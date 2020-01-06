@@ -1,0 +1,2 @@
+include ':example', ':airwallex'
+rootProject.name='airwallex-android'
