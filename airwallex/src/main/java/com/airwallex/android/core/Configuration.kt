@@ -2,6 +2,7 @@ package com.airwallex.android.core
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.airwallex.android.ApiKeyValidator
 import com.airwallex.android.util.ContextProvider
 import org.jetbrains.annotations.NotNull
 
@@ -12,14 +13,7 @@ data class Configuration(
 ) {
 
     init {
-        // TODO Add some other conditions
-        require(!apiKey.isBlank()) {
-            "Invalid API key"
-        }
-
-        require(!clientId.isBlank()) {
-            "Invalid Client Id"
-        }
+        ApiKeyValidator.requireValid(apiKey)
     }
 
     private class Store internal constructor(context: Context) {
