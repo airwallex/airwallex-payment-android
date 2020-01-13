@@ -1,3 +1,35 @@
 <resources>
     <string name="app_name">Airwallex Sample</string>
+    <string name="payment_auth_sub_title">Begin your shipping journey with us.</string>
+    <string name="payment_auth_title">Aircross</string>
+    <string name="payment_auth_customers">Returning Customers</string>
+    <string name="payment_auth_guest_checkout">Guest Checkout</string>
+    <string name="payment_auth_guest_checkout_sub">Proceed to checkout as a guest.</string>
+    <string name="login">Login</string>
+    <string name="continueGuest">Continue as a guest</string>
+    <string name="payment_order_info_title">Order Information</string>
+    <string name="shipping_address">Shipping Address</string>
+    <string name="shipping_first_name_hint">First name</string>
+    <string name="shipping_last_name_hint">Last name</string>
+    <string name="shipping_street_hint">Street address</string>
+    <string name="shipping_zip_code_hint">Zip code</string>
+    <string name="shipping_city_name_hint">City</string>
+    <string name="shipping_state_name_hint">State</string>
+    <string name="shipping_country_name_hint">Country</string>
+    <string name="shipping_phone_number_hint">Phone number</string>
+    <string name="contact_information">Contact Information</string>
+    <string name="contact_email_hint">Email</string>
+    <string name="contact_phone_number_hint">Phone number (optional)</string>
+    <string name="checkout">Check out</string>
+    <string name="payment_methods_title">Payment Methods</string>
+    <string name="payment_method_wechat_title">WeChat Pay</string>
+    <string name="payment_method_wechat_subtitle">Please use WeChat app to scan the QR code below to complete transaction.</string>
+    <string name="payment_method_card_number_hint">Card number</string>
+    <string name="payment_method_card_expires_hint">Expires MM / YY</string>
+    <string name="payment_method_card_security_code_hint">Security code</string>
+    <string name="payment_method_card_zip_code_hint">Zip code</string>
+    <string name="payment_method_card_name_hint">Name on card</string>
+    <string name="payment_method_card">Card</string>
+    <string name="payment_method_we_chat">WeChat</string>
+    <string name="payment_method_card_pay">Pay %s</string>
 </resources>
