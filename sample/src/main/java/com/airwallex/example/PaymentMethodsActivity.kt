@@ -27,8 +27,8 @@ class PaymentMethodsActivity : AppCompatActivity() {
             supportFragmentManager,
             this
         )
-        viewPager.adapter = adapter
-        tabLayout.setupWithViewPager(viewPager)
+        vpMethods.adapter = adapter
+        tlMethods.setupWithViewPager(vpMethods)
     }
 
     class PaymentMethodsAdapter(

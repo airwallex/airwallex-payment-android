@@ -11,12 +11,12 @@
         android:text="@string/payment_methods_title" />
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
+        android:id="@+id/tlMethods"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPager"
+        android:id="@+id/vpMethods"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

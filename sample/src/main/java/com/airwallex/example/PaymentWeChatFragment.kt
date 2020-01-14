@@ -13,7 +13,7 @@ class PaymentWeChatFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return View.inflate(context, R.layout.activity_payment_method_wechat, null)
+        return View.inflate(context, R.layout.fragment_payment_method_wechat, null)
     }
 
 }

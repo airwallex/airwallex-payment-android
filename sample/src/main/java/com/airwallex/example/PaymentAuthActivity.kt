@@ -23,7 +23,7 @@ class PaymentAuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment_auth)
 
-        customerSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        spCustomer.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
@@ -42,13 +42,13 @@ class PaymentAuthActivity : AppCompatActivity() {
             this,
             android.R.layout.simple_list_item_1,
             customerOptions.map { it.label })
-        customerSpinner.adapter = arrayAdapter
+        spCustomer.adapter = arrayAdapter
 
-        login.setOnClickListener {
+        btnLogin.setOnClickListener {
             PaymentOrderInfoActivity.start(this)
         }
 
-        continueAsGuest.setOnClickListener {
+        btnContinueAsGuest.setOnClickListener {
 
         }
     }

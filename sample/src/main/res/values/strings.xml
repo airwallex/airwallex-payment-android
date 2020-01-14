@@ -32,4 +32,15 @@
     <string name="payment_method_card">Card</string>
     <string name="payment_method_we_chat">WeChat</string>
     <string name="payment_method_card_pay">Pay %s</string>
+    <string name="demo_credit_cards_title">Demo credit cards</string>
+    <string name="demo_credit_cards_sub_title">You can copy and paste the following test card to trigger the different scenarios.</string>
+    <string name="demo_credit_cards_default">Default</string>
+    <string name="demo_credit_cards_default_value">4012 0003 0000 1003</string>
+    <string name="demo_credit_cards_auth_required">Authentication required</string>
+    <string name="demo_credit_cards_auth_required_value">5413 3303 0020 1184</string>
+    <string name="order_summary_subtotal">Subtotal</string>
+    <string name="order_summary_shipping">Shipping</string>
+    <string name="order_summary_total">Total</string>
+    <string name="order_summary">Order Summary</string>
+    <string name="remove">Remove</string>
 </resources>

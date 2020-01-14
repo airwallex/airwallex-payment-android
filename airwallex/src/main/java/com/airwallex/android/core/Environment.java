@@ -14,6 +14,6 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 @StringDef({Environment.STAGING, Environment.PRODUCTION})
 public @interface Environment {
-    String STAGING = "https://";
+    String STAGING = "https://staging-pacheckoutdemo.airwallex.com";
     String PRODUCTION = "https://";
 }
