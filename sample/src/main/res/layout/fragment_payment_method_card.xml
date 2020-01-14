@@ -78,7 +78,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/startPay"
+        android:id="@+id/btnStartPay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/payment_method_card_pay" />

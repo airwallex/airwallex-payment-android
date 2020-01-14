@@ -36,13 +36,13 @@
                 android:text="@string/payment_auth_customers" />
 
             <Spinner
-                android:id="@+id/customerSpinner"
+                android:id="@+id/spCustomer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:spinnerMode="dialog" />
 
             <Button
-                android:id="@+id/login"
+                android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/login" />
@@ -59,7 +59,7 @@
 
 
             <Button
-                android:id="@+id/continueAsGuest"
+                android:id="@+id/btnContinueAsGuest"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/continueGuest" />
