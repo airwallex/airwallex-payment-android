@@ -1,15 +1,14 @@
-package com.airwallex.android.core
+package com.airwallex.android
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.airwallex.android.ApiKeyValidator
 import com.airwallex.android.util.ContextProvider
 import org.jetbrains.annotations.NotNull
 
-data class Configuration(
+data class PaymentConfiguration(
     @NotNull val apiKey: String,
     @NotNull val clientId: String,
-    @Environment val environment: String
+    val environment: Environment
 ) {
 
     init {
@@ -24,25 +23,34 @@ data class Configuration(
         internal fun save(
             apiKey: String,
             clientId: String,
-            @Environment environment: String
+            environment: Environment
         ) {
             prefs.edit()
                 .putString(KEY_API_KEY, apiKey)
                 .putString(KEY_CLIENT_ID, clientId)
-                .putString(KEY_ENVIRONMENT, environment)
+                .putInt(KEY_ENVIRONMENT, environment.ordinal)
                 .apply()
         }
 
         @JvmSynthetic
-        internal fun load(): Configuration? {
+        internal fun load(): PaymentConfiguration? {
             val apiKey: String = prefs.getString(KEY_API_KEY, null) ?: return null
             val clientId: String = prefs.getString(KEY_CLIENT_ID, null) ?: return null
-            val environment: String = prefs.getString(KEY_ENVIRONMENT, null) ?: return null
-            return Configuration(apiKey, clientId, environment)
+            val environment: Environment = Environment.getEnvironment(
+                prefs.getInt(
+                    KEY_ENVIRONMENT,
+                    Environment.PRODUCTION.ordinal
+                )
+            )
+            return PaymentConfiguration(
+                apiKey,
+                clientId,
+                environment
+            )
         }
 
         private companion object {
-            private val NAME = Configuration::class.java.canonicalName
+            private val NAME = PaymentConfiguration::class.java.canonicalName
 
             private const val KEY_API_KEY = "key_api_key"
             private const val KEY_CLIENT_ID = "key_client_id"
@@ -52,14 +60,17 @@ data class Configuration(
 
     companion object {
 
-        private var config: Configuration? = null
+        private var config: PaymentConfiguration? = null
 
         @JvmStatic
-        fun getInstance(context: Context): Configuration {
-            return config ?: loadInstance(context)
+        fun getInstance(context: Context): PaymentConfiguration {
+            return config
+                ?: loadInstance(
+                    context
+                )
         }
 
-        private fun loadInstance(context: Context): Configuration {
+        private fun loadInstance(context: Context): PaymentConfiguration {
             return Store(context).load()?.let {
                 config = it
                 it
@@ -70,9 +81,14 @@ data class Configuration(
             context: Context,
             apiKey: String,
             clientId: String,
-            @Environment environment: String = Environment.PRODUCTION
+            environment: Environment = Environment.PRODUCTION
         ) {
-            config = Configuration(apiKey, clientId, environment)
+            config =
+                PaymentConfiguration(
+                    apiKey,
+                    clientId,
+                    environment
+                )
             ContextProvider.init(context)
         }
 

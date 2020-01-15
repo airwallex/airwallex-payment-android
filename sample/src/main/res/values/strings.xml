@@ -1,14 +1,6 @@
 <resources>
     <string name="app_name">Airwallex Sample</string>
-    <string name="payment_auth_sub_title">Begin your shipping journey with us.</string>
-    <string name="payment_auth_title">Aircross</string>
-    <string name="payment_auth_customers">Returning Customers</string>
-    <string name="payment_auth_guest_checkout">Guest Checkout</string>
-    <string name="payment_auth_guest_checkout_sub">Proceed to checkout as a guest.</string>
-    <string name="login">Login</string>
-    <string name="continueGuest">Continue as a guest</string>
-    <string name="payment_order_info_title">Order Information</string>
-    <string name="shipping_address">Shipping Address</string>
+    <string name="shipping_address">Shipping</string>
     <string name="shipping_first_name_hint">First name</string>
     <string name="shipping_last_name_hint">Last name</string>
     <string name="shipping_street_hint">Street address</string>
@@ -21,26 +13,13 @@
     <string name="contact_email_hint">Email</string>
     <string name="contact_phone_number_hint">Phone number (optional)</string>
     <string name="checkout">Check out</string>
-    <string name="payment_methods_title">Payment Methods</string>
-    <string name="payment_method_wechat_title">WeChat Pay</string>
-    <string name="payment_method_wechat_subtitle">Please use WeChat app to scan the QR code below to complete transaction.</string>
-    <string name="payment_method_card_number_hint">Card number</string>
-    <string name="payment_method_card_expires_hint">Expires MM / YY</string>
-    <string name="payment_method_card_security_code_hint">Security code</string>
-    <string name="payment_method_card_zip_code_hint">Zip code</string>
-    <string name="payment_method_card_name_hint">Name on card</string>
-    <string name="payment_method_card">Card</string>
-    <string name="payment_method_we_chat">WeChat</string>
-    <string name="payment_method_card_pay">Pay %s</string>
-    <string name="demo_credit_cards_title">Demo credit cards</string>
-    <string name="demo_credit_cards_sub_title">You can copy and paste the following test card to trigger the different scenarios.</string>
-    <string name="demo_credit_cards_default">Default</string>
-    <string name="demo_credit_cards_default_value">4012 0003 0000 1003</string>
-    <string name="demo_credit_cards_auth_required">Authentication required</string>
-    <string name="demo_credit_cards_auth_required_value">5413 3303 0020 1184</string>
     <string name="order_summary_subtotal">Subtotal</string>
     <string name="order_summary_shipping">Shipping</string>
     <string name="order_summary_total">Total</string>
-    <string name="order_summary">Order Summary</string>
     <string name="remove">Remove</string>
+    <string name="my_cart">My cart</string>
+    <string name="pay_now">Pay now</string>
+    <string name="total">Total</string>
+    <string name="shipping">Shipping</string>
+    <string name="payment">Payment</string>
 </resources>

@@ -1,193 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-        <fragment
-            android:id="@+id/fgOrderSummary"
-            android:name="com.airwallex.example.OrderSummaryFragment"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="20dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/payment_order_info_title" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/shipping_address" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:counterEnabled="true"
-            app:errorEnabled="true">
-
-            <EditText
-                android:id="@+id/etFirstName"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/shipping_first_name_hint"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:counterEnabled="true"
-            app:errorEnabled="true">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/my_cart"
+                    android:textColor="@android:color/black"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/etLastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/shipping_last_name_hint"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                <fragment
+                    android:id="@+id/fgOrderSummary"
+                    android:name="com.airwallex.example.OrderSummaryFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:counterEnabled="true"
-            app:errorEnabled="true">
-
-            <EditText
-                android:id="@+id/etStreetAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/shipping_street_hint"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:counterEnabled="true"
-            app:errorEnabled="true">
-
-            <EditText
-                android:id="@+id/etZipCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/shipping_zip_code_hint"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:counterEnabled="true"
-            app:errorEnabled="true">
-
-            <EditText
-                android:id="@+id/etCity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/shipping_city_name_hint"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:counterEnabled="true"
-            app:errorEnabled="true">
-
-            <EditText
-                android:id="@+id/etState"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/shipping_state_name_hint"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:counterEnabled="true"
-            app:errorEnabled="true">
-
-            <EditText
-                android:id="@+id/etCountry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/shipping_country_name_hint"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:counterEnabled="true"
-            app:errorEnabled="true">
-
-            <EditText
-                android:id="@+id/etPhoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/shipping_phone_number_hint"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/contact_information" />
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:counterEnabled="true"
-            app:errorEnabled="true">
-
-            <EditText
-                android:id="@+id/etContactEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/contact_email_hint"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:counterEnabled="true"
-            app:errorEnabled="true">
-
-            <EditText
-                android:id="@+id/etContactPhoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/contact_phone_number_hint"
-                android:inputType="phone" />
-        </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </ScrollView>
 
         <Button
             android:id="@+id/btnCheckout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/checkout" />
+            android:layout_margin="20dp"
+            android:layout_weight="0"
+            android:background="@android:color/holo_blue_dark"
+            android:text="@string/checkout"
+            android:textColor="@android:color/white" />
     </LinearLayout>
-</ScrollView>
+
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</merge>
