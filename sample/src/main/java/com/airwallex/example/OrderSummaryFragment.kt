@@ -15,40 +15,6 @@ import kotlinx.android.synthetic.main.order_summary_item.view.*
 
 class OrderSummaryFragment : Fragment() {
 
-
-    private val products = mutableListOf(
-        Product(
-            code = 123,
-            name = "IPhone XR",
-            desc = "Buy iPhone XR, per month with trade-in",
-            sku = "piece",
-            type = "physical",
-            unitPrice = 100,
-            url = "www.aircross.com",
-            quantity = 1
-        ),
-        Product(
-            code = 123,
-            name = "IPad Air 5",
-            desc = "Buy iPad, Get free two-business-day delivery on any in‑stock iPad ordered by 5:00 p.m.",
-            sku = "piece",
-            type = "physical",
-            unitPrice = 200,
-            url = "www.aircross.com",
-            quantity = 2
-        ),
-        Product(
-            code = 123,
-            name = "MacBook Pro",
-            desc = "Buy iMac Pro. 3.2GHz 8-core Intel Xenon W processor",
-            sku = "piece",
-            type = "physical",
-            unitPrice = 1000,
-            url = "www.aircross.com",
-            quantity = 8
-        )
-    )
-
     @SuppressLint("ViewConstructor")
     class OrderSummaryItem(val order: Product, context: Context?, val removeHandler: () -> Unit) :
         RelativeLayout(context) {
@@ -75,20 +41,16 @@ class OrderSummaryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        updateUI()
-
-        rlOrderSummaryHeader.setOnClickListener {
-            llOrderSummaryContent.visibility =
-                if (llOrderSummaryContent.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-        }
+        refreshUI()
     }
 
-    private fun updateUI() {
+    private fun refreshUI() {
+        val products = TestData.products
         llProducts.removeAllViews()
         products.map {
             OrderSummaryItem(it, context) {
                 products.remove(it)
-                updateUI()
+                refreshUI()
             }
         }.forEach { llProducts.addView(it) }
 
@@ -97,7 +59,6 @@ class OrderSummaryFragment : Fragment() {
         val totalPrice = subtotalPrice + shipping
 
         tvOrderSubtotalPrice.text = subtotalPrice.toString()
-        tvOrderHeaderTotalPrice.text = totalPrice.toString()
         tvOrderTotalPrice.text = totalPrice.toString()
     }
 }
