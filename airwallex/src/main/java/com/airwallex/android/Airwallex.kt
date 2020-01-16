@@ -1,7 +1,9 @@
 package com.airwallex.android
 
 import android.content.Context
+import android.content.Intent
 import androidx.annotation.UiThread
+import androidx.annotation.WorkerThread
 
 class Airwallex internal constructor(
     private val context: Context,
@@ -38,52 +40,22 @@ class Airwallex internal constructor(
     )
 
     @UiThread
-    fun confirmPayment(
-        paymentIntentId: String
-    ) {
-        paymentController.startConfirm(paymentIntentId, token)
+    fun confirmPaymentIntent(paymentIntentId: String) {
+        paymentController.startConfirm(token, paymentIntentId)
     }
 
-//    @UiThread
-//    fun confirmPayment(
-//        fragment: Fragment,
-//        confirmPaymentIntentParams: ConfirmPaymentIntentParams
-//    ) {
-//        paymentController.startConfirmAndAuth(
-//            AuthActivityStarter.Host.create(fragment),
-//            confirmPaymentIntentParams,
-//            ApiRequest.Options(
-//                url = config.environment.baseUrl
-//            )
-//        )
-//    }
+    @WorkerThread
+    fun retrievePaymentIntent(paymentIntentId: String) {
+        airwallexRepository.retrievePaymentIntent(token, paymentIntentId)
+    }
 
-//    @UiThread
-//    fun onPaymentResult(
-//        requestCode: Int,
-//        data: Intent?,
-//        callback: ApiResultCallback<PaymentIntentResult>
-//    ): Boolean {
-//        return if (data != null && paymentController.shouldHandlePaymentResult(requestCode, data)) {
-//            paymentController.handlePaymentResult(
-//                data,
-//                ApiRequest.Options(
-//                    url = config.environment.baseUrl
-//                ),
-//                callback
-//            )
-//            true
-//        } else {
-//            false
-//        }
-//    }
-//
-//    @WorkerThread
-//    fun retrievePaymentIntentSynchronous(): PaymentIntent? {
-//        return stripeRepository.retrievePaymentIntent(
-//            ApiRequest.Options(
-//                url = config.environment.baseUrl
-//            )
-//        )
-//    }
+    @UiThread
+    fun onPaymentResult(
+        requestCode: Int,
+        data: Intent?,
+        callback: ApiResultCallback<PaymentIntentResult>
+    ) {
+
+    }
+
 }

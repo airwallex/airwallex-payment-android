@@ -10,6 +10,9 @@ import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
 import kotlinx.android.synthetic.main.activity_payment_methods.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class PaymentStartPayActivity : AppCompatActivity() {
 
@@ -77,7 +80,12 @@ class PaymentStartPayActivity : AppCompatActivity() {
 
 
             val airwallex = Airwallex(this, token)
-            airwallex.confirmPayment(paymentIntentId)
+//            airwallex.confirmPaymentIntent(paymentIntentId)
+
+
+            CoroutineScope(Dispatchers.IO).launch {
+                airwallex.retrievePaymentIntent("int_jjLlyQTiz1h49tZkZzgJDDEHABC")
+            }
         }
     }
 
