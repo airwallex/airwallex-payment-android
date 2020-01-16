@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.AirwallexPlugins
 import com.airwallex.paymentacceptance.model.Order
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -23,7 +22,7 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
     private val compositeSubscription = CompositeDisposable()
 
     private val api: Api by lazy {
-        ApiFactory(AirwallexPlugins.baseUrl).create()
+        ApiFactory("https://staging-pci-api.airwallex.com").create()
     }
 
     private var token: String = ""
