@@ -32,7 +32,16 @@ internal class AirwallexApiRepository : ApiRepository {
         token: String,
         paymentIntentId: String
     ): PaymentIntent? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val response = AirwallexPlugins.restClient()?.executeInternal(
+            AirwallexHttpRequest.Builder()
+                .setUrl(
+                    getRetrievePaymentIntentUrl(paymentIntentId)
+                )
+                .addHeader("Authorization", "Bearer $token")
+                .setMethod(AirwallexHttpRequest.Method.GET)
+                .build()
+        )
+        return PaymentIntent(id = "")
     }
 
     /**

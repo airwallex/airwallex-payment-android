@@ -4,7 +4,7 @@ import android.content.Intent
 
 internal interface PaymentController {
 
-    fun startConfirm(paymentIntentId: String, token: String)
+    fun startConfirm(token: String, paymentIntentId: String)
 
     fun shouldHandlePaymentResult(requestCode: Int, data: Intent?): Boolean
 
