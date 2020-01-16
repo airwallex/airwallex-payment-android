@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.airwallex.example">
+    package="com.airwallex.paymentacceptance">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name=".SampleApplication"
+        android:name="com.airwallex.paymentacceptance.SampleApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PaymentOrderInfoActivity">
+        <activity android:name="com.airwallex.paymentacceptance.PaymentOrderInfoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,9 +21,24 @@
         </activity>
 
 
-        <activity android:name=".PaymentStartPayActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.PaymentStartPayActivity" />
 
-        <activity android:name=".EditShippingAddressActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.EditShippingAddressActivity" />
+
+
+        <activity
+            android:name="com.airwallex.paymentacceptance.wechat.wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+        </activity>
+
+        <receiver
+            android:name="com.airwallex.paymentacceptance.wechat.AppRegister"
+            android:permission="com.tencent.mm.plugin.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

@@ -13,16 +13,40 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.airwallex.example"
+        applicationId "com.airwallex.paymentacceptance"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
-    buildTypes {
+
+    signingConfigs {
+        debug {
+            storeFile file(AIRWALLEX_DEBUG_STORE_FILE)
+            storePassword AIRWALLEX_DEBUG_STORE_PASSWORD
+            keyAlias AIRWALLEX_DEBUG_KEY_ALIAS
+            keyPassword AIRWALLEX_DEBUG_KEY_PASSWORD
+        }
         release {
+            storeFile file(AIRWALLEX_RELEASE_STORE_FILE)
+            storePassword AIRWALLEX_RELEASE_STORE_PASSWORD
+            keyAlias AIRWALLEX_RELEASE_KEY_ALIAS
+            keyPassword AIRWALLEX_RELEASE_KEY_PASSWORD
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
             minifyEnabled false
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -47,6 +71,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.7.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.7.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.3'
+
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.5.8'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'

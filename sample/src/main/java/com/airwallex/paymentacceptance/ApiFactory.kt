@@ -1,4 +1,4 @@
-package com.airwallex.example
+package com.airwallex.paymentacceptance
 
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
