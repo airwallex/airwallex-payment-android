@@ -1,15 +1,14 @@
-package com.airwallex.example
+package com.airwallex.paymentacceptance
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
-import com.airwallex.example.model.Product
+import com.airwallex.paymentacceptance.model.Product
 import kotlinx.android.synthetic.main.fragment_order_summary.*
 import kotlinx.android.synthetic.main.order_summary_item.view.*
 
@@ -20,7 +19,8 @@ class OrderSummaryFragment : Fragment() {
         RelativeLayout(context) {
 
         init {
-            View.inflate(context, R.layout.order_summary_item, this)
+            View.inflate(context,
+                R.layout.order_summary_item, this)
 
             tvProductName.text = order.name
             tvProductType.text = order.type + " * " + order.quantity
@@ -36,7 +36,8 @@ class OrderSummaryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return View.inflate(context, R.layout.fragment_order_summary, null)
+        return View.inflate(context,
+            R.layout.fragment_order_summary, null)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,7 +49,10 @@ class OrderSummaryFragment : Fragment() {
         val products = TestData.products
         llProducts.removeAllViews()
         products.map {
-            OrderSummaryItem(it, context) {
+            OrderSummaryItem(
+                it,
+                context
+            ) {
                 products.remove(it)
                 refreshUI()
             }

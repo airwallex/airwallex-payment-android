@@ -1,8 +1,8 @@
-package com.airwallex.example
+package com.airwallex.paymentacceptance
 
-import com.airwallex.example.model.Product
-import com.airwallex.example.model.Shipping
-import com.airwallex.example.model.ShippingAddress
+import com.airwallex.paymentacceptance.model.Product
+import com.airwallex.paymentacceptance.model.Shipping
+import com.airwallex.paymentacceptance.model.ShippingAddress
 
 object TestData {
 

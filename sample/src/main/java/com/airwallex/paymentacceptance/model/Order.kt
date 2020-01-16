@@ -1,4 +1,4 @@
-package com.airwallex.example.model
+package com.airwallex.paymentacceptance.model
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,4 +1,4 @@
-package com.airwallex.example
+package com.airwallex.paymentacceptance
 
 import android.app.Application
 import com.airwallex.android.Airwallex

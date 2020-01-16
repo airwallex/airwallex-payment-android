@@ -1,4 +1,4 @@
-package com.airwallex.example
+package com.airwallex.paymentacceptance
 
 import android.app.Activity
 import android.content.Intent

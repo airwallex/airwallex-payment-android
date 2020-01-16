@@ -1,4 +1,4 @@
-package com.airwallex.example
+package com.airwallex.paymentacceptance
 
 import android.app.Activity
 import android.content.Intent
@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.AirwallexPlugins
-import com.airwallex.example.model.Order
+import com.airwallex.paymentacceptance.model.Order
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -100,7 +100,11 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
         loading.visibility = View.GONE
         try {
             val responseData = JSONObject(responseBody.string())
-            PaymentStartPayActivity.start(this, responseData["id"].toString(), token)
+            PaymentStartPayActivity.start(
+                this,
+                responseData["id"].toString(),
+                token
+            )
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: JSONException) {

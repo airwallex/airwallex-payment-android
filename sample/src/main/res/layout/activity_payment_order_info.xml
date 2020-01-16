@@ -28,7 +28,7 @@
 
                 <fragment
                     android:id="@+id/fgOrderSummary"
-                    android:name="com.airwallex.example.OrderSummaryFragment"
+                    android:name="com.airwallex.paymentacceptance.OrderSummaryFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
