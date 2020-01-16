@@ -28,6 +28,7 @@ android {
 
 ext {
     okhttpVersion = "4.2.0"
+    gsonVersion = '2.8.5'
 }
 
 dependencies {
@@ -36,6 +37,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.0.2'
 
     api "com.squareup.okhttp3:okhttp:$okhttpVersion"
+    api "com.google.code.gson:gson:${gsonVersion}"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
