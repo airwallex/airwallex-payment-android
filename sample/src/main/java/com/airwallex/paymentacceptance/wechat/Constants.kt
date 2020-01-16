@@ -5,8 +5,5 @@ internal object Constants {
     const val APP_ID = "wxfad13fd6681a62b0"
 
     // update with your app signature
-    const val APP_SIGNATURE = "my_app_signature"
-    
-    // update with your app publishable key
-    const val STRIPE_KEY = "my_key"
+    const val APP_SIGNATURE = "eb1b3de47de134a321442cad974db87e"
 }
