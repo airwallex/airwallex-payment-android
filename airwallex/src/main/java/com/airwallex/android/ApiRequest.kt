@@ -1,43 +1,45 @@
 package com.airwallex.android
 
-import java.io.UnsupportedEncodingException
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import java.net.URLEncoder
 import java.util.*
-
 
 internal class ApiRequest internal constructor(
     method: Method,
     url: String,
+    val options: Options,
     params: Map<String, *>? = null
 ) : AirwallexRequest(method, url, params) {
 
     internal companion object {
 
-        const val HEADER_USER_AGENT = "User-Agent"
         const val CHARSET = "UTF-8"
-
 
         @JvmSynthetic
         internal fun createGet(
             url: String,
+            options: Options,
             params: Map<String, *>? = null
         ): ApiRequest {
-            return ApiRequest(Method.GET, url, params)
+            return ApiRequest(Method.GET, url, options, params)
         }
 
         @JvmSynthetic
         internal fun createPost(
             url: String,
+            options: Options,
             params: Map<String, *>? = null
         ): ApiRequest {
-            return ApiRequest(Method.POST, url, params)
+            return ApiRequest(Method.POST, url, options, params)
         }
 
         @JvmSynthetic
         internal fun createDelete(
-            url: String
+            url: String,
+            options: Options
         ): ApiRequest {
-            return ApiRequest(Method.DELETE, url, null)
+            return ApiRequest(Method.DELETE, url, options, null)
         }
     }
 
@@ -54,8 +56,20 @@ internal class ApiRequest internal constructor(
         return result.toString()
     }
 
+    override fun getUserAgent(): String {
+        return DEFAULT_USER_AGENT
+    }
+
+    override fun createHeaders(): Map<String, String> {
+        return mapOf("Authorization" to "Bearer ${options.token}")
+    }
+
     override fun getOutputBytes(): ByteArray {
         return query.toByteArray(charset(CHARSET))
     }
 
+    @Parcelize
+    internal data class Options internal constructor(
+        val token: String
+    ) : Parcelable
 }

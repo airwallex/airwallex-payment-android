@@ -1,10 +1,5 @@
-package com.airwallex.android
+package com.airwallex.android.model
 
-import android.os.Parcelable
-
-/**
- * Model for a Stripe API object.
- */
 interface AirwallexModel {
     override fun hashCode(): Int
 

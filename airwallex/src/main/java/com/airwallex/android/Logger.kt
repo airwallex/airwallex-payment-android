@@ -1,9 +1,8 @@
-package com.airwallex.android.util
+package com.airwallex.android
 
 import android.util.Log
-import com.airwallex.android.BuildConfig
 
-object Logger {
+internal object Logger {
 
     enum class Level {
         VERBOSE, DEBUG, INFO, WARNING, ERROR
@@ -31,38 +30,47 @@ object Logger {
     var loggingEnabled: Boolean = BuildConfig.DEBUG
 
     @JvmStatic
-    var logWorker: LogWorker = DEFAULT_LOG_WORKER
+    var logWorker: LogWorker =
+        DEFAULT_LOG_WORKER
 
     @JvmStatic
     @JvmOverloads
-    fun error(message: String?, throwable: Throwable? = null) = error("ERROR", message, throwable)
+    fun error(message: String?, throwable: Throwable? = null) =
+        error("ERROR", message, throwable)
 
     fun error(tag: String, message: String?, throwable: Throwable? = null) {
-        if (loggingEnabled) logWorker.log(Level.ERROR, tag, message, throwable)
+        if (loggingEnabled) logWorker.log(
+            Level.ERROR, tag, message, throwable)
     }
 
     @JvmStatic
     @JvmOverloads
     fun warn(tag: String, message: String?, throwable: Throwable? = null) {
-        if (loggingEnabled) logWorker.log(Level.WARNING, tag, message, throwable)
+        if (loggingEnabled) logWorker.log(
+            Level.WARNING, tag, message, throwable)
     }
 
-    fun warn(message: String?, throwable: Throwable? = null) = warn("WARN", message, throwable)
+    fun warn(message: String?, throwable: Throwable? = null) =
+        warn("WARN", message, throwable)
 
     @JvmStatic
     @JvmOverloads
-    fun info(message: String?, throwable: Throwable? = null) = info("INFO", message, throwable)
+    fun info(message: String?, throwable: Throwable? = null) =
+        info("INFO", message, throwable)
 
     fun info(tag: String, message: String?, throwable: Throwable? = null) {
-        if (loggingEnabled) logWorker.log(Level.INFO, tag, message, throwable)
+        if (loggingEnabled) logWorker.log(
+            Level.INFO, tag, message, throwable)
     }
 
     @JvmStatic
     @JvmOverloads
-    fun debug(message: String?, throwable: Throwable? = null) = debug("DEBUG", message, throwable)
+    fun debug(message: String?, throwable: Throwable? = null) =
+        debug("DEBUG", message, throwable)
 
     fun debug(tag: String, message: String?, throwable: Throwable? = null) {
-        if (loggingEnabled) logWorker.log(Level.DEBUG, tag, message, throwable)
+        if (loggingEnabled) logWorker.log(
+            Level.DEBUG, tag, message, throwable)
     }
 
     @JvmStatic
@@ -71,6 +79,7 @@ object Logger {
         verbose("VERBOSE", message, throwable)
 
     fun verbose(tag: String, message: String?, throwable: Throwable? = null) {
-        if (loggingEnabled) logWorker.log(Level.VERBOSE, tag, message, throwable)
+        if (loggingEnabled) logWorker.log(
+            Level.VERBOSE, tag, message, throwable)
     }
 }

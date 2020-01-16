@@ -1,5 +1,6 @@
 package com.airwallex.android
 
+import com.airwallex.android.model.AirwallexModel
 import org.json.JSONArray
 import org.json.JSONObject
 

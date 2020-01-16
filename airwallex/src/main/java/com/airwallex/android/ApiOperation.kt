@@ -38,8 +38,11 @@ internal abstract class ApiOperation<ResultType>(
         when {
             resultWrapper.result != null -> callback.onSuccess(resultWrapper.result)
             resultWrapper.error != null -> callback.onError(resultWrapper.error)
-            else -> callback.onError(RuntimeException(
-                "The API operation returned neither a result or exception"))
+            else -> callback.onError(
+                RuntimeException(
+                    "The API operation returned neither a result or exception"
+                )
+            )
         }
     }
 }

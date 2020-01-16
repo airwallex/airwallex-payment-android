@@ -1,7 +1,6 @@
 package com.airwallex.android
 
 import android.content.Context
-import com.airwallex.android.util.ContextProvider
 
 data class AirwallexConfiguration(
     val environment: Environment,

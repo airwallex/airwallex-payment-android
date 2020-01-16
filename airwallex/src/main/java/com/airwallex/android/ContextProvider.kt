@@ -1,4 +1,4 @@
-package com.airwallex.android.util
+package com.airwallex.android
 
 import android.content.Context
 

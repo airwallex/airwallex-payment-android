@@ -12,5 +12,4 @@ internal interface PaymentController {
         data: Intent,
         callback: ApiResultCallback<PaymentIntentResult>
     )
-
 }

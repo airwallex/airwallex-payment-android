@@ -2,26 +2,28 @@ package com.airwallex.android
 
 import androidx.annotation.VisibleForTesting
 import com.airwallex.android.exception.APIConnectionException
-import com.airwallex.android.model.PaymentIntentJsonParser
+import com.airwallex.android.model.AirwallexModel
+import com.airwallex.android.model.parser.PaymentIntentJsonParser
 import java.io.IOException
 import java.util.*
 
 internal class AirwallexApiRepository(
     private val stripeApiRequestExecutor: ApiRequestExecutor = AirwallexApiRequestExecutor()
-) : AirwallexRepository {
+) : ApiRepository {
 
     override fun confirmPaymentIntent(token: String, paymentIntentId: String): PaymentIntent? {
 
         return fetchStripeModel(
             ApiRequest.createPost(
                 getConfirmPaymentIntentUrl(paymentIntentId),
+                ApiRequest.Options(token),
                 mapOf("customer" to "cus_123")
             ),
             PaymentIntentJsonParser()
         )
     }
 
-    override fun retrievePaymentIntent(): PaymentIntent? {
+    override fun retrievePaymentIntent(token: String, paymentIntentId: String): PaymentIntent? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -48,7 +50,7 @@ internal class AirwallexApiRepository(
     }
 
     private fun getApiUrl(path: String): String {
-        return "${AirwallexPlugins.baseUrl()}/api/v1/pa/$path"
+        return "${AirwallexPlugins.baseUrl}/api/v1/pa/$path"
     }
 
     private fun <ModelType : AirwallexModel> fetchStripeModel(

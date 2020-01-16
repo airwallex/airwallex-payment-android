@@ -9,10 +9,6 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 
-/**
- * Wraps a SSLSocketFactory and enables more TLS versions on older versions of Android.
- * Most of the code is taken from stripe-java.
- */
 internal class AirwallexSSLSocketFactory constructor(
     private val tlsv11Supported: Boolean,
     private val tlsv12Supported: Boolean
@@ -72,7 +68,8 @@ internal class AirwallexSSLSocketFactory constructor(
         localPort: Int
     ): Socket? {
         return fixupSocket(
-            internalFactory.createSocket(address, port, localAddress, localPort))
+            internalFactory.createSocket(address, port, localAddress, localPort)
+        )
     }
 
     private fun fixupSocket(sock: Socket): Socket {
@@ -82,7 +79,7 @@ internal class AirwallexSSLSocketFactory constructor(
         return sock
     }
 
-    fun getEnabledProtocols(
+    private fun getEnabledProtocols(
         enabledProtocols: Array<String>
     ): Array<String?> {
         return setOf(

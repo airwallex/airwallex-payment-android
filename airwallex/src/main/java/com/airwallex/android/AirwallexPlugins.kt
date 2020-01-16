@@ -2,17 +2,15 @@ package com.airwallex.android
 
 object AirwallexPlugins {
 
-    lateinit var configuration: AirwallexConfiguration
+    private lateinit var configuration: AirwallexConfiguration
 
     fun initialize(configuration: AirwallexConfiguration) {
         this.configuration = configuration
     }
 
-    fun baseUrl(): String {
-        return configuration.environment.baseUrl
-    }
+    val baseUrl by lazy { configuration.environment.baseUrl }
+    val authUrl by lazy { configuration.environment.authUrl }
 
-    fun authUrl(): String {
-        return configuration.environment.authUrl
-    }
+    val enableLogging by lazy { configuration.enableLogging }
+
 }
