@@ -1,22 +1,59 @@
 package com.airwallex.android
 
 import android.content.Intent
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
-internal class AirwallexPaymentController : PaymentController {
+internal class AirwallexPaymentController(
+    private val airwallexRepository: AirwallexRepository,
+    private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+) : PaymentController {
 
-    override fun startConfirmAndAuth(
-        host: AuthActivityStarter.Host,
-        confirmStripeIntentParams: ConfirmAirwallexIntentParams,
-        requestOptions: ApiRequest.Options
-    ) {
+//    override fun startConfirmAndAuth(
+//        confirmStripeIntentParams: ConfirmAirwallexIntentParams
+//    ) {
 //        ConfirmAirwallexIntentTask(
 //            stripeRepository, confirmStripeIntentParams, requestOptions, workScope,
 //            ConfirmStripeIntentCallback(
 //                host, requestOptions, this, getRequestCode(confirmStripeIntentParams)
 //            )
 //        ).execute()
+//    }
 
+
+    private class ConfirmAirwallexIntentTask(
+        private val token: String,
+        private val paymentIntentId: String,
+        private val airwallexRepository: AirwallexRepository,
+        workScope: CoroutineScope,
+        callback: ApiResultCallback<AirwallexIntent>
+    ) : ApiOperation<AirwallexIntent>(workScope, callback) {
+
+        override suspend fun getResult(): AirwallexIntent? {
+            return airwallexRepository.confirmPaymentIntent(token, paymentIntentId)
+        }
+    }
+
+    override fun startConfirm(paymentIntentId: String, token: String) {
+        ConfirmAirwallexIntentTask(
+            token,
+            paymentIntentId,
+            airwallexRepository,
+            workScope,
+            ConfirmAirwallexIntentCallback()
+        ).execute()
+    }
+
+    private class ConfirmAirwallexIntentCallback : ApiResultCallback<AirwallexIntent> {
+
+        override fun onError(e: Exception) {
+        }
+
+        override fun onSuccess(result: AirwallexIntent) {
+
+            Log.e("aaa", "result $result")
+        }
     }
 
 //    private class ConfirmAirwallexIntentTask(
@@ -40,7 +77,6 @@ internal class AirwallexPaymentController : PaymentController {
 
     override fun handlePaymentResult(
         data: Intent,
-        requestOptions: ApiRequest.Options,
         callback: ApiResultCallback<PaymentIntentResult>
     ) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

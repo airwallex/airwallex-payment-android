@@ -3,13 +3,11 @@ package com.airwallex.example
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.PaymentConfiguration
+import com.airwallex.android.AirwallexPlugins
 import com.airwallex.example.model.Order
-import com.airwallex.example.model.Product
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -25,8 +23,10 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
     private val compositeSubscription = CompositeDisposable()
 
     private val api: Api by lazy {
-        ApiFactory(PaymentConfiguration.getInstance(applicationContext).environment.baseUrl).create()
+        ApiFactory(AirwallexPlugins.baseUrl()).create()
     }
+
+    private var token: String = ""
 
     companion object {
 
@@ -54,8 +54,8 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
     private fun authAndCreatePaymentIntent() {
         compositeSubscription.add(
             api.authentication(
-                apiKey = PaymentConfiguration.getInstance(applicationContext).apiKey,
-                clientId = PaymentConfiguration.getInstance(applicationContext).clientId
+                apiKey = "9092eb393908b656c2ed8134535b574c30e7a243718a1c08a06b8ea9278919f4550af02cac520e062518028204c1dc54",
+                clientId = "DW19XFSMSUq4YPc7xkM4Nw"
             )
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -64,8 +64,9 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
                 }
                 .flatMap {
                     val responseData = JSONObject(it.string())
+                    token = responseData["token"].toString()
                     api.createPaymentIntent(
-                        authorization = "Bearer " + responseData["token"],
+                        authorization = "Bearer $token",
                         params = mutableMapOf(
                             "amount" to 100.01,
                             "currency" to "USD",
@@ -99,10 +100,7 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
         loading.visibility = View.GONE
         try {
             val responseData = JSONObject(responseBody.string())
-            Log.e("aaa", "responseData $responseData")
-
-            PaymentStartPayActivity.start(this)
-
+            PaymentStartPayActivity.start(this, responseData["id"].toString(), token)
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: JSONException) {
