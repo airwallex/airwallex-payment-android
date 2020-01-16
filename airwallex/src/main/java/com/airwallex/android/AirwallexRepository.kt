@@ -2,13 +2,9 @@ package com.airwallex.android
 
 internal interface AirwallexRepository {
 
-    fun confirmPaymentIntent(
-        confirmPaymentIntentParams: ConfirmPaymentIntentParams,
-        options: ApiRequest.Options
-    ): PaymentIntent?
+    fun confirmPaymentIntent(token: String, paymentIntentId: String): PaymentIntent?
 
     fun retrievePaymentIntent(
-        options: ApiRequest.Options
     ): PaymentIntent?
 
 }
