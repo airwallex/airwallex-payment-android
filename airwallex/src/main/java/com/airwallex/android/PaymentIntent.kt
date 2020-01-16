@@ -1,6 +1,6 @@
 package com.airwallex.android
 
-import android.os.Parcel
+import com.airwallex.android.model.AirwallexModel
 
 data class PaymentIntent(
 

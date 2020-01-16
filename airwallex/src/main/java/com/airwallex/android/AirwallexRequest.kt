@@ -9,6 +9,15 @@ internal abstract class AirwallexRequest(
     val baseUrl: String,
     params: Map<String, *>?
 ) {
+    internal val headers: Map<String, String>
+        get() {
+            return createHeaders()
+                .plus(HEADER_USER_AGENT to getUserAgent())
+        }
+
+    internal abstract fun getUserAgent(): String
+
+    internal abstract fun createHeaders(): Map<String, String>
 
 
     private val params: Map<String, *>? = params?.let { compactParams(it) }
@@ -22,6 +31,12 @@ internal abstract class AirwallexRequest(
     internal abstract fun getOutputBytes(): ByteArray
 
     companion object {
+
+        internal const val CONTENT_TYPE = "application/json"
+
+        const val HEADER_USER_AGENT = "User-Agent"
+
+        const val DEFAULT_USER_AGENT = "Airwallex/v1 ${BuildConfig.VERSION_NAME}"
 
         private fun compactParams(params: Map<String, *>): Map<String, Any> {
             val compactParams = HashMap<String, Any>(params)

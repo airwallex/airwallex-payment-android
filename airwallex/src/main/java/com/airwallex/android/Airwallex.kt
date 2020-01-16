@@ -4,16 +4,14 @@ import android.content.Context
 import androidx.annotation.UiThread
 
 class Airwallex internal constructor(
-    val context: Context,
-    val token: String,
+    private val context: Context,
+    private val token: String,
     private val paymentController: PaymentController,
-    private val airwallexRepository: AirwallexRepository
+    private val airwallexRepository: ApiRepository
 ) {
 
     companion object {
         fun initialize(configuration: AirwallexConfiguration) {
-            // check configuration params
-
             AirwallexPlugins.initialize(configuration)
         }
     }
@@ -31,7 +29,7 @@ class Airwallex internal constructor(
     private constructor(
         context: Context,
         token: String,
-        airwallexRepository: AirwallexRepository
+        airwallexRepository: ApiRepository
     ) : this(
         context.applicationContext,
         token,

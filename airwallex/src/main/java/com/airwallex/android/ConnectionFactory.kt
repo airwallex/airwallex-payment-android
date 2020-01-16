@@ -1,6 +1,5 @@
 package com.airwallex.android
 
-import java.io.UnsupportedEncodingException
 import java.net.URL
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.HttpsURLConnection
@@ -16,13 +15,13 @@ internal class ConnectionFactory {
             sslSocketFactory = SSL_SOCKET_FACTORY
             requestMethod = request.method.code
 
-//            for ((key, value) in request.headers) {
-//                setRequestProperty(key, value)
-//            }
+            for ((key, value) in request.headers) {
+                setRequestProperty(key, value)
+            }
 
             if (AirwallexRequest.Method.POST == request.method) {
                 doOutput = true
-//                setRequestProperty("Content-Type", request.contentType)
+                setRequestProperty("Content-Type", AirwallexRequest.CONTENT_TYPE)
                 outputStream.use { output -> output.write(getRequestOutputBytes(request)) }
             }
         }
@@ -36,17 +35,7 @@ internal class ConnectionFactory {
 
     @JvmSynthetic
     internal fun getRequestOutputBytes(request: AirwallexRequest): ByteArray {
-
         return request.getOutputBytes()
-//        try {
-//            return request.getOutputBytes()
-//        } catch (e: UnsupportedEncodingException) {
-//            throw InvalidRequestException(
-//                "Unable to encode parameters to ${StandardCharsets.UTF_8.name()}. " +
-//                    "Please contact support@stripe.com for assistance.",
-//                null, null, 0, null, null, null, e
-//            )
-//        }
     }
 
     private companion object {

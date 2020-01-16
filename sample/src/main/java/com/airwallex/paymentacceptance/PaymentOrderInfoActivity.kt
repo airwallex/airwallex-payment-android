@@ -23,7 +23,7 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
     private val compositeSubscription = CompositeDisposable()
 
     private val api: Api by lazy {
-        ApiFactory(AirwallexPlugins.baseUrl()).create()
+        ApiFactory(AirwallexPlugins.baseUrl).create()
     }
 
     private var token: String = ""

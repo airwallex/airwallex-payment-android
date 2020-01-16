@@ -1,4 +1,4 @@
-package com.airwallex.android.model
+package com.airwallex.android.model.parser
 
 import android.util.Log
 import com.airwallex.android.ModelJsonParser

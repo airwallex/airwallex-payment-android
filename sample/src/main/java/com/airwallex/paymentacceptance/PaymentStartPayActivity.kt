@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.Airwallex
 import com.airwallex.paymentacceptance.wechat.Constants
 import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI
@@ -62,21 +63,21 @@ class PaymentStartPayActivity : AppCompatActivity() {
 //                    }
 //                })
 
-            launchWeChat(
-                WeChat(
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
-                )
-            )
+//            launchWeChat(
+//                WeChat(
+//                    "",
+//                    "",
+//                    "",
+//                    "",
+//                    "",
+//                    "",
+//                    ""
+//                )
+//            )
 
 
-//            val airwallex = Airwallex(this, token)
-//            airwallex.confirmPayment(paymentIntentId)
+            val airwallex = Airwallex(this, token)
+            airwallex.confirmPayment(paymentIntentId)
         }
     }
 
