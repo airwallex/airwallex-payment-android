@@ -2,10 +2,10 @@ package com.airwallex.android
 
 import android.content.Context
 
-data class AirwallexConfiguration(
-    val environment: Environment,
-    val enableLogging: Boolean
-) {
+data class AirwallexConfiguration constructor(val builder: Builder) {
+
+    val environment: Environment = builder.environment
+    val enableLogging: Boolean = builder.enableLogging
 
     class Builder(val context: Context) {
 
@@ -13,8 +13,8 @@ data class AirwallexConfiguration(
             ContextProvider.init(context)
         }
 
-        private var environment: Environment = Environment.PRODUCTION
-        private var enableLogging: Boolean = false
+        var environment: Environment = Environment.PRODUCTION
+        var enableLogging: Boolean = false
 
         fun setEnvironment(environment: Environment): Builder = apply {
             this.environment = environment
@@ -25,10 +25,7 @@ data class AirwallexConfiguration(
         }
 
         fun build(): AirwallexConfiguration {
-            return AirwallexConfiguration(
-                environment,
-                enableLogging
-            )
+            return AirwallexConfiguration(this)
         }
     }
 }

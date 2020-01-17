@@ -11,12 +11,11 @@ internal class AirwallexApiRepository : ApiRepository {
         paymentIntentId: String
     ): PaymentIntent? {
         val jsonRequest = JsonObject()
-        val response = AirwallexPlugins.restClient()?.executeInternal(
-            AirwallexHttpRequest.Builder()
-                .setUrl(
-                    getConfirmPaymentIntentUrl(paymentIntentId)
-                )
-                .setMethod(AirwallexHttpRequest.Method.POST)
+        val response = AirwallexPlugins.restClient()?.execute(
+            AirwallexHttpRequest.Builder(
+                getConfirmPaymentIntentUrl(paymentIntentId),
+                AirwallexHttpRequest.Method.POST
+            )
                 .setBody(
                     AirwallexHttpBody(
                         "application/json; charset=utf-8",
@@ -32,13 +31,12 @@ internal class AirwallexApiRepository : ApiRepository {
         token: String,
         paymentIntentId: String
     ): PaymentIntent? {
-        val response = AirwallexPlugins.restClient()?.executeInternal(
-            AirwallexHttpRequest.Builder()
-                .setUrl(
-                    getRetrievePaymentIntentUrl(paymentIntentId)
-                )
+        val response = AirwallexPlugins.restClient()?.execute(
+            AirwallexHttpRequest.Builder(
+                getRetrievePaymentIntentUrl(paymentIntentId),
+                AirwallexHttpRequest.Method.GET
+            )
                 .addHeader("Authorization", "Bearer $token")
-                .setMethod(AirwallexHttpRequest.Method.GET)
                 .build()
         )
         return PaymentIntent(id = "")
