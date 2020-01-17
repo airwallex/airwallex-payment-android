@@ -1,12 +1,14 @@
 package com.airwallex.android.exception
 
+import com.airwallex.android.model.AirwallexError
+
 class APIException(
     message: String?,
     requestId: String? = null,
     statusCode: Int,
-    stripeError: AirwallexError? = null,
+    airwallexError: AirwallexError? = null,
     e: Throwable? = null
-) : AirwallexException(stripeError, message, requestId, statusCode, e) {
+) : AirwallexException(airwallexError, message, requestId, statusCode, e) {
     internal companion object {
         @JvmSynthetic
         internal fun create(e: AirwallexException): APIException {

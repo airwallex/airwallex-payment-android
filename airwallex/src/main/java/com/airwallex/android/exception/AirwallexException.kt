@@ -1,7 +1,9 @@
 package com.airwallex.android.exception
 
+import com.airwallex.android.model.AirwallexError
+
 abstract class AirwallexException @JvmOverloads constructor(
-    val stripeError: AirwallexError?,
+    val airwallexError: AirwallexError?,
     message: String?,
     val requestId: String?,
     val statusCode: Int,
@@ -16,15 +18,17 @@ abstract class AirwallexException @JvmOverloads constructor(
     ) : this(null, message, requestId, statusCode, e)
 
     override fun toString(): String {
-        val reqIdStr: String = if (requestId != null) {
+        var reqIdStr: String = if (requestId != null) {
             "; request-id: $requestId"
         } else {
             ""
         }
-        return super.toString() + reqIdStr
-    }
 
-    internal companion object {
-        protected const val serialVersionUID = 1L
+        reqIdStr = super.toString() + reqIdStr
+
+        if (airwallexError != null) {
+            reqIdStr = "$reqIdStr, $airwallexError"
+        }
+        return reqIdStr
     }
 }
