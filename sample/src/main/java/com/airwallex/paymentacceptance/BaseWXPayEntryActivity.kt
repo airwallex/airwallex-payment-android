@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance.wechat
+package com.airwallex.paymentacceptance
 
 import android.os.Bundle
 import android.widget.Toast
@@ -15,8 +15,7 @@ abstract class BaseWXPayEntryActivity : AppCompatActivity(), IWXAPIEventHandler 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        weChatApi = WXAPIFactory.createWXAPI(this,
-            Constants.APP_ID, true)
+        weChatApi = WXAPIFactory.createWXAPI(this, Constants.APP_ID, true)
         weChatApi.handleIntent(intent, this)
     }
 
