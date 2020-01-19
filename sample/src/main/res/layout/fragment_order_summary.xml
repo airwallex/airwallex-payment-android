@@ -6,6 +6,33 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/circularstd_bold"
+            android:text="@string/my_cart"
+            android:textColor="#2A2A2A"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvOrderSum"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/order_sum_bg"
+            android:fontFamily="@font/circularstd_bold"
+            android:gravity="center"
+            android:textColor="#612FFF"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/llProducts"
         android:layout_width="match_parent"
@@ -13,71 +40,98 @@
         android:orientation="vertical" />
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="30dp">
+        android:layout_width="match_parent"
+        android:layout_height="84dp"
+        android:paddingVertical="16dp">
 
-        <TextView
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/circularstd_medium"
+                android:text="@string/order_summary_subtotal"
+                android:textColor="#54545E"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvOrderSubtotalPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/circularstd_medium"
+                android:textColor="#2A2A2A"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/order_summary_shipping" />
+            android:layout_alignParentBottom="true">
 
-        <TextView
-            android:id="@+id/orderShipping"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/circularstd_medium"
+                android:text="@string/order_summary_shipping"
+                android:textColor="#54545E"
+                android:textSize="14sp" />
 
+            <TextView
+                android:id="@+id/tvShipping"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/circularstd_medium"
+                android:textColor="#2A2A2A"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
     </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="30dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/order_summary_subtotal" />
-
-        <TextView
-            android:id="@+id/tvOrderSubtotalPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
-
-    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1px"
+        android:layout_height="1dp"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/black" />
+        android:background="#EBECF0" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="40dp">
+        android:layout_height="58dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="@string/order_summary_total" />
+            android:fontFamily="@font/circularstd_medium"
+            android:text="@string/order_summary_total"
+            android:textColor="#2A2A2A"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tvOrderTotalPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_alignParentRight="true" />
+            android:fontFamily="@font/circularstd_medium"
+            android:textColor="#2A2A2A"
+            android:textSize="14sp" />
 
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1px"
+        android:layout_height="1dp"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/black" />
+        android:background="#EBECF0" />
 </LinearLayout>

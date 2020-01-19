@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F7F7F9">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tvTotalPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/circularstd_bold"
+        android:textColor="#1E272E"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/tvTotalLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTotalPrice"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/circularstd_medium"
+        android:text="@string/total"
+        android:textColor="#1E272E"
+        android:textSize="14sp" />
+
+    <RelativeLayout
+        android:id="@+id/rlShipping"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTotalLabel"
+        android:layout_marginTop="40dp"
+        android:background="@android:color/white"
+        android:minHeight="58dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/circularstd_medium"
+            android:text="@string/shipping"
+            android:textColor="#54545E"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvShipping"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/circularstd_medium"
+                android:gravity="right"
+                android:lineSpacingExtra="4dp"
+                android:textColor="#2A2A2A"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/right_arrow" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/rlShipping"
+        android:background="#EBECF0" />
+
+    <RelativeLayout
+        android:id="@+id/rlPaymentMethod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rlShipping"
+        android:layout_marginTop="1dp"
+        android:background="@android:color/white"
+        android:minHeight="58dp"
+        android:paddingHorizontal="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/circularstd_medium"
+            android:text="@string/payment"
+            android:textColor="#54545E"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvPaymentMethod"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/circularstd_medium"
+                android:gravity="right"
+                android:textColor="#2A2A2A"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/right_arrow" />
+        </LinearLayout>
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rlPlay"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:background="@drawable/button_bg"
+        android:enabled="false"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_alignParentBottom="true"
+            android:background="@null"
+            android:layout_centerInParent="true"
+            android:drawableLeft="@drawable/lock_selector"
+            android:text="@string/pay_now"
+            android:textColor="@color/button_text_selector"
+            android:orientation="horizontal"/>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

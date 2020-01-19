@@ -19,7 +19,7 @@ data class Product(
     val type: String,
 
     @SerializedName("unit_price")
-    val unitPrice: Int,
+    val unitPrice: Double,
 
     @SerializedName("url")
     val url: String,

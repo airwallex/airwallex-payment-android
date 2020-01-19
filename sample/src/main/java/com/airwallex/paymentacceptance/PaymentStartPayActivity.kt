@@ -2,14 +2,20 @@ package com.airwallex.paymentacceptance
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Parcelable
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
+import com.airwallex.paymentacceptance.model.PaymentMethodType
+import com.airwallex.paymentacceptance.model.Shipping
 import com.airwallex.paymentacceptance.wechat.Constants
+import com.neovisionaries.i18n.CountryCode
 import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
-import kotlinx.android.synthetic.main.activity_payment_methods.*
+import kotlinx.android.synthetic.main.activity_start_pay.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,6 +26,10 @@ class PaymentStartPayActivity : AppCompatActivity() {
         intent.getStringExtra(PAYMENT_INTENT_ID)
     }
 
+    private val paymentAmount: Float by lazy {
+        intent.getFloatExtra(PAYMENT_AMOUNT, 0F)
+    }
+
     private val token: String by lazy {
         intent.getStringExtra(PAYMENT_TOKEN)
     }
@@ -27,11 +37,16 @@ class PaymentStartPayActivity : AppCompatActivity() {
     companion object {
 
         private const val PAYMENT_INTENT_ID = "payment_intent_id"
+        private const val PAYMENT_AMOUNT = "payment_amount"
         private const val PAYMENT_TOKEN = "payment_token"
 
-        fun start(activity: Activity, paymentIntentId: String, token: String) {
+        private const val REQUEST_EIDT_SHIPPING_CODE = 998
+        private const val REQUEST_PAYMENT_MOTHOD_CODE = 999
+
+        fun start(activity: Activity, paymentIntentId: String, amount: Float, token: String) {
             val intent = Intent(activity, PaymentStartPayActivity::class.java)
             intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
+            intent.putExtra(PAYMENT_AMOUNT, amount)
             intent.putExtra(PAYMENT_TOKEN, token)
             activity.startActivity(intent)
         }
@@ -41,44 +56,28 @@ class PaymentStartPayActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_payment_methods)
+        setContentView(R.layout.activity_start_pay)
 
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setHomeButtonEnabled(true)
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowTitleEnabled(false)
+        }
+
+        tvTotalPrice.text = "$$paymentAmount"
+
+        rlShipping.setOnClickListener {
+            EditShippingActivity.startActivityForResult(this, REQUEST_EIDT_SHIPPING_CODE)
+        }
+
+        rlPaymentMethod.setOnClickListener {
+            PaymentMethodsActivity.startActivityForResult(this, REQUEST_PAYMENT_MOTHOD_CODE)
+        }
 
         weChatApi = WXAPIFactory.createWXAPI(this, Constants.APP_ID, true)
 
-//        val stripe = Stripe(this, Constants.STRIPE_KEY)
-//        val weChatPaySourceParams = SourceParams.createWeChatPayParams(
-//            MainActivity.AMOUNT,
-//            MainActivity.CURRENCY,
-//            Constants.APP_ID,
-//            MainActivity.STATEMENT_DESCRIPTOR
-//        )
-
-        btnPay.setOnClickListener {
-
-            //            stripe.createSource(weChatPaySourceParams,
-//                object : ApiResultCallback<Source> {
-//                    override fun onError(e: Exception) {
-//                    }
-//
-//                    override fun onSuccess(source: Source) {
-//
-//                    }
-//                })
-
-//            launchWeChat(
-//                WeChat(
-//                    "",
-//                    "",
-//                    "",
-//                    "",
-//                    "",
-//                    "",
-//                    ""
-//                )
-//            )
-
-
+        rlPlay.setOnClickListener {
             val airwallex = Airwallex(this, token)
 //            airwallex.confirmPaymentIntent(paymentIntentId)
 
@@ -87,6 +86,62 @@ class PaymentStartPayActivity : AppCompatActivity() {
                 airwallex.retrievePaymentIntent("int_jjLlyQTiz1h49tZkZzgJDDEHABC")
             }
         }
+
+        val shipping = Data.shipping
+        if (shipping == null) {
+            tvShipping.text = getString(R.string.select_shipping)
+            tvShipping.setTextColor(Color.parseColor("#A9A9A9"))
+        } else {
+            updateShippingLabel(shipping)
+        }
+
+        if (Data.paymentMethodType == null) {
+            tvPaymentMethod.text = getString(R.string.select_payment_method)
+            tvPaymentMethod.setTextColor(Color.parseColor("#A9A9A9"))
+        } else {
+            tvPaymentMethod.text = Data.paymentMethodType!!.value
+            tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
+        }
+
+        rlPlay.isEnabled = shipping != null && Data.paymentMethodType != null
+        btnPlay.isEnabled = rlPlay.isEnabled
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun updateShippingLabel(shipping: Shipping) {
+        tvShipping.text = "${shipping.lastName} ${shipping.firstName}\n" +
+                "${shipping.address.street}\n" +
+                "${shipping.address.city}, ${shipping.address.state}, ${CountryCode.values().find { it.name == shipping.address.countryCode }?.getName()}"
+        tvShipping.setTextColor(Color.parseColor("#2A2A2A"))
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (data == null) {
+            return
+        }
+        when (requestCode) {
+            REQUEST_EIDT_SHIPPING_CODE -> {
+                val shipping =
+                    data.getParcelableExtra<Parcelable>(EditShippingActivity.SHIPPING_DETAIL) as Shipping
+                updateShippingLabel(shipping)
+            }
+            REQUEST_PAYMENT_MOTHOD_CODE -> {
+                val paymentMethodType =
+                    data.getSerializableExtra(PaymentMethodsActivity.PAYMENT_METHOD_TYPE) as PaymentMethodType
+                tvPaymentMethod.text = paymentMethodType.value
+                tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
+            }
+        }
+        rlPlay.isEnabled = Data.shipping != null && Data.paymentMethodType != null
+        btnPlay.isEnabled = rlPlay.isEnabled
     }
 
     private fun launchWeChat(weChat: WeChat) {

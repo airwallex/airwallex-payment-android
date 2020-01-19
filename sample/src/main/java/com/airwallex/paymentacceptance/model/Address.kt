@@ -1,21 +1,24 @@
 package com.airwallex.paymentacceptance.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
-data class ShippingAddress(
+@Parcelize
+data class Address(
 
     @SerializedName("country_code")
-    val countryCode: String,
+    var countryCode: String,
 
     @SerializedName("state")
-    val state: String,
+    var state: String,
 
     @SerializedName("city")
-    val city: String,
+    var city: String,
 
     @SerializedName("street")
-    val street: String,
+    var street: String,
 
     @SerializedName("postcode")
-    val postcode: String
-)
+    var postcode: String
+) : Parcelable

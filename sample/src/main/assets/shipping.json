@@ -1,0 +1,13 @@
+{
+  "first_name": "John",
+  "last_name": "Doe",
+  "phone_number": "13800000000",
+  "shipping_method": "sameday",
+  "address": {
+    "country_code": "CN",
+    "state": "Shanghai",
+    "city": "Shanghai",
+    "street": "Pudong District",
+    "postcode": "100000"
+  }
+}
