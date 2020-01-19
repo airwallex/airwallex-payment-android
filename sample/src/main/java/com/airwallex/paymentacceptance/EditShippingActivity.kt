@@ -10,6 +10,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.model.Address
+import com.airwallex.android.model.Shipping
 import com.neovisionaries.i18n.CountryCode
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_edit_shipping.*
@@ -304,11 +306,11 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
         shipping?.apply {
             etFirstName.setText(firstName)
             etLastName.setText(lastName)
-            etStreetAddress.setText(address.street)
-            etZipCode.setText(address.postcode)
-            etCity.setText(address.city)
-            etState.setText(address.state)
-            etCountry.setText(CountryCode.values().find { it.name == address.countryCode }?.getName())
+            etStreetAddress.setText(address?.street)
+            etZipCode.setText(address?.postcode)
+            etCity.setText(address?.city)
+            etState.setText(address?.state)
+            etCountry.setText(CountryCode.values().find { it.name == address?.countryCode }?.getName())
             etPhoneNumber.setText(phone)
         }
 
@@ -353,18 +355,23 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
 
     @Throws(IllegalArgumentException::class)
     private fun actionSave() {
-        Data.shipping = shipping?.apply {
-            lastName = etLastName.text.toString()
-            firstName = etFirstName.text.toString()
-            phone = etPhoneNumber.text.toString()
-            address.countryCode =
-                CountryCode.values().find { it.getName() == etCountry.text.toString() }?.name
-                    ?: throw IllegalArgumentException("Invalid country code")
-            address.state = etState.text.toString()
-            address.city = etCity.text.toString()
-            address.street = etStreetAddress.text.toString()
-            address.postcode = etZipCode.text.toString()
-        }
+        val shipping = Shipping.Builder()
+            .setLastName(etLastName.text.toString())
+            .setFirstName(etFirstName.text.toString())
+            .setPhone(etPhoneNumber.text.toString())
+            .setAddress(
+                Address.Builder()
+                    .setCountryCode(
+                        CountryCode.values().find { it.getName() == etCountry.text.toString() }?.name
+                            ?: ""
+                    )
+                    .setState(etState.text.toString())
+                    .setCity(etCity.text.toString())
+                    .setStreet(etStreetAddress.text.toString())
+                    .setPostcode(etZipCode.text.toString())
+                    .build()
+            )
+            .build()
 
         val intent = Intent()
         intent.putExtra(SHIPPING_DETAIL, shipping)

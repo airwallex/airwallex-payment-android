@@ -8,8 +8,8 @@ import android.os.Parcelable
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
+import com.airwallex.android.model.Shipping
 import com.airwallex.paymentacceptance.model.PaymentMethodType
-import com.airwallex.paymentacceptance.model.Shipping
 import com.airwallex.paymentacceptance.wechat.Constants
 import com.neovisionaries.i18n.CountryCode
 import com.tencent.mm.opensdk.modelpay.PayReq
@@ -116,8 +116,8 @@ class PaymentStartPayActivity : AppCompatActivity() {
 
     private fun updateShippingLabel(shipping: Shipping) {
         tvShipping.text = "${shipping.lastName} ${shipping.firstName}\n" +
-                "${shipping.address.street}\n" +
-                "${shipping.address.city}, ${shipping.address.state}, ${CountryCode.values().find { it.name == shipping.address.countryCode }?.getName()}"
+                "${shipping.address?.street}\n" +
+                "${shipping.address?.city}, ${shipping.address?.state}, ${CountryCode.values().find { it.name == shipping.address?.countryCode }?.getName()}"
         tvShipping.setTextColor(Color.parseColor("#2A2A2A"))
     }
 

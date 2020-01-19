@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
-import com.airwallex.paymentacceptance.model.Product
+import com.airwallex.android.model.Product
 import kotlinx.android.synthetic.main.fragment_order_summary.*
 import kotlinx.android.synthetic.main.order_summary_item.view.*
 
@@ -32,7 +32,8 @@ class OrderSummaryFragment : Fragment() {
 
             tvProductName.text = order.name
             tvProductType.text = "${order.type} x ${order.quantity}"
-            tvProductPrice.text = String.format("$%.2f", order.unitPrice * order.quantity)
+            tvProductPrice.text =
+                String.format("$%.2f", order.unitPrice ?: 0 * (order.quantity ?: 0))
             tvRemove.setOnClickListener {
                 removeHandler.invoke()
             }
@@ -68,13 +69,13 @@ class OrderSummaryFragment : Fragment() {
         }.forEach { llProducts.addView(it) }
 
         val subtotalPrice =
-            products.sumByDouble { it.unitPrice.toDouble() * it.quantity.toDouble() }
+            products.sumByDouble { it.unitPrice ?: 0 * (it.quantity ?: 0).toDouble() }
         val shipping = 0
         val totalPrice = subtotalPrice + shipping
 
         tvOrderSubtotalPrice.text = String.format("$%.2f", subtotalPrice)
         tvOrderTotalPrice.text = String.format("$%.2f", totalPrice)
         tvShipping.text = "Free"
-        tvOrderSum.text = products.sumBy { it.quantity }.toString()
+        tvOrderSum.text = products.sumBy { it.quantity ?: 0 }.toString()
     }
 }

@@ -1,5 +1,7 @@
 package com.airwallex.paymentacceptance.model
 
+import com.airwallex.android.model.Product
+import com.airwallex.android.model.Shipping
 import com.google.gson.annotations.SerializedName
 
 data class Order(
