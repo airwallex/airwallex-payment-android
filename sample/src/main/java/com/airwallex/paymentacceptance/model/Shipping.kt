@@ -1,21 +1,24 @@
 package com.airwallex.paymentacceptance.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Shipping(
 
     @SerializedName("shipping_method")
-    val shippingMethod: String,
+    var shippingMethod: String,
 
     @SerializedName("first_name")
-    val firstName: String,
+    var firstName: String,
 
     @SerializedName("last_name")
-    val lastName: String,
+    var lastName: String,
 
     @SerializedName("phone_number")
-    val phone: String,
+    var phone: String,
 
     @SerializedName("address")
-    val shippingAddress: ShippingAddress
-)
+    var address: Address
+) : Parcelable

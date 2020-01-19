@@ -14,17 +14,25 @@ import kotlinx.android.synthetic.main.order_summary_item.view.*
 
 class OrderSummaryFragment : Fragment() {
 
+    val products = Data.products
+
     @SuppressLint("ViewConstructor")
-    class OrderSummaryItem(val order: Product, context: Context?, val removeHandler: () -> Unit) :
+    class OrderSummaryItem(
+        val order: Product,
+        context: Context?,
+        private val removeHandler: () -> Unit
+    ) :
         RelativeLayout(context) {
 
         init {
-            View.inflate(context,
-                R.layout.order_summary_item, this)
+            View.inflate(
+                context,
+                R.layout.order_summary_item, this
+            )
 
             tvProductName.text = order.name
-            tvProductType.text = order.type + " * " + order.quantity
-            tvProductPrice.text = (order.unitPrice * order.quantity).toString()
+            tvProductType.text = "${order.type} x ${order.quantity}"
+            tvProductPrice.text = String.format("$%.2f", order.unitPrice * order.quantity)
             tvRemove.setOnClickListener {
                 removeHandler.invoke()
             }
@@ -36,8 +44,10 @@ class OrderSummaryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return View.inflate(context,
-            R.layout.fragment_order_summary, null)
+        return View.inflate(
+            context,
+            R.layout.fragment_order_summary, null
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,7 +56,6 @@ class OrderSummaryFragment : Fragment() {
     }
 
     private fun refreshUI() {
-        val products = TestData.products
         llProducts.removeAllViews()
         products.map {
             OrderSummaryItem(
@@ -58,11 +67,14 @@ class OrderSummaryFragment : Fragment() {
             }
         }.forEach { llProducts.addView(it) }
 
-        val subtotalPrice = products.sumBy { it.unitPrice * it.quantity }
+        val subtotalPrice =
+            products.sumByDouble { it.unitPrice.toDouble() * it.quantity.toDouble() }
         val shipping = 0
         val totalPrice = subtotalPrice + shipping
 
-        tvOrderSubtotalPrice.text = subtotalPrice.toString()
-        tvOrderTotalPrice.text = totalPrice.toString()
+        tvOrderSubtotalPrice.text = String.format("$%.2f", subtotalPrice)
+        tvOrderTotalPrice.text = String.format("$%.2f", totalPrice)
+        tvShipping.text = "Free"
+        tvOrderSum.text = products.sumBy { it.quantity }.toString()
     }
 }

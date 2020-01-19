@@ -7,7 +7,7 @@ data class Order(
     val products: List<Product>,
 
     @SerializedName("shipping")
-    val shipping: Shipping,
+    val shipping: Shipping?,
 
     @SerializedName("type")
     val type: String

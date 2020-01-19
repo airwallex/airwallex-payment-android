@@ -29,8 +29,6 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
 
     companion object {
 
-        val TAG = PaymentOrderInfoActivity::class.java.canonicalName
-
         fun start(activity: Activity) {
             activity.startActivity(Intent(activity, PaymentOrderInfoActivity::class.java))
         }
@@ -62,19 +60,21 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
                     loading.visibility = View.VISIBLE
                 }
                 .flatMap {
+                    val fgOrderSummary =
+                        supportFragmentManager.findFragmentById(R.id.fgOrderSummary) as OrderSummaryFragment
                     val responseData = JSONObject(it.string())
                     token = responseData["token"].toString()
                     api.createPaymentIntent(
                         authorization = "Bearer $token",
                         params = mutableMapOf(
-                            "amount" to 100.01,
+                            "amount" to 0.01,
                             "currency" to "USD",
                             "descriptor" to "Airwallex - T-shirt",
                             "merchant_order_id" to UUID.randomUUID().toString(),
                             "metadata" to mapOf("id" to 1),
                             "order" to Order(
-                                products = TestData.products,
-                                shipping = TestData.shipping,
+                                products = fgOrderSummary.products,
+                                shipping = Data.shipping,
                                 type = "physical_goods"
                             ),
 
@@ -102,6 +102,7 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
             PaymentStartPayActivity.start(
                 this,
                 responseData["id"].toString(),
+                responseData["amount"].toString().toFloat(),
                 token
             )
         } catch (e: IOException) {
