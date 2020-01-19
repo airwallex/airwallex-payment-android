@@ -20,6 +20,9 @@ data class Shipping(
     @SerializedName("phone_number")
     val phone: String? = null,
 
+    @SerializedName("date_of_birth")
+    val dateOfBirth: String? = null,
+
     @SerializedName("address")
     val address: Address? = null
 ) : AirwallexModel, Parcelable {
@@ -29,6 +32,7 @@ data class Shipping(
         private var firstName: String? = null
         private var lastName: String? = null
         private var phone: String? = null
+        private var dateOfBirth: String? = null
         private var address: Address? = null
 
         fun setShippingMethod(shippingMethod: String?): Builder = apply {
@@ -45,6 +49,10 @@ data class Shipping(
 
         fun setPhone(phone: String?): Builder = apply {
             this.phone = phone
+        }
+
+        fun setDateForBirth(dateOfBirth: String?): Builder = apply {
+            this.dateOfBirth = dateOfBirth
         }
 
         fun setAddress(address: Address?): Builder = apply {

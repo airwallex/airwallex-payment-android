@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance.model
+package com.airwallex.android.model
 
 enum class PaymentMethodType(val value: String) {
 

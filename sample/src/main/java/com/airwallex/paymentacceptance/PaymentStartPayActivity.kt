@@ -7,8 +7,8 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.model.Shipping
-import com.airwallex.paymentacceptance.model.PaymentMethodType
 import com.neovisionaries.i18n.CountryCode
 import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI

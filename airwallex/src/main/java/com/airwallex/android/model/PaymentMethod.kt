@@ -9,7 +9,7 @@ import kotlinx.android.parcel.Parcelize
 data class PaymentMethod internal constructor(
 
     @SerializedName("billing")
-    val billing: Billing,
+    val billing: Shipping,
 
     @SerializedName("card")
     val card: Card,
