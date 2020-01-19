@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.paymentacceptance.model.Order
+import com.airwallex.android.model.Order
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -72,12 +72,11 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
                             "descriptor" to "Airwallex - T-shirt",
                             "merchant_order_id" to UUID.randomUUID().toString(),
                             "metadata" to mapOf("id" to 1),
-                            "order" to Order(
-                                products = fgOrderSummary.products,
-                                shipping = Data.shipping,
-                                type = "physical_goods"
-                            ),
-
+                            "order" to Order.Builder()
+                                .setProducts(fgOrderSummary.products)
+                                .setShipping(Data.shipping)
+                                .setType("physical_goods")
+                                .build(),
                             "request_id" to UUID.randomUUID().toString()
                         )
                     )
