@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance.wechat
+package com.airwallex.paymentacceptance
 
 internal object Constants {
     // update with your app id

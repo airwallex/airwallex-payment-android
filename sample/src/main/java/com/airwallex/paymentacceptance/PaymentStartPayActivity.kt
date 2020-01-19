@@ -7,10 +7,8 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.Airwallex
 import com.airwallex.android.model.Shipping
 import com.airwallex.paymentacceptance.model.PaymentMethodType
-import com.airwallex.paymentacceptance.wechat.Constants
 import com.neovisionaries.i18n.CountryCode
 import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI
@@ -78,13 +76,29 @@ class PaymentStartPayActivity : AppCompatActivity() {
         weChatApi = WXAPIFactory.createWXAPI(this, Constants.APP_ID, true)
 
         rlPlay.setOnClickListener {
-            val airwallex = Airwallex(this, token)
+//            val airwallex = Airwallex(this, token)
 //            airwallex.confirmPaymentIntent(paymentIntentId)
 
 
             CoroutineScope(Dispatchers.IO).launch {
-                airwallex.retrievePaymentIntent("int_jjLlyQTiz1h49tZkZzgJDDEHABC")
+
+
+//                airwallex.retrievePaymentIntent("int_jjLlyQTiz1h49tZkZzgJDDEHABC")
+
+
             }
+
+            launchWeChat(
+                WeChat(
+                    appId = "wxfad13fd6681a62b0",
+                    partnerId = "334777613",
+                    prepayId = "wx191803162627511bc2299b671801586900",
+                    packageValue = "Sign=WXPay",
+                    nonce = "RbUilMJ9vKfPMJxDXpk51GOcdz1NMmB8",
+                    timestamp = "1579428196",
+                    sign = "AF83A58CAB542EE60EC652533E6AA43A505AB62B4C3C2C461A1A28CEB1FC4D1C"
+                )
+            )
         }
 
         val shipping = Data.shipping
