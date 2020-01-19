@@ -1,9 +1,9 @@
 package com.airwallex.paymentacceptance
 
 import android.content.Context
+import com.airwallex.android.model.Product
+import com.airwallex.android.model.Shipping
 import com.airwallex.paymentacceptance.model.PaymentMethodType
-import com.airwallex.paymentacceptance.model.Product
-import com.airwallex.paymentacceptance.model.Shipping
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
