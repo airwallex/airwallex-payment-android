@@ -8,6 +8,7 @@ import android.os.Parcelable
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
 import com.airwallex.android.model.*
@@ -146,13 +147,19 @@ class PaymentPayActivity : AppCompatActivity() {
 //                            )
 //                        )
 
-
                         airwallex.retrievePaymentIntent(
                             paymentIntentId = paymentIntentId,
                             callback = object : Airwallex.PaymentIntentCallback {
                                 override fun onSuccess(paymentIntent: PaymentIntent) {
                                     loading.visibility = View.GONE
-                                    Log.e(TAG, "onSuccess")
+
+                                    Toast.makeText(
+                                        this@PaymentPayActivity,
+                                        "Payment Success!",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+
                                     finish()
                                 }
 

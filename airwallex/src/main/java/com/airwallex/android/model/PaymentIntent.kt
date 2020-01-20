@@ -10,46 +10,46 @@ import java.util.*
 data class PaymentIntent internal constructor(
 
     @SerializedName("id")
-    val id: String,
+    val id: String? = null,
 
     @SerializedName("request_id")
-    val requestId: String,
+    val requestId: String? = null,
 
     @SerializedName("amount")
-    val amount: Float,
+    val amount: Float? = null,
 
     @SerializedName("currency")
-    val currency: String,
+    val currency: String? = null,
 
     @SerializedName("merchant_order_id")
-    val merchantOrderId: String,
+    val merchantOrderId: String? = null,
 
     @SerializedName("order")
-    val order: PaymentIntentOrder,
+    val order: PaymentIntentOrder? = null,
 
     @SerializedName("customer_id")
-    val customerId: String,
+    val customerId: String? = null,
 
     @SerializedName("descriptor")
-    val descriptor: String,
+    val descriptor: String? = null,
 
     @SerializedName("status")
-    val status: String,
+    val status: String? = null,
 
     @SerializedName("captured_amount")
-    val capturedAmount: Int,
+    val capturedAmount: Int? = null,
 
     @SerializedName("latest_payment_attempt")
-    val latestPaymentAttempt: PaymentAttempt,
+    val latestPaymentAttempt: PaymentAttempt? = null,
 
     @SerializedName("available_payment_method_types")
-    val availablePaymentMethodTypes: List<String>,
+    val availablePaymentMethodTypes: List<String>? = null,
 
     @SerializedName("customer_payment_methods")
-    val customerPaymentMethods: List<String>,
+    val customerPaymentMethods: List<String>? = null,
 
     @SerializedName("client_secret")
-    val clientSecret: String
+    val clientSecret: String? = null
 
 ) : AirwallexModel, Parcelable {
 
@@ -57,41 +57,41 @@ data class PaymentIntent internal constructor(
     data class PaymentIntentOrder internal constructor(
 
         @SerializedName("type")
-        val type: String,
+        val type: String?,
 
         @SerializedName("products")
-        val products: List<Product>
+        val products: List<Product>?
     ) : AirwallexModel, Parcelable
 
     @Parcelize
     data class PaymentAttempt internal constructor(
 
         @SerializedName("id")
-        val id: String,
+        val id: String?,
 
         @SerializedName("currency")
-        val currency: String,
+        val currency: String?,
 
         @SerializedName("payment_method")
-        val paymentMethod: PaymentMethod,
+        val paymentMethod: PaymentMethod?,
 
         @SerializedName("status")
-        val status: String,
+        val status: String?,
 
         @SerializedName("captured_amount")
-        val capturedAmount: Int,
+        val capturedAmount: Int?,
 
         @SerializedName("refunded_amount")
-        val refundedAmount: Int,
+        val refundedAmount: Int?,
 
         @SerializedName("created_at")
-        val createdAt: Date,
+        val createdAt: Date?,
 
         @SerializedName("updated_at")
-        val updatedAt: Date,
+        val updatedAt: Date?,
 
         @SerializedName("device")
-        val device: Device
+        val device: Device?
 
     ) : AirwallexModel, Parcelable
 }
