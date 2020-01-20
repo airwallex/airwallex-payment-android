@@ -59,15 +59,15 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
     }
 
     private fun getRequest(request: AirwallexHttpRequest): Request {
-        val okHttpRequestBuilder = Request.Builder()
+        val builder = Request.Builder()
         val method: AirwallexHttpRequest.Method? = request.method
         // Set method
         if (method == AirwallexHttpRequest.Method.GET) {
-            okHttpRequestBuilder.get()
+            builder.get()
         }
 
         // Set url
-        okHttpRequestBuilder.url(request.url)
+        builder.url(request.url)
 
         // Set Header
         val okHttpHeadersBuilder = Headers.Builder()
@@ -77,20 +77,20 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
 
         // OkHttp automatically add gzip header so we do not need to deal with it
         val okHttpHeaders = okHttpHeadersBuilder.build()
-        okHttpRequestBuilder.headers(okHttpHeaders)
+        builder.headers(okHttpHeaders)
 
         // Set Body
         val parseBody: AirwallexHttpBody? = request.body
         if (parseBody != null) {
             val okHttpRequestBody = AirwallexOkHttpRequestBody(parseBody)
             when (method) {
-                AirwallexHttpRequest.Method.PUT -> okHttpRequestBuilder.put(okHttpRequestBody)
-                AirwallexHttpRequest.Method.POST -> okHttpRequestBuilder.post(okHttpRequestBody)
-                AirwallexHttpRequest.Method.DELETE -> okHttpRequestBuilder.delete(okHttpRequestBody)
+                AirwallexHttpRequest.Method.PUT -> builder.put(okHttpRequestBody)
+                AirwallexHttpRequest.Method.POST -> builder.post(okHttpRequestBody)
+                AirwallexHttpRequest.Method.DELETE -> builder.delete(okHttpRequestBody)
             }
         }
 
-        return okHttpRequestBuilder.build()
+        return builder.build()
     }
 
     private class AirwallexOkHttpRequestBody internal constructor(val body: AirwallexHttpBody) :
@@ -112,5 +112,4 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
             sink.write(content, offset, byteCount)
         }
     }
-
 }

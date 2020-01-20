@@ -22,9 +22,9 @@ internal class AirwallexPaymentController(
             workScope,
             object : ApiResultCallback<AirwallexHttpResponse> {
                 override fun onSuccess(result: AirwallexHttpResponse) {
-                    if (result.isSuccessful) {
+                    if (result.isSuccessful && result.body != null) {
                         val paymentIntent = AirwallexPlugins.gson.fromJson(
-                            result.body.toString(),
+                            result.body.string(),
                             PaymentIntent::class.java
                         )
                         callback.onSuccess(paymentIntent)
@@ -51,9 +51,9 @@ internal class AirwallexPaymentController(
             workScope,
             object : ApiResultCallback<AirwallexHttpResponse> {
                 override fun onSuccess(result: AirwallexHttpResponse) {
-                    if (result.isSuccessful) {
+                    if (result.isSuccessful && result.body != null) {
                         val paymentIntent = AirwallexPlugins.gson.fromJson(
-                            result.body.toString(),
+                            result.body?.string(),
                             PaymentIntent::class.java
                         )
                         callback.onSuccess(paymentIntent)
