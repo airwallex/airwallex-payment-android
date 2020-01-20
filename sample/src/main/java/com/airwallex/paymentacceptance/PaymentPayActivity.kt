@@ -136,6 +136,12 @@ class PaymentPayActivity : AppCompatActivity() {
                                 override fun onSuccess(paymentIntent: PaymentIntent) {
                                     loading.visibility = View.GONE
 
+                                    Log.e(TAG, "paymentIntent.status ${paymentIntent.status}")
+
+                                    if (paymentIntent.status == "SUCCEEDED") {
+
+                                    }
+
                                     Toast.makeText(
                                         this@PaymentPayActivity,
                                         "Payment Success!",
