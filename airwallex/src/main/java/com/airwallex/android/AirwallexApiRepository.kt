@@ -2,7 +2,9 @@ package com.airwallex.android
 
 import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
-import com.google.gson.JsonObject
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentIntentParams
+import com.google.gson.JsonParser
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
@@ -15,9 +17,15 @@ internal class AirwallexApiRepository : ApiRepository {
         internal val paymentIntentId: String
     ) : Parcelable
 
-    override fun confirmPaymentIntent(options: Options): PaymentIntent? {
-        val jsonRequest = JsonObject()
-        val response = AirwallexPlugins.restClient.execute(
+    override fun confirmPaymentIntent(
+        options: Options,
+        paymentIntentParams: PaymentIntentParams
+    ): AirwallexHttpResponse? {
+        val jsonParser = JsonParser()
+        val paramsJson =
+            jsonParser.parse(AirwallexPlugins.gson.toJson(paymentIntentParams)).asJsonObject
+
+        return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
                 getConfirmPaymentIntentUrl(options),
                 AirwallexHttpRequest.Method.POST
@@ -25,17 +33,16 @@ internal class AirwallexApiRepository : ApiRepository {
                 .setBody(
                     AirwallexHttpBody(
                         "application/json; charset=utf-8",
-                        jsonRequest.toString()
+                        paramsJson.toString()
                     )
                 )
                 .addHeader("Authorization", "Bearer ${options.token}")
                 .build()
         )
-        return PaymentIntent(id = "")
     }
 
-    override fun retrievePaymentIntent(options: Options): PaymentIntent? {
-        val response = AirwallexPlugins.restClient.execute(
+    override fun retrievePaymentIntent(options: Options): AirwallexHttpResponse? {
+        return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
                 getRetrievePaymentIntentUrl(options),
                 AirwallexHttpRequest.Method.GET
@@ -43,7 +50,6 @@ internal class AirwallexApiRepository : ApiRepository {
                 .addHeader("Authorization", "Bearer ${options.token}")
                 .build()
         )
-        return PaymentIntent(id = "")
     }
 
     /**

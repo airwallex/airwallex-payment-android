@@ -11,7 +11,7 @@ import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.model.Address
-import com.airwallex.android.model.Shipping
+import com.airwallex.android.model.PaymentMethod
 import com.neovisionaries.i18n.CountryCode
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_edit_shipping.*
@@ -354,7 +354,7 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
 
     @Throws(IllegalArgumentException::class)
     private fun actionSave() {
-        val shipping = Shipping.Builder()
+        val shipping = PaymentMethod.Billing.Builder()
             .setLastName(etLastName.text.toString())
             .setFirstName(etFirstName.text.toString())
             .setPhone(etPhoneNumber.text.toString())

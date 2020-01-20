@@ -1,15 +1,10 @@
 package com.airwallex.android
 
-import android.content.Intent
+import com.airwallex.android.model.PaymentIntentParams
 
 internal interface PaymentController {
 
-    fun startConfirm(options: AirwallexApiRepository.Options)
+    fun startConfirm(options: AirwallexApiRepository.Options, paymentIntentParams: PaymentIntentParams, callback: Airwallex.PaymentIntentCallback)
 
-    fun shouldHandlePaymentResult(requestCode: Int, data: Intent?): Boolean
-
-    fun handlePaymentResult(
-        data: Intent,
-        callback: ApiResultCallback<PaymentIntentResult>
-    )
+    fun retrievePaymentIntent(options: AirwallexApiRepository.Options, callback: Airwallex.PaymentIntentCallback)
 }
