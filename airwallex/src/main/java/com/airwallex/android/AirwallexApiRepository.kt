@@ -10,9 +10,12 @@ import java.util.*
 
 internal class AirwallexApiRepository : ApiRepository {
 
+    companion object {
+        internal const val API_HOST = "https://staging-pci-api.airwallex.com"
+    }
+
     @Parcelize
     internal data class Options internal constructor(
-        internal val baseUrl: String,
         internal val token: String,
         internal val paymentIntentId: String
     ) : Parcelable
@@ -58,7 +61,7 @@ internal class AirwallexApiRepository : ApiRepository {
     @VisibleForTesting
     @JvmSynthetic
     internal fun getRetrievePaymentIntentUrl(options: Options): String {
-        return getApiUrl(options.baseUrl, "payment_intents/%s", options.paymentIntentId)
+        return getApiUrl("payment_intents/%s", options.paymentIntentId)
     }
 
     /**
@@ -67,10 +70,10 @@ internal class AirwallexApiRepository : ApiRepository {
     @VisibleForTesting
     @JvmSynthetic
     internal fun getConfirmPaymentIntentUrl(options: Options): String {
-        return getApiUrl(options.baseUrl, "payment_intents/%s/confirm", options.paymentIntentId)
+        return getApiUrl("payment_intents/%s/confirm", options.paymentIntentId)
     }
 
-    private fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
-        return "${baseUrl}/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
+    private fun getApiUrl(path: String, vararg args: Any): String {
+        return "${API_HOST}/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
     }
 }

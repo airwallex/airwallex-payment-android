@@ -1,27 +1,26 @@
 package com.airwallex.android
 
 import okhttp3.ResponseBody
-import java.io.InputStream
 import java.util.*
 
-internal class AirwallexHttpResponse private constructor(builder: Builder) {
-
-    val isSuccessful = builder.isSuccessful
-    val statusCode = builder.statusCode
-    val body = builder.body
-    val totalSize = builder.totalSize
-    val reasonPhrase = builder.reasonPhrase
-    val allHeaders = builder.headers
-    val contentType = builder.contentType
+internal class AirwallexHttpResponse private constructor(
+    val isSuccessful: Boolean,
+    val statusCode: Int,
+    val body: ResponseBody?,
+    val totalSize: Long,
+    val reasonPhrase: String?,
+    val allHeaders: MutableMap<String, String?>,
+    val contentType: String?
+) {
 
     class Builder {
-        internal var isSuccessful = false
-        internal var statusCode = 0
-        internal var body: ResponseBody? = null
-        internal var totalSize: Long = 0
-        internal var reasonPhrase: String? = null
-        internal var headers: MutableMap<String, String?> = mutableMapOf()
-        internal var contentType: String? = null
+        private var isSuccessful = false
+        private var statusCode = 0
+        private var body: ResponseBody? = null
+        private var totalSize: Long = 0
+        private var reasonPhrase: String? = null
+        private var headers: MutableMap<String, String?> = mutableMapOf()
+        private var contentType: String? = null
 
         fun setIsSuccessful(isSuccessful: Boolean): Builder = apply {
             this.isSuccessful = isSuccessful
@@ -52,7 +51,15 @@ internal class AirwallexHttpResponse private constructor(builder: Builder) {
         }
 
         fun build(): AirwallexHttpResponse {
-            return AirwallexHttpResponse(this)
+            return AirwallexHttpResponse(
+                isSuccessful = isSuccessful,
+                statusCode = statusCode,
+                body = body,
+                totalSize = totalSize,
+                reasonPhrase = reasonPhrase,
+                allHeaders = headers,
+                contentType = contentType
+            )
         }
     }
 }

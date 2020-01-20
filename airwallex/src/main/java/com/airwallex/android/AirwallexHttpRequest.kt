@@ -1,19 +1,19 @@
 package com.airwallex.android
 
-internal class AirwallexHttpRequest private constructor(builder: Builder) {
-
-    val url = builder.url
-    val method = builder.method
-    val allHeaders = builder.headers
-    val body = builder.body
+internal class AirwallexHttpRequest private constructor(
+    val url: String,
+    val method: Method,
+    val allHeaders: MutableMap<String, String>,
+    val body: AirwallexHttpBody?
+) {
 
     enum class Method {
         GET, POST, PUT, DELETE;
     }
 
-    class Builder(val url: String, val method: Method) {
-        internal var headers: MutableMap<String, String> = mutableMapOf()
-        internal var body: AirwallexHttpBody? = null
+    class Builder(private val url: String, private val method: Method) {
+        private var headers: MutableMap<String, String> = mutableMapOf()
+        private var body: AirwallexHttpBody? = null
 
         fun setBody(body: AirwallexHttpBody?): Builder = apply {
             this.body = body
@@ -24,7 +24,12 @@ internal class AirwallexHttpRequest private constructor(builder: Builder) {
         }
 
         fun build(): AirwallexHttpRequest {
-            return AirwallexHttpRequest(this)
+            return AirwallexHttpRequest(
+                url = url,
+                method = method,
+                allHeaders = headers,
+                body = body
+            )
         }
     }
 }

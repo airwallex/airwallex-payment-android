@@ -82,7 +82,7 @@ class PaymentPayActivity : AppCompatActivity() {
             loading.visibility = View.VISIBLE
 
             // Start Confirm PaymentIntent
-            val airwallex = Airwallex(this, token)
+            val airwallex = Airwallex(token)
             airwallex.confirmPaymentIntent(
                 paymentIntentId = paymentIntentId,
                 paymentIntentParams = PaymentIntentParams.Builder()
