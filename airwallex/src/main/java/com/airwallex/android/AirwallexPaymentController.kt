@@ -53,7 +53,7 @@ internal class AirwallexPaymentController(
                 override fun onSuccess(result: AirwallexHttpResponse) {
                     if (result.isSuccessful && result.body != null) {
                         val paymentIntent = AirwallexPlugins.gson.fromJson(
-                            result.body?.string(),
+                            result.body.string(),
                             PaymentIntent::class.java
                         )
                         callback.onSuccess(paymentIntent)
