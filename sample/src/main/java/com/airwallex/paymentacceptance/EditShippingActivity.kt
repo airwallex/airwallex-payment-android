@@ -311,6 +311,7 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
             etState.setText(address?.state)
             etCountry.setText(CountryCode.values().find { it.name == address?.countryCode }?.getName())
             etPhoneNumber.setText(phone)
+            etEmail.setText(email)
         }
 
         etLastName.addTextChangedListener(this)
@@ -321,6 +322,7 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
         etCity.addTextChangedListener(this)
         etStreetAddress.addTextChangedListener(this)
         etZipCode.addTextChangedListener(this)
+        etEmail.addTextChangedListener(this)
 
         etCountry.setOnClickListener {
             val codes = CountryCode.values()
@@ -386,6 +388,7 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
     override fun afterTextChanged(s: Editable?) {
         menu?.findItem(R.id.menu_save)?.isEnabled = etLastName.text.isNotEmpty()
                 && etFirstName.text.isNotEmpty()
+                && etEmail.text.isNotEmpty()
                 && etCountry.text.isNotEmpty()
                 && etState.text.isNotEmpty()
                 && etCity.text.isNotEmpty()
