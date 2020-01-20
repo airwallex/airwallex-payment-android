@@ -40,13 +40,31 @@ class Airwallex internal constructor(
     )
 
     @UiThread
-    fun confirmPaymentIntent(paymentIntentId: String) {
-        paymentController.startConfirm(token, paymentIntentId)
+    fun confirmPaymentIntent(
+        paymentIntentId: String,
+        baseUrl: String = "https://staging-pci-api.airwallex.com"
+    ) {
+        paymentController.startConfirm(
+            AirwallexApiRepository.Options(
+                baseUrl = baseUrl,
+                token = token,
+                paymentIntentId = paymentIntentId
+            )
+        )
     }
 
     @WorkerThread
-    fun retrievePaymentIntent(paymentIntentId: String) {
-        airwallexRepository.retrievePaymentIntent(token, paymentIntentId)
+    fun retrievePaymentIntent(
+        paymentIntentId: String,
+        baseUrl: String = "https://staging-pci-api.airwallex.com"
+    ) {
+        airwallexRepository.retrievePaymentIntent(
+            AirwallexApiRepository.Options(
+                baseUrl = baseUrl,
+                token = token,
+                paymentIntentId = paymentIntentId
+            )
+        )
     }
 
     @UiThread

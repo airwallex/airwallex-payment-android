@@ -7,7 +7,7 @@ import com.airwallex.android.model.Shipping
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-object Data {
+object PaymentData {
 
     private const val SHARED_PREFERENCE_NAME = "sample"
     private const val SHIPPING_OBJECT = "shipping"

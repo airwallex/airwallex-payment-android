@@ -70,7 +70,7 @@ class PaymentStartPayActivity : AppCompatActivity() {
         }
 
         rlPaymentMethod.setOnClickListener {
-            PaymentMethodsActivity.startActivityForResult(this, REQUEST_PAYMENT_MOTHOD_CODE)
+            PaymentSelectMethodActivity.startActivityForResult(this, REQUEST_PAYMENT_MOTHOD_CODE)
         }
 
         weChatApi = WXAPIFactory.createWXAPI(this, Constants.APP_ID, true)
@@ -101,7 +101,7 @@ class PaymentStartPayActivity : AppCompatActivity() {
             )
         }
 
-        val shipping = Data.shipping
+        val shipping = PaymentData.shipping
         if (shipping == null) {
             tvShipping.text = getString(R.string.select_shipping)
             tvShipping.setTextColor(Color.parseColor("#A9A9A9"))
@@ -109,15 +109,15 @@ class PaymentStartPayActivity : AppCompatActivity() {
             updateShippingLabel(shipping)
         }
 
-        if (Data.paymentMethodType == null) {
+        if (PaymentData.paymentMethodType == null) {
             tvPaymentMethod.text = getString(R.string.select_payment_method)
             tvPaymentMethod.setTextColor(Color.parseColor("#A9A9A9"))
         } else {
-            tvPaymentMethod.text = Data.paymentMethodType!!.value
+            tvPaymentMethod.text = PaymentData.paymentMethodType!!.value
             tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
         }
 
-        rlPlay.isEnabled = shipping != null && Data.paymentMethodType != null
+        rlPlay.isEnabled = shipping != null && PaymentData.paymentMethodType != null
         btnPlay.isEnabled = rlPlay.isEnabled
     }
 
@@ -149,12 +149,12 @@ class PaymentStartPayActivity : AppCompatActivity() {
             }
             REQUEST_PAYMENT_MOTHOD_CODE -> {
                 val paymentMethodType =
-                    data.getSerializableExtra(PaymentMethodsActivity.PAYMENT_METHOD_TYPE) as PaymentMethodType
+                    data.getSerializableExtra(PaymentSelectMethodActivity.PAYMENT_METHOD_TYPE) as PaymentMethodType
                 tvPaymentMethod.text = paymentMethodType.value
                 tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
             }
         }
-        rlPlay.isEnabled = Data.shipping != null && Data.paymentMethodType != null
+        rlPlay.isEnabled = PaymentData.shipping != null && PaymentData.paymentMethodType != null
         btnPlay.isEnabled = rlPlay.isEnabled
     }
 

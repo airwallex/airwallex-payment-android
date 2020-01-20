@@ -18,8 +18,7 @@ import kotlinx.android.synthetic.main.activity_edit_shipping.*
 
 class EditShippingActivity : AppCompatActivity(), TextWatcher {
 
-
-    private val legalCountry = arrayOf(
+    private val legalCountries = arrayOf(
         "AC",
         "AD",
         "AE",
@@ -270,7 +269,7 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
     )
     private val compositeSubscription = CompositeDisposable()
     private var menu: Menu? = null
-    private val shipping = Data.shipping
+    private val shipping = PaymentData.shipping
 
     companion object {
 
@@ -325,7 +324,7 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
 
         etCountry.setOnClickListener {
             val codes = CountryCode.values()
-                .filter { it.name != "UNDEFINED" && legalCountry.contains(it.name) }
+                .filter { it.name != "UNDEFINED" && legalCountries.contains(it.name) }
                 .map { it.getName() }
                 .toTypedArray()
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)

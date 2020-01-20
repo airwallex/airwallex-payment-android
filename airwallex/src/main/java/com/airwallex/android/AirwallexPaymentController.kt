@@ -10,10 +10,9 @@ internal class AirwallexPaymentController(
     private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : PaymentController {
 
-    override fun startConfirm(paymentIntentId: String, token: String) {
+    override fun startConfirm(options: AirwallexApiRepository.Options) {
         ConfirmIntentTask(
-            token,
-            paymentIntentId,
+            options,
             airwallexRepository,
             workScope,
             ConfirmIntentCallback()
@@ -21,15 +20,14 @@ internal class AirwallexPaymentController(
     }
 
     private class ConfirmIntentTask(
-        private val token: String,
-        private val paymentIntentId: String,
+        private val options: AirwallexApiRepository.Options,
         private val airwallexRepository: ApiRepository,
         workScope: CoroutineScope,
         callback: ApiResultCallback<AirwallexIntent>
     ) : ApiOperation<AirwallexIntent>(workScope, callback) {
 
         override suspend fun getResult(): AirwallexIntent? {
-            return airwallexRepository.confirmPaymentIntent(token, paymentIntentId)
+            return airwallexRepository.confirmPaymentIntent(options)
         }
     }
 

@@ -12,13 +12,13 @@ import com.airwallex.android.model.Product
 import kotlinx.android.synthetic.main.fragment_order_summary.*
 import kotlinx.android.synthetic.main.order_summary_item.view.*
 
-class OrderSummaryFragment : Fragment() {
+class CartFragment : Fragment() {
 
-    val products = Data.products
+    val products = PaymentData.products
 
     @SuppressLint("ViewConstructor")
     class OrderSummaryItem(
-        val order: Product,
+        order: Product,
         context: Context?,
         private val removeHandler: () -> Unit
     ) :
