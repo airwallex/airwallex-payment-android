@@ -120,6 +120,29 @@
                     android:textSize="16sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/input_border"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="5dp"
+                app:errorEnabled="true">
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:fontFamily="@font/circularstd_medium"
+                    android:hint="@string/contact_email_hint"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="#A9A9AE"
+                    android:textSize="16sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
