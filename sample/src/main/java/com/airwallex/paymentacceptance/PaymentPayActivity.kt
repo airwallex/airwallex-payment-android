@@ -18,6 +18,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPI
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
 import kotlinx.android.synthetic.main.activity_start_pay.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class PaymentPayActivity : AppCompatActivity() {
 
@@ -46,7 +47,12 @@ class PaymentPayActivity : AppCompatActivity() {
         private const val REQUEST_EIDT_SHIPPING_CODE = 998
         private const val REQUEST_PAYMENT_MOTHOD_CODE = 999
 
-        fun start(activity: Activity, paymentIntentId: String, amount: Float, token: String) {
+        fun start(
+            activity: Activity,
+            paymentIntentId: String,
+            amount: Float,
+            token: String
+        ) {
             val intent = Intent(activity, PaymentPayActivity::class.java)
             intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
             intent.putExtra(PAYMENT_AMOUNT, amount)
@@ -54,6 +60,9 @@ class PaymentPayActivity : AppCompatActivity() {
             activity.startActivity(intent)
         }
     }
+
+    private var shipping: PaymentMethod.Billing? = PaymentData.shipping
+    private var paymentMethodType: PaymentMethodType? = PaymentData.paymentMethodType
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,7 +120,7 @@ class PaymentPayActivity : AppCompatActivity() {
                                     .setName("Adam")
                                     .build()
                             )
-                            .setBilling(PaymentData.shipping)
+                            .setBilling(shipping)
                             .build()
                     )
                     .build(),
@@ -168,23 +177,22 @@ class PaymentPayActivity : AppCompatActivity() {
             )
         }
 
-        val shipping = PaymentData.shipping
-        if (shipping == null) {
+        if (shipping != null) {
+            updateShippingLabel(shipping!!)
+        } else {
             tvShipping.text = getString(R.string.select_shipping)
             tvShipping.setTextColor(Color.parseColor("#A9A9A9"))
-        } else {
-            updateShippingLabel(shipping)
         }
 
-        if (PaymentData.paymentMethodType == null) {
+        if (paymentMethodType == null) {
             tvPaymentMethod.text = getString(R.string.select_payment_method)
             tvPaymentMethod.setTextColor(Color.parseColor("#A9A9A9"))
         } else {
-            tvPaymentMethod.text = PaymentData.paymentMethodType!!.value
+            tvPaymentMethod.text = paymentMethodType!!.value
             tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
         }
 
-        rlPlay.isEnabled = shipping != null && PaymentData.paymentMethodType != null
+        rlPlay.isEnabled = shipping != null && paymentMethodType != null
         btnPlay.isEnabled = rlPlay.isEnabled
     }
 
@@ -210,18 +218,22 @@ class PaymentPayActivity : AppCompatActivity() {
         }
         when (requestCode) {
             REQUEST_EIDT_SHIPPING_CODE -> {
-                val shipping =
+                shipping =
                     data.getParcelableExtra<Parcelable>(EditShippingActivity.SHIPPING_DETAIL) as PaymentMethod.Billing
-                updateShippingLabel(shipping)
+                shipping?.let {
+                    updateShippingLabel(it)
+                }
             }
             REQUEST_PAYMENT_MOTHOD_CODE -> {
-                val paymentMethodType =
+                paymentMethodType =
                     data.getSerializableExtra(PaymentSelectMethodActivity.PAYMENT_METHOD_TYPE) as PaymentMethodType
-                tvPaymentMethod.text = paymentMethodType.value
-                tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
+                paymentMethodType?.let {
+                    tvPaymentMethod.text = it.value
+                    tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
+                }
             }
         }
-        rlPlay.isEnabled = PaymentData.shipping != null && PaymentData.paymentMethodType != null
+        rlPlay.isEnabled = shipping != null && paymentMethodType != null
         btnPlay.isEnabled = rlPlay.isEnabled
     }
 

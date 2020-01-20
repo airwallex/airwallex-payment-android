@@ -66,7 +66,6 @@ class PaymentSelectMethodActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> finish()
             R.id.menu_save -> {
-                PaymentData.paymentMethodType = paymentMethodType
                 val intent = Intent()
                 intent.putExtra(PAYMENT_METHOD_TYPE, paymentMethodType)
                 setResult(Activity.RESULT_OK, intent)

@@ -2,9 +2,9 @@ package com.airwallex.android
 
 import android.content.Context
 
-data class AirwallexConfiguration constructor(val builder: Builder) {
-
-    val enableLogging: Boolean = builder.enableLogging
+data class AirwallexConfiguration internal constructor(
+    val enableLogging: Boolean
+) {
 
     class Builder(context: Context) {
 
@@ -19,7 +19,9 @@ data class AirwallexConfiguration constructor(val builder: Builder) {
         }
 
         fun build(): AirwallexConfiguration {
-            return AirwallexConfiguration(this)
+            return AirwallexConfiguration(
+                enableLogging = enableLogging
+            )
         }
     }
 }

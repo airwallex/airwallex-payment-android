@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.model.Order
+import com.airwallex.paymentacceptance.PaymentData.products
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -57,7 +58,9 @@ class PaymentCartActivity : AppCompatActivity() {
                     api.createPaymentIntent(
                         authorization = "Bearer $token",
                         params = mutableMapOf(
-                            "amount" to 0.01,
+                            "amount" to products.sumByDouble {
+                                it.unitPrice ?: 0 * (it.quantity ?: 0).toDouble()
+                            },
                             "currency" to "USD",
                             "descriptor" to "Airwallex - T-shirt",
                             "merchant_order_id" to UUID.randomUUID().toString(),
