@@ -11,10 +11,10 @@ import com.airwallex.android.model.PaymentMethodType
 import kotlinx.android.synthetic.main.activity_edit_shipping.toolbar
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 
-class PaymentMethodsActivity : AppCompatActivity() {
+class PaymentSelectMethodActivity : AppCompatActivity() {
 
     private var menu: Menu? = null
-    private var paymentMethodType = Data.paymentMethodType
+    private var paymentMethodType = PaymentData.paymentMethodType
 
     companion object {
 
@@ -22,7 +22,7 @@ class PaymentMethodsActivity : AppCompatActivity() {
 
         fun startActivityForResult(activity: Activity, requestCode: Int) {
             activity.startActivityForResult(
-                Intent(activity, PaymentMethodsActivity::class.java),
+                Intent(activity, PaymentSelectMethodActivity::class.java),
                 requestCode
             )
         }
@@ -66,7 +66,7 @@ class PaymentMethodsActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> finish()
             R.id.menu_save -> {
-                Data.paymentMethodType = paymentMethodType
+                PaymentData.paymentMethodType = paymentMethodType
                 val intent = Intent()
                 intent.putExtra(PAYMENT_METHOD_TYPE, paymentMethodType)
                 setResult(Activity.RESULT_OK, intent)

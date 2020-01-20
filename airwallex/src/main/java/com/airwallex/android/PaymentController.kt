@@ -4,7 +4,7 @@ import android.content.Intent
 
 internal interface PaymentController {
 
-    fun startConfirm(token: String, paymentIntentId: String)
+    fun startConfirm(options: AirwallexApiRepository.Options)
 
     fun shouldHandlePaymentResult(requestCode: Int, data: Intent?): Boolean
 

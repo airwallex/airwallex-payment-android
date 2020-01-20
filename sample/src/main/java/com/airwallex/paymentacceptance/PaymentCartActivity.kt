@@ -1,7 +1,5 @@
 package com.airwallex.paymentacceptance
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -17,21 +15,12 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.*
 
-class PaymentOrderInfoActivity : AppCompatActivity() {
+class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
 
     private val api: Api by lazy {
-        ApiFactory("https://staging-pci-api.airwallex.com").create()
-    }
-
-    private var token: String = ""
-
-    companion object {
-
-        fun start(activity: Activity) {
-            activity.startActivity(Intent(activity, PaymentOrderInfoActivity::class.java))
-        }
+        ApiFactory(Constants.BASE_URL).create()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,10 +38,11 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
     }
 
     private fun authAndCreatePaymentIntent() {
+        var token = ""
         compositeSubscription.add(
             api.authentication(
-                apiKey = "9092eb393908b656c2ed8134535b574c30e7a243718a1c08a06b8ea9278919f4550af02cac520e062518028204c1dc54",
-                clientId = "DW19XFSMSUq4YPc7xkM4Nw"
+                apiKey = Constants.API_KEY,
+                clientId = Constants.CLIENT_ID
             )
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -61,7 +51,7 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
                 }
                 .flatMap {
                     val fgOrderSummary =
-                        supportFragmentManager.findFragmentById(R.id.fgOrderSummary) as OrderSummaryFragment
+                        supportFragmentManager.findFragmentById(R.id.fgOrderSummary) as CartFragment
                     val responseData = JSONObject(it.string())
                     token = responseData["token"].toString()
                     api.createPaymentIntent(
@@ -74,7 +64,7 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
                             "metadata" to mapOf("id" to 1),
                             "order" to Order.Builder()
                                 .setProducts(fgOrderSummary.products)
-                                .setShipping(Data.shipping)
+                                .setShipping(PaymentData.shipping)
                                 .setType("physical_goods")
                                 .build(),
                             "request_id" to UUID.randomUUID().toString()
@@ -83,7 +73,7 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { handleResponse(it) },
+                    { handleResponse(it, token) },
                     { handleError(it) }
                 )
         )
@@ -94,7 +84,7 @@ class PaymentOrderInfoActivity : AppCompatActivity() {
         Toast.makeText(this, err.localizedMessage, Toast.LENGTH_SHORT).show()
     }
 
-    private fun handleResponse(responseBody: ResponseBody) {
+    private fun handleResponse(responseBody: ResponseBody, token: String) {
         loading.visibility = View.GONE
         try {
             val responseData = JSONObject(responseBody.string())

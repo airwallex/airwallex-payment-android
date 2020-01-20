@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.airwallex.paymentacceptance.PaymentOrderInfoActivity">
+        <activity android:name="com.airwallex.paymentacceptance.PaymentCartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,10 +25,10 @@
 
         <activity android:name="com.airwallex.paymentacceptance.EditShippingActivity" />
 
-        <activity android:name="com.airwallex.paymentacceptance.PaymentMethodsActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.PaymentSelectMethodActivity" />
 
         <activity
-            android:name="com.airwallex.paymentacceptance.wechat.wxapi.WXPayEntryActivity"
+            android:name="com.airwallex.paymentacceptance.wxapi.WXPayEntryActivity"
             android:exported="true"
             android:launchMode="singleTop">
         </activity>

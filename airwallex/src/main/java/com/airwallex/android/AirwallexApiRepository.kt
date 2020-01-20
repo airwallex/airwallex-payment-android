@@ -1,19 +1,25 @@
 package com.airwallex.android
 
+import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
 import com.google.gson.JsonObject
+import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 internal class AirwallexApiRepository : ApiRepository {
 
-    override fun confirmPaymentIntent(
-        token: String,
-        paymentIntentId: String
-    ): PaymentIntent? {
+    @Parcelize
+    internal data class Options internal constructor(
+        internal val baseUrl: String,
+        internal val token: String,
+        internal val paymentIntentId: String
+    ) : Parcelable
+
+    override fun confirmPaymentIntent(options: Options): PaymentIntent? {
         val jsonRequest = JsonObject()
-        val response = AirwallexPlugins.restClient()?.execute(
+        val response = AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                getConfirmPaymentIntentUrl(paymentIntentId),
+                getConfirmPaymentIntentUrl(options),
                 AirwallexHttpRequest.Method.POST
             )
                 .setBody(
@@ -22,21 +28,19 @@ internal class AirwallexApiRepository : ApiRepository {
                         jsonRequest.toString()
                     )
                 )
+                .addHeader("Authorization", "Bearer ${options.token}")
                 .build()
         )
         return PaymentIntent(id = "")
     }
 
-    override fun retrievePaymentIntent(
-        token: String,
-        paymentIntentId: String
-    ): PaymentIntent? {
-        val response = AirwallexPlugins.restClient()?.execute(
+    override fun retrievePaymentIntent(options: Options): PaymentIntent? {
+        val response = AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                getRetrievePaymentIntentUrl(paymentIntentId),
+                getRetrievePaymentIntentUrl(options),
                 AirwallexHttpRequest.Method.GET
             )
-                .addHeader("Authorization", "Bearer $token")
+                .addHeader("Authorization", "Bearer ${options.token}")
                 .build()
         )
         return PaymentIntent(id = "")
@@ -47,8 +51,8 @@ internal class AirwallexApiRepository : ApiRepository {
      */
     @VisibleForTesting
     @JvmSynthetic
-    internal fun getRetrievePaymentIntentUrl(paymentIntentId: String): String {
-        return getApiUrl("payment_intents/%s", paymentIntentId)
+    internal fun getRetrievePaymentIntentUrl(options: Options): String {
+        return getApiUrl(options.baseUrl, "payment_intents/%s", options.paymentIntentId)
     }
 
     /**
@@ -56,15 +60,11 @@ internal class AirwallexApiRepository : ApiRepository {
      */
     @VisibleForTesting
     @JvmSynthetic
-    internal fun getConfirmPaymentIntentUrl(paymentIntentId: String): String {
-        return getApiUrl("payment_intents/%s/confirm", paymentIntentId)
+    internal fun getConfirmPaymentIntentUrl(options: Options): String {
+        return getApiUrl(options.baseUrl, "payment_intents/%s/confirm", options.paymentIntentId)
     }
 
-    private fun getApiUrl(path: String, vararg args: Any): String {
-        return getApiUrl(String.format(Locale.ENGLISH, path, *args))
-    }
-
-    private fun getApiUrl(path: String): String {
-        return "${AirwallexPlugins.baseUrl}/api/v1/pa/$path"
+    private fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
+        return "${baseUrl}/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
     }
 }
