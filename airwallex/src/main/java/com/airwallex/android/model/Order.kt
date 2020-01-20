@@ -10,21 +10,21 @@ data class Order internal constructor(
     val products: List<Product>? = null,
 
     @SerializedName("shipping")
-    val shipping: Shipping? = null,
+    val shipping: PaymentMethod.Billing? = null,
 
     @SerializedName("type")
     val type: String? = null
 ) : AirwallexModel, Parcelable {
     class Builder : ObjectBuilder<Order> {
         private var products: List<Product>? = null
-        private var shipping: Shipping? = null
+        private var shipping: PaymentMethod.Billing? = null
         private var type: String? = null
 
         fun setProducts(products: List<Product>?): Builder = apply {
             this.products = products
         }
 
-        fun setShipping(shipping: Shipping?): Builder = apply {
+        fun setShipping(shipping: PaymentMethod.Billing?): Builder = apply {
             this.shipping = shipping
         }
 

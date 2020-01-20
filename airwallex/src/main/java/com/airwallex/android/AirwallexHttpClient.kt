@@ -28,8 +28,10 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
         // Status code
         val statusCode = response.code
 
-        // Content
-        val content = response.body?.byteStream()
+        val isSuccessful = response.isSuccessful
+
+        // Body
+        val body = response.body
 
         // Total size
         val totalSize = response.body?.contentLength() ?: 0
@@ -47,7 +49,8 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
         val contentType: String? = response.body?.contentType()?.toString()
         return AirwallexHttpResponse.Builder()
             .setStatusCode(statusCode)
-            .setContent(content)
+            .setIsSuccessful(isSuccessful)
+            .setBody(body)
             .setTotalSize(totalSize)
             .setReasonPhrase(reasonPhrase)
             .setHeaders(headers)

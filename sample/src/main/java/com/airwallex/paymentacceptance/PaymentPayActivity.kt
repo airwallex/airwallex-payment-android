@@ -5,20 +5,20 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.model.Shipping
+import com.airwallex.android.Airwallex
+import com.airwallex.android.model.*
 import com.neovisionaries.i18n.CountryCode
 import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
 import kotlinx.android.synthetic.main.activity_start_pay.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import java.util.*
 
-class PaymentStartPayActivity : AppCompatActivity() {
+class PaymentPayActivity : AppCompatActivity() {
 
     private val paymentIntentId: String by lazy {
         intent.getStringExtra(PAYMENT_INTENT_ID)
@@ -32,7 +32,11 @@ class PaymentStartPayActivity : AppCompatActivity() {
         intent.getStringExtra(PAYMENT_TOKEN)
     }
 
+    private lateinit var weChatApi: IWXAPI
+
     companion object {
+
+        private const val TAG = "PaymentPayActivity"
 
         private const val PAYMENT_INTENT_ID = "payment_intent_id"
         private const val PAYMENT_AMOUNT = "payment_amount"
@@ -42,15 +46,13 @@ class PaymentStartPayActivity : AppCompatActivity() {
         private const val REQUEST_PAYMENT_MOTHOD_CODE = 999
 
         fun start(activity: Activity, paymentIntentId: String, amount: Float, token: String) {
-            val intent = Intent(activity, PaymentStartPayActivity::class.java)
+            val intent = Intent(activity, PaymentPayActivity::class.java)
             intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
             intent.putExtra(PAYMENT_AMOUNT, amount)
             intent.putExtra(PAYMENT_TOKEN, token)
             activity.startActivity(intent)
         }
     }
-
-    private lateinit var weChatApi: IWXAPI
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,28 +78,97 @@ class PaymentStartPayActivity : AppCompatActivity() {
         weChatApi = WXAPIFactory.createWXAPI(this, Constants.APP_ID, true)
 
         rlPlay.setOnClickListener {
-//            val airwallex = Airwallex(this, token)
-//            airwallex.confirmPaymentIntent(paymentIntentId)
+            loading.visibility = View.VISIBLE
+
+            // Start Confirm PaymentIntent
+            val airwallex = Airwallex(this, token)
+            airwallex.confirmPaymentIntent(
+                paymentIntentId = paymentIntentId,
+                paymentIntentParams = PaymentIntentParams.Builder()
+                    .setRequestId(UUID.randomUUID().toString())
+                    .setDevice(
+                        Device.Builder()
+                            .setBrowserInfo("Chrome/76.0.3809.100")
+                            .setCookiesAccepted("true")
+                            .setDeviceId("IMEI-4432fsdafd31243244fdsafdfd653")
+                            .setHostName("www.airwallex.com")
+                            .setHttpBrowserEmail("jim631@sina.com")
+                            .setHttpBrowserType("chrome")
+                            .setIpAddress("123.90.0.1")
+                            .setIpNetworkAddress("128.0.0.0")
+                            .build()
+                    )
+                    .setPaymentMethod(
+                        PaymentMethod.Builder()
+                            .setType("card")
+                            .setCard(
+                                PaymentMethod.Card.Builder()
+                                    .setNumber("4012000300001003")
+                                    .setExpMonth("12")
+                                    .setExpYear("2020")
+                                    .setCvc("123")
+                                    .setName("Adam")
+                                    .build()
+                            )
+                            .setBilling(
+                                PaymentMethod.Billing.Builder()
+                                    .setDateForBirth("2011-10-12")
+                                    .setEmail("jim631@sina.com")
+                                    .setFirstName("Jim")
+                                    .setLastName("He")
+                                    .setPhone("1367875786")
+                                    .setAddress(
+                                        Address.Builder()
+                                            .setCountryCode("CN")
+                                            .setState("Shanghai")
+                                            .setCity("Shanghai")
+                                            .setStreet("Pudong District")
+                                            .setPostcode("201304")
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build(),
+                callback = object : Airwallex.PaymentIntentCallback {
+                    override fun onSuccess(paymentIntent: PaymentIntent) {
+
+//                        launchWeChat(
+//                            WeChat(
+//                                appId = "wxfad13fd6681a62b0",
+//                                partnerId = "334777613",
+//                                prepayId = "wx2010563737889845f8f386d71754657400",
+//                                packageValue = "Sign=WXPay",
+//                                nonce = "h4di4JfuuQuiJIIo6kX4NvBWaASWwpoh",
+//                                timestamp = "1579488997",
+//                                sign = "198CF2019DF64D1822807A32E3F18F8D2062F10583BC2C2005B018D200ADFA3D"
+//                            )
+//                        )
 
 
-            CoroutineScope(Dispatchers.IO).launch {
+                        airwallex.retrievePaymentIntent(
+                            paymentIntentId = paymentIntentId,
+                            callback = object : Airwallex.PaymentIntentCallback {
+                                override fun onSuccess(paymentIntent: PaymentIntent) {
+                                    loading.visibility = View.GONE
+                                    Log.e(TAG, "onSuccess")
+                                    finish()
+                                }
 
+                                override fun onFailed() {
+                                    loading.visibility = View.GONE
+                                    Log.e(TAG, "Retrieve PaymentIntent failed")
+                                }
 
-//                airwallex.retrievePaymentIntent("int_jjLlyQTiz1h49tZkZzgJDDEHABC")
+                            })
+                    }
 
-
-            }
-
-            launchWeChat(
-                WeChat(
-                    appId = "wxfad13fd6681a62b0",
-                    partnerId = "334777613",
-                    prepayId = "wx191803162627511bc2299b671801586900",
-                    packageValue = "Sign=WXPay",
-                    nonce = "RbUilMJ9vKfPMJxDXpk51GOcdz1NMmB8",
-                    timestamp = "1579428196",
-                    sign = "AF83A58CAB542EE60EC652533E6AA43A505AB62B4C3C2C461A1A28CEB1FC4D1C"
-                )
+                    override fun onFailed() {
+                        loading.visibility = View.GONE
+                        Log.e(TAG, "Confirm PaymentIntent failed")
+                    }
+                }
             )
         }
 
@@ -128,7 +199,7 @@ class PaymentStartPayActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun updateShippingLabel(shipping: Shipping) {
+    private fun updateShippingLabel(shipping: PaymentMethod.Billing) {
         tvShipping.text = "${shipping.lastName} ${shipping.firstName}\n" +
                 "${shipping.address?.street}\n" +
                 "${shipping.address?.city}, ${shipping.address?.state}, ${CountryCode.values().find { it.name == shipping.address?.countryCode }?.getName()}"
@@ -144,7 +215,7 @@ class PaymentStartPayActivity : AppCompatActivity() {
         when (requestCode) {
             REQUEST_EIDT_SHIPPING_CODE -> {
                 val shipping =
-                    data.getParcelableExtra<Parcelable>(EditShippingActivity.SHIPPING_DETAIL) as Shipping
+                    data.getParcelableExtra<Parcelable>(EditShippingActivity.SHIPPING_DETAIL) as PaymentMethod.Billing
                 updateShippingLabel(shipping)
             }
             REQUEST_PAYMENT_MOTHOD_CODE -> {

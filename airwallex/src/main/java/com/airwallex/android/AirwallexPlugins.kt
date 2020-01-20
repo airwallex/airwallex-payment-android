@@ -1,5 +1,6 @@
 package com.airwallex.android
 
+import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -33,5 +34,10 @@ internal object AirwallexPlugins {
         clientBuilder.readTimeout(30, TimeUnit.SECONDS)
         clientBuilder.followRedirects(false)
         AirwallexHttpClient.createClient(clientBuilder)
+    }
+
+
+    val gson by lazy {
+        Gson()
     }
 }

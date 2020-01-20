@@ -1,7 +1,7 @@
 package com.airwallex.android
 
-import android.content.Intent
-import android.util.Log
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentIntentParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -10,48 +10,88 @@ internal class AirwallexPaymentController(
     private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : PaymentController {
 
-    override fun startConfirm(options: AirwallexApiRepository.Options) {
+    override fun startConfirm(
+        options: AirwallexApiRepository.Options,
+        paymentIntentParams: PaymentIntentParams,
+        callback: Airwallex.PaymentIntentCallback
+    ) {
         ConfirmIntentTask(
+            options,
+            paymentIntentParams,
+            airwallexRepository,
+            workScope,
+            object : ApiResultCallback<AirwallexHttpResponse> {
+                override fun onSuccess(result: AirwallexHttpResponse) {
+                    if (result.isSuccessful) {
+                        val paymentIntent = AirwallexPlugins.gson.fromJson(
+                            result.body.toString(),
+                            PaymentIntent::class.java
+                        )
+                        callback.onSuccess(paymentIntent)
+                    } else {
+                        callback.onFailed()
+                    }
+                }
+
+                override fun onError(e: Exception) {
+                    callback.onFailed()
+                }
+
+            }
+        ).execute()
+    }
+
+    override fun retrievePaymentIntent(
+        options: AirwallexApiRepository.Options,
+        callback: Airwallex.PaymentIntentCallback
+    ) {
+        RetrieveIntentTask(
             options,
             airwallexRepository,
             workScope,
-            ConfirmIntentCallback()
+            object : ApiResultCallback<AirwallexHttpResponse> {
+                override fun onSuccess(result: AirwallexHttpResponse) {
+                    if (result.isSuccessful) {
+                        val paymentIntent = AirwallexPlugins.gson.fromJson(
+                            result.body.toString(),
+                            PaymentIntent::class.java
+                        )
+                        callback.onSuccess(paymentIntent)
+                    } else {
+                        callback.onFailed()
+                    }
+                }
+
+                override fun onError(e: Exception) {
+                    callback.onFailed()
+                }
+
+            }
         ).execute()
     }
 
     private class ConfirmIntentTask(
         private val options: AirwallexApiRepository.Options,
+        private val paymentIntentParams: PaymentIntentParams,
         private val airwallexRepository: ApiRepository,
         workScope: CoroutineScope,
-        callback: ApiResultCallback<AirwallexIntent>
-    ) : ApiOperation<AirwallexIntent>(workScope, callback) {
+        callback: ApiResultCallback<AirwallexHttpResponse>
+    ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
 
-        override suspend fun getResult(): AirwallexIntent? {
-            return airwallexRepository.confirmPaymentIntent(options)
+        override suspend fun getResult(): AirwallexHttpResponse? {
+            return airwallexRepository.confirmPaymentIntent(options, paymentIntentParams)
         }
     }
 
-    private class ConfirmIntentCallback : ApiResultCallback<AirwallexIntent> {
+    private class RetrieveIntentTask(
+        private val options: AirwallexApiRepository.Options,
+        private val airwallexRepository: ApiRepository,
+        workScope: CoroutineScope,
+        callback: ApiResultCallback<AirwallexHttpResponse>
+    ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
 
-        override fun onError(e: Exception) {
+        override suspend fun getResult(): AirwallexHttpResponse? {
+            return airwallexRepository.retrievePaymentIntent(options)
         }
-
-        override fun onSuccess(result: AirwallexIntent) {
-
-            Log.e("aaa", "result $result")
-        }
     }
-
-    override fun shouldHandlePaymentResult(requestCode: Int, data: Intent?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun handlePaymentResult(
-        data: Intent,
-        callback: ApiResultCallback<PaymentIntentResult>
-    ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-
 }

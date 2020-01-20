@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentIntentParams
 
 class Airwallex internal constructor(
     private val context: Context,
@@ -16,6 +18,12 @@ class Airwallex internal constructor(
         fun initialize(configuration: AirwallexConfiguration) {
             AirwallexPlugins.initialize(configuration)
         }
+    }
+
+    interface PaymentIntentCallback {
+        fun onSuccess(paymentIntent: PaymentIntent)
+
+        fun onFailed()
     }
 
     @JvmOverloads
@@ -42,6 +50,8 @@ class Airwallex internal constructor(
     @UiThread
     fun confirmPaymentIntent(
         paymentIntentId: String,
+        paymentIntentParams: PaymentIntentParams,
+        callback: PaymentIntentCallback,
         baseUrl: String = "https://staging-pci-api.airwallex.com"
     ) {
         paymentController.startConfirm(
@@ -49,31 +59,26 @@ class Airwallex internal constructor(
                 baseUrl = baseUrl,
                 token = token,
                 paymentIntentId = paymentIntentId
-            )
-        )
-    }
-
-    @WorkerThread
-    fun retrievePaymentIntent(
-        paymentIntentId: String,
-        baseUrl: String = "https://staging-pci-api.airwallex.com"
-    ) {
-        airwallexRepository.retrievePaymentIntent(
-            AirwallexApiRepository.Options(
-                baseUrl = baseUrl,
-                token = token,
-                paymentIntentId = paymentIntentId
-            )
+            ),
+            paymentIntentParams,
+            callback
         )
     }
 
     @UiThread
-    fun onPaymentResult(
-        requestCode: Int,
-        data: Intent?,
-        callback: ApiResultCallback<PaymentIntentResult>
+    fun retrievePaymentIntent(
+        paymentIntentId: String,
+        baseUrl: String = "https://staging-pci-api.airwallex.com",
+        callback: PaymentIntentCallback
     ) {
-
+        paymentController.retrievePaymentIntent(
+            AirwallexApiRepository.Options(
+                baseUrl = baseUrl,
+                token = token,
+                paymentIntentId = paymentIntentId
+            ),
+            callback
+        )
     }
 
 }
