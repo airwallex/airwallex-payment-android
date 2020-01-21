@@ -2,8 +2,16 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-android {
+def computeVersionCode = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-list', 'HEAD', '--count'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim().toInteger()
+}
 
+android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
@@ -16,23 +24,44 @@ android {
         applicationId "com.airwallex.paymentacceptance"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
+
+        versionCode computeVersionCode()
+        versionName "1.0.0"
     }
 
     signingConfigs {
+        debug {
+            storeFile file(AIRWALLEX_STORE_FILE)
+            storePassword AIRWALLEX_STORE_PASSWORD
+            keyAlias AIRWALLEX_KEY_ALIAS
+            keyPassword AIRWALLEX_KEY_PASSWORD
+        }
         release {
-            storeFile file(AIRWALLEX_RELEASE_STORE_FILE)
-            storePassword AIRWALLEX_RELEASE_STORE_PASSWORD
-            keyAlias AIRWALLEX_RELEASE_KEY_ALIAS
-            keyPassword AIRWALLEX_RELEASE_KEY_PASSWORD
+            storeFile file(AIRWALLEX_STORE_FILE)
+            storePassword AIRWALLEX_STORE_PASSWORD
+            keyAlias AIRWALLEX_KEY_ALIAS
+            keyPassword AIRWALLEX_KEY_PASSWORD
         }
     }
 
     buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
         release {
             debuggable false
             minifyEnabled false
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "${variant.versionName}-${variant.versionCode}-release.apk"
+                }
+            }
         }
     }
 }

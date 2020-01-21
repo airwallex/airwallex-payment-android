@@ -302,7 +302,7 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
             return@setOnEditorActionListener false
         }
 
-        shipping?.apply {
+        shipping.apply {
             etFirstName.setText(firstName)
             etLastName.setText(lastName)
             etStreetAddress.setText(address?.street)
