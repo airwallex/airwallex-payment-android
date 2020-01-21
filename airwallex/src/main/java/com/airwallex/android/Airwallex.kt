@@ -20,7 +20,6 @@ class Airwallex internal constructor(
         fun onFailed()
     }
 
-    @JvmOverloads
     constructor(
         token: String
     ) : this(

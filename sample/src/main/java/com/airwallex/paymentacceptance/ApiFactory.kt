@@ -12,7 +12,7 @@ internal class ApiFactory internal constructor(private val baseUrl: String) {
 
     fun create(): Api {
         val logging = HttpLoggingInterceptor()
-            .setLevel(HttpLoggingInterceptor.Level.BODY)
+        logging.level = HttpLoggingInterceptor.Level.BODY
 
         val httpClient = OkHttpClient.Builder()
             .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)

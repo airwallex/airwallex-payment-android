@@ -34,7 +34,7 @@ lintDebug:
 assembleDebug:
   stage: build
   script:
-    - ./gradlew assembleDebug
+    - ./gradlew assembleRelease
   artifacts:
     paths:
       - app/build/outputs/
@@ -42,5 +42,5 @@ assembleDebug:
 debugTests:
   stage: test
   script:
-    - ./gradlew -Pci --console=plain :airwallex:testDebug
-    - ./gradlew -Pci --console=plain :sample:testDebug
+    - ./gradlew -Pci --console=plain :airwallex:testRelease
+    - ./gradlew -Pci --console=plain :sample:testRelease
