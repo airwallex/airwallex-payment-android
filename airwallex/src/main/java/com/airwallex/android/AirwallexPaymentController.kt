@@ -1,5 +1,7 @@
 package com.airwallex.android
 
+import com.airwallex.android.exception.APIException
+import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentParams
 import kotlinx.coroutines.CoroutineScope
@@ -29,12 +31,20 @@ internal class AirwallexPaymentController(
                         )
                         callback.onSuccess(paymentIntent)
                     } else {
-                        callback.onFailed()
+                        callback.onFailed(
+                            APIException(
+                                message = result.body?.string(),
+                                requestId = null,
+                                statusCode = result.statusCode,
+                                airwallexError = null,
+                                e = null
+                            )
+                        )
                     }
                 }
 
-                override fun onError(e: Exception) {
-                    callback.onFailed()
+                override fun onError(e: AirwallexException) {
+                    callback.onFailed(e)
                 }
 
             }
@@ -58,12 +68,20 @@ internal class AirwallexPaymentController(
                         )
                         callback.onSuccess(paymentIntent)
                     } else {
-                        callback.onFailed()
+                        callback.onFailed(
+                            APIException(
+                                message = result.body?.string(),
+                                requestId = null,
+                                statusCode = result.statusCode,
+                                airwallexError = null,
+                                e = null
+                            )
+                        )
                     }
                 }
 
-                override fun onError(e: Exception) {
-                    callback.onFailed()
+                override fun onError(e: AirwallexException) {
+                    callback.onFailed(e)
                 }
 
             }

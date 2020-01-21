@@ -9,12 +9,11 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.airwallex.android.model.Product
+import com.airwallex.paymentacceptance.PaymentData.products
 import kotlinx.android.synthetic.main.fragment_order_summary.*
 import kotlinx.android.synthetic.main.order_summary_item.view.*
 
 class CartFragment : Fragment() {
-
-    val products = PaymentData.products
 
     @SuppressLint("ViewConstructor")
     class OrderSummaryItem(

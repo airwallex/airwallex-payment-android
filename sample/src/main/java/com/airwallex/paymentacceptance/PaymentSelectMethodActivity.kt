@@ -8,13 +8,13 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.paymentacceptance.PaymentData.paymentMethodType
 import kotlinx.android.synthetic.main.activity_edit_shipping.toolbar
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 
 class PaymentSelectMethodActivity : AppCompatActivity() {
 
     private var menu: Menu? = null
-    private var paymentMethodType = PaymentData.paymentMethodType
 
     companion object {
 

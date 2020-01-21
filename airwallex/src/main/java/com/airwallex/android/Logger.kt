@@ -27,7 +27,7 @@ internal object Logger {
     }
 
     @JvmStatic
-    var loggingEnabled: Boolean = BuildConfig.DEBUG
+    var loggingEnabled: Boolean = AirwallexPlugins.enableLogging
 
     @JvmStatic
     var logWorker: LogWorker =

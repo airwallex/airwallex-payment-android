@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.model.Order
 import com.airwallex.paymentacceptance.PaymentData.products
+import com.airwallex.paymentacceptance.PaymentData.shipping
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -51,8 +52,6 @@ class PaymentCartActivity : AppCompatActivity() {
                     loading.visibility = View.VISIBLE
                 }
                 .flatMap {
-                    val fgOrderSummary =
-                        supportFragmentManager.findFragmentById(R.id.fgOrderSummary) as CartFragment
                     val responseData = JSONObject(it.string())
                     token = responseData["token"].toString()
                     api.createPaymentIntent(
@@ -66,8 +65,8 @@ class PaymentCartActivity : AppCompatActivity() {
                             "merchant_order_id" to UUID.randomUUID().toString(),
                             "metadata" to mapOf("id" to 1),
                             "order" to Order.Builder()
-                                .setProducts(fgOrderSummary.products)
-                                .setShipping(PaymentData.shipping)
+                                .setProducts(products)
+                                .setShipping(shipping)
                                 .setType("physical_goods")
                                 .build(),
                             "request_id" to UUID.randomUUID().toString()

@@ -7,9 +7,9 @@ import com.airwallex.android.model.Product
 
 object PaymentData {
 
-    val paymentMethodType: PaymentMethodType? = PaymentMethodType.WECHAT
+    var paymentMethodType: PaymentMethodType? = PaymentMethodType.WECHAT
 
-    val shipping: PaymentMethod.Billing = PaymentMethod.Billing.Builder()
+    var shipping: PaymentMethod.Billing? = PaymentMethod.Billing.Builder()
         .setFirstName("John")
         .setLastName("Doe")
         .setPhone("13800000000")
@@ -25,7 +25,7 @@ object PaymentData {
         )
         .build()
 
-    val products = mutableListOf(
+    var products = mutableListOf(
         Product.Builder()
             .setCode("123")
             .setName("AirPods Pro")

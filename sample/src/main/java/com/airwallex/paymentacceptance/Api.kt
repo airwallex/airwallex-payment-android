@@ -2,7 +2,9 @@ package com.airwallex.paymentacceptance
 
 import io.reactivex.Observable
 import okhttp3.ResponseBody
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.Header
+import retrofit2.http.POST
 
 interface Api {
 

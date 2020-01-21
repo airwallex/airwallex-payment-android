@@ -1,6 +1,7 @@
 package com.airwallex.android
 
 import androidx.annotation.UiThread
+import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentParams
 
@@ -17,7 +18,7 @@ class Airwallex internal constructor(
     interface PaymentIntentCallback {
         fun onSuccess(paymentIntent: PaymentIntent)
 
-        fun onFailed()
+        fun onFailed(exception: AirwallexException)
     }
 
     constructor(
