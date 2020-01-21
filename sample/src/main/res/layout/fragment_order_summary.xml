@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,8 +10,9 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/tvOrderSum"
             android:fontFamily="@font/circularstd_bold"
             android:text="@string/my_cart"
             android:textColor="#2A2A2A"
@@ -23,7 +23,7 @@
             android:id="@+id/tvOrderSum"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@drawable/order_sum_bg"
             android:fontFamily="@font/circularstd_bold"
@@ -42,13 +42,16 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="84dp"
-        android:paddingVertical="16dp">
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/tvSubtotalLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -61,8 +64,9 @@
                 android:id="@+id/tvOrderSubtotalPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/tvSubtotalLabel"
                 android:fontFamily="@font/circularstd_medium"
                 android:textColor="#2A2A2A"
                 android:textSize="14sp" />
@@ -76,6 +80,7 @@
             android:layout_alignParentBottom="true">
 
             <TextView
+                android:id="@+id/tvShippingLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -88,8 +93,9 @@
                 android:id="@+id/tvShipping"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/tvShippingLabel"
                 android:fontFamily="@font/circularstd_medium"
                 android:textColor="#2A2A2A"
                 android:textSize="14sp" />
@@ -101,7 +107,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_alignParentBottom="true"
         android:background="#EBECF0" />
 
     <RelativeLayout
@@ -109,6 +114,7 @@
         android:layout_height="58dp">
 
         <TextView
+            android:id="@+id/tvTotalLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -121,8 +127,9 @@
             android:id="@+id/tvOrderTotalPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/tvTotalLabel"
             android:fontFamily="@font/circularstd_medium"
             android:textColor="#2A2A2A"
             android:textSize="14sp" />
@@ -132,6 +139,5 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_alignParentBottom="true"
         android:background="#EBECF0" />
 </LinearLayout>

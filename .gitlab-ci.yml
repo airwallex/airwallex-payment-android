@@ -25,13 +25,13 @@ stages:
   - build
   - test
 
-lintDebug:
+lintRelease:
   stage: build
   script:
-    - ./gradlew -Pci --console=plain :airwallex:lintDebug -PbuildDir=lint
-    - ./gradlew -Pci --console=plain :sample:lintDebug -PbuildDir=lint
+    - ./gradlew -Pci --console=plain :airwallex:lintRelease -PbuildDir=lint
+    - ./gradlew -Pci --console=plain :sample:lintRelease -PbuildDir=lint
 
-assembleDebug:
+assembleRelease:
   stage: build
   script:
     - ./gradlew assembleRelease
@@ -39,7 +39,7 @@ assembleDebug:
     paths:
       - app/build/outputs/
 
-debugTests:
+releaseTests:
   stage: test
   script:
     - ./gradlew -Pci --console=plain :airwallex:testRelease

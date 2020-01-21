@@ -2,7 +2,6 @@
 
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -18,7 +17,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingTop="8dp"
             android:paddingBottom="16dp">
@@ -27,7 +26,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/circularstd_bold"
-                android:paddingHorizontal="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
                 android:text="@string/payment_methods"
                 android:textColor="#2A2A2A"
                 android:textSize="32sp"
@@ -40,13 +40,15 @@
                 android:layout_marginTop="10dp"
                 android:background="@android:color/white"
                 android:orientation="horizontal"
-                android:paddingHorizontal="16dp">
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
 
                 <ImageView
                     android:id="@+id/wechatPayIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
+                    android:contentDescription="@null"
                     android:src="@drawable/wechat_pay" />
 
                 <TextView
@@ -67,6 +69,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:src="@drawable/tick"
+                    android:contentDescription="@null"
                     android:visibility="gone" />
             </RelativeLayout>
 
@@ -76,7 +79,8 @@
                 android:layout_marginTop="20dp"
                 android:background="@android:color/white"
                 android:orientation="horizontal"
-                android:paddingHorizontal="16dp">
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
