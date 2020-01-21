@@ -64,7 +64,7 @@
             android:drawableEnd="@drawable/right_arrow"
             android:drawablePadding="10dp"
             android:fontFamily="@font/circularstd_medium"
-            android:gravity="right"
+            android:gravity="end"
             android:lineSpacingExtra="4dp"
             android:textColor="#2A2A2A"
             android:textSize="14sp" />
@@ -108,7 +108,7 @@
             android:drawableEnd="@drawable/right_arrow"
             android:drawablePadding="10dp"
             android:fontFamily="@font/circularstd_medium"
-            android:gravity="right"
+            android:gravity="end"
             android:textColor="#2A2A2A"
             android:textSize="14sp" />
     </RelativeLayout>

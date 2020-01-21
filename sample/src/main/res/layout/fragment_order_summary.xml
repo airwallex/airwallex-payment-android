@@ -69,7 +69,7 @@
                 android:layout_toEndOf="@id/tvSubtotalLabel"
                 android:fontFamily="@font/circularstd_medium"
                 android:textColor="#2A2A2A"
-                android:gravity="right"
+                android:gravity="end"
                 android:textSize="14sp" />
 
         </RelativeLayout>
@@ -99,7 +99,7 @@
                 android:layout_toEndOf="@id/tvShippingLabel"
                 android:fontFamily="@font/circularstd_medium"
                 android:textColor="#2A2A2A"
-                android:gravity="right"
+                android:gravity="end"
                 android:textSize="14sp" />
 
         </RelativeLayout>
@@ -134,7 +134,7 @@
             android:layout_toEndOf="@id/tvTotalLabel"
             android:fontFamily="@font/circularstd_medium"
             android:textColor="#2A2A2A"
-            android:gravity="right"
+            android:gravity="end"
             android:textSize="14sp" />
 
     </RelativeLayout>
