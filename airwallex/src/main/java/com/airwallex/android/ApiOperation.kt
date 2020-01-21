@@ -1,14 +1,12 @@
 package com.airwallex.android
 
 import com.airwallex.android.exception.APIConnectionException
-import com.airwallex.android.exception.AirwallexException
 import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONException
 
 internal abstract class ApiOperation<ResultType>(
     private val workScope: CoroutineScope = CoroutineScope(IO),
@@ -20,10 +18,6 @@ internal abstract class ApiOperation<ResultType>(
         workScope.launch {
             val resultWrapper: ResultWrapper<ResultType> = try {
                 ResultWrapper.create(getResult())
-            } catch (e: AirwallexException) {
-                ResultWrapper.create(e)
-            } catch (e: JSONException) {
-                ResultWrapper.create(e)
             } catch (e: IOException) {
                 ResultWrapper.create(APIConnectionException.create(e))
             }
@@ -39,8 +33,9 @@ internal abstract class ApiOperation<ResultType>(
             resultWrapper.result != null -> callback.onSuccess(resultWrapper.result)
             resultWrapper.error != null -> callback.onError(resultWrapper.error)
             else -> callback.onError(
-                RuntimeException(
-                    "The API operation returned neither a result or exception"
+                APIConnectionException(
+                    message = "The API operation returned neither a result or exception",
+                    e = null
                 )
             )
         }

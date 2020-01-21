@@ -10,13 +10,6 @@ abstract class AirwallexException @JvmOverloads constructor(
     e: Throwable? = null
 ) : Exception(message, e) {
 
-    constructor(
-        message: String?,
-        requestId: String?,
-        statusCode: Int,
-        e: Throwable?
-    ) : this(null, message, requestId, statusCode, e)
-
     override fun toString(): String {
         var reqIdStr: String = if (requestId != null) {
             "; request-id: $requestId"

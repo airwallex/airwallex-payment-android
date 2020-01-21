@@ -11,14 +11,16 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
+import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
+import com.airwallex.paymentacceptance.PaymentData.paymentMethodType
+import com.airwallex.paymentacceptance.PaymentData.shipping
 import com.neovisionaries.i18n.CountryCode
 import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
 import kotlinx.android.synthetic.main.activity_start_pay.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 class PaymentPayActivity : AppCompatActivity() {
 
@@ -60,9 +62,6 @@ class PaymentPayActivity : AppCompatActivity() {
             activity.startActivity(intent)
         }
     }
-
-    private var shipping: PaymentMethod.Billing? = PaymentData.shipping
-    private var paymentMethodType: PaymentMethodType? = PaymentData.paymentMethodType
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,7 +109,7 @@ class PaymentPayActivity : AppCompatActivity() {
                     )
                     .setPaymentMethod(
                         PaymentMethod.Builder()
-                            .setType("card")
+                            .setType(PaymentMethodType.CARD)
                             .setCard(
                                 PaymentMethod.Card.Builder()
                                     .setNumber("4012000300001003")
@@ -155,24 +154,31 @@ class PaymentPayActivity : AppCompatActivity() {
                                         this@PaymentPayActivity,
                                         "Payment Success!",
                                         Toast.LENGTH_SHORT
-                                    )
-                                        .show()
+                                    ).show()
 
                                     finish()
                                 }
 
-                                override fun onFailed() {
+                                override fun onFailed(exception: AirwallexException) {
                                     loading.visibility = View.GONE
-                                    Log.e(TAG, "Retrieve PaymentIntent failed")
+                                    Toast.makeText(
+                                        this@PaymentPayActivity,
+                                        exception.message,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-
                             })
                     }
 
-                    override fun onFailed() {
+                    override fun onFailed(exception: AirwallexException) {
                         loading.visibility = View.GONE
-                        Log.e(TAG, "Confirm PaymentIntent failed")
+                        Toast.makeText(
+                            this@PaymentPayActivity,
+                            exception.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+
                 }
             )
         }

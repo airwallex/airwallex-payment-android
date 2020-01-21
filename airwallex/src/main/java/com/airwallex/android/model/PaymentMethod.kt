@@ -14,7 +14,7 @@ data class PaymentMethod internal constructor(
     val card: Card?,
 
     @SerializedName("type")
-    val type: String?
+    val type: PaymentMethodType?
 
 ) : AirwallexModel, Parcelable {
 
@@ -22,7 +22,7 @@ data class PaymentMethod internal constructor(
     class Builder : ObjectBuilder<PaymentMethod> {
         private var billing: Billing? = null
         private var card: Card? = null
-        private var type: String? = null
+        private var type: PaymentMethodType? = null
 
         fun setBilling(billing: Billing?): Builder = apply {
             this.billing = billing
@@ -32,7 +32,7 @@ data class PaymentMethod internal constructor(
             this.card = card
         }
 
-        fun setType(type: String?): Builder = apply {
+        fun setType(type: PaymentMethodType?): Builder = apply {
             this.type = type
         }
 

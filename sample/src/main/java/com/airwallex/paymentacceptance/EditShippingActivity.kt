@@ -12,6 +12,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.paymentacceptance.PaymentData.shipping
 import com.neovisionaries.i18n.CountryCode
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_edit_shipping.*
@@ -269,7 +270,6 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
     )
     private val compositeSubscription = CompositeDisposable()
     private var menu: Menu? = null
-    private val shipping = PaymentData.shipping
 
     companion object {
 
@@ -302,8 +302,8 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
             return@setOnEditorActionListener false
         }
 
-        shipping.apply {
-            etFirstName.setText(firstName)
+        shipping?.apply {
+            etFirstName.setText(firstName ?: "")
             etLastName.setText(lastName)
             etStreetAddress.setText(address?.street)
             etZipCode.setText(address?.postcode)
@@ -360,6 +360,7 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
             .setLastName(etLastName.text.toString())
             .setFirstName(etFirstName.text.toString())
             .setPhone(etPhoneNumber.text.toString())
+            .setEmail(etEmail.text.toString())
             .setAddress(
                 Address.Builder()
                     .setCountryCode(
