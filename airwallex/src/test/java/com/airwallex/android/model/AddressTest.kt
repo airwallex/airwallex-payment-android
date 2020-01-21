@@ -22,7 +22,7 @@ class AddressTest {
     }
 
     @Test
-    fun testParcelize() {
+    fun testParcelable() {
         assertEquals(AddressFixtures.ADDRESS, ParcelUtils.create(AddressFixtures.ADDRESS))
     }
 

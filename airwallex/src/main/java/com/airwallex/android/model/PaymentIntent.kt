@@ -1,7 +1,6 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import androidx.annotation.IntRange
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import java.util.*
