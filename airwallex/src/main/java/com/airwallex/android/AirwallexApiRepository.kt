@@ -2,7 +2,6 @@ package com.airwallex.android
 
 import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
-import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentParams
 import com.google.gson.JsonParser
 import kotlinx.android.parcel.Parcelize
