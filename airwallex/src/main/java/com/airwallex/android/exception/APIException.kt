@@ -4,17 +4,17 @@ import com.airwallex.android.model.AirwallexError
 
 class APIException(
     message: String?,
-    requestId: String? = null,
+    traceId: String? = null,
     statusCode: Int,
-    airwallexError: AirwallexError? = null,
+    error: AirwallexError? = null,
     e: Throwable? = null
-) : AirwallexException(airwallexError, message, requestId, statusCode, e) {
+) : AirwallexException(error, message, traceId, statusCode, e) {
     internal companion object {
         @JvmSynthetic
         internal fun create(e: AirwallexException): APIException {
             return APIException(
                 message = e.message,
-                requestId = e.requestId,
+                traceId = e.traceId,
                 statusCode = e.statusCode,
                 e = e
             )

@@ -2,13 +2,14 @@ package com.airwallex.android
 
 import com.airwallex.android.exception.APIException
 import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 internal class AirwallexPaymentController(
-    private val airwallexRepository: ApiRepository,
+    private val repository: ApiRepository,
     private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : PaymentController {
 
@@ -20,7 +21,7 @@ internal class AirwallexPaymentController(
         ConfirmIntentTask(
             options,
             paymentIntentParams,
-            airwallexRepository,
+            repository,
             workScope,
             object : ApiResultCallback<AirwallexHttpResponse> {
                 override fun onSuccess(result: AirwallexHttpResponse) {
@@ -31,12 +32,16 @@ internal class AirwallexPaymentController(
                         )
                         callback.onSuccess(paymentIntent)
                     } else {
+                        val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
+                            result.body.string(),
+                            AirwallexError::class.java
+                        ) else null
                         callback.onFailed(
                             APIException(
-                                message = result.body?.string(),
-                                requestId = null,
+                                message = null,
+                                traceId = result.allHeaders["x-awx-traceid"],
                                 statusCode = result.statusCode,
-                                airwallexError = null,
+                                error = error,
                                 e = null
                             )
                         )
@@ -57,7 +62,7 @@ internal class AirwallexPaymentController(
     ) {
         RetrieveIntentTask(
             options,
-            airwallexRepository,
+            repository,
             workScope,
             object : ApiResultCallback<AirwallexHttpResponse> {
                 override fun onSuccess(result: AirwallexHttpResponse) {
@@ -68,12 +73,16 @@ internal class AirwallexPaymentController(
                         )
                         callback.onSuccess(paymentIntent)
                     } else {
+                        val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
+                            result.body.string(),
+                            AirwallexError::class.java
+                        ) else null
                         callback.onFailed(
                             APIException(
-                                message = result.body?.string(),
-                                requestId = null,
+                                message = null,
+                                traceId = result.allHeaders["x-awx-traceid"],
                                 statusCode = result.statusCode,
-                                airwallexError = null,
+                                error = error,
                                 e = null
                             )
                         )
