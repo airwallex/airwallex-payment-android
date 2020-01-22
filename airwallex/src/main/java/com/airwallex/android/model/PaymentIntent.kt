@@ -36,7 +36,7 @@ data class PaymentIntent internal constructor(
     val status: String? = null,
 
     @SerializedName("captured_amount")
-    val capturedAmount: Int? = null,
+    val capturedAmount: Float? = null,
 
     @SerializedName("latest_payment_attempt")
     val latestPaymentAttempt: PaymentAttempt? = null,
@@ -80,10 +80,10 @@ data class PaymentIntent internal constructor(
         val status: String?,
 
         @SerializedName("captured_amount")
-        val capturedAmount: Int?,
+        val capturedAmount: Float?,
 
         @SerializedName("refunded_amount")
-        val refundedAmount: Int?,
+        val refundedAmount: Float?,
 
         @SerializedName("created_at")
         val createdAt: Date?,
