@@ -57,10 +57,10 @@ class PaymentCartActivity : AppCompatActivity() {
                     api.createPaymentIntent(
                         authorization = "Bearer $token",
                         params = mutableMapOf(
-//                            "amount" to products.sumByDouble {
-//                                it.unitPrice ?: 0 * (it.quantity ?: 0).toDouble()
-//                            },
-                            "amount" to 0.01,
+                            "amount" to products.sumByDouble {
+                                it.unitPrice ?: 0 * (it.quantity ?: 0).toDouble()
+                            },
+//                            "amount" to 0.01,
                             "currency" to "USD",
                             "descriptor" to "Airwallex - T-shirt",
                             "merchant_order_id" to UUID.randomUUID().toString(),
