@@ -10,6 +10,9 @@ data class PaymentMethod internal constructor(
     @SerializedName("billing")
     val billing: Billing?,
 
+    @SerializedName("wechatpay")
+    val wechatPayFlow: WechatPayFlow?,
+
     @SerializedName("card")
     val card: Card?,
 
@@ -23,6 +26,7 @@ data class PaymentMethod internal constructor(
         private var billing: Billing? = null
         private var card: Card? = null
         private var type: PaymentMethodType? = null
+        private var wechatPayFlow: WechatPayFlow? = null
 
         fun setBilling(billing: Billing?): Builder = apply {
             this.billing = billing
@@ -30,6 +34,10 @@ data class PaymentMethod internal constructor(
 
         fun setCard(card: Card?): Builder = apply {
             this.card = card
+        }
+
+        fun setWechatPayFlow(wechatPayFlow: WechatPayFlow?): Builder = apply {
+            this.wechatPayFlow = wechatPayFlow
         }
 
         fun setType(type: PaymentMethodType?): Builder = apply {
@@ -40,7 +48,8 @@ data class PaymentMethod internal constructor(
             return PaymentMethod(
                 billing = billing,
                 card = card,
-                type = type
+                type = type,
+                wechatPayFlow = wechatPayFlow
             )
         }
     }

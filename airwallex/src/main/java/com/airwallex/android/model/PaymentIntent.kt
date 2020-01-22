@@ -48,8 +48,10 @@ data class PaymentIntent internal constructor(
     val customerPaymentMethods: List<String>? = null,
 
     @SerializedName("client_secret")
-    val clientSecret: String? = null
+    val clientSecret: String? = null,
 
+    @SerializedName("next_action")
+    val nextAction: NextAction? = null
 ) : AirwallexModel, Parcelable {
 
     @Parcelize
@@ -93,4 +95,41 @@ data class PaymentIntent internal constructor(
         val device: Device?
 
     ) : AirwallexModel, Parcelable
+
+    @Parcelize
+    data class NextAction internal constructor(
+
+        @SerializedName("type")
+        val type: String?,
+
+        @SerializedName("data")
+        val data: NextActionData?
+    ) : AirwallexModel, Parcelable
+
+    @Parcelize
+    data class NextActionData internal constructor(
+
+        @SerializedName("appId")
+        val appId: String?,
+
+        @SerializedName("timeStamp")
+        val timeStamp: String?,
+
+        @SerializedName("nonceStr")
+        val nonceStr: String?,
+
+        @SerializedName("prepayId")
+        val prepayId: String?,
+
+        @SerializedName("partnerId")
+        val partnerId: String?,
+
+        @SerializedName("package")
+        val packageValue: String?,
+
+        @SerializedName("sign")
+        val sign: String?
+
+    ) : AirwallexModel, Parcelable
+
 }

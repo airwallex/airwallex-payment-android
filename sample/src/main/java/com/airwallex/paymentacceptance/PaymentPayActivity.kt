@@ -102,27 +102,32 @@ class PaymentPayActivity : AppCompatActivity() {
                     )
                     .setPaymentMethod(
                         PaymentMethod.Builder()
-                            .setType(PaymentMethodType.CARD)
-                            .setCard(
-                                PaymentMethod.Card.Builder()
-                                    .setNumber("4012000300001003")
-                                    .setExpMonth("12")
-                                    .setExpYear("2020")
-                                    .setCvc("123")
-                                    .setName("Adam")
-                                    .build()
-                            )
+                            .setType(PaymentMethodType.WECHAT)
+                            .setWechatPayFlow(WechatPayFlow(WechatPayFlowType.INAPP))
                             .setBilling(shipping)
                             .build()
                     )
                     .build(),
                 callback = object : Airwallex.PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
+
+                        if (paymentIntent.nextAction == null
+                            || paymentIntent.nextAction?.data == null
+                        ) {
+                            Toast.makeText(
+                                this@PaymentPayActivity,
+                                "Server error, NextAction is null...",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return
+                        }
+
                         Log.d(TAG, "Confirm PaymentIntent success, start launch Wechat pay.")
                         // launch wechat pay
                         WXPay.instance.launchWeChat(
                             context = this@PaymentPayActivity,
                             appId = Constants.APP_ID,
+                            data = paymentIntent.nextAction!!.data!!,
                             listener = object : PayListener {
                                 override fun onSuccess() {
                                     airwallex.retrievePaymentIntent(
@@ -189,7 +194,7 @@ class PaymentPayActivity : AppCompatActivity() {
                         loading.visibility = View.GONE
                         Toast.makeText(
                             this@PaymentPayActivity,
-                            exception.message,
+                            exception.toString(),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
