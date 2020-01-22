@@ -16,9 +16,6 @@ import com.airwallex.android.model.*
 import com.airwallex.paymentacceptance.PaymentData.paymentMethodType
 import com.airwallex.paymentacceptance.PaymentData.shipping
 import com.neovisionaries.i18n.CountryCode
-import com.tencent.mm.opensdk.modelpay.PayReq
-import com.tencent.mm.opensdk.openapi.IWXAPI
-import com.tencent.mm.opensdk.openapi.WXAPIFactory
 import kotlinx.android.synthetic.main.activity_start_pay.*
 import java.util.*
 
@@ -35,8 +32,6 @@ class PaymentPayActivity : AppCompatActivity() {
     private val token: String by lazy {
         intent.getStringExtra(PAYMENT_TOKEN)
     }
-
-    private lateinit var weChatApi: IWXAPI
 
     companion object {
 
@@ -84,8 +79,6 @@ class PaymentPayActivity : AppCompatActivity() {
             PaymentSelectMethodActivity.startActivityForResult(this, REQUEST_PAYMENT_MOTHOD_CODE)
         }
 
-        weChatApi = WXAPIFactory.createWXAPI(this, Constants.APP_ID, true)
-
         rlPlay.setOnClickListener {
             loading.visibility = View.VISIBLE
 
@@ -125,49 +118,71 @@ class PaymentPayActivity : AppCompatActivity() {
                     .build(),
                 callback = object : Airwallex.PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
+                        Log.d(TAG, "Confirm PaymentIntent success, start launch Wechat pay.")
+                        // launch wechat pay
+                        WXPay.instance.launchWeChat(
+                            context = this@PaymentPayActivity,
+                            appId = Constants.APP_ID,
+                            listener = object : PayListener {
+                                override fun onSuccess() {
+                                    airwallex.retrievePaymentIntent(
+                                        paymentIntentId = paymentIntentId,
+                                        callback = object : Airwallex.PaymentIntentCallback {
+                                            override fun onSuccess(paymentIntent: PaymentIntent) {
+                                                Log.d(TAG, "Retrieve PaymentIntent success")
+                                                loading.visibility = View.GONE
 
-//                        launchWeChat(
-//                            WeChat(
-//                                appId = "wxfad13fd6681a62b0",
-//                                partnerId = "334777613",
-//                                prepayId = "wx2010563737889845f8f386d71754657400",
-//                                packageValue = "Sign=WXPay",
-//                                nonce = "h4di4JfuuQuiJIIo6kX4NvBWaASWwpoh",
-//                                timestamp = "1579488997",
-//                                sign = "198CF2019DF64D1822807A32E3F18F8D2062F10583BC2C2005B018D200ADFA3D"
-//                            )
-//                        )
+                                                Log.e(
+                                                    TAG,
+                                                    "paymentIntent.status ${paymentIntent.status}"
+                                                )
 
-                        airwallex.retrievePaymentIntent(
-                            paymentIntentId = paymentIntentId,
-                            callback = object : Airwallex.PaymentIntentCallback {
-                                override fun onSuccess(paymentIntent: PaymentIntent) {
-                                    loading.visibility = View.GONE
+                                                if (paymentIntent.status == "SUCCEEDED") {
 
-                                    Log.e(TAG, "paymentIntent.status ${paymentIntent.status}")
+                                                }
 
-                                    if (paymentIntent.status == "SUCCEEDED") {
+                                                Toast.makeText(
+                                                    this@PaymentPayActivity,
+                                                    "Payment Success!",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
 
-                                    }
+                                                finish()
+                                            }
 
-                                    Toast.makeText(
-                                        this@PaymentPayActivity,
-                                        "Payment Success!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-
-                                    finish()
+                                            override fun onFailed(exception: AirwallexException) {
+                                                Log.e(TAG, "Retrieve PaymentIntent failed")
+                                                loading.visibility = View.GONE
+                                                Toast.makeText(
+                                                    this@PaymentPayActivity,
+                                                    exception.message,
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        })
                                 }
 
-                                override fun onFailed(exception: AirwallexException) {
+                                override fun onFailure(errCode: String?, errMessage: String?) {
+                                    Log.e(TAG, "Wechat pay failed, error $errMessage")
                                     loading.visibility = View.GONE
                                     Toast.makeText(
                                         this@PaymentPayActivity,
-                                        exception.message,
+                                        "errCode $errCode, errMessage $errMessage",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
+                                override fun onCancel() {
+                                    Log.e(TAG, "User cancel the Wechat payment")
+                                    loading.visibility = View.GONE
+                                    Toast.makeText(
+                                        this@PaymentPayActivity,
+                                        "User cancel the payment",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
                             })
+
                     }
 
                     override fun onFailed(exception: AirwallexException) {
@@ -242,33 +257,4 @@ class PaymentPayActivity : AppCompatActivity() {
         rlPlay.isEnabled = shipping != null && paymentMethodType != null
         btnPlay.isEnabled = rlPlay.isEnabled
     }
-
-    private fun launchWeChat(weChat: WeChat) {
-        val success = weChatApi.registerApp(Constants.APP_SIGNATURE)
-        assert(success)
-        weChatApi.sendReq(createPayReq(weChat))
-    }
-
-    private fun createPayReq(weChat: WeChat): PayReq {
-        val weChatReq = PayReq()
-        weChatReq.appId = weChat.appId
-        weChatReq.partnerId = weChat.partnerId
-        weChatReq.prepayId = weChat.prepayId
-        weChatReq.packageValue = weChat.packageValue
-        weChatReq.nonceStr = weChat.nonce
-        weChatReq.timeStamp = weChat.timestamp
-        weChatReq.sign = weChat.sign
-
-        return weChatReq
-    }
-
-    data class WeChat(
-        val appId: String,
-        val partnerId: String,
-        val prepayId: String,
-        val packageValue: String,
-        val nonce: String,
-        val timestamp: String,
-        val sign: String
-    )
 }
