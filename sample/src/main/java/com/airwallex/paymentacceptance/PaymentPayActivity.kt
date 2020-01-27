@@ -43,8 +43,8 @@ class PaymentPayActivity : AppCompatActivity() {
         private const val PAYMENT_AMOUNT = "payment_amount"
         private const val PAYMENT_TOKEN = "payment_token"
 
-        private const val REQUEST_EIDT_SHIPPING_CODE = 998
-        private const val REQUEST_PAYMENT_MOTHOD_CODE = 999
+        private const val REQUEST_EDIT_SHIPPING_CODE = 998
+        private const val REQUEST_PAYMENT_METHOD_CODE = 999
 
         fun start(
             activity: Activity,
@@ -74,11 +74,11 @@ class PaymentPayActivity : AppCompatActivity() {
         tvTotalPrice.text = "$$paymentAmount"
 
         rlShipping.setOnClickListener {
-            EditShippingActivity.startActivityForResult(this, REQUEST_EIDT_SHIPPING_CODE)
+            EditShippingActivity.startActivityForResult(this, REQUEST_EDIT_SHIPPING_CODE)
         }
 
         rlPaymentMethod.setOnClickListener {
-            PaymentSelectMethodActivity.startActivityForResult(this, REQUEST_PAYMENT_MOTHOD_CODE)
+            PaymentSelectMethodActivity.startActivityForResult(this, REQUEST_PAYMENT_METHOD_CODE)
         }
 
         rlPlay.setOnClickListener {
@@ -280,14 +280,14 @@ class PaymentPayActivity : AppCompatActivity() {
             return
         }
         when (requestCode) {
-            REQUEST_EIDT_SHIPPING_CODE -> {
+            REQUEST_EDIT_SHIPPING_CODE -> {
                 shipping =
                     data.getParcelableExtra<Parcelable>(EditShippingActivity.SHIPPING_DETAIL) as PaymentMethod.Billing
                 shipping?.let {
                     updateShippingLabel(it)
                 }
             }
-            REQUEST_PAYMENT_MOTHOD_CODE -> {
+            REQUEST_PAYMENT_METHOD_CODE -> {
                 paymentMethodType =
                     data.getSerializableExtra(PaymentSelectMethodActivity.PAYMENT_METHOD_TYPE) as PaymentMethodType
                 paymentMethodType?.let {

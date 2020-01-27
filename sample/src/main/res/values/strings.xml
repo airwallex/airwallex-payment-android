@@ -28,4 +28,9 @@
     <string name="no_saved_cards">No saved cards</string>
     <string name="add_new_card">Add new card</string>
     <string name="select_shipping">Enter shipping information</string>
+    <string name="add_card">Add card</string>
+    <string name="card_number">Card number</string>
+    <string name="card_name">Name on card</string>
+    <string name="expires">Expires MM / YY</string>
+    <string name="cvc">CVC / VCC</string>
 </resources>

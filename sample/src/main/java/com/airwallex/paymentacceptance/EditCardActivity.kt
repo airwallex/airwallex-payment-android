@@ -3,25 +3,21 @@ package com.airwallex.paymentacceptance
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.model.PaymentMethod
-import kotlinx.android.synthetic.main.activity_edit_shipping.*
+import kotlinx.android.synthetic.main.activity_add_card.*
+import kotlinx.android.synthetic.main.activity_add_card.editShippingLayout
+import kotlinx.android.synthetic.main.activity_add_card.toolbar
 
-class EditShippingActivity : AppCompatActivity(), TextWatcher {
+class EditCardActivity : AppCompatActivity() {
 
     private var menu: Menu? = null
 
     companion object {
-
-        const val SHIPPING_DETAIL = "SHIPPING_DETAIL"
-
         fun startActivityForResult(activity: Activity, requestCode: Int) {
             activity.startActivityForResult(
-                Intent(activity, EditShippingActivity::class.java),
+                Intent(activity, EditCardActivity::class.java),
                 requestCode
             )
         }
@@ -29,15 +25,16 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
 
     private fun updateMenuStatus() {
         menu?.findItem(R.id.menu_save)?.isEnabled =
-            etLastName.text.isNotEmpty()
-                    && etFirstName.text.isNotEmpty()
-                    && etEmail.text.isNotEmpty()
+            etCardNumber.text.isNotEmpty()
+                    && etCardName.text.isNotEmpty()
+                    && etExpires.text.isNotEmpty()
+                    && etCVC.text.isNotEmpty()
                     && editShippingLayout.isValidShipping()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_shipping)
+        setContentView(R.layout.activity_add_card)
 
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
@@ -45,11 +42,6 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowTitleEnabled(false)
         }
-
-        etLastName.addTextChangedListener(this)
-        etFirstName.addTextChangedListener(this)
-        etPhoneNumber.addTextChangedListener(this)
-        etEmail.addTextChangedListener(this)
 
         editShippingLayout.onShippingChanged = {
             updateMenuStatus()
@@ -74,27 +66,7 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
 
     @Throws(IllegalArgumentException::class)
     private fun actionSave() {
-        val shipping = PaymentMethod.Billing.Builder()
-            .setLastName(etLastName.text.toString())
-            .setFirstName(etFirstName.text.toString())
-            .setPhone(etPhoneNumber.text.toString())
-            .setEmail(etEmail.text.toString())
-            .setAddress(editShippingLayout.getEditShipping())
-            .build()
 
-        val intent = Intent()
-        intent.putExtra(SHIPPING_DETAIL, shipping)
-        setResult(Activity.RESULT_OK, intent)
-        finish()
     }
 
-    override fun afterTextChanged(s: Editable?) {
-        updateMenuStatus()
-    }
-
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-    }
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-    }
 }

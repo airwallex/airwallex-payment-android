@@ -20,6 +20,8 @@ class PaymentSelectMethodActivity : AppCompatActivity() {
 
         const val PAYMENT_METHOD_TYPE = "PAYMENT_METHOD_TYPE"
 
+        private const val REQUEST_EDIT_CARD_CODE = 9998
+
         fun startActivityForResult(activity: Activity, requestCode: Int) {
             activity.startActivityForResult(
                 Intent(activity, PaymentSelectMethodActivity::class.java),
@@ -52,6 +54,10 @@ class PaymentSelectMethodActivity : AppCompatActivity() {
             }
 
             menu?.findItem(R.id.menu_save)?.isEnabled = paymentMethodType != null
+        }
+
+        tvAddCard.setOnClickListener {
+            EditCardActivity.startActivityForResult(this, REQUEST_EDIT_CARD_CODE)
         }
     }
 
