@@ -25,6 +25,7 @@
             android:paddingRight="16dp"
             android:paddingBottom="16dp">
 
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -33,7 +34,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/circularstd_bold"
-                    android:text="@string/shipping"
+                    android:text="@string/add_card"
                     android:textColor="#2A2A2A"
                     android:textSize="32sp"
                     android:textStyle="bold" />
@@ -41,115 +42,114 @@
             </RelativeLayout>
 
 
-            <TextView
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/input_border"
+                android:paddingLeft="16dp"
+                android:paddingTop="5dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="5dp"
+                app:errorEnabled="true">
+
+                <EditText
+                    android:id="@+id/etCardNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:fontFamily="@font/circularstd_medium"
+                    android:hint="@string/card_number"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="#A9A9AE"
+                    android:textSize="16sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/input_border"
+                android:paddingLeft="16dp"
+                android:paddingTop="5dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="5dp"
+                app:errorEnabled="true">
+
+                <EditText
+                    android:id="@+id/etCardName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:fontFamily="@font/circularstd_medium"
+                    android:hint="@string/card_name"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="#A9A9AE"
+                    android:textSize="16sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="33dp"
-                android:fontFamily="@font/circularstd_bold"
-                android:text="@string/contact"
-                android:textColor="#2A2A2A"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/input_border"
-                android:paddingLeft="16dp"
-                android:paddingTop="5dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="5dp"
-                app:errorEnabled="true">
-
-                <EditText
-                    android:id="@+id/etLastName"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:fontFamily="@font/circularstd_medium"
-                    android:hint="@string/shipping_last_name_hint"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="#A9A9AE"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="53dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/input_border"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="5dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="5dp"
+                    app:errorEnabled="true">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/input_border"
-                android:paddingLeft="16dp"
-                android:paddingTop="5dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="5dp"
-                app:errorEnabled="true">
+                    <EditText
+                        android:id="@+id/etExpires"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:fontFamily="@font/circularstd_medium"
+                        android:hint="@string/expires"
+                        android:imeOptions="actionNext"
+                        android:inputType="phone"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="#A9A9AE"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <EditText
-                    android:id="@+id/etFirstName"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:fontFamily="@font/circularstd_medium"
-                    android:hint="@string/shipping_first_name_hint"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="#A9A9AE"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="53dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/input_border"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="5dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="5dp"
+                    app:errorEnabled="true">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/input_border"
-                android:paddingLeft="16dp"
-                android:paddingTop="5dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="5dp"
-                app:errorEnabled="true">
+                    <EditText
+                        android:id="@+id/etCVC"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:fontFamily="@font/circularstd_medium"
+                        android:hint="@string/cvc"
+                        android:imeOptions="actionNext"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="#A9A9AE"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
 
-                <EditText
-                    android:id="@+id/etPhoneNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:fontFamily="@font/circularstd_medium"
-                    android:hint="@string/contact_phone_number_hint"
-                    android:imeOptions="actionNext"
-                    android:inputType="phone"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="#A9A9AE"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/input_border"
-                android:paddingLeft="16dp"
-                android:paddingTop="5dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="5dp"
-                app:errorEnabled="true">
-
-                <EditText
-                    android:id="@+id/etEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:fontFamily="@font/circularstd_medium"
-                    android:hint="@string/contact_email_hint"
-                    android:imeOptions="actionNext"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="#A9A9AE"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
 
             <com.airwallex.paymentacceptance.EditShippingLayout
                 android:id="@+id/editShippingLayout"
