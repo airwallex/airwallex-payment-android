@@ -3,18 +3,36 @@ package com.airwallex.paymentacceptance
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.paymentacceptance.PaymentData.paymentMethodType
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_edit_shipping.toolbar
 import kotlinx.android.synthetic.main.activity_payment_methods.*
+import okhttp3.ResponseBody
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.IOException
 
-class PaymentSelectMethodActivity : AppCompatActivity() {
+class PaymentMethodsActivity : AppCompatActivity() {
 
     private var menu: Menu? = null
+
+    private val api: Api by lazy {
+        ApiFactory(Constants.BASE_URL).create()
+    }
+
+    private val compositeSubscription = CompositeDisposable()
 
     companion object {
 
@@ -24,7 +42,7 @@ class PaymentSelectMethodActivity : AppCompatActivity() {
 
         fun startActivityForResult(activity: Activity, requestCode: Int) {
             activity.startActivityForResult(
-                Intent(activity, PaymentSelectMethodActivity::class.java),
+                Intent(activity, PaymentMethodsActivity::class.java),
                 requestCode
             )
         }
@@ -59,6 +77,8 @@ class PaymentSelectMethodActivity : AppCompatActivity() {
         tvAddCard.setOnClickListener {
             EditCardActivity.startActivityForResult(this, REQUEST_EDIT_CARD_CODE)
         }
+
+        fetchPaymentMethods()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -80,4 +100,44 @@ class PaymentSelectMethodActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    override fun onDestroy() {
+        compositeSubscription.dispose()
+        super.onDestroy()
+    }
+
+    private fun fetchPaymentMethods() {
+        compositeSubscription.add(
+            api.fetchPaymentMethods(authorization = "Bearer ${Store.token}")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { handleResponse(it) },
+                    { handleError(it) }
+                )
+        )
+    }
+
+
+    private fun handleError(err: Throwable) {
+        Toast.makeText(this, err.localizedMessage, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun handleResponse(responseBody: ResponseBody) {
+        try {
+            val responseData = JSONObject(responseBody.string())
+            val paymentMethods: List<PaymentMethod> = Gson().fromJson(
+                responseData["items"].toString(),
+                object : TypeToken<List<PaymentMethod?>?>() {}.type
+            )
+
+            paymentMethods.forEach { Log.d("", it.card?.last4) }
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+    }
+
 }

@@ -40,7 +40,6 @@ class PaymentCartActivity : AppCompatActivity() {
     }
 
     private fun authAndCreatePaymentIntent() {
-        var token = ""
         compositeSubscription.add(
             api.authentication(
                 apiKey = Constants.API_KEY,
@@ -53,7 +52,8 @@ class PaymentCartActivity : AppCompatActivity() {
                 }
                 .flatMap {
                     val responseData = JSONObject(it.string())
-                    token = responseData["token"].toString()
+                    val token = responseData["token"].toString()
+                    Store.token = token
                     api.createPaymentIntent(
                         authorization = "Bearer $token",
                         params = mutableMapOf(
@@ -76,7 +76,7 @@ class PaymentCartActivity : AppCompatActivity() {
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { handleResponse(it, token) },
+                    { handleResponse(it) },
                     { handleError(it) }
                 )
         )
@@ -87,15 +87,14 @@ class PaymentCartActivity : AppCompatActivity() {
         Toast.makeText(this, err.localizedMessage, Toast.LENGTH_SHORT).show()
     }
 
-    private fun handleResponse(responseBody: ResponseBody, token: String) {
+    private fun handleResponse(responseBody: ResponseBody) {
         loading.visibility = View.GONE
         try {
             val responseData = JSONObject(responseBody.string())
             PaymentPayActivity.start(
                 this,
                 responseData["id"].toString(),
-                responseData["amount"].toString().toFloat(),
-                token
+                responseData["amount"].toString().toFloat()
             )
         } catch (e: IOException) {
             e.printStackTrace()
