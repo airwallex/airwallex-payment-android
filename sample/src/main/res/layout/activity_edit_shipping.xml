@@ -25,134 +25,13 @@
             android:paddingRight="16dp"
             android:paddingBottom="16dp">
 
-            <RelativeLayout
+            <com.airwallex.paymentacceptance.ContactWidget
+                android:id="@+id/contactWidget"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/circularstd_bold"
-                    android:text="@string/shipping"
-                    android:textColor="#2A2A2A"
-                    android:textSize="32sp"
-                    android:textStyle="bold" />
-
-            </RelativeLayout>
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="33dp"
-                android:fontFamily="@font/circularstd_bold"
-                android:text="@string/contact"
-                android:textColor="#2A2A2A"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/input_border"
-                android:paddingLeft="16dp"
-                android:paddingTop="5dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="5dp"
-                android:hint="@string/shipping_last_name_hint"
-                app:errorEnabled="true">
-
-                <EditText
-                    android:id="@+id/etLastName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:fontFamily="@font/circularstd_medium"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="#A9A9AE"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/input_border"
-                android:paddingLeft="16dp"
-                android:paddingTop="5dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="5dp"
-                android:hint="@string/shipping_first_name_hint"
-                app:errorEnabled="true">
-
-                <EditText
-                    android:id="@+id/etFirstName"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:fontFamily="@font/circularstd_medium"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="#A9A9AE"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/input_border"
-                android:paddingLeft="16dp"
-                android:paddingTop="5dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="5dp"
-                android:hint="@string/contact_phone_number_hint"
-                app:errorEnabled="true">
-
-                <EditText
-                    android:id="@+id/etPhoneNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:fontFamily="@font/circularstd_medium"
-                    android:imeOptions="actionNext"
-                    android:inputType="phone"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="#A9A9AE"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="53dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/input_border"
-                android:paddingLeft="16dp"
-                android:paddingTop="5dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="5dp"
-                android:hint="@string/contact_email_hint"
-                app:errorEnabled="true">
-
-                <EditText
-                    android:id="@+id/etEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:fontFamily="@font/circularstd_medium"
-                    android:imeOptions="actionNext"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@android:color/black"
-                    android:textColorHint="#A9A9AE"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="wrap_content" />
 
             <com.airwallex.paymentacceptance.ShippingWidget
-                android:id="@+id/editShippingLayout"
+                android:id="@+id/shippingWidget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>

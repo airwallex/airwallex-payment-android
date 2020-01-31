@@ -4,28 +4,29 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.RelativeLayout
+import android.view.View
+import android.widget.LinearLayout
 import com.airwallex.android.model.Address
 import com.airwallex.paymentacceptance.view.CountryAutoCompleteView
 import kotlinx.android.synthetic.main.widget_shipping.view.*
 
-class ShippingWidget(context: Context, attrs: AttributeSet) : RelativeLayout(context, attrs),
+class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs),
     TextWatcher {
 
     var shippingChangeCallback: (() -> Unit)? = null
 
     private var country: CountryAutoCompleteView.Country? = null
 
-    fun getEditShipping(): Address {
-        return Address.Builder()
-            .setCountryCode(country?.code)
-            .setState(etState.text.toString())
-            .setCity(etCity.text.toString())
-            .setStreet(etStreetAddress.text.toString())
-            .setPostcode(etZipCode.text.toString())
-            .build()
-    }
+    val shipping: Address
+        get() {
+            return Address.Builder()
+                .setCountryCode(country?.code)
+                .setState(etState.text.toString())
+                .setCity(etCity.text.toString())
+                .setStreet(etStreetAddress.text.toString())
+                .setPostcode(etZipCode.text.toString())
+                .build()
+        }
 
     fun isValidShipping(): Boolean {
         return country != null
@@ -35,10 +36,11 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : RelativeLayout(con
     }
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.widget_shipping, this)
+        View.inflate(getContext(), R.layout.widget_shipping, this)
 
         countryAutocomplete.countryChangeCallback = { country ->
             this.country = country
+            shippingChangeCallback?.invoke()
         }
 
         PaymentData.shipping?.apply {

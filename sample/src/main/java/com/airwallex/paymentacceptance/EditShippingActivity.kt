@@ -3,15 +3,13 @@ package com.airwallex.paymentacceptance
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.activity_edit_shipping.*
 
-class EditShippingActivity : AppCompatActivity(), TextWatcher {
+class EditShippingActivity : AppCompatActivity() {
 
     private var menu: Menu? = null
 
@@ -29,10 +27,7 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
 
     private fun updateMenuStatus() {
         menu?.findItem(R.id.menu_save)?.isEnabled =
-            etLastName.text.isNotEmpty()
-                    && etFirstName.text.isNotEmpty()
-                    && etEmail.text.isNotEmpty()
-                    && editShippingLayout.isValidShipping()
+            contactWidget.isValidContact() && shippingWidget.isValidShipping()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,19 +41,11 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
             setDisplayShowTitleEnabled(false)
         }
 
-        PaymentData.shipping?.apply {
-            etLastName.setText(lastName)
-            etFirstName.setText(firstName)
-            etPhoneNumber.setText(phone)
-            etEmail.setText(email)
+        contactWidget.contactChangeCallback = {
+            updateMenuStatus()
         }
 
-        etLastName.addTextChangedListener(this)
-        etFirstName.addTextChangedListener(this)
-        etPhoneNumber.addTextChangedListener(this)
-        etEmail.addTextChangedListener(this)
-
-        editShippingLayout.shippingChangeCallback = {
+        shippingWidget.shippingChangeCallback = {
             updateMenuStatus()
         }
     }
@@ -81,27 +68,18 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
 
     @Throws(IllegalArgumentException::class)
     private fun actionSave() {
+        val contact = contactWidget.contact
         val shipping = PaymentMethod.Billing.Builder()
-            .setLastName(etLastName.text.toString())
-            .setFirstName(etFirstName.text.toString())
-            .setPhone(etPhoneNumber.text.toString())
-            .setEmail(etEmail.text.toString())
-            .setAddress(editShippingLayout.getEditShipping())
+            .setLastName(contact.lastName)
+            .setFirstName(contact.firstName)
+            .setPhone(contact.phone)
+            .setEmail(contact.email)
+            .setAddress(shippingWidget.shipping)
             .build()
 
         val intent = Intent()
         intent.putExtra(SHIPPING_DETAIL, shipping)
         setResult(Activity.RESULT_OK, intent)
         finish()
-    }
-
-    override fun afterTextChanged(s: Editable?) {
-        updateMenuStatus()
-    }
-
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-    }
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
     }
 }

@@ -11,21 +11,16 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:fontFamily="@font/circularstd_bold"
-        android:text="@string/shipping_address"
+        android:text="@string/contact"
         android:textColor="#2A2A2A"
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <com.airwallex.paymentacceptance.view.CountryAutoCompleteView
-        android:id="@+id/countryAutocomplete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="53dp"
-        android:layout_marginTop="20dp"
         android:background="@drawable/input_border"
+        android:hint="@string/shipping_last_name_hint"
         android:paddingLeft="16dp"
         android:paddingTop="5dp"
         android:paddingRight="16dp"
@@ -33,38 +28,11 @@
         app:errorEnabled="true">
 
         <EditText
-            android:id="@+id/etState"
+            android:id="@+id/etLastName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"
             android:fontFamily="@font/circularstd_medium"
-            android:hint="@string/shipping_state_name_hint"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/input_border"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp"
-        app:errorEnabled="true">
-
-        <EditText
-            android:id="@+id/etCity"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:hint="@string/shipping_city_name_hint"
             android:imeOptions="actionNext"
             android:inputType="text"
             android:textColor="@android:color/black"
@@ -77,6 +45,7 @@
         android:layout_height="53dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/input_border"
+        android:hint="@string/shipping_first_name_hint"
         android:paddingLeft="16dp"
         android:paddingTop="5dp"
         android:paddingRight="16dp"
@@ -84,12 +53,11 @@
         app:errorEnabled="true">
 
         <EditText
-            android:id="@+id/etStreetAddress"
+            android:id="@+id/etFirstName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"
             android:fontFamily="@font/circularstd_medium"
-            android:hint="@string/shipping_street_hint"
             android:imeOptions="actionNext"
             android:inputType="text"
             android:textColor="@android:color/black"
@@ -102,6 +70,7 @@
         android:layout_height="53dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/input_border"
+        android:hint="@string/contact_phone_number_hint"
         android:paddingLeft="16dp"
         android:paddingTop="5dp"
         android:paddingRight="16dp"
@@ -109,14 +78,38 @@
         app:errorEnabled="true">
 
         <EditText
-            android:id="@+id/etZipCode"
+            android:id="@+id/etPhoneNumber"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"
             android:fontFamily="@font/circularstd_medium"
-            android:hint="@string/shipping_zip_code_hint"
-            android:imeOptions="actionDone"
-            android:inputType="text"
+            android:imeOptions="actionNext"
+            android:inputType="phone"
+            android:textColor="@android:color/black"
+            android:textColorHint="#A9A9AE"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="53dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/input_border"
+        android:hint="@string/contact_email_hint"
+        android:paddingLeft="16dp"
+        android:paddingTop="5dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="5dp"
+        app:errorEnabled="true">
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:fontFamily="@font/circularstd_medium"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress"
             android:textColor="@android:color/black"
             android:textColorHint="#A9A9AE"
             android:textSize="16sp" />
