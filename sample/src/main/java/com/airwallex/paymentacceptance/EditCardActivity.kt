@@ -7,7 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_add_card.*
-import kotlinx.android.synthetic.main.activity_add_card.editShippingLayout
+import kotlinx.android.synthetic.main.activity_add_card.shippingWidget
 import kotlinx.android.synthetic.main.activity_add_card.toolbar
 
 class EditCardActivity : AppCompatActivity() {
@@ -25,11 +25,7 @@ class EditCardActivity : AppCompatActivity() {
 
     private fun updateMenuStatus() {
         menu?.findItem(R.id.menu_save)?.isEnabled =
-            etCardNumber.text.isNotEmpty()
-                    && etCardName.text.isNotEmpty()
-                    && etExpires.text.isNotEmpty()
-                    && etCVC.text.isNotEmpty()
-                    && editShippingLayout.isValidShipping()
+            cardWidget.isValidCard && shippingWidget.isValidShipping
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +39,11 @@ class EditCardActivity : AppCompatActivity() {
             setDisplayShowTitleEnabled(false)
         }
 
-        editShippingLayout.shippingChangeCallback = {
+        cardWidget.cardChangeCallback = {
+            updateMenuStatus()
+        }
+
+        shippingWidget.shippingChangeCallback = {
             updateMenuStatus()
         }
     }
