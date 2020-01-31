@@ -60,6 +60,7 @@
                 android:paddingTop="5dp"
                 android:paddingRight="16dp"
                 android:paddingBottom="5dp"
+                android:hint="@string/shipping_last_name_hint"
                 app:errorEnabled="true">
 
                 <EditText
@@ -68,7 +69,6 @@
                     android:layout_height="match_parent"
                     android:background="@null"
                     android:fontFamily="@font/circularstd_medium"
-                    android:hint="@string/shipping_last_name_hint"
                     android:imeOptions="actionNext"
                     android:inputType="text"
                     android:textColor="@android:color/black"
@@ -85,6 +85,7 @@
                 android:paddingTop="5dp"
                 android:paddingRight="16dp"
                 android:paddingBottom="5dp"
+                android:hint="@string/shipping_first_name_hint"
                 app:errorEnabled="true">
 
                 <EditText
@@ -93,7 +94,6 @@
                     android:layout_height="match_parent"
                     android:background="@null"
                     android:fontFamily="@font/circularstd_medium"
-                    android:hint="@string/shipping_first_name_hint"
                     android:imeOptions="actionNext"
                     android:inputType="text"
                     android:textColor="@android:color/black"
@@ -110,6 +110,7 @@
                 android:paddingTop="5dp"
                 android:paddingRight="16dp"
                 android:paddingBottom="5dp"
+                android:hint="@string/contact_phone_number_hint"
                 app:errorEnabled="true">
 
                 <EditText
@@ -118,7 +119,6 @@
                     android:layout_height="match_parent"
                     android:background="@null"
                     android:fontFamily="@font/circularstd_medium"
-                    android:hint="@string/contact_phone_number_hint"
                     android:imeOptions="actionNext"
                     android:inputType="phone"
                     android:textColor="@android:color/black"
@@ -135,6 +135,7 @@
                 android:paddingTop="5dp"
                 android:paddingRight="16dp"
                 android:paddingBottom="5dp"
+                android:hint="@string/contact_email_hint"
                 app:errorEnabled="true">
 
                 <EditText
@@ -143,7 +144,6 @@
                     android:layout_height="match_parent"
                     android:background="@null"
                     android:fontFamily="@font/circularstd_medium"
-                    android:hint="@string/contact_email_hint"
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
                     android:textColor="@android:color/black"
@@ -151,7 +151,7 @@
                     android:textSize="16sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.airwallex.paymentacceptance.EditShippingLayout
+            <com.airwallex.paymentacceptance.ShippingWidget
                 android:id="@+id/editShippingLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

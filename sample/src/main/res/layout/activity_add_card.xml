@@ -151,7 +151,7 @@
             </LinearLayout>
 
 
-            <com.airwallex.paymentacceptance.EditShippingLayout
+            <com.airwallex.paymentacceptance.ShippingWidget
                 android:id="@+id/editShippingLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

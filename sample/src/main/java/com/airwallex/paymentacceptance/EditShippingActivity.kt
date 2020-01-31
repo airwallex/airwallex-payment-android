@@ -46,12 +46,19 @@ class EditShippingActivity : AppCompatActivity(), TextWatcher {
             setDisplayShowTitleEnabled(false)
         }
 
+        PaymentData.shipping?.apply {
+            etLastName.setText(lastName)
+            etFirstName.setText(firstName)
+            etPhoneNumber.setText(phone)
+            etEmail.setText(email)
+        }
+
         etLastName.addTextChangedListener(this)
         etFirstName.addTextChangedListener(this)
         etPhoneNumber.addTextChangedListener(this)
         etEmail.addTextChangedListener(this)
 
-        editShippingLayout.onShippingChanged = {
+        editShippingLayout.shippingChangeCallback = {
             updateMenuStatus()
         }
     }
