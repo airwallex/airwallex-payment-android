@@ -20,11 +20,12 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
     var contactChangeCallback: (() -> Unit)? = null
 
-    fun isValidContact(): Boolean {
-        return etLastName.text.isNotEmpty()
-                && etFirstName.text.isNotEmpty()
-                && etEmail.text.isNotEmpty()
-    }
+    val isValidContact: Boolean
+        get() {
+            return etLastName.text.isNotEmpty()
+                    && etFirstName.text.isNotEmpty()
+                    && etEmail.text.isNotEmpty()
+        }
 
     internal val contact: Contact
         get() {

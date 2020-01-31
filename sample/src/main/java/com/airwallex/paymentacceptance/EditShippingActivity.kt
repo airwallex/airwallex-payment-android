@@ -27,7 +27,7 @@ class EditShippingActivity : AppCompatActivity() {
 
     private fun updateMenuStatus() {
         menu?.findItem(R.id.menu_save)?.isEnabled =
-            contactWidget.isValidContact() && shippingWidget.isValidShipping()
+            contactWidget.isValidContact && shippingWidget.isValidShipping
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

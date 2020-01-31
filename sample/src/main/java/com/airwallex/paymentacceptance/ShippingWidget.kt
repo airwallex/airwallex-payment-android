@@ -28,12 +28,13 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
                 .build()
         }
 
-    fun isValidShipping(): Boolean {
-        return country != null
-                && etState.text.isNotEmpty()
-                && etCity.text.isNotEmpty()
-                && etStreetAddress.text.isNotEmpty()
-    }
+    val isValidShipping: Boolean
+        get() {
+            return country != null
+                    && etState.text.isNotEmpty()
+                    && etCity.text.isNotEmpty()
+                    && etStreetAddress.text.isNotEmpty()
+        }
 
     init {
         View.inflate(getContext(), R.layout.widget_shipping, this)
