@@ -31,17 +31,12 @@ class PaymentPayActivity : AppCompatActivity() {
         intent.getFloatExtra(PAYMENT_AMOUNT, 0F)
     }
 
-    private val token: String by lazy {
-        intent.getStringExtra(PAYMENT_TOKEN)
-    }
-
     companion object {
 
         private const val TAG = "PaymentPayActivity"
 
         private const val PAYMENT_INTENT_ID = "payment_intent_id"
         private const val PAYMENT_AMOUNT = "payment_amount"
-        private const val PAYMENT_TOKEN = "payment_token"
 
         private const val REQUEST_EDIT_SHIPPING_CODE = 998
         private const val REQUEST_PAYMENT_METHOD_CODE = 999
@@ -49,13 +44,11 @@ class PaymentPayActivity : AppCompatActivity() {
         fun start(
             activity: Activity,
             paymentIntentId: String,
-            amount: Float,
-            token: String
+            amount: Float
         ) {
             val intent = Intent(activity, PaymentPayActivity::class.java)
             intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
             intent.putExtra(PAYMENT_AMOUNT, amount)
-            intent.putExtra(PAYMENT_TOKEN, token)
             activity.startActivity(intent)
         }
     }
@@ -78,14 +71,14 @@ class PaymentPayActivity : AppCompatActivity() {
         }
 
         rlPaymentMethod.setOnClickListener {
-            PaymentSelectMethodActivity.startActivityForResult(this, REQUEST_PAYMENT_METHOD_CODE)
+            PaymentMethodsActivity.startActivityForResult(this, REQUEST_PAYMENT_METHOD_CODE)
         }
 
         rlPlay.setOnClickListener {
             loading.visibility = View.VISIBLE
 
             // Start Confirm PaymentIntent
-            val airwallex = Airwallex(token)
+            val airwallex = Airwallex(Store.token)
             airwallex.confirmPaymentIntent(
                 paymentIntentId = paymentIntentId,
                 paymentIntentParams = PaymentIntentParams.Builder()
@@ -289,7 +282,7 @@ class PaymentPayActivity : AppCompatActivity() {
             }
             REQUEST_PAYMENT_METHOD_CODE -> {
                 paymentMethodType =
-                    data.getSerializableExtra(PaymentSelectMethodActivity.PAYMENT_METHOD_TYPE) as PaymentMethodType
+                    data.getSerializableExtra(PaymentMethodsActivity.PAYMENT_METHOD_TYPE) as PaymentMethodType
                 paymentMethodType?.let {
                     tvPaymentMethod.text = it.value
                     tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))

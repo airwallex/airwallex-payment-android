@@ -7,26 +7,57 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class PaymentMethod internal constructor(
 
-    @SerializedName("billing")
-    val billing: Billing?,
+    @SerializedName("id")
+    val id: String?,
 
-    @SerializedName("wechatpay")
-    val wechatPayFlow: WechatPayFlow?,
+    @SerializedName("request_id")
+    val requestId: String?,
+
+    @SerializedName("customer_id")
+    val customerId: String?,
+
+    @SerializedName("type")
+    val type: PaymentMethodType?,
 
     @SerializedName("card")
     val card: Card?,
 
-    @SerializedName("type")
-    val type: PaymentMethodType?
+    @SerializedName("wechatpay")
+    val wechatPayFlow: WechatPayFlow?,
 
+    @SerializedName("billing")
+    val billing: Billing?,
+
+    @SerializedName("metadata")
+    val metadata: String?
 ) : AirwallexModel, Parcelable {
 
 
     class Builder : ObjectBuilder<PaymentMethod> {
-        private var billing: Billing? = null
-        private var card: Card? = null
+        private var id: String? = null
+        private var requestId: String? = null
+        private var customerId: String? = null
         private var type: PaymentMethodType? = null
+        private var card: Card? = null
         private var wechatPayFlow: WechatPayFlow? = null
+        private var billing: Billing? = null
+        private var metadata: String? = null
+
+        fun setId(id: String?): Builder = apply {
+            this.id = id
+        }
+
+        fun setRequestId(requestId: String?): Builder = apply {
+            this.requestId = requestId
+        }
+
+        fun setCustomerId(customerId: String?): Builder = apply {
+            this.customerId = customerId
+        }
+
+        fun setMetadata(metadata: String?): Builder = apply {
+            this.metadata = metadata
+        }
 
         fun setBilling(billing: Billing?): Builder = apply {
             this.billing = billing
@@ -46,10 +77,14 @@ data class PaymentMethod internal constructor(
 
         override fun build(): PaymentMethod {
             return PaymentMethod(
+                id = id,
+                requestId = requestId,
+                customerId = customerId,
                 billing = billing,
                 card = card,
                 type = type,
-                wechatPayFlow = wechatPayFlow
+                wechatPayFlow = wechatPayFlow,
+                metadata = metadata
             )
         }
     }
@@ -70,7 +105,31 @@ data class PaymentMethod internal constructor(
         val name: String?,
 
         @SerializedName("number")
-        val number: String?
+        val number: String?,
+
+        @SerializedName("bin")
+        val bin: String?,
+
+        @SerializedName("last4")
+        val last4: String?,
+
+        @SerializedName("brand")
+        val brand: String?,
+
+        @SerializedName("country")
+        val country: String?,
+
+        @SerializedName("funding")
+        val funding: String?,
+
+        @SerializedName("fingerprint")
+        val fingerprint: String?,
+
+        @SerializedName("cvc_check")
+        val cvcCheck: String?,
+
+        @SerializedName("avs_check")
+        val avsCheck: String?
     ) : AirwallexModel, Parcelable {
 
         class Builder : ObjectBuilder<Card> {
@@ -79,7 +138,14 @@ data class PaymentMethod internal constructor(
             private var expYear: String? = null
             private var name: String? = null
             private var number: String? = null
-
+            private var bin: String? = null
+            private var last4: String? = null
+            private var brand: String? = null
+            private var country: String? = null
+            private var funding: String? = null
+            private var fingerprint: String? = null
+            private var cvcCheck: String? = null
+            private var avsCheck: String? = null
             fun setCvc(cvc: String?): Builder = apply {
                 this.cvc = cvc
             }
@@ -100,13 +166,53 @@ data class PaymentMethod internal constructor(
                 this.number = number
             }
 
+            fun setBin(bin: String?): Builder = apply {
+                this.bin = bin
+            }
+
+            fun setLast4(last4: String?): Builder = apply {
+                this.last4 = last4
+            }
+
+            fun setBrand(brand: String?): Builder = apply {
+                this.brand = brand
+            }
+
+            fun setCountry(country: String?): Builder = apply {
+                this.country = country
+            }
+
+            fun setFunding(funding: String?): Builder = apply {
+                this.funding = funding
+            }
+
+            fun setFingerprint(fingerprint: String?): Builder = apply {
+                this.fingerprint = fingerprint
+            }
+
+            fun setCvcCheck(cvcCheck: String?): Builder = apply {
+                this.cvcCheck = cvcCheck
+            }
+
+            fun setAvsCheck(avsCheck: String?): Builder = apply {
+                this.avsCheck = avsCheck
+            }
+
             override fun build(): Card {
                 return Card(
                     cvc = cvc,
                     expMonth = expMonth,
                     expYear = expYear,
                     name = name,
-                    number = number
+                    number = number,
+                    bin = bin,
+                    last4 = last4,
+                    brand = brand,
+                    country = country,
+                    funding = funding,
+                    fingerprint = fingerprint,
+                    cvcCheck = cvcCheck,
+                    avsCheck = avsCheck
                 )
             }
         }

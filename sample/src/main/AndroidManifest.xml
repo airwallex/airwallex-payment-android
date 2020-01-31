@@ -25,7 +25,7 @@
 
         <activity android:name="com.airwallex.paymentacceptance.EditShippingActivity" />
 
-        <activity android:name="com.airwallex.paymentacceptance.PaymentSelectMethodActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.PaymentMethodsActivity" />
 
         <activity android:name="com.airwallex.paymentacceptance.EditCardActivity" />
 
