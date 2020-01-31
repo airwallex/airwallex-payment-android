@@ -43,7 +43,7 @@ class EditCardActivity : AppCompatActivity() {
             setDisplayShowTitleEnabled(false)
         }
 
-        editShippingLayout.onShippingChanged = {
+        editShippingLayout.shippingChangeCallback = {
             updateMenuStatus()
         }
     }
