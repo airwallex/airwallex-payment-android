@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tlCardNumber"
         android:layout_width="match_parent"
         android:layout_height="53dp"
         android:layout_marginTop="20dp"
@@ -16,11 +17,12 @@
         android:paddingBottom="5dp"
         app:errorEnabled="true">
 
-        <EditText
+        <com.airwallex.paymentacceptance.view.CardNumberEditText
             android:id="@+id/etCardNumber"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@null"
+            android:digits="@string/valid_digits"
             android:fontFamily="@font/circularstd_medium"
             android:hint="@string/card_number"
             android:imeOptions="actionNext"
@@ -28,6 +30,7 @@
             android:textColor="@android:color/black"
             android:textColorHint="#A9A9AE"
             android:textSize="16sp" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout

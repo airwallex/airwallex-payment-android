@@ -3,4 +3,5 @@
     <color name="colorPrimary">#612FFF</color>
     <color name="colorPrimaryDark">#612FFF</color>
     <color name="colorAccent">#612FFF</color>
+    <color name="airwallex_error_text">@android:color/holo_red_dark</color>
 </resources>

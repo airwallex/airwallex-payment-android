@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import com.airwallex.paymentacceptance.view.ErrorListener
 import kotlinx.android.synthetic.main.widget_card.view.*
 
 class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs),
@@ -15,8 +16,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
 
     val isValidCard: Boolean
         get() {
-            return etCardNumber.text.isNotEmpty()
-                    && etCardName.text.isNotEmpty()
+            return etCardName.text.isNotEmpty()
                     && etExpires.text.isNotEmpty()
                     && etCVC.text.isNotEmpty()
         }
@@ -24,11 +24,19 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
     init {
         View.inflate(getContext(), R.layout.widget_card, this)
 
-        etCardNumber.addTextChangedListener(this)
         etCardName.addTextChangedListener(this)
         etExpires.addTextChangedListener(this)
         etCVC.addTextChangedListener(this)
+
+        etCardNumber.setErrorMessageListener(ErrorListener(tlCardNumber))
+
+        initErrorMessages()
     }
+
+    private fun initErrorMessages() {
+        etCardNumber.setErrorMessage(context.getString(R.string.invalid_card_number))
+    }
+
 
     override fun afterTextChanged(s: Editable?) {
         cardChangeCallback?.invoke()
