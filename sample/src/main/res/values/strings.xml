@@ -33,4 +33,7 @@
     <string name="card_name">Name on card</string>
     <string name="expires">Expires MM / YY</string>
     <string name="cvc">CVC / VCC</string>
+
+    <string name="valid_digits">0123456789</string>
+    <string name="invalid_card_number">Your card\'s number is invalid.</string>
 </resources>
