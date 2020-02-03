@@ -5,14 +5,25 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_add_card.shippingWidget
 import kotlinx.android.synthetic.main.activity_add_card.toolbar
+import okhttp3.ResponseBody
+import java.util.*
 
 class EditCardActivity : AppCompatActivity() {
 
+    private val compositeSubscription = CompositeDisposable()
     private var menu: Menu? = null
+
+    private val api: Api by lazy {
+        ApiFactory(Constants.BASE_URL).create()
+    }
 
     companion object {
         fun startActivityForResult(activity: Activity, requestCode: Int) {
@@ -43,6 +54,10 @@ class EditCardActivity : AppCompatActivity() {
             updateMenuStatus()
         }
 
+        cardWidget.completionCallback = {
+            shippingWidget.requestFocus()
+        }
+
         shippingWidget.shippingChangeCallback = {
             updateMenuStatus()
         }
@@ -64,9 +79,39 @@ class EditCardActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    @Throws(IllegalArgumentException::class)
-    private fun actionSave() {
-
+    override fun onDestroy() {
+        compositeSubscription.dispose()
+        super.onDestroy()
     }
 
+    @Throws(IllegalArgumentException::class)
+    private fun actionSave() {
+        val card = cardWidget.paymentMethodCard ?: return
+        val shipping = PaymentData.shipping ?: return
+        compositeSubscription.add(
+            api.savePaymentMethod(
+                authorization = "Bearer ${Store.token}",
+                params = mutableMapOf(
+                    "request_id" to UUID.randomUUID().toString(),
+                    "type" to "card",
+                    "card" to card,
+                    "billing" to shipping
+                )
+            )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { handleResponse(it) },
+                    { handleError(it) }
+                )
+        )
+    }
+
+    private fun handleError(err: Throwable) {
+        Toast.makeText(this, err.localizedMessage, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun handleResponse(responseBody: ResponseBody) {
+
+    }
 }

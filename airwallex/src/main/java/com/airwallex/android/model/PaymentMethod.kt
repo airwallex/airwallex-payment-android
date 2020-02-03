@@ -145,6 +145,10 @@ data class PaymentMethod internal constructor(
             }
         }
 
+        companion object {
+            const val CVC_LENGTH: Int = 3
+        }
+
         class Builder : ObjectBuilder<Card> {
             private var cvc: String? = null
             private var expMonth: String? = null
