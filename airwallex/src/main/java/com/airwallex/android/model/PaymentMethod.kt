@@ -33,7 +33,6 @@ data class PaymentMethod internal constructor(
     val metadata: String?
 ) : AirwallexModel, Parcelable {
 
-
     class Builder : ObjectBuilder<PaymentMethod> {
         private var id: String? = null
         private var requestId: String? = null

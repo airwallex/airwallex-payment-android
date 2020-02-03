@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
-import com.airwallex.paymentacceptance.PaymentData.paymentMethodType
 import com.airwallex.paymentacceptance.PaymentData.shipping
 import com.neovisionaries.i18n.CountryCode
 import kotlinx.android.synthetic.main.activity_start_pay.*
@@ -30,6 +29,8 @@ class PaymentPayActivity : AppCompatActivity() {
     private val paymentAmount: Float by lazy {
         intent.getFloatExtra(PAYMENT_AMOUNT, 0F)
     }
+
+    private var paymentMethod: PaymentMethod? = null
 
     companion object {
 
@@ -197,15 +198,15 @@ class PaymentPayActivity : AppCompatActivity() {
             tvShipping.setTextColor(Color.parseColor("#A9A9A9"))
         }
 
-        if (paymentMethodType == null) {
+        if (paymentMethod == null) {
             tvPaymentMethod.text = getString(R.string.select_payment_method)
             tvPaymentMethod.setTextColor(Color.parseColor("#A9A9A9"))
         } else {
-            tvPaymentMethod.text = paymentMethodType!!.value
+            tvPaymentMethod.text = paymentMethod!!.type?.value
             tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
         }
 
-        rlPlay.isEnabled = shipping != null && paymentMethodType != null
+        rlPlay.isEnabled = shipping != null && paymentMethod != null
         btnPlay.isEnabled = rlPlay.isEnabled
     }
 
@@ -281,15 +282,15 @@ class PaymentPayActivity : AppCompatActivity() {
                 }
             }
             REQUEST_PAYMENT_METHOD_CODE -> {
-                paymentMethodType =
-                    data.getSerializableExtra(PaymentMethodsActivity.PAYMENT_METHOD_TYPE) as PaymentMethodType
-                paymentMethodType?.let {
-                    tvPaymentMethod.text = it.value
+                paymentMethod =
+                    data.getParcelableExtra(PaymentMethodsActivity.PAYMENT_METHOD) as PaymentMethod
+                paymentMethod?.let {
+                    tvPaymentMethod.text = it.type?.value
                     tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
                 }
             }
         }
-        rlPlay.isEnabled = shipping != null && paymentMethodType != null
+        rlPlay.isEnabled = shipping != null && paymentMethod != null
         btnPlay.isEnabled = rlPlay.isEnabled
     }
 }
