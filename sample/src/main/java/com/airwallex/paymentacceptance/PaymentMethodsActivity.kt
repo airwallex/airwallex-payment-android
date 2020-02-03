@@ -3,15 +3,13 @@ package com.airwallex.paymentacceptance
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.paymentacceptance.PaymentData.paymentMethodType
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,19 +24,21 @@ import java.io.IOException
 
 class PaymentMethodsActivity : AppCompatActivity() {
 
-    private var menu: Menu? = null
+    var menu: Menu? = null
 
     private val api: Api by lazy {
         ApiFactory(Constants.BASE_URL).create()
     }
 
     private val compositeSubscription = CompositeDisposable()
+    private lateinit var cardAdapter: CardAdapter
+    private val cards = mutableListOf<PaymentMethod.Card?>(null, null)
 
     companion object {
 
-        const val PAYMENT_METHOD_TYPE = "PAYMENT_METHOD_TYPE"
+        const val PAYMENT_METHOD = "PAYMENT_METHOD"
 
-        private const val REQUEST_EDIT_CARD_CODE = 9998
+        const val REQUEST_EDIT_CARD_CODE = 9998
 
         fun startActivityForResult(activity: Activity, requestCode: Int) {
             activity.startActivityForResult(
@@ -59,23 +59,12 @@ class PaymentMethodsActivity : AppCompatActivity() {
             setDisplayShowTitleEnabled(false)
         }
 
-        ivChecked.visibility =
-            if (paymentMethodType == PaymentMethodType.WECHAT) View.VISIBLE else View.GONE
-
-        rlWechatPay.setOnClickListener {
-            if (ivChecked.visibility == View.VISIBLE) {
-                ivChecked.visibility = View.GONE
-                paymentMethodType = null
-            } else {
-                ivChecked.visibility = View.VISIBLE
-                paymentMethodType = PaymentMethodType.WECHAT
-            }
-
-            menu?.findItem(R.id.menu_save)?.isEnabled = paymentMethodType != null
-        }
-
-        tvAddCard.setOnClickListener {
-            EditCardActivity.startActivityForResult(this, REQUEST_EDIT_CARD_CODE)
+        val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        cardAdapter = CardAdapter(cards, this)
+        rvPaymentMethods.apply {
+            setHasFixedSize(true)
+            layoutManager = viewManager
+            adapter = cardAdapter
         }
 
         fetchPaymentMethods()
@@ -84,7 +73,7 @@ class PaymentMethodsActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         this.menu = menu
         menuInflater.inflate(R.menu.menu_save, menu)
-        menu?.findItem(R.id.menu_save)?.isEnabled = paymentMethodType != null
+        menu?.findItem(R.id.menu_save)?.isEnabled = cardAdapter.paymentMethod != null
         return true
     }
 
@@ -93,7 +82,7 @@ class PaymentMethodsActivity : AppCompatActivity() {
             android.R.id.home -> finish()
             R.id.menu_save -> {
                 val intent = Intent()
-                intent.putExtra(PAYMENT_METHOD_TYPE, paymentMethodType)
+                intent.putExtra(PAYMENT_METHOD, cardAdapter.paymentMethod)
                 setResult(Activity.RESULT_OK, intent)
                 finish()
             }
@@ -108,7 +97,8 @@ class PaymentMethodsActivity : AppCompatActivity() {
 
     private fun fetchPaymentMethods() {
         compositeSubscription.add(
-            api.fetchPaymentMethods(authorization = "Bearer ${Store.token}")
+            // TODO Visa & Mastercard
+            api.fetchPaymentMethods(authorization = "Bearer ${Store.token}", method = "visa")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -118,6 +108,14 @@ class PaymentMethodsActivity : AppCompatActivity() {
         )
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_EDIT_CARD_CODE -> {
+                fetchPaymentMethods()
+            }
+        }
+    }
 
     private fun handleError(err: Throwable) {
         Toast.makeText(this, err.localizedMessage, Toast.LENGTH_SHORT).show()
@@ -131,8 +129,11 @@ class PaymentMethodsActivity : AppCompatActivity() {
                 object : TypeToken<List<PaymentMethod?>?>() {}.type
             )
 
-            paymentMethods.forEach { Log.d("", it.card?.last4) }
-
+            cards.clear()
+            cards.add(null)
+            cards.addAll(paymentMethods.mapNotNull { it.card })
+            cards.add(null)
+            cardAdapter.notifyDataSetChanged()
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: JSONException) {

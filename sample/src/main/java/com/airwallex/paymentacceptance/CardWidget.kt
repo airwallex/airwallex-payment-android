@@ -25,6 +25,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                 etExpires.validDateFields?.let { (month, year) ->
                     PaymentMethod.Card.Builder()
                         .setNumber(etCardNumber.cardNumber)
+                        .setName(etCardName.text.toString())
                         .setExpMonth(month.toString())
                         .setExpYear(year.toString())
                         .setCvc(etCvc.text.toString())

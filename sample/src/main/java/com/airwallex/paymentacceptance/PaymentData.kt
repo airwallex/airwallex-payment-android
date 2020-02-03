@@ -7,8 +7,6 @@ import com.airwallex.android.model.Product
 
 object PaymentData {
 
-    var paymentMethodType: PaymentMethodType? = PaymentMethodType.WECHAT
-
     var shipping: PaymentMethod.Billing? = PaymentMethod.Billing.Builder()
         .setFirstName("John")
         .setLastName("Doe")

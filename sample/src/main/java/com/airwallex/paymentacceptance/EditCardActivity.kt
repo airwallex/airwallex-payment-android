@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -13,7 +14,6 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_add_card.shippingWidget
 import kotlinx.android.synthetic.main.activity_add_card.toolbar
-import okhttp3.ResponseBody
 import java.util.*
 
 class EditCardActivity : AppCompatActivity() {
@@ -86,6 +86,7 @@ class EditCardActivity : AppCompatActivity() {
 
     @Throws(IllegalArgumentException::class)
     private fun actionSave() {
+        loading.visibility = View.VISIBLE
         val card = cardWidget.paymentMethodCard ?: return
         val shipping = PaymentData.shipping ?: return
         compositeSubscription.add(
@@ -101,17 +102,20 @@ class EditCardActivity : AppCompatActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { handleResponse(it) },
+                    { handleResponse() },
                     { handleError(it) }
                 )
         )
     }
 
     private fun handleError(err: Throwable) {
+        loading.visibility = View.GONE
         Toast.makeText(this, err.localizedMessage, Toast.LENGTH_SHORT).show()
     }
 
-    private fun handleResponse(responseBody: ResponseBody) {
-
+    private fun handleResponse() {
+        loading.visibility = View.GONE
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 }
