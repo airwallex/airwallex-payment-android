@@ -3,10 +3,11 @@ package com.airwallex.paymentacceptance.view
 import android.content.Context
 import android.text.Editable
 import android.text.InputFilter
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
-import com.airwallex.android.model.PaymentMethod
 import com.airwallex.paymentacceptance.CardUtils
+import com.airwallex.paymentacceptance.R
 
 class CardNumberEditText @JvmOverloads constructor(
     context: Context,
@@ -27,26 +28,26 @@ class CardNumberEditText @JvmOverloads constructor(
         }
     }
 
-    private var cardBrand: String = PaymentMethod.Card.CardBrand.UNKNOWN
-
-    @JvmSynthetic
-    internal var completionCallback: () -> Unit = {}
-    private var isCardNumberValid: Boolean = false
-
-    val cardNumber: String?
+    internal val cardNumber: String?
         get() = if (isCardNumberValid) {
             CardUtils.removeSpacesAndHyphens(fieldText)
         } else {
             null
         }
 
+    internal var completionCallback: () -> Unit = {}
+
+    private var isCardNumberValid: Boolean = false
     // When we format the card number, we need to ignore the text change event.
     private var ignoreTextChanges = false
 
-
     init {
-        listenForTextChanges()
+        setHint(R.string.card_number_hint)
+        maxLines = 1
         filters = arrayOf<InputFilter>(InputFilter.LengthFilter(MAX_CARD_LENGTH))
+        inputType = InputType.TYPE_CLASS_NUMBER
+
+        listenForTextChanges()
     }
 
     @JvmSynthetic
@@ -86,7 +87,7 @@ class CardNumberEditText @JvmOverloads constructor(
             private var latestChangeStart: Int = 0
             private var latestInsertionSize: Int = 0
 
-            private var newCursorPosition: Int? = null
+            private var cursorPosition: Int? = null
             private var formattedNumber: String? = null
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -102,29 +103,16 @@ class CardNumberEditText @JvmOverloads constructor(
                 }
 
                 val inputText = s?.toString().orEmpty()
-                if (start < 4) {
-                    // update possible card brand
-                    val brand = CardUtils.getPossibleCardBrand(inputText)
-                    if (cardBrand != brand) {
-                        cardBrand = brand
-                    }
-                }
-
                 if (start > 16) {
                     // no need to do formatting if we're past all of the spaces.
                     return
                 }
 
                 val spacelessNumber = CardUtils.removeSpacesAndHyphens(inputText) ?: return
+                val formattedNumber =
+                    createFormattedNumber(separateCardNumberGroups(spacelessNumber))
 
-                val formattedNumber = createFormattedNumber(
-                    separateCardNumberGroups(
-                        spacelessCardNumber = spacelessNumber,
-                        brand = cardBrand
-                    )
-                )
-
-                this.newCursorPosition = updateSelectionIndex(
+                this.cursorPosition = updateSelectionIndex(
                     newLength = formattedNumber.length,
                     editActionStart = latestChangeStart,
                     editActionAddition = latestInsertionSize
@@ -140,12 +128,12 @@ class CardNumberEditText @JvmOverloads constructor(
                 ignoreTextChanges = true
                 if (formattedNumber != null) {
                     setText(formattedNumber)
-                    newCursorPosition?.let {
+                    cursorPosition?.let {
                         setSelection(it)
                     }
                 }
                 formattedNumber = null
-                newCursorPosition = null
+                cursorPosition = null
                 ignoreTextChanges = false
 
                 if (fieldText.length == MAX_CARD_LENGTH) {
@@ -164,10 +152,7 @@ class CardNumberEditText @JvmOverloads constructor(
         })
     }
 
-    fun separateCardNumberGroups(
-        spacelessCardNumber: String,
-        @PaymentMethod.Card.CardBrand brand: String
-    ): Array<String?> {
+    fun separateCardNumberGroups(spacelessCardNumber: String): Array<String?> {
         val numberGroups = arrayOfNulls<String?>(4)
         var i = 0
         var previousStart = 0
