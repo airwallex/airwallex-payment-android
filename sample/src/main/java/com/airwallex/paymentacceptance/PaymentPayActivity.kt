@@ -146,6 +146,18 @@ class PaymentPayActivity : AppCompatActivity() {
             .setIpNetworkAddress("128.0.0.0")
             .build()
 
+        val paymentMethodOptions: PaymentMethodOptions = PaymentMethodOptions.Builder()
+            .setCardOptions(
+                PaymentMethodOptions.CardOptions.Builder()
+                    .setAutoCapture(true)
+                    .setThreeDs(
+                        PaymentMethodOptions.CardOptions.ThreeDs.Builder()
+                            .setOption(false)
+                            .build()
+                    ).build()
+            )
+            .build()
+
         if (paymentMethod.type == PaymentMethodType.CARD
             && paymentMethod.card?.number == null
         ) {
@@ -158,6 +170,7 @@ class PaymentPayActivity : AppCompatActivity() {
                         .setCvc(cvc)
                         .build()
                 )
+                .setPaymentMethodOptions(paymentMethodOptions)
                 .build()
 
         } else {
@@ -165,6 +178,7 @@ class PaymentPayActivity : AppCompatActivity() {
                 .setRequestId(UUID.randomUUID().toString())
                 .setDevice(device)
                 .setPaymentMethod(paymentMethod)
+                .setPaymentMethodOptions(paymentMethodOptions)
                 .build()
         }
 

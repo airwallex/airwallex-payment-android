@@ -16,7 +16,11 @@ data class PaymentIntentParams internal constructor(
     val device: Device? = null,
 
     @SerializedName("payment_method_reference")
-    val paymentMethodReference: PaymentMethodReference?
+    val paymentMethodReference: PaymentMethodReference?,
+
+    @SerializedName("payment_method_options")
+    val paymentMethodOptions: PaymentMethodOptions?
+
 ) : AirwallexModel, Parcelable {
 
     class Builder : ObjectBuilder<PaymentIntentParams> {
@@ -24,6 +28,7 @@ data class PaymentIntentParams internal constructor(
         private var paymentMethod: PaymentMethod? = null
         private var device: Device? = null
         private var paymentMethodReference: PaymentMethodReference? = null
+        private var paymentMethodOptions: PaymentMethodOptions? = null
 
         fun setRequestId(requestId: String?): Builder = apply {
             this.requestId = requestId
@@ -42,12 +47,18 @@ data class PaymentIntentParams internal constructor(
                 this.paymentMethodReference = paymentMethodReference
             }
 
+        fun setPaymentMethodOptions(paymentMethodOptions: PaymentMethodOptions?): Builder =
+            apply {
+                this.paymentMethodOptions = paymentMethodOptions
+            }
+
         override fun build(): PaymentIntentParams {
             return PaymentIntentParams(
                 requestId = requestId,
                 paymentMethod = paymentMethod,
                 device = device,
-                paymentMethodReference = paymentMethodReference
+                paymentMethodReference = paymentMethodReference,
+                paymentMethodOptions = paymentMethodOptions
             )
         }
     }
