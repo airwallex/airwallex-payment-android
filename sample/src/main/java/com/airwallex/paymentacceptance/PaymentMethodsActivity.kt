@@ -32,7 +32,7 @@ class PaymentMethodsActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
     private lateinit var cardAdapter: CardAdapter
-    private val cards = mutableListOf<PaymentMethod.Card?>(null, null)
+    private val paymentMethods = mutableListOf<PaymentMethod?>(null, null)
 
     companion object {
 
@@ -60,7 +60,7 @@ class PaymentMethodsActivity : AppCompatActivity() {
         }
 
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        cardAdapter = CardAdapter(cards, this)
+        cardAdapter = CardAdapter(paymentMethods, this)
         rvPaymentMethods.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
@@ -124,15 +124,15 @@ class PaymentMethodsActivity : AppCompatActivity() {
     private fun handleResponse(responseBody: ResponseBody) {
         try {
             val responseData = JSONObject(responseBody.string())
-            val paymentMethods: List<PaymentMethod> = Gson().fromJson(
+            val items: List<PaymentMethod> = Gson().fromJson(
                 responseData["items"].toString(),
                 object : TypeToken<List<PaymentMethod?>?>() {}.type
             )
 
-            cards.clear()
-            cards.add(null)
-            cards.addAll(paymentMethods.mapNotNull { it.card })
-            cards.add(null)
+            paymentMethods.clear()
+            paymentMethods.add(null)
+            paymentMethods.addAll(items)
+            paymentMethods.add(null)
             cardAdapter.notifyDataSetChanged()
         } catch (e: IOException) {
             e.printStackTrace()

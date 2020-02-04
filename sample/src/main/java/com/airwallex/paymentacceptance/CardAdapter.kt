@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.payment_method_item_footer.view.*
 import kotlinx.android.synthetic.main.payment_method_item_header.view.*
 
 class CardAdapter(
-    private val cards: List<PaymentMethod.Card?>,
+    private val paymentMethods: List<PaymentMethod?>,
     private val context: Context
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -32,7 +32,7 @@ class CardAdapter(
             0 -> {
                 ItemViewType.HEADER.value
             }
-            cards.size - 1 -> {
+            paymentMethods.size - 1 -> {
                 ItemViewType.FOOTER.value
             }
             else -> {
@@ -65,7 +65,7 @@ class CardAdapter(
     }
 
     override fun getItemCount(): Int {
-        return cards.size
+        return paymentMethods.size
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -101,17 +101,19 @@ class CardAdapter(
     inner class CardHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bindView(position: Int) {
-            val card = cards[position] ?: return
+            val method = paymentMethods[position] ?: return
+            val card = method.card ?: return
             itemView.tvCardInfo.text = String.format("%s •••• %s", card.brand, card.last4)
             when (card.brand) {
                 "visa" -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
                 "mastercard" -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
             }
             itemView.rlCard.setOnClickListener {
-                if (paymentMethod?.type == PaymentMethodType.CARD && card.fingerprint == paymentMethod?.card?.fingerprint) {
+                if (paymentMethod?.type == PaymentMethodType.CARD && method.id == paymentMethod?.id) {
                     return@setOnClickListener
                 }
                 paymentMethod = PaymentMethod.Builder()
+                    .setId(method.id)
                     .setType(PaymentMethodType.CARD)
                     .setCard(card)
                     .setBilling(PaymentData.shipping)
@@ -121,7 +123,7 @@ class CardAdapter(
                 notifyDataSetChanged()
             }
             itemView.ivCardChecked.visibility =
-                if (paymentMethod?.type == PaymentMethodType.CARD && card.fingerprint == paymentMethod?.card?.fingerprint) View.VISIBLE else View.GONE
+                if (paymentMethod?.type == PaymentMethodType.CARD && method.id == paymentMethod?.id) View.VISIBLE else View.GONE
         }
     }
 

@@ -31,6 +31,7 @@ data class PaymentMethod internal constructor(
 
     @SerializedName("metadata")
     val metadata: String?
+
 ) : AirwallexModel, Parcelable {
 
     class Builder : ObjectBuilder<PaymentMethod> {
