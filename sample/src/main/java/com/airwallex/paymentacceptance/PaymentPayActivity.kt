@@ -88,8 +88,7 @@ class PaymentPayActivity : AppCompatActivity() {
                     // Should fill cvc
                     val input = EditText(this)
                     input.inputType = InputType.TYPE_CLASS_NUMBER
-                    val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                    builder.setTitle(R.string.input_cvc)
+                    AlertDialog.Builder(this).setTitle(R.string.input_cvc)
                         .setView(input)
                         .setNegativeButton(android.R.string.cancel) { dialog, _ ->
                             dialog.dismiss()
@@ -105,8 +104,7 @@ class PaymentPayActivity : AppCompatActivity() {
                                 return@setPositiveButton
                             }
                             startConfirmPaymentIntent(it, cvc)
-                        }
-                    builder.show()
+                        }.show()
                 } else {
                     startConfirmPaymentIntent(it)
                 }
@@ -304,31 +302,44 @@ class PaymentPayActivity : AppCompatActivity() {
 
                     loading.visibility = View.GONE
                     if (paymentIntent.status == "SUCCEEDED") {
-                        Toast.makeText(
-                            this@PaymentPayActivity,
-                            "Payment Success!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        finish()
+                        showPaymentSuccessDialog()
                     } else {
-                        Toast.makeText(
-                            this@PaymentPayActivity,
-                            "Payment failed! PaymentIntent status: ${paymentIntent.status}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showPaymentFailedDialog()
                     }
                 }
 
                 override fun onFailed(exception: AirwallexException) {
                     Log.e(TAG, "Retrieve PaymentIntent failed")
                     loading.visibility = View.GONE
-                    Toast.makeText(
-                        this@PaymentPayActivity,
-                        exception.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
+
+                    // TODO Need Retry?
+
+                    showPaymentFailedDialog()
                 }
             })
+    }
+
+
+
+    private fun showPaymentSuccessDialog() {
+        AlertDialog.Builder(this@PaymentPayActivity)
+            .setTitle(R.string.payment_successful)
+            .setMessage(R.string.payment_successful_message)
+            .setNegativeButton(android.R.string.ok) { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+            .show()
+    }
+
+    private fun showPaymentFailedDialog() {
+        AlertDialog.Builder(this@PaymentPayActivity)
+            .setTitle(R.string.payment_failed)
+            .setMessage(R.string.payment_failed_message)
+            .setNegativeButton(android.R.string.ok) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
