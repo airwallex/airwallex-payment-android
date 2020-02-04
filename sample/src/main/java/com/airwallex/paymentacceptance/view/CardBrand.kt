@@ -24,15 +24,10 @@ enum class CardBrand(
             "225", "226", "227", "228", "229", "23", "24", "25", "26", "270", "271", "2720",
             "50", "51", "52", "53", "54", "55", "67"
         )
-    ),
-    Unknown(
-        "unknown",
-        "Unknown",
-        R.drawable.airwallex_ic_unknown
     );
 
     companion object {
-        fun fromCardNumber(cardNumber: String?): CardBrand {
+        fun fromCardNumber(cardNumber: String?): CardBrand? {
             return values()
                 .firstOrNull { cardBrand ->
                     cardBrand.prefixes
@@ -41,11 +36,7 @@ enum class CardBrand(
                         }?.any {
                             cardNumber?.startsWith(it) == true
                         } == true
-                } ?: Unknown
-        }
-
-        fun fromCode(code: String?): CardBrand {
-            return values().firstOrNull { it.code == code } ?: Unknown
+                }
         }
     }
 }
