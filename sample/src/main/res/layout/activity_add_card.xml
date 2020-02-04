@@ -50,10 +50,8 @@
 
     </LinearLayout>
 
-    <ProgressBar
+    <include
         android:id="@+id/loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+        layout="@layout/loading"
+        android:visibility="gone"/>
 </merge>
