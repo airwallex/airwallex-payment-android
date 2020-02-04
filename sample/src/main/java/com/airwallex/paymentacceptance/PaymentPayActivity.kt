@@ -45,9 +45,8 @@ class PaymentPayActivity : AppCompatActivity() {
 
         private const val REQUEST_EDIT_SHIPPING_CODE = 998
         private const val REQUEST_PAYMENT_METHOD_CODE = 999
-        const val REQUEST_START_PAYMENT = 1000
 
-        fun startActivityForResult(
+        fun startActivity(
             activity: Activity,
             paymentIntentId: String,
             amount: Float
@@ -55,7 +54,7 @@ class PaymentPayActivity : AppCompatActivity() {
             val intent = Intent(activity, PaymentPayActivity::class.java)
             intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
             intent.putExtra(PAYMENT_AMOUNT, amount)
-            activity.startActivityForResult(intent, REQUEST_START_PAYMENT)
+            activity.startActivity(intent)
         }
     }
 
@@ -77,7 +76,11 @@ class PaymentPayActivity : AppCompatActivity() {
         }
 
         rlPaymentMethod.setOnClickListener {
-            PaymentMethodsActivity.startActivityForResult(this, REQUEST_PAYMENT_METHOD_CODE)
+            PaymentMethodsActivity.startActivityForResult(
+                this,
+                paymentMethod,
+                REQUEST_PAYMENT_METHOD_CODE
+            )
         }
 
         rlPlay.setOnClickListener {
@@ -320,7 +323,6 @@ class PaymentPayActivity : AppCompatActivity() {
     }
 
 
-
     private fun showPaymentSuccessDialog() {
         AlertDialog.Builder(this@PaymentPayActivity)
             .setTitle(R.string.payment_successful)
@@ -374,7 +376,13 @@ class PaymentPayActivity : AppCompatActivity() {
                 paymentMethod =
                     data.getParcelableExtra(PaymentMethodsActivity.PAYMENT_METHOD) as PaymentMethod
                 paymentMethod?.let {
-                    tvPaymentMethod.text = it.type?.value
+                    if (it.type == PaymentMethodType.WECHAT) {
+                        tvPaymentMethod.text = it.type?.value
+                    } else {
+                        tvPaymentMethod.text =
+                            String.format("%s •••• %s", it.card?.brand, it.card?.last4)
+                    }
+
                     tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
                 }
             }

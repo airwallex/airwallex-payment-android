@@ -16,10 +16,9 @@ import kotlinx.android.synthetic.main.payment_method_item_header.view.*
 
 class CardAdapter(
     private val paymentMethods: List<PaymentMethod?>,
-    private val context: Context
+    private val context: Context,
+    var paymentMethod: PaymentMethod?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    var paymentMethod: PaymentMethod? = null
 
     enum class ItemViewType(val value: Int) {
         HEADER(1),
