@@ -40,11 +40,14 @@ class PaymentMethodsActivity : AppCompatActivity() {
 
         const val REQUEST_EDIT_CARD_CODE = 9998
 
-        fun startActivityForResult(activity: Activity, requestCode: Int) {
-            activity.startActivityForResult(
-                Intent(activity, PaymentMethodsActivity::class.java),
-                requestCode
-            )
+        fun startActivityForResult(
+            activity: Activity,
+            paymentMethod: PaymentMethod?,
+            requestCode: Int
+        ) {
+            val intent = Intent(activity, PaymentMethodsActivity::class.java)
+            intent.putExtra(PAYMENT_METHOD, paymentMethod)
+            activity.startActivityForResult(intent, requestCode)
         }
     }
 
@@ -60,7 +63,7 @@ class PaymentMethodsActivity : AppCompatActivity() {
         }
 
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        cardAdapter = CardAdapter(paymentMethods, this)
+        cardAdapter = CardAdapter(paymentMethods, this, intent.getParcelableExtra(PAYMENT_METHOD) as? PaymentMethod)
         rvPaymentMethods.apply {
             setHasFixedSize(true)
             layoutManager = viewManager

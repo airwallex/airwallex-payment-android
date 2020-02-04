@@ -91,7 +91,7 @@ class PaymentCartActivity : AppCompatActivity() {
         loading.visibility = View.GONE
         try {
             val responseData = JSONObject(responseBody.string())
-            PaymentPayActivity.startActivityForResult(
+            PaymentPayActivity.startActivity(
                 this,
                 responseData["id"].toString(),
                 responseData["amount"].toString().toFloat()
