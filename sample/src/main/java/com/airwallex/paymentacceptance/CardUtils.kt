@@ -9,12 +9,6 @@ object CardUtils {
     private const val LENGTH_CARD = 16
 
     @JvmStatic
-    @PaymentMethod.Card.CardBrand
-    fun getPossibleCardBrand(cardNumber: String?): String {
-        return getPossibleCardBrand(cardNumber, true)
-    }
-
-    @JvmStatic
     fun isValidCardNumber(cardNumber: String?): Boolean {
         val normalizedNumber = removeSpacesAndHyphens(cardNumber)
         return isValidLuhnNumber(normalizedNumber) && isValidCardLength(normalizedNumber)
@@ -82,7 +76,7 @@ object CardUtils {
                 cardNumber
             }
 
-        return fromCardNumber(spacelessCardNumber).displayName
+        return fromCardNumber(spacelessCardNumber)?.displayName ?: ""
     }
 
     fun removeSpacesAndHyphens(cardNumberWithSpaces: String?): String? {
