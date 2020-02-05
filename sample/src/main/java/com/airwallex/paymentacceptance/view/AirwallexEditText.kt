@@ -166,7 +166,7 @@ open class AirwallexEditText @JvmOverloads constructor(
         cachedColorStateList = textColors
         defaultErrorColor = ContextCompat.getColor(
             context,
-            R.color.airwallex_error_text
+            R.color.colorEditTextError
         )
     }
 

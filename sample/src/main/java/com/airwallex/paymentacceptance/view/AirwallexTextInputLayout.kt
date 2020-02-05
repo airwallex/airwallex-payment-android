@@ -26,7 +26,7 @@ internal class AirwallexTextInputLayout constructor(
             }
 
             tvError.text = value
-            updateBorderColor()
+            updateLayoutColor()
         }
         get() {
             return tvError.text.toString()
@@ -77,13 +77,24 @@ internal class AirwallexTextInputLayout constructor(
         }
     }
 
-    private fun updateBorderColor() {
-        vBorder.background =
-            ResourcesCompat.getDrawable(
-                resources,
-                if (error.isNullOrEmpty()) R.drawable.bg_input_layout_border else R.drawable.bg_input_layout_border_error,
-                null
-            )
+    private fun updateLayoutColor() {
+        if (error.isNullOrEmpty()) {
+            vBorder.background =
+                ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.bg_input_layout_border,
+                    null
+                )
+//            teInput.setHintTextColor(ContextCompat.getColor(context, R.color.colorEditTextAccent))
+        } else {
+            vBorder.background =
+                ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.bg_input_layout_border_error,
+                    null
+                )
+//            teInput.setHintTextColor(ContextCompat.getColor(context, R.color.colorEditTextError))
+        }
     }
 
     fun requestInputFocus() {
