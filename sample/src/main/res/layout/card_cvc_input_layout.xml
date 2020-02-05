@@ -16,10 +16,9 @@
             style="@style/AirwallexTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_input_layout_border"
             app:hintTextColor="@color/colorEditTextAccent">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.airwallex.paymentacceptance.view.CardCvcEditText
                 android:id="@+id/teInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

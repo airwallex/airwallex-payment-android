@@ -8,10 +8,10 @@ import android.view.View
 import android.widget.LinearLayout
 import com.airwallex.android.model.Address
 import com.airwallex.paymentacceptance.view.CountryAutoCompleteView
+import kotlinx.android.synthetic.main.widget_contact.view.*
 import kotlinx.android.synthetic.main.widget_shipping.view.*
 
-class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs),
-    TextWatcher {
+class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     var shippingChangeCallback: (() -> Unit)? = null
 
@@ -21,19 +21,19 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
         get() {
             return Address.Builder()
                 .setCountryCode(country?.code)
-                .setState(etState.text.toString())
-                .setCity(etCity.text.toString())
-                .setStreet(etStreetAddress.text.toString())
-                .setPostcode(etZipCode.text.toString())
+                .setState(atlState.text)
+                .setCity(atlCity.text)
+                .setStreet(atlStreetAddress.text)
+                .setPostcode(atlZipCode.text)
                 .build()
         }
 
     val isValidShipping: Boolean
         get() {
             return country != null
-                    && etState.text.isNotEmpty()
-                    && etCity.text.isNotEmpty()
-                    && etStreetAddress.text.isNotEmpty()
+                    && atlState.text.isNotEmpty()
+                    && atlCity.text.isNotEmpty()
+                    && atlStreetAddress.text.isNotEmpty()
         }
 
     init {
@@ -45,26 +45,63 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
         }
 
         PaymentData.shipping?.apply {
-            etStreetAddress.setText(address?.street)
-            etZipCode.setText(address?.postcode)
-            etCity.setText(address?.city)
-            etState.setText(address?.state)
+            atlStreetAddress.text = address?.street ?: ""
+            atlZipCode.text = address?.postcode ?: ""
+            atlCity.text = address?.city ?: ""
+            atlState.text = address?.state ?: ""
             countryAutocomplete.setInitCountry(address?.countryCode)
         }
 
-        etState.addTextChangedListener(this)
-        etCity.addTextChangedListener(this)
-        etStreetAddress.addTextChangedListener(this)
-        etZipCode.addTextChangedListener(this)
-    }
+        atlState.afterTextChanged {
+            shippingChangeCallback?.invoke()
+        }
 
-    override fun afterTextChanged(s: Editable?) {
-        shippingChangeCallback?.invoke()
-    }
+        atlCity.afterTextChanged {
+            shippingChangeCallback?.invoke()
+        }
 
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-    }
+        atlStreetAddress.afterTextChanged {
+            shippingChangeCallback?.invoke()
+        }
 
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        atlZipCode.afterTextChanged {
+            shippingChangeCallback?.invoke()
+        }
+
+        atlState.afterFocusChanged { hasFocus ->
+            if (!hasFocus) {
+                if (atlState.text.isEmpty()) {
+                    atlState.error = "Please enter your state"
+                } else {
+                    atlState.error = null
+                }
+            } else {
+                atlState.error = null
+            }
+        }
+
+        atlCity.afterFocusChanged { hasFocus ->
+            if (!hasFocus) {
+                if (atlCity.text.isEmpty()) {
+                    atlCity.error = "Please enter your city"
+                } else {
+                    atlCity.error = null
+                }
+            } else {
+                atlCity.error = null
+            }
+        }
+
+        atlStreetAddress.afterFocusChanged { hasFocus ->
+            if (!hasFocus) {
+                if (atlStreetAddress.text.isEmpty()) {
+                    atlStreetAddress.error = "Please enter your street"
+                } else {
+                    atlStreetAddress.error = null
+                }
+            } else {
+                atlStreetAddress.error = null
+            }
+        }
     }
 }

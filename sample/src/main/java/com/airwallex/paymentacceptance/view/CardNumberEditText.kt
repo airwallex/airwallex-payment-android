@@ -8,12 +8,13 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import com.airwallex.paymentacceptance.CardUtils
 import com.airwallex.paymentacceptance.R
+import com.google.android.material.textfield.TextInputEditText
 
 class CardNumberEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
-) : AirwallexEditText(context, attrs, defStyleAttr) {
+) : TextInputEditText(context, attrs, defStyleAttr) {
 
     internal companion object {
         private const val MAX_CARD_LENGTH = 19
@@ -28,6 +29,8 @@ class CardNumberEditText @JvmOverloads constructor(
         }
     }
 
+    internal var errorCallback: (showError: Boolean) -> Unit = {}
+
     internal val cardNumber: String?
         get() = if (isCardNumberValid) {
             CardUtils.removeSpacesAndHyphens(fieldText)
@@ -35,9 +38,15 @@ class CardNumberEditText @JvmOverloads constructor(
             null
         }
 
+    private val fieldText: String
+        get() {
+            return text?.toString().orEmpty()
+        }
+
+
     internal var completionCallback: () -> Unit = {}
 
-    private var isCardNumberValid: Boolean = false
+    var isCardNumberValid: Boolean = false
     // When we format the card number, we need to ignore the text change event.
     private var ignoreTextChanges = false
 
@@ -50,7 +59,6 @@ class CardNumberEditText @JvmOverloads constructor(
         listenForTextChanges()
     }
 
-    @JvmSynthetic
     internal fun updateSelectionIndex(
         newLength: Int,
         editActionStart: Int,
@@ -139,14 +147,14 @@ class CardNumberEditText @JvmOverloads constructor(
                 if (fieldText.length == MAX_CARD_LENGTH) {
                     val before = isCardNumberValid
                     isCardNumberValid = CardUtils.isValidCardNumber(fieldText)
-                    shouldShowError = !isCardNumberValid
+                    errorCallback.invoke(!isCardNumberValid)
                     if (!before && isCardNumberValid) {
                         completionCallback()
                     }
                 } else {
                     isCardNumberValid = CardUtils.isValidCardNumber(fieldText)
                     // Don't show errors if we aren't full-length.
-                    shouldShowError = false
+                    errorCallback.invoke(false)
                 }
             }
         })

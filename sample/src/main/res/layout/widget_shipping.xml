@@ -19,107 +19,41 @@
     <com.airwallex.paymentacceptance.view.CountryAutoCompleteView
         android:id="@+id/countryAutocomplete"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+        android:id="@+id/atlState"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:background="@drawable/input_border"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp"
-        app:errorEnabled="true">
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        app:hint="@string/shipping_state_name_hint" />
 
-        <EditText
-            android:id="@+id/etState"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:hint="@string/shipping_state_name_hint"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
+    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+        android:id="@+id/atlCity"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:background="@drawable/input_border"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp"
-        app:errorEnabled="true">
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        app:hint="@string/shipping_city_name_hint" />
 
-        <EditText
-            android:id="@+id/etCity"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:hint="@string/shipping_city_name_hint"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
+    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+        android:id="@+id/atlStreetAddress"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:background="@drawable/input_border"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp"
-        app:errorEnabled="true">
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        app:hint="@string/shipping_street_hint" />
 
-        <EditText
-            android:id="@+id/etStreetAddress"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:hint="@string/shipping_street_hint"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
+    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+        android:id="@+id/atlZipCode"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:background="@drawable/input_border"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp"
-        app:errorEnabled="true">
-
-        <EditText
-            android:id="@+id/etZipCode"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:hint="@string/shipping_zip_code_hint"
-            android:imeOptions="actionDone"
-            android:inputType="text"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
-
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        app:hint="@string/shipping_zip_code_hint" />
 </LinearLayout>

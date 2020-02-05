@@ -6,17 +6,17 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
-import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.view.View
 import com.airwallex.android.model.PaymentMethod.Card.Companion.CVC_LENGTH
 import com.airwallex.paymentacceptance.R
+import com.google.android.material.textfield.TextInputEditText
 
-class CvcEditText @JvmOverloads constructor(
+class CardCvcEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
-) : AirwallexEditText(context, attrs, defStyleAttr) {
+) : TextInputEditText(context, attrs, defStyleAttr) {
 
     internal val cvcValue: String?
         get() {
@@ -30,10 +30,9 @@ class CvcEditText @JvmOverloads constructor(
             return text.toString().trim()
         }
 
-    private val isValid: Boolean
+    val isValid: Boolean
         get() {
             return rawCvcValue.length == CVC_LENGTH
-
         }
 
     init {

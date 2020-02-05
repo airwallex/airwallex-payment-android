@@ -6,20 +6,22 @@ import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
-import com.airwallex.android.model.PaymentMethod
 import com.airwallex.paymentacceptance.R
+import com.google.android.material.textfield.TextInputEditText
 import kotlin.math.min
 
-class ExpiryEditText @JvmOverloads constructor(
+class CardExpiryEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
-) : AirwallexEditText(context, attrs, defStyleAttr) {
+) : TextInputEditText(context, attrs, defStyleAttr) {
 
     private companion object {
         private const val INVALID_INPUT = -1
         private const val MAX_INPUT_LENGTH = 5
     }
+
+    internal var errorCallback: (showError: Boolean) -> Unit = {}
 
     init {
         setHint(R.string.expires_hint)
@@ -180,7 +182,7 @@ class ExpiryEditText @JvmOverloads constructor(
                     isDateValid = false
                 }
 
-                this@ExpiryEditText.shouldShowError = shouldShowError
+                errorCallback.invoke(shouldShowError)
 
                 formattedDate = null
                 newCursorPosition = null
