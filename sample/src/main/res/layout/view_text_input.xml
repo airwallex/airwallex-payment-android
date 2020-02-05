@@ -25,8 +25,8 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:fontFamily="@font/circularstd_medium"
-                android:textColor="#DE000000"
-                android:textColorHint="#A9A9AE"
+                android:textColor="@color/colorEditTextDefault"
+                android:textColorHint="@color/colorEditTextAccent"
                 android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
