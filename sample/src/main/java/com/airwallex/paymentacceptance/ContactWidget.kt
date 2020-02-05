@@ -22,18 +22,18 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
     val isValidContact: Boolean
         get() {
-            return etLastName.text.isNotEmpty()
-                    && etFirstName.text.isNotEmpty()
-                    && etEmail.text.isNotEmpty()
+            return atlLastName.text.isNotEmpty()
+                    && atlFirstName.text.isNotEmpty()
+                    && atlEmail.text.isNotEmpty()
         }
 
     internal val contact: Contact
         get() {
             return Contact(
-                lastName = etLastName.text.toString(),
-                firstName = etFirstName.text.toString(),
-                phone = etPhoneNumber.text.toString(),
-                email = etEmail.text.toString()
+                lastName = atlLastName.text,
+                firstName = atlFirstName.text,
+                phone = atlPhoneNumber.text,
+                email = atlEmail.text
             )
         }
 
@@ -41,16 +41,59 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         View.inflate(getContext(), R.layout.widget_contact, this)
 
         PaymentData.shipping?.apply {
-            etLastName.setText(lastName)
-            etFirstName.setText(firstName)
-            etPhoneNumber.setText(phone)
-            etEmail.setText(email)
+            atlLastName.text = lastName ?: ""
+            atlFirstName.text = firstName ?: ""
+            atlPhoneNumber.text = phone ?: ""
+            atlEmail.text = email ?: ""
         }
 
-        etLastName.addTextChangedListener(this)
-        etFirstName.addTextChangedListener(this)
-        etPhoneNumber.addTextChangedListener(this)
-        etEmail.addTextChangedListener(this)
+        atlLastName.afterTextChanged {
+            contactChangeCallback?.invoke()
+        }
+
+        atlFirstName.afterTextChanged {
+            contactChangeCallback?.invoke()
+        }
+
+        atlEmail.afterTextChanged {
+            contactChangeCallback?.invoke()
+        }
+
+        atlLastName.afterFocusChanged { hasFocus ->
+            if (!hasFocus) {
+                if (atlLastName.text.isEmpty()) {
+                    atlLastName.error = "Please enter your last name"
+                } else {
+                    atlLastName.error = null
+                }
+            } else {
+                atlLastName.error = null
+            }
+        }
+
+        atlFirstName.afterFocusChanged { hasFocus ->
+            if (!hasFocus) {
+                if (atlFirstName.text.isEmpty()) {
+                    atlFirstName.error = "Please enter your first name"
+                } else {
+                    atlFirstName.error = null
+                }
+            } else {
+                atlFirstName.error = null
+            }
+        }
+
+        atlEmail.afterFocusChanged { hasFocus ->
+            if (!hasFocus) {
+                if (atlEmail.text.isEmpty()) {
+                    atlEmail.error = "Please enter your email"
+                } else {
+                    atlEmail.error = null
+                }
+            } else {
+                atlEmail.error = null
+            }
+        }
     }
 
     override fun afterTextChanged(s: Editable?) {

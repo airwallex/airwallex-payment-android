@@ -16,103 +16,39 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+        android:id="@+id/atlLastName"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:background="@drawable/input_border"
-        android:hint="@string/shipping_last_name_hint"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp"
-        app:errorEnabled="true">
+        android:layout_height="wrap_content"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        app:hint="@string/shipping_last_name_hint" />
 
-        <EditText
-            android:id="@+id/etLastName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
+    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+        android:id="@+id/atlFirstName"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:background="@drawable/input_border"
-        android:hint="@string/shipping_first_name_hint"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp"
-        app:errorEnabled="true">
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        app:hint="@string/shipping_first_name_hint" />
 
-        <EditText
-            android:id="@+id/etFirstName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
+    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+        android:id="@+id/atlPhoneNumber"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:background="@drawable/input_border"
-        android:hint="@string/contact_phone_number_hint"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp"
-        app:errorEnabled="true">
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        app:hint="@string/contact_phone_number_hint" />
 
-        <EditText
-            android:id="@+id/etPhoneNumber"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:imeOptions="actionNext"
-            android:inputType="phone"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
+    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+        android:id="@+id/atlEmail"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:background="@drawable/input_border"
-        android:hint="@string/contact_email_hint"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp"
-        app:errorEnabled="true">
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:imeOptions="actionNext"
-            android:inputType="textEmailAddress"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        app:hint="@string/contact_email_hint" />
 
 </LinearLayout>
