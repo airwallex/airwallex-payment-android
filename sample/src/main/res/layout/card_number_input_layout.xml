@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="53dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tlInput"
+            style="@style/AirwallexTextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:hintTextColor="@color/colorEditTextAccent">
+
+            <com.airwallex.paymentacceptance.view.CardNumberEditText
+                android:id="@+id/teInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:fontFamily="@font/circularstd_medium"
+                android:textColor="@color/colorEditTextDefault"
+                android:textColorHint="@color/colorEditTextAccent"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:id="@+id/vBorder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_input_layout_border" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/circularstd_medium"
+        android:paddingTop="4dp"
+        android:textColor="@color/colorEditTextError"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+</LinearLayout>
+

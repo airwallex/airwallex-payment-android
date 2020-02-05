@@ -5,6 +5,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tlCountry"
+        style="@style/AirwallexTextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="53dp"
         android:background="@drawable/input_border"

@@ -9,14 +9,22 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.airwallex.paymentacceptance.R
-import kotlinx.android.synthetic.main.view_text_input.view.*
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 
-internal class AirwallexTextInputLayout constructor(
+internal open class InputLayout constructor(
     context: Context,
-    attrs: AttributeSet
+    attrs: AttributeSet,
+    resourceLayout: Int
 ) : LinearLayout(context, attrs) {
+
+    private var tlInput: TextInputLayout
+    var teInput: TextInputEditText
+    private var vBorder: View
+    private var tvError: TextView
 
     var error: String?
         set(value) {
@@ -41,7 +49,12 @@ internal class AirwallexTextInputLayout constructor(
         }
 
     init {
-        View.inflate(getContext(), R.layout.view_text_input, this)
+        View.inflate(getContext(), resourceLayout, this)
+
+        tlInput = findViewById(R.id.tlInput)
+        teInput = findViewById(R.id.teInput)
+        vBorder = findViewById(R.id.vBorder)
+        tvError = findViewById(R.id.tvError)
 
         context.theme.obtainStyledAttributes(
             attrs,

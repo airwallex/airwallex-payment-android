@@ -5,139 +5,40 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <com.airwallex.paymentacceptance.view.CardNumberTextInputLayout
+        android:id="@+id/atlCardNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    <FrameLayout
+    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+        android:id="@+id/atlCardName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tlCardNumber"
-            android:layout_width="match_parent"
-            android:layout_height="53dp"
-            android:background="@drawable/input_border"
-            android:paddingLeft="16dp"
-            android:paddingTop="5dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="5dp"
-            app:errorEnabled="true">
-
-            <com.airwallex.paymentacceptance.view.CardNumberEditText
-                android:id="@+id/etCardNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:digits="@string/valid_digits"
-                android:fontFamily="@font/circularstd_medium"
-                android:imeOptions="actionNext"
-                android:textColor="@android:color/black"
-                android:textColorHint="#A9A9AE"
-                android:textSize="16sp" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:layout_marginEnd="16dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:src="@drawable/airwallex_ic_visa" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/airwallex_ic_mastercard" />
-        </LinearLayout>
-    </FrameLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="53dp"
         android:layout_marginTop="20dp"
-        android:background="@drawable/input_border"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp"
-        app:errorEnabled="true">
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        app:hint="@string/card_name_hint" />
 
-        <EditText
-            android:id="@+id/etCardName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:hint="@string/card_name_hint"
-            android:imeOptions="actionNext"
-            android:inputType="text"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:baselineAligned="false"
         android:orientation="horizontal">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tlExpires"
+        <com.airwallex.paymentacceptance.view.CardExpiryTextInputLayout
+            android:id="@+id/atlCardExpiry"
             android:layout_width="match_parent"
-            android:layout_height="53dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="23dp"
-            android:layout_weight="1"
-            android:background="@drawable/input_border"
-            android:paddingLeft="16dp"
-            android:paddingTop="5dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="5dp"
-            app:errorEnabled="true">
+            android:layout_weight="1" />
 
-            <com.airwallex.paymentacceptance.view.ExpiryEditText
-                android:id="@+id/etExpires"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:fontFamily="@font/circularstd_medium"
-                android:imeOptions="actionNext"
-                android:textColor="@android:color/black"
-                android:textColorHint="#A9A9AE"
-                android:textSize="16sp" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tlCvc"
+        <com.airwallex.paymentacceptance.view.CardCvcTextInputLayout
+            android:id="@+id/atlCardCvc"
             android:layout_width="match_parent"
-            android:layout_height="53dp"
-            android:layout_marginTop="20dp"
-            android:layout_weight="2"
-            android:background="@drawable/input_border"
-            android:paddingLeft="16dp"
-            android:paddingTop="5dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="5dp"
-            app:errorEnabled="true">
+            android:layout_height="wrap_content"
+            android:layout_weight="2" />
 
-            <com.airwallex.paymentacceptance.view.CvcEditText
-                android:id="@+id/etCvc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:fontFamily="@font/circularstd_medium"
-                android:imeOptions="actionNext"
-                android:textColor="@android:color/black"
-                android:textColorHint="#A9A9AE"
-                android:textSize="16sp" />
-
-        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 </LinearLayout>

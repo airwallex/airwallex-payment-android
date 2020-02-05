@@ -1,15 +1,13 @@
 package com.airwallex.paymentacceptance
 
 import android.content.Context
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
+import android.util.Patterns
 import android.view.View
 import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.widget_contact.view.*
 
-class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs),
-    TextWatcher {
+class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     internal data class Contact(
         val lastName: String,
@@ -24,7 +22,7 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         get() {
             return atlLastName.text.isNotEmpty()
                     && atlFirstName.text.isNotEmpty()
-                    && atlEmail.text.isNotEmpty()
+                    && atlEmail.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(atlEmail.text).matches()
         }
 
     internal val contact: Contact
@@ -47,22 +45,21 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
             atlEmail.text = email ?: ""
         }
 
-        atlLastName.afterTextChanged {
-            contactChangeCallback?.invoke()
-        }
+        listenTextChanged()
+        listenFocusChanged()
+    }
 
-        atlFirstName.afterTextChanged {
-            contactChangeCallback?.invoke()
-        }
+    private fun listenTextChanged() {
+        atlLastName.afterTextChanged { contactChangeCallback?.invoke() }
+        atlFirstName.afterTextChanged { contactChangeCallback?.invoke() }
+        atlEmail.afterTextChanged { contactChangeCallback?.invoke() }
+    }
 
-        atlEmail.afterTextChanged {
-            contactChangeCallback?.invoke()
-        }
-
+    private fun listenFocusChanged() {
         atlLastName.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 if (atlLastName.text.isEmpty()) {
-                    atlLastName.error = "Please enter your last name"
+                    atlLastName.error = resources.getString(R.string.empty_last_name)
                 } else {
                     atlLastName.error = null
                 }
@@ -74,7 +71,7 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         atlFirstName.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 if (atlFirstName.text.isEmpty()) {
-                    atlFirstName.error = "Please enter your first name"
+                    atlFirstName.error = resources.getString(R.string.empty_first_name)
                 } else {
                     atlFirstName.error = null
                 }
@@ -85,24 +82,20 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
         atlEmail.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlEmail.text.isEmpty()) {
-                    atlEmail.error = "Please enter your email"
-                } else {
-                    atlEmail.error = null
+                when {
+                    atlEmail.text.isEmpty() -> {
+                        atlEmail.error = resources.getString(R.string.empty_email)
+                    }
+                    !Patterns.EMAIL_ADDRESS.matcher(atlEmail.text).matches() -> {
+                        atlEmail.error = resources.getString(R.string.invalid_email)
+                    }
+                    else -> {
+                        atlEmail.error = null
+                    }
                 }
             } else {
                 atlEmail.error = null
             }
         }
-    }
-
-    override fun afterTextChanged(s: Editable?) {
-        contactChangeCallback?.invoke()
-    }
-
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-    }
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
     }
 }
