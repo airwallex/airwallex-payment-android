@@ -32,7 +32,7 @@
     <string name="card_number_hint">Card number</string>
     <string name="card_name_hint">Name on card</string>
     <string name="expires_hint">Expires MM / YY</string>
-    <string name="cvc_hint">CVC / VCC</string>
+    <string name="cvc_hint">CVC / CVV</string>
 
     <string name="valid_digits">0123456789</string>
     <string name="empty_card_number">Please enter your card number</string>

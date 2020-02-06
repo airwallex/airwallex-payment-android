@@ -65,6 +65,7 @@ class PaymentEditCardActivity : PaymentBaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         this.menu = menu
         menuInflater.inflate(R.menu.menu_save, menu)
+        updateMenuStatus()
         return true
     }
 
