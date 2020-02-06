@@ -43,7 +43,6 @@
     <string name="empty_cvc">Please enter your card CVC</string>
     <string name="invalid_cvc">Please enter a valid security code.</string>
 
-    <string name="input_cvc">Please input cvc</string>
     <string name="payment_successful">Payment successful</string>
     <string name="payment_successful_message">Your payment has been charged</string>
     <string name="payment_failed">Payment failed</string>
@@ -58,5 +57,7 @@
     <string name="empty_city">Please enter your city</string>
     <string name="empty_street">Please enter your street</string>
     <string name="billing_info">Billing info</string>
+    <string name="confirm_and_pay">Confirm and Pay</string>
+    <string name="enter_cvc_title">Enter CVC/CVV code for your card %s •••• %s</string>
 
 </resources>

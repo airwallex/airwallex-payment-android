@@ -10,11 +10,13 @@ import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.model.WechatPayFlow
 import com.airwallex.android.model.WechatPayFlowType
+import com.airwallex.paymentacceptance.BaseActivity.Companion.REQUEST_CONFIRM_CVC_CODE
+import com.airwallex.paymentacceptance.BaseActivity.Companion.REQUEST_EDIT_CARD_CODE
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_footer.view.*
 import kotlinx.android.synthetic.main.payment_method_item_header.view.*
 
-class CardAdapter(
+class PaymentMethodsAdapter(
     private val paymentMethods: List<PaymentMethod?>,
     private val context: Context,
     var paymentMethod: PaymentMethod?
@@ -108,18 +110,27 @@ class CardAdapter(
                 "mastercard" -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
             }
             itemView.rlCard.setOnClickListener {
+                val context = context as PaymentMethodsActivity
                 if (paymentMethod?.type == PaymentMethodType.CARD && method.id == paymentMethod?.id) {
-                    return@setOnClickListener
-                }
-                paymentMethod = PaymentMethod.Builder()
-                    .setId(method.id)
-                    .setType(PaymentMethodType.CARD)
-                    .setCard(card)
-                    .setBilling(PaymentData.billing)
-                    .build()
+                    // No need to update payment method
+                } else {
+                    paymentMethod = PaymentMethod.Builder()
+                        .setId(method.id)
+                        .setType(PaymentMethodType.CARD)
+                        .setCard(card)
+                        .setBilling(PaymentData.billing)
+                        .build()
 
-                (context as PaymentMethodsActivity).menu?.findItem(R.id.menu_save)?.isEnabled = true
-                notifyDataSetChanged()
+                    context.menu?.findItem(R.id.menu_save)?.isEnabled = true
+                    notifyDataSetChanged()
+                }
+
+                ConfirmCvcActivity.startActivityForResult(
+                    context,
+                    paymentMethod,
+                    context.paymentIntentId,
+                    REQUEST_CONFIRM_CVC_CODE
+                )
             }
             itemView.ivCardChecked.visibility =
                 if (paymentMethod?.type == PaymentMethodType.CARD && method.id == paymentMethod?.id) View.VISIBLE else View.GONE
@@ -132,7 +143,7 @@ class CardAdapter(
             itemView.tvAddCard.setOnClickListener {
                 EditCardActivity.startActivityForResult(
                     context as Activity,
-                    PaymentMethodsActivity.REQUEST_EDIT_CARD_CODE
+                    REQUEST_EDIT_CARD_CODE
                 )
             }
 

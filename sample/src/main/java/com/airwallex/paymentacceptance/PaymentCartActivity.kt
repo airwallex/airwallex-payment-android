@@ -3,7 +3,6 @@ package com.airwallex.paymentacceptance
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.model.Order
 import com.airwallex.paymentacceptance.PaymentData.products
 import com.airwallex.paymentacceptance.PaymentData.shipping
@@ -17,7 +16,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.*
 
-class PaymentCartActivity : AppCompatActivity() {
+class PaymentCartActivity : BaseActivity() {
 
     private val compositeSubscription = CompositeDisposable()
 
