@@ -17,8 +17,7 @@
                 android:id="@+id/fgOrderSummary"
                 android:name="com.airwallex.paymentacceptance.CartFragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="33dp" />
+                android:layout_height="wrap_content" />
         </ScrollView>
 
         <TextView

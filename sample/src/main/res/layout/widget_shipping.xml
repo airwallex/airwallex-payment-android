@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:imeOptions="actionNext"
-        android:inputType="text"
+        android:inputType="textCapWords"
         app:hint="@string/shipping_state_name_hint" />
 
     <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:imeOptions="actionNext"
-        android:inputType="text"
+        android:inputType="textCapWords"
         app:hint="@string/shipping_city_name_hint" />
 
     <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:imeOptions="actionNext"
-        android:inputType="text"
+        android:inputType="textCapWords"
         app:hint="@string/shipping_street_hint" />
 
     <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout

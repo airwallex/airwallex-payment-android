@@ -23,7 +23,7 @@
             android:layout_marginTop="32dp"
             android:layout_marginRight="24dp"
             android:fontFamily="@font/circularstd_bold"
-            android:lineSpacingExtra="5dp"
+            android:lineSpacingExtra="8dp"
             android:textColor="#2A2A2A"
             android:textSize="18sp" />
 
