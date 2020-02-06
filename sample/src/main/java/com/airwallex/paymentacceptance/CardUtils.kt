@@ -62,6 +62,10 @@ object CardUtils {
         return cardNumber.length == LENGTH_CARD
     }
 
+    fun getPossibleCardBrand(cardNumber: String?): String {
+        return getPossibleCardBrand(cardNumber = cardNumber, shouldNormalize = true)
+    }
+
     @SuppressLint("WrongConstant")
     @PaymentMethod.Card.CardBrand
     private fun getPossibleCardBrand(cardNumber: String?, shouldNormalize: Boolean): String {

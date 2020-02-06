@@ -29,6 +29,8 @@ class CardNumberEditText @JvmOverloads constructor(
         }
     }
 
+    internal var brandChangeCallback: (String) -> Unit = {}
+
     internal var errorCallback: (showError: Boolean) -> Unit = {}
 
     internal val cardNumber: String?
@@ -111,6 +113,10 @@ class CardNumberEditText @JvmOverloads constructor(
                 }
 
                 val inputText = s?.toString().orEmpty()
+                if (start < 4) {
+                    updateCardBrandFromNumber(inputText)
+                }
+
                 if (start > 16) {
                     // no need to do formatting if we're past all of the spaces.
                     return
@@ -158,6 +164,11 @@ class CardNumberEditText @JvmOverloads constructor(
                 }
             }
         })
+    }
+
+    private fun updateCardBrandFromNumber(partialNumber: String) {
+        val brand = CardUtils.getPossibleCardBrand(partialNumber)
+        brandChangeCallback.invoke(brand)
     }
 
     fun separateCardNumberGroups(spacelessCardNumber: String): Array<String?> {
