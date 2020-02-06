@@ -40,7 +40,7 @@ class CardCvcEditText @JvmOverloads constructor(
         maxLines = 1
         filters = arrayOf(InputFilter.LengthFilter(CVC_LENGTH))
 
-        inputType = InputType.TYPE_NUMBER_VARIATION_PASSWORD
+        inputType = InputType.TYPE_CLASS_NUMBER
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE)
