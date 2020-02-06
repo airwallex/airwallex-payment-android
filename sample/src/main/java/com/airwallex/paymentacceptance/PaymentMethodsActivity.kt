@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodType
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -105,7 +106,7 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
     private fun fetchPaymentMethods() {
         compositeSubscription.add(
             // TODO Visa & Mastercard
-            api.fetchPaymentMethods(authorization = "Bearer ${Store.token}", method = "visa")
+            api.fetchPaymentMethods(authorization = "Bearer ${Store.token}")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -138,7 +139,7 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
 
             paymentMethods.clear()
             paymentMethods.add(null)
-            paymentMethods.addAll(items)
+            paymentMethods.addAll(items.filter { it.type == PaymentMethodType.CARD })
             paymentMethods.add(null)
             cardAdapter.notifyDataSetChanged()
         } catch (e: IOException) {
