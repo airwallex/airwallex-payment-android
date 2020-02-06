@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_confirm_cvc.rlPlay
 import kotlinx.android.synthetic.main.activity_confirm_cvc.toolbar
 import java.util.*
 
-class ConfirmCvcActivity : BaseActivity() {
+class PaymentConfirmCvcActivity : PaymentBaseActivity() {
 
     private val paymentMethod: PaymentMethod by lazy {
         intent.getParcelableExtra(PAYMENT_METHOD) as PaymentMethod
@@ -37,7 +37,7 @@ class ConfirmCvcActivity : BaseActivity() {
             paymentIntentId: String,
             requestCode: Int
         ) {
-            val intent = Intent(activity, ConfirmCvcActivity::class.java)
+            val intent = Intent(activity, PaymentConfirmCvcActivity::class.java)
             intent.putExtra(PAYMENT_METHOD, paymentMethod)
             intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
             activity.startActivityForResult(intent, requestCode)
@@ -141,7 +141,7 @@ class ConfirmCvcActivity : BaseActivity() {
                 override fun onFailed(exception: AirwallexException) {
                     loading.visibility = View.GONE
                     Toast.makeText(
-                        this@ConfirmCvcActivity,
+                        this@PaymentConfirmCvcActivity,
                         exception.toString(),
                         Toast.LENGTH_SHORT
                     ).show()
@@ -184,18 +184,18 @@ class ConfirmCvcActivity : BaseActivity() {
     }
 
     private fun showPaymentSuccessDialog() {
-        AlertDialog.Builder(this@ConfirmCvcActivity)
+        AlertDialog.Builder(this@PaymentConfirmCvcActivity)
             .setTitle(R.string.payment_successful)
             .setMessage(R.string.payment_successful_message)
             .setNegativeButton(android.R.string.ok) { dialog, _ ->
                 dialog.dismiss()
-                finish()
+                notifyPaymentSuccess()
             }
             .show()
     }
 
     private fun showPaymentFailedDialog() {
-        AlertDialog.Builder(this@ConfirmCvcActivity)
+        AlertDialog.Builder(this@PaymentConfirmCvcActivity)
             .setTitle(R.string.payment_failed)
             .setMessage(R.string.payment_failed_message)
             .setNegativeButton(android.R.string.ok) { dialog, _ ->

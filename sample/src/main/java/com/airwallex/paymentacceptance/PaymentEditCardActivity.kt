@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_add_card.toolbar
 import java.util.*
 
-class EditCardActivity : BaseActivity() {
+class PaymentEditCardActivity : PaymentBaseActivity() {
 
     private val compositeSubscription = CompositeDisposable()
     private var menu: Menu? = null
@@ -26,7 +26,7 @@ class EditCardActivity : BaseActivity() {
     companion object {
         fun startActivityForResult(activity: Activity, requestCode: Int) {
             activity.startActivityForResult(
-                Intent(activity, EditCardActivity::class.java),
+                Intent(activity, PaymentEditCardActivity::class.java),
                 requestCode
             )
         }

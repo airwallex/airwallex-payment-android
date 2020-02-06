@@ -8,7 +8,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPI
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
 
-abstract class BaseWXPayEntryActivity : BaseActivity(), IWXAPIEventHandler {
+abstract class BaseWXPayEntryActivity : PaymentBaseActivity(), IWXAPIEventHandler {
     private lateinit var weChatApi: IWXAPI
 
     override fun onCreate(savedInstanceState: Bundle?) {

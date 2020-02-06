@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name="com.airwallex.paymentacceptance.PaymentCartActivity">
+        <activity android:name="com.airwallex.paymentacceptance.CartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -21,15 +21,15 @@
         </activity>
 
 
-        <activity android:name="com.airwallex.paymentacceptance.PaymentPayActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.PaymentStartPayActivity" />
 
-        <activity android:name="com.airwallex.paymentacceptance.EditShippingActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.PaymentEditShippingActivity" />
 
         <activity android:name="com.airwallex.paymentacceptance.PaymentMethodsActivity" />
 
-        <activity android:name="com.airwallex.paymentacceptance.EditCardActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.PaymentEditCardActivity" />
 
-        <activity android:name="com.airwallex.paymentacceptance.ConfirmCvcActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.PaymentConfirmCvcActivity" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.wxapi.WXPayEntryActivity"
