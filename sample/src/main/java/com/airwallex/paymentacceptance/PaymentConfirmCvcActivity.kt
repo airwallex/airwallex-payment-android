@@ -57,7 +57,7 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
 
         tvTitle.text = getString(
             R.string.enter_cvc_title,
-            paymentMethod.card?.brand,
+            paymentMethod.card?.brand?.capitalize(),
             paymentMethod.card?.last4
         )
 

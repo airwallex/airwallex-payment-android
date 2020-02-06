@@ -104,7 +104,8 @@ class PaymentMethodsAdapter(
         fun bindView(position: Int) {
             val method = paymentMethods[position] ?: return
             val card = method.card ?: return
-            itemView.tvCardInfo.text = String.format("%s •••• %s", card.brand, card.last4)
+            itemView.tvCardInfo.text =
+                String.format("%s •••• %s", card.brand?.capitalize(), card.last4)
             when (card.brand) {
                 "visa" -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
                 "mastercard" -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)

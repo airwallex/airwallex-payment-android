@@ -14,7 +14,6 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import com.airwallex.paymentacceptance.PaymentData.shipping
-import com.neovisionaries.i18n.CountryCode
 import kotlinx.android.synthetic.main.activity_start_pay.*
 import okhttp3.*
 import java.io.IOException
@@ -306,9 +305,14 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
     }
 
     private fun updateShippingLabel(shipping: Shipping) {
+        val countryName = shipping.address?.countryCode?.let {
+            val loc = Locale("", it)
+            loc.displayCountry
+        }
+
         tvShipping.text = "${shipping.lastName} ${shipping.firstName}\n" +
                 "${shipping.address?.street}\n" +
-                "${shipping.address?.city}, ${shipping.address?.state}, ${CountryCode.values().find { it.name == shipping.address?.countryCode }?.getName()}"
+                "${shipping.address?.city}, ${shipping.address?.state}, $countryName"
         tvShipping.setTextColor(Color.parseColor("#2A2A2A"))
     }
 
