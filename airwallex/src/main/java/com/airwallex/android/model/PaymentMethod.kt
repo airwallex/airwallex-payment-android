@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringDef
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
 
 @Parcelize
 data class PaymentMethod internal constructor(
@@ -30,7 +31,7 @@ data class PaymentMethod internal constructor(
     val billing: Billing?,
 
     @SerializedName("metadata")
-    val metadata: String?
+    val metadata: @RawValue Map<String, Any>?
 
 ) : AirwallexModel, Parcelable {
 
@@ -42,7 +43,7 @@ data class PaymentMethod internal constructor(
         private var card: Card? = null
         private var wechatPayFlow: WechatPayFlow? = null
         private var billing: Billing? = null
-        private var metadata: String? = null
+        private var metadata: Map<String, Any>? = null
 
         fun setId(id: String?): Builder = apply {
             this.id = id
@@ -56,7 +57,7 @@ data class PaymentMethod internal constructor(
             this.customerId = customerId
         }
 
-        fun setMetadata(metadata: String?): Builder = apply {
+        fun setMetadata(metadata: Map<String, Any>?): Builder = apply {
             this.metadata = metadata
         }
 
