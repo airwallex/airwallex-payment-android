@@ -8,12 +8,13 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.model.PaymentMethod
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_add_card.*
-import kotlinx.android.synthetic.main.activity_add_card.shippingWidget
 import kotlinx.android.synthetic.main.activity_add_card.toolbar
+import kotlinx.android.synthetic.main.activity_edit_shipping.*
 import java.util.*
 
 class EditCardActivity : AppCompatActivity() {
@@ -36,7 +37,7 @@ class EditCardActivity : AppCompatActivity() {
 
     private fun updateMenuStatus() {
         menu?.findItem(R.id.menu_save)?.isEnabled =
-            cardWidget.isValidCard && shippingWidget.isValidShipping
+            cardWidget.isValidCard && billingWidget.isValidBilling
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,10 +56,10 @@ class EditCardActivity : AppCompatActivity() {
         }
 
         cardWidget.completionCallback = {
-            shippingWidget.requestFocus()
+            billingWidget.requestFocus()
         }
 
-        shippingWidget.shippingChangeCallback = {
+        billingWidget.billingChangeCallback = {
             updateMenuStatus()
         }
     }
@@ -88,7 +89,6 @@ class EditCardActivity : AppCompatActivity() {
     private fun actionSave() {
         loading.visibility = View.VISIBLE
         val card = cardWidget.paymentMethodCard ?: return
-        val shipping = PaymentData.shipping ?: return
         compositeSubscription.add(
             api.savePaymentMethod(
                 authorization = "Bearer ${Store.token}",
@@ -96,7 +96,7 @@ class EditCardActivity : AppCompatActivity() {
                     "request_id" to UUID.randomUUID().toString(),
                     "type" to "card",
                     "card" to card,
-                    "billing" to shipping
+                    "billing" to billingWidget.billing
                 )
             )
                 .subscribeOn(Schedulers.io())

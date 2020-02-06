@@ -42,8 +42,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="28dp" />
 
-                <com.airwallex.paymentacceptance.ShippingWidget
-                    android:id="@+id/shippingWidget"
+                <com.airwallex.paymentacceptance.BillingWidget
+                    android:id="@+id/billingWidget"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>
