@@ -21,19 +21,23 @@
                 android:layout_marginTop="33dp" />
         </ScrollView>
 
-        <Button
+        <TextView
             android:id="@+id/btnCheckout"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:layout_margin="16dp"
             android:layout_weight="0"
             android:background="@drawable/button_bg"
+            android:fontFamily="@font/circularstd_bold"
+            android:gravity="center"
+            android:padding="0dp"
             android:text="@string/checkout"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <include
         android:id="@+id/loading"
         layout="@layout/loading"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 </merge>

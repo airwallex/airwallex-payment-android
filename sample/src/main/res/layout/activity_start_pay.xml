@@ -124,26 +124,23 @@
         android:enabled="false"
         android:orientation="horizontal">
 
-        <Button
+        <TextView
             android:id="@+id/btnPlay"
             android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:layout_alignParentBottom="true"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="@null"
             android:clickable="false"
             android:drawableStart="@drawable/lock_selector"
+            android:drawablePadding="10dp"
             android:focusable="false"
             android:orientation="horizontal"
             android:text="@string/pay_now"
             android:textColor="@color/button_text_selector" />
-
     </RelativeLayout>
-
 
     <include
         android:id="@+id/loading"
         layout="@layout/loading"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </RelativeLayout>
