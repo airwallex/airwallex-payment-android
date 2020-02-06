@@ -1,38 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="53dp">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tlCountry"
-        style="@style/AirwallexTextInputLayout"
+    <FrameLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="53dp"
-        android:background="@drawable/input_border"
-        android:hint="@string/shipping_country_name_hint"
-        android:labelFor="@id/actCountry"
-        android:paddingLeft="16dp"
-        android:paddingTop="5dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="5dp">
+        android:layout_height="53dp">
 
-        <AutoCompleteTextView
-            android:id="@+id/actCountry"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tlCountry"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:fontFamily="@font/circularstd_medium"
-            android:inputType="text"
-            android:textColor="@android:color/black"
-            android:textColorHint="#A9A9AE"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="match_parent"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            android:hint="@string/shipping_country_name_hint"
+            android:labelFor="@id/actCountry"
+            app:hintTextColor="@color/colorEditTextAccent">
 
-    <ImageView
-        android:layout_width="wrap_content"
+            <AutoCompleteTextView
+                android:id="@+id/actCountry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:fontFamily="@font/circularstd_medium"
+                android:inputType="text"
+                android:textColor="@color/colorEditTextDefault"
+                android:textColorHint="@color/colorEditTextAccent"
+                android:textSize="16sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:id="@+id/vBorder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_input_layout_border" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:contentDescription="@null"
-        android:src="@drawable/down_arrow" />
-</FrameLayout>
+        android:fontFamily="@font/circularstd_medium"
+        android:paddingTop="4dp"
+        android:textColor="@color/colorEditTextError"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+</LinearLayout>
+
