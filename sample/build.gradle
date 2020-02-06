@@ -89,9 +89,6 @@ dependencies {
     // Used for Wechat Pay
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.5.8'
 
-    // Used for Country Code
-    implementation 'com.neovisionaries:nv-i18n:1.27'
-
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
 }

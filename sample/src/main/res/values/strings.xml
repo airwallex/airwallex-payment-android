@@ -58,6 +58,6 @@
     <string name="empty_street">Please enter your street</string>
     <string name="billing_info">Billing info</string>
     <string name="confirm_and_pay">Confirm and Pay</string>
-    <string name="enter_cvc_title">Enter CVC/CVV code for your card %s •••• %s</string>
+    <string name="enter_cvc_title">Enter CVC/CVV code for your card\n%s •••• %s</string>
 
 </resources>
