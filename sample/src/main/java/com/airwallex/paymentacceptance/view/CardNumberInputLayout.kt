@@ -1,19 +1,11 @@
 package com.airwallex.paymentacceptance.view
 
 import android.content.Context
-import android.os.Build
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
-import android.view.KeyEvent
-import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.EditText
-import android.widget.LinearLayout
-import androidx.core.content.res.ResourcesCompat
-import com.airwallex.paymentacceptance.CardUtils
+import com.airwallex.android.model.PaymentMethod.Card.CardBrand.Companion.MASTERCARD
+import com.airwallex.android.model.PaymentMethod.Card.CardBrand.Companion.VISA
 import com.airwallex.paymentacceptance.R
-import kotlinx.android.synthetic.main.common_text_input_layout.view.*
+import kotlinx.android.synthetic.main.card_number_input_layout.view.*
 
 internal class CardNumberTextInputLayout constructor(
     context: Context,
@@ -39,6 +31,14 @@ internal class CardNumberTextInputLayout constructor(
                 resources.getString(R.string.invalid_card_number)
             } else {
                 null
+            }
+        }
+
+        input.brandChangeCallback = { brand ->
+            when (brand) {
+                VISA -> ivBrand.setImageResource(R.drawable.airwallex_ic_visa)
+                MASTERCARD -> ivBrand.setImageResource(R.drawable.airwallex_ic_mastercard)
+                else -> ivBrand.setImageResource(R.drawable.airwallex_ic_card_default)
             }
         }
     }
