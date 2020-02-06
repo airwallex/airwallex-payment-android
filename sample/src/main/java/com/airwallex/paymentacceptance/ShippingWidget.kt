@@ -14,7 +14,7 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
 
     private var country: CountryAutoCompleteView.Country? = null
 
-    val shipping: Address
+    val address: Address
         get() {
             return Address.Builder()
                 .setCountryCode(country?.code)

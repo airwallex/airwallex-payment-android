@@ -1,13 +1,26 @@
 package com.airwallex.paymentacceptance
 
-import com.airwallex.android.model.Address
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.model.Product
+import com.airwallex.android.model.*
 
 object PaymentData {
 
-    var shipping: PaymentMethod.Billing? = PaymentMethod.Billing.Builder()
+    var shipping: Shipping? = Shipping.Builder()
+        .setFirstName("John")
+        .setLastName("Doe")
+        .setPhone("13800000000")
+        .setEmail("jim631@sina.com")
+        .setAddress(
+            Address.Builder()
+                .setCountryCode("CN")
+                .setState("Shanghai")
+                .setCity("Shanghai")
+                .setStreet("Pudong District")
+                .setPostcode("100000")
+                .build()
+        )
+        .build()
+
+    var billing: PaymentMethod.Billing? = PaymentMethod.Billing.Builder()
         .setFirstName("John")
         .setLastName("Doe")
         .setPhone("13800000000")

@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.activity_edit_shipping.*
 
 class EditShippingActivity : AppCompatActivity() {
@@ -69,12 +70,12 @@ class EditShippingActivity : AppCompatActivity() {
     @Throws(IllegalArgumentException::class)
     private fun actionSave() {
         val contact = contactWidget.contact
-        val shipping = PaymentMethod.Billing.Builder()
+        val shipping = Shipping.Builder()
             .setLastName(contact.lastName)
             .setFirstName(contact.firstName)
             .setPhone(contact.phone)
             .setEmail(contact.email)
-            .setAddress(shippingWidget.shipping)
+            .setAddress(shippingWidget.address)
             .build()
 
         val intent = Intent()

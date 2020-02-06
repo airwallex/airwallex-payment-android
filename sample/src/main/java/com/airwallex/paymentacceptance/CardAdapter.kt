@@ -88,7 +88,7 @@ class CardAdapter(
                 paymentMethod = PaymentMethod.Builder()
                     .setType(PaymentMethodType.WECHAT)
                     .setWechatPayFlow(WechatPayFlow(WechatPayFlowType.INAPP))
-                    .setBilling(PaymentData.shipping)
+                    .setBilling(PaymentData.billing)
                     .build()
 
                 (context as PaymentMethodsActivity).menu?.findItem(R.id.menu_save)?.isEnabled = true
@@ -115,7 +115,7 @@ class CardAdapter(
                     .setId(method.id)
                     .setType(PaymentMethodType.CARD)
                     .setCard(card)
-                    .setBilling(PaymentData.shipping)
+                    .setBilling(PaymentData.billing)
                     .build()
 
                 (context as PaymentMethodsActivity).menu?.findItem(R.id.menu_save)?.isEnabled = true

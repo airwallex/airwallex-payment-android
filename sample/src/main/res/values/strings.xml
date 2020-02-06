@@ -57,5 +57,6 @@
     <string name="empty_state">Please enter your state</string>
     <string name="empty_city">Please enter your city</string>
     <string name="empty_street">Please enter your street</string>
+    <string name="billing_info">Billing info</string>
 
 </resources>

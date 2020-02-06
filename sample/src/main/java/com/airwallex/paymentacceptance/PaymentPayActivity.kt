@@ -351,7 +351,7 @@ class PaymentPayActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun updateShippingLabel(shipping: PaymentMethod.Billing) {
+    private fun updateShippingLabel(shipping: Shipping) {
         tvShipping.text = "${shipping.lastName} ${shipping.firstName}\n" +
                 "${shipping.address?.street}\n" +
                 "${shipping.address?.city}, ${shipping.address?.state}, ${CountryCode.values().find { it.name == shipping.address?.countryCode }?.getName()}"
@@ -367,7 +367,7 @@ class PaymentPayActivity : AppCompatActivity() {
         when (requestCode) {
             REQUEST_EDIT_SHIPPING_CODE -> {
                 shipping =
-                    data.getParcelableExtra<Parcelable>(EditShippingActivity.SHIPPING_DETAIL) as PaymentMethod.Billing
+                    data.getParcelableExtra<Parcelable>(EditShippingActivity.SHIPPING_DETAIL) as Shipping
                 shipping?.let {
                     updateShippingLabel(it)
                 }
