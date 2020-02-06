@@ -29,6 +29,8 @@
 
         <activity android:name="com.airwallex.paymentacceptance.EditCardActivity" />
 
+        <activity android:name="com.airwallex.paymentacceptance.ConfirmCvcActivity" />
+
         <activity
             android:name="com.airwallex.paymentacceptance.wxapi.WXPayEntryActivity"
             android:exported="true"

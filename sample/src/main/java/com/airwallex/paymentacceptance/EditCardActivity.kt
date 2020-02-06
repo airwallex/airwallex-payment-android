@@ -7,17 +7,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.model.PaymentMethod
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_add_card.toolbar
-import kotlinx.android.synthetic.main.activity_edit_shipping.*
 import java.util.*
 
-class EditCardActivity : AppCompatActivity() {
+class EditCardActivity : BaseActivity() {
 
     private val compositeSubscription = CompositeDisposable()
     private var menu: Menu? = null
@@ -46,6 +43,7 @@ class EditCardActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
+            setTitle(R.string.cvc_hint)
             setHomeButtonEnabled(true)
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowTitleEnabled(false)

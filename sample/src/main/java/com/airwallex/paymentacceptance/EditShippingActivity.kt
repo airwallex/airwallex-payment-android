@@ -5,19 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.activity_edit_shipping.*
 
-class EditShippingActivity : AppCompatActivity() {
+class EditShippingActivity : BaseActivity() {
 
     private var menu: Menu? = null
 
     companion object {
-
-        const val SHIPPING_DETAIL = "SHIPPING_DETAIL"
-
         fun startActivityForResult(activity: Activity, requestCode: Int) {
             activity.startActivityForResult(
                 Intent(activity, EditShippingActivity::class.java),

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.model.PaymentMethod
@@ -22,7 +21,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
-class PaymentMethodsActivity : AppCompatActivity() {
+class PaymentMethodsActivity : BaseActivity() {
 
     var menu: Menu? = null
 
@@ -30,23 +29,24 @@ class PaymentMethodsActivity : AppCompatActivity() {
         ApiFactory(Constants.BASE_URL).create()
     }
 
+    val paymentIntentId: String by lazy {
+        intent.getStringExtra(PAYMENT_INTENT_ID)
+    }
+
     private val compositeSubscription = CompositeDisposable()
-    private lateinit var cardAdapter: CardAdapter
+    private lateinit var cardAdapter: PaymentMethodsAdapter
     private val paymentMethods = mutableListOf<PaymentMethod?>(null, null)
 
     companion object {
-
-        const val PAYMENT_METHOD = "PAYMENT_METHOD"
-
-        const val REQUEST_EDIT_CARD_CODE = 9998
-
         fun startActivityForResult(
             activity: Activity,
             paymentMethod: PaymentMethod?,
+            paymentIntentId: String,
             requestCode: Int
         ) {
             val intent = Intent(activity, PaymentMethodsActivity::class.java)
             intent.putExtra(PAYMENT_METHOD, paymentMethod)
+            intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
             activity.startActivityForResult(intent, requestCode)
         }
     }
@@ -63,7 +63,11 @@ class PaymentMethodsActivity : AppCompatActivity() {
         }
 
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        cardAdapter = CardAdapter(paymentMethods, this, intent.getParcelableExtra(PAYMENT_METHOD) as? PaymentMethod)
+        cardAdapter = PaymentMethodsAdapter(
+            paymentMethods,
+            this,
+            intent.getParcelableExtra(PAYMENT_METHOD) as? PaymentMethod
+        )
         rvPaymentMethods.apply {
             setHasFixedSize(true)
             layoutManager = viewManager

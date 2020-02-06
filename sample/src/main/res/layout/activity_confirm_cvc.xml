@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginRight="24dp"
+            android:fontFamily="@font/circularstd_bold"
+            android:lineHeight="28dp"
+            android:textColor="#2A2A2A"
+            android:textSize="18sp" />
+
+        <com.airwallex.paymentacceptance.view.CardCvcTextInputLayout
+            android:id="@+id/atlCardCvc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp" />
+
+        <RelativeLayout
+            android:id="@+id/rlPlay"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="33dp"
+            android:layout_marginRight="24dp"
+            android:background="@drawable/button_bg"
+            android:enabled="false"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:clickable="false"
+                android:drawableStart="@drawable/lock_selector"
+                android:drawablePadding="10dp"
+                android:focusable="false"
+                android:orientation="horizontal"
+                android:text="@string/confirm_and_pay"
+                android:textColor="@color/button_text_selector" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <include
+        android:id="@+id/loading"
+        layout="@layout/loading"
+        android:visibility="gone" />
+</merge>
