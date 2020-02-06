@@ -8,14 +8,14 @@ import android.view.MenuItem
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.activity_edit_shipping.*
 
-class EditShippingActivity : BaseActivity() {
+class PaymentEditShippingActivity : PaymentBaseActivity() {
 
     private var menu: Menu? = null
 
     companion object {
         fun startActivityForResult(activity: Activity, requestCode: Int) {
             activity.startActivityForResult(
-                Intent(activity, EditShippingActivity::class.java),
+                Intent(activity, PaymentEditShippingActivity::class.java),
                 requestCode
             )
         }

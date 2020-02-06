@@ -10,8 +10,8 @@ import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.model.WechatPayFlow
 import com.airwallex.android.model.WechatPayFlowType
-import com.airwallex.paymentacceptance.BaseActivity.Companion.REQUEST_CONFIRM_CVC_CODE
-import com.airwallex.paymentacceptance.BaseActivity.Companion.REQUEST_EDIT_CARD_CODE
+import com.airwallex.paymentacceptance.PaymentBaseActivity.Companion.REQUEST_CONFIRM_CVC_CODE
+import com.airwallex.paymentacceptance.PaymentBaseActivity.Companion.REQUEST_EDIT_CARD_CODE
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_footer.view.*
 import kotlinx.android.synthetic.main.payment_method_item_header.view.*
@@ -125,7 +125,7 @@ class PaymentMethodsAdapter(
                     notifyDataSetChanged()
                 }
 
-                ConfirmCvcActivity.startActivityForResult(
+                PaymentConfirmCvcActivity.startActivityForResult(
                     context,
                     paymentMethod,
                     context.paymentIntentId,
@@ -141,12 +141,11 @@ class PaymentMethodsAdapter(
 
         fun bindView() {
             itemView.tvAddCard.setOnClickListener {
-                EditCardActivity.startActivityForResult(
+                PaymentEditCardActivity.startActivityForResult(
                     context as Activity,
                     REQUEST_EDIT_CARD_CODE
                 )
             }
-
         }
     }
 }

@@ -21,7 +21,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
-class PaymentMethodsActivity : BaseActivity() {
+class PaymentMethodsActivity : PaymentBaseActivity() {
 
     var menu: Menu? = null
 

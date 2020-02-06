@@ -20,7 +20,7 @@ import okhttp3.*
 import java.io.IOException
 import java.util.*
 
-class PaymentPayActivity : BaseActivity() {
+class PaymentStartPayActivity : PaymentBaseActivity() {
 
     private val paymentIntentId: String by lazy {
         intent.getStringExtra(PAYMENT_INTENT_ID)
@@ -44,7 +44,7 @@ class PaymentPayActivity : BaseActivity() {
             paymentIntentId: String,
             amount: Float
         ) {
-            val intent = Intent(activity, PaymentPayActivity::class.java)
+            val intent = Intent(activity, PaymentStartPayActivity::class.java)
             intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
             intent.putExtra(PAYMENT_AMOUNT, amount)
             activity.startActivity(intent)
@@ -65,7 +65,7 @@ class PaymentPayActivity : BaseActivity() {
         tvTotalPrice.text = "$$paymentAmount"
 
         rlShipping.setOnClickListener {
-            EditShippingActivity.startActivityForResult(this, REQUEST_EDIT_SHIPPING_CODE)
+            PaymentEditShippingActivity.startActivityForResult(this, REQUEST_EDIT_SHIPPING_CODE)
         }
 
         rlPaymentMethod.setOnClickListener {
@@ -106,7 +106,7 @@ class PaymentPayActivity : BaseActivity() {
         when (paymentMethod.type) {
             PaymentMethodType.CARD -> {
                 // Need fill CVC
-                ConfirmCvcActivity.startActivityForResult(
+                PaymentConfirmCvcActivity.startActivityForResult(
                     this,
                     paymentMethod,
                     paymentIntentId,
@@ -159,7 +159,7 @@ class PaymentPayActivity : BaseActivity() {
                         override fun onFailed(exception: AirwallexException) {
                             loading.visibility = View.GONE
                             Toast.makeText(
-                                this@PaymentPayActivity,
+                                this@PaymentStartPayActivity,
                                 exception.toString(),
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -176,7 +176,7 @@ class PaymentPayActivity : BaseActivity() {
         if (nextAction?.data == null
         ) {
             Toast.makeText(
-                this@PaymentPayActivity,
+                this@PaymentStartPayActivity,
                 "Server error, NextAction is null...",
                 Toast.LENGTH_SHORT
             ).show()
@@ -198,7 +198,7 @@ class PaymentPayActivity : BaseActivity() {
                     Log.e(TAG, "User cancel the Wechat payment")
                     loading.visibility = View.GONE
                     Toast.makeText(
-                        this@PaymentPayActivity,
+                        this@PaymentStartPayActivity,
                         "Failed to mock wechat pay, reason: ${e.message}",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -212,7 +212,7 @@ class PaymentPayActivity : BaseActivity() {
             Log.d(TAG, "Confirm PaymentIntent success, launch REAL Wechat pay.")
             // launch wechat pay
             WXPay.instance.launchWeChat(
-                context = this@PaymentPayActivity,
+                context = this@PaymentStartPayActivity,
                 appId = Constants.APP_ID,
                 data = paymentIntent.nextAction!!.data!!,
                 listener = object : PayListener {
@@ -224,7 +224,7 @@ class PaymentPayActivity : BaseActivity() {
                         Log.e(TAG, "Wechat pay failed, error $errMessage")
                         loading.visibility = View.GONE
                         Toast.makeText(
-                            this@PaymentPayActivity,
+                            this@PaymentStartPayActivity,
                             "errCode $errCode, errMessage $errMessage",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -234,7 +234,7 @@ class PaymentPayActivity : BaseActivity() {
                         Log.e(TAG, "User cancel the Wechat payment")
                         loading.visibility = View.GONE
                         Toast.makeText(
-                            this@PaymentPayActivity,
+                            this@PaymentStartPayActivity,
                             "User cancel the payment",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -278,18 +278,18 @@ class PaymentPayActivity : BaseActivity() {
 
 
     private fun showPaymentSuccessDialog() {
-        AlertDialog.Builder(this@PaymentPayActivity)
+        AlertDialog.Builder(this@PaymentStartPayActivity)
             .setTitle(R.string.payment_successful)
             .setMessage(R.string.payment_successful_message)
             .setNegativeButton(android.R.string.ok) { dialog, _ ->
                 dialog.dismiss()
-                finish()
+                notifyPaymentSuccess()
             }
             .show()
     }
 
     private fun showPaymentFailedDialog() {
-        AlertDialog.Builder(this@PaymentPayActivity)
+        AlertDialog.Builder(this@PaymentStartPayActivity)
             .setTitle(R.string.payment_failed)
             .setMessage(R.string.payment_failed_message)
             .setNegativeButton(android.R.string.ok) { dialog, _ ->
