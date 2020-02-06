@@ -1,14 +1,11 @@
 package com.airwallex.paymentacceptance
 
 import android.content.Context
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.airwallex.android.model.Address
 import com.airwallex.paymentacceptance.view.CountryAutoCompleteView
-import kotlinx.android.synthetic.main.widget_contact.view.*
 import kotlinx.android.synthetic.main.widget_shipping.view.*
 
 class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
@@ -52,26 +49,22 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
             countryAutocomplete.setInitCountry(address?.countryCode)
         }
 
-        atlState.afterTextChanged {
-            shippingChangeCallback?.invoke()
-        }
+        listenTextChanged()
+        listenFocusChanged()
+    }
 
-        atlCity.afterTextChanged {
-            shippingChangeCallback?.invoke()
-        }
+    private fun listenTextChanged() {
+        atlState.afterTextChanged { shippingChangeCallback?.invoke() }
+        atlCity.afterTextChanged { shippingChangeCallback?.invoke() }
+        atlStreetAddress.afterTextChanged { shippingChangeCallback?.invoke() }
+        atlZipCode.afterTextChanged { shippingChangeCallback?.invoke() }
+    }
 
-        atlStreetAddress.afterTextChanged {
-            shippingChangeCallback?.invoke()
-        }
-
-        atlZipCode.afterTextChanged {
-            shippingChangeCallback?.invoke()
-        }
-
+    private fun listenFocusChanged() {
         atlState.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 if (atlState.text.isEmpty()) {
-                    atlState.error = "Please enter your state"
+                    atlState.error = resources.getString(R.string.empty_state)
                 } else {
                     atlState.error = null
                 }
@@ -83,7 +76,7 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
         atlCity.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 if (atlCity.text.isEmpty()) {
-                    atlCity.error = "Please enter your city"
+                    atlCity.error = resources.getString(R.string.empty_city)
                 } else {
                     atlCity.error = null
                 }
@@ -95,7 +88,7 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
         atlStreetAddress.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 if (atlStreetAddress.text.isEmpty()) {
-                    atlStreetAddress.error = "Please enter your street"
+                    atlStreetAddress.error = resources.getString(R.string.empty_street)
                 } else {
                     atlStreetAddress.error = null
                 }
