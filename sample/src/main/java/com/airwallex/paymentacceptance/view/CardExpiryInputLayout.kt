@@ -7,7 +7,7 @@ import com.airwallex.paymentacceptance.R
 internal class CardExpiryTextInputLayout constructor(
     context: Context,
     attrs: AttributeSet
-) : InputLayout(context, attrs, R.layout.card_expiry_input_layout) {
+) : AirwallexTextInputLayout(context, attrs, R.layout.card_expiry_input_layout) {
 
     internal var completionCallback: () -> Unit = {}
         set(value) {
@@ -15,7 +15,7 @@ internal class CardExpiryTextInputLayout constructor(
             field = value
         }
 
-    internal val isValid: Boolean
+    val isValid: Boolean
         get() = (teInput as CardExpiryEditText).isDateValid
 
     internal val validDateFields: Pair<Int, Int>?

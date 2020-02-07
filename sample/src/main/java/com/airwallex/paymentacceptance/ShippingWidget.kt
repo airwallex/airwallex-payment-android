@@ -18,19 +18,19 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
         get() {
             return Address.Builder()
                 .setCountryCode(country?.code)
-                .setState(atlState.text)
-                .setCity(atlCity.text)
-                .setStreet(atlStreetAddress.text)
-                .setPostcode(atlZipCode.text)
+                .setState(atlState.value)
+                .setCity(atlCity.value)
+                .setStreet(atlStreetAddress.value)
+                .setPostcode(atlZipCode.value)
                 .build()
         }
 
     val isValidShipping: Boolean
         get() {
             return country != null
-                    && atlState.text.isNotEmpty()
-                    && atlCity.text.isNotEmpty()
-                    && atlStreetAddress.text.isNotEmpty()
+                    && atlState.value.isNotEmpty()
+                    && atlCity.value.isNotEmpty()
+                    && atlStreetAddress.value.isNotEmpty()
         }
 
     init {
@@ -42,10 +42,10 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
         }
 
         PaymentData.shipping?.apply {
-            atlStreetAddress.text = address?.street ?: ""
-            atlZipCode.text = address?.postcode ?: ""
-            atlCity.text = address?.city ?: ""
-            atlState.text = address?.state ?: ""
+            atlStreetAddress.value = address?.street ?: ""
+            atlZipCode.value = address?.postcode ?: ""
+            atlCity.value = address?.city ?: ""
+            atlState.value = address?.state ?: ""
             countryAutocomplete.setInitCountry(address?.countryCode)
         }
 
@@ -63,7 +63,7 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
     private fun listenFocusChanged() {
         atlState.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlState.text.isEmpty()) {
+                if (atlState.value.isEmpty()) {
                     atlState.error = resources.getString(R.string.empty_state)
                 } else {
                     atlState.error = null
@@ -75,7 +75,7 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
 
         atlCity.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlCity.text.isEmpty()) {
+                if (atlCity.value.isEmpty()) {
                     atlCity.error = resources.getString(R.string.empty_city)
                 } else {
                     atlCity.error = null
@@ -87,7 +87,7 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
 
         atlStreetAddress.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlStreetAddress.text.isEmpty()) {
+                if (atlStreetAddress.value.isEmpty()) {
                     atlStreetAddress.error = resources.getString(R.string.empty_street)
                 } else {
                     atlStreetAddress.error = null

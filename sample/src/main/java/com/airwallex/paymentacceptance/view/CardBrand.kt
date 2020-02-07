@@ -32,16 +32,14 @@ enum class CardBrand(
     );
 
     companion object {
-        fun fromCardNumber(cardNumber: String?): CardBrand {
-            return values()
-                .firstOrNull { cardBrand ->
-                    cardBrand.prefixes
-                        .takeIf {
-                            it.isNotEmpty()
-                        }?.any {
-                            cardNumber?.startsWith(it) == true
-                        } == true
-                } ?: Unknown
+        fun fromCardNumber(number: String?): CardBrand {
+            return values().firstOrNull { brand ->
+                brand.prefixes.takeIf { it.isNotEmpty() }?.any {
+                    number?.startsWith(
+                        it
+                    ) == true
+                } == true
+            } ?: Unknown
         }
     }
 }

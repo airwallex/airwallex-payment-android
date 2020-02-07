@@ -15,10 +15,10 @@ import com.airwallex.paymentacceptance.R
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-internal open class InputLayout constructor(
+internal open class AirwallexTextInputLayout constructor(
     context: Context,
     attrs: AttributeSet,
-    resourceLayout: Int
+    resourceLayout: Int = R.layout.common_text_input_layout
 ) : LinearLayout(context, attrs) {
 
     private var tlInput: TextInputLayout
@@ -40,7 +40,7 @@ internal open class InputLayout constructor(
             return tvError.text.toString()
         }
 
-    var text: String
+    var value: String
         get() {
             return teInput.text.toString()
         }

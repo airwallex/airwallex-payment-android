@@ -20,18 +20,18 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
     val isValidContact: Boolean
         get() {
-            return atlLastName.text.isNotEmpty()
-                    && atlFirstName.text.isNotEmpty()
-                    && atlEmail.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(atlEmail.text).matches()
+            return atlLastName.value.isNotEmpty()
+                    && atlFirstName.value.isNotEmpty()
+                    && atlEmail.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches()
         }
 
     internal val contact: Contact
         get() {
             return Contact(
-                lastName = atlLastName.text,
-                firstName = atlFirstName.text,
-                phone = atlPhoneNumber.text,
-                email = atlEmail.text
+                lastName = atlLastName.value,
+                firstName = atlFirstName.value,
+                phone = atlPhoneNumber.value,
+                email = atlEmail.value
             )
         }
 
@@ -39,10 +39,10 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         View.inflate(getContext(), R.layout.widget_contact, this)
 
         PaymentData.shipping?.apply {
-            atlLastName.text = lastName ?: ""
-            atlFirstName.text = firstName ?: ""
-            atlPhoneNumber.text = phone ?: ""
-            atlEmail.text = email ?: ""
+            atlLastName.value = lastName ?: ""
+            atlFirstName.value = firstName ?: ""
+            atlPhoneNumber.value = phone ?: ""
+            atlEmail.value = email ?: ""
         }
 
         listenTextChanged()
@@ -58,7 +58,7 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
     private fun listenFocusChanged() {
         atlLastName.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlLastName.text.isEmpty()) {
+                if (atlLastName.value.isEmpty()) {
                     atlLastName.error = resources.getString(R.string.empty_last_name)
                 } else {
                     atlLastName.error = null
@@ -70,7 +70,7 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
         atlFirstName.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlFirstName.text.isEmpty()) {
+                if (atlFirstName.value.isEmpty()) {
                     atlFirstName.error = resources.getString(R.string.empty_first_name)
                 } else {
                     atlFirstName.error = null
@@ -83,10 +83,10 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         atlEmail.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 when {
-                    atlEmail.text.isEmpty() -> {
+                    atlEmail.value.isEmpty() -> {
                         atlEmail.error = resources.getString(R.string.empty_email)
                     }
-                    !Patterns.EMAIL_ADDRESS.matcher(atlEmail.text).matches() -> {
+                    !Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches() -> {
                         atlEmail.error = resources.getString(R.string.invalid_email)
                     }
                     else -> {

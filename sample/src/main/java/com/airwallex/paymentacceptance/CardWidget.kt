@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.LinearLayout
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.widget_card.view.*
-import kotlinx.android.synthetic.main.widget_shipping.view.*
 
 class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
@@ -20,7 +19,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                 atlCardExpiry.validDateFields?.let { (month, year) ->
                     PaymentMethod.Card.Builder()
                         .setNumber(atlCardNumber.cardNumber)
-                        .setName(atlCardName.text)
+                        .setName(atlCardName.value)
                         .setExpMonth(month.toString())
                         .setExpYear(year.toString())
                         .setCvc(atlCardCvc.cvcValue)
@@ -58,7 +57,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         atlCardNumber.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 when {
-                    atlCardNumber.text.isEmpty() -> {
+                    atlCardNumber.value.isEmpty() -> {
                         atlCardNumber.error = resources.getString(R.string.empty_card_number)
                     }
                     !atlCardNumber.isValid -> {
@@ -75,7 +74,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         atlCardName.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 when {
-                    atlCardName.text.isEmpty() -> {
+                    atlCardName.value.isEmpty() -> {
                         atlCardName.error = resources.getString(R.string.empty_card_name)
                     }
                     else -> {
@@ -89,7 +88,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         atlCardExpiry.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 when {
-                    atlCardExpiry.text.isEmpty() -> {
+                    atlCardExpiry.value.isEmpty() -> {
                         atlCardExpiry.error = resources.getString(R.string.empty_expiry)
                     }
                     !atlCardExpiry.isValid -> {
@@ -106,7 +105,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         atlCardCvc.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 when {
-                    atlCardCvc.text.isEmpty() -> {
+                    atlCardCvc.value.isEmpty() -> {
                         atlCardCvc.error = resources.getString(R.string.empty_cvc)
                     }
                     !atlCardCvc.isValid -> {
