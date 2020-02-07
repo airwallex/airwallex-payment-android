@@ -8,7 +8,7 @@ import kotlinx.android.synthetic.main.card_number_input_layout.view.*
 internal class CardNumberTextInputLayout constructor(
     context: Context,
     attrs: AttributeSet
-) : InputLayout(context, attrs, R.layout.card_number_input_layout) {
+) : AirwallexTextInputLayout(context, attrs, R.layout.card_number_input_layout) {
 
     internal var completionCallback: () -> Unit = {}
         set(value) {
@@ -16,7 +16,7 @@ internal class CardNumberTextInputLayout constructor(
             field = value
         }
 
-    internal val isValid: Boolean
+    val isValid: Boolean
         get() = (teInput as CardNumberEditText).isCardNumberValid
 
     internal val cardNumber: String?

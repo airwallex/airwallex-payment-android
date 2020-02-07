@@ -7,16 +7,16 @@ import com.airwallex.paymentacceptance.R
 internal class CardCvcTextInputLayout constructor(
     context: Context,
     attrs: AttributeSet
-) : InputLayout(context, attrs, R.layout.card_cvc_input_layout) {
+) : AirwallexTextInputLayout(context, attrs, R.layout.card_cvc_input_layout) {
+
+    val isValid: Boolean
+        get() = (teInput as CardCvcEditText).isValid
 
     internal var completionCallback: () -> Unit = {}
         set(value) {
             (teInput as CardCvcEditText).completionCallback = value
             field = value
         }
-
-    internal val isValid: Boolean
-        get() = (teInput as CardCvcEditText).isValid
 
     internal val cvcValue: String?
         get() = (teInput as CardCvcEditText).cvcValue

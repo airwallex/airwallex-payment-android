@@ -67,7 +67,7 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
         }
 
         rlPlay.setOnClickListener {
-            if (atlCardCvc.text.isEmpty()) {
+            if (atlCardCvc.value.isEmpty()) {
                 atlCardCvc.error = resources.getString(R.string.empty_cvc)
                 return@setOnClickListener
             }
@@ -78,7 +78,7 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
             }
 
             loading.visibility = View.VISIBLE
-            startConfirmPaymentIntent(paymentMethod, atlCardCvc.text)
+            startConfirmPaymentIntent(paymentMethod, atlCardCvc.value)
             return@setOnClickListener
         }
     }
