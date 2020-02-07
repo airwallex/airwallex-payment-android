@@ -8,7 +8,6 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
-import com.airwallex.android.model.PaymentMethod.Card.Companion.CVC_LENGTH
 import com.airwallex.paymentacceptance.R
 import com.google.android.material.textfield.TextInputEditText
 
@@ -17,6 +16,10 @@ class CardCvcEditText @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
 ) : TextInputEditText(context, attrs, defStyleAttr) {
+
+    companion object {
+        private const val CVC_LENGTH = 3
+    }
 
     internal val cvcValue: String?
         get() {

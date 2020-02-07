@@ -1,7 +1,6 @@
 package com.airwallex.paymentacceptance
 
-import android.annotation.SuppressLint
-import com.airwallex.android.model.PaymentMethod
+import com.airwallex.paymentacceptance.view.CardBrand
 import com.airwallex.paymentacceptance.view.CardBrand.Companion.fromCardNumber
 
 object CardUtils {
@@ -11,26 +10,26 @@ object CardUtils {
     @JvmStatic
     fun isValidCardNumber(cardNumber: String?): Boolean {
         val normalizedNumber = removeSpacesAndHyphens(cardNumber)
-        return isValidLuhnNumber(normalizedNumber) && isValidCardLength(normalizedNumber)
+        return isValidNumber(normalizedNumber) && isValidCardLength(normalizedNumber)
     }
 
-    private fun isValidLuhnNumber(cardNumber: String?): Boolean {
-        if (cardNumber == null) {
+    private fun isValidNumber(number: String?): Boolean {
+        if (number == null) {
             return false
         }
 
         var isOdd = true
         var sum = 0
 
-        for (index in cardNumber.length - 1 downTo 0) {
-            val c = cardNumber[index]
+        for (index in number.length - 1 downTo 0) {
+            val c = number[index]
             if (!Character.isDigit(c)) {
                 return false
             }
 
-            var digitInteger = Character.getNumericValue(c)
             isOdd = !isOdd
 
+            var digitInteger = Character.getNumericValue(c)
             if (isOdd) {
                 digitInteger *= 2
             }
@@ -41,7 +40,6 @@ object CardUtils {
 
             sum += digitInteger
         }
-
         return sum % 10 == 0
     }
 
@@ -54,33 +52,27 @@ object CardUtils {
 
     private fun isValidCardLength(
         cardNumber: String?,
-        @PaymentMethod.Card.CardBrand cardBrand: String
+        cardBrand: CardBrand?
     ): Boolean {
-        if (cardNumber == null || PaymentMethod.Card.CardBrand.UNKNOWN == cardBrand) {
+        if (cardNumber == null || cardBrand == null) {
             return false
         }
         return cardNumber.length == LENGTH_CARD
     }
 
-    fun getPossibleCardBrand(cardNumber: String?): String {
-        return getPossibleCardBrand(cardNumber = cardNumber, shouldNormalize = true)
-    }
-
-    @SuppressLint("WrongConstant")
-    @PaymentMethod.Card.CardBrand
-    private fun getPossibleCardBrand(cardNumber: String?, shouldNormalize: Boolean): String {
+    fun getPossibleCardBrand(cardNumber: String?, shouldNormalize: Boolean): CardBrand {
         if (cardNumber.isNullOrBlank()) {
-            return PaymentMethod.Card.CardBrand.UNKNOWN
+            return CardBrand.Unknown
         }
 
-        val spacelessCardNumber =
+        val normalizeCardNumber =
             if (shouldNormalize) {
                 removeSpacesAndHyphens(cardNumber)
             } else {
                 cardNumber
             }
 
-        return fromCardNumber(spacelessCardNumber)?.displayName ?: ""
+        return fromCardNumber(normalizeCardNumber)
     }
 
     fun removeSpacesAndHyphens(cardNumberWithSpaces: String?): String? {

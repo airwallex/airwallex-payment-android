@@ -2,8 +2,6 @@ package com.airwallex.paymentacceptance.view
 
 import android.content.Context
 import android.util.AttributeSet
-import com.airwallex.android.model.PaymentMethod.Card.CardBrand.Companion.MASTERCARD
-import com.airwallex.android.model.PaymentMethod.Card.CardBrand.Companion.VISA
 import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.card_number_input_layout.view.*
 
@@ -35,11 +33,7 @@ internal class CardNumberTextInputLayout constructor(
         }
 
         input.brandChangeCallback = { brand ->
-            when (brand) {
-                VISA -> ivBrand.setImageResource(R.drawable.airwallex_ic_visa)
-                MASTERCARD -> ivBrand.setImageResource(R.drawable.airwallex_ic_mastercard)
-                else -> ivBrand.setImageResource(R.drawable.airwallex_ic_card_default)
-            }
+            ivBrand.setImageResource(brand.icon)
         }
     }
 }

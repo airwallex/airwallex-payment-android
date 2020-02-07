@@ -29,7 +29,7 @@ class CardNumberEditText @JvmOverloads constructor(
         }
     }
 
-    internal var brandChangeCallback: (String) -> Unit = {}
+    internal var brandChangeCallback: (CardBrand) -> Unit = {}
 
     internal var errorCallback: (showError: Boolean) -> Unit = {}
 
@@ -44,7 +44,6 @@ class CardNumberEditText @JvmOverloads constructor(
         get() {
             return text?.toString().orEmpty()
         }
-
 
     internal var completionCallback: () -> Unit = {}
 
@@ -167,7 +166,8 @@ class CardNumberEditText @JvmOverloads constructor(
     }
 
     private fun updateCardBrandFromNumber(partialNumber: String) {
-        val brand = CardUtils.getPossibleCardBrand(partialNumber)
+        val brand =
+            CardUtils.getPossibleCardBrand(cardNumber = partialNumber, shouldNormalize = true)
         brandChangeCallback.invoke(brand)
     }
 
