@@ -1,7 +1,6 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import androidx.annotation.StringDef
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
@@ -133,22 +132,6 @@ data class PaymentMethod internal constructor(
         @SerializedName("avs_check")
         val avsCheck: String?
     ) : AirwallexModel, Parcelable {
-
-        @Retention(AnnotationRetention.SOURCE)
-        @StringDef(
-            CardBrand.VISA, CardBrand.MASTERCARD, CardBrand.UNKNOWN
-        )
-        annotation class CardBrand {
-            companion object {
-                const val VISA: String = "Visa"
-                const val MASTERCARD: String = "MasterCard"
-                const val UNKNOWN: String = "Unknown"
-            }
-        }
-
-        companion object {
-            const val CVC_LENGTH: Int = 3
-        }
 
         class Builder : ObjectBuilder<Card> {
             private var cvc: String? = null
