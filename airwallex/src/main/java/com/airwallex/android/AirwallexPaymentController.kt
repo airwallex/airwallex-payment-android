@@ -2,9 +2,7 @@ package com.airwallex.android
 
 import com.airwallex.android.exception.APIException
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.AirwallexError
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentIntentParams
+import com.airwallex.android.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -13,7 +11,7 @@ internal class AirwallexPaymentController(
     private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : PaymentController {
 
-    override fun startConfirm(
+    override fun confirmPaymentIntent(
         options: AirwallexApiRepository.Options,
         paymentIntentParams: PaymentIntentParams,
         callback: Airwallex.PaymentIntentCallback
@@ -97,6 +95,48 @@ internal class AirwallexPaymentController(
         ).execute()
     }
 
+    override fun createPaymentMethod(
+        options: AirwallexApiRepository.Options,
+        paymentMethodParams: PaymentMethodParams,
+        callback: Airwallex.PaymentMethodCallback
+    ) {
+        CreatePaymentMethodTask(
+            options,
+            paymentMethodParams,
+            repository,
+            workScope,
+            object : ApiResultCallback<AirwallexHttpResponse> {
+                override fun onSuccess(result: AirwallexHttpResponse) {
+                    if (result.isSuccessful && result.body != null) {
+                        val paymentMethod = AirwallexPlugins.gson.fromJson(
+                            result.body.string(),
+                            PaymentMethod::class.java
+                        )
+                        callback.onSuccess(paymentMethod)
+                    } else {
+                        val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
+                            result.body.string(),
+                            AirwallexError::class.java
+                        ) else null
+                        callback.onFailed(
+                            APIException(
+                                message = null,
+                                traceId = result.allHeaders["x-awx-traceid"],
+                                statusCode = result.statusCode,
+                                error = error,
+                                e = null
+                            )
+                        )
+                    }
+                }
+
+                override fun onError(e: AirwallexException) {
+                    callback.onFailed(e)
+                }
+            }
+        ).execute()
+    }
+
     private class ConfirmIntentTask(
         private val options: AirwallexApiRepository.Options,
         private val paymentIntentParams: PaymentIntentParams,
@@ -119,6 +159,19 @@ internal class AirwallexPaymentController(
 
         override suspend fun getResult(): AirwallexHttpResponse? {
             return airwallexRepository.retrievePaymentIntent(options)
+        }
+    }
+
+    private class CreatePaymentMethodTask(
+        private val options: AirwallexApiRepository.Options,
+        private val paymentMethodParams: PaymentMethodParams,
+        private val airwallexRepository: ApiRepository,
+        workScope: CoroutineScope,
+        callback: ApiResultCallback<AirwallexHttpResponse>
+    ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
+
+        override suspend fun getResult(): AirwallexHttpResponse? {
+            return airwallexRepository.createPaymentMethod(options, paymentMethodParams)
         }
     }
 }

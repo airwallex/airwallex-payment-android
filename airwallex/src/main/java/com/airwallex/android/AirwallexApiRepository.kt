@@ -3,6 +3,7 @@ package com.airwallex.android
 import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
 import com.airwallex.android.model.PaymentIntentParams
+import com.airwallex.android.model.PaymentMethodParams
 import com.google.gson.JsonParser
 import kotlinx.android.parcel.Parcelize
 import java.util.*
@@ -16,7 +17,7 @@ internal class AirwallexApiRepository : ApiRepository {
     @Parcelize
     internal data class Options internal constructor(
         internal val token: String,
-        internal val paymentIntentId: String
+        internal val paymentIntentId: String? = null
     ) : Parcelable
 
     override fun confirmPaymentIntent(
@@ -54,13 +55,37 @@ internal class AirwallexApiRepository : ApiRepository {
         )
     }
 
+    override fun createPaymentMethod(
+        options: Options,
+        paymentMethodParams: PaymentMethodParams
+    ): AirwallexHttpResponse? {
+        val jsonParser = JsonParser()
+        val paramsJson =
+            jsonParser.parse(AirwallexPlugins.gson.toJson(paymentMethodParams)).asJsonObject
+
+        return AirwallexPlugins.restClient.execute(
+            AirwallexHttpRequest.Builder(
+                getCreateMethodUrl(),
+                AirwallexHttpRequest.Method.POST
+            )
+                .setBody(
+                    AirwallexHttpBody(
+                        "application/json; charset=utf-8",
+                        paramsJson.toString()
+                    )
+                )
+                .addHeader("Authorization", "Bearer ${options.token}")
+                .build()
+        )
+    }
+
     /**
      *  `/api/v1/pa/payment_intents/{id}`
      */
     @VisibleForTesting
     @JvmSynthetic
     internal fun getRetrievePaymentIntentUrl(options: Options): String {
-        return getApiUrl("payment_intents/%s", options.paymentIntentId)
+        return getApiUrl("payment_intents/%s", options.paymentIntentId!!)
     }
 
     /**
@@ -69,7 +94,16 @@ internal class AirwallexApiRepository : ApiRepository {
     @VisibleForTesting
     @JvmSynthetic
     internal fun getConfirmPaymentIntentUrl(options: Options): String {
-        return getApiUrl("payment_intents/%s/confirm", options.paymentIntentId)
+        return getApiUrl("payment_intents/%s/confirm", options.paymentIntentId!!)
+    }
+
+    /**
+     *  `/api/v1/pa/payment_methods/create`
+     */
+    @VisibleForTesting
+    @JvmSynthetic
+    internal fun getCreateMethodUrl(): String {
+        return getApiUrl("payment_methods/create")
     }
 
     private fun getApiUrl(path: String, vararg args: Any): String {

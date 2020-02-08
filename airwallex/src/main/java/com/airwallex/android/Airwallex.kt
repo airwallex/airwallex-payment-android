@@ -4,6 +4,8 @@ import androidx.annotation.UiThread
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentParams
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodParams
 
 class Airwallex internal constructor(
     private val token: String,
@@ -17,6 +19,12 @@ class Airwallex internal constructor(
 
     interface PaymentIntentCallback {
         fun onSuccess(paymentIntent: PaymentIntent)
+
+        fun onFailed(exception: AirwallexException)
+    }
+
+    interface PaymentMethodCallback {
+        fun onSuccess(paymentIntent: PaymentMethod)
 
         fun onFailed(exception: AirwallexException)
     }
@@ -42,7 +50,7 @@ class Airwallex internal constructor(
         paymentIntentParams: PaymentIntentParams,
         callback: PaymentIntentCallback
     ) {
-        paymentController.startConfirm(
+        paymentController.confirmPaymentIntent(
             AirwallexApiRepository.Options(
                 token = token,
                 paymentIntentId = paymentIntentId
@@ -62,6 +70,20 @@ class Airwallex internal constructor(
                 token = token,
                 paymentIntentId = paymentIntentId
             ),
+            callback
+        )
+    }
+
+    @UiThread
+    fun createPaymentMethod(
+        paymentMethodParams: PaymentMethodParams,
+        callback: PaymentMethodCallback
+    ) {
+        paymentController.createPaymentMethod(
+            AirwallexApiRepository.Options(
+                token = token
+            ),
+            paymentMethodParams,
             callback
         )
     }

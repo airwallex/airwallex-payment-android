@@ -7,6 +7,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import com.airwallex.android.Airwallex
+import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodParams
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -16,12 +20,7 @@ import java.util.*
 
 class PaymentEditCardActivity : PaymentBaseActivity() {
 
-    private val compositeSubscription = CompositeDisposable()
     private var menu: Menu? = null
-
-    private val api: Api by lazy {
-        ApiFactory(Constants.BASE_URL).create()
-    }
 
     companion object {
         fun startActivityForResult(activity: Activity, requestCode: Int) {
@@ -79,42 +78,39 @@ class PaymentEditCardActivity : PaymentBaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onDestroy() {
-        compositeSubscription.dispose()
-        super.onDestroy()
-    }
 
     @Throws(IllegalArgumentException::class)
     private fun actionSave() {
         loading.visibility = View.VISIBLE
         val card = cardWidget.paymentMethodCard ?: return
-        compositeSubscription.add(
-            api.savePaymentMethod(
-                authorization = "Bearer ${Store.token}",
-                params = mutableMapOf(
-                    "request_id" to UUID.randomUUID().toString(),
-                    "type" to "card",
-                    "card" to card,
-                    "billing" to billingWidget.billing
-                )
-            )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { handleResponse() },
-                    { handleError(it) }
-                )
-        )
-    }
 
-    private fun handleError(err: Throwable) {
-        loading.visibility = View.GONE
-        Toast.makeText(this, err.localizedMessage, Toast.LENGTH_SHORT).show()
-    }
+        val paymentMethodParams = PaymentMethodParams.Builder()
+            .setRequestId(UUID.randomUUID().toString())
+            .setType("card")
+            .setCard(card)
+            .setBilling(billingWidget.billing)
+            .build()
 
-    private fun handleResponse() {
-        loading.visibility = View.GONE
-        setResult(Activity.RESULT_OK, intent)
-        finish()
+        val airwallex = Airwallex(Store.token)
+        airwallex.createPaymentMethod(
+            paymentMethodParams,
+            object : Airwallex.PaymentMethodCallback {
+                override fun onSuccess(paymentMethod: PaymentMethod) {
+                    loading.visibility = View.GONE
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
+                }
+
+                override fun onFailed(exception: AirwallexException) {
+                    loading.visibility = View.GONE
+                    Toast.makeText(
+                        this@PaymentEditCardActivity,
+                        exception.message,
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+
+            })
     }
 }
