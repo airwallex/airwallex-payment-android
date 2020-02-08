@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance.view
+package com.airwallex.android.view
 
 import android.content.Context
 import android.text.Editable
@@ -11,11 +11,11 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
-import com.airwallex.paymentacceptance.R
+import com.airwallex.android.R
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-internal open class AirwallexTextInputLayout @JvmOverloads constructor(
+open class AirwallexTextInputLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet,
     resourceLayout: Int = R.layout.common_text_input_layout

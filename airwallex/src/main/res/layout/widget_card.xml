@@ -5,12 +5,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.airwallex.paymentacceptance.view.CardNumberTextInputLayout
+    <com.airwallex.android.view.CardNumberTextInputLayout
         android:id="@+id/atlCardNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlCardName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,14 +27,14 @@
         android:baselineAligned="false"
         android:orientation="horizontal">
 
-        <com.airwallex.paymentacceptance.view.CardExpiryTextInputLayout
+        <com.airwallex.android.view.CardExpiryTextInputLayout
             android:id="@+id/atlCardExpiry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="23dp"
             android:layout_weight="1" />
 
-        <com.airwallex.paymentacceptance.view.CardCvcTextInputLayout
+        <com.airwallex.android.view.CardCvcTextInputLayout
             android:id="@+id/atlCardCvc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

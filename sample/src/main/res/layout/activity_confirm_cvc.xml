@@ -34,7 +34,7 @@
             android:paddingLeft="24dp"
             android:paddingRight="24dp">
 
-            <com.airwallex.paymentacceptance.view.CardCvcTextInputLayout
+            <com.airwallex.android.view.CardCvcTextInputLayout
                 android:id="@+id/atlCardCvc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

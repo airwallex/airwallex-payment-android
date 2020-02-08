@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance.view
+package com.airwallex.android.view
 
 import android.content.Context
 import android.text.Editable
@@ -6,7 +6,7 @@ import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
-import com.airwallex.paymentacceptance.R
+import com.airwallex.android.R
 import com.google.android.material.textfield.TextInputEditText
 import kotlin.math.min
 
