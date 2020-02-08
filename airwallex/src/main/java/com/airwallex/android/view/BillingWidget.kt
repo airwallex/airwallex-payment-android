@@ -41,10 +41,14 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
     val isValidBilling: Boolean
         get() {
-            return country != null
+            return atlFirstName.value.isNotEmpty()
+                    && atlLastName.value.isNotEmpty()
+                    && country != null
                     && atlState.value.isNotEmpty()
                     && atlCity.value.isNotEmpty()
                     && atlStreetAddress.value.isNotEmpty()
+                    && atlEmail.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches()
+
         }
 
     init {
@@ -53,6 +57,7 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         countryAutocomplete.countryChangeCallback = { country ->
             this.country = country
             billingChangeCallback?.invoke()
+            atlState.requestInputFocus()
         }
 
         listenTextChanged()

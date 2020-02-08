@@ -17,7 +17,7 @@
 
             <TextView
                 android:id="@+id/tvProductName"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@id/tvProductPrice"
                 android:fontFamily="@font/circularstd_bold"
@@ -41,11 +41,11 @@
 
             <TextView
                 android:id="@+id/tvProductType"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/circularstd_medium"
                 android:textColor="#545454"
-                android:layout_toStartOf="@id/tvProductType"
+                android:layout_toStartOf="@id/tvRemove"
                 android:textSize="14sp" />
 
             <TextView
