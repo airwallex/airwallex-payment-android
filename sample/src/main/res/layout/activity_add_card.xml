@@ -36,13 +36,13 @@
                     android:textSize="32sp"
                     android:textStyle="bold" />
 
-                <com.airwallex.paymentacceptance.CardWidget
+                <com.airwallex.android.view.CardWidget
                     android:id="@+id/cardWidget"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="28dp" />
 
-                <com.airwallex.paymentacceptance.BillingWidget
+                <com.airwallex.android.view.BillingWidget
                     android:id="@+id/billingWidget"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

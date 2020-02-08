@@ -1,7 +1,7 @@
-package com.airwallex.paymentacceptance.view
+package com.airwallex.android.view
 
 import androidx.annotation.DrawableRes
-import com.airwallex.paymentacceptance.R
+import com.airwallex.android.R
 
 enum class CardBrand(
     val code: String,

@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance.view
+package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Context
@@ -9,18 +9,18 @@ import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import com.airwallex.paymentacceptance.R
+import com.airwallex.android.R
 import kotlinx.android.synthetic.main.view_country_autocomplete.view.*
 import java.util.*
 
-internal class CountryAutoCompleteView constructor(
+class CountryAutoCompleteView constructor(
     context: Context,
     attrs: AttributeSet
 ) : FrameLayout(context, attrs) {
 
     private var selectedCountry: Country? = null
 
-    internal var countryChangeCallback: ((Country) -> Unit)? = null
+    var countryChangeCallback: ((Country) -> Unit)? = null
 
     private val legalCountries = arrayOf(
         "AC", "AD", "AE", "AG", "AI", "AL", "AM", "AN", "AO", "AQ", "AR", "AS", "AT", "AU", "AW",
@@ -112,7 +112,7 @@ internal class CountryAutoCompleteView constructor(
         }
     }
 
-    internal data class Country(
+    data class Country(
         val code: String,
         val name: String
     ) {

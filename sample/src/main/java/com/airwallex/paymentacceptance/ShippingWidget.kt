@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.airwallex.android.model.Address
-import com.airwallex.paymentacceptance.view.CountryAutoCompleteView
+import com.airwallex.android.view.CountryAutoCompleteView
 import kotlinx.android.synthetic.main.widget_shipping.view.*
 
 class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {

@@ -1,17 +1,18 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.android.view
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import com.airwallex.android.R
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.widget_card.view.*
 
 class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    internal var completionCallback: () -> Unit = {}
+    var completionCallback: () -> Unit = {}
 
-    internal var cardChangeCallback: () -> Unit = {}
+    var cardChangeCallback: () -> Unit = {}
 
     val paymentMethodCard: PaymentMethod.Card?
         get() {

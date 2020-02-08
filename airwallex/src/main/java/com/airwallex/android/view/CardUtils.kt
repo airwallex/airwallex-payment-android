@@ -1,7 +1,6 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.android.view
 
-import com.airwallex.paymentacceptance.view.CardBrand
-import com.airwallex.paymentacceptance.view.CardBrand.Companion.fromCardNumber
+import com.airwallex.android.view.CardBrand.Companion.fromCardNumber
 
 object CardUtils {
 

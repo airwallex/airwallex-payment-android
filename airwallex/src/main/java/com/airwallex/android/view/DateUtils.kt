@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance.view
+package com.airwallex.android.view
 
 import androidx.annotation.IntRange
 import androidx.annotation.Size

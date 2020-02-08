@@ -1,8 +1,8 @@
-package com.airwallex.paymentacceptance.view
+package com.airwallex.android.view
 
 import android.content.Context
 import android.util.AttributeSet
-import com.airwallex.paymentacceptance.R
+import com.airwallex.android.R
 
 internal class CardExpiryTextInputLayout constructor(
     context: Context,

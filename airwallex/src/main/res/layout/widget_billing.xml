@@ -16,7 +16,7 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlFirstName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
         android:inputType="textCapWords"
         app:hint="@string/shipping_first_name_hint" />
 
-    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlLastName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,13 +33,13 @@
         android:inputType="textCapWords"
         app:hint="@string/shipping_last_name_hint" />
 
-    <com.airwallex.paymentacceptance.view.CountryAutoCompleteView
+    <com.airwallex.android.view.CountryAutoCompleteView
         android:id="@+id/countryAutocomplete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp" />
 
-    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
         android:inputType="textCapWords"
         app:hint="@string/shipping_state_name_hint" />
 
-    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlCity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         android:inputType="textCapWords"
         app:hint="@string/shipping_city_name_hint" />
 
-    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlStreetAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
         android:inputType="textCapWords"
         app:hint="@string/shipping_street_hint" />
 
-    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlZipCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
         android:inputType="text"
         app:hint="@string/shipping_zip_code_hint" />
 
-    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
         android:inputType="text"
         app:hint="@string/contact_email_hint" />
 
-    <com.airwallex.paymentacceptance.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

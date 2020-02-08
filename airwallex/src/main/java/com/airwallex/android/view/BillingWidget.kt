@@ -1,13 +1,13 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.android.view
 
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Patterns
 import android.view.View
 import android.widget.LinearLayout
+import com.airwallex.android.R
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.paymentacceptance.view.CountryAutoCompleteView
 import kotlinx.android.synthetic.main.widget_billing.view.*
 import kotlinx.android.synthetic.main.widget_billing.view.atlEmail
 import kotlinx.android.synthetic.main.widget_billing.view.atlFirstName
@@ -53,18 +53,6 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         countryAutocomplete.countryChangeCallback = { country ->
             this.country = country
             billingChangeCallback?.invoke()
-        }
-
-        PaymentData.billing?.apply {
-            atlFirstName.value = firstName ?: ""
-            atlLastName.value = lastName ?: ""
-            atlEmail.value = email ?: ""
-            atlPhoneNumber.value = phone ?: ""
-            atlStreetAddress.value = address?.street ?: ""
-            atlZipCode.value = address?.postcode ?: ""
-            atlCity.value = address?.city ?: ""
-            atlState.value = address?.state ?: ""
-            countryAutocomplete.setInitCountry(address?.countryCode)
         }
 
         listenTextChanged()
