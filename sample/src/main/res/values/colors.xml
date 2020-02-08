@@ -3,8 +3,4 @@
     <color name="colorPrimary">#612FFF</color>
     <color name="colorPrimaryDark">#612FFF</color>
     <color name="colorAccent">#612FFF</color>
-
-    <color name="colorEditTextError">#FF4F42</color>
-    <color name="colorEditTextAccent">#A9A9AE</color>
-    <color name="colorEditTextDefault">#DE000000</color>
 </resources>

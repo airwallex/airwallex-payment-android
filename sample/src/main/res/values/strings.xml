@@ -29,5 +29,6 @@
 
     <string name="confirm_and_pay">Confirm and Pay</string>
     <string name="enter_cvc_title">Enter CVC/CVV code for your card\n%s •••• %s</string>
+    <string name="free">Free</string>
 
 </resources>

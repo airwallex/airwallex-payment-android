@@ -93,7 +93,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                         atlCardExpiry.error = resources.getString(R.string.empty_expiry)
                     }
                     !atlCardExpiry.isValid -> {
-                        atlCardExpiry.error = resources.getString(R.string.invalid_expiry)
+                        atlCardExpiry.error = resources.getString(R.string.invalid_expiry_year)
                     }
                     else -> {
                         atlCardExpiry.error = null

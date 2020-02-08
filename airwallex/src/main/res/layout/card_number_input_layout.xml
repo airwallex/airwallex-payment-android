@@ -24,6 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
+                android:digits="@string/valid_digits"
                 android:fontFamily="@font/circularstd_medium"
                 android:textColor="@color/colorEditTextDefault"
                 android:textColorHint="@color/colorEditTextAccent"
