@@ -25,7 +25,7 @@ internal class CardExpiryTextInputLayout constructor(
         val input = teInput as CardExpiryEditText
         input.errorCallback = { showError ->
             error = if (showError) {
-                resources.getString(R.string.invalid_expiry)
+                resources.getString(R.string.invalid_expiry_year)
             } else {
                 null
             }

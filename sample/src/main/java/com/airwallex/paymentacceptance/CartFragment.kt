@@ -74,7 +74,7 @@ class CartFragment : Fragment() {
 
         tvOrderSubtotalPrice.text = String.format("$%.2f", subtotalPrice)
         tvOrderTotalPrice.text = String.format("$%.2f", totalPrice)
-        tvShipping.text = "Free"
+        tvShipping.text = getString(R.string.free)
         tvOrderSum.text = products.sumBy { it.quantity ?: 0 }.toString()
     }
 }

@@ -17,24 +17,4 @@
         <item name="android:activityCloseEnterAnimation">@anim/slide_in_left</item>
         <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
     </style>
-
-
-    <style name="AirwallexTextInputLayout" parent="Base.Widget.MaterialComponents.TextInputLayout">
-        <item name="materialThemeOverlay">@style/AirwallexMaterialThemeOverlay</item>
-        <item name="android:background">#00000000</item>
-        <item name="boxBackgroundMode">filled</item>
-        <item name="boxBackgroundColor">@null</item>
-        <item name="boxCollapsedPaddingTop">9dp</item>
-        <item name="boxStrokeColor">@color/stroke_transparent_color</item>
-    </style>
-
-    <style name="AirwallexMaterialThemeOverlay">
-        <item name="editTextStyle">@style/AirwallexEditTextPadding</item>
-    </style>
-
-    <style name="AirwallexEditTextPadding" parent="Base.Widget.MaterialComponents.TextInputEditText">
-        <item name="android:paddingTop">26dp</item>
-        <item name="android:paddingBottom">8dp</item>
-    </style>
-
 </resources>
