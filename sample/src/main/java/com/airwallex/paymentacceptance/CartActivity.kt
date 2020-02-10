@@ -1,5 +1,8 @@
 package com.airwallex.paymentacceptance
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -23,6 +26,13 @@ class CartActivity : AppCompatActivity() {
 
     private val api: Api by lazy {
         ApiFactory(Constants.BASE_URL).create()
+    }
+
+    companion object {
+        fun startActivity(context: Context) {
+            context.startActivity(Intent(context, CartActivity::class.java))
+            (context as Activity).finish()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
