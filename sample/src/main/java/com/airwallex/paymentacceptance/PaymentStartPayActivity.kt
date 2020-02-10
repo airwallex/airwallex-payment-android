@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
@@ -259,9 +258,9 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
 
                     loading.visibility = View.GONE
                     if (paymentIntent.status == "SUCCEEDED") {
-                        showPaymentSuccessDialog()
+                        showPaymentSuccess()
                     } else {
-                        showPaymentFailedDialog()
+                        showPaymentError()
                     }
                 }
 
@@ -270,32 +269,9 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
                     loading.visibility = View.GONE
 
                     // TODO Need Retry?
-
-                    showPaymentFailedDialog()
+                    showPaymentError()
                 }
             })
-    }
-
-
-    private fun showPaymentSuccessDialog() {
-        AlertDialog.Builder(this@PaymentStartPayActivity)
-            .setTitle(R.string.payment_successful)
-            .setMessage(R.string.payment_successful_message)
-            .setNegativeButton(android.R.string.ok) { dialog, _ ->
-                dialog.dismiss()
-                notifyPaymentSuccess()
-            }
-            .show()
-    }
-
-    private fun showPaymentFailedDialog() {
-        AlertDialog.Builder(this@PaymentStartPayActivity)
-            .setTitle(R.string.payment_failed)
-            .setMessage(R.string.payment_failed_message)
-            .setNegativeButton(android.R.string.ok) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

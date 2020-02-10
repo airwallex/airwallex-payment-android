@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
@@ -62,5 +63,36 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
     override fun onDestroy() {
         unRegisterLoginBroadcast()
         super.onDestroy()
+    }
+
+    fun showPaymentSuccess() {
+        showAlert(
+            getString(R.string.payment_successful),
+            getString(R.string.payment_successful_message)
+        ) {
+            notifyPaymentSuccess()
+        }
+    }
+
+    fun showPaymentError() {
+        showAlert(
+            getString(R.string.payment_failed),
+            getString(R.string.payment_failed_message)
+        )
+    }
+
+    private fun showAlert(title: String, message: String, completion: (() -> Unit)? = null) {
+        if (!isFinishing) {
+            AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                    dialogInterface.dismiss()
+                    completion?.invoke()
+                }
+                .create()
+                .show()
+        }
     }
 }
