@@ -60,12 +60,21 @@ data class PaymentMethodOptions internal constructor(
         data class ThreeDs internal constructor(
 
             @SerializedName("option")
-            val option: Boolean
+            val option: Boolean,
+
+            @SerializedName("pa_res")
+            val paRes: String?
 
         ) : AirwallexModel, Parcelable {
 
             class Builder : ObjectBuilder<ThreeDs> {
                 private var option: Boolean = false
+
+                private var paRes: String? = null
+
+                fun setPaRes(paRes: String): Builder = apply {
+                    this.paRes = paRes
+                }
 
                 fun setOption(option: Boolean): Builder = apply {
                     this.option = option
@@ -73,7 +82,8 @@ data class PaymentMethodOptions internal constructor(
 
                 override fun build(): ThreeDs {
                     return ThreeDs(
-                        option = option
+                        option = option,
+                        paRes = paRes
                     )
                 }
             }
