@@ -17,6 +17,7 @@
             style="@style/AirwallexTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:textColorHint="@color/color_edit_text_accent"
             app:hintTextColor="@color/color_edit_text_accent">
 
             <com.airwallex.android.view.CardNumberEditText

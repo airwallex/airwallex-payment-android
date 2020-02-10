@@ -20,6 +20,10 @@ class AddPaymentMethodActivity : AirwallexActivity() {
         intent.getStringExtra(TOKEN)
     }
 
+    private val airwallex: Airwallex by lazy {
+        Airwallex(token)
+    }
+
     companion object {
         const val REQUEST_ADD_CARD_CODE = 98
         const val PAYMENT_METHOD = "payment_method"
@@ -36,8 +40,8 @@ class AddPaymentMethodActivity : AirwallexActivity() {
     }
 
     override fun onActionSave() {
-        pbLoading.visibility = View.VISIBLE
         val card = cardWidget.paymentMethodCard ?: return
+        loading.visibility = View.VISIBLE
 
         val paymentMethodParams = PaymentMethodParams.Builder()
             .setRequestId(UUID.randomUUID().toString())
@@ -46,12 +50,11 @@ class AddPaymentMethodActivity : AirwallexActivity() {
             .setBilling(billingWidget.billing)
             .build()
 
-        val airwallex = Airwallex(token)
         airwallex.createPaymentMethod(
             paymentMethodParams,
             object : Airwallex.PaymentMethodCallback {
                 override fun onSuccess(paymentMethod: PaymentMethod) {
-                    pbLoading.visibility = View.GONE
+                    loading.visibility = View.GONE
                     setResult(Activity.RESULT_OK, Intent().apply {
                         putExtra(PAYMENT_METHOD, paymentMethod)
                     })
@@ -59,7 +62,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    pbLoading.visibility = View.GONE
+                    loading.visibility = View.GONE
                     Toast.makeText(
                         this@AddPaymentMethodActivity,
                         exception.toString(),

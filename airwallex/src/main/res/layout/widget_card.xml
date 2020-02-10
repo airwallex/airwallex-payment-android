@@ -19,7 +19,6 @@
         android:inputType="text"
         app:hint="@string/card_name_hint" />
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,13 +30,14 @@
             android:id="@+id/atlCardExpiry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="23dp"
+            android:layout_marginEnd="12dp"
             android:layout_weight="1" />
 
         <com.airwallex.android.view.CardCvcTextInputLayout
             android:id="@+id/atlCardCvc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_weight="2" />
 
     </LinearLayout>
