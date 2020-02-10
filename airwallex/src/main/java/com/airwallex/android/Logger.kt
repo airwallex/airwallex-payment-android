@@ -40,14 +40,16 @@ internal object Logger {
 
     fun error(tag: String, message: String?, throwable: Throwable? = null) {
         if (loggingEnabled) logWorker.log(
-            Level.ERROR, tag, message, throwable)
+            Level.ERROR, tag, message, throwable
+        )
     }
 
     @JvmStatic
     @JvmOverloads
     fun warn(tag: String, message: String?, throwable: Throwable? = null) {
         if (loggingEnabled) logWorker.log(
-            Level.WARNING, tag, message, throwable)
+            Level.WARNING, tag, message, throwable
+        )
     }
 
     fun warn(message: String?, throwable: Throwable? = null) =
@@ -60,7 +62,8 @@ internal object Logger {
 
     fun info(tag: String, message: String?, throwable: Throwable? = null) {
         if (loggingEnabled) logWorker.log(
-            Level.INFO, tag, message, throwable)
+            Level.INFO, tag, message, throwable
+        )
     }
 
     @JvmStatic
@@ -70,7 +73,8 @@ internal object Logger {
 
     fun debug(tag: String, message: String?, throwable: Throwable? = null) {
         if (loggingEnabled) logWorker.log(
-            Level.DEBUG, tag, message, throwable)
+            Level.DEBUG, tag, message, throwable
+        )
     }
 
     @JvmStatic
@@ -80,6 +84,7 @@ internal object Logger {
 
     fun verbose(tag: String, message: String?, throwable: Throwable? = null) {
         if (loggingEnabled) logWorker.log(
-            Level.VERBOSE, tag, message, throwable)
+            Level.VERBOSE, tag, message, throwable
+        )
     }
 }

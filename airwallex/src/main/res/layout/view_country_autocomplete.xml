@@ -16,10 +16,10 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
             android:hint="@string/shipping_country_name_hint"
             android:labelFor="@id/actCountry"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
             app:hintTextColor="@color/color_edit_text_accent">
 
             <AutoCompleteTextView

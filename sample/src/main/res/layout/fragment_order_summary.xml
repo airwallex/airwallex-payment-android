@@ -35,9 +35,9 @@
 
     <LinearLayout
         android:id="@+id/llProducts"
-        android:layout_marginTop="33dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="33dp"
         android:orientation="vertical" />
 
     <RelativeLayout
@@ -69,8 +69,8 @@
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@id/tvSubtotalLabel"
                 android:fontFamily="@font/circularstd_medium"
-                android:textColor="#2A2A2A"
                 android:gravity="end"
+                android:textColor="#2A2A2A"
                 android:textSize="14sp" />
 
         </RelativeLayout>
@@ -99,8 +99,8 @@
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@id/tvShippingLabel"
                 android:fontFamily="@font/circularstd_medium"
-                android:textColor="#2A2A2A"
                 android:gravity="end"
+                android:textColor="#2A2A2A"
                 android:textSize="14sp" />
 
         </RelativeLayout>
@@ -134,8 +134,8 @@
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/tvTotalLabel"
             android:fontFamily="@font/circularstd_medium"
-            android:textColor="#2A2A2A"
             android:gravity="end"
+            android:textColor="#2A2A2A"
             android:textSize="14sp" />
 
     </RelativeLayout>

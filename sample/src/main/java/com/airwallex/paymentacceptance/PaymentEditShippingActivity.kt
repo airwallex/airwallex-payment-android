@@ -40,7 +40,8 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.menu_save)?.isEnabled = contactWidget.isValidContact && shippingWidget.isValidShipping
+        menu?.findItem(R.id.menu_save)?.isEnabled =
+            contactWidget.isValidContact && shippingWidget.isValidShipping
         return super.onPrepareOptionsMenu(menu)
     }
 

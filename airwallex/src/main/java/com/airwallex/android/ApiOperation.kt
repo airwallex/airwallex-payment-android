@@ -1,12 +1,12 @@
 package com.airwallex.android
 
 import com.airwallex.android.exception.APIConnectionException
-import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 internal abstract class ApiOperation<ResultType>(
     private val workScope: CoroutineScope = CoroutineScope(IO),

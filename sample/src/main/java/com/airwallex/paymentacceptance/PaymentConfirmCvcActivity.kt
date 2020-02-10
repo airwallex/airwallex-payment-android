@@ -12,9 +12,6 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.activity_confirm_cvc.*
-import kotlinx.android.synthetic.main.activity_confirm_cvc.loading
-import kotlinx.android.synthetic.main.activity_confirm_cvc.rlPlay
-import kotlinx.android.synthetic.main.activity_confirm_cvc.toolbar
 import java.util.*
 
 class PaymentConfirmCvcActivity : PaymentBaseActivity() {
