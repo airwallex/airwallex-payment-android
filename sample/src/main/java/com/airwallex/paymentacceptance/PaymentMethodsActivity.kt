@@ -51,10 +51,8 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         ) {
             activity.startActivityForResult(
                 Intent(activity, PaymentMethodsActivity::class.java)
-                    .apply {
-                        putExtra(PAYMENT_METHOD, paymentMethod)
-                        putExtra(PAYMENT_INTENT_ID, paymentIntentId)
-                    },
+                    .putExtra(PAYMENT_METHOD, paymentMethod)
+                    .putExtra(PAYMENT_INTENT_ID, paymentIntentId),
                 requestCode
             )
         }
@@ -98,9 +96,10 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_save) {
-            setResult(Activity.RESULT_OK, Intent().apply {
-                putExtra(PAYMENT_METHOD, cardAdapter.paymentMethod)
-            })
+            setResult(
+                Activity.RESULT_OK,
+                Intent().putExtra(PAYMENT_METHOD, cardAdapter.paymentMethod)
+            )
             finish()
         }
         return super.onOptionsItemSelected(item)

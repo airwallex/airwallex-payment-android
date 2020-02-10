@@ -20,7 +20,6 @@ class CardNumberEditText @JvmOverloads constructor(
 
         private val SPACE_CARD_SET = setOf(4, 9, 14)
 
-        @JvmSynthetic
         internal fun createFormattedNumber(cardParts: Array<String?>): String {
             return cardParts
                 .takeWhile { it != null }
@@ -71,8 +70,6 @@ class CardNumberEditText @JvmOverloads constructor(
                 gapsJumped++
             }
 
-            // editActionAddition can only be 0 if we are deleting,
-            // so we need to check whether or not to skip backwards one space
             if (editActionAddition == 0 && editActionStart == gap + 1) {
                 skipBack = true
             }
@@ -170,19 +167,17 @@ class CardNumberEditText @JvmOverloads constructor(
         brandChangeCallback.invoke(brand)
     }
 
-    fun separateCardNumberGroups(spacelessCardNumber: String): Array<String?> {
+    fun separateCardNumberGroups(cardNumber: String): Array<String?> {
         val numberGroups = arrayOfNulls<String?>(4)
         var i = 0
         var previousStart = 0
-        while ((i + 1) * 4 < spacelessCardNumber.length) {
-            val group = spacelessCardNumber.substring(previousStart, (i + 1) * 4)
+        while ((i + 1) * 4 < cardNumber.length) {
+            val group = cardNumber.substring(previousStart, (i + 1) * 4)
             numberGroups[i] = group
             previousStart = (i + 1) * 4
             i++
         }
-        // Always stuff whatever is left into the next available array entry. This handles
-        // incomplete numbers, full 16-digit numbers, and full 14-digit numbers
-        numberGroups[i] = spacelessCardNumber.substring(previousStart)
+        numberGroups[i] = cardNumber.substring(previousStart)
 
         return numberGroups
     }

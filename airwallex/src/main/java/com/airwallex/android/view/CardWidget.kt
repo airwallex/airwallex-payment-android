@@ -34,9 +34,10 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
     val isValid: Boolean
         get() {
             val cardNumberIsValid = CardUtils.isValidCardNumber(atlCardNumber.cardNumber)
+            val cardNameIsValid = atlCardName.value.isNotEmpty()
             val expiryIsValid = atlCardExpiry.validDateFields != null
             val cvcIsValid = atlCardCvc.isValid
-            return cardNumberIsValid && expiryIsValid && cvcIsValid
+            return cardNumberIsValid && cardNameIsValid && expiryIsValid && cvcIsValid
         }
 
     init {

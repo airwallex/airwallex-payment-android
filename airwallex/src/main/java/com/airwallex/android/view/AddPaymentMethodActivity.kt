@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
@@ -30,10 +29,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
 
         fun startActivityForResult(activity: Activity, token: String) {
             activity.startActivityForResult(
-                Intent(activity, AddPaymentMethodActivity::class.java)
-                    .apply {
-                        putExtra(TOKEN, token)
-                    },
+                Intent(activity, AddPaymentMethodActivity::class.java).putExtra(TOKEN, token),
                 REQUEST_ADD_CARD_CODE
             )
         }
@@ -41,37 +37,34 @@ class AddPaymentMethodActivity : AirwallexActivity() {
 
     override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
-        loading.visibility = View.VISIBLE
+        val billing = billingWidget.billing ?: return
 
+        loading.visibility = View.VISIBLE
         val paymentMethodParams = PaymentMethodParams.Builder()
             .setRequestId(UUID.randomUUID().toString())
             .setType("card")
             .setCard(card)
-            .setBilling(billingWidget.billing)
+            .setBilling(billing)
             .build()
 
         airwallex.createPaymentMethod(
             paymentMethodParams,
             object : Airwallex.PaymentMethodCallback {
                 override fun onSuccess(paymentMethod: PaymentMethod) {
-                    loading.visibility = View.GONE
-                    setResult(Activity.RESULT_OK, Intent().apply {
-                        putExtra(PAYMENT_METHOD, paymentMethod)
-                    })
-                    finish()
+                    finishWithPaymentMethod(paymentMethod)
                 }
 
                 override fun onFailed(exception: AirwallexException) {
                     loading.visibility = View.GONE
-                    Toast.makeText(
-                        this@AddPaymentMethodActivity,
-                        exception.toString(),
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    showError(exception.toString())
                 }
-
             })
+    }
+
+    private fun finishWithPaymentMethod(paymentMethod: PaymentMethod) {
+        loading.visibility = View.GONE
+        setResult(Activity.RESULT_OK, Intent().putExtra(PAYMENT_METHOD, paymentMethod))
+        finish()
     }
 
     override fun menuEnable(): Boolean {

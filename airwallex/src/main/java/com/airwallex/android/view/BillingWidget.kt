@@ -16,23 +16,27 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
     private var country: CountryAutoCompleteView.Country? = null
 
-    val billing: PaymentMethod.Billing
+    val billing: PaymentMethod.Billing?
         get() {
-            return PaymentMethod.Billing.Builder()
-                .setFirstName(atlFirstName.value)
-                .setLastName(atlLastName.value)
-                .setEmail(atlEmail.value)
-                .setPhone(atlPhoneNumber.value)
-                .setAddress(
-                    Address.Builder()
-                        .setCountryCode(country?.code)
-                        .setState(atlState.value)
-                        .setCity(atlCity.value)
-                        .setStreet(atlStreetAddress.value)
-                        .setPostcode(atlZipCode.value)
-                        .build()
-                )
-                .build()
+            if (isValid) {
+                return PaymentMethod.Billing.Builder()
+                    .setFirstName(atlFirstName.value)
+                    .setLastName(atlLastName.value)
+                    .setEmail(atlEmail.value)
+                    .setPhone(atlPhoneNumber.value)
+                    .setAddress(
+                        Address.Builder()
+                            .setCountryCode(country?.code)
+                            .setState(atlState.value)
+                            .setCity(atlCity.value)
+                            .setStreet(atlStreetAddress.value)
+                            .setPostcode(atlZipCode.value)
+                            .build()
+                    )
+                    .build()
+            } else {
+                return null
+            }
         }
 
     val isValid: Boolean

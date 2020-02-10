@@ -43,10 +43,11 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             paymentIntentId: String,
             amount: Float
         ) {
-            val intent = Intent(activity, PaymentStartPayActivity::class.java)
-            intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
-            intent.putExtra(PAYMENT_AMOUNT, amount)
-            activity.startActivity(intent)
+            activity.startActivity(
+                Intent(activity, PaymentStartPayActivity::class.java)
+                    .putExtra(PAYMENT_INTENT_ID, paymentIntentId)
+                    .putExtra(PAYMENT_AMOUNT, amount)
+            )
         }
     }
 

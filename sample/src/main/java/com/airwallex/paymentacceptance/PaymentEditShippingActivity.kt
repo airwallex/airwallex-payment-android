@@ -67,9 +67,7 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
             .setEmail(contact.email)
             .setAddress(shippingWidget.address)
             .build()
-        setResult(Activity.RESULT_OK, Intent().apply {
-            putExtra(SHIPPING_DETAIL, shipping)
-        })
+        setResult(Activity.RESULT_OK, Intent().putExtra(SHIPPING_DETAIL, shipping))
         finish()
     }
 }
