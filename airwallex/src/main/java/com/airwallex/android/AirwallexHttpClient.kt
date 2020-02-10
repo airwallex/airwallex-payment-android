@@ -84,6 +84,9 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
         if (parseBody != null) {
             val okHttpRequestBody = AirwallexOkHttpRequestBody(parseBody)
             when (method) {
+                AirwallexHttpRequest.Method.GET -> {
+                    // No body for get request
+                }
                 AirwallexHttpRequest.Method.PUT -> builder.put(okHttpRequestBody)
                 AirwallexHttpRequest.Method.POST -> builder.post(okHttpRequestBody)
                 AirwallexHttpRequest.Method.DELETE -> builder.delete(okHttpRequestBody)

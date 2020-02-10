@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.airwallex.paymentacceptance.CartActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.PaymentCartActivity" />
 
         <activity android:name="com.airwallex.paymentacceptance.PaymentStartPayActivity" />
 
