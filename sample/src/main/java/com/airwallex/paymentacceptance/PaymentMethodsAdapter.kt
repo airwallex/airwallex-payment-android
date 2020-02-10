@@ -1,5 +1,6 @@
 package com.airwallex.paymentacceptance
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import com.airwallex.paymentacceptance.PaymentBaseActivity.Companion.REQUEST_CON
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_footer.view.*
 import kotlinx.android.synthetic.main.payment_method_item_header.view.*
+import java.util.*
 
 class PaymentMethodsAdapter(
     private val paymentMethods: List<PaymentMethod?>,
@@ -69,6 +71,7 @@ class PaymentMethodsAdapter(
         return paymentMethods.size
     }
 
+    @ExperimentalStdlibApi
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is HeaderHolder -> holder.bindView()
@@ -101,11 +104,13 @@ class PaymentMethodsAdapter(
 
     inner class CardHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+        @SuppressLint("DefaultLocale")
+        @ExperimentalStdlibApi
         fun bindView(position: Int) {
             val method = paymentMethods[position] ?: return
             val card = method.card ?: return
             itemView.tvCardInfo.text =
-                String.format("%s •••• %s", card.brand?.capitalize(), card.last4)
+                String.format("%s •••• %s", card.brand?.capitalize(Locale.ENGLISH), card.last4)
             when (card.brand) {
                 "visa" -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
                 "mastercard" -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)

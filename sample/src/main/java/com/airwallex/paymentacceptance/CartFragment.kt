@@ -30,7 +30,7 @@ class CartFragment : Fragment() {
             )
 
             tvProductName.text = order.name
-            tvProductType.text = "${order.type} x ${order.quantity}"
+            tvProductType.text = context?.getString(R.string.product_type, order.type, order.quantity)
             tvProductPrice.text =
                 String.format("$%.2f", order.unitPrice ?: 0 * (order.quantity ?: 0))
             tvRemove.setOnClickListener {
