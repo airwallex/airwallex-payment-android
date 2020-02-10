@@ -3,7 +3,7 @@ package com.airwallex.android.view
 import androidx.annotation.IntRange
 import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
-import java.util.Calendar
+import java.util.*
 
 internal object DateUtils {
 

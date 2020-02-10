@@ -1,2 +1,2 @@
 include ':sample', ':airwallex'
-rootProject.name='airwallex-android'
+rootProject.name = 'airwallex-android'
