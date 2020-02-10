@@ -10,8 +10,6 @@ import kotlinx.android.synthetic.main.activity_edit_shipping.*
 
 class PaymentEditShippingActivity : PaymentBaseActivity() {
 
-    private var menu: Menu? = null
-
     companion object {
         fun startActivityForResult(activity: Activity, requestCode: Int) {
             activity.startActivityForResult(
@@ -19,11 +17,6 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
                 requestCode
             )
         }
-    }
-
-    private fun updateMenuStatus() {
-        menu?.findItem(R.id.menu_save)?.isEnabled =
-            contactWidget.isValidContact && shippingWidget.isValidShipping
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,17 +31,21 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
         }
 
         contactWidget.contactChangeCallback = {
-            updateMenuStatus()
+            invalidateOptionsMenu()
         }
 
         shippingWidget.shippingChangeCallback = {
-            updateMenuStatus()
+            invalidateOptionsMenu()
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.findItem(R.id.menu_save)?.isEnabled = contactWidget.isValidContact && shippingWidget.isValidShipping
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        this.menu = menu
-        menuInflater.inflate(R.menu.menu_save, menu)
+        menuInflater.inflate(R.menu.menu_add_payment_method, menu)
         return true
     }
 

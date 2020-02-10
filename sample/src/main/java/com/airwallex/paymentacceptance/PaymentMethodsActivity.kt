@@ -24,8 +24,6 @@ import java.io.IOException
 
 class PaymentMethodsActivity : PaymentBaseActivity() {
 
-    var menu: Menu? = null
-
     private val api: Api by lazy {
         ApiFactory(Constants.BASE_URL).create()
     }
@@ -78,10 +76,13 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         fetchPaymentMethods()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        this.menu = menu
-        menuInflater.inflate(R.menu.menu_save, menu)
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menu?.findItem(R.id.menu_save)?.isEnabled = cardAdapter.paymentMethod != null
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_add_payment_method, menu)
         return true
     }
 
