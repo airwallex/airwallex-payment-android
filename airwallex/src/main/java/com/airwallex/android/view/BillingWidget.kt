@@ -39,7 +39,7 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
                 .build()
         }
 
-    val isValidBilling: Boolean
+    val isValid: Boolean
         get() {
             return atlFirstName.value.isNotEmpty()
                     && atlLastName.value.isNotEmpty()

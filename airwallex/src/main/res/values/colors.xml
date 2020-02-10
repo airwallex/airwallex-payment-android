@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorEditTextError">#FF4F42</color>
-    <color name="colorEditTextAccent">#A9A9AE</color>
-    <color name="colorEditTextDefault">#DE000000</color>
+    <color name="color_edit_text_error">#FF4F42</color>
+    <color name="color_edit_text_accent">#A9A9AE</color>
+    <color name="color_edit_text_default">#DE000000</color>
+
+    <color name="color_accent_default">#D81B60</color>
+    <color name="color_primary_default">#008577</color>
+    <color name="color_primary_dark_default">#00574B</color>
 </resources>

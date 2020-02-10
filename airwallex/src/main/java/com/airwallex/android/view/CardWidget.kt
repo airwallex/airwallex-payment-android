@@ -16,7 +16,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
 
     val paymentMethodCard: PaymentMethod.Card?
         get() {
-            return if (isValidCard) {
+            return if (isValid) {
                 atlCardExpiry.validDateFields?.let { (month, year) ->
                     PaymentMethod.Card.Builder()
                         .setNumber(atlCardNumber.cardNumber)
@@ -31,7 +31,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
             }
         }
 
-    val isValidCard: Boolean
+    val isValid: Boolean
         get() {
             val cardNumberIsValid = CardUtils.isValidCardNumber(atlCardNumber.cardNumber)
             val expiryIsValid = atlCardExpiry.validDateFields != null
