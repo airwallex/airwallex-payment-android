@@ -4,6 +4,7 @@ import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.activity_airwallex.*
@@ -52,6 +53,19 @@ abstract class AirwallexActivity : AppCompatActivity() {
                 onBackPressed()
             }
             handled
+        }
+    }
+
+    fun showError(message: String) {
+        if (!isFinishing) {
+            AlertDialog.Builder(this)
+                .setMessage(message)
+                .setCancelable(true)
+                .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                    dialogInterface.dismiss()
+                }
+                .create()
+                .show()
         }
     }
 }

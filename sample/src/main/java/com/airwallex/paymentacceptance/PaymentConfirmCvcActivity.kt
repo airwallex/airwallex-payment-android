@@ -35,10 +35,8 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
         ) {
             activity.startActivityForResult(
                 Intent(activity, PaymentConfirmCvcActivity::class.java)
-                    .apply {
-                        putExtra(PAYMENT_METHOD, paymentMethod)
-                        putExtra(PAYMENT_INTENT_ID, paymentIntentId)
-                    },
+                    .putExtra(PAYMENT_METHOD, paymentMethod)
+                    .putExtra(PAYMENT_INTENT_ID, paymentIntentId),
                 requestCode
             )
         }

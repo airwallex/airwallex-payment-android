@@ -42,7 +42,7 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
 
     var value: String
         get() {
-            return teInput.text.toString()
+            return teInput.text?.trim().toString()
         }
         set(value) {
             teInput.setText(value)
