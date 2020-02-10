@@ -2,11 +2,11 @@ package com.airwallex.android.model
 
 import com.google.gson.annotations.SerializedName
 
-enum class PaymentMethodType(val value: String) {
+enum class PaymentMethodType(val code: String, val displayName: String) {
 
     @SerializedName("card")
-    CARD("Card"),
+    CARD("card", "Card"),
 
     @SerializedName("wechatpay")
-    WECHAT("Wechat pay")
+    WECHAT("wechatpay", "Wechat pay")
 }

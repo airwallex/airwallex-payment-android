@@ -12,9 +12,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 abstract class PaymentBaseActivity : AppCompatActivity() {
 
-    private val localBroadcastManager: LocalBroadcastManager by lazy {
-        LocalBroadcastManager.getInstance(this)
-    }
+    abstract val inPaymentFlow: Boolean
 
     companion object {
         const val PAYMENT_METHOD = "PAYMENT_METHOD"
@@ -27,6 +25,10 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
         const val REQUEST_CONFIRM_CVC_CODE = 998
 
         const val PAYMENT_SUCCESS_ACTION = "PAYMENT_SUCCESS_ACTION"
+    }
+
+    private val localBroadcastManager: LocalBroadcastManager by lazy {
+        LocalBroadcastManager.getInstance(this)
     }
 
     private val receiver = object : BroadcastReceiver() {
@@ -50,7 +52,16 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        registerPaymentBroadcast()
+        if (inPaymentFlow) {
+            registerPaymentBroadcast()
+        }
+    }
+
+    override fun onDestroy() {
+        if (inPaymentFlow) {
+            unRegisterLoginBroadcast()
+        }
+        super.onDestroy()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -58,11 +69,6 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
             android.R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onDestroy() {
-        unRegisterLoginBroadcast()
-        super.onDestroy()
     }
 
     fun showPaymentSuccess() {

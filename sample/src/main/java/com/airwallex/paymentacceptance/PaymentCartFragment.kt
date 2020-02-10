@@ -13,7 +13,7 @@ import com.airwallex.paymentacceptance.PaymentData.products
 import kotlinx.android.synthetic.main.fragment_order_summary.*
 import kotlinx.android.synthetic.main.order_summary_item.view.*
 
-class CartFragment : Fragment() {
+class PaymentCartFragment : Fragment() {
 
     @SuppressLint("ViewConstructor")
     class OrderSummaryItem(
@@ -30,7 +30,7 @@ class CartFragment : Fragment() {
             )
 
             tvProductName.text = order.name
-            tvProductType.text = context?.getString(R.string.product_type, order.type, order.quantity)
+            tvProductType.text = String.format("%s x %d", order.type, order.quantity)
             tvProductPrice.text =
                 String.format("$%.2f", order.unitPrice ?: 0 * (order.quantity ?: 0))
             tvRemove.setOnClickListener {

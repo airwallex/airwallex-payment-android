@@ -15,7 +15,7 @@
 
             <fragment
                 android:id="@+id/fgOrderSummary"
-                android:name="com.airwallex.paymentacceptance.CartFragment"
+                android:name="com.airwallex.paymentacceptance.PaymentCartFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </ScrollView>

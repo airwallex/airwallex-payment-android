@@ -10,7 +10,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Handler().postDelayed({
-            CartActivity.startActivity(this@SplashActivity)
+            PaymentCartActivity.startActivity(this@SplashActivity)
         }, 2000)
     }
 }

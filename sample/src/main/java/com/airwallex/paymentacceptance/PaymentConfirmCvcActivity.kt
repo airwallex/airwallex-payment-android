@@ -23,6 +23,9 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
         intent.getStringExtra(PAYMENT_INTENT_ID)
     }
 
+    override val inPaymentFlow: Boolean
+        get() = true
+
     companion object {
 
         private const val TAG = "ConfirmCvcActivity"

@@ -10,6 +10,9 @@ import kotlinx.android.synthetic.main.activity_edit_shipping.*
 
 class PaymentEditShippingActivity : PaymentBaseActivity() {
 
+    override val inPaymentFlow: Boolean
+        get() = true
+
     companion object {
         fun startActivityForResult(activity: Activity, requestCode: Int) {
             activity.startActivityForResult(

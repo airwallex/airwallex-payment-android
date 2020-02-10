@@ -28,6 +28,9 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
         intent.getFloatExtra(PAYMENT_AMOUNT, 0F)
     }
 
+    override val inPaymentFlow: Boolean
+        get() = true
+
     private var paymentMethod: PaymentMethod? = null
 
     companion object {
@@ -61,7 +64,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             setDisplayShowTitleEnabled(false)
         }
 
-        tvTotalPrice.text = getString(R.string.price, paymentAmount)
+        tvTotalPrice.text = String.format("$%.2f", paymentAmount)
 
         rlShipping.setOnClickListener {
             PaymentEditShippingActivity.startActivityForResult(this, REQUEST_EDIT_SHIPPING_CODE)
@@ -93,7 +96,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             tvPaymentMethod.text = getString(R.string.select_payment_method)
             tvPaymentMethod.setTextColor(Color.parseColor("#A9A9A9"))
         } else {
-            tvPaymentMethod.text = paymentMethod!!.type?.value
+            tvPaymentMethod.text = paymentMethod!!.type?.displayName
             tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
         }
 
@@ -287,8 +290,8 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             loc.displayCountry
         }
 
-        tvShipping.text = getString(
-            R.string.shipping_label,
+        tvShipping.text = String.format(
+            "%s %s\n%s\n%s, %s, %s",
             shipping.lastName,
             shipping.firstName,
             shipping.address?.street,
@@ -318,7 +321,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
                     data.getParcelableExtra(PAYMENT_METHOD) as PaymentMethod
                 paymentMethod?.let {
                     if (it.type == PaymentMethodType.WECHAT) {
-                        tvPaymentMethod.text = it.type?.value
+                        tvPaymentMethod.text = it.type?.displayName
                     } else {
                         tvPaymentMethod.text =
                             String.format("%s •••• %s", it.card?.brand, it.card?.last4)

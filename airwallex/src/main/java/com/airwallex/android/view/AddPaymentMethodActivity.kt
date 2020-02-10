@@ -9,6 +9,7 @@ import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodParams
+import com.airwallex.android.model.PaymentMethodType
 import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import java.util.*
@@ -42,7 +43,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
         loading.visibility = View.VISIBLE
         val paymentMethodParams = PaymentMethodParams.Builder()
             .setRequestId(UUID.randomUUID().toString())
-            .setType("card")
+            .setType(PaymentMethodType.CARD.code)
             .setCard(card)
             .setBilling(billing)
             .build()

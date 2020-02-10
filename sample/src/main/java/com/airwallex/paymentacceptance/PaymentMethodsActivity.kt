@@ -36,6 +36,9 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         intent.getStringExtra(PAYMENT_INTENT_ID)
     }
 
+    override val inPaymentFlow: Boolean
+        get() = true
+
     private val compositeSubscription = CompositeDisposable()
     private lateinit var cardAdapter: PaymentMethodsAdapter
     private val paymentMethods = mutableListOf<PaymentMethod?>(null, null)
