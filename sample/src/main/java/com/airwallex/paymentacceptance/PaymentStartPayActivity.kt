@@ -61,7 +61,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             setDisplayShowTitleEnabled(false)
         }
 
-        tvTotalPrice.text = "$$paymentAmount"
+        tvTotalPrice.text = getString(R.string.price, paymentAmount)
 
         rlShipping.setOnClickListener {
             PaymentEditShippingActivity.startActivityForResult(this, REQUEST_EDIT_SHIPPING_CODE)
@@ -287,9 +287,16 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             loc.displayCountry
         }
 
-        tvShipping.text = "${shipping.lastName} ${shipping.firstName}\n" +
-                "${shipping.address?.street}\n" +
-                "${shipping.address?.city}, ${shipping.address?.state}, $countryName"
+        tvShipping.text = getString(
+            R.string.shipping_label,
+            shipping.lastName,
+            shipping.firstName,
+            shipping.address?.street,
+            shipping.address?.city,
+            shipping.address?.state,
+            countryName
+        )
+
         tvShipping.setTextColor(Color.parseColor("#2A2A2A"))
     }
 

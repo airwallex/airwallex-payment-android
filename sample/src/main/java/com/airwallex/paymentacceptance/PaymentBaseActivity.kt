@@ -35,7 +35,7 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
         }
     }
 
-    fun notifyPaymentSuccess() {
+    private fun notifyPaymentSuccess() {
         localBroadcastManager.sendBroadcast(Intent().setAction(PAYMENT_SUCCESS_ACTION))
     }
 

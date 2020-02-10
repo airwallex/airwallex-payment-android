@@ -1,6 +1,5 @@
 package com.airwallex.android.view
 
-import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -26,11 +25,6 @@ abstract class AirwallexActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        toolbar.navigationIcon?.mutate()?.setColorFilter(
-            resources.getColor(R.color.airwallex_blue),
-            PorterDuff.Mode.SRC_IN
-        )
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {

@@ -1,5 +1,6 @@
 package com.airwallex.paymentacceptance
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -41,6 +42,8 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
         }
     }
 
+    @SuppressLint("DefaultLocale")
+    @ExperimentalStdlibApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_confirm_cvc)
@@ -54,7 +57,7 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
 
         tvTitle.text = getString(
             R.string.enter_cvc_title,
-            paymentMethod.card?.brand?.capitalize(),
+            paymentMethod.card?.brand?.capitalize(Locale.ENGLISH),
             paymentMethod.card?.last4
         )
 
