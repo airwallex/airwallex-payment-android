@@ -7,4 +7,7 @@
     <color name="color_accent_default">#D81B60</color>
     <color name="color_primary_default">#008577</color>
     <color name="color_primary_dark_default">#00574B</color>
+
+    <color name="airwallex_blue">#612FFF</color>
+    <color name="airwallex_dark_gray">#2A2A2A</color>
 </resources>

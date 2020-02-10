@@ -18,6 +18,7 @@
             android:layout_height="match_parent"
             android:hint="@string/shipping_country_name_hint"
             android:labelFor="@id/actCountry"
+            android:textColorHint="@color/color_edit_text_accent"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
             app:hintTextColor="@color/color_edit_text_accent">
@@ -30,7 +31,6 @@
                 android:fontFamily="@font/circularstd_medium"
                 android:inputType="text"
                 android:textColor="@color/color_edit_text_default"
-                android:textColorHint="@color/color_edit_text_accent"
                 android:textSize="16sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
