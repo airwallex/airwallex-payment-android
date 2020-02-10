@@ -60,7 +60,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
         if (!isFinishing) {
             AlertDialog.Builder(this)
                 .setMessage(message)
-                .setCancelable(true)
+                .setCancelable(false)
                 .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
                     dialogInterface.dismiss()
                 }

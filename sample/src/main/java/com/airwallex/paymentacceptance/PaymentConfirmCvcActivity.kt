@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
@@ -158,40 +157,19 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
 
                     loading.visibility = View.GONE
                     if (paymentIntent.status == "SUCCEEDED") {
-                        showPaymentSuccessDialog()
+                        showPaymentSuccess()
                     } else {
-                        showPaymentFailedDialog()
+                        showPaymentError()
                     }
                 }
 
                 override fun onFailed(exception: AirwallexException) {
                     Log.e(TAG, "Retrieve PaymentIntent failed")
                     loading.visibility = View.GONE
-                    // TODO Need Retry?
 
-                    showPaymentFailedDialog()
+                    // TODO Need Retry?
+                    showPaymentError()
                 }
             })
-    }
-
-    private fun showPaymentSuccessDialog() {
-        AlertDialog.Builder(this@PaymentConfirmCvcActivity)
-            .setTitle(R.string.payment_successful)
-            .setMessage(R.string.payment_successful_message)
-            .setNegativeButton(android.R.string.ok) { dialog, _ ->
-                dialog.dismiss()
-                notifyPaymentSuccess()
-            }
-            .show()
-    }
-
-    private fun showPaymentFailedDialog() {
-        AlertDialog.Builder(this@PaymentConfirmCvcActivity)
-            .setTitle(R.string.payment_failed)
-            .setMessage(R.string.payment_failed_message)
-            .setNegativeButton(android.R.string.ok) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .show()
     }
 }
