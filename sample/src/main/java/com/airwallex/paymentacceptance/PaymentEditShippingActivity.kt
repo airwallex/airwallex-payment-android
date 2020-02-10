@@ -46,16 +46,13 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_add_payment_method, menu)
+        menuInflater.inflate(R.menu.menu_save, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> finish()
-            R.id.menu_save -> {
-                actionSave()
-            }
+        if (item.itemId == R.id.menu_save) {
+            actionSave()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -70,10 +67,9 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
             .setEmail(contact.email)
             .setAddress(shippingWidget.address)
             .build()
-
-        val intent = Intent()
-        intent.putExtra(SHIPPING_DETAIL, shipping)
-        setResult(Activity.RESULT_OK, intent)
+        setResult(Activity.RESULT_OK, Intent().apply {
+            putExtra(SHIPPING_DETAIL, shipping)
+        })
         finish()
     }
 }

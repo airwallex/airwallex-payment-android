@@ -318,8 +318,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        if (data == null) {
+        if (resultCode != Activity.RESULT_OK || data == null) {
             return
         }
         when (requestCode) {

@@ -3,6 +3,8 @@ package com.airwallex.paymentacceptance
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -10,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.view.AddPaymentMethodActivity
+import com.airwallex.android.view.AddPaymentMethodActivity.Companion.REQUEST_ADD_CARD_CODE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -37,16 +41,22 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
     private val paymentMethods = mutableListOf<PaymentMethod?>(null, null)
 
     companion object {
+        private const val TAG = "PaymentMethodsActivity"
+
         fun startActivityForResult(
             activity: Activity,
             paymentMethod: PaymentMethod?,
             paymentIntentId: String,
             requestCode: Int
         ) {
-            val intent = Intent(activity, PaymentMethodsActivity::class.java)
-            intent.putExtra(PAYMENT_METHOD, paymentMethod)
-            intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
-            activity.startActivityForResult(intent, requestCode)
+            activity.startActivityForResult(
+                Intent(activity, PaymentMethodsActivity::class.java)
+                    .apply {
+                        putExtra(PAYMENT_METHOD, paymentMethod)
+                        putExtra(PAYMENT_INTENT_ID, paymentIntentId)
+                    },
+                requestCode
+            )
         }
     }
 
@@ -82,19 +92,16 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_add_payment_method, menu)
+        menuInflater.inflate(R.menu.menu_save, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> finish()
-            R.id.menu_save -> {
-                val intent = Intent()
-                intent.putExtra(PAYMENT_METHOD, cardAdapter.paymentMethod)
-                setResult(Activity.RESULT_OK, intent)
-                finish()
-            }
+        if (item.itemId == R.id.menu_save) {
+            setResult(Activity.RESULT_OK, Intent().apply {
+                putExtra(PAYMENT_METHOD, cardAdapter.paymentMethod)
+            })
+            finish()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -119,8 +126,15 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_OK || data == null) {
+            return
+        }
         when (requestCode) {
-            REQUEST_EDIT_CARD_CODE -> {
+            REQUEST_ADD_CARD_CODE -> {
+                val paymentMethod =
+                    data.getParcelableExtra<Parcelable>(AddPaymentMethodActivity.PAYMENT_METHOD) as PaymentMethod
+                Log.d(TAG, "Save card success ${paymentMethod.id}")
+                // Add card success
                 fetchPaymentMethods()
             }
         }
@@ -138,6 +152,7 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
                 object : TypeToken<List<PaymentMethod?>?>() {}.type
             )
 
+            // TODO
             paymentMethods.clear()
             paymentMethods.add(null)
             paymentMethods.addAll(items.filter { it.type == PaymentMethodType.CARD })

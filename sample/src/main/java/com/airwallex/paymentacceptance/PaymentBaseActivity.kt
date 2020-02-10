@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
@@ -22,8 +23,6 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
         const val REQUEST_EDIT_SHIPPING_CODE = 8
         const val REQUEST_PAYMENT_METHOD_CODE = 9
 
-        const val REQUEST_EDIT_CARD_CODE = 98
-
         const val REQUEST_CONFIRM_CVC_CODE = 998
 
         const val PAYMENT_SUCCESS_ACTION = "PAYMENT_SUCCESS_ACTION"
@@ -40,7 +39,7 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
     }
 
     private fun registerPaymentBroadcast() {
-        val intentFilter = IntentFilter(PAYMENT_SUCCESS_ACTION);
+        val intentFilter = IntentFilter(PAYMENT_SUCCESS_ACTION)
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter)
     }
 
@@ -51,6 +50,13 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         registerPaymentBroadcast()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroy() {

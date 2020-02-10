@@ -44,6 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|right"
                 android:layout_marginEnd="15dp"
+                android:contentDescription="@null"
                 android:src="@drawable/cvv"
                 tools:ignore="RtlHardcoded" />
         </FrameLayout>
