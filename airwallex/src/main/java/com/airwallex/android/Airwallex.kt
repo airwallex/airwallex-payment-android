@@ -24,7 +24,7 @@ class Airwallex internal constructor(
     }
 
     interface PaymentMethodCallback {
-        fun onSuccess(paymentIntent: PaymentMethod)
+        fun onSuccess(paymentMethod: PaymentMethod)
 
         fun onFailed(exception: AirwallexException)
     }

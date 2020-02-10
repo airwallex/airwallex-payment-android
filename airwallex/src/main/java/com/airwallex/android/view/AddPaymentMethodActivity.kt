@@ -21,13 +21,16 @@ class AddPaymentMethodActivity : AirwallexActivity() {
     }
 
     companion object {
-        fun startActivityForResult(activity: Activity, token: String, requestCode: Int) {
+        const val REQUEST_ADD_CARD_CODE = 98
+        const val PAYMENT_METHOD = "payment_method"
+
+        fun startActivityForResult(activity: Activity, token: String) {
             activity.startActivityForResult(
                 Intent(activity, AddPaymentMethodActivity::class.java)
                     .apply {
                         putExtra(TOKEN, token)
                     },
-                requestCode
+                REQUEST_ADD_CARD_CODE
             )
         }
     }
@@ -49,7 +52,9 @@ class AddPaymentMethodActivity : AirwallexActivity() {
             object : Airwallex.PaymentMethodCallback {
                 override fun onSuccess(paymentMethod: PaymentMethod) {
                     pbLoading.visibility = View.GONE
-                    setResult(Activity.RESULT_OK, intent)
+                    setResult(Activity.RESULT_OK, Intent().apply {
+                        putExtra(PAYMENT_METHOD, paymentMethod)
+                    })
                     finish()
                 }
 

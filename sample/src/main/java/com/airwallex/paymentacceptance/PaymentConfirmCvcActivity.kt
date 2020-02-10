@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -34,10 +33,14 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
             paymentIntentId: String,
             requestCode: Int
         ) {
-            val intent = Intent(activity, PaymentConfirmCvcActivity::class.java)
-            intent.putExtra(PAYMENT_METHOD, paymentMethod)
-            intent.putExtra(PAYMENT_INTENT_ID, paymentIntentId)
-            activity.startActivityForResult(intent, requestCode)
+            activity.startActivityForResult(
+                Intent(activity, PaymentConfirmCvcActivity::class.java)
+                    .apply {
+                        putExtra(PAYMENT_METHOD, paymentMethod)
+                        putExtra(PAYMENT_INTENT_ID, paymentIntentId)
+                    },
+                requestCode
+            )
         }
     }
 
@@ -78,13 +81,6 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
             startConfirmPaymentIntent(paymentMethod, atlCardCvc.value)
             return@setOnClickListener
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> finish()
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun startConfirmPaymentIntent(paymentMethod: PaymentMethod, cvc: String) {

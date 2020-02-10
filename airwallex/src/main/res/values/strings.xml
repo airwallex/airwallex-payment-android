@@ -8,7 +8,7 @@
     <string name="invalid_card_number">Please enter a valid credit card number.</string>
     <string name="empty_card_name">Please enter your card name</string>
     <string name="empty_expiry">Please enter your card expiry date</string>
-    <string name="invalid_expiry_year">Please enter a valid expiry year.</string>
+    <string name="invalid_expiry_date">Please enter a valid expiry date.</string>
     <string name="empty_cvc">Please enter your card CVC</string>
     <string name="invalid_cvc">Please enter a valid security code.</string>
 
