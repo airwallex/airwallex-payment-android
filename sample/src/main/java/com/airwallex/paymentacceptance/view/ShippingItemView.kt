@@ -3,7 +3,6 @@ package com.airwallex.paymentacceptance.view
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
@@ -42,7 +41,12 @@ class ShippingItemView constructor(
         if (shipping == null) {
             tvShippingAddress.text =
                 context.getString(com.airwallex.paymentacceptance.R.string.select_shipping)
-            tvShippingAddress.setTextColor(Color.parseColor("#A9A9A9"))
+            tvShippingAddress.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.airwallex_dark_light
+                )
+            )
             return
         }
 
@@ -61,14 +65,12 @@ class ShippingItemView constructor(
             countryName
         )
 
-        context?.let {
-            tvShippingAddress.setTextColor(
-                ContextCompat.getColor(
-                    it,
-                    R.color.airwallex_dark_gray
-                )
+        tvShippingAddress.setTextColor(
+            ContextCompat.getColor(
+                context,
+                R.color.airwallex_dark_gray
             )
-        }
+        )
     }
 
     fun onActivityResult(

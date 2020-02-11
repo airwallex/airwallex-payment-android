@@ -10,6 +10,7 @@
 
     <color name="airwallex_blue">#612FFF</color>
     <color name="airwallex_dark_gray">#2A2A2A</color>
+    <color name="airwallex_dark_light">#A9A9A9</color>
     <color name="airwallex_bg">#F7F7F7</color>
 
 </resources>

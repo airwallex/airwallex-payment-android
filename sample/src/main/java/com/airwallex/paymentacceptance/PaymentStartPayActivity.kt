@@ -2,7 +2,6 @@ package com.airwallex.paymentacceptance
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -13,8 +12,6 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.activity_start_pay.*
-import kotlinx.android.synthetic.main.activity_start_pay.shippingView
-import kotlinx.android.synthetic.main.fragment_order_summary.*
 import okhttp3.*
 import java.io.IOException
 import java.util.*
@@ -84,7 +81,12 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
 
         if (paymentMethod == null) {
             tvPaymentMethod.text = getString(R.string.select_payment_method)
-            tvPaymentMethod.setTextColor(Color.parseColor("#A9A9A9"))
+            tvPaymentMethod.setTextColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.airwallex_dark_light
+                )
+            )
         } else {
             tvPaymentMethod.text = paymentMethod!!.type?.displayName
             tvPaymentMethod.setTextColor(ContextCompat.getColor(this, R.color.airwallex_dark_gray))
@@ -283,7 +285,12 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
                             String.format("%s •••• %s", it.card?.brand, it.card?.last4)
                     }
 
-                    tvPaymentMethod.setTextColor(ContextCompat.getColor(this, R.color.airwallex_dark_gray))
+                    tvPaymentMethod.setTextColor(
+                        ContextCompat.getColor(
+                            this,
+                            R.color.airwallex_dark_gray
+                        )
+                    )
                 }
             }
         }
