@@ -106,12 +106,38 @@ class PaymentCartActivity : PaymentBaseActivity() {
                     val responseData = JSONObject(it.string())
                     val token = responseData["token"].toString()
                     Store.token = token
-                    api.createPaymentIntent(
+                    api.createCustomer(
                         authorization = "Bearer $token",
+                        params = mutableMapOf(
+                            "request_id" to UUID.randomUUID().toString(),
+                            "merchant_customer_id" to UUID.randomUUID().toString(),
+                            "first_name" to "John",
+                            "last_name" to "Doe",
+                            "email" to "john.doe@airwallex.com",
+                            "phone_number" to "13800000000",
+                            "additional_info" to mapOf(
+                                "registered_via_social_media" to false,
+                                "registration_date" to "2019-09-18",
+                                "first_successful_order_date" to "2019-09-18"
+                            ),
+                            "metadata" to mapOf(
+                                "id" to 1
+                            )
+                        )
+                    )
+
+                }
+                .observeOn(Schedulers.io())
+                .flatMap {
+                    val responseData = JSONObject(it.string())
+                    val customerId = responseData["id"].toString()
+                    api.createPaymentIntent(
+                        authorization = "Bearer ${Store.token}",
                         params = mutableMapOf(
                             "amount" to products.sumByDouble { product ->
                                 product.unitPrice ?: 0 * (product.quantity ?: 0).toDouble()
                             },
+                            "customer_id" to customerId,
                             "currency" to "USD",
                             "descriptor" to "Airwallex - T-shirt",
                             "merchant_order_id" to UUID.randomUUID().toString(),
