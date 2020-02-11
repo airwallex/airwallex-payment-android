@@ -37,7 +37,8 @@
     <com.airwallex.paymentacceptance.view.ShippingItemView
         android:id="@+id/shippingView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/llProducts"

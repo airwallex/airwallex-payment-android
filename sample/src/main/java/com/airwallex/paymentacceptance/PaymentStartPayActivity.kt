@@ -13,6 +13,8 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.activity_start_pay.*
+import kotlinx.android.synthetic.main.activity_start_pay.shippingView
+import kotlinx.android.synthetic.main.fragment_order_summary.*
 import okhttp3.*
 import java.io.IOException
 import java.util.*
@@ -87,6 +89,8 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             tvPaymentMethod.text = paymentMethod!!.type?.displayName
             tvPaymentMethod.setTextColor(ContextCompat.getColor(this, R.color.airwallex_dark_gray))
         }
+
+        shippingView.refreshShippingAddress(SampleApplication.instance.shipping)
 
         rlPlay.isEnabled = paymentMethod != null
         btnPlay.isEnabled = rlPlay.isEnabled
@@ -283,6 +287,11 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
                 }
             }
         }
+
+        shippingView.onActivityResult(requestCode, resultCode, data) {
+            SampleApplication.instance.shipping = it
+        }
+
         rlPlay.isEnabled = paymentMethod != null
         btnPlay.isEnabled = rlPlay.isEnabled
     }
