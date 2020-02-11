@@ -32,56 +32,17 @@
         android:textColor="#1E272E"
         android:textSize="14sp" />
 
-    <RelativeLayout
-        android:id="@+id/rlShipping"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvTotalLabel"
-        android:layout_marginTop="40dp"
-        android:background="@android:color/white"
-        android:minHeight="58dp"
-        android:paddingLeft="16dp"
-        android:paddingTop="20dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="20dp">
-
-        <TextView
-            android:id="@+id/tvShippingLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:fontFamily="@font/circularstd_medium"
-            android:text="@string/shipping"
-            android:textColor="#54545E"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvShipping"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_toEndOf="@id/tvShippingLabel"
-            android:drawableEnd="@drawable/right_arrow"
-            android:drawablePadding="10dp"
-            android:fontFamily="@font/circularstd_medium"
-            android:gravity="end"
-            android:lineSpacingExtra="4dp"
-            android:textColor="#2A2A2A"
-            android:textSize="14sp" />
-
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/rlShipping"
-        android:background="#EBECF0" />
+<!--    <View-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:layout_below="@id/rlShipping"-->
+<!--        android:background="#EBECF0" />-->
 
     <RelativeLayout
         android:id="@+id/rlPaymentMethod"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/rlShipping"
+        android:layout_below="@id/tvTotalLabel"
         android:layout_marginTop="1dp"
         android:background="@android:color/white"
         android:minHeight="58dp"
@@ -109,7 +70,7 @@
             android:drawablePadding="10dp"
             android:fontFamily="@font/circularstd_medium"
             android:gravity="end"
-            android:textColor="#2A2A2A"
+            android:textColor="@color/airwallex_dark_gray"
             android:textSize="14sp" />
     </RelativeLayout>
 
