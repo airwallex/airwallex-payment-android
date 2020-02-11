@@ -1,23 +1,17 @@
 package com.airwallex.paymentacceptance
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.airwallex.android.model.Product
-import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.fragment_order_summary.*
 import kotlinx.android.synthetic.main.order_summary_item.view.*
-import java.util.*
 
 class PaymentCartFragment : Fragment() {
 
@@ -59,62 +53,14 @@ class PaymentCartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val shipping = (context as PaymentCartActivity).shipping
-        rlShipping.setOnClickListener {
-            activity?.let {
-                PaymentEditShippingActivity.startActivityForResult(
-                    it,
-                    shipping,
-                    PaymentBaseActivity.REQUEST_EDIT_SHIPPING_CODE
-                )
-            }
-        }
-
-        refreshShippingAddress(shipping)
+        shippingView.refreshShippingAddress((context as PaymentCartActivity).shipping)
         refreshProducts()
-    }
-
-    private fun refreshShippingAddress(shipping: Shipping?) {
-        if (shipping == null) {
-            tvShippingAddress.text = getString(R.string.select_shipping)
-            tvShippingAddress.setTextColor(Color.parseColor("#A9A9A9"))
-            return
-        }
-
-        val countryName = shipping.address?.countryCode?.let {
-            val loc = Locale("", it)
-            loc.displayCountry
-        }
-
-        tvShippingAddress.text = String.format(
-            "%s %s\n%s\n%s, %s, %s",
-            shipping.lastName,
-            shipping.firstName,
-            shipping.address?.street,
-            shipping.address?.city,
-            shipping.address?.state,
-            countryName
-        )
-
-        context?.let {
-            tvShipping.setTextColor(ContextCompat.getColor(it, R.color.airwallex_dark_gray))
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_OK || data == null) {
-            return
-        }
-        when (requestCode) {
-            PaymentBaseActivity.REQUEST_EDIT_SHIPPING_CODE -> {
-                val shipping =
-                    data.getParcelableExtra<Parcelable>(PaymentBaseActivity.SHIPPING_DETAIL) as Shipping
-                refreshShippingAddress(shipping)
-                (context as PaymentCartActivity).shipping = shipping
-            }
+        shippingView.onActivityResult(requestCode, resultCode, data) {
+            (context as PaymentCartActivity).shipping = it
         }
     }
 
