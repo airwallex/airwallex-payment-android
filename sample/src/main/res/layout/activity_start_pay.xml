@@ -32,18 +32,12 @@
         android:textColor="#1E272E"
         android:textSize="14sp" />
 
-<!--    <View-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="1dp"-->
-<!--        android:layout_below="@id/rlShipping"-->
-<!--        android:background="#EBECF0" />-->
-
     <RelativeLayout
         android:id="@+id/rlPaymentMethod"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tvTotalLabel"
-        android:layout_marginTop="1dp"
+        android:layout_marginTop="40dp"
         android:background="@android:color/white"
         android:minHeight="58dp"
         android:paddingLeft="16dp"

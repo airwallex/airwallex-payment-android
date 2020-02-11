@@ -5,13 +5,11 @@
 
     <string name="contact">Contact</string>
     <string name="checkout">Checkout</string>
-    <string name="order_summary_subtotal">Subtotal</string>
-    <string name="order_summary_shipping">Shipping</string>
-    <string name="order_summary_total">Total</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="total">Total</string>
     <string name="remove">Remove</string>
     <string name="my_cart">My cart</string>
     <string name="pay_now">Pay now</string>
-    <string name="total">Total</string>
     <string name="payment">Payment</string>
     <string name="payment_methods">Payment methods</string>
     <string name="wechat_pay">WeChat pay</string>

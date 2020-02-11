@@ -13,8 +13,7 @@
         android:fontFamily="@font/circularstd_bold"
         android:text="@string/contact"
         android:textColor="@color/airwallex_dark_gray"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textSize="18sp" />
 
     <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlFirstName"

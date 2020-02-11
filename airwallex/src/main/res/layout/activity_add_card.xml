@@ -19,8 +19,7 @@
             android:fontFamily="@font/circularstd_bold"
             android:text="@string/add_card"
             android:textColor="@color/airwallex_dark_gray"
-            android:textSize="32sp"
-            android:textStyle="bold" />
+            android:textSize="32sp" />
 
         <com.airwallex.android.view.CardWidget
             android:id="@+id/cardWidget"

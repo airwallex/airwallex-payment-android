@@ -15,8 +15,7 @@
         android:paddingRight="16dp"
         android:text="@string/payment_methods"
         android:textColor="@color/airwallex_dark_gray"
-        android:textSize="32sp"
-        android:textStyle="bold" />
+        android:textSize="32sp" />
 
     <RelativeLayout
         android:id="@+id/rlWechatPay"
