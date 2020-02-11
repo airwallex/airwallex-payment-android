@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.airwallex.android.model.Address
+import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.CountryAutoCompleteView
 import kotlinx.android.synthetic.main.widget_shipping.view.*
 
@@ -41,16 +42,18 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
             shippingChangeCallback?.invoke()
         }
 
-        PaymentData.shipping?.apply {
+        listenTextChanged()
+        listenFocusChanged()
+    }
+
+    fun initializeView(shipping: Shipping) {
+        with(shipping) {
             atlStreetAddress.value = address?.street ?: ""
             atlZipCode.value = address?.postcode ?: ""
             atlCity.value = address?.city ?: ""
             atlState.value = address?.state ?: ""
             countryAutocomplete.setInitCountry(address?.countryCode)
         }
-
-        listenTextChanged()
-        listenFocusChanged()
     }
 
     private fun listenTextChanged() {

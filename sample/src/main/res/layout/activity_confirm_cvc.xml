@@ -24,7 +24,7 @@
             android:layout_marginRight="24dp"
             android:fontFamily="@font/circularstd_bold"
             android:lineSpacingExtra="8dp"
-            android:textColor="#2A2A2A"
+            android:textColor="@color/airwallex_dark_gray"
             android:textSize="18sp" />
 
         <FrameLayout

@@ -13,10 +13,17 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
     override val inPaymentFlow: Boolean
         get() = true
 
+    private val shipping: Shipping by lazy {
+        intent.getParcelableExtra(SHIPPING) as Shipping
+    }
+
     companion object {
-        fun startActivityForResult(activity: Activity, requestCode: Int) {
+        private const val SHIPPING = "shipping"
+
+        fun startActivityForResult(activity: Activity, shipping: Shipping, requestCode: Int) {
             activity.startActivityForResult(
-                Intent(activity, PaymentEditShippingActivity::class.java),
+                Intent(activity, PaymentEditShippingActivity::class.java)
+                    .putExtra(SHIPPING, shipping),
                 requestCode
             )
         }
@@ -32,6 +39,9 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowTitleEnabled(false)
         }
+
+        contactWidget.initializeView(shipping)
+        shippingWidget.initializeView(shipping)
 
         contactWidget.contactChangeCallback = {
             invalidateOptionsMenu()

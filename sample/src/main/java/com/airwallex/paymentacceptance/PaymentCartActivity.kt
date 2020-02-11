@@ -6,9 +6,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import com.airwallex.android.model.Address
 import com.airwallex.android.model.Order
-import com.airwallex.paymentacceptance.PaymentData.products
-import com.airwallex.paymentacceptance.PaymentData.shipping
+import com.airwallex.android.model.Product
+import com.airwallex.android.model.Shipping
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -20,6 +21,45 @@ import java.io.IOException
 import java.util.*
 
 class PaymentCartActivity : PaymentBaseActivity() {
+
+    val products = mutableListOf(
+        Product.Builder()
+            .setCode("123")
+            .setName("AirPods Pro")
+            .setDesc("Buy AirPods Pro, per month with trade-in")
+            .setSku("piece")
+            .setType("Free engraving")
+            .setUnitPrice(399.00)
+            .setUrl("www.aircross.com")
+            .setQuantity(1)
+            .build(),
+        Product.Builder()
+            .setCode("123")
+            .setName("HomePod")
+            .setDesc("Buy HomePod, per month with trade-in")
+            .setSku("piece")
+            .setType("White")
+            .setUnitPrice(469.00)
+            .setUrl("www.aircross.com")
+            .setQuantity(1)
+            .build()
+    )
+
+    var shipping: Shipping = Shipping.Builder()
+        .setFirstName("John")
+        .setLastName("Doe")
+        .setPhone("13800000000")
+        .setEmail("jim631@sina.com")
+        .setAddress(
+            Address.Builder()
+                .setCountryCode("CN")
+                .setState("Shanghai")
+                .setCity("Shanghai")
+                .setStreet("Pudong District")
+                .setPostcode("100000")
+                .build()
+        )
+        .build()
 
     private val compositeSubscription = CompositeDisposable()
 
@@ -69,10 +109,9 @@ class PaymentCartActivity : PaymentBaseActivity() {
                     api.createPaymentIntent(
                         authorization = "Bearer $token",
                         params = mutableMapOf(
-                            "amount" to products.sumByDouble {
-                                it.unitPrice ?: 0 * (it.quantity ?: 0).toDouble()
+                            "amount" to products.sumByDouble { product ->
+                                product.unitPrice ?: 0 * (product.quantity ?: 0).toDouble()
                             },
-//                            "amount" to 0.01,
                             "currency" to "USD",
                             "descriptor" to "Airwallex - T-shirt",
                             "merchant_order_id" to UUID.randomUUID().toString(),
@@ -113,5 +152,10 @@ class PaymentCartActivity : PaymentBaseActivity() {
         } catch (e: JSONException) {
             e.printStackTrace()
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        fgOrderSummary.onActivityResult(requestCode, resultCode, data)
     }
 }

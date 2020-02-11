@@ -14,7 +14,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:text="@string/payment_methods"
-        android:textColor="#2A2A2A"
+        android:textColor="@color/airwallex_dark_gray"
         android:textSize="32sp"
         android:textStyle="bold" />
 
@@ -44,7 +44,7 @@
             android:layout_toEndOf="@id/wechatPayIcon"
             android:fontFamily="@font/circularstd_medium"
             android:text="@string/wechat_pay"
-            android:textColor="#2A2A2A"
+            android:textColor="@color/airwallex_dark_gray"
             android:textSize="14sp" />
 
         <ImageView

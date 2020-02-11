@@ -24,7 +24,7 @@
         android:layout_marginStart="16dp"
         android:layout_toEndOf="@id/ivCardIcon"
         android:fontFamily="@font/circularstd_medium"
-        android:textColor="#2A2A2A"
+        android:textColor="@color/airwallex_dark_gray"
         android:textSize="14sp" />
 
     <ImageView

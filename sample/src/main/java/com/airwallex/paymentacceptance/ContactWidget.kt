@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.util.Patterns
 import android.view.View
 import android.widget.LinearLayout
+import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.widget_contact.view.*
 
 class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
@@ -38,15 +39,17 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
     init {
         View.inflate(getContext(), R.layout.widget_contact, this)
 
-        PaymentData.shipping?.apply {
+        listenTextChanged()
+        listenFocusChanged()
+    }
+
+    fun initializeView(shipping: Shipping) {
+        with(shipping) {
             atlLastName.value = lastName ?: ""
             atlFirstName.value = firstName ?: ""
             atlPhoneNumber.value = phone ?: ""
             atlEmail.value = email ?: ""
         }
-
-        listenTextChanged()
-        listenFocusChanged()
     }
 
     private fun listenTextChanged() {

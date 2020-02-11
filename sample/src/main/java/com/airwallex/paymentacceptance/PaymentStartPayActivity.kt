@@ -4,15 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
-import com.airwallex.paymentacceptance.PaymentData.shipping
 import kotlinx.android.synthetic.main.activity_start_pay.*
 import okhttp3.*
 import java.io.IOException
@@ -66,10 +65,6 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
 
         tvTotalPrice.text = String.format("$%.2f", paymentAmount)
 
-        rlShipping.setOnClickListener {
-            PaymentEditShippingActivity.startActivityForResult(this, REQUEST_EDIT_SHIPPING_CODE)
-        }
-
         rlPaymentMethod.setOnClickListener {
             PaymentMethodsActivity.startActivityForResult(
                 this,
@@ -85,22 +80,15 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             }
         }
 
-        if (shipping != null) {
-            updateShippingLabel(shipping!!)
-        } else {
-            tvShipping.text = getString(R.string.select_shipping)
-            tvShipping.setTextColor(Color.parseColor("#A9A9A9"))
-        }
-
         if (paymentMethod == null) {
             tvPaymentMethod.text = getString(R.string.select_payment_method)
             tvPaymentMethod.setTextColor(Color.parseColor("#A9A9A9"))
         } else {
             tvPaymentMethod.text = paymentMethod!!.type?.displayName
-            tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
+            tvPaymentMethod.setTextColor(ContextCompat.getColor(this, R.color.airwallex_dark_gray))
         }
 
-        rlPlay.isEnabled = shipping != null && paymentMethod != null
+        rlPlay.isEnabled = paymentMethod != null
         btnPlay.isEnabled = rlPlay.isEnabled
     }
 
@@ -118,16 +106,6 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             PaymentMethodType.WECHAT -> {
                 loading.visibility = View.VISIBLE
                 val paymentIntentParams: PaymentIntentParams
-                val device = Device.Builder()
-                    .setBrowserInfo("Chrome/76.0.3809.100")
-                    .setCookiesAccepted("true")
-                    .setDeviceId("IMEI-4432fsdafd31243244fdsafdfd653")
-                    .setHostName("www.airwallex.com")
-                    .setHttpBrowserEmail("jim631@sina.com")
-                    .setHttpBrowserType("chrome")
-                    .setIpAddress("123.90.0.1")
-                    .setIpNetworkAddress("128.0.0.0")
-                    .build()
 
                 val paymentMethodOptions: PaymentMethodOptions = PaymentMethodOptions.Builder()
                     .setCardOptions(
@@ -143,7 +121,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
 
                 paymentIntentParams = PaymentIntentParams.Builder()
                     .setRequestId(UUID.randomUUID().toString())
-                    .setDevice(device)
+                    .setDevice(PaymentData.device)
                     .setPaymentMethod(paymentMethod)
                     .setPaymentMethodOptions(paymentMethodOptions)
                     .build()
@@ -284,38 +262,12 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun updateShippingLabel(shipping: Shipping) {
-        val countryName = shipping.address?.countryCode?.let {
-            val loc = Locale("", it)
-            loc.displayCountry
-        }
-
-        tvShipping.text = String.format(
-            "%s %s\n%s\n%s, %s, %s",
-            shipping.lastName,
-            shipping.firstName,
-            shipping.address?.street,
-            shipping.address?.city,
-            shipping.address?.state,
-            countryName
-        )
-
-        tvShipping.setTextColor(Color.parseColor("#2A2A2A"))
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode != Activity.RESULT_OK || data == null) {
             return
         }
         when (requestCode) {
-            REQUEST_EDIT_SHIPPING_CODE -> {
-                shipping =
-                    data.getParcelableExtra<Parcelable>(SHIPPING_DETAIL) as Shipping
-                shipping?.let {
-                    updateShippingLabel(it)
-                }
-            }
             REQUEST_PAYMENT_METHOD_CODE -> {
                 paymentMethod =
                     data.getParcelableExtra(PAYMENT_METHOD) as PaymentMethod
@@ -327,11 +279,11 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
                             String.format("%s •••• %s", it.card?.brand, it.card?.last4)
                     }
 
-                    tvPaymentMethod.setTextColor(Color.parseColor("#2A2A2A"))
+                    tvPaymentMethod.setTextColor(ContextCompat.getColor(this, R.color.airwallex_dark_gray))
                 }
             }
         }
-        rlPlay.isEnabled = shipping != null && paymentMethod != null
+        rlPlay.isEnabled = paymentMethod != null
         btnPlay.isEnabled = rlPlay.isEnabled
     }
 }
