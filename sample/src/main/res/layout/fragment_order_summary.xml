@@ -34,43 +34,10 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/rlShipping"
+    <com.airwallex.paymentacceptance.view.ShippingItemView
+        android:id="@+id/shippingView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="33dp"
-        android:background="@android:color/white"
-        android:minHeight="58dp"
-        android:paddingLeft="16dp"
-        android:paddingTop="20dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="20dp">
-
-        <TextView
-            android:id="@+id/tvShippingTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:fontFamily="@font/circularstd_medium"
-            android:text="@string/shipping"
-            android:textColor="#54545E"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvShippingAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_toEndOf="@id/tvShippingTitle"
-            android:drawableEnd="@drawable/right_arrow"
-            android:drawablePadding="10dp"
-            android:fontFamily="@font/circularstd_medium"
-            android:gravity="end"
-            android:lineSpacingExtra="4dp"
-            android:textColor="@color/airwallex_dark_gray"
-            android:textSize="14sp" />
-
-    </RelativeLayout>
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/llProducts"
