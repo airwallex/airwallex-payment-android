@@ -53,19 +53,19 @@ class PaymentCartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        shippingView.refreshShippingAddress((context as PaymentCartActivity).shipping)
+        shippingView.refreshShippingAddress(SampleApplication.instance.shipping)
         refreshProducts()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         shippingView.onActivityResult(requestCode, resultCode, data) {
-            (context as PaymentCartActivity).shipping = it
+            SampleApplication.instance.shipping = it
         }
     }
 
     private fun refreshProducts() {
-        val products = (context as PaymentCartActivity).products
+        val products = SampleApplication.instance.products
         llProducts.removeAllViews()
         products.map {
             OrderSummaryItem(
