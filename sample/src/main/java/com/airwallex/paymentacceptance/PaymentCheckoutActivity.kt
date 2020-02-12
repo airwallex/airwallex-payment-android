@@ -62,7 +62,6 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
 
         paymentMethodItemView.paymentIntent = paymentIntent
         paymentMethodItemView.renewalPaymentMethod((paymentMethod))
-        shippingItemView.renewalShipping(SampleApplication.instance.shipping)
 
         rlPlay.isEnabled = paymentMethod != null
         btnPlay.isEnabled = rlPlay.isEnabled
@@ -245,10 +244,6 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             this.paymentMethod = it
             rlPlay.isEnabled = paymentMethod != null
             btnPlay.isEnabled = rlPlay.isEnabled
-        }
-
-        shippingItemView.onActivityResult(requestCode, resultCode, data) {
-            SampleApplication.instance.shipping = it
         }
     }
 }
