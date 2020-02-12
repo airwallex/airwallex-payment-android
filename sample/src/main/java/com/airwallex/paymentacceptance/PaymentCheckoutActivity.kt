@@ -66,10 +66,10 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         }
 
         paymentMethodItemView.paymentIntent = paymentIntent
-        paymentMethodItemView.renewalPaymentMethod((paymentMethod))
-
-        rlPlay.isEnabled = paymentMethod != null
-        btnPlay.isEnabled = rlPlay.isEnabled
+        paymentMethodItemView.renewalPaymentMethod(paymentMethod)
+        paymentMethodItemView.cvcChangedCallback = {
+            updateButtonStatus()
+        }
     }
 
     private fun startConfirmPaymentIntent(paymentMethod: PaymentMethod) {
@@ -250,8 +250,11 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
 
         paymentMethodItemView.onActivityResult(requestCode, resultCode, data) {
             this.paymentMethod = it
-            rlPlay.isEnabled = paymentMethod != null
-            btnPlay.isEnabled = rlPlay.isEnabled
+            updateButtonStatus()
         }
+    }
+
+    private fun updateButtonStatus() {
+        rlPlay.isEnabled = paymentMethodItemView.isValid
     }
 }

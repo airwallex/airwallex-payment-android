@@ -57,6 +57,7 @@
             android:clickable="false"
             android:drawableStart="@drawable/lock_selector"
             android:drawablePadding="10dp"
+            android:duplicateParentState="true"
             android:focusable="false"
             android:orientation="horizontal"
             android:text="@string/pay_now"
