@@ -18,6 +18,12 @@ class CardCvcTextInputLayout constructor(
             field = value
         }
 
+    var changedCallback: () -> Unit = {}
+        set(value) {
+            (teInput as CardCvcEditText).changedCallback = value
+            field = value
+        }
+
     val cvcValue: String?
         get() = (teInput as CardCvcEditText).cvcValue
 }

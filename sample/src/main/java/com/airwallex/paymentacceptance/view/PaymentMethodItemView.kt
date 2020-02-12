@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.model.PaymentIntent
@@ -26,12 +27,19 @@ class PaymentMethodItemView constructor(
 
     internal val cvc: String?
         get() {
-            return if (atlCardCvc.isValid) {
+            return if (isValid) {
                 atlCardCvc.value
             } else {
                 null
             }
         }
+
+    internal val isValid: Boolean
+        get() {
+            return atlCardCvc.isValid && paymentMethod != null
+        }
+
+    var cvcChangedCallback: () -> Unit = {}
 
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
@@ -43,6 +51,13 @@ class PaymentMethodItemView constructor(
                 paymentIntent,
                 PaymentBaseActivity.REQUEST_PAYMENT_METHOD_CODE
             )
+        }
+
+        atlCardCvc.changedCallback = {
+            if (atlCardCvc.isValid) {
+                hideKeyboard(context as Activity)
+            }
+            cvcChangedCallback()
         }
     }
 
@@ -96,5 +111,11 @@ class PaymentMethodItemView constructor(
         }
     }
 
-
+    private fun hideKeyboard(activity: Activity) {
+        val inputMethodManager =
+            activity.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        if (inputMethodManager?.isAcceptingText == true) {
+            inputMethodManager.hideSoftInputFromWindow(activity.currentFocus?.windowToken, 0)
+        }
+    }
 }
