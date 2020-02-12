@@ -11,7 +11,7 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.airwallex.android.model.Product
 import kotlinx.android.synthetic.main.fragment_order_summary.*
-import kotlinx.android.synthetic.main.order_summary_item.view.*
+import kotlinx.android.synthetic.main.cart_summary_item.view.*
 
 class PaymentCartFragment : Fragment() {
 
@@ -26,7 +26,7 @@ class PaymentCartFragment : Fragment() {
         init {
             View.inflate(
                 context,
-                R.layout.order_summary_item, this
+                R.layout.cart_summary_item, this
             )
 
             tvProductName.text = order.name
@@ -53,13 +53,13 @@ class PaymentCartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        shippingView.refreshShippingAddress(SampleApplication.instance.shipping)
+        shippingItemView.renewalShipping(SampleApplication.instance.shipping)
         refreshProducts()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        shippingView.onActivityResult(requestCode, resultCode, data) {
+        shippingItemView.onActivityResult(requestCode, resultCode, data) {
             SampleApplication.instance.shipping = it
         }
     }

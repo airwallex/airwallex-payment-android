@@ -7,16 +7,15 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
-import kotlinx.android.synthetic.main.activity_start_pay.*
+import kotlinx.android.synthetic.main.activity_payment_checkout.*
 import okhttp3.*
 import java.io.IOException
 import java.util.*
 
-class PaymentStartPayActivity : PaymentBaseActivity() {
+class PaymentCheckoutActivity : PaymentBaseActivity() {
 
     private val paymentIntentId: String by lazy {
         intent.getStringExtra(PAYMENT_INTENT_ID)
@@ -34,9 +33,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
     companion object {
 
         private const val TAG = "PaymentPayActivity"
-
         private const val PAYMENT_AMOUNT = "payment_amount"
-
 
         fun startActivity(
             activity: Activity,
@@ -44,7 +41,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             amount: Float
         ) {
             activity.startActivity(
-                Intent(activity, PaymentStartPayActivity::class.java)
+                Intent(activity, PaymentCheckoutActivity::class.java)
                     .putExtra(PAYMENT_INTENT_ID, paymentIntentId)
                     .putExtra(PAYMENT_AMOUNT, amount)
             )
@@ -53,7 +50,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_start_pay)
+        setContentView(R.layout.activity_payment_checkout)
 
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
@@ -64,35 +61,14 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
 
         tvTotalPrice.text = String.format("$%.2f", paymentAmount)
 
-        rlPaymentMethod.setOnClickListener {
-            PaymentMethodsActivity.startActivityForResult(
-                this,
-                paymentMethod,
-                paymentIntentId,
-                REQUEST_PAYMENT_METHOD_CODE
-            )
-        }
-
         rlPlay.setOnClickListener {
             paymentMethod?.let {
                 startConfirmPaymentIntent(it)
             }
         }
 
-        if (paymentMethod == null) {
-            tvPaymentMethod.text = getString(R.string.select_payment_method)
-            tvPaymentMethod.setTextColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.airwallex_dark_light
-                )
-            )
-        } else {
-            tvPaymentMethod.text = paymentMethod!!.type?.displayName
-            tvPaymentMethod.setTextColor(ContextCompat.getColor(this, R.color.airwallex_dark_gray))
-        }
-
-        shippingView.refreshShippingAddress(SampleApplication.instance.shipping)
+        paymentMethodItemView.paymentIntentId = paymentIntentId
+        shippingItemView.renewalShipping(SampleApplication.instance.shipping)
 
         rlPlay.isEnabled = paymentMethod != null
         btnPlay.isEnabled = rlPlay.isEnabled
@@ -145,7 +121,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
                         override fun onFailed(exception: AirwallexException) {
                             loading.visibility = View.GONE
                             Toast.makeText(
-                                this@PaymentStartPayActivity,
+                                this@PaymentCheckoutActivity,
                                 exception.toString(),
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -162,7 +138,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
         if (nextAction?.data == null
         ) {
             Toast.makeText(
-                this@PaymentStartPayActivity,
+                this@PaymentCheckoutActivity,
                 "Server error, NextAction is null...",
                 Toast.LENGTH_SHORT
             ).show()
@@ -184,7 +160,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
                     Log.e(TAG, "User cancel the Wechat payment")
                     loading.visibility = View.GONE
                     Toast.makeText(
-                        this@PaymentStartPayActivity,
+                        this@PaymentCheckoutActivity,
                         "Failed to mock wechat pay, reason: ${e.message}",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -198,7 +174,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
             Log.d(TAG, "Confirm PaymentIntent success, launch REAL Wechat pay.")
             // launch wechat pay
             WXPay.instance.launchWeChat(
-                context = this@PaymentStartPayActivity,
+                context = this@PaymentCheckoutActivity,
                 appId = Constants.APP_ID,
                 data = paymentIntent.nextAction!!.data!!,
                 listener = object : PayListener {
@@ -210,7 +186,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
                         Log.e(TAG, "Wechat pay failed, error $errMessage")
                         loading.visibility = View.GONE
                         Toast.makeText(
-                            this@PaymentStartPayActivity,
+                            this@PaymentCheckoutActivity,
                             "errCode $errCode, errMessage $errMessage",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -220,7 +196,7 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
                         Log.e(TAG, "User cancel the Wechat payment")
                         loading.visibility = View.GONE
                         Toast.makeText(
-                            this@PaymentStartPayActivity,
+                            this@PaymentCheckoutActivity,
                             "User cancel the payment",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -270,36 +246,15 @@ class PaymentStartPayActivity : PaymentBaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_OK || data == null) {
-            return
-        }
-        when (requestCode) {
-            REQUEST_PAYMENT_METHOD_CODE -> {
-                paymentMethod =
-                    data.getParcelableExtra(PAYMENT_METHOD) as PaymentMethod
-                paymentMethod?.let {
-                    if (it.type == PaymentMethodType.WECHAT) {
-                        tvPaymentMethod.text = it.type?.displayName
-                    } else {
-                        tvPaymentMethod.text =
-                            String.format("%s •••• %s", it.card?.brand, it.card?.last4)
-                    }
 
-                    tvPaymentMethod.setTextColor(
-                        ContextCompat.getColor(
-                            this,
-                            R.color.airwallex_dark_gray
-                        )
-                    )
-                }
-            }
+        paymentMethodItemView.onActivityResult(requestCode, resultCode, data) {
+            this.paymentMethod = it
+            rlPlay.isEnabled = paymentMethod != null
+            btnPlay.isEnabled = rlPlay.isEnabled
         }
 
-        shippingView.onActivityResult(requestCode, resultCode, data) {
+        shippingItemView.onActivityResult(requestCode, resultCode, data) {
             SampleApplication.instance.shipping = it
         }
-
-        rlPlay.isEnabled = paymentMethod != null
-        btnPlay.isEnabled = rlPlay.isEnabled
     }
 }
