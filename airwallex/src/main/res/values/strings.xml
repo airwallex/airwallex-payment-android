@@ -34,5 +34,5 @@
     <string name="empty_country">Please enter your country</string>
 
     <string name="save">Save</string>
-    <string name="add_card">Add card</string>
+    <string name="new_card">New card</string>
 </resources>

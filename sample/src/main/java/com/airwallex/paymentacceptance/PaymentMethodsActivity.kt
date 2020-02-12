@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -93,25 +91,12 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         fetchPaymentMethods()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.menu_save)?.isEnabled = cardAdapter.selectedPaymentMethod != null
-        return super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_save, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_save) {
-            setResult(
-                Activity.RESULT_OK,
-                Intent().putExtra(PAYMENT_METHOD, cardAdapter.selectedPaymentMethod)
-            )
-            finish()
-        }
-        return super.onOptionsItemSelected(item)
+    fun onSaveResult() {
+        setResult(
+            Activity.RESULT_OK,
+            Intent().putExtra(PAYMENT_METHOD, cardAdapter.selectedPaymentMethod)
+        )
+        finish()
     }
 
     override fun onDestroy() {

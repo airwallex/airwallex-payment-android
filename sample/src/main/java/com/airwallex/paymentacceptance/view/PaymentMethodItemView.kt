@@ -24,6 +24,15 @@ class PaymentMethodItemView constructor(
 
     internal lateinit var paymentIntent: PaymentIntent
 
+    internal val cvc: String?
+        get() {
+            return if (atlCardCvc.isValid) {
+                atlCardCvc.value
+            } else {
+                null
+            }
+        }
+
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
 
@@ -47,14 +56,17 @@ class PaymentMethodItemView constructor(
                     R.color.airwallex_dark_light
                 )
             )
+            llCardCvc.visibility = View.GONE
             return
         }
 
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
             tvPaymentMethod.text = paymentMethod.type?.displayName
+            llCardCvc.visibility = View.GONE
         } else {
             tvPaymentMethod.text =
                 String.format("%s •••• %s", paymentMethod.card?.brand, paymentMethod.card?.last4)
+            llCardCvc.visibility = View.VISIBLE
         }
 
         tvPaymentMethod.setTextColor(
