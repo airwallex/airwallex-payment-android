@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.model.*
 import com.airwallex.android.view.AddPaymentMethodActivity
-import com.airwallex.paymentacceptance.PaymentBaseActivity.Companion.REQUEST_CONFIRM_CVC_CODE
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_footer.view.*
 import kotlinx.android.synthetic.main.payment_method_item_header.view.*
@@ -128,13 +127,7 @@ class PaymentMethodsAdapter(
                     context.invalidateOptionsMenu()
                     notifyDataSetChanged()
                 }
-
-                PaymentCheckoutCvcActivity.startActivityForResult(
-                    context,
-                    selectedPaymentMethod,
-                    paymentIntent,
-                    REQUEST_CONFIRM_CVC_CODE
-                )
+                context.onSaveResult()
             }
             itemView.ivCardChecked.visibility =
                 if (selectedPaymentMethod?.type == PaymentMethodType.CARD && method.id == selectedPaymentMethod?.id) View.VISIBLE else View.GONE

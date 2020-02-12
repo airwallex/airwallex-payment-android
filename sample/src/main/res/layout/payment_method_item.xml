@@ -1,36 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rlPaymentMethod"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_below="@id/shippingItemView"
     android:background="@android:color/white"
-    android:minHeight="58dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvPaymentLabel"
+    <RelativeLayout
+        android:id="@+id/rlPaymentMethod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="58dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <TextView
+            android:id="@+id/tvPaymentLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/circularstd_medium"
+            android:text="@string/payment"
+            android:textColor="#54545E"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvPaymentMethod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/tvPaymentLabel"
+            android:drawableEnd="@drawable/right_arrow"
+            android:drawablePadding="10dp"
+            android:fontFamily="@font/circularstd_medium"
+            android:gravity="end"
+            android:textColor="@color/airwallex_dark_gray"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/llCardCvc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:fontFamily="@font/circularstd_medium"
-        android:text="@string/payment"
-        android:textColor="#54545E"
-        android:textSize="14sp" />
+        android:layout_gravity="right"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        tools:ignore="RtlHardcoded">
 
-    <TextView
-        android:id="@+id/tvPaymentMethod"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/tvPaymentLabel"
-        android:drawableEnd="@drawable/right_arrow"
-        android:drawablePadding="10dp"
-        android:fontFamily="@font/circularstd_medium"
-        android:gravity="end"
-        android:textColor="@color/airwallex_dark_gray"
-        android:textSize="14sp" />
-</RelativeLayout>
+        <com.airwallex.android.view.CardCvcTextInputLayout
+            android:id="@+id/atlCardCvc"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginEnd="15dp"
+            android:contentDescription="@null"
+            android:src="@drawable/cvv"
+            tools:ignore="RtlHardcoded" />
+    </LinearLayout>
+</LinearLayout>

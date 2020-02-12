@@ -56,6 +56,11 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
 
         rlPlay.setOnClickListener {
             paymentMethod?.let {
+                if (it.type == PaymentMethodType.CARD
+                    && paymentMethodItemView.cvc == null
+                ) {
+                    return@let
+                }
                 startConfirmPaymentIntent(it)
             }
         }
@@ -68,62 +73,65 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
     }
 
     private fun startConfirmPaymentIntent(paymentMethod: PaymentMethod) {
-        when (paymentMethod.type) {
+        loading.visibility = View.VISIBLE
+        val paymentMethodOptions: PaymentMethodOptions = PaymentMethodOptions.Builder()
+            .setCardOptions(
+                PaymentMethodOptions.CardOptions.Builder()
+                    .setAutoCapture(true)
+                    .setThreeDs(
+                        PaymentMethodOptions.CardOptions.ThreeDs.Builder()
+                            .setOption(false)
+                            .build()
+                    ).build()
+            )
+            .build()
+        val paymentIntentParams: PaymentIntentParams = when (paymentMethod.type!!) {
             PaymentMethodType.CARD -> {
-                // Need fill CVC
-                PaymentCheckoutCvcActivity.startActivityForResult(
-                    this,
-                    paymentMethod,
-                    paymentIntent,
-                    REQUEST_CONFIRM_CVC_CODE
-                )
+                PaymentIntentParams.Builder()
+                    .setRequestId(UUID.randomUUID().toString())
+                    .setDevice(PaymentData.device)
+                    .setPaymentMethodReference(
+                        PaymentMethodReference.Builder()
+                            .setId(paymentMethod.id)
+                            .setCvc(paymentMethodItemView.cvc)
+                            .build()
+                    )
+                    .setPaymentMethodOptions(paymentMethodOptions)
+                    .build()
             }
             PaymentMethodType.WECHAT -> {
-                loading.visibility = View.VISIBLE
-                val paymentIntentParams: PaymentIntentParams
-
-                val paymentMethodOptions: PaymentMethodOptions = PaymentMethodOptions.Builder()
-                    .setCardOptions(
-                        PaymentMethodOptions.CardOptions.Builder()
-                            .setAutoCapture(true)
-                            .setThreeDs(
-                                PaymentMethodOptions.CardOptions.ThreeDs.Builder()
-                                    .setOption(false)
-                                    .build()
-                            ).build()
-                    )
-                    .build()
-
-                paymentIntentParams = PaymentIntentParams.Builder()
+                PaymentIntentParams.Builder()
                     .setRequestId(UUID.randomUUID().toString())
                     .setDevice(PaymentData.device)
                     .setPaymentMethod(paymentMethod)
                     .setPaymentMethodOptions(paymentMethodOptions)
                     .build()
-
-                // Start Confirm PaymentIntent
-                val airwallex = Airwallex(Store.token, paymentIntent.clientSecret!!)
-                airwallex.confirmPaymentIntent(
-                    paymentIntentId = paymentIntent.id!!,
-                    paymentIntentParams = paymentIntentParams,
-                    callback = object : Airwallex.PaymentIntentCallback {
-                        override fun onSuccess(paymentIntent: PaymentIntent) {
-                            handlePaymentWithWechat(airwallex, paymentIntent)
-                        }
-
-                        override fun onFailed(exception: AirwallexException) {
-                            loading.visibility = View.GONE
-                            Toast.makeText(
-                                this@PaymentCheckoutActivity,
-                                exception.toString(),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                    }
-                )
             }
         }
+
+        // Start Confirm PaymentIntent
+        val airwallex = Airwallex(Store.token, paymentIntent.clientSecret!!)
+        airwallex.confirmPaymentIntent(
+            paymentIntentId = paymentIntent.id!!,
+            paymentIntentParams = paymentIntentParams,
+            callback = object : Airwallex.PaymentIntentCallback {
+                override fun onSuccess(paymentIntent: PaymentIntent) {
+                    when (paymentMethod.type) {
+                        PaymentMethodType.CARD -> {
+                            retrievePaymentIntent(airwallex)
+                        }
+                        PaymentMethodType.WECHAT -> {
+                            handlePaymentWithWechat(airwallex, paymentIntent)
+                        }
+                    }
+                }
+
+                override fun onFailed(exception: AirwallexException) {
+                    loading.visibility = View.GONE
+                    showPaymentError()
+                }
+            }
+        )
     }
 
     private fun handlePaymentWithWechat(airwallex: Airwallex, paymentIntent: PaymentIntent) {

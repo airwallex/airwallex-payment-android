@@ -30,8 +30,6 @@
 
         <activity android:name="com.airwallex.paymentacceptance.PaymentMethodsActivity" />
 
-        <activity android:name="com.airwallex.paymentacceptance.PaymentCheckoutCvcActivity" />
-
         <activity
             android:name="com.airwallex.paymentacceptance.wxapi.WXPayEntryActivity"
             android:exported="true"
