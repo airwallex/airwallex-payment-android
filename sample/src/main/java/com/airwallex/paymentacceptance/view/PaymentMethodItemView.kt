@@ -41,6 +41,7 @@ class PaymentMethodItemView constructor(
 
     var cvcChangedCallback: () -> Unit = {}
 
+
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
 
@@ -109,6 +110,11 @@ class PaymentMethodItemView constructor(
                 completion(paymentMethod)
             }
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        hideKeyboard(context as Activity)
+        super.onDetachedFromWindow()
     }
 
     private fun hideKeyboard(activity: Activity) {
