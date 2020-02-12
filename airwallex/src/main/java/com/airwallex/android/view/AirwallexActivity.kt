@@ -12,6 +12,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
 
     companion object {
         const val TOKEN = "token"
+        const val CLIENT_SECRET = "client_secret"
     }
 
     protected abstract fun onActionSave()

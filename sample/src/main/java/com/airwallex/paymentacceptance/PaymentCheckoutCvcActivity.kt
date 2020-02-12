@@ -13,14 +13,14 @@ import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.activity_confirm_cvc.*
 import java.util.*
 
-class PaymentConfirmCvcActivity : PaymentBaseActivity() {
+class PaymentCheckoutCvcActivity : PaymentBaseActivity() {
 
     private val paymentMethod: PaymentMethod by lazy {
         intent.getParcelableExtra(PAYMENT_METHOD) as PaymentMethod
     }
 
-    private val paymentIntentId: String by lazy {
-        intent.getStringExtra(PAYMENT_INTENT_ID)
+    private val paymentIntent: PaymentIntent by lazy {
+        intent.getParcelableExtra(PAYMENT_INTENT) as PaymentIntent
     }
 
     override val inPaymentFlow: Boolean
@@ -33,13 +33,13 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
         fun startActivityForResult(
             activity: Activity,
             paymentMethod: PaymentMethod?,
-            paymentIntentId: String,
+            paymentIntent: PaymentIntent,
             requestCode: Int
         ) {
             activity.startActivityForResult(
-                Intent(activity, PaymentConfirmCvcActivity::class.java)
+                Intent(activity, PaymentCheckoutCvcActivity::class.java)
                     .putExtra(PAYMENT_METHOD, paymentMethod)
-                    .putExtra(PAYMENT_INTENT_ID, paymentIntentId),
+                    .putExtra(PAYMENT_INTENT, paymentIntent),
                 requestCode
             )
         }
@@ -114,9 +114,9 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
             .build()
 
         // Start Confirm PaymentIntent
-        val airwallex = Airwallex(Store.token)
+        val airwallex = Airwallex(Store.token, paymentIntent.clientSecret!!)
         airwallex.confirmPaymentIntent(
-            paymentIntentId = paymentIntentId,
+            paymentIntentId = paymentIntent.id!!,
             paymentIntentParams = paymentIntentParams,
             callback = object : Airwallex.PaymentIntentCallback {
                 override fun onSuccess(paymentIntent: PaymentIntent) {
@@ -126,7 +126,7 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
                 override fun onFailed(exception: AirwallexException) {
                     loading.visibility = View.GONE
                     Toast.makeText(
-                        this@PaymentConfirmCvcActivity,
+                        this@PaymentCheckoutCvcActivity,
                         exception.toString(),
                         Toast.LENGTH_SHORT
                     ).show()
@@ -139,10 +139,10 @@ class PaymentConfirmCvcActivity : PaymentBaseActivity() {
     private fun retrievePaymentIntent(airwallex: Airwallex) {
         Log.d(
             TAG,
-            "Start retrieve PaymentIntent $paymentIntentId"
+            "Start retrieve PaymentIntent ${paymentIntent.id}"
         )
         airwallex.retrievePaymentIntent(
-            paymentIntentId = paymentIntentId,
+            paymentIntentId = paymentIntent.id!!,
             callback = object : Airwallex.PaymentIntentCallback {
                 override fun onSuccess(paymentIntent: PaymentIntent) {
                     Log.d(

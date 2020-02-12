@@ -9,6 +9,7 @@ import com.airwallex.android.model.PaymentMethodParams
 
 class Airwallex internal constructor(
     private val token: String,
+    private val clientSecret: String,
     private val paymentController: PaymentController
 ) {
     companion object {
@@ -29,18 +30,23 @@ class Airwallex internal constructor(
         fun onFailed(exception: AirwallexException)
     }
 
+    // TODO token need to be removed after API changed
     constructor(
-        token: String
+        token: String,
+        clientSecret: String
     ) : this(
         token,
+        clientSecret,
         AirwallexApiRepository()
     )
 
     private constructor(
         token: String,
+        clientSecret: String,
         repository: ApiRepository
     ) : this(
         token,
+        clientSecret,
         AirwallexPaymentController(repository)
     )
 
@@ -53,6 +59,7 @@ class Airwallex internal constructor(
         paymentController.confirmPaymentIntent(
             AirwallexApiRepository.Options(
                 token = token,
+                clientSecret = clientSecret,
                 paymentIntentId = paymentIntentId
             ),
             paymentIntentParams,
@@ -68,6 +75,7 @@ class Airwallex internal constructor(
         paymentController.retrievePaymentIntent(
             AirwallexApiRepository.Options(
                 token = token,
+                clientSecret = clientSecret,
                 paymentIntentId = paymentIntentId
             ),
             callback
@@ -81,7 +89,8 @@ class Airwallex internal constructor(
     ) {
         paymentController.createPaymentMethod(
             AirwallexApiRepository.Options(
-                token = token
+                token = token,
+                clientSecret = clientSecret
             ),
             paymentMethodParams,
             callback

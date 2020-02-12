@@ -20,17 +20,23 @@ class AddPaymentMethodActivity : AirwallexActivity() {
         intent.getStringExtra(TOKEN)
     }
 
+    private val clientSecret: String by lazy {
+        intent.getStringExtra(CLIENT_SECRET)
+    }
+
     private val airwallex: Airwallex by lazy {
-        Airwallex(token)
+        Airwallex(token, clientSecret)
     }
 
     companion object {
         const val REQUEST_ADD_CARD_CODE = 98
         const val PAYMENT_METHOD = "payment_method"
 
-        fun startActivityForResult(activity: Activity, token: String) {
+        fun startActivityForResult(activity: Activity, token: String, clientSecret: String) {
             activity.startActivityForResult(
-                Intent(activity, AddPaymentMethodActivity::class.java).putExtra(TOKEN, token),
+                Intent(activity, AddPaymentMethodActivity::class.java)
+                    .putExtra(TOKEN, token)
+                    .putExtra(CLIENT_SECRET, clientSecret),
                 REQUEST_ADD_CARD_CODE
             )
         }

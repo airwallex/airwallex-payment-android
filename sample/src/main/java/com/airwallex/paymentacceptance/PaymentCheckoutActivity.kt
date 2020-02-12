@@ -17,12 +17,8 @@ import java.util.*
 
 class PaymentCheckoutActivity : PaymentBaseActivity() {
 
-    private val paymentIntentId: String by lazy {
-        intent.getStringExtra(PAYMENT_INTENT_ID)
-    }
-
-    private val paymentAmount: Float by lazy {
-        intent.getFloatExtra(PAYMENT_AMOUNT, 0F)
+    private val paymentIntent: PaymentIntent by lazy {
+        intent.getParcelableExtra(PAYMENT_INTENT) as PaymentIntent
     }
 
     override val inPaymentFlow: Boolean
@@ -33,17 +29,14 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
     companion object {
 
         private const val TAG = "PaymentPayActivity"
-        private const val PAYMENT_AMOUNT = "payment_amount"
 
         fun startActivity(
             activity: Activity,
-            paymentIntentId: String,
-            amount: Float
+            paymentIntent: PaymentIntent
         ) {
             activity.startActivity(
                 Intent(activity, PaymentCheckoutActivity::class.java)
-                    .putExtra(PAYMENT_INTENT_ID, paymentIntentId)
-                    .putExtra(PAYMENT_AMOUNT, amount)
+                    .putExtra(PAYMENT_INTENT, paymentIntent)
             )
         }
     }
@@ -59,7 +52,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             setDisplayShowTitleEnabled(false)
         }
 
-        tvTotalPrice.text = String.format("$%.2f", paymentAmount)
+        tvTotalPrice.text = String.format("$%.2f", paymentIntent.amount)
 
         rlPlay.setOnClickListener {
             paymentMethod?.let {
@@ -67,7 +60,8 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             }
         }
 
-        paymentMethodItemView.paymentIntentId = paymentIntentId
+        paymentMethodItemView.paymentIntent = paymentIntent
+        paymentMethodItemView.renewalPaymentMethod((paymentMethod))
         shippingItemView.renewalShipping(SampleApplication.instance.shipping)
 
         rlPlay.isEnabled = paymentMethod != null
@@ -78,10 +72,10 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         when (paymentMethod.type) {
             PaymentMethodType.CARD -> {
                 // Need fill CVC
-                PaymentConfirmCvcActivity.startActivityForResult(
+                PaymentCheckoutCvcActivity.startActivityForResult(
                     this,
                     paymentMethod,
-                    paymentIntentId,
+                    paymentIntent,
                     REQUEST_CONFIRM_CVC_CODE
                 )
             }
@@ -109,9 +103,9 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                     .build()
 
                 // Start Confirm PaymentIntent
-                val airwallex = Airwallex(Store.token)
+                val airwallex = Airwallex(Store.token, paymentIntent.clientSecret!!)
                 airwallex.confirmPaymentIntent(
-                    paymentIntentId = paymentIntentId,
+                    paymentIntentId = paymentIntent.id!!,
                     paymentIntentParams = paymentIntentParams,
                     callback = object : Airwallex.PaymentIntentCallback {
                         override fun onSuccess(paymentIntent: PaymentIntent) {
@@ -208,10 +202,10 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
     private fun retrievePaymentIntent(airwallex: Airwallex) {
         Log.d(
             TAG,
-            "Start retrieve PaymentIntent $paymentIntentId"
+            "Start retrieve PaymentIntent ${paymentIntent.id}"
         )
         airwallex.retrievePaymentIntent(
-            paymentIntentId = paymentIntentId,
+            paymentIntentId = paymentIntent.id!!,
             callback = object : Airwallex.PaymentIntentCallback {
                 override fun onSuccess(paymentIntent: PaymentIntent) {
                     Log.d(

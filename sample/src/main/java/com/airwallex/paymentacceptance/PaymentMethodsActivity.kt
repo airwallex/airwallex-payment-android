@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.view.AddPaymentMethodActivity
@@ -32,8 +33,12 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         ApiFactory(Constants.BASE_URL).create()
     }
 
-    val paymentIntentId: String by lazy {
-        intent.getStringExtra(PAYMENT_INTENT_ID)
+    private val paymentIntent: PaymentIntent by lazy {
+        intent.getParcelableExtra(PAYMENT_INTENT) as PaymentIntent
+    }
+
+    private val selectedPaymentMethod: PaymentMethod? by lazy {
+        intent.getParcelableExtra(PAYMENT_METHOD) as? PaymentMethod
     }
 
     override val inPaymentFlow: Boolean
@@ -49,13 +54,13 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         fun startActivityForResult(
             activity: Activity,
             paymentMethod: PaymentMethod?,
-            paymentIntentId: String,
+            paymentIntent: PaymentIntent,
             requestCode: Int
         ) {
             activity.startActivityForResult(
                 Intent(activity, PaymentMethodsActivity::class.java)
                     .putExtra(PAYMENT_METHOD, paymentMethod)
-                    .putExtra(PAYMENT_INTENT_ID, paymentIntentId),
+                    .putExtra(PAYMENT_INTENT, paymentIntent),
                 requestCode
             )
         }
@@ -76,7 +81,8 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         cardAdapter = PaymentMethodsAdapter(
             paymentMethods,
             this,
-            intent.getParcelableExtra(PAYMENT_METHOD) as? PaymentMethod
+            selectedPaymentMethod,
+            paymentIntent
         )
         rvPaymentMethods.apply {
             setHasFixedSize(true)
@@ -88,7 +94,7 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.menu_save)?.isEnabled = cardAdapter.paymentMethod != null
+        menu?.findItem(R.id.menu_save)?.isEnabled = cardAdapter.selectedPaymentMethod != null
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -101,7 +107,7 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         if (item.itemId == R.id.menu_save) {
             setResult(
                 Activity.RESULT_OK,
-                Intent().putExtra(PAYMENT_METHOD, cardAdapter.paymentMethod)
+                Intent().putExtra(PAYMENT_METHOD, cardAdapter.selectedPaymentMethod)
             )
             finish()
         }

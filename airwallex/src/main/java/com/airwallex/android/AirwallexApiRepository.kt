@@ -17,6 +17,7 @@ internal class AirwallexApiRepository : ApiRepository {
     @Parcelize
     internal data class Options internal constructor(
         internal val token: String,
+        internal val clientSecret: String,
         internal val paymentIntentId: String? = null
     ) : Parcelable
 
@@ -39,7 +40,7 @@ internal class AirwallexApiRepository : ApiRepository {
                         paramsJson.toString()
                     )
                 )
-                .addHeader("Authorization", "Bearer ${options.token}")
+                .addHeader("client-secret", options.clientSecret)
                 .build()
         )
     }

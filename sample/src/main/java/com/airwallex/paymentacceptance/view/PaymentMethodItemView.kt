@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
+import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.paymentacceptance.PaymentBaseActivity
@@ -21,7 +22,7 @@ class PaymentMethodItemView constructor(
 
     private var paymentMethod: PaymentMethod? = null
 
-    internal lateinit var paymentIntentId: String
+    internal lateinit var paymentIntent: PaymentIntent
 
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
@@ -30,13 +31,13 @@ class PaymentMethodItemView constructor(
             PaymentMethodsActivity.startActivityForResult(
                 context as Activity,
                 paymentMethod,
-                paymentIntentId,
+                paymentIntent,
                 PaymentBaseActivity.REQUEST_PAYMENT_METHOD_CODE
             )
         }
     }
 
-    private fun renewalPaymentMethod(paymentMethod: PaymentMethod?) {
+    fun renewalPaymentMethod(paymentMethod: PaymentMethod?) {
         this.paymentMethod = paymentMethod
         if (paymentMethod == null) {
             tvPaymentMethod.text = context.getString(R.string.select_payment_method)
