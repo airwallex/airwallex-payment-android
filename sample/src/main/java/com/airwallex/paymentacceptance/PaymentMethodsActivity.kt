@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,7 +45,7 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
 
     private val compositeSubscription = CompositeDisposable()
     private lateinit var cardAdapter: PaymentMethodsAdapter
-    private val paymentMethods = mutableListOf<PaymentMethod?>(null, null)
+    private val paymentMethods = mutableListOf<PaymentMethod?>(null)
 
     companion object {
         private const val TAG = "PaymentMethodsActivity"
@@ -145,8 +146,11 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
                 object : TypeToken<List<PaymentMethod?>?>() {}.type
             )
 
+            val cards = items.filter { it.type == PaymentMethodType.CARD }
+            paymentNoCards.visibility = if (cards.isEmpty()) View.VISIBLE else View.GONE
+
             paymentMethods.clear()
-            paymentMethods.addAll(items.filter { it.type == PaymentMethodType.CARD })
+            paymentMethods.addAll(cards)
             paymentMethods.add(null)
             cardAdapter.notifyDataSetChanged()
         } catch (e: IOException) {
