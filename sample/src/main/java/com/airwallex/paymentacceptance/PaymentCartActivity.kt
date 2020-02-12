@@ -7,11 +7,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.airwallex.android.model.Order
+import com.airwallex.android.model.PaymentIntent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_payment_order_info.*
-import okhttp3.ResponseBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -124,14 +124,12 @@ class PaymentCartActivity : PaymentBaseActivity() {
         Toast.makeText(this, err.localizedMessage, Toast.LENGTH_SHORT).show()
     }
 
-    private fun handleResponse(responseBody: ResponseBody) {
+    private fun handleResponse(paymentIntent: PaymentIntent) {
         loading.visibility = View.GONE
         try {
-            val responseData = JSONObject(responseBody.string())
             PaymentCheckoutActivity.startActivity(
                 this,
-                responseData["id"].toString(),
-                responseData["amount"].toString().toFloat()
+                paymentIntent
             )
         } catch (e: IOException) {
             e.printStackTrace()

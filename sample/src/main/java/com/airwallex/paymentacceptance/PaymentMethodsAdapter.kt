@@ -7,10 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.model.WechatPayFlow
-import com.airwallex.android.model.WechatPayFlowType
+import com.airwallex.android.model.*
 import com.airwallex.android.view.AddPaymentMethodActivity
 import com.airwallex.paymentacceptance.PaymentBaseActivity.Companion.REQUEST_CONFIRM_CVC_CODE
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
@@ -21,7 +18,8 @@ import java.util.*
 class PaymentMethodsAdapter(
     private val paymentMethods: List<PaymentMethod?>,
     private val context: Context,
-    var paymentMethod: PaymentMethod?
+    var selectedPaymentMethod: PaymentMethod?,
+    val paymentIntent: PaymentIntent
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     enum class ItemViewType(val value: Int) {
@@ -84,13 +82,13 @@ class PaymentMethodsAdapter(
 
         fun bindView() {
             itemView.ivChecked.visibility =
-                if (paymentMethod?.type == PaymentMethodType.WECHAT) View.VISIBLE else View.GONE
+                if (selectedPaymentMethod?.type == PaymentMethodType.WECHAT) View.VISIBLE else View.GONE
 
             itemView.rlWechatPay.setOnClickListener {
-                if (paymentMethod?.type == PaymentMethodType.WECHAT) {
+                if (selectedPaymentMethod?.type == PaymentMethodType.WECHAT) {
                     return@setOnClickListener
                 }
-                paymentMethod = PaymentMethod.Builder()
+                selectedPaymentMethod = PaymentMethod.Builder()
                     .setType(PaymentMethodType.WECHAT)
                     .setWechatPayFlow(WechatPayFlow(WechatPayFlowType.INAPP))
                     .setBilling(PaymentData.billing)
@@ -117,10 +115,10 @@ class PaymentMethodsAdapter(
             }
             itemView.rlCard.setOnClickListener {
                 val context = context as PaymentMethodsActivity
-                if (paymentMethod?.type == PaymentMethodType.CARD && method.id == paymentMethod?.id) {
+                if (selectedPaymentMethod?.type == PaymentMethodType.CARD && method.id == selectedPaymentMethod?.id) {
                     // No need to update payment method
                 } else {
-                    paymentMethod = PaymentMethod.Builder()
+                    selectedPaymentMethod = PaymentMethod.Builder()
                         .setId(method.id)
                         .setType(PaymentMethodType.CARD)
                         .setCard(card)
@@ -131,15 +129,15 @@ class PaymentMethodsAdapter(
                     notifyDataSetChanged()
                 }
 
-                PaymentConfirmCvcActivity.startActivityForResult(
+                PaymentCheckoutCvcActivity.startActivityForResult(
                     context,
-                    paymentMethod,
-                    context.paymentIntentId,
+                    selectedPaymentMethod,
+                    paymentIntent,
                     REQUEST_CONFIRM_CVC_CODE
                 )
             }
             itemView.ivCardChecked.visibility =
-                if (paymentMethod?.type == PaymentMethodType.CARD && method.id == paymentMethod?.id) View.VISIBLE else View.GONE
+                if (selectedPaymentMethod?.type == PaymentMethodType.CARD && method.id == selectedPaymentMethod?.id) View.VISIBLE else View.GONE
         }
     }
 
@@ -149,7 +147,8 @@ class PaymentMethodsAdapter(
             itemView.tvAddCard.setOnClickListener {
                 AddPaymentMethodActivity.startActivityForResult(
                     context as Activity,
-                    Store.token
+                    Store.token,
+                    paymentIntent.clientSecret!!
                 )
             }
         }
