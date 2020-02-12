@@ -24,11 +24,16 @@
 
         <activity android:name="com.airwallex.paymentacceptance.PaymentCartActivity" />
 
-        <activity android:name="com.airwallex.paymentacceptance.PaymentCheckoutActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.PaymentCheckoutActivity"
+            android:theme="@style/ActivityTheme"/>
 
-        <activity android:name="com.airwallex.paymentacceptance.PaymentEditShippingActivity" />
+        <activity
+            android:name="com.airwallex.paymentacceptance.PaymentEditShippingActivity"
+            android:theme="@style/ActivityTheme" />
 
-        <activity android:name="com.airwallex.paymentacceptance.PaymentMethodsActivity" />
+        <activity
+            android:name="com.airwallex.paymentacceptance.PaymentMethodsActivity"
+            android:theme="@style/ActivityTheme" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.wxapi.WXPayEntryActivity"

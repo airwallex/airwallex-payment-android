@@ -15,6 +15,7 @@ import okhttp3.*
 import java.io.IOException
 import java.util.*
 
+
 class PaymentCheckoutActivity : PaymentBaseActivity() {
 
     private val paymentIntent: PaymentIntent by lazy {
@@ -251,6 +252,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         paymentMethodItemView.onActivityResult(requestCode, resultCode, data) {
             this.paymentMethod = it
             updateButtonStatus()
+            paymentMethodItemView.requestFocus()
         }
     }
 
