@@ -70,8 +70,8 @@ class PaymentMethodsAdapter(
             itemView.tvCardInfo.text =
                 String.format("%s •••• %s", card.brand?.capitalize(Locale.ENGLISH), card.last4)
             when (card.brand) {
-                CardBrand.Visa.code -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
-                CardBrand.MasterCard.code -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
+                CardBrand.Visa.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
+                CardBrand.MasterCard.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
             }
             itemView.rlCard.setOnClickListener {
                 val context = context as PaymentMethodsActivity
