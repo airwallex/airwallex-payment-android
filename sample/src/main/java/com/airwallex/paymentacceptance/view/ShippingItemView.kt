@@ -36,7 +36,7 @@ class ShippingItemView constructor(
         }
     }
 
-    fun refreshShippingAddress(shipping: Shipping?) {
+    fun renewalShipping(shipping: Shipping?) {
         this.shipping = shipping
         if (shipping == null) {
             tvShippingAddress.text =
@@ -86,7 +86,7 @@ class ShippingItemView constructor(
             PaymentBaseActivity.REQUEST_EDIT_SHIPPING_CODE -> {
                 val shipping =
                     data.getParcelableExtra<Parcelable>(PaymentBaseActivity.SHIPPING_DETAIL) as Shipping
-                refreshShippingAddress(shipping)
+                renewalShipping(shipping)
                 completion(shipping)
             }
         }
