@@ -9,10 +9,10 @@ object CardUtils {
     @JvmStatic
     fun isValidCardNumber(cardNumber: String?): Boolean {
         val normalizedNumber = removeSpacesAndHyphens(cardNumber)
-        return isValidNumber(normalizedNumber) && isValidCardLength(normalizedNumber)
+        return isValidLuhnNumber(normalizedNumber) && isValidCardLength(normalizedNumber)
     }
 
-    private fun isValidNumber(number: String?): Boolean {
+    private fun isValidLuhnNumber(number: String?): Boolean {
         if (number == null) {
             return false
         }
