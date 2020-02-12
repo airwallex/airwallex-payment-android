@@ -71,6 +71,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         paymentMethodItemView.cvcChangedCallback = {
             updateButtonStatus()
         }
+        updateButtonStatus()
     }
 
     private fun startConfirmPaymentIntent(paymentMethod: PaymentMethod) {

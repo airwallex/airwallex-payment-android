@@ -45,7 +45,7 @@ class PaymentMethodItemView constructor(
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
 
-        rlPaymentMethod.setOnClickListener {
+        llPaymentMethod.setOnClickListener {
             PaymentMethodsActivity.startActivityForResult(
                 context as Activity,
                 paymentMethod,
