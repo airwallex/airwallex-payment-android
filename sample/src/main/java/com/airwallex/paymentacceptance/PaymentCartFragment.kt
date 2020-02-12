@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.airwallex.android.model.Product
-import kotlinx.android.synthetic.main.fragment_order_summary.*
 import kotlinx.android.synthetic.main.cart_summary_item.view.*
+import kotlinx.android.synthetic.main.fragment_order_summary.*
 
 class PaymentCartFragment : Fragment() {
 

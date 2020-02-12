@@ -1,6 +1,8 @@
 package com.airwallex.paymentacceptance
 
-import com.airwallex.android.model.*
+import com.airwallex.android.model.Address
+import com.airwallex.android.model.Device
+import com.airwallex.android.model.PaymentMethod
 
 object PaymentData {
 

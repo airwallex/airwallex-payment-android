@@ -30,19 +30,7 @@ internal class AirwallexPaymentController(
                         )
                         callback.onSuccess(paymentIntent)
                     } else {
-                        val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
-                            AirwallexError::class.java
-                        ) else null
-                        callback.onFailed(
-                            APIException(
-                                message = null,
-                                traceId = result.allHeaders["x-awx-traceid"],
-                                statusCode = result.statusCode,
-                                error = error,
-                                e = null
-                            )
-                        )
+                        callback.onFailed(handleAPIError(result))
                     }
                 }
 
@@ -71,19 +59,7 @@ internal class AirwallexPaymentController(
                         )
                         callback.onSuccess(paymentIntent)
                     } else {
-                        val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
-                            AirwallexError::class.java
-                        ) else null
-                        callback.onFailed(
-                            APIException(
-                                message = null,
-                                traceId = result.allHeaders["x-awx-traceid"],
-                                statusCode = result.statusCode,
-                                error = error,
-                                e = null
-                            )
-                        )
+                        callback.onFailed(handleAPIError(result))
                     }
                 }
 
@@ -114,19 +90,7 @@ internal class AirwallexPaymentController(
                         )
                         callback.onSuccess(paymentMethod)
                     } else {
-                        val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
-                            AirwallexError::class.java
-                        ) else null
-                        callback.onFailed(
-                            APIException(
-                                message = null,
-                                traceId = result.allHeaders["x-awx-traceid"],
-                                statusCode = result.statusCode,
-                                error = error,
-                                e = null
-                            )
-                        )
+                        callback.onFailed(handleAPIError(result))
                     }
                 }
 
@@ -135,6 +99,20 @@ internal class AirwallexPaymentController(
                 }
             }
         ).execute()
+    }
+
+    private fun handleAPIError(result: AirwallexHttpResponse): APIException {
+        val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
+            result.body.string(),
+            AirwallexError::class.java
+        ) else null
+        return APIException(
+            message = null,
+            traceId = result.allHeaders["x-awx-traceid"],
+            statusCode = result.statusCode,
+            error = error,
+            e = null
+        )
     }
 
     private class ConfirmIntentTask(
