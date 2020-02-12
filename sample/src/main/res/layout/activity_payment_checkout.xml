@@ -32,19 +32,12 @@
         android:textColor="#1E272E"
         android:textSize="14sp" />
 
-    <com.airwallex.paymentacceptance.view.ShippingItemView
-        android:id="@+id/shippingItemView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvTotalLabel"
-        android:layout_marginTop="40dp" />
-
-
     <com.airwallex.paymentacceptance.view.PaymentMethodItemView
         android:id="@+id/paymentMethodItemView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/shippingItemView" />
+        android:layout_below="@id/tvTotalLabel"
+        android:layout_marginTop="40dp" />
 
     <RelativeLayout
         android:id="@+id/rlPlay"
