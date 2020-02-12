@@ -3,8 +3,7 @@
     android:id="@+id/rlCard"
     android:layout_width="match_parent"
     android:layout_height="58dp"
-    android:layout_marginTop="10dp"
-    android:background="@android:color/white"
+    android:background="@drawable/item_bg"
     android:orientation="horizontal"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
