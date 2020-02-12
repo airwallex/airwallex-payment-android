@@ -11,6 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/circularstd_bold"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="@string/payment_methods"
+        android:textColor="@color/airwallex_dark_gray"
+        android:textSize="32sp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPaymentMethods"
         android:layout_width="match_parent"
