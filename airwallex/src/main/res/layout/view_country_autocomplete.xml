@@ -29,6 +29,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:fontFamily="@font/circularstd_medium"
+                android:imeOptions="actionNext"
                 android:inputType="text"
                 android:textColor="@color/color_edit_text_default"
                 android:textSize="16sp" />

@@ -9,6 +9,7 @@ import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.view_country_autocomplete.view.*
 import java.util.*
@@ -21,6 +22,21 @@ class CountryAutoCompleteView constructor(
     private var selectedCountry: Country? = null
 
     var countryChangeCallback: ((Country) -> Unit)? = null
+
+
+    private var error: String?
+        set(value) {
+            tvError.visibility = when (value) {
+                null -> View.GONE
+                else -> View.VISIBLE
+            }
+
+            tvError.text = value
+            updateLayoutColor()
+        }
+        get() {
+            return tvError.text.toString()
+        }
 
     private val legalCountries = arrayOf(
         "AC", "AD", "AE", "AG", "AI", "AL", "AM", "AN", "AO", "AQ", "AR", "AS", "AT", "AU", "AW",
@@ -60,6 +76,26 @@ class CountryAutoCompleteView constructor(
         return countries.firstOrNull { it.code == countryCode }
     }
 
+    private fun updateLayoutColor() {
+        if (error.isNullOrEmpty()) {
+            vBorder.background =
+                ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.bg_input_layout_border,
+                    null
+                )
+//            teInput.setHintTextColor(ContextCompat.getColor(context, R.color.colorEditTextAccent))
+        } else {
+            vBorder.background =
+                ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.bg_input_layout_border_error,
+                    null
+                )
+//            teInput.setHintTextColor(ContextCompat.getColor(context, R.color.colorEditTextError))
+        }
+    }
+
     init {
         View.inflate(getContext(), R.layout.view_country_autocomplete, this)
 
@@ -81,6 +117,7 @@ class CountryAutoCompleteView constructor(
         actCountry.onFocusChangeListener = OnFocusChangeListener { _, focused ->
             if (focused) {
                 actCountry.showDropDown()
+                error = null
             } else {
                 val enteredCountry = actCountry.text.toString()
                 val country = getCountryByName(enteredCountry)
@@ -91,6 +128,12 @@ class CountryAutoCompleteView constructor(
                 } ?: selectedCountry?.name
 
                 actCountry.setText(displayCountry)
+
+                error = if (displayCountry.isNullOrBlank()) {
+                    resources.getString(R.string.empty_country)
+                } else {
+                    null
+                }
             }
         }
     }
