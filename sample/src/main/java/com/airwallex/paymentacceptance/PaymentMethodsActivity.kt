@@ -145,9 +145,7 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
                 object : TypeToken<List<PaymentMethod?>?>() {}.type
             )
 
-            // TODO
             paymentMethods.clear()
-            paymentMethods.add(null)
             paymentMethods.addAll(items.filter { it.type == PaymentMethodType.CARD })
             paymentMethods.add(null)
             cardAdapter.notifyDataSetChanged()
