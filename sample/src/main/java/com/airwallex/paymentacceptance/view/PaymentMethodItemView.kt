@@ -42,6 +42,10 @@ class PaymentMethodItemView constructor(
     var cvcChangedCallback: () -> Unit = {}
 
 
+    fun requestInputFocus() {
+        atlCardCvc.requestInputFocus()
+    }
+
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
 
@@ -120,8 +124,6 @@ class PaymentMethodItemView constructor(
     private fun hideKeyboard(activity: Activity) {
         val inputMethodManager =
             activity.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        if (inputMethodManager?.isAcceptingText == true) {
-            inputMethodManager.hideSoftInputFromWindow(activity.currentFocus?.windowToken, 0)
-        }
+        inputMethodManager?.hideSoftInputFromWindow(activity.currentFocus?.windowToken, 0)
     }
 }
