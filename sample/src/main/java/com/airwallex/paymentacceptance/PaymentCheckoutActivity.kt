@@ -3,6 +3,7 @@ package com.airwallex.paymentacceptance
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -253,7 +254,12 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         paymentMethodItemView.onActivityResult(requestCode, resultCode, data) {
             this.paymentMethod = it
             updateButtonStatus()
-            paymentMethodItemView.requestFocus()
+
+            // Delay to show the keyboard
+            Handler().postDelayed({
+                paymentMethodItemView.requestInputFocus()
+            }, 100)
+
         }
     }
 
