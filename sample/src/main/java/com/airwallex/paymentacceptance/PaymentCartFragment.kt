@@ -11,7 +11,7 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.airwallex.android.model.Product
 import kotlinx.android.synthetic.main.cart_summary_item.view.*
-import kotlinx.android.synthetic.main.fragment_order_summary.*
+import kotlinx.android.synthetic.main.fragment_cart_summary.*
 
 class PaymentCartFragment : Fragment() {
 
@@ -46,7 +46,7 @@ class PaymentCartFragment : Fragment() {
     ): View? {
         return View.inflate(
             context,
-            R.layout.fragment_order_summary, null
+            R.layout.fragment_cart_summary, null
         )
     }
 

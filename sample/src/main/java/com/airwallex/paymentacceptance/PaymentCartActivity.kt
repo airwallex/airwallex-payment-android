@@ -11,7 +11,7 @@ import com.airwallex.android.model.PaymentIntent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_payment_order_info.*
+import kotlinx.android.synthetic.main.activity_payment_cart.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -37,7 +37,7 @@ class PaymentCartActivity : PaymentBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_payment_order_info)
+        setContentView(R.layout.activity_payment_cart)
 
         btnCheckout.setOnClickListener {
             authAndCreatePaymentIntent()
