@@ -2,10 +2,7 @@ package com.airwallex.android
 
 import androidx.annotation.UiThread
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentIntentParams
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodParams
+import com.airwallex.android.model.*
 
 class Airwallex internal constructor(
     private val token: String,
@@ -26,6 +23,12 @@ class Airwallex internal constructor(
 
     interface PaymentMethodCallback {
         fun onSuccess(paymentMethod: PaymentMethod)
+
+        fun onFailed(exception: AirwallexException)
+    }
+
+    interface GetPaymentMethodsCallback {
+        fun onSuccess(response: PaymentMethodResponse)
 
         fun onFailed(exception: AirwallexException)
     }
@@ -93,6 +96,20 @@ class Airwallex internal constructor(
                 clientSecret = clientSecret
             ),
             paymentMethodParams,
+            callback
+        )
+    }
+
+
+    @UiThread
+    fun getPaymentMethods(
+        callback: GetPaymentMethodsCallback
+    ) {
+        paymentController.getPaymentMethods(
+            AirwallexApiRepository.Options(
+                token = token,
+                clientSecret = clientSecret
+            ),
             callback
         )
     }

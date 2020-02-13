@@ -21,4 +21,9 @@ internal interface PaymentController {
         paymentMethodParams: PaymentMethodParams,
         callback: Airwallex.PaymentMethodCallback
     )
+
+    fun getPaymentMethods(
+        options: AirwallexApiRepository.Options,
+        callback: Airwallex.GetPaymentMethodsCallback
+    )
 }

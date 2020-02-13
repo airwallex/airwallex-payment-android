@@ -86,6 +86,10 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
         )
     }
 
+    fun showError(title: String, message: String) {
+        showAlert(title, message)
+    }
+
     private fun showAlert(title: String, message: String, completion: (() -> Unit)? = null) {
         if (!isFinishing) {
             AlertDialog.Builder(this)

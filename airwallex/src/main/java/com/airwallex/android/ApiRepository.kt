@@ -17,4 +17,5 @@ internal interface ApiRepository {
         paymentMethodParams: PaymentMethodParams
     ): AirwallexHttpResponse?
 
+    fun getPaymentMethods(options: AirwallexApiRepository.Options): AirwallexHttpResponse?
 }
