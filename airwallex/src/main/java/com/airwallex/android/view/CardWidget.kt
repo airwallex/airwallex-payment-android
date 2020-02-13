@@ -21,8 +21,8 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
                     PaymentMethod.Card.Builder()
                         .setNumber(atlCardNumber.cardNumber)
                         .setName(atlCardName.value)
-                        .setExpMonth(month.toString())
-                        .setExpYear(year.toString())
+                        .setExpiryMonth(month.toString())
+                        .setExpiryYear(year.toString())
                         .setCvc(atlCardCvc.cvcValue)
                         .build()
                 }

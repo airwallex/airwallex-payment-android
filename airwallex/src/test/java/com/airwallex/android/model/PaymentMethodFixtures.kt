@@ -9,8 +9,8 @@ internal object PaymentMethodFixtures {
             "type": "card",
 	        "card": {
 	            "number": "4012000300001003",
-	            "exp_month": "12",
-	            "exp_year": "2020",  
+	            "expiry_month": "12",
+	            "expiry_year": "2020",  
 	            "cvc": "123",
 	            "name": "Adam"
 	        },

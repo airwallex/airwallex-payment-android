@@ -96,11 +96,11 @@ data class PaymentMethod internal constructor(
         @SerializedName("cvc")
         val cvc: String?,
 
-        @SerializedName("exp_month")
-        val expMonth: String?,
+        @SerializedName("expiry_month")
+        val expiryMonth: String?,
 
-        @SerializedName("exp_year")
-        val expYear: String?,
+        @SerializedName("expiry_year")
+        val expiryYear: String?,
 
         @SerializedName("name")
         val name: String?,
@@ -135,8 +135,8 @@ data class PaymentMethod internal constructor(
 
         class Builder : ObjectBuilder<Card> {
             private var cvc: String? = null
-            private var expMonth: String? = null
-            private var expYear: String? = null
+            private var expiryMonth: String? = null
+            private var expiryYear: String? = null
             private var name: String? = null
             private var number: String? = null
             private var bin: String? = null
@@ -151,12 +151,12 @@ data class PaymentMethod internal constructor(
                 this.cvc = cvc
             }
 
-            fun setExpMonth(expMonth: String?): Builder = apply {
-                this.expMonth = expMonth
+            fun setExpiryMonth(expiryMonth: String?): Builder = apply {
+                this.expiryMonth = expiryMonth
             }
 
-            fun setExpYear(expYear: String?): Builder = apply {
-                this.expYear = expYear
+            fun setExpiryYear(expiryYear: String?): Builder = apply {
+                this.expiryYear = expiryYear
             }
 
             fun setName(name: String?): Builder = apply {
@@ -202,8 +202,8 @@ data class PaymentMethod internal constructor(
             override fun build(): Card {
                 return Card(
                     cvc = cvc,
-                    expMonth = expMonth,
-                    expYear = expYear,
+                    expiryMonth = expiryMonth,
+                    expiryYear = expiryYear,
                     name = name,
                     number = number,
                     bin = bin,
