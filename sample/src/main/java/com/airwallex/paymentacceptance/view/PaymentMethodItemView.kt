@@ -1,8 +1,11 @@
 package com.airwallex.paymentacceptance.view
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -15,6 +18,7 @@ import com.airwallex.paymentacceptance.PaymentBaseActivity
 import com.airwallex.paymentacceptance.PaymentMethodsActivity
 import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.payment_method_item.view.*
+import java.util.*
 
 class PaymentMethodItemView constructor(
     context: Context,
@@ -28,7 +32,7 @@ class PaymentMethodItemView constructor(
     internal val cvc: String?
         get() {
             return if (isValid) {
-                atlCardCvc.value
+                etCardCvc.text.trim().toString()
             } else {
                 null
             }
@@ -36,15 +40,16 @@ class PaymentMethodItemView constructor(
 
     internal val isValid: Boolean
         get() {
-            return atlCardCvc.isValid && paymentMethod != null
+            return etCardCvc.text.trim().toString().length == 3 && paymentMethod != null
         }
 
     var cvcChangedCallback: () -> Unit = {}
 
-
     fun requestInputFocus() {
         if (llCardCvc.visibility == View.VISIBLE) {
-            atlCardCvc.requestInputFocus()
+            val imm: InputMethodManager? =
+                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+            imm?.showSoftInput(etCardCvc, InputMethodManager.SHOW_IMPLICIT)
         }
     }
 
@@ -60,14 +65,24 @@ class PaymentMethodItemView constructor(
             )
         }
 
-        atlCardCvc.changedCallback = {
-            if (atlCardCvc.isValid) {
-                hideKeyboard(context as Activity)
+        etCardCvc.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (isValid) {
+                    hideKeyboard(context as Activity)
+                }
+                cvcChangedCallback()
             }
-            cvcChangedCallback()
-        }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
     }
 
+    @SuppressLint("DefaultLocale")
+    @ExperimentalStdlibApi
     fun renewalPaymentMethod(paymentMethod: PaymentMethod?, cvc: String? = null) {
         this.paymentMethod = paymentMethod
         if (paymentMethod == null) {
@@ -87,12 +102,17 @@ class PaymentMethodItemView constructor(
             llCardCvc.visibility = View.GONE
         } else {
             tvPaymentMethod.text =
-                String.format("%s •••• %s", paymentMethod.card?.brand, paymentMethod.card?.last4)
+                String.format(
+                    "%s •••• %s",
+                    paymentMethod.card?.brand?.capitalize(Locale.ENGLISH),
+                    paymentMethod.card?.last4
+                )
             if (cvc != null) {
                 llCardCvc.visibility = View.GONE
-                atlCardCvc.value = cvc
+                etCardCvc.setText(cvc)
             } else {
                 llCardCvc.visibility = View.VISIBLE
+                etCardCvc.setText("")
             }
         }
 
@@ -104,6 +124,7 @@ class PaymentMethodItemView constructor(
         )
     }
 
+    @ExperimentalStdlibApi
     fun onActivityResult(
         requestCode: Int,
         resultCode: Int,

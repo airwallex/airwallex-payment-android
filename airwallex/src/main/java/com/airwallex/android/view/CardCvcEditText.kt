@@ -28,8 +28,6 @@ class CardCvcEditText @JvmOverloads constructor(
 
     internal var completionCallback: () -> Unit = {}
 
-    internal var changedCallback: () -> Unit = {}
-
     private val rawCvcValue: String
         get() {
             return text.toString().trim()
@@ -56,7 +54,6 @@ class CardCvcEditText @JvmOverloads constructor(
                 if (isValid) {
                     completionCallback()
                 }
-                changedCallback()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

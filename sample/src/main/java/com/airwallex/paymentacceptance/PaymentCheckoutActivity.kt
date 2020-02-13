@@ -43,6 +43,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         }
     }
 
+    @ExperimentalStdlibApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment_checkout)
@@ -248,6 +249,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    @ExperimentalStdlibApi
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
