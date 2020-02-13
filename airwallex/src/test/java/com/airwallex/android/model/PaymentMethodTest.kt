@@ -16,8 +16,8 @@ class PaymentMethodTest {
             .setCard(
                 PaymentMethod.Card.Builder()
                     .setNumber("4012000300001003")
-                    .setExpMonth("12")
-                    .setExpYear("2020")
+                    .setExpiryMonth("12")
+                    .setExpiryYear("2020")
                     .setCvc("123")
                     .setName("Adam")
                     .build()
