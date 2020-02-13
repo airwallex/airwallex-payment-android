@@ -53,11 +53,19 @@
         android:paddingRight="24dp"
         tools:ignore="RtlHardcoded">
 
-        <com.airwallex.android.view.CardCvcTextInputLayout
-            android:id="@+id/atlCardCvc"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="16dp" />
+        <EditText
+            android:id="@+id/etCardCvc"
+            android:layout_width="88dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/bg_input_layout_border"
+            android:fontFamily="@font/circularstd_medium"
+            android:hint="@string/cvc_hint"
+            android:paddingLeft="5dp"
+            android:textColor="@color/color_edit_text_default"
+            android:textColorHint="@color/color_edit_text_accent"
+            android:textSize="13sp"
+            tools:ignore="RtlSymmetry" />
 
         <ImageView
             android:layout_width="wrap_content"

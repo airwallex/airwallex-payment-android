@@ -7,11 +7,9 @@ import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
 import com.google.android.material.textfield.TextInputEditText
@@ -114,9 +112,6 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
 
     fun requestInputFocus() {
         teInput.requestFocus()
-        val imm: InputMethodManager? =
-            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm?.showSoftInput(teInput, InputMethodManager.SHOW_IMPLICIT)
     }
 
     fun afterTextChanged(afterTextChanged: (String) -> Unit) {
