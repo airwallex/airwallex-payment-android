@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -99,10 +98,10 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         fetchPaymentMethods()
     }
 
-    fun onSaveResult() {
+    fun onSavePaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
         setResult(
             Activity.RESULT_OK,
-            Intent().putExtra(PAYMENT_METHOD, cardAdapter.selectedPaymentMethod)
+            Intent().putExtra(PAYMENT_METHOD, paymentMethod).putExtra(PAYMENT_CARD_CVC, cvc)
         )
         finish()
     }
@@ -134,9 +133,8 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
             REQUEST_ADD_CARD_CODE -> {
                 val paymentMethod =
                     data.getParcelableExtra<Parcelable>(AddPaymentMethodActivity.PAYMENT_METHOD) as PaymentMethod
-                Log.d(TAG, "Save card success ${paymentMethod.id}")
-                // Add card success
-                fetchPaymentMethods()
+                val cvc = data.getStringExtra(AddPaymentMethodActivity.PAYMENT_CARD_CVC)
+                onSavePaymentMethod(paymentMethod, cvc)
             }
         }
     }

@@ -86,7 +86,7 @@ class PaymentMethodsAdapter(
                     context.invalidateOptionsMenu()
                     notifyDataSetChanged()
                 }
-                context.onSaveResult()
+                context.onSavePaymentMethod(paymentMethod = selectedPaymentMethod!!)
             }
             itemView.ivCardChecked.visibility =
                 if (selectedPaymentMethod?.type == PaymentMethodType.CARD && method.id == selectedPaymentMethod?.id) View.VISIBLE else View.GONE

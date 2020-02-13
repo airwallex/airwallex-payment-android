@@ -43,7 +43,9 @@ class PaymentMethodItemView constructor(
 
 
     fun requestInputFocus() {
-        atlCardCvc.requestInputFocus()
+        if (llCardCvc.visibility == View.VISIBLE) {
+            atlCardCvc.requestInputFocus()
+        }
     }
 
     init {
@@ -66,7 +68,7 @@ class PaymentMethodItemView constructor(
         }
     }
 
-    fun renewalPaymentMethod(paymentMethod: PaymentMethod?) {
+    fun renewalPaymentMethod(paymentMethod: PaymentMethod?, cvc: String? = null) {
         this.paymentMethod = paymentMethod
         if (paymentMethod == null) {
             tvPaymentMethod.text = context.getString(R.string.select_payment_method)
@@ -86,7 +88,12 @@ class PaymentMethodItemView constructor(
         } else {
             tvPaymentMethod.text =
                 String.format("%s •••• %s", paymentMethod.card?.brand, paymentMethod.card?.last4)
-            llCardCvc.visibility = View.VISIBLE
+            if (cvc != null) {
+                llCardCvc.visibility = View.GONE
+                atlCardCvc.value = cvc
+            } else {
+                llCardCvc.visibility = View.VISIBLE
+            }
         }
 
         tvPaymentMethod.setTextColor(
@@ -110,7 +117,8 @@ class PaymentMethodItemView constructor(
             PaymentBaseActivity.REQUEST_PAYMENT_METHOD_CODE -> {
                 paymentMethod =
                     data.getParcelableExtra(PaymentBaseActivity.PAYMENT_METHOD) as? PaymentMethod
-                renewalPaymentMethod(paymentMethod)
+                val cvc = data.getStringExtra(PaymentBaseActivity.PAYMENT_CARD_CVC)
+                renewalPaymentMethod(paymentMethod, cvc)
                 completion(paymentMethod)
             }
         }
