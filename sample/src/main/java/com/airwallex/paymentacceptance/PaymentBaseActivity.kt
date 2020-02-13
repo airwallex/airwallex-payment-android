@@ -1,13 +1,11 @@
 package com.airwallex.paymentacceptance
 
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -18,13 +16,12 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
 
     companion object {
         const val PAYMENT_METHOD = "payment_method"
+        const val PAYMENT_CARD_CVC = "payment_card_cvc"
         const val SHIPPING_DETAIL = "shipping_detail"
         const val PAYMENT_INTENT = "payment_intent"
 
         const val REQUEST_EDIT_SHIPPING_CODE = 8
         const val REQUEST_PAYMENT_METHOD_CODE = 9
-
-        const val REQUEST_CONFIRM_CVC_CODE = 998
 
         const val PAYMENT_SUCCESS_ACTION = "PAYMENT_SUCCESS_ACTION"
     }

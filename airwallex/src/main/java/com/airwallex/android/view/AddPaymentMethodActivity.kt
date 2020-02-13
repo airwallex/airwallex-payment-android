@@ -31,6 +31,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
     companion object {
         const val REQUEST_ADD_CARD_CODE = 98
         const val PAYMENT_METHOD = "payment_method"
+        const val PAYMENT_CARD_CVC = "payment_card_cvc"
 
         fun startActivityForResult(activity: Activity, token: String, clientSecret: String) {
             activity.startActivityForResult(
@@ -58,7 +59,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
             paymentMethodParams,
             object : Airwallex.PaymentMethodCallback {
                 override fun onSuccess(paymentMethod: PaymentMethod) {
-                    finishWithPaymentMethod(paymentMethod)
+                    onActionSave(paymentMethod, card.cvc!!)
                 }
 
                 override fun onFailed(exception: AirwallexException) {
@@ -68,9 +69,12 @@ class AddPaymentMethodActivity : AirwallexActivity() {
             })
     }
 
-    private fun finishWithPaymentMethod(paymentMethod: PaymentMethod) {
+    private fun onActionSave(paymentMethod: PaymentMethod, cvc: String) {
         loading.visibility = View.GONE
-        setResult(Activity.RESULT_OK, Intent().putExtra(PAYMENT_METHOD, paymentMethod))
+        setResult(
+            Activity.RESULT_OK,
+            Intent().putExtra(PAYMENT_METHOD, paymentMethod).putExtra(PAYMENT_CARD_CVC, cvc)
+        )
         finish()
     }
 
