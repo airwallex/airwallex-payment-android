@@ -83,10 +83,17 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
             selectedPaymentMethod,
             paymentIntent
         )
+
         rvPaymentMethods.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = cardAdapter
+            addItemDecoration(
+                DividerItemDecoration(
+                    this@PaymentMethodsActivity,
+                    R.drawable.line_divider
+                )
+            )
         }
 
         fetchPaymentMethods()
