@@ -5,31 +5,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airwallex.android.Airwallex
+import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodResponse
 import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.view.AddPaymentMethodActivity
 import com.airwallex.android.view.AddPaymentMethodActivity.Companion.REQUEST_ADD_CARD_CODE
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_edit_shipping.toolbar
 import kotlinx.android.synthetic.main.activity_payment_methods.*
-import okhttp3.ResponseBody
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.IOException
 
 class PaymentMethodsActivity : PaymentBaseActivity() {
-
-    private val api: Api by lazy {
-        ApiFactory(Constants.BASE_URL).create()
-    }
 
     private val paymentIntent: PaymentIntent by lazy {
         intent.getParcelableExtra(PAYMENT_INTENT) as PaymentIntent
@@ -42,12 +31,10 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
     override val inPaymentFlow: Boolean
         get() = true
 
-    private val compositeSubscription = CompositeDisposable()
     private lateinit var cardAdapter: PaymentMethodsAdapter
     private val paymentMethods = mutableListOf<PaymentMethod?>(null)
 
     companion object {
-        private const val TAG = "PaymentMethodsActivity"
 
         fun startActivityForResult(
             activity: Activity,
@@ -106,22 +93,24 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         finish()
     }
 
-    override fun onDestroy() {
-        compositeSubscription.dispose()
-        super.onDestroy()
-    }
-
     private fun fetchPaymentMethods() {
-        compositeSubscription.add(
-            // TODO Visa & Mastercard
-            api.fetchPaymentMethods(authorization = "Bearer ${Store.token}")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { handleResponse(it) },
-                    { handleError(it) }
-                )
-        )
+        val airwallex = Airwallex(Store.token, paymentIntent.clientSecret!!)
+        airwallex.getPaymentMethods(object : Airwallex.GetPaymentMethodsCallback {
+            override fun onSuccess(response: PaymentMethodResponse) {
+                val cards = response.items.filter { it.type == PaymentMethodType.CARD }
+                paymentNoCards.visibility = if (cards.isEmpty()) View.VISIBLE else View.GONE
+
+                this@PaymentMethodsActivity.paymentMethods.clear()
+                this@PaymentMethodsActivity.paymentMethods.addAll(cards)
+                this@PaymentMethodsActivity.paymentMethods.add(null)
+                cardAdapter.notifyDataSetChanged()
+
+            }
+
+            override fun onFailed(exception: AirwallexException) {
+                showError(getString(R.string.get_payment_methods_failed), exception.toString())
+            }
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -138,31 +127,4 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
             }
         }
     }
-
-    private fun handleError(err: Throwable) {
-        Toast.makeText(this, err.localizedMessage, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun handleResponse(responseBody: ResponseBody) {
-        try {
-            val responseData = JSONObject(responseBody.string())
-            val items: List<PaymentMethod> = Gson().fromJson(
-                responseData["items"].toString(),
-                object : TypeToken<List<PaymentMethod?>?>() {}.type
-            )
-
-            val cards = items.filter { it.type == PaymentMethodType.CARD }
-            paymentNoCards.visibility = if (cards.isEmpty()) View.VISIBLE else View.GONE
-
-            paymentMethods.clear()
-            paymentMethods.addAll(cards)
-            paymentMethods.add(null)
-            cardAdapter.notifyDataSetChanged()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-    }
-
 }

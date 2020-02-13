@@ -101,6 +101,35 @@ internal class AirwallexPaymentController(
         ).execute()
     }
 
+    override fun getPaymentMethods(
+        options: AirwallexApiRepository.Options,
+        callback: Airwallex.GetPaymentMethodsCallback
+    ) {
+        GetPaymentMethodsTask(
+            options,
+            repository,
+            workScope,
+            object : ApiResultCallback<AirwallexHttpResponse> {
+                override fun onSuccess(result: AirwallexHttpResponse) {
+                    if (result.isSuccessful && result.body != null) {
+                        val response: PaymentMethodResponse = AirwallexPlugins.gson.fromJson(
+                            result.body.string(),
+                            PaymentMethodResponse::class.java
+                        )
+
+                        callback.onSuccess(response)
+                    } else {
+                        callback.onFailed(handleAPIError(result))
+                    }
+                }
+
+                override fun onError(e: AirwallexException) {
+                    callback.onFailed(e)
+                }
+            }
+        ).execute()
+    }
+
     private fun handleAPIError(result: AirwallexHttpResponse): APIException {
         val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
             result.body.string(),
@@ -150,6 +179,18 @@ internal class AirwallexPaymentController(
 
         override suspend fun getResult(): AirwallexHttpResponse? {
             return airwallexRepository.createPaymentMethod(options, paymentMethodParams)
+        }
+    }
+
+    private class GetPaymentMethodsTask(
+        private val options: AirwallexApiRepository.Options,
+        private val airwallexRepository: ApiRepository,
+        workScope: CoroutineScope,
+        callback: ApiResultCallback<AirwallexHttpResponse>
+    ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
+
+        override suspend fun getResult(): AirwallexHttpResponse? {
+            return airwallexRepository.getPaymentMethods(options)
         }
     }
 }

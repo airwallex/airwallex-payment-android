@@ -31,7 +31,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
         return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                getConfirmPaymentIntentUrl(options),
+                confirmPaymentIntentUrl(options),
                 AirwallexHttpRequest.Method.POST
             )
                 .setBody(
@@ -48,7 +48,7 @@ internal class AirwallexApiRepository : ApiRepository {
     override fun retrievePaymentIntent(options: Options): AirwallexHttpResponse? {
         return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                getRetrievePaymentIntentUrl(options),
+                retrievePaymentIntentUrl(options),
                 AirwallexHttpRequest.Method.GET
             )
                 .addHeader("Authorization", "Bearer ${options.token}")
@@ -66,7 +66,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
         return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                getCreateMethodUrl(),
+                createPaymentMethodUrl(),
                 AirwallexHttpRequest.Method.POST
             )
                 .setBody(
@@ -80,12 +80,23 @@ internal class AirwallexApiRepository : ApiRepository {
         )
     }
 
+    override fun getPaymentMethods(options: Options): AirwallexHttpResponse? {
+        return AirwallexPlugins.restClient.execute(
+            AirwallexHttpRequest.Builder(
+                getPaymentMethodsUrl(),
+                AirwallexHttpRequest.Method.GET
+            )
+                .addHeader("Authorization", "Bearer ${options.token}")
+                .build()
+        )
+    }
+
     /**
      *  `/api/v1/pa/payment_intents/{id}`
      */
     @VisibleForTesting
     @JvmSynthetic
-    internal fun getRetrievePaymentIntentUrl(options: Options): String {
+    internal fun retrievePaymentIntentUrl(options: Options): String {
         return getApiUrl("payment_intents/%s", options.paymentIntentId!!)
     }
 
@@ -94,7 +105,7 @@ internal class AirwallexApiRepository : ApiRepository {
      */
     @VisibleForTesting
     @JvmSynthetic
-    internal fun getConfirmPaymentIntentUrl(options: Options): String {
+    internal fun confirmPaymentIntentUrl(options: Options): String {
         return getApiUrl("payment_intents/%s/confirm", options.paymentIntentId!!)
     }
 
@@ -103,8 +114,17 @@ internal class AirwallexApiRepository : ApiRepository {
      */
     @VisibleForTesting
     @JvmSynthetic
-    internal fun getCreateMethodUrl(): String {
+    internal fun createPaymentMethodUrl(): String {
         return getApiUrl("payment_methods/create")
+    }
+
+    /**
+     *  `/api/v1/pa/payment_methods/create`
+     */
+    @VisibleForTesting
+    @JvmSynthetic
+    internal fun getPaymentMethodsUrl(): String {
+        return getApiUrl("payment_methods")
     }
 
     private fun getApiUrl(path: String, vararg args: Any): String {

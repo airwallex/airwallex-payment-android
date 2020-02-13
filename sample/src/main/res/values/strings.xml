@@ -24,5 +24,6 @@
     <string name="payment_failed_message">There was an error while processing your payment. Please try again.</string>
 
     <string name="free">Free</string>
+    <string name="get_payment_methods_failed">Get Payment methods failed</string>
 
 </resources>
