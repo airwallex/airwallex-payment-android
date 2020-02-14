@@ -4,7 +4,7 @@
     <color name="color_edit_text_accent">#A9A9AE</color>
     <color name="color_edit_text_default">#DE000000</color>
 
-    <color name="color_accent_default">#D81B60</color>
+    <color name="color_accent_default">#612FFF</color>
     <color name="color_primary_default">#612FFF</color>
     <color name="color_primary_dark_default">@android:color/black</color>
 
