@@ -24,8 +24,9 @@
 
         <activity android:name="com.airwallex.paymentacceptance.PaymentCartActivity" />
 
-        <activity android:name="com.airwallex.paymentacceptance.PaymentCheckoutActivity"
-            android:theme="@style/ActivityTheme"/>
+        <activity
+            android:name="com.airwallex.paymentacceptance.PaymentCheckoutActivity"
+            android:theme="@style/ActivityTheme" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.PaymentEditShippingActivity"
