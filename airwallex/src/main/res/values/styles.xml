@@ -16,7 +16,7 @@
         <item name="boxBackgroundMode">filled</item>
         <item name="boxBackgroundColor">@null</item>
         <item name="boxCollapsedPaddingTop">9dp</item>
-        <item name="boxStrokeColor">@color/stroke_transparent_color</item>
+        <item name="boxStrokeColor">@color/airwallex_stroke_color</item>
     </style>
 
     <style name="AirwallexMaterialThemeOverlay">

@@ -175,7 +175,7 @@ class CountryAutoCompleteView constructor(
     internal class CountryAdapter(
         context: Context,
         var countries: List<Country>
-    ) : ArrayAdapter<Country>(context, R.layout.item_country) {
+    ) : ArrayAdapter<Country>(context, R.layout.view_country_item) {
 
         private val countryFilter: CountryFilter = CountryFilter(
             countries,
@@ -200,7 +200,7 @@ class CountryAutoCompleteView constructor(
                 view
             } else {
                 val countryText = LayoutInflater.from(context).inflate(
-                    R.layout.item_country, viewGroup, false
+                    R.layout.view_country_item, viewGroup, false
                 ) as TextView
                 countryText.text = getItem(i).name
                 countryText

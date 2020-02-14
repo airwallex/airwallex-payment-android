@@ -61,5 +61,5 @@
 
     </RelativeLayout>
 
-    <include layout="@layout/line_divider"/>
+    <include layout="@layout/line_divider" />
 </LinearLayout>
