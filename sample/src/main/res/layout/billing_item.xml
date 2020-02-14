@@ -42,4 +42,5 @@
     </RelativeLayout>
 
     <include layout="@layout/line_divider" />
+
 </LinearLayout>

@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.model.*
-import com.airwallex.android.view.AddPaymentMethodActivity
+import com.airwallex.android.view.AddPaymentCardActivity
 import com.airwallex.android.view.CardBrand
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_footer.view.*
@@ -97,7 +97,7 @@ class PaymentMethodsAdapter(
 
         fun bindView() {
             itemView.tvAddCard.setOnClickListener {
-                AddPaymentMethodActivity.startActivityForResult(
+                AddPaymentCardActivity.startActivityForResult(
                     context as Activity,
                     Store.token,
                     paymentIntent.clientSecret!!

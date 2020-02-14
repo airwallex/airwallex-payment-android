@@ -9,31 +9,31 @@ import java.util.*
 data class PaymentIntent internal constructor(
 
     @SerializedName("id")
-    val id: String? = null,
+    val id: String,
 
     @SerializedName("request_id")
-    val requestId: String? = null,
+    val requestId: String,
 
     @SerializedName("amount")
-    val amount: Float? = null,
+    val amount: Float,
 
     @SerializedName("currency")
-    val currency: String? = null,
+    val currency: String,
 
     @SerializedName("merchant_order_id")
     val merchantOrderId: String? = null,
 
     @SerializedName("order")
-    val order: PaymentIntentOrder? = null,
+    val order: PaymentIntentOrder,
 
     @SerializedName("customer_id")
-    val customerId: String? = null,
+    val customerId: String,
 
     @SerializedName("descriptor")
-    val descriptor: String? = null,
+    val descriptor: String,
 
     @SerializedName("status")
-    val status: String? = null,
+    val status: String,
 
     @SerializedName("captured_amount")
     val capturedAmount: Float? = null,
@@ -61,7 +61,10 @@ data class PaymentIntent internal constructor(
         val type: String?,
 
         @SerializedName("products")
-        val products: List<Product>?
+        val products: List<Product>?,
+
+        @SerializedName("shipping")
+        val shipping: Shipping?
     ) : AirwallexModel, Parcelable
 
     @Parcelize

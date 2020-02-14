@@ -39,6 +39,12 @@
         android:layout_below="@id/tvTotalLabel"
         android:layout_marginTop="40dp" />
 
+    <com.airwallex.paymentacceptance.view.BillingItemView
+        android:id="@+id/billingItemView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/paymentMethodItemView" />
+
     <RelativeLayout
         android:id="@+id/rlPlay"
         android:layout_width="match_parent"

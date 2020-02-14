@@ -5,91 +5,119 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/circularstd_bold"
-        android:text="@string/billing_info"
-        android:textColor="@color/airwallex_dark_gray"
-        android:textSize="18sp" />
-
-    <com.airwallex.android.view.AirwallexTextInputLayout
-        android:id="@+id/atlFirstName"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:imeOptions="actionNext"
-        android:inputType="textCapWords"
-        app:hint="@string/shipping_first_name_hint" />
+        android:layout_height="58dp"
+        android:background="@android:color/white"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
-        android:id="@+id/atlLastName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:imeOptions="actionNext"
-        android:inputType="textCapWords"
-        app:hint="@string/shipping_last_name_hint" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/circularstd_medium"
+            android:text="@string/same_as_shipping"
+            android:textColor="@color/airwallex_dark_gray"
+            android:textSize="14sp" />
 
-    <com.airwallex.android.view.CountryAutoCompleteView
-        android:id="@+id/countryAutocomplete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp" />
+        <Switch
+            android:id="@+id/swSameAsShipping"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
-        android:id="@+id/atlState"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:imeOptions="actionNext"
-        android:inputType="textCapWords"
-        app:hint="@string/shipping_state_name_hint" />
+    </RelativeLayout>
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
-        android:id="@+id/atlCity"
+    <LinearLayout
+        android:id="@+id/llBilling"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:imeOptions="actionNext"
-        android:inputType="textCapWords"
-        app:hint="@string/shipping_city_name_hint" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
-        android:id="@+id/atlStreetAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:imeOptions="actionNext"
-        android:inputType="textCapWords"
-        app:hint="@string/shipping_street_hint" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
-        android:id="@+id/atlZipCode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:imeOptions="actionNext"
-        android:inputType="text"
-        app:hint="@string/shipping_zip_code_hint" />
+        <com.airwallex.android.view.AirwallexTextInputLayout
+            android:id="@+id/atlFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:imeOptions="actionNext"
+            android:inputType="textCapWords"
+            app:hint="@string/shipping_first_name_hint" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
-        android:id="@+id/atlEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:imeOptions="actionNext"
-        android:inputType="text"
-        app:hint="@string/contact_email_hint" />
+        <com.airwallex.android.view.AirwallexTextInputLayout
+            android:id="@+id/atlLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:imeOptions="actionNext"
+            android:inputType="textCapWords"
+            app:hint="@string/shipping_last_name_hint" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
-        android:id="@+id/atlPhoneNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:imeOptions="actionDone"
-        android:inputType="text"
-        app:hint="@string/contact_phone_number_hint" />
+        <com.airwallex.android.view.CountryAutoCompleteView
+            android:id="@+id/countryAutocomplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp" />
+
+        <com.airwallex.android.view.AirwallexTextInputLayout
+            android:id="@+id/atlState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:imeOptions="actionNext"
+            android:inputType="textCapWords"
+            app:hint="@string/shipping_state_name_hint" />
+
+        <com.airwallex.android.view.AirwallexTextInputLayout
+            android:id="@+id/atlCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:imeOptions="actionNext"
+            android:inputType="textCapWords"
+            app:hint="@string/shipping_city_name_hint" />
+
+        <com.airwallex.android.view.AirwallexTextInputLayout
+            android:id="@+id/atlStreetAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:imeOptions="actionNext"
+            android:inputType="textCapWords"
+            app:hint="@string/shipping_street_hint" />
+
+        <com.airwallex.android.view.AirwallexTextInputLayout
+            android:id="@+id/atlZipCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:imeOptions="actionNext"
+            android:inputType="text"
+            app:hint="@string/shipping_zip_code_hint" />
+
+        <com.airwallex.android.view.AirwallexTextInputLayout
+            android:id="@+id/atlEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:imeOptions="actionNext"
+            android:inputType="text"
+            app:hint="@string/contact_email_hint" />
+
+        <com.airwallex.android.view.AirwallexTextInputLayout
+            android:id="@+id/atlPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            app:hint="@string/contact_phone_number_hint" />
+    </LinearLayout>
 
 </LinearLayout>

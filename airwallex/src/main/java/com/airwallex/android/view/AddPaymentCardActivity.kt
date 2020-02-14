@@ -7,6 +7,7 @@ import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.model.Address
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodParams
 import com.airwallex.android.model.PaymentMethodType
@@ -14,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import java.util.*
 
-class AddPaymentMethodActivity : AirwallexActivity() {
+class AddPaymentCardActivity : AirwallexActivity() {
 
     private val token: String by lazy {
         intent.getStringExtra(TOKEN)
@@ -29,13 +30,12 @@ class AddPaymentMethodActivity : AirwallexActivity() {
     }
 
     companion object {
-        const val REQUEST_ADD_CARD_CODE = 98
         const val PAYMENT_METHOD = "payment_method"
         const val PAYMENT_CARD_CVC = "payment_card_cvc"
 
         fun startActivityForResult(activity: Activity, token: String, clientSecret: String) {
             activity.startActivityForResult(
-                Intent(activity, AddPaymentMethodActivity::class.java)
+                Intent(activity, AddPaymentCardActivity::class.java)
                     .putExtra(TOKEN, token)
                     .putExtra(CLIENT_SECRET, clientSecret),
                 REQUEST_ADD_CARD_CODE
@@ -45,7 +45,22 @@ class AddPaymentMethodActivity : AirwallexActivity() {
 
     override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
-        val billing = billingWidget.billing ?: return
+        // TODO Need to be removed. As the billing will be optional
+        val billing = PaymentMethod.Billing.Builder()
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setPhone("13800000000")
+            .setEmail("jim631@sina.com")
+            .setAddress(
+                Address.Builder()
+                    .setCountryCode("CN")
+                    .setState("Shanghai")
+                    .setCity("Shanghai")
+                    .setStreet("Pudong District")
+                    .setPostcode("100000")
+                    .build()
+            )
+            .build()
 
         loading.visibility = View.VISIBLE
         val paymentMethodParams = PaymentMethodParams.Builder()
@@ -79,7 +94,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
     }
 
     override fun menuEnable(): Boolean {
-        return cardWidget.isValid && billingWidget.isValid
+        return cardWidget.isValid
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,7 +104,5 @@ class AddPaymentMethodActivity : AirwallexActivity() {
         viewStub.inflate()
 
         cardWidget.cardChangeCallback = { invalidateOptionsMenu() }
-        cardWidget.completionCallback = { billingWidget.requestFocus() }
-        billingWidget.billingChangeCallback = { invalidateOptionsMenu() }
     }
 }
