@@ -51,7 +51,7 @@
         android:layout_height="44dp"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
-        android:background="@drawable/button_bg"
+        android:background="@drawable/airwallex_button"
         android:enabled="false"
         android:orientation="horizontal">
 
@@ -65,9 +65,11 @@
             android:drawablePadding="10dp"
             android:duplicateParentState="true"
             android:focusable="false"
+            android:fontFamily="@font/circularstd_bold"
             android:orientation="horizontal"
             android:text="@string/pay_now"
-            android:textColor="@color/button_text_selector" />
+            android:textColor="@color/airwallex_button_text"
+            android:textSize="14sp" />
     </RelativeLayout>
 
     <include

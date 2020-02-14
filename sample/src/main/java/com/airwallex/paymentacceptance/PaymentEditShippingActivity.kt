@@ -59,7 +59,7 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_save, menu)
+        menuInflater.inflate(R.menu.airwallex_menu_save, menu)
         return true
     }
 

@@ -58,7 +58,7 @@
             android:layout_width="88dp"
             android:layout_height="32dp"
             android:layout_marginRight="16dp"
-            android:background="@drawable/bg_input_layout_border"
+            android:background="@drawable/airwallex_input_layout_border"
             android:fontFamily="@font/circularstd_medium"
             android:hint="@string/cvc_hint"
             android:paddingLeft="5dp"
