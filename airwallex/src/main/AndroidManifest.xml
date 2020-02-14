@@ -5,8 +5,13 @@
     <application>
 
         <activity
-            android:name="com.airwallex.android.view.AddPaymentMethodActivity"
+            android:name="com.airwallex.android.view.AddPaymentCardActivity"
             android:theme="@style/AirwallexDefaultTheme" />
+
+        <activity
+            android:name="com.airwallex.android.view.AddPaymentBillingActivity"
+            android:theme="@style/AirwallexDefaultTheme" />
+
     </application>
 
 </manifest>

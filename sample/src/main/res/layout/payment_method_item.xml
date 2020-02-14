@@ -76,4 +76,6 @@
             android:src="@drawable/cvv"
             tools:ignore="RtlHardcoded" />
     </LinearLayout>
+
+    <include layout="@layout/line_divider" />
 </LinearLayout>

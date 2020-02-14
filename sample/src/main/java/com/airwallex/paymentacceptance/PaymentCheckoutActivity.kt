@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
+import com.airwallex.android.model.Address
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
 import okhttp3.*
 import java.io.IOException
@@ -27,6 +28,8 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         get() = true
 
     private var paymentMethod: PaymentMethod? = null
+
+    private var billing: PaymentMethod.Billing? = null
 
     companion object {
 
@@ -73,6 +76,30 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         paymentMethodItemView.cvcChangedCallback = {
             updateButtonStatus()
         }
+
+        val shipping = paymentIntent.order.shipping
+        val billing = shipping?.let {
+            PaymentMethod.Billing.Builder()
+                .setFirstName(it.firstName)
+                .setLastName(it.lastName)
+                .setPhone(it.phone)
+                .setEmail(it.email)
+                .setAddress(
+                    it.address?.apply {
+                        Address.Builder()
+                            .setCountryCode(countryCode)
+                            .setState(state)
+                            .setCity(city)
+                            .setStreet(street)
+                            .setPostcode(postcode)
+                            .build()
+                    }
+                )
+                .build()
+        }
+
+        billingItemView.renewalBilling(billing)
+
         updateButtonStatus()
     }
 
@@ -261,11 +288,15 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             Handler().postDelayed({
                 paymentMethodItemView.requestInputFocus()
             }, 100)
+        }
 
+        billingItemView.onActivityResult(requestCode, resultCode, data) {
+            this.billing = it
+            updateButtonStatus()
         }
     }
 
     private fun updateButtonStatus() {
-        rlPlay.isEnabled = paymentMethodItemView.isValid
+        rlPlay.isEnabled = paymentMethodItemView.isValid && billingItemView.isValid
     }
 }

@@ -25,7 +25,7 @@ class ShippingItemView constructor(
     init {
         View.inflate(getContext(), R.layout.shipping_item, this)
 
-        rlShipping.setOnClickListener {
+        rlBilling.setOnClickListener {
             shipping?.let {
                 PaymentEditShippingActivity.startActivityForResult(
                     context as Activity,
@@ -40,7 +40,7 @@ class ShippingItemView constructor(
         this.shipping = shipping
         if (shipping == null) {
             tvShippingAddress.text =
-                context.getString(com.airwallex.paymentacceptance.R.string.select_shipping)
+                context.getString(R.string.enter_shipping)
             tvShippingAddress.setTextColor(
                 ContextCompat.getColor(
                     context,
@@ -85,7 +85,7 @@ class ShippingItemView constructor(
         when (requestCode) {
             PaymentBaseActivity.REQUEST_EDIT_SHIPPING_CODE -> {
                 val shipping =
-                    data.getParcelableExtra<Parcelable>(PaymentBaseActivity.SHIPPING_DETAIL) as Shipping
+                    data.getParcelableExtra<Parcelable>(PaymentBaseActivity.PAYMENT_SHIPPING) as Shipping
                 renewalShipping(shipping)
                 completion(shipping)
             }

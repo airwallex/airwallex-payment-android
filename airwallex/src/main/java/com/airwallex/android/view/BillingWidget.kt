@@ -14,9 +14,16 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
     var billingChangeCallback: (() -> Unit)? = null
 
-    private var country: CountryAutoCompleteView.Country? = null
+    var sameAsShipping: Boolean = true
+        set(value) {
+            swSameAsShipping.isChecked = value
+            field = value
+        }
+        get() {
+            return swSameAsShipping.isChecked
+        }
 
-    val billing: PaymentMethod.Billing?
+    var billing: PaymentMethod.Billing? = null
         get() {
             if (isValid) {
                 return PaymentMethod.Billing.Builder()
@@ -26,7 +33,7 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
                     .setPhone(atlPhoneNumber.value)
                     .setAddress(
                         Address.Builder()
-                            .setCountryCode(country?.code)
+                            .setCountryCode(countryAutocomplete.country)
                             .setState(atlState.value)
                             .setCity(atlCity.value)
                             .setStreet(atlStreetAddress.value)
@@ -38,26 +45,44 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
                 return null
             }
         }
+        set(value) {
+            value?.apply {
+                atlFirstName.value = firstName ?: ""
+                atlLastName.value = lastName ?: ""
+                countryAutocomplete.country = address?.countryCode
+                atlState.value = address?.state ?: ""
+                atlCity.value = address?.city ?: ""
+                atlStreetAddress.value = address?.street ?: ""
+                atlZipCode.value = address?.postcode ?: ""
+                atlEmail.value = email ?: ""
+                atlPhoneNumber.value = phone ?: ""
+            }
+            field = value
+        }
 
     val isValid: Boolean
         get() {
-            return atlFirstName.value.isNotEmpty()
+            return swSameAsShipping.isChecked || !swSameAsShipping.isChecked
+                    && atlFirstName.value.isNotEmpty()
                     && atlLastName.value.isNotEmpty()
-                    && country != null
+                    && countryAutocomplete.country != null
                     && atlState.value.isNotEmpty()
                     && atlCity.value.isNotEmpty()
                     && atlStreetAddress.value.isNotEmpty()
                     && atlEmail.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches()
-
         }
 
     init {
         View.inflate(getContext(), R.layout.widget_billing, this)
 
-        countryAutocomplete.countryChangeCallback = { country ->
-            this.country = country
+        countryAutocomplete.countryChangeCallback = {
             billingChangeCallback?.invoke()
             atlState.requestInputFocus()
+        }
+
+        swSameAsShipping.setOnCheckedChangeListener { _, isChecked ->
+            llBilling.visibility = if (isChecked) View.GONE else View.VISIBLE
+            billingChangeCallback?.invoke()
         }
 
         listenTextChanged()

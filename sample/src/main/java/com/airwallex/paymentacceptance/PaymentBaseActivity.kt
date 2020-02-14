@@ -17,7 +17,7 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
     companion object {
         const val PAYMENT_METHOD = "payment_method"
         const val PAYMENT_CARD_CVC = "payment_card_cvc"
-        const val SHIPPING_DETAIL = "shipping_detail"
+        const val PAYMENT_SHIPPING = "payment_shipping"
         const val PAYMENT_INTENT = "payment_intent"
 
         const val REQUEST_EDIT_SHIPPING_CODE = 8

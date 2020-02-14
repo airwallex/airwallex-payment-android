@@ -94,20 +94,20 @@ class PaymentCartActivity : PaymentBaseActivity() {
                     api.createPaymentIntent(
                         authorization = "Bearer ${Store.token}",
                         params = mutableMapOf(
+                            "request_id" to UUID.randomUUID().toString(),
                             "amount" to products.sumByDouble { product ->
                                 product.unitPrice ?: 0 * (product.quantity ?: 0).toDouble()
                             },
-                            "customer_id" to customerId,
                             "currency" to "USD",
-                            "descriptor" to "Airwallex - T-shirt",
                             "merchant_order_id" to UUID.randomUUID().toString(),
-                            "metadata" to mapOf("id" to 1),
                             "order" to Order.Builder()
                                 .setProducts(products)
                                 .setShipping(shipping)
                                 .setType("physical_goods")
                                 .build(),
-                            "request_id" to UUID.randomUUID().toString()
+                            "customer_id" to customerId,
+                            "descriptor" to "Airwallex - T-shirt",
+                            "metadata" to mapOf("id" to 1)
                         )
                     )
                 }

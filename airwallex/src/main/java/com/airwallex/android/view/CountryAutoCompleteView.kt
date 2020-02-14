@@ -23,7 +23,6 @@ class CountryAutoCompleteView constructor(
 
     var countryChangeCallback: ((Country) -> Unit)? = null
 
-
     private var error: String?
         set(value) {
             tvError.visibility = when (value) {
@@ -36,6 +35,17 @@ class CountryAutoCompleteView constructor(
         }
         get() {
             return tvError.text.toString()
+        }
+
+    var country: String? = null
+        set(value) {
+            value?.let {
+                actCountry.setText(getCountryByCode(it)?.name)
+            }
+            field = value
+        }
+        get() {
+            return getCountryByName(actCountry.text.toString())?.code
         }
 
     private val legalCountries = arrayOf(

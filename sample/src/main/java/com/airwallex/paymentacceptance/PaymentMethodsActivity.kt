@@ -13,8 +13,8 @@ import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodResponse
 import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.view.AddPaymentMethodActivity
-import com.airwallex.android.view.AddPaymentMethodActivity.Companion.REQUEST_ADD_CARD_CODE
+import com.airwallex.android.view.AddPaymentCardActivity
+import com.airwallex.android.view.AirwallexActivity.Companion.REQUEST_ADD_CARD_CODE
 import kotlinx.android.synthetic.main.activity_edit_shipping.toolbar
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 
@@ -121,8 +121,8 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         when (requestCode) {
             REQUEST_ADD_CARD_CODE -> {
                 val paymentMethod =
-                    data.getParcelableExtra<Parcelable>(AddPaymentMethodActivity.PAYMENT_METHOD) as PaymentMethod
-                val cvc = data.getStringExtra(AddPaymentMethodActivity.PAYMENT_CARD_CVC)
+                    data.getParcelableExtra<Parcelable>(AddPaymentCardActivity.PAYMENT_METHOD) as PaymentMethod
+                val cvc = data.getStringExtra(AddPaymentCardActivity.PAYMENT_CARD_CVC)
                 onSavePaymentMethod(paymentMethod, cvc)
             }
         }
