@@ -143,7 +143,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         // Start Confirm PaymentIntent
         val airwallex = Airwallex(Store.token, paymentIntent.clientSecret!!)
         airwallex.confirmPaymentIntent(
-            paymentIntentId = paymentIntent.id!!,
+            paymentIntentId = paymentIntent.id,
             paymentIntentParams = paymentIntentParams,
             callback = object : Airwallex.PaymentIntentCallback {
                 override fun onSuccess(paymentIntent: PaymentIntent) {

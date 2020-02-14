@@ -27,7 +27,7 @@
             android:layout_height="44dp"
             android:layout_margin="16dp"
             android:layout_weight="0"
-            android:background="@drawable/button_bg"
+            android:background="@drawable/airwallex_button"
             android:fontFamily="@font/circularstd_bold"
             android:gravity="center"
             android:padding="0dp"

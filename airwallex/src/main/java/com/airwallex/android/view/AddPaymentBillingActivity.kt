@@ -3,6 +3,8 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import com.airwallex.android.R
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.activity_add_billing.*
@@ -33,6 +35,29 @@ class AddPaymentBillingActivity : AirwallexActivity() {
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.findItem(R.id.action_save)?.isEnabled = isValid()
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.airwallex_menu_save, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.action_save) {
+            onActionSave()
+            true
+        } else {
+            val handled = super.onOptionsItemSelected(item)
+            if (!handled) {
+                onBackPressed()
+            }
+            handled
+        }
+    }
+
     override fun onActionSave() {
         setResult(
             Activity.RESULT_OK,
@@ -43,7 +68,7 @@ class AddPaymentBillingActivity : AirwallexActivity() {
         finish()
     }
 
-    override fun menuEnable(): Boolean {
+    override fun isValid(): Boolean {
         return billingWidget.isValid
     }
 

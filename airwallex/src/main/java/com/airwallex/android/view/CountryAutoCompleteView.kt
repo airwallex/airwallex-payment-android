@@ -91,7 +91,7 @@ class CountryAutoCompleteView constructor(
             vBorder.background =
                 ResourcesCompat.getDrawable(
                     resources,
-                    R.drawable.bg_input_layout_border,
+                    R.drawable.airwallex_input_layout_border,
                     null
                 )
 //            teInput.setHintTextColor(ContextCompat.getColor(context, R.color.colorEditTextAccent))
@@ -99,7 +99,7 @@ class CountryAutoCompleteView constructor(
             vBorder.background =
                 ResourcesCompat.getDrawable(
                     resources,
-                    R.drawable.bg_input_layout_border_error,
+                    R.drawable.airwallex_input_layout_border_error,
                     null
                 )
 //            teInput.setHintTextColor(ContextCompat.getColor(context, R.color.colorEditTextError))

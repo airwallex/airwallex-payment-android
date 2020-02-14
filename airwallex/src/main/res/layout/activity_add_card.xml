@@ -26,5 +26,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp" />
+
+        <TextView
+            android:id="@+id/tvSaveCard"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/ariwallex_button"
+            android:fontFamily="@font/circularstd_bold"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:text="@string/enter_new_card"
+            android:textColor="@color/airwallex_button_text"
+            android:textSize="14sp" />
+
     </LinearLayout>
 </ScrollView>

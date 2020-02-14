@@ -93,7 +93,7 @@ class AddPaymentCardActivity : AirwallexActivity() {
         finish()
     }
 
-    override fun menuEnable(): Boolean {
+    override fun isValid(): Boolean {
         return cardWidget.isValid
     }
 
@@ -103,6 +103,11 @@ class AddPaymentCardActivity : AirwallexActivity() {
         viewStub.layoutResource = R.layout.activity_add_card
         viewStub.inflate()
 
-        cardWidget.cardChangeCallback = { invalidateOptionsMenu() }
+        cardWidget.cardChangeCallback = { tvSaveCard.isEnabled = isValid() }
+        tvSaveCard.isEnabled = isValid()
+
+        tvSaveCard.setOnClickListener {
+            onActionSave()
+        }
     }
 }

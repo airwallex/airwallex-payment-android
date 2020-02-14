@@ -34,7 +34,7 @@
             android:id="@+id/vBorder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_input_layout_border" />
+            android:background="@drawable/airwallex_input_layout_border" />
 
     </FrameLayout>
 
