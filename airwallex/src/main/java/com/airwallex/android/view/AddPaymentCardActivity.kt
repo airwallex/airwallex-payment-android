@@ -74,7 +74,9 @@ class AddPaymentCardActivity : AirwallexActivity() {
             paymentMethodParams,
             object : Airwallex.PaymentMethodCallback {
                 override fun onSuccess(paymentMethod: PaymentMethod) {
-                    onActionSave(paymentMethod, card.cvc!!)
+                    card.cvc?.let {
+                        onActionSave(paymentMethod, it)
+                    }
                 }
 
                 override fun onFailed(exception: AirwallexException) {

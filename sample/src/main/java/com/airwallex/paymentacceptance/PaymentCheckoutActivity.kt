@@ -25,7 +25,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(Store.token, paymentIntent.clientSecret!!)
+        Airwallex(Store.token, paymentIntent.clientSecret)
     }
 
     override val inPaymentFlow: Boolean
@@ -230,11 +230,20 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             })
         } else {
             Log.d(TAG, "Confirm PaymentIntent success, launch REAL Wechat pay.")
+            val data = paymentIntent.nextAction?.data
+            if (data == null) {
+                Toast.makeText(
+                    this@PaymentCheckoutActivity,
+                    "No Wechat data!",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
             // launch wechat pay
             WXPay.instance.launchWeChat(
                 context = this@PaymentCheckoutActivity,
                 appId = Constants.APP_ID,
-                data = paymentIntent.nextAction!!.data!!,
+                data = data,
                 listener = object : PayListener {
                     override fun onSuccess() {
                         retrievePaymentIntent(airwallex)
@@ -269,7 +278,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             "Start retrieve PaymentIntent ${paymentIntent.id}"
         )
         airwallex.retrievePaymentIntent(
-            paymentIntentId = paymentIntent.id!!,
+            paymentIntentId = paymentIntent.id,
             callback = object : Airwallex.PaymentIntentCallback {
                 override fun onSuccess(paymentIntent: PaymentIntent) {
                     Log.d(
