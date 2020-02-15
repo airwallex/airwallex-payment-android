@@ -24,6 +24,10 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         intent.getParcelableExtra(PAYMENT_INTENT) as PaymentIntent
     }
 
+    private val airwallex: Airwallex by lazy {
+        Airwallex(Store.token, paymentIntent.clientSecret!!)
+    }
+
     override val inPaymentFlow: Boolean
         get() = true
 
@@ -99,8 +103,31 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         }
 
         billingItemView.renewalBilling(billing)
+        // It there only one cards, default use this.
+        fetchPaymentMethods()
+    }
 
-        updateButtonStatus()
+    @ExperimentalStdlibApi
+    private fun fetchPaymentMethods() {
+        loading.visibility = View.VISIBLE
+
+        airwallex.getPaymentMethods(object : Airwallex.GetPaymentMethodsCallback {
+            override fun onSuccess(response: PaymentMethodResponse) {
+                val cards = response.items.filter { it.type == PaymentMethodType.CARD }
+                if (cards.isNotEmpty()) {
+                    paymentMethod = cards[0]
+                    paymentMethodItemView.renewalPaymentMethod(paymentMethod)
+                }
+                updateButtonStatus()
+                loading.visibility = View.GONE
+            }
+
+            override fun onFailed(exception: AirwallexException) {
+                showError(getString(R.string.get_payment_methods_failed), exception.toString())
+                updateButtonStatus()
+                loading.visibility = View.GONE
+            }
+        })
     }
 
     private fun startConfirmPaymentIntent(paymentMethod: PaymentMethod) {
@@ -141,7 +168,6 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         }
 
         // Start Confirm PaymentIntent
-        val airwallex = Airwallex(Store.token, paymentIntent.clientSecret!!)
         airwallex.confirmPaymentIntent(
             paymentIntentId = paymentIntent.id,
             paymentIntentParams = paymentIntentParams,
