@@ -28,6 +28,10 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         intent.getParcelableExtra(PAYMENT_METHOD) as? PaymentMethod
     }
 
+    private val airwallex: Airwallex by lazy {
+        Airwallex(Store.token, paymentIntent.clientSecret!!)
+    }
+
     override val inPaymentFlow: Boolean
         get() = true
 
@@ -94,7 +98,6 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
     }
 
     private fun fetchPaymentMethods() {
-        val airwallex = Airwallex(Store.token, paymentIntent.clientSecret!!)
         airwallex.getPaymentMethods(object : Airwallex.GetPaymentMethodsCallback {
             override fun onSuccess(response: PaymentMethodResponse) {
                 val cards = response.items.filter { it.type == PaymentMethodType.CARD }
