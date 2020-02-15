@@ -27,7 +27,7 @@ class PaymentMethodsAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == paymentMethods.size - 1) {
+        return if (position == paymentMethods.size) {
             ItemViewType.FOOTER.value
         } else {
             ItemViewType.CARD.value
@@ -49,7 +49,7 @@ class PaymentMethodsAdapter(
     }
 
     override fun getItemCount(): Int {
-        return paymentMethods.size
+        return paymentMethods.size + 1
     }
 
     @ExperimentalStdlibApi

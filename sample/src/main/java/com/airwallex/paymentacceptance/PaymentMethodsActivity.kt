@@ -32,11 +32,13 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
         Airwallex(Store.token, paymentIntent.clientSecret)
     }
 
+    private var pageNum = 0
+
     override val inPaymentFlow: Boolean
         get() = true
 
     private lateinit var cardAdapter: PaymentMethodsAdapter
-    private val paymentMethods = mutableListOf<PaymentMethod?>(null)
+    private val paymentMethods = mutableListOf<PaymentMethod?>()
 
     companion object {
 
@@ -86,7 +88,21 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
             )
         }
 
+        srlPaymentMethods.setOnRefreshListener {
+            fetchPaymentMethods()
+        }
+        srlPaymentMethods.setColorSchemeResources(
+            R.color.colorPrimary,
+            R.color.colorPrimaryDark,
+            R.color.colorAccent
+        )
+
+        startFetchPaymentMethods()
+    }
+
+    private fun startFetchPaymentMethods() {
         fetchPaymentMethods()
+        srlPaymentMethods.isRefreshing = true
     }
 
     fun onSavePaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
@@ -98,22 +114,24 @@ class PaymentMethodsActivity : PaymentBaseActivity() {
     }
 
     private fun fetchPaymentMethods() {
-        airwallex.getPaymentMethods(object : Airwallex.GetPaymentMethodsCallback {
-            override fun onSuccess(response: PaymentMethodResponse) {
-                val cards = response.items.filter { it.type == PaymentMethodType.CARD }
-                paymentNoCards.visibility = if (cards.isEmpty()) View.VISIBLE else View.GONE
+        airwallex.getPaymentMethods(
+            pageNum = pageNum,
+            callback = object : Airwallex.GetPaymentMethodsCallback {
+                override fun onSuccess(response: PaymentMethodResponse) {
+                    val cards = response.items.filter { it.type == PaymentMethodType.CARD }
+                    paymentNoCards.visibility = if (cards.isEmpty()) View.VISIBLE else View.GONE
 
-                this@PaymentMethodsActivity.paymentMethods.clear()
-                this@PaymentMethodsActivity.paymentMethods.addAll(cards)
-                this@PaymentMethodsActivity.paymentMethods.add(null)
-                cardAdapter.notifyDataSetChanged()
+                    srlPaymentMethods.isRefreshing = false
+                    pageNum++
+                    this@PaymentMethodsActivity.paymentMethods.addAll(0, cards.reversed())
+                    cardAdapter.notifyDataSetChanged()
+                }
 
-            }
-
-            override fun onFailed(exception: AirwallexException) {
-                showError(getString(R.string.get_payment_methods_failed), exception.toString())
-            }
-        })
+                override fun onFailed(exception: AirwallexException) {
+                    srlPaymentMethods.isRefreshing = false
+                    showError(getString(R.string.get_payment_methods_failed), exception.toString())
+                }
+            })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
