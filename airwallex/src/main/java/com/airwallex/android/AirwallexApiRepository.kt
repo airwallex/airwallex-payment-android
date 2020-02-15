@@ -18,7 +18,9 @@ internal class AirwallexApiRepository : ApiRepository {
     internal data class Options internal constructor(
         internal val token: String,
         internal val clientSecret: String,
-        internal val paymentIntentId: String? = null
+        internal val paymentIntentId: String? = null,
+        internal val pageNum: Int = 0,
+        internal val pageSize: Int = 10
     ) : Parcelable
 
     override fun confirmPaymentIntent(
@@ -83,7 +85,7 @@ internal class AirwallexApiRepository : ApiRepository {
     override fun getPaymentMethods(options: Options): AirwallexHttpResponse? {
         return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                getPaymentMethodsUrl(),
+                getPaymentMethodsUrl(options),
                 AirwallexHttpRequest.Method.GET
             )
                 .addHeader("Authorization", "Bearer ${options.token}")
@@ -123,8 +125,8 @@ internal class AirwallexApiRepository : ApiRepository {
      */
     @VisibleForTesting
     @JvmSynthetic
-    internal fun getPaymentMethodsUrl(): String {
-        return getApiUrl("payment_methods")
+    internal fun getPaymentMethodsUrl(options: Options): String {
+        return getApiUrl("payment_methods?page_num=${options.pageNum}&page_size=${options.pageSize}")
     }
 
     private fun getApiUrl(path: String, vararg args: Any): String {

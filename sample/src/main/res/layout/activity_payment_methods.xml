@@ -29,10 +29,17 @@
         android:layout_height="58dp"
         android:layout_marginTop="9dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvPaymentMethods"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srlPaymentMethods"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPaymentMethods"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

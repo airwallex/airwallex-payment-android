@@ -111,23 +111,24 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
     private fun fetchPaymentMethods() {
         loading.visibility = View.VISIBLE
 
-        airwallex.getPaymentMethods(object : Airwallex.GetPaymentMethodsCallback {
-            override fun onSuccess(response: PaymentMethodResponse) {
-                val cards = response.items.filter { it.type == PaymentMethodType.CARD }
-                if (cards.isNotEmpty()) {
-                    paymentMethod = cards[0]
-                    paymentMethodItemView.renewalPaymentMethod(paymentMethod)
+        airwallex.getPaymentMethods(
+            callback = object : Airwallex.GetPaymentMethodsCallback {
+                override fun onSuccess(response: PaymentMethodResponse) {
+                    val cards = response.items.filter { it.type == PaymentMethodType.CARD }
+                    if (cards.isNotEmpty()) {
+                        paymentMethod = cards[0]
+                        paymentMethodItemView.renewalPaymentMethod(paymentMethod)
+                    }
+                    updateButtonStatus()
+                    loading.visibility = View.GONE
                 }
-                updateButtonStatus()
-                loading.visibility = View.GONE
-            }
 
-            override fun onFailed(exception: AirwallexException) {
-                showError(getString(R.string.get_payment_methods_failed), exception.toString())
-                updateButtonStatus()
-                loading.visibility = View.GONE
-            }
-        })
+                override fun onFailed(exception: AirwallexException) {
+                    showError(getString(R.string.get_payment_methods_failed), exception.toString())
+                    updateButtonStatus()
+                    loading.visibility = View.GONE
+                }
+            })
     }
 
     private fun startConfirmPaymentIntent(paymentMethod: PaymentMethod) {
