@@ -19,7 +19,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:text="@string/payment_methods"
-        android:textColor="@color/airwallex_dark_gray"
+        android:textColor="@color/airwallex_color_dark_deep"
         android:textSize="32sp" />
 
     <include

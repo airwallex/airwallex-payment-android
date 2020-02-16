@@ -58,7 +58,7 @@ class BillingItemView constructor(
             tvShippingAddress.setTextColor(
                 ContextCompat.getColor(
                     context,
-                    R.color.airwallex_dark_light
+                    R.color.airwallex_color_dark_light
                 )
             )
             return
@@ -70,7 +70,7 @@ class BillingItemView constructor(
             tvShippingAddress.setTextColor(
                 ContextCompat.getColor(
                     context,
-                    R.color.airwallex_dark_gray
+                    R.color.airwallex_color_dark_deep
                 )
             )
             return
@@ -94,7 +94,7 @@ class BillingItemView constructor(
         tvShippingAddress.setTextColor(
             ContextCompat.getColor(
                 context,
-                R.color.airwallex_dark_gray
+                R.color.airwallex_color_dark_deep
             )
         )
     }

@@ -17,7 +17,7 @@
             android:layout_marginStart="16dp"
             android:fontFamily="@font/circularstd_bold"
             android:text="@string/billing_info"
-            android:textColor="@color/airwallex_dark_gray"
+            android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="32sp" />
 
         <com.airwallex.android.view.BillingWidget

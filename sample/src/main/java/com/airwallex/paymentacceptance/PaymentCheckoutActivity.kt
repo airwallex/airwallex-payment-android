@@ -124,7 +124,6 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    showError(getString(R.string.get_payment_methods_failed), exception.toString())
                     updateButtonStatus()
                     loading.visibility = View.GONE
                 }

@@ -18,7 +18,7 @@
             android:layout_centerVertical="true"
             android:fontFamily="@font/circularstd_medium"
             android:text="@string/same_as_shipping"
-            android:textColor="@color/airwallex_dark_gray"
+            android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="14sp" />
 
         <Switch

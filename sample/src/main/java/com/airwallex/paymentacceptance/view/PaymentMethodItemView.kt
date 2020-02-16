@@ -14,9 +14,10 @@ import androidx.core.content.ContextCompat
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.view.PaymentMethodsActivity
 import com.airwallex.paymentacceptance.PaymentBaseActivity
-import com.airwallex.paymentacceptance.PaymentMethodsActivity
 import com.airwallex.paymentacceptance.R
+import com.airwallex.paymentacceptance.Store
 import kotlinx.android.synthetic.main.payment_method_item.view.*
 import java.util.*
 
@@ -61,6 +62,7 @@ class PaymentMethodItemView constructor(
                 context as Activity,
                 paymentMethod,
                 paymentIntent,
+                Store.token,
                 PaymentBaseActivity.REQUEST_PAYMENT_METHOD_CODE
             )
         }
@@ -90,7 +92,7 @@ class PaymentMethodItemView constructor(
             tvPaymentMethod.setTextColor(
                 ContextCompat.getColor(
                     context,
-                    R.color.airwallex_dark_light
+                    R.color.airwallex_color_dark_light
                 )
             )
             llCardCvc.visibility = View.GONE
@@ -119,7 +121,7 @@ class PaymentMethodItemView constructor(
         tvPaymentMethod.setTextColor(
             ContextCompat.getColor(
                 context,
-                R.color.airwallex_dark_gray
+                R.color.airwallex_color_dark_deep
             )
         )
     }

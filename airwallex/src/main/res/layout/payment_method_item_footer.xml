@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/airwallex_bg"
+    android:background="@color/airwallex_color_bg"
     android:orientation="vertical">
 
     <TextView
@@ -13,7 +13,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/border_bg"
+        android:background="@drawable/airwallex_button_border_bg"
         android:drawablePadding="8dp"
         android:fontFamily="@font/circularstd_bold"
         android:gravity="center"
@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="58dp"
         android:layout_marginTop="24dp"
-        android:background="@drawable/item_bg"
+        android:background="@drawable/airwallex_item_bg"
         android:orientation="horizontal"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:contentDescription="@null"
-            android:src="@drawable/wechat_pay" />
+            android:src="@drawable/airwallex_wechat_pay" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -46,7 +46,7 @@
             android:layout_toEndOf="@id/wechatPayIcon"
             android:fontFamily="@font/circularstd_medium"
             android:text="@string/wechat_pay"
-            android:textColor="@color/airwallex_dark_gray"
+            android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="14sp" />
 
         <ImageView
@@ -56,7 +56,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:contentDescription="@null"
-            android:src="@drawable/tick"
+            android:src="@drawable/airwallex_tick"
             android:visibility="gone" />
     </RelativeLayout>
 </LinearLayout>

@@ -17,7 +17,7 @@
             android:layout_toStartOf="@id/tvOrderSum"
             android:fontFamily="@font/circularstd_bold"
             android:text="@string/my_cart"
-            android:textColor="@color/airwallex_dark_gray"
+            android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="32sp" />
 
         <TextView
@@ -83,7 +83,7 @@
                 android:layout_toEndOf="@id/tvSubtotalLabel"
                 android:fontFamily="@font/circularstd_medium"
                 android:gravity="end"
-                android:textColor="@color/airwallex_dark_gray"
+                android:textColor="@color/airwallex_color_dark_deep"
                 android:textSize="14sp" />
 
         </RelativeLayout>
@@ -113,7 +113,7 @@
                 android:layout_toEndOf="@id/tvShippingLabel"
                 android:fontFamily="@font/circularstd_medium"
                 android:gravity="end"
-                android:textColor="@color/airwallex_dark_gray"
+                android:textColor="@color/airwallex_color_dark_deep"
                 android:textSize="14sp" />
 
         </RelativeLayout>
@@ -133,7 +133,7 @@
             android:layout_centerVertical="true"
             android:fontFamily="@font/circularstd_medium"
             android:text="@string/total"
-            android:textColor="@color/airwallex_dark_gray"
+            android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="14sp" />
 
         <TextView
@@ -145,7 +145,7 @@
             android:layout_toEndOf="@id/tvTotalLabel"
             android:fontFamily="@font/circularstd_medium"
             android:gravity="end"
-            android:textColor="@color/airwallex_dark_gray"
+            android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="14sp" />
 
     </RelativeLayout>
