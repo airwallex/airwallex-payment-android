@@ -4,6 +4,11 @@
 
     <application>
 
+
+        <activity
+            android:name="com.airwallex.android.view.PaymentMethodsActivity"
+            android:theme="@style/AirwallexDefaultTheme" />
+
         <activity
             android:name="com.airwallex.android.view.AddPaymentCardActivity"
             android:theme="@style/AirwallexDefaultTheme" />

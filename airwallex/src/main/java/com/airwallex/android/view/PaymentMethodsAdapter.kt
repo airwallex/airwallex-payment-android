@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.android.view
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.airwallex.android.R
 import com.airwallex.android.model.*
 import com.airwallex.android.view.AddPaymentCardActivity
 import com.airwallex.android.view.CardBrand
@@ -18,7 +19,8 @@ class PaymentMethodsAdapter(
     private val paymentMethods: List<PaymentMethod?>,
     private val context: Context,
     var selectedPaymentMethod: PaymentMethod?,
-    val paymentIntent: PaymentIntent
+    val paymentIntent: PaymentIntent,
+    val token: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     enum class ItemViewType(val value: Int) {
@@ -80,7 +82,6 @@ class PaymentMethodsAdapter(
                         .setId(method.id)
                         .setType(PaymentMethodType.CARD)
                         .setCard(card)
-                        .setBilling(PaymentData.billing)
                         .build()
 
                     context.invalidateOptionsMenu()
@@ -101,7 +102,7 @@ class PaymentMethodsAdapter(
             itemView.tvAddCard.setOnClickListener {
                 AddPaymentCardActivity.startActivityForResult(
                     context as Activity,
-                    Store.token,
+                    token,
                     paymentIntent.clientSecret
                 )
             }
@@ -116,7 +117,6 @@ class PaymentMethodsAdapter(
                 selectedPaymentMethod = PaymentMethod.Builder()
                     .setType(PaymentMethodType.WECHAT)
                     .setWechatPayFlow(WechatPayFlow(WechatPayFlowType.INAPP))
-                    .setBilling(PaymentData.billing)
                     .build()
 
                 (context as PaymentMethodsActivity).invalidateOptionsMenu()

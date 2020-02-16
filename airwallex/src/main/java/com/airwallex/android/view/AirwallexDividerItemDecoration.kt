@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.android.view
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,8 +6,9 @@ import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
+import com.airwallex.android.R
 
-class DividerItemDecoration : ItemDecoration {
+class AirwallexDividerItemDecoration : ItemDecoration {
     private var divider: Drawable?
     private var context: Context? = null
 
@@ -28,7 +29,7 @@ class DividerItemDecoration : ItemDecoration {
         parent: RecyclerView,
         state: RecyclerView.State
     ) {
-        val padding = context?.resources?.getDimension(R.dimen.divider_padding)?.toInt() ?: 0
+        val padding = context?.resources?.getDimension(R.dimen.airwallex_divider_padding)?.toInt() ?: 0
         val left = parent.paddingLeft + padding
         val right = parent.width - parent.paddingRight - padding
         val childCount = parent.childCount

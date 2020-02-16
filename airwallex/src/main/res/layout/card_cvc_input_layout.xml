@@ -16,8 +16,8 @@
             style="@style/AirwallexTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColorHint="@color/color_edit_text_accent"
-            app:hintTextColor="@color/color_edit_text_accent">
+            android:textColorHint="@color/airwallex_color_edit_text_accent"
+            app:hintTextColor="@color/airwallex_color_edit_text_accent">
 
             <com.airwallex.android.view.CardCvcEditText
                 android:id="@+id/teInput"
@@ -25,8 +25,8 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:fontFamily="@font/circularstd_medium"
-                android:textColor="@color/color_edit_text_default"
-                android:textColorHint="@color/color_edit_text_accent"
+                android:textColor="@color/airwallex_color_edit_text_default"
+                android:textColorHint="@color/airwallex_color_edit_text_accent"
                 android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -46,7 +46,7 @@
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/circularstd_medium"
         android:paddingTop="4dp"
-        android:textColor="@color/color_edit_text_error"
+        android:textColor="@color/airwallex_color_edit_text_error"
         android:textSize="12sp"
         android:visibility="gone" />
 

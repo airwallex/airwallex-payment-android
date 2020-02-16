@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_edit_text_error">#FF4F42</color>
-    <color name="color_edit_text_accent">#A9A9AE</color>
-    <color name="color_edit_text_default">#DE000000</color>
+    <color name="airwallex_color_edit_text_error">#FF4F42</color>
+    <color name="airwallex_color_edit_text_accent">#A9A9AE</color>
+    <color name="airwallex_color_edit_text_default">#DE000000</color>
 
-    <color name="color_accent_default">#612FFF</color>
-    <color name="color_primary_default">#612FFF</color>
-    <color name="color_primary_dark_default">@android:color/black</color>
+    <color name="airwallex_color_accent_default">#612FFF</color>
+    <color name="airwallex_color_primary_default">#612FFF</color>
+    <color name="airwallex_color_primary_dark_default">@android:color/black</color>
 
-    <color name="airwallex_blue">#612FFF</color>
-    <color name="airwallex_dark_gray">#2A2A2A</color>
-    <color name="airwallex_dark_light">#A9A9A9</color>
-    <color name="airwallex_bg">#F7F7F7</color>
-
+    <color name="airwallex_color_dark">#D1D2D5</color>
+    <color name="airwallex_color_dark_deep">#2A2A2A</color>
+    <color name="airwallex_color_dark_light">#A9A9A9</color>
+    <color name="airwallex_color_bg">#F7F7F7</color>
 </resources>

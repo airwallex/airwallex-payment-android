@@ -73,7 +73,6 @@ android {
 dependencies {
     implementation project(':airwallex')
     implementation 'com.google.android.material:material:1.1.0'
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
 

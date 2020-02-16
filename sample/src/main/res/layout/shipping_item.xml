@@ -9,7 +9,7 @@
         android:id="@+id/rlBilling"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/item_bg"
+        android:background="@drawable/airwallex_item_bg"
         android:minHeight="58dp"
         android:paddingLeft="16dp"
         android:paddingTop="20dp"
@@ -37,7 +37,7 @@
             android:fontFamily="@font/circularstd_medium"
             android:gravity="end"
             android:lineSpacingExtra="4dp"
-            android:textColor="@color/airwallex_dark_gray"
+            android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="14sp" />
     </RelativeLayout>
 

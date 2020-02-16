@@ -30,8 +30,6 @@ class AddPaymentCardActivity : AirwallexActivity() {
     }
 
     companion object {
-        const val PAYMENT_METHOD = "payment_method"
-        const val PAYMENT_CARD_CVC = "payment_card_cvc"
 
         fun startActivityForResult(activity: Activity, token: String, clientSecret: String) {
             activity.startActivityForResult(

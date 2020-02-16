@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/airwallex_blue" android:state_selected="true" />
-    <item android:color="@color/airwallex_blue" android:state_enabled="true" />
-    <item android:color="@color/color_edit_text_accent" />
+    <item android:color="@color/airwallex_color_accent_default" android:state_selected="true" />
+    <item android:color="@color/airwallex_color_accent_default" android:state_enabled="true" />
+    <item android:color="@color/airwallex_color_edit_text_accent" />
 </selector>

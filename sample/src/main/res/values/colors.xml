@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/color_primary_default</color>
-    <color name="colorPrimaryDark">@color/color_primary_dark_default</color>
-    <color name="colorAccent">@color/color_accent_default</color>
-    <color name="common_dark">#D1D2D5</color>
+    <color name="colorPrimary">@color/airwallex_color_primary_default</color>
+    <color name="colorPrimaryDark">@color/airwallex_color_primary_dark_default</color>
+    <color name="colorAccent">@color/airwallex_color_accent_default</color>
 </resources>
