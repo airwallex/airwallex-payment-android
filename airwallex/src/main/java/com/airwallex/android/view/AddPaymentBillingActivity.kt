@@ -58,7 +58,7 @@ class AddPaymentBillingActivity : AirwallexActivity() {
         }
     }
 
-    override fun onActionSave() {
+    private fun onActionSave() {
         setResult(
             Activity.RESULT_OK,
             Intent()
@@ -68,7 +68,7 @@ class AddPaymentBillingActivity : AirwallexActivity() {
         finish()
     }
 
-    override fun isValid(): Boolean {
+    private fun isValid(): Boolean {
         return billingWidget.isValid
     }
 
