@@ -57,13 +57,6 @@ class PaymentMethodsActivity : AirwallexActivity() {
         }
     }
 
-    override fun onActionSave() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun isValid(): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

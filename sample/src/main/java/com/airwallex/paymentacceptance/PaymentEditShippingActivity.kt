@@ -53,7 +53,7 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.menu_save)?.isEnabled =
+        menu?.findItem(R.id.action_save)?.isEnabled =
             contactWidget.isValidContact && shippingWidget.isValidShipping
         return super.onPrepareOptionsMenu(menu)
     }
@@ -64,7 +64,7 @@ class PaymentEditShippingActivity : PaymentBaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.menu_save) {
+        if (item.itemId == R.id.action_save) {
             actionSave()
         }
         return super.onOptionsItemSelected(item)

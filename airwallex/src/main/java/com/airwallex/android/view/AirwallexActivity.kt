@@ -21,10 +21,6 @@ abstract class AirwallexActivity : AppCompatActivity() {
         const val PAYMENT_INTENT = "payment_intent"
     }
 
-    protected abstract fun onActionSave()
-
-    protected abstract fun isValid(): Boolean
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_airwallex)

@@ -4,6 +4,7 @@ import android.app.Application
 import com.airwallex.android.Airwallex
 import com.airwallex.android.AirwallexConfiguration
 import com.airwallex.android.model.Address
+import com.airwallex.android.model.Device
 import com.airwallex.android.model.Product
 import com.airwallex.android.model.Shipping
 
@@ -24,6 +25,17 @@ class SampleApplication : Application() {
                 .build()
         )
     }
+
+    val device = Device.Builder()
+        .setBrowserInfo("Chrome/76.0.3809.100")
+        .setCookiesAccepted("true")
+        .setDeviceId("IMEI-4432fsdafd31243244fdsafdfd653")
+        .setHostName("www.airwallex.com")
+        .setHttpBrowserEmail("jim631@sina.com")
+        .setHttpBrowserType("chrome")
+        .setIpAddress("123.90.0.1")
+        .setIpNetworkAddress("128.0.0.0")
+        .build()
 
     val products = mutableListOf(
         Product.Builder()

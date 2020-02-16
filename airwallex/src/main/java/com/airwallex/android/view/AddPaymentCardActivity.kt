@@ -41,7 +41,7 @@ class AddPaymentCardActivity : AirwallexActivity() {
         }
     }
 
-    override fun onActionSave() {
+    fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
         // TODO Need to be removed. As the billing will be optional
         val billing = PaymentMethod.Billing.Builder()
@@ -93,7 +93,7 @@ class AddPaymentCardActivity : AirwallexActivity() {
         finish()
     }
 
-    override fun isValid(): Boolean {
+    private fun isValid(): Boolean {
         return cardWidget.isValid
     }
 
