@@ -11,7 +11,6 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
             android:name="com.airwallex.paymentacceptance.SplashActivity"
@@ -22,15 +21,16 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.airwallex.paymentacceptance.PaymentCartActivity" />
+        <activity android:name="com.airwallex.paymentacceptance.PaymentCartActivity"
+            android:theme="@style/ActivityAnimTheme"/>
 
         <activity
             android:name="com.airwallex.paymentacceptance.PaymentCheckoutActivity"
-            android:theme="@style/ActivityTheme" />
+            android:theme="@style/ActivityAnimTheme"/>
 
         <activity
             android:name="com.airwallex.paymentacceptance.PaymentEditShippingActivity"
-            android:theme="@style/ActivityTheme" />
+            android:theme="@style/ActivityAnimTheme" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.wxapi.WXPayEntryActivity"

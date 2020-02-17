@@ -11,6 +11,7 @@ class SplashActivity : AppCompatActivity() {
 
         Handler().postDelayed({
             PaymentCartActivity.startActivity(this@SplashActivity)
+            overridePendingTransition(0, 0)
         }, 1000)
     }
 }
