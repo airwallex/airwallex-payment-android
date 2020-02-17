@@ -113,7 +113,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             callback = object : Airwallex.GetPaymentMethodsCallback {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }
-                    if (cards.isNotEmpty()) {
+                    if (cards.size == 1) {
                         paymentMethod = cards[0]
                         paymentMethodItemView.renewalPaymentMethod(paymentMethod)
                     }

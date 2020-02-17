@@ -4,9 +4,9 @@
     <color name="airwallex_color_edit_text_accent">#A9A9AE</color>
     <color name="airwallex_color_edit_text_default">#DE000000</color>
 
-    <color name="airwallex_color_accent_default">#612FFF</color>
+    <color name="airwallex_color_accent_default">#3711AE</color>
     <color name="airwallex_color_primary_default">#612FFF</color>
-    <color name="airwallex_color_primary_dark_default">@android:color/black</color>
+    <color name="airwallex_color_primary_dark_default">#3711AE</color>
 
     <color name="airwallex_color_dark">#D1D2D5</color>
     <color name="airwallex_color_dark_deep">#2A2A2A</color>
