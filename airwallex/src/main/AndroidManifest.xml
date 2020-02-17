@@ -3,8 +3,6 @@
     package="com.airwallex.android">
 
     <application>
-
-
         <activity
             android:name="com.airwallex.android.view.PaymentMethodsActivity"
             android:theme="@style/AirwallexDefaultTheme" />
