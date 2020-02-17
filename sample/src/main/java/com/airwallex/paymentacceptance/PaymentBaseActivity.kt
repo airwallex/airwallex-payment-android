@@ -15,13 +15,10 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
     abstract val inPaymentFlow: Boolean
 
     companion object {
-        const val PAYMENT_METHOD = "payment_method"
-        const val PAYMENT_CARD_CVC = "payment_card_cvc"
         const val PAYMENT_SHIPPING = "payment_shipping"
         const val PAYMENT_INTENT = "payment_intent"
 
         const val REQUEST_EDIT_SHIPPING_CODE = 8
-        const val REQUEST_PAYMENT_METHOD_CODE = 9
 
         const val PAYMENT_SUCCESS_ACTION = "PAYMENT_SUCCESS_ACTION"
     }
@@ -64,8 +61,8 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> finish()
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
         }
         return super.onOptionsItemSelected(item)
     }
