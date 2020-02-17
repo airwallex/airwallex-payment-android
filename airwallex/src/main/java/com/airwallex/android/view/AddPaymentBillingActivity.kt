@@ -12,27 +12,8 @@ import kotlinx.android.synthetic.main.activity_airwallex.*
 
 class AddPaymentBillingActivity : AirwallexActivity() {
 
-    private val sameAsShipping: Boolean by lazy {
-        intent.getBooleanExtra(SAME_AS_SHIPPING, true)
-    }
-
-    private val billing: PaymentMethod.Billing? by lazy {
-        intent.getParcelableExtra(PAYMENT_BILLING) as? PaymentMethod.Billing
-    }
-
-    companion object {
-        fun startActivityForResult(
-            activity: Activity,
-            billing: PaymentMethod.Billing?,
-            sameAsShipping: Boolean
-        ) {
-            activity.startActivityForResult(
-                Intent(activity, AddPaymentBillingActivity::class.java)
-                    .putExtra(PAYMENT_BILLING, billing)
-                    .putExtra(SAME_AS_SHIPPING, sameAsShipping),
-                REQUEST_ADD_BILLING_CODE
-            )
-        }
+    private val args: AddPaymentBillingActivityStarter.Args by lazy {
+        AddPaymentBillingActivityStarter.Args.create(intent)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -60,11 +41,15 @@ class AddPaymentBillingActivity : AirwallexActivity() {
 
     private fun onActionSave() {
         setResult(
-            Activity.RESULT_OK,
-            Intent()
-                .putExtra(PAYMENT_BILLING, billingWidget.billing)
-                .putExtra(SAME_AS_SHIPPING, billingWidget.sameAsShipping)
+            Activity.RESULT_OK, Intent()
+                .putExtras(
+                    AddPaymentBillingActivityStarter.Result(
+                        billingWidget.billing,
+                        billingWidget.sameAsShipping
+                    ).toBundle()
+                )
         )
+
         finish()
     }
 
@@ -78,10 +63,10 @@ class AddPaymentBillingActivity : AirwallexActivity() {
         viewStub.layoutResource = R.layout.activity_add_billing
         viewStub.inflate()
 
-        if (!sameAsShipping) {
-            billingWidget.billing = billing
+        if (!args.sameAsShipping) {
+            billingWidget.billing = args.billing
         }
-        billingWidget.sameAsShipping = sameAsShipping
+        billingWidget.sameAsShipping = args.sameAsShipping
         billingWidget.billingChangeCallback = { invalidateOptionsMenu() }
     }
 }

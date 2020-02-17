@@ -3,15 +3,13 @@ package com.airwallex.paymentacceptance.view
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.Patterns
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.view.AddPaymentBillingActivity
-import com.airwallex.android.view.AirwallexActivity
+import com.airwallex.android.view.AddPaymentBillingActivityStarter
 import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.billing_item.view.*
 import java.util.*
@@ -42,9 +40,13 @@ class BillingItemView constructor(
         View.inflate(getContext(), R.layout.billing_item, this)
 
         rlBilling.setOnClickListener {
-            AddPaymentBillingActivity.startActivityForResult(
-                context as Activity, billing, sameAsShipping
-            )
+            AddPaymentBillingActivityStarter(context as Activity)
+                .startForResult(
+                    AddPaymentBillingActivityStarter.Args.Builder()
+                        .setSameAsShipping(sameAsShipping)
+                        .setBilling(billing)
+                        .build()
+                )
         }
     }
 
@@ -109,12 +111,10 @@ class BillingItemView constructor(
             return
         }
         when (requestCode) {
-            AirwallexActivity.REQUEST_ADD_BILLING_CODE -> {
-                val billing =
-                    data.getParcelableExtra<Parcelable>(AirwallexActivity.PAYMENT_BILLING) as PaymentMethod.Billing
-                val sameAsShipping = data.getBooleanExtra(AirwallexActivity.SAME_AS_SHIPPING, true)
-                renewalBilling(billing, sameAsShipping)
-                completion(billing)
+            AddPaymentBillingActivityStarter.REQUEST_CODE -> {
+                val result = AddPaymentBillingActivityStarter.Result.fromIntent(data)
+                renewalBilling(result?.billing, result?.sameAsShipping ?: true)
+                completion(result?.billing!!)
             }
         }
     }

@@ -17,31 +17,15 @@ import java.util.*
 
 class AddPaymentCardActivity : AirwallexActivity() {
 
-    private val token: String by lazy {
-        intent.getStringExtra(TOKEN)
-    }
-
-    private val clientSecret: String by lazy {
-        intent.getStringExtra(CLIENT_SECRET)
+    private val args: AddPaymentCardActivityStarter.Args by lazy {
+        AddPaymentCardActivityStarter.Args.create(intent)
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(token, clientSecret)
+        Airwallex(args.token!!, args.clientSecret!!)
     }
 
-    companion object {
-
-        fun startActivityForResult(activity: Activity, token: String, clientSecret: String) {
-            activity.startActivityForResult(
-                Intent(activity, AddPaymentCardActivity::class.java)
-                    .putExtra(TOKEN, token)
-                    .putExtra(CLIENT_SECRET, clientSecret),
-                REQUEST_ADD_CARD_CODE
-            )
-        }
-    }
-
-    fun onActionSave() {
+    private fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
         // TODO Need to be removed. As the billing will be optional
         val billing = PaymentMethod.Billing.Builder()
@@ -87,8 +71,8 @@ class AddPaymentCardActivity : AirwallexActivity() {
     private fun onActionSave(paymentMethod: PaymentMethod, cvc: String) {
         loading.visibility = View.GONE
         setResult(
-            Activity.RESULT_OK,
-            Intent().putExtra(PAYMENT_METHOD, paymentMethod).putExtra(PAYMENT_CARD_CVC, cvc)
+            Activity.RESULT_OK, Intent()
+                .putExtras(AddPaymentCardActivityStarter.Result(paymentMethod, cvc).toBundle())
         )
         finish()
     }

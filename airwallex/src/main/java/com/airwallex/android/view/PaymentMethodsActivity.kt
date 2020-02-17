@@ -3,14 +3,12 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodResponse
 import com.airwallex.android.model.PaymentMethodType
@@ -19,44 +17,18 @@ import kotlinx.android.synthetic.main.activity_payment_methods.*
 
 class PaymentMethodsActivity : AirwallexActivity() {
 
-    private val paymentIntent: PaymentIntent by lazy {
-        intent.getParcelableExtra(PAYMENT_INTENT) as PaymentIntent
-    }
-
-    private val selectedPaymentMethod: PaymentMethod? by lazy {
-        intent.getParcelableExtra(PAYMENT_METHOD) as? PaymentMethod
-    }
-
-    private val token: String by lazy {
-        intent.getStringExtra(TOKEN) as String
+    private val args: PaymentMethodsActivityStarter.Args by lazy {
+        PaymentMethodsActivityStarter.Args.create(intent)
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(token, paymentIntent.clientSecret)
+        Airwallex(args.token!!, args.paymentIntent!!.clientSecret)
     }
 
     private var currentPageNum = 0
 
     private lateinit var cardAdapter: PaymentMethodsAdapter
     private val paymentMethods = mutableListOf<PaymentMethod>()
-
-    companion object {
-        fun startActivityForResult(
-            activity: Activity,
-            paymentMethod: PaymentMethod?,
-            paymentIntent: PaymentIntent,
-            token: String,
-            requestCode: Int
-        ) {
-            activity.startActivityForResult(
-                Intent(activity, PaymentMethodsActivity::class.java)
-                    .putExtra(PAYMENT_METHOD, paymentMethod)
-                    .putExtra(PAYMENT_INTENT, paymentIntent)
-                    .putExtra(TOKEN, token),
-                requestCode
-            )
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,9 +40,9 @@ class PaymentMethodsActivity : AirwallexActivity() {
         cardAdapter = PaymentMethodsAdapter(
             paymentMethods,
             this,
-            selectedPaymentMethod,
-            paymentIntent,
-            token
+            args.paymentMethod,
+            args.paymentIntent!!,
+            args.token!!
         )
 
         rvPaymentMethods.apply {
@@ -100,8 +72,13 @@ class PaymentMethodsActivity : AirwallexActivity() {
 
     fun onSavePaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
         setResult(
-            Activity.RESULT_OK,
-            Intent().putExtra(PAYMENT_METHOD, paymentMethod).putExtra(PAYMENT_CARD_CVC, cvc)
+            Activity.RESULT_OK, Intent()
+                .putExtras(
+                    PaymentMethodsActivityStarter.Result(
+                        paymentMethod,
+                        cvc
+                    ).toBundle()
+                )
         )
         finish()
     }
@@ -133,11 +110,11 @@ class PaymentMethodsActivity : AirwallexActivity() {
             return
         }
         when (requestCode) {
-            REQUEST_ADD_CARD_CODE -> {
-                val paymentMethod =
-                    data.getParcelableExtra<Parcelable>(PAYMENT_METHOD) as PaymentMethod
-                val cvc = data.getStringExtra(PAYMENT_CARD_CVC)
-                onSavePaymentMethod(paymentMethod, cvc)
+            AddPaymentCardActivityStarter.REQUEST_CODE -> {
+                val result = AddPaymentCardActivityStarter.Result.fromIntent(data)
+                result?.let {
+                    onSavePaymentMethod(it.paymentMethod, it.cvc)
+                }
             }
         }
     }
