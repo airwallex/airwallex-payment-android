@@ -58,10 +58,9 @@ class PaymentMethodItemView constructor(
         llPaymentMethod.setOnClickListener {
             PaymentMethodsActivityStarter(context as Activity)
                 .startForResult(
-                    PaymentMethodsActivityStarter.Args.Builder()
+                    PaymentMethodsActivityStarter.PaymentMethodsArgs
+                        .Builder(paymentIntent, Store.token)
                         .setPaymentMethod(paymentMethod)
-                        .setPaymentIntent(paymentIntent)
-                        .setToken(Store.token)
                         .build()
                 )
         }

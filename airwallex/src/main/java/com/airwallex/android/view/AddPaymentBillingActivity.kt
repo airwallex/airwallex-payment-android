@@ -4,15 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.activity_add_billing.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 
 class AddPaymentBillingActivity : AirwallexActivity() {
 
-    private val args: AddPaymentBillingActivityStarter.Args by lazy {
-        AddPaymentBillingActivityStarter.Args.create(intent)
+    private val args: AddPaymentBillingActivityStarter.BillingArgs by lazy {
+        AddPaymentBillingActivityStarter.BillingArgs.create(intent)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -23,33 +22,6 @@ class AddPaymentBillingActivity : AirwallexActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.airwallex_menu_save, menu)
         return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.action_save) {
-            onActionSave()
-            true
-        } else {
-            val handled = super.onOptionsItemSelected(item)
-            if (!handled) {
-                onBackPressed()
-            }
-            handled
-        }
-    }
-
-    private fun onActionSave() {
-        setResult(
-            Activity.RESULT_OK, Intent()
-                .putExtras(
-                    AddPaymentBillingActivityStarter.Result(
-                        billingWidget.billing,
-                        billingWidget.sameAsShipping
-                    ).toBundle()
-                )
-        )
-
-        finish()
     }
 
     private fun isValid(): Boolean {
@@ -67,5 +39,19 @@ class AddPaymentBillingActivity : AirwallexActivity() {
         }
         billingWidget.sameAsShipping = args.sameAsShipping
         billingWidget.billingChangeCallback = { invalidateOptionsMenu() }
+    }
+
+    override fun onActionSave() {
+        setResult(
+            Activity.RESULT_OK, Intent()
+                .putExtras(
+                    AddPaymentBillingActivityStarter.Result(
+                        billingWidget.billing,
+                        billingWidget.sameAsShipping
+                    ).toBundle()
+                )
+        )
+
+        finish()
     }
 }

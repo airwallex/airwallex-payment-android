@@ -1,6 +1,7 @@
 package com.airwallex.android.view
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.R
@@ -15,6 +16,21 @@ abstract class AirwallexActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+    }
+
+    abstract fun onActionSave()
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.action_save) {
+            onActionSave()
+            true
+        } else {
+            val handled = super.onOptionsItemSelected(item)
+            if (!handled) {
+                onBackPressed()
+            }
+            handled
+        }
     }
 
     fun showError(message: String) {

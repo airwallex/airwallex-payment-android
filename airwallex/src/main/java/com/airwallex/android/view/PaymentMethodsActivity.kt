@@ -17,18 +17,17 @@ import kotlinx.android.synthetic.main.activity_payment_methods.*
 
 class PaymentMethodsActivity : AirwallexActivity() {
 
-    private val args: PaymentMethodsActivityStarter.Args by lazy {
-        PaymentMethodsActivityStarter.Args.create(intent)
+    private val args: PaymentMethodsActivityStarter.PaymentMethodsArgs by lazy {
+        PaymentMethodsActivityStarter.PaymentMethodsArgs.create(intent)
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(args.token!!, args.paymentIntent!!.clientSecret)
+        Airwallex(args.token, args.paymentIntent.clientSecret)
     }
 
     private var currentPageNum = 0
 
     private lateinit var cardAdapter: PaymentMethodsAdapter
-    private val paymentMethods = mutableListOf<PaymentMethod>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,27 +37,20 @@ class PaymentMethodsActivity : AirwallexActivity() {
 
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         cardAdapter = PaymentMethodsAdapter(
-            paymentMethods,
             args.paymentMethod
         )
 
         cardAdapter.callback = object : PaymentMethodsAdapter.Callback {
             override fun onPaymentMethodClick(paymentMethod: PaymentMethod) {
-                onSavePaymentMethod(paymentMethod)
+                finishWithPaymentMethod(paymentMethod)
             }
 
             override fun onWechatClick(paymentMethod: PaymentMethod) {
-                onSavePaymentMethod(paymentMethod)
+                finishWithPaymentMethod(paymentMethod)
             }
 
             override fun onAddCardClick() {
-                AddPaymentCardActivityStarter(this@PaymentMethodsActivity)
-                    .startForResult(
-                        AddPaymentCardActivityStarter.Args.Builder()
-                            .setToken(args.token!!)
-                            .setClientSecret(args.paymentIntent!!.clientSecret)
-                            .build()
-                    )
+                startAddPaymentMethod()
             }
         }
 
@@ -83,11 +75,23 @@ class PaymentMethodsActivity : AirwallexActivity() {
             R.color.airwallex_color_accent_default
         )
 
-        srlPaymentMethods.isRefreshing = true
         fetchPaymentMethods()
     }
 
-    private fun onSavePaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
+    override fun onActionSave() {
+        // Ignore
+    }
+
+    private fun startAddPaymentMethod() {
+        AddPaymentCardActivityStarter(this@PaymentMethodsActivity)
+            .startForResult(
+                AddPaymentCardActivityStarter.CardArgs
+                    .Builder(args.token, args.paymentIntent.clientSecret)
+                    .build()
+            )
+    }
+
+    private fun finishWithPaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
         setResult(
             Activity.RESULT_OK, Intent()
                 .putExtras(
@@ -101,6 +105,7 @@ class PaymentMethodsActivity : AirwallexActivity() {
     }
 
     private fun fetchPaymentMethods() {
+        srlPaymentMethods.isRefreshing = true
         airwallex.getPaymentMethods(
             pageNum = currentPageNum,
             callback = object : Airwallex.GetPaymentMethodsCallback {
@@ -110,8 +115,7 @@ class PaymentMethodsActivity : AirwallexActivity() {
 
                     srlPaymentMethods.isRefreshing = false
                     currentPageNum++
-                    this@PaymentMethodsActivity.paymentMethods.addAll(0, cards.reversed())
-                    cardAdapter.notifyDataSetChanged()
+                    cardAdapter.setPaymentMethods(cards.reversed())
                 }
 
                 override fun onFailed(exception: AirwallexException) {
@@ -130,7 +134,7 @@ class PaymentMethodsActivity : AirwallexActivity() {
             AddPaymentCardActivityStarter.REQUEST_CODE -> {
                 val result = AddPaymentCardActivityStarter.Result.fromIntent(data)
                 result?.let {
-                    onSavePaymentMethod(it.paymentMethod, it.cvc)
+                    finishWithPaymentMethod(it.paymentMethod, it.cvc)
                 }
             }
         }

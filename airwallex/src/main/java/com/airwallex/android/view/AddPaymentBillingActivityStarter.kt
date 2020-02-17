@@ -5,25 +5,24 @@ import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.view.AddPaymentBillingActivityStarter.Args
+import com.airwallex.android.view.AddPaymentBillingActivityStarter.BillingArgs
 import kotlinx.android.parcel.Parcelize
 
 class AddPaymentBillingActivityStarter constructor(
     activity: Activity
-) : ActivityStarter<AddPaymentBillingActivity, Args>(
+) : ActivityStarter<AddPaymentBillingActivity, BillingArgs>(
     activity,
     AddPaymentBillingActivity::class.java,
-    Args.DEFAULT,
     REQUEST_CODE
 ) {
 
     @Parcelize
-    data class Args internal constructor(
+    data class BillingArgs internal constructor(
         internal val sameAsShipping: Boolean,
         internal val billing: PaymentMethod.Billing?
-    ) : ActivityStarter.Args {
+    ) : Args {
 
-        class Builder : ObjectBuilder<Args> {
+        class Builder : ObjectBuilder<BillingArgs> {
             private var sameAsShipping: Boolean = true
             private var billing: PaymentMethod.Billing? = null
 
@@ -35,8 +34,8 @@ class AddPaymentBillingActivityStarter constructor(
                 this.billing = billing
             }
 
-            override fun build(): Args {
-                return Args(
+            override fun build(): BillingArgs {
+                return BillingArgs(
                     sameAsShipping = sameAsShipping,
                     billing = billing
                 )
@@ -44,11 +43,8 @@ class AddPaymentBillingActivityStarter constructor(
         }
 
         internal companion object {
-            internal val DEFAULT = Builder().build()
-
-            @JvmSynthetic
-            internal fun create(intent: Intent): Args {
-                return requireNotNull(intent.getParcelableExtra(ActivityStarter.Args.EXTRA))
+            internal fun create(intent: Intent): BillingArgs {
+                return requireNotNull(intent.getParcelableExtra(Args.AIRWALLEX_EXTRA))
             }
         }
     }
@@ -60,19 +56,19 @@ class AddPaymentBillingActivityStarter constructor(
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()
-            bundle.putParcelable(ActivityStarter.Result.EXTRA, this)
+            bundle.putParcelable(ActivityStarter.Result.AIRWALLEX_EXTRA, this)
             return bundle
         }
 
         companion object {
             fun fromIntent(intent: Intent?): Result? {
-                return intent?.getParcelableExtra(ActivityStarter.Result.EXTRA)
+                return intent?.getParcelableExtra(ActivityStarter.Result.AIRWALLEX_EXTRA)
             }
         }
     }
 
     companion object {
-        const val REQUEST_CODE: Int = 1002
+        const val REQUEST_CODE: Int = 1003
     }
 
 }

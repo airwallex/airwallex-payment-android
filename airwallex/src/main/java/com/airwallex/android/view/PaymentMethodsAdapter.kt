@@ -13,13 +13,20 @@ import com.airwallex.android.model.WechatPayFlowType
 import kotlinx.android.synthetic.main.payment_method_item_add_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_wechat.view.*
+import java.util.*
 
 class PaymentMethodsAdapter(
-    private val paymentMethods: List<PaymentMethod>,
     var selectedPaymentMethod: PaymentMethod?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    internal val paymentMethods = ArrayList<PaymentMethod>()
+
     internal var callback: Callback? = null
+
+    internal fun setPaymentMethods(paymentMethods: List<PaymentMethod>) {
+        this.paymentMethods.addAll(0, paymentMethods)
+        notifyDataSetChanged()
+    }
 
     override fun getItemCount(): Int {
         return paymentMethods.size + ADD_PAYMENT_CARD_COUNT + WECHAT_COUNT
@@ -38,8 +45,7 @@ class PaymentMethodsAdapter(
     }
 
     private fun isPaymentMethodsPosition(position: Int): Boolean {
-        val range = paymentMethods.indices
-        return position in range
+        return position < paymentMethods.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
