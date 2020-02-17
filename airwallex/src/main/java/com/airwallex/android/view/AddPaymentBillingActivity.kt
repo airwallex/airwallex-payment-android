@@ -77,6 +77,7 @@ class AddPaymentBillingActivity : AirwallexActivity() {
 
         viewStub.layoutResource = R.layout.activity_add_billing
         viewStub.inflate()
+
         if (!sameAsShipping) {
             billingWidget.billing = billing
         }

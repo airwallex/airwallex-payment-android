@@ -14,6 +14,7 @@ import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodResponse
 import com.airwallex.android.model.PaymentMethodType
+import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 
 class PaymentMethodsActivity : AirwallexActivity() {
@@ -34,10 +35,10 @@ class PaymentMethodsActivity : AirwallexActivity() {
         Airwallex(token, paymentIntent.clientSecret)
     }
 
-    private var pageNum = 0
+    private var currentPageNum = 0
 
     private lateinit var cardAdapter: PaymentMethodsAdapter
-    private val paymentMethods = mutableListOf<PaymentMethod?>()
+    private val paymentMethods = mutableListOf<PaymentMethod>()
 
     companion object {
         fun startActivityForResult(
@@ -57,17 +58,11 @@ class PaymentMethodsActivity : AirwallexActivity() {
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_payment_methods)
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.apply {
-            setHomeButtonEnabled(true)
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowTitleEnabled(false)
-        }
+        viewStub.layoutResource = R.layout.activity_payment_methods
+        viewStub.inflate()
 
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         cardAdapter = PaymentMethodsAdapter(
@@ -99,12 +94,8 @@ class PaymentMethodsActivity : AirwallexActivity() {
             R.color.airwallex_color_accent_default
         )
 
-        startFetchPaymentMethods()
-    }
-
-    private fun startFetchPaymentMethods() {
-        fetchPaymentMethods()
         srlPaymentMethods.isRefreshing = true
+        fetchPaymentMethods()
     }
 
     fun onSavePaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
@@ -117,14 +108,14 @@ class PaymentMethodsActivity : AirwallexActivity() {
 
     private fun fetchPaymentMethods() {
         airwallex.getPaymentMethods(
-            pageNum = pageNum,
+            pageNum = currentPageNum,
             callback = object : Airwallex.GetPaymentMethodsCallback {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }
                     paymentNoCards.visibility = if (cards.isEmpty()) View.VISIBLE else View.GONE
 
                     srlPaymentMethods.isRefreshing = false
-                    pageNum++
+                    currentPageNum++
                     this@PaymentMethodsActivity.paymentMethods.addAll(0, cards.reversed())
                     cardAdapter.notifyDataSetChanged()
                 }

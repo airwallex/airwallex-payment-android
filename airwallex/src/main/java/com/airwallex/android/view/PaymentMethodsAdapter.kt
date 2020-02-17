@@ -9,68 +9,89 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.R
 import com.airwallex.android.model.*
-import com.airwallex.android.view.AddPaymentCardActivity
-import com.airwallex.android.view.CardBrand
+import kotlinx.android.synthetic.main.payment_method_item_add_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
-import kotlinx.android.synthetic.main.payment_method_item_footer.view.*
-import java.util.*
+import kotlinx.android.synthetic.main.payment_method_item_wechat.view.*
 
 class PaymentMethodsAdapter(
-    private val paymentMethods: List<PaymentMethod?>,
+    private val paymentMethods: List<PaymentMethod>,
     private val context: Context,
     var selectedPaymentMethod: PaymentMethod?,
     val paymentIntent: PaymentIntent,
     val token: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    enum class ItemViewType(val value: Int) {
-        CARD(1),
-        FOOTER(2)
+    private val addCardCount = 1
+    private val wechatCount = 1
+
+    init {
+        setHasStableIds(true)
+    }
+
+    override fun getItemCount(): Int {
+        return paymentMethods.size + addCardCount + wechatCount
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == paymentMethods.size) {
-            ItemViewType.FOOTER.value
-        } else {
-            ItemViewType.CARD.value
+        return when {
+            isWechatPosition(position) -> ItemViewType.Wechat.ordinal
+            isPaymentMethodsPosition(position) -> ItemViewType.Card.ordinal
+            else -> ItemViewType.AddCard.ordinal
+        }
+    }
+
+    private fun isWechatPosition(position: Int): Boolean {
+        return position == itemCount - 1
+    }
+
+    private fun isPaymentMethodsPosition(position: Int): Boolean {
+        val range = paymentMethods.indices
+        return position in range
+    }
+
+    override fun getItemId(position: Int): Long {
+        return when {
+            isWechatPosition(position) ->
+                WECHAT_ITEM_ID
+            isPaymentMethodsPosition(position) ->
+                getPaymentMethodAtPosition(position).hashCode().toLong()
+            else -> ADD_CARD_ITEM_ID
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == ItemViewType.FOOTER.value) {
-            FooterHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.payment_method_item_footer, parent, false)
-            )
-        } else {
-            CardHolder(
+        return when (ItemViewType.values()[viewType]) {
+            ItemViewType.Card -> CardHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.payment_method_item_card, parent, false)
+            )
+            ItemViewType.AddCard -> AddCardHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.payment_method_item_add_card, parent, false)
+            )
+            ItemViewType.Wechat -> WechatHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.payment_method_item_wechat, parent, false)
             )
         }
     }
 
-    override fun getItemCount(): Int {
-        return paymentMethods.size + 1
-    }
-
-    @ExperimentalStdlibApi
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is FooterHolder -> holder.bindView()
+            is WechatHolder -> holder.bindView()
             is CardHolder -> holder.bindView(position)
+            is AddCardHolder -> holder.bindView()
         }
     }
 
     inner class CardHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         @SuppressLint("DefaultLocale")
-        @ExperimentalStdlibApi
         fun bindView(position: Int) {
-            val method = paymentMethods[position] ?: return
+            val method = paymentMethods[position]
             val card = method.card ?: return
             itemView.tvCardInfo.text =
-                String.format("%s •••• %s", card.brand?.capitalize(Locale.ENGLISH), card.last4)
+                String.format("%s •••• %s", card.brand?.capitalize(), card.last4)
             when (card.brand) {
                 CardBrand.Visa.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
                 CardBrand.MasterCard.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
@@ -96,17 +117,9 @@ class PaymentMethodsAdapter(
         }
     }
 
-    inner class FooterHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class WechatHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bindView() {
-            itemView.tvAddCard.setOnClickListener {
-                AddPaymentCardActivity.startActivityForResult(
-                    context as Activity,
-                    token,
-                    paymentIntent.clientSecret
-                )
-            }
-
             itemView.ivChecked.visibility =
                 if (selectedPaymentMethod?.type == PaymentMethodType.WECHAT) View.VISIBLE else View.GONE
 
@@ -121,7 +134,38 @@ class PaymentMethodsAdapter(
 
                 (context as PaymentMethodsActivity).invalidateOptionsMenu()
                 notifyDataSetChanged()
+                selectedPaymentMethod?.let {
+                    context.onSavePaymentMethod(paymentMethod = it)
+                }
             }
         }
+    }
+
+    inner class AddCardHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        fun bindView() {
+            itemView.tvAddCard.setOnClickListener {
+                AddPaymentCardActivity.startActivityForResult(
+                    context as Activity,
+                    token,
+                    paymentIntent.clientSecret
+                )
+            }
+        }
+    }
+
+    private fun getPaymentMethodAtPosition(position: Int): PaymentMethod {
+        return paymentMethods[position]
+    }
+
+    internal companion object {
+        internal val WECHAT_ITEM_ID = "wechat_pay".hashCode().toLong()
+        internal val ADD_CARD_ITEM_ID = "add_card".hashCode().toLong()
+    }
+
+    internal enum class ItemViewType {
+        Card,
+        AddCard,
+        Wechat
     }
 }

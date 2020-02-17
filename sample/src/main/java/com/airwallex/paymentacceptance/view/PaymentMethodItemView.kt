@@ -84,7 +84,6 @@ class PaymentMethodItemView constructor(
     }
 
     @SuppressLint("DefaultLocale")
-    @ExperimentalStdlibApi
     fun renewalPaymentMethod(paymentMethod: PaymentMethod?, cvc: String? = null) {
         this.paymentMethod = paymentMethod
         if (paymentMethod == null) {
@@ -106,7 +105,7 @@ class PaymentMethodItemView constructor(
             tvPaymentMethod.text =
                 String.format(
                     "%s •••• %s",
-                    paymentMethod.card?.brand?.capitalize(Locale.ENGLISH),
+                    paymentMethod.card?.brand?.capitalize(),
                     paymentMethod.card?.last4
                 )
             if (cvc != null) {
@@ -126,7 +125,6 @@ class PaymentMethodItemView constructor(
         )
     }
 
-    @ExperimentalStdlibApi
     fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
