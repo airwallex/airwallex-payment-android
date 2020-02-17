@@ -1,7 +1,6 @@
 package com.airwallex.paymentacceptance
 
 import android.os.Bundle
-import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 
 class SplashActivity : AppCompatActivity() {
@@ -9,8 +8,9 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Handler().postDelayed({
+        window.decorView.postDelayed({
             PaymentCartActivity.startActivity(this@SplashActivity)
+            overridePendingTransition(0, android.R.anim.fade_out)
         }, 1000)
     }
 }
