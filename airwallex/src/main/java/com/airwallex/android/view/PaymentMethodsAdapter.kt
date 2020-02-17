@@ -1,25 +1,25 @@
 package com.airwallex.android.view
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.R
-import com.airwallex.android.model.*
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.model.WechatPayFlow
+import com.airwallex.android.model.WechatPayFlowType
 import kotlinx.android.synthetic.main.payment_method_item_add_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_wechat.view.*
 
 class PaymentMethodsAdapter(
     private val paymentMethods: List<PaymentMethod>,
-    private val context: Context,
-    var selectedPaymentMethod: PaymentMethod?,
-    val paymentIntent: PaymentIntent,
-    val token: String
+    var selectedPaymentMethod: PaymentMethod?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    internal var callback: Callback? = null
 
     override fun getItemCount(): Int {
         return paymentMethods.size + ADD_PAYMENT_CARD_COUNT + WECHAT_COUNT
@@ -80,7 +80,6 @@ class PaymentMethodsAdapter(
                 CardBrand.MasterCard.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
             }
             itemView.rlCard.setOnClickListener {
-                val context = context as PaymentMethodsActivity
                 if (selectedPaymentMethod?.type != PaymentMethodType.CARD || method.id != selectedPaymentMethod?.id) {
                     selectedPaymentMethod = PaymentMethod.Builder()
                         .setId(method.id)
@@ -88,11 +87,10 @@ class PaymentMethodsAdapter(
                         .setCard(card)
                         .build()
 
-                    context.invalidateOptionsMenu()
                     notifyDataSetChanged()
                 }
                 selectedPaymentMethod?.let {
-                    context.onSavePaymentMethod(paymentMethod = it)
+                    callback?.onPaymentMethodClick(it)
                 }
             }
             itemView.ivCardChecked.visibility =
@@ -115,10 +113,9 @@ class PaymentMethodsAdapter(
                     .setWechatPayFlow(WechatPayFlow(WechatPayFlowType.INAPP))
                     .build()
 
-                (context as PaymentMethodsActivity).invalidateOptionsMenu()
                 notifyDataSetChanged()
                 selectedPaymentMethod?.let {
-                    context.onSavePaymentMethod(paymentMethod = it)
+                    callback?.onWechatClick(it)
                 }
             }
         }
@@ -128,15 +125,15 @@ class PaymentMethodsAdapter(
 
         fun bindView() {
             itemView.tvAddCard.setOnClickListener {
-                AddPaymentCardActivityStarter(context as Activity)
-                    .startForResult(
-                        AddPaymentCardActivityStarter.Args.Builder()
-                            .setToken(token)
-                            .setClientSecret(paymentIntent.clientSecret)
-                            .build()
-                    )
+                callback?.onAddCardClick()
             }
         }
+    }
+
+    internal interface Callback {
+        fun onPaymentMethodClick(paymentMethod: PaymentMethod)
+        fun onWechatClick(paymentMethod: PaymentMethod)
+        fun onAddCardClick()
     }
 
     internal companion object {

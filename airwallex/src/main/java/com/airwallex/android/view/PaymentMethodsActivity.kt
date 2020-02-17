@@ -39,11 +39,28 @@ class PaymentMethodsActivity : AirwallexActivity() {
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         cardAdapter = PaymentMethodsAdapter(
             paymentMethods,
-            this,
-            args.paymentMethod,
-            args.paymentIntent!!,
-            args.token!!
+            args.paymentMethod
         )
+
+        cardAdapter.callback = object : PaymentMethodsAdapter.Callback {
+            override fun onPaymentMethodClick(paymentMethod: PaymentMethod) {
+                onSavePaymentMethod(paymentMethod)
+            }
+
+            override fun onWechatClick(paymentMethod: PaymentMethod) {
+                onSavePaymentMethod(paymentMethod)
+            }
+
+            override fun onAddCardClick() {
+                AddPaymentCardActivityStarter(this@PaymentMethodsActivity)
+                    .startForResult(
+                        AddPaymentCardActivityStarter.Args.Builder()
+                            .setToken(args.token!!)
+                            .setClientSecret(args.paymentIntent!!.clientSecret)
+                            .build()
+                    )
+            }
+        }
 
         rvPaymentMethods.apply {
             setHasFixedSize(true)
@@ -70,7 +87,7 @@ class PaymentMethodsActivity : AirwallexActivity() {
         fetchPaymentMethods()
     }
 
-    fun onSavePaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
+    private fun onSavePaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
         setResult(
             Activity.RESULT_OK, Intent()
                 .putExtras(

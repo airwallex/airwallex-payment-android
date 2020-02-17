@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.airwallex.android.R
-import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.activity_add_billing.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 
