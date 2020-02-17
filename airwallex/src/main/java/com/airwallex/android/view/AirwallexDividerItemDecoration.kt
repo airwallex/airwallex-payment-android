@@ -29,7 +29,8 @@ class AirwallexDividerItemDecoration : ItemDecoration {
         parent: RecyclerView,
         state: RecyclerView.State
     ) {
-        val padding = context?.resources?.getDimension(R.dimen.airwallex_divider_padding)?.toInt() ?: 0
+        val padding =
+            context?.resources?.getDimension(R.dimen.airwallex_divider_padding)?.toInt() ?: 0
         val left = parent.paddingLeft + padding
         val right = parent.width - parent.paddingRight - padding
         val childCount = parent.childCount
