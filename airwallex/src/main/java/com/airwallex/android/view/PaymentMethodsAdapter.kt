@@ -21,15 +21,8 @@ class PaymentMethodsAdapter(
     val token: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val addCardCount = 1
-    private val wechatCount = 1
-
-    init {
-        setHasStableIds(true)
-    }
-
     override fun getItemCount(): Int {
-        return paymentMethods.size + addCardCount + wechatCount
+        return paymentMethods.size + ADD_PAYMENT_CARD_COUNT + WECHAT_COUNT
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -47,16 +40,6 @@ class PaymentMethodsAdapter(
     private fun isPaymentMethodsPosition(position: Int): Boolean {
         val range = paymentMethods.indices
         return position in range
-    }
-
-    override fun getItemId(position: Int): Long {
-        return when {
-            isWechatPosition(position) ->
-                WECHAT_ITEM_ID
-            isPaymentMethodsPosition(position) ->
-                getPaymentMethodAtPosition(position).hashCode().toLong()
-            else -> ADD_CARD_ITEM_ID
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -145,22 +128,20 @@ class PaymentMethodsAdapter(
 
         fun bindView() {
             itemView.tvAddCard.setOnClickListener {
-                AddPaymentCardActivity.startActivityForResult(
-                    context as Activity,
-                    token,
-                    paymentIntent.clientSecret
-                )
+                AddPaymentCardActivityStarter(context as Activity)
+                    .startForResult(
+                        AddPaymentCardActivityStarter.Args.Builder()
+                            .setToken(token)
+                            .setClientSecret(paymentIntent.clientSecret)
+                            .build()
+                    )
             }
         }
     }
 
-    private fun getPaymentMethodAtPosition(position: Int): PaymentMethod {
-        return paymentMethods[position]
-    }
-
     internal companion object {
-        internal val WECHAT_ITEM_ID = "wechat_pay".hashCode().toLong()
-        internal val ADD_CARD_ITEM_ID = "add_card".hashCode().toLong()
+        private const val ADD_PAYMENT_CARD_COUNT = 1
+        private const val WECHAT_COUNT = 1
     }
 
     internal enum class ItemViewType {

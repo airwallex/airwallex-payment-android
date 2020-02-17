@@ -10,11 +10,8 @@ abstract class AirwallexActivity : AppCompatActivity() {
 
     companion object {
         const val TOKEN = "token"
-        const val CLIENT_SECRET = "client_secret"
         const val PAYMENT_BILLING = "billing"
         const val SAME_AS_SHIPPING = "same_as_shipping"
-        const val REQUEST_ADD_CARD_CODE = 98
-        const val REQUEST_ADD_BILLING_CODE = 99
 
         const val PAYMENT_METHOD = "payment_method"
         const val PAYMENT_CARD_CVC = "payment_card_cvc"
