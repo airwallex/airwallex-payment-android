@@ -3,6 +3,7 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
@@ -17,15 +18,15 @@ import java.util.*
 
 class AddPaymentCardActivity : AirwallexActivity() {
 
-    private val args: AddPaymentCardActivityStarter.Args by lazy {
-        AddPaymentCardActivityStarter.Args.create(intent)
+    private val args: AddPaymentCardActivityStarter.CardArgs by lazy {
+        AddPaymentCardActivityStarter.CardArgs.create(intent)
     }
 
     private val airwallex: Airwallex by lazy {
         Airwallex(args.token!!, args.clientSecret!!)
     }
 
-    private fun onActionSave() {
+    override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
         // TODO Need to be removed. As the billing will be optional
         val billing = PaymentMethod.Billing.Builder()

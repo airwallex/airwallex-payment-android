@@ -6,42 +6,37 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.fragment.app.Fragment
 
-abstract class ActivityStarter<TargetActivityType : Activity, ArgsType : ActivityStarter.Args> internal constructor(
+abstract class ActivityStarter<TargetActivity : Activity, ArgsType : ActivityStarter.Args> internal constructor(
     private val activity: Activity,
     private val fragment: Fragment? = null,
-    private val targetClass: Class<TargetActivityType>,
-    private val defaultArgs: ArgsType,
+    private val targetActivity: Class<TargetActivity>,
     private val requestCode: Int
 ) {
     internal constructor(
         activity: Activity,
-        targetClass: Class<TargetActivityType>,
-        args: ArgsType,
+        targetActivity: Class<TargetActivity>,
         requestCode: Int
     ) : this(
         activity = activity,
-        targetClass = targetClass,
-        defaultArgs = args,
+        fragment = null,
+        targetActivity = targetActivity,
         requestCode = requestCode
     )
 
     internal constructor(
         fragment: Fragment,
-        targetClass: Class<TargetActivityType>,
-        args: ArgsType,
+        targetActivity: Class<TargetActivity>,
         requestCode: Int
     ) : this(
         activity = fragment.requireActivity(),
         fragment = fragment,
-        targetClass = targetClass,
-        defaultArgs = args,
+        targetActivity = targetActivity,
         requestCode = requestCode
     )
 
-    @JvmOverloads
-    fun startForResult(args: ArgsType = defaultArgs) {
-        val intent = Intent(activity, targetClass)
-            .putExtra(Args.EXTRA, args)
+    fun startForResult(args: ArgsType) {
+        val intent = Intent(activity, targetActivity)
+            .putExtra(Args.AIRWALLEX_EXTRA, args)
 
         if (fragment != null) {
             fragment.startActivityForResult(intent, requestCode)
@@ -52,7 +47,7 @@ abstract class ActivityStarter<TargetActivityType : Activity, ArgsType : Activit
 
     interface Args : Parcelable {
         companion object {
-            internal const val EXTRA: String = "extra_activity_args"
+            internal const val AIRWALLEX_EXTRA: String = "airwallex_activity_args"
         }
     }
 
@@ -60,7 +55,7 @@ abstract class ActivityStarter<TargetActivityType : Activity, ArgsType : Activit
         fun toBundle(): Bundle
 
         companion object {
-            internal const val EXTRA: String = "extra_activity_result"
+            internal const val AIRWALLEX_EXTRA: String = "airwallexa_activity_result"
         }
     }
 }

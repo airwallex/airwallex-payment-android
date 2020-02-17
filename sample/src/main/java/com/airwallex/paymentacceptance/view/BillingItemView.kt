@@ -42,7 +42,7 @@ class BillingItemView constructor(
         rlBilling.setOnClickListener {
             AddPaymentBillingActivityStarter(context as Activity)
                 .startForResult(
-                    AddPaymentBillingActivityStarter.Args.Builder()
+                    AddPaymentBillingActivityStarter.BillingArgs.Builder()
                         .setSameAsShipping(sameAsShipping)
                         .setBilling(billing)
                         .build()

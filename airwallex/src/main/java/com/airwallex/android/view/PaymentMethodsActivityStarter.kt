@@ -6,44 +6,37 @@ import android.os.Bundle
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.view.PaymentMethodsActivityStarter.Args
+import com.airwallex.android.view.PaymentMethodsActivityStarter.PaymentMethodsArgs
 import kotlinx.android.parcel.Parcelize
 
 class PaymentMethodsActivityStarter constructor(
     activity: Activity
-) : ActivityStarter<PaymentMethodsActivity, Args>(
+) : ActivityStarter<PaymentMethodsActivity, PaymentMethodsArgs>(
     activity,
     PaymentMethodsActivity::class.java,
-    Args.DEFAULT,
     REQUEST_CODE
 ) {
 
     @Parcelize
-    data class Args internal constructor(
+    data class PaymentMethodsArgs internal constructor(
         val paymentMethod: PaymentMethod?,
-        val paymentIntent: PaymentIntent?,
-        val token: String?
-    ) : ActivityStarter.Args {
+        val paymentIntent: PaymentIntent,
+        val token: String
+    ) : Args {
 
-        class Builder : ObjectBuilder<Args> {
+        class Builder(
+            private val paymentIntent: PaymentIntent,
+            private val token: String
+        ) :
+            ObjectBuilder<PaymentMethodsArgs> {
             private var paymentMethod: PaymentMethod? = null
-            private var paymentIntent: PaymentIntent? = null
-            private var token: String? = null
 
             fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
                 this.paymentMethod = paymentMethod
             }
 
-            fun setPaymentIntent(paymentIntent: PaymentIntent?): Builder = apply {
-                this.paymentIntent = paymentIntent
-            }
-
-            fun setToken(token: String?): Builder = apply {
-                this.token = token
-            }
-
-            override fun build(): Args {
-                return Args(
+            override fun build(): PaymentMethodsArgs {
+                return PaymentMethodsArgs(
                     token = token,
                     paymentMethod = paymentMethod,
                     paymentIntent = paymentIntent
@@ -52,11 +45,8 @@ class PaymentMethodsActivityStarter constructor(
         }
 
         internal companion object {
-            internal val DEFAULT = Builder().build()
-
-            @JvmSynthetic
-            internal fun create(intent: Intent): Args {
-                return requireNotNull(intent.getParcelableExtra(ActivityStarter.Args.EXTRA))
+            internal fun create(intent: Intent): PaymentMethodsArgs {
+                return requireNotNull(intent.getParcelableExtra(Args.AIRWALLEX_EXTRA))
             }
         }
     }
@@ -68,19 +58,19 @@ class PaymentMethodsActivityStarter constructor(
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()
-            bundle.putParcelable(ActivityStarter.Result.EXTRA, this)
+            bundle.putParcelable(ActivityStarter.Result.AIRWALLEX_EXTRA, this)
             return bundle
         }
 
         companion object {
             fun fromIntent(intent: Intent?): Result? {
-                return intent?.getParcelableExtra(ActivityStarter.Result.EXTRA)
+                return intent?.getParcelableExtra(ActivityStarter.Result.AIRWALLEX_EXTRA)
             }
         }
     }
 
     companion object {
-        const val REQUEST_CODE: Int = 1003
+        const val REQUEST_CODE: Int = 1001
     }
 
 }
