@@ -33,10 +33,6 @@
             android:theme="@style/ActivityTheme" />
 
         <activity
-            android:name="com.airwallex.paymentacceptance.PaymentMethodsActivity"
-            android:theme="@style/ActivityTheme" />
-
-        <activity
             android:name="com.airwallex.paymentacceptance.wxapi.WXPayEntryActivity"
             android:exported="true"
             android:launchMode="singleTop" />
