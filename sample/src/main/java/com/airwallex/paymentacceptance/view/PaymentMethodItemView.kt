@@ -59,8 +59,9 @@ class PaymentMethodItemView constructor(
             PaymentMethodsActivityStarter(context as Activity)
                 .startForResult(
                     PaymentMethodsActivityStarter.PaymentMethodsArgs
-                        .Builder(paymentIntent, Store.token)
+                        .Builder(paymentIntent.clientSecret, Store.token)
                         .setPaymentMethod(paymentMethod)
+                        .setAvailablePaymentMethodTypes(paymentIntent.availablePaymentMethodTypes)
                         .build()
                 )
         }
