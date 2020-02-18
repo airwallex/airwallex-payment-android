@@ -22,12 +22,12 @@ class PaymentMethodsActivity : AirwallexActivity() {
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(args.token, args.paymentIntent.clientSecret)
+        Airwallex(args.token, args.clientSecret)
     }
 
     private val shouldShowWechatPay: Boolean
         get() {
-            return args.paymentIntent.availablePaymentMethodTypes.contains(PaymentMethodType.WECHAT.code)
+            return args.availablePaymentMethodTypes.contains(PaymentMethodType.WECHAT.code)
         }
 
     private var currentPageNum = 0
@@ -92,7 +92,7 @@ class PaymentMethodsActivity : AirwallexActivity() {
         AddPaymentCardActivityStarter(this@PaymentMethodsActivity)
             .startForResult(
                 AddPaymentCardActivityStarter.CardArgs
-                    .Builder(args.token, args.paymentIntent.clientSecret)
+                    .Builder(args.token, args.clientSecret)
                     .build()
             )
     }

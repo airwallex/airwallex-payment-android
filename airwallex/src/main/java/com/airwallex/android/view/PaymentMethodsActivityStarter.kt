@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.PaymentMethodsActivityStarter.PaymentMethodsArgs
 import kotlinx.android.parcel.Parcelize
@@ -20,34 +19,34 @@ class PaymentMethodsActivityStarter constructor(
     @Parcelize
     data class PaymentMethodsArgs internal constructor(
         val paymentMethod: PaymentMethod?,
-        val paymentIntent: PaymentIntent,
+        val clientSecret: String,
         val token: String,
-        private val shouldShowWechatPay: Boolean
+        val availablePaymentMethodTypes: List<String>
     ) : Args {
 
         class Builder(
-            private val paymentIntent: PaymentIntent,
+            private val clientSecret: String,
             private val token: String
-
         ) :
             ObjectBuilder<PaymentMethodsArgs> {
             private var paymentMethod: PaymentMethod? = null
-            private var shouldShowWechatPay: Boolean = false
+            private var availablePaymentMethodTypes: List<String> = emptyList()
 
             fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
                 this.paymentMethod = paymentMethod
             }
 
-            fun setShouldShowWechatPay(shouldShowWechatPay: Boolean): Builder = apply {
-                this.shouldShowWechatPay = shouldShowWechatPay
-            }
+            fun setAvailablePaymentMethodTypes(availablePaymentMethodTypes: List<String>): Builder =
+                apply {
+                    this.availablePaymentMethodTypes = availablePaymentMethodTypes
+                }
 
             override fun build(): PaymentMethodsArgs {
                 return PaymentMethodsArgs(
                     token = token,
                     paymentMethod = paymentMethod,
-                    paymentIntent = paymentIntent,
-                    shouldShowWechatPay = shouldShowWechatPay
+                    clientSecret = clientSecret,
+                    availablePaymentMethodTypes = availablePaymentMethodTypes
                 )
             }
         }
