@@ -42,7 +42,7 @@ data class PaymentIntent internal constructor(
     val latestPaymentAttempt: PaymentAttempt? = null,
 
     @SerializedName("available_payment_method_types")
-    val availablePaymentMethodTypes: List<String>? = null,
+    val availablePaymentMethodTypes: List<String>,
 
     @SerializedName("customer_payment_methods")
     val customerPaymentMethods: List<String>? = null,
