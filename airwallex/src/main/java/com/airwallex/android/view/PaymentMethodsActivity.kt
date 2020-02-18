@@ -25,6 +25,11 @@ class PaymentMethodsActivity : AirwallexActivity() {
         Airwallex(args.token, args.paymentIntent.clientSecret)
     }
 
+    private val shouldShowWechatPay: Boolean
+        get() {
+            return args.paymentIntent.availablePaymentMethodTypes.contains(PaymentMethodType.WECHAT.code)
+        }
+
     private var currentPageNum = 0
 
     private lateinit var cardAdapter: PaymentMethodsAdapter
@@ -37,7 +42,8 @@ class PaymentMethodsActivity : AirwallexActivity() {
 
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         cardAdapter = PaymentMethodsAdapter(
-            args.paymentMethod
+            selectedPaymentMethod = args.paymentMethod,
+            shouldShowWechatPay = shouldShowWechatPay
         )
 
         cardAdapter.callback = object : PaymentMethodsAdapter.Callback {

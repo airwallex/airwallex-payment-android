@@ -21,25 +21,33 @@ class PaymentMethodsActivityStarter constructor(
     data class PaymentMethodsArgs internal constructor(
         val paymentMethod: PaymentMethod?,
         val paymentIntent: PaymentIntent,
-        val token: String
+        val token: String,
+        private val shouldShowWechatPay: Boolean
     ) : Args {
 
         class Builder(
             private val paymentIntent: PaymentIntent,
             private val token: String
+
         ) :
             ObjectBuilder<PaymentMethodsArgs> {
             private var paymentMethod: PaymentMethod? = null
+            private var shouldShowWechatPay: Boolean = false
 
             fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
                 this.paymentMethod = paymentMethod
+            }
+
+            fun setShouldShowWechatPay(shouldShowWechatPay: Boolean): Builder = apply {
+                this.shouldShowWechatPay = shouldShowWechatPay
             }
 
             override fun build(): PaymentMethodsArgs {
                 return PaymentMethodsArgs(
                     token = token,
                     paymentMethod = paymentMethod,
-                    paymentIntent = paymentIntent
+                    paymentIntent = paymentIntent,
+                    shouldShowWechatPay = shouldShowWechatPay
                 )
             }
         }

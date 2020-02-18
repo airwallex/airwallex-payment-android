@@ -18,8 +18,8 @@ class AddPaymentCardActivityStarter constructor(
 
     @Parcelize
     data class CardArgs internal constructor(
-        internal val token: String?,
-        internal val clientSecret: String?
+        internal val token: String,
+        internal val clientSecret: String
     ) : Args {
 
         class Builder(

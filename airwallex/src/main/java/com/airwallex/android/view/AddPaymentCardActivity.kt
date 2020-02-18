@@ -3,7 +3,6 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
@@ -23,7 +22,7 @@ class AddPaymentCardActivity : AirwallexActivity() {
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(args.token!!, args.clientSecret!!)
+        Airwallex(args.token, args.clientSecret)
     }
 
     override fun onActionSave() {

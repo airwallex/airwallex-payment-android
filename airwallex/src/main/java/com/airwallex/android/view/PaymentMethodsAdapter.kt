@@ -16,8 +16,12 @@ import kotlinx.android.synthetic.main.payment_method_item_wechat.view.*
 import java.util.*
 
 class PaymentMethodsAdapter(
-    var selectedPaymentMethod: PaymentMethod?
+    var selectedPaymentMethod: PaymentMethod?,
+    private val shouldShowWechatPay: Boolean = false
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private val addPaymentCardCount = 1
+    private val wechatCount = if (shouldShowWechatPay) 1 else 0
 
     internal val paymentMethods = ArrayList<PaymentMethod>()
 
@@ -29,19 +33,19 @@ class PaymentMethodsAdapter(
     }
 
     override fun getItemCount(): Int {
-        return paymentMethods.size + ADD_PAYMENT_CARD_COUNT + WECHAT_COUNT
+        return paymentMethods.size + addPaymentCardCount + wechatCount
     }
 
     override fun getItemViewType(position: Int): Int {
         return when {
-            isWechatPosition(position) -> ItemViewType.Wechat.ordinal
+            isAddPaymentCardPosition(position) -> ItemViewType.AddCard.ordinal
             isPaymentMethodsPosition(position) -> ItemViewType.Card.ordinal
-            else -> ItemViewType.AddCard.ordinal
+            else -> ItemViewType.Wechat.ordinal
         }
     }
 
-    private fun isWechatPosition(position: Int): Boolean {
-        return position == itemCount - 1
+    private fun isAddPaymentCardPosition(position: Int): Boolean {
+        return position == paymentMethods.size
     }
 
     private fun isPaymentMethodsPosition(position: Int): Boolean {
@@ -140,11 +144,6 @@ class PaymentMethodsAdapter(
         fun onPaymentMethodClick(paymentMethod: PaymentMethod)
         fun onWechatClick(paymentMethod: PaymentMethod)
         fun onAddCardClick()
-    }
-
-    internal companion object {
-        private const val ADD_PAYMENT_CARD_COUNT = 1
-        private const val WECHAT_COUNT = 1
     }
 
     internal enum class ItemViewType {
