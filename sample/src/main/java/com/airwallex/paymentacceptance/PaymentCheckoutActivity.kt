@@ -11,7 +11,6 @@ import android.widget.Toast
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
-import com.airwallex.android.model.Address
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
 import okhttp3.*
 import java.io.IOException
@@ -70,6 +69,29 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                 ) {
                     return@let
                 }
+
+                // TODO Should update payment method with billing info
+//                val shipping = paymentIntent.order.shipping
+//                val billing = this.billing ?: shipping?.let {
+//                    PaymentMethod.Billing.Builder()
+//                        .setFirstName(it.firstName)
+//                        .setLastName(it.lastName)
+//                        .setPhone(it.phone)
+//                        .setEmail(it.email)
+//                        .setAddress(
+//                            it.address?.apply {
+//                                Address.Builder()
+//                                    .setCountryCode(countryCode)
+//                                    .setState(state)
+//                                    .setCity(city)
+//                                    .setStreet(street)
+//                                    .setPostcode(postcode)
+//                                    .build()
+//                            }
+//                        )
+//                        .build()
+//                }
+
                 startConfirmPaymentIntent(it)
             }
         }
@@ -78,27 +100,6 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         paymentMethodItemView.renewalPaymentMethod(paymentMethod)
         paymentMethodItemView.cvcChangedCallback = {
             updateButtonStatus()
-        }
-
-        val shipping = paymentIntent.order.shipping
-        val billing = shipping?.let {
-            PaymentMethod.Billing.Builder()
-                .setFirstName(it.firstName)
-                .setLastName(it.lastName)
-                .setPhone(it.phone)
-                .setEmail(it.email)
-                .setAddress(
-                    it.address?.apply {
-                        Address.Builder()
-                            .setCountryCode(countryCode)
-                            .setState(state)
-                            .setCity(city)
-                            .setStreet(street)
-                            .setPostcode(postcode)
-                            .build()
-                    }
-                )
-                .build()
         }
 
         billingItemView.renewalBilling(billing)

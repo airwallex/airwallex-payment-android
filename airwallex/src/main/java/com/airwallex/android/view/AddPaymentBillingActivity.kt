@@ -34,10 +34,7 @@ class AddPaymentBillingActivity : AirwallexActivity() {
         viewStub.layoutResource = R.layout.activity_add_billing
         viewStub.inflate()
 
-        if (!args.sameAsShipping) {
-            billingWidget.billing = args.billing
-        }
-        billingWidget.sameAsShipping = args.sameAsShipping
+        billingWidget.billing = args.billing
         billingWidget.billingChangeCallback = { invalidateOptionsMenu() }
     }
 
@@ -46,8 +43,7 @@ class AddPaymentBillingActivity : AirwallexActivity() {
             Activity.RESULT_OK, Intent()
                 .putExtras(
                     AddPaymentBillingActivityStarter.Result(
-                        billingWidget.billing,
-                        billingWidget.sameAsShipping
+                        billingWidget.billing
                     ).toBundle()
                 )
         )
