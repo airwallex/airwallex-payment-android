@@ -21,11 +21,10 @@ class BillingItemView constructor(
 
     private var billing: PaymentMethod.Billing? = null
 
-    private var sameAsShipping: Boolean = true
-
     val isValid: Boolean
         get() {
-            return sameAsShipping || !sameAsShipping
+            return billing == null
+                    || billing != null
                     && !billing?.firstName.isNullOrBlank()
                     && !billing?.lastName.isNullOrBlank()
                     && !billing?.address?.countryCode.isNullOrBlank()
@@ -43,30 +42,16 @@ class BillingItemView constructor(
             AddPaymentBillingActivityStarter(context as Activity)
                 .startForResult(
                     AddPaymentBillingActivityStarter.BillingArgs.Builder()
-                        .setSameAsShipping(sameAsShipping)
                         .setBilling(billing)
                         .build()
                 )
         }
     }
 
-    fun renewalBilling(billing: PaymentMethod.Billing?, sameAsShipping: Boolean = true) {
+    fun renewalBilling(billing: PaymentMethod.Billing?) {
         this.billing = billing
-        this.sameAsShipping = sameAsShipping
 
         if (billing == null) {
-            tvShippingAddress.text =
-                context.getString(R.string.enter_billing)
-            tvShippingAddress.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.airwallex_color_dark_light
-                )
-            )
-            return
-        }
-
-        if (sameAsShipping) {
             tvShippingAddress.text =
                 context.getString(R.string.same_as_shipping)
             tvShippingAddress.setTextColor(
@@ -105,7 +90,7 @@ class BillingItemView constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        completion: (billing: PaymentMethod.Billing) -> Unit
+        completion: (billing: PaymentMethod.Billing?) -> Unit
     ) {
         if (resultCode != Activity.RESULT_OK || data == null) {
             return
@@ -113,8 +98,11 @@ class BillingItemView constructor(
         when (requestCode) {
             AddPaymentBillingActivityStarter.REQUEST_CODE -> {
                 val result = AddPaymentBillingActivityStarter.Result.fromIntent(data)
-                renewalBilling(result?.billing, result?.sameAsShipping ?: true)
-                completion(result?.billing!!)
+
+                result?.let {
+                    renewalBilling(result.billing)
+                    completion(result.billing)
+                }
             }
         }
     }

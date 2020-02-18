@@ -14,18 +14,14 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
     var billingChangeCallback: (() -> Unit)? = null
 
-    var sameAsShipping: Boolean = true
-        set(value) {
-            swSameAsShipping.isChecked = value
-            field = value
-        }
+    private val sameAsShipping: Boolean
         get() {
             return swSameAsShipping.isChecked
         }
 
     var billing: PaymentMethod.Billing? = null
         get() {
-            if (isValid) {
+            if (isValid && !sameAsShipping) {
                 return PaymentMethod.Billing.Builder()
                     .setFirstName(atlFirstName.value)
                     .setLastName(atlLastName.value)
@@ -58,11 +54,13 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
                 atlPhoneNumber.value = phone ?: ""
             }
             field = value
+            swSameAsShipping.isChecked = value == null
         }
 
     val isValid: Boolean
         get() {
-            return swSameAsShipping.isChecked || !swSameAsShipping.isChecked
+            return sameAsShipping
+                    || !sameAsShipping
                     && atlFirstName.value.isNotEmpty()
                     && atlLastName.value.isNotEmpty()
                     && countryAutocomplete.country != null

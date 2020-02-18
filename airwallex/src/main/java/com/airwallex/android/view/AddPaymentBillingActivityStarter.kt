@@ -18,17 +18,11 @@ class AddPaymentBillingActivityStarter constructor(
 
     @Parcelize
     data class BillingArgs internal constructor(
-        internal val sameAsShipping: Boolean,
         internal val billing: PaymentMethod.Billing?
     ) : Args {
 
         class Builder : ObjectBuilder<BillingArgs> {
-            private var sameAsShipping: Boolean = true
             private var billing: PaymentMethod.Billing? = null
-
-            fun setSameAsShipping(sameAsShipping: Boolean): Builder = apply {
-                this.sameAsShipping = sameAsShipping
-            }
 
             fun setBilling(billing: PaymentMethod.Billing?): Builder = apply {
                 this.billing = billing
@@ -36,7 +30,6 @@ class AddPaymentBillingActivityStarter constructor(
 
             override fun build(): BillingArgs {
                 return BillingArgs(
-                    sameAsShipping = sameAsShipping,
                     billing = billing
                 )
             }
@@ -51,8 +44,7 @@ class AddPaymentBillingActivityStarter constructor(
 
     @Parcelize
     data class Result internal constructor(
-        val billing: PaymentMethod.Billing?,
-        val sameAsShipping: Boolean
+        val billing: PaymentMethod.Billing?
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()
