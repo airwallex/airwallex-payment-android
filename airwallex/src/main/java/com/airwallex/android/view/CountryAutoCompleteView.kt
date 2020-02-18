@@ -1,13 +1,11 @@
 package com.airwallex.android.view
 
-import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
@@ -114,15 +112,6 @@ class CountryAutoCompleteView constructor(
 
         actCountry.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             updatedSelectedCountryCode(countryAdapter.getItem(position))
-
-            val inputMethodManager =
-                getContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            if (inputMethodManager?.isAcceptingText == true) {
-                inputMethodManager.hideSoftInputFromWindow(
-                    (getContext() as Activity).currentFocus?.windowToken,
-                    0
-                )
-            }
         }
         actCountry.onFocusChangeListener = OnFocusChangeListener { _, focused ->
             if (focused) {
