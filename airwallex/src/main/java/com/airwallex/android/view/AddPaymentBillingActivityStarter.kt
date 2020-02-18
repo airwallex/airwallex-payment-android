@@ -36,7 +36,7 @@ class AddPaymentBillingActivityStarter constructor(
         }
 
         internal companion object {
-            internal fun create(intent: Intent): BillingArgs {
+            internal fun getExtra(intent: Intent): BillingArgs {
                 return requireNotNull(intent.getParcelableExtra(Args.AIRWALLEX_EXTRA))
             }
         }
