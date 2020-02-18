@@ -52,7 +52,7 @@ class PaymentMethodsActivityStarter constructor(
         }
 
         internal companion object {
-            internal fun create(intent: Intent): PaymentMethodsArgs {
+            internal fun getExtra(intent: Intent): PaymentMethodsArgs {
                 return requireNotNull(intent.getParcelableExtra(Args.AIRWALLEX_EXTRA))
             }
         }
