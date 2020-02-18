@@ -40,6 +40,7 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
         countryAutocomplete.countryChangeCallback = { country ->
             this.country = country
             shippingChangeCallback?.invoke()
+            atlState.requestInputFocus()
         }
 
         listenTextChanged()
