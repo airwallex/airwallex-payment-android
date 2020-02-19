@@ -12,7 +12,6 @@
     <string name="pay_now">Pay now</string>
     <string name="payment">Payment</string>
     <string name="select_payment_method">Select payment method</string>
-    <string name="enter_new_card">Enter a new card</string>
     <string name="enter_shipping">Enter shipping information</string>
     <string name="enter_billing">Enter billing information</string>
 

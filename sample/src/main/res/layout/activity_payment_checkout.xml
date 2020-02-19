@@ -51,7 +51,7 @@
         android:layout_height="44dp"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
-        android:background="@drawable/airwallex_button"
+        android:background="@drawable/airwallex_button_solid"
         android:enabled="false"
         android:orientation="horizontal">
 
