@@ -14,7 +14,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/airwallex_button_border_bg"
+        android:background="@drawable/airwallex_button_border"
         android:drawablePadding="8dp"
         android:fontFamily="@font/circularstd_bold"
         android:gravity="center"
