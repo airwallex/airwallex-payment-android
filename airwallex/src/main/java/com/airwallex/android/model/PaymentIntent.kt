@@ -45,7 +45,7 @@ data class PaymentIntent internal constructor(
     val availablePaymentMethodTypes: List<String>,
 
     @SerializedName("customer_payment_methods")
-    val customerPaymentMethods: List<String>? = null,
+    val customerPaymentMethods: List<PaymentMethod>? = null,
 
     @SerializedName("client_secret")
     val clientSecret: String,
@@ -61,10 +61,10 @@ data class PaymentIntent internal constructor(
         val type: String?,
 
         @SerializedName("products")
-        val products: List<Product>?,
+        val products: List<Product>? = null,
 
         @SerializedName("shipping")
-        val shipping: Shipping?
+        val shipping: Shipping? = null
     ) : AirwallexModel, Parcelable
 
     @Parcelize

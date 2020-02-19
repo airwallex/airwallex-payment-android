@@ -130,7 +130,14 @@ data class PaymentMethod internal constructor(
         val cvcCheck: String?,
 
         @SerializedName("avs_check")
-        val avsCheck: String?
+        val avsCheck: String?,
+
+        @SerializedName("issuer_country_code")
+        val issuerCountryCode: String?,
+
+        @SerializedName("card_type")
+        val cardType: String?
+
     ) : AirwallexModel, Parcelable {
 
         class Builder : ObjectBuilder<Card> {
@@ -147,6 +154,8 @@ data class PaymentMethod internal constructor(
             private var fingerprint: String? = null
             private var cvcCheck: String? = null
             private var avsCheck: String? = null
+            private var issuerCountryCode: String? = null
+            private var cardType: String? = null
             fun setCvc(cvc: String?): Builder = apply {
                 this.cvc = cvc
             }
@@ -199,6 +208,14 @@ data class PaymentMethod internal constructor(
                 this.avsCheck = avsCheck
             }
 
+            fun setIssuerCountryCode(issuerCountryCode: String?): Builder = apply {
+                this.issuerCountryCode = issuerCountryCode
+            }
+
+            fun setCardType(cardType: String?): Builder = apply {
+                this.cardType = cardType
+            }
+
             override fun build(): Card {
                 return Card(
                     cvc = cvc,
@@ -213,7 +230,9 @@ data class PaymentMethod internal constructor(
                     funding = funding,
                     fingerprint = fingerprint,
                     cvcCheck = cvcCheck,
-                    avsCheck = avsCheck
+                    avsCheck = avsCheck,
+                    issuerCountryCode = issuerCountryCode,
+                    cardType = cardType
                 )
             }
         }
