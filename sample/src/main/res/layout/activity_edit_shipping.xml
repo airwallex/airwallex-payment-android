@@ -32,12 +32,12 @@
                 android:textColor="@color/airwallex_color_dark_deep"
                 android:textSize="32sp" />
 
-            <com.airwallex.paymentacceptance.ContactWidget
+            <com.airwallex.paymentacceptance.view.ContactWidget
                 android:id="@+id/contactWidget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <com.airwallex.paymentacceptance.ShippingWidget
+            <com.airwallex.paymentacceptance.view.ShippingWidget
                 android:id="@+id/shippingWidget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

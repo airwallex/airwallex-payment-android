@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.CountryAutoCompleteView
+import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.widget_shipping.view.*
 
 class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
@@ -35,7 +36,8 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
         }
 
     init {
-        View.inflate(getContext(), R.layout.widget_shipping, this)
+        View.inflate(getContext(),
+            R.layout.widget_shipping, this)
 
         countryAutocomplete.countryChangeCallback = { country ->
             this.country = country
