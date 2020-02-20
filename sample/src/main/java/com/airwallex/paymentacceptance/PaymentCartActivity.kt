@@ -13,7 +13,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_payment_cart.*
 import org.json.JSONException
-import org.json.JSONObject
 import java.io.IOException
 import java.util.*
 
@@ -56,39 +55,38 @@ class PaymentCartActivity : PaymentBaseActivity() {
                 clientId = Constants.CLIENT_ID
             )
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .doOnSubscribe {
                     loading.visibility = View.VISIBLE
                 }
-                .flatMap {
-                    val responseData = JSONObject(it.string())
-                    val token = responseData["token"].toString()
-                    Store.token = token
-                    api.createCustomer(
-                        authorization = "Bearer $token",
-                        params = mutableMapOf(
-                            "request_id" to UUID.randomUUID().toString(),
-                            "merchant_customer_id" to UUID.randomUUID().toString(),
-                            "first_name" to "John",
-                            "last_name" to "Doe",
-                            "email" to "john.doe@airwallex.com",
-                            "phone_number" to "13800000000",
-                            "additional_info" to mapOf(
-                                "registered_via_social_media" to false,
-                                "registration_date" to "2019-09-18",
-                                "first_successful_order_date" to "2019-09-18"
-                            ),
-                            "metadata" to mapOf(
-                                "id" to 1
-                            )
-                        )
-                    )
-
-                }
+//                .observeOn(Schedulers.io())
+//                .flatMap {
+//                    val responseData = JSONObject(it.string())
+//                    val token = responseData["token"].toString()
+//                    Store.token = token
+//                    api.createCustomer(
+//                        authorization = "Bearer $token",
+//                        params = mutableMapOf(
+//                            "request_id" to UUID.randomUUID().toString(),
+//                            "merchant_customer_id" to "79fc248c-a2fc-4863-b1ea-fac2e2c16dac",
+//                            "first_name" to "John",
+//                            "last_name" to "Doe",
+//                            "email" to "john.doe@airwallex.com",
+//                            "phone_number" to "13800000000",
+//                            "additional_info" to mapOf(
+//                                "registered_via_social_media" to false,
+//                                "registration_date" to "2019-09-18",
+//                                "first_successful_order_date" to "2019-09-18"
+//                            ),
+//                            "metadata" to mapOf(
+//                                "id" to 1
+//                            )
+//                        )
+//                    )
+//                }
                 .observeOn(Schedulers.io())
                 .flatMap {
-                    val responseData = JSONObject(it.string())
-                    val customerId = responseData["id"].toString()
+                    //                    val responseData = JSONObject(it.string())
+                    val customerId = "cus_Dn6mVcMeTEkJgYuu9o5xEcxWRah"
                     val products = SampleApplication.instance.products
                     val shipping = SampleApplication.instance.shipping
                     api.createPaymentIntent(

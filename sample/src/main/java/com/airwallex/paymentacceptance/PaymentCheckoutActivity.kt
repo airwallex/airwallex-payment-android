@@ -146,6 +146,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             PaymentMethodType.CARD -> {
                 PaymentIntentParams.Builder()
                     .setRequestId(UUID.randomUUID().toString())
+                    .setCustomerId(paymentIntent.customerId)
                     .setDevice(SampleApplication.instance.device)
                     .setPaymentMethodReference(
                         PaymentMethodReference.Builder()
@@ -159,6 +160,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             PaymentMethodType.WECHAT -> {
                 PaymentIntentParams.Builder()
                     .setRequestId(UUID.randomUUID().toString())
+                    .setCustomerId(paymentIntent.customerId)
                     .setDevice(SampleApplication.instance.device)
                     .setPaymentMethod(paymentMethod)
                     .setPaymentMethodOptions(paymentMethodOptions)

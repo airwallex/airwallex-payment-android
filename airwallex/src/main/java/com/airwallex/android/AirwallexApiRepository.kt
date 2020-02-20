@@ -20,7 +20,8 @@ internal class AirwallexApiRepository : ApiRepository {
         internal val clientSecret: String,
         internal val paymentIntentId: String? = null,
         internal val pageNum: Int = 0,
-        internal val pageSize: Int = 10
+        internal val pageSize: Int = 10,
+        internal val customerId: String? = null
     ) : Parcelable
 
     override fun confirmPaymentIntent(
@@ -126,7 +127,13 @@ internal class AirwallexApiRepository : ApiRepository {
     @VisibleForTesting
     @JvmSynthetic
     internal fun getPaymentMethodsUrl(options: Options): String {
-        return getApiUrl("payment_methods?page_num=${options.pageNum}&page_size=${options.pageSize}")
+        val builder = StringBuilder("payment_methods?")
+        builder.append("page_num=${options.pageNum}")
+        builder.append("&page_size=${options.pageSize}")
+        options.customerId?.let {
+            builder.append("&customer_id=$it")
+        }
+        return getApiUrl(builder.toString())
     }
 
     private fun getApiUrl(path: String, vararg args: Any): String {
