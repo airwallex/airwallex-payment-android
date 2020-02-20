@@ -103,7 +103,9 @@ class Airwallex internal constructor(
 
     @UiThread
     fun getPaymentMethods(
-        pageNum: Int = 0, pageSize: Int = 10,
+        pageNum: Int = 0,
+        pageSize: Int = 10,
+        customerId: String? = null,
         callback: GetPaymentMethodsCallback
     ) {
         paymentController.getPaymentMethods(
@@ -111,7 +113,8 @@ class Airwallex internal constructor(
                 token = token,
                 clientSecret = clientSecret,
                 pageNum = pageNum,
-                pageSize = pageSize
+                pageSize = pageSize,
+                customerId = customerId
             ),
             callback
         )

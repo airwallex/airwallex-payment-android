@@ -21,7 +21,8 @@ class PaymentMethodsActivityStarter constructor(
         val paymentMethod: PaymentMethod?,
         val clientSecret: String,
         val token: String,
-        val availablePaymentMethodTypes: List<String>
+        val availablePaymentMethodTypes: List<String>,
+        val customerId: String?
     ) : Args {
 
         class Builder(
@@ -31,6 +32,11 @@ class PaymentMethodsActivityStarter constructor(
             ObjectBuilder<PaymentMethodsArgs> {
             private var paymentMethod: PaymentMethod? = null
             private var availablePaymentMethodTypes: List<String> = emptyList()
+            private var customerId: String? = null
+
+            fun setCustomerId(customerId: String?): Builder = apply {
+                this.customerId = customerId
+            }
 
             fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
                 this.paymentMethod = paymentMethod
@@ -46,7 +52,8 @@ class PaymentMethodsActivityStarter constructor(
                     token = token,
                     paymentMethod = paymentMethod,
                     clientSecret = clientSecret,
-                    availablePaymentMethodTypes = availablePaymentMethodTypes
+                    availablePaymentMethodTypes = availablePaymentMethodTypes,
+                    customerId = customerId
                 )
             }
         }

@@ -62,6 +62,7 @@ class PaymentMethodItemView constructor(
                         .Builder(paymentIntent.clientSecret, Store.token)
                         .setPaymentMethod(paymentMethod)
                         .setAvailablePaymentMethodTypes(paymentIntent.availablePaymentMethodTypes)
+                        .setCustomerId(paymentIntent.customerId)
                         .build()
                 )
         }

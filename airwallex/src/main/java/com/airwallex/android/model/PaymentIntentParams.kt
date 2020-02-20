@@ -9,6 +9,9 @@ data class PaymentIntentParams internal constructor(
     @SerializedName("request_id")
     val requestId: String? = null,
 
+    @SerializedName("customer_id")
+    val customerId: String? = null,
+
     @SerializedName("payment_method")
     val paymentMethod: PaymentMethod? = null,
 
@@ -25,6 +28,7 @@ data class PaymentIntentParams internal constructor(
 
     class Builder : ObjectBuilder<PaymentIntentParams> {
         private var requestId: String? = null
+        private var customerId: String? = null
         private var paymentMethod: PaymentMethod? = null
         private var device: Device? = null
         private var paymentMethodReference: PaymentMethodReference? = null
@@ -32,6 +36,10 @@ data class PaymentIntentParams internal constructor(
 
         fun setRequestId(requestId: String?): Builder = apply {
             this.requestId = requestId
+        }
+
+        fun setCustomerId(customerId: String?): Builder = apply {
+            this.customerId = customerId
         }
 
         fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {

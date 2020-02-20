@@ -91,7 +91,10 @@ class PaymentMethodsActivity : AirwallexActivity() {
     private fun startAddPaymentMethod() {
         AddPaymentCardActivityStarter(this@PaymentMethodsActivity)
             .startForResult(
-                AddPaymentCardActivityStarter.CardArgs(args.token, args.clientSecret)
+                AddPaymentCardActivityStarter.CardArgs
+                    .Builder(args.token, args.clientSecret)
+                    .setCustomerId(args.customerId)
+                    .build()
             )
     }
 
@@ -112,14 +115,14 @@ class PaymentMethodsActivity : AirwallexActivity() {
         srlPaymentMethods.isRefreshing = true
         airwallex.getPaymentMethods(
             pageNum = currentPageNum,
+            customerId = args.customerId,
             callback = object : Airwallex.GetPaymentMethodsCallback {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }
-                    paymentNoCards.visibility = if (cards.isEmpty()) View.VISIBLE else View.GONE
-
                     srlPaymentMethods.isRefreshing = false
                     currentPageNum++
                     cardAdapter.setPaymentMethods(cards.reversed())
+                    paymentNoCards.visibility = if (cardAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
                 }
 
                 override fun onFailed(exception: AirwallexException) {
