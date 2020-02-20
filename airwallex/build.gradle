@@ -55,5 +55,3 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
 }
-
-apply from: 'maven-push.gradle'
