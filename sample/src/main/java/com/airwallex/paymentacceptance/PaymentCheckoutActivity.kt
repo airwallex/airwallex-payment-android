@@ -103,8 +103,20 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         }
 
         billingItemView.renewalBilling(billing)
-        // It there only one cards, default use this.
-        fetchPaymentMethods()
+
+        if (paymentIntent.customerId == null) {
+            // TODO Whether the tourist identity can go to obtain all payment methods
+            // It there only one cards, default use this.
+            fetchPaymentMethods()
+        } else {
+            val paymentMethods = paymentIntent.customerPaymentMethods
+            if (paymentMethods != null && paymentMethods.size == 1) {
+                paymentMethod = paymentMethods[0]
+                paymentMethodItemView.renewalPaymentMethod(paymentMethod)
+            }
+            updateButtonStatus()
+        }
+
     }
 
     private fun fetchPaymentMethods() {
