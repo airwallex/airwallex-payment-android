@@ -111,6 +111,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         loading.visibility = View.VISIBLE
 
         airwallex.getPaymentMethods(
+            customerId = paymentIntent.customerId,
             callback = object : Airwallex.GetPaymentMethodsCallback {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }
