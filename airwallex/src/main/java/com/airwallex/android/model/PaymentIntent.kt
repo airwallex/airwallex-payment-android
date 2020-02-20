@@ -27,7 +27,7 @@ data class PaymentIntent internal constructor(
     val order: PaymentIntentOrder,
 
     @SerializedName("customer_id")
-    val customerId: String,
+    val customerId: String?,
 
     @SerializedName("descriptor")
     val descriptor: String,
