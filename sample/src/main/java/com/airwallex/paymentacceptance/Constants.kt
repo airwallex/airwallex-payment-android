@@ -7,9 +7,9 @@ internal object Constants {
     const val BASE_URL = "https://staging-pci-api.airwallex.com"
 
     const val API_KEY =
-        "9092eb393908b656c2ed8134535b574c30e7a243718a1c08a06b8ea9278919f4550af02cac520e062518028204c1dc54"
+        "e70420bb90a34c6c2be422387f4209eaf3a7aa84bc8cc4fc2af23cfde121370407833f0649261723e2a91aec552f56ee"
 
-    const val CLIENT_ID = "DW19XFSMSUq4YPc7xkM4Nw"
+    const val CLIENT_ID = "dPH0tQnxRaijLH7ILl0nDQ"
 
     // Wechat pay
     // update with your app id
