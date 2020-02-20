@@ -13,6 +13,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_payment_cart.*
 import org.json.JSONException
+import org.json.JSONObject
 import java.io.IOException
 import java.util.*
 
@@ -85,7 +86,9 @@ class PaymentCartActivity : PaymentBaseActivity() {
 //                }
                 .observeOn(Schedulers.io())
                 .flatMap {
-                    //                    val responseData = JSONObject(it.string())
+                    val responseData = JSONObject(it.string())
+                    val token = responseData["token"].toString()
+                    Store.token = token
                     val customerId = "cus_Dn6mVcMeTEkJgYuu9o5xEcxWRah"
                     val products = SampleApplication.instance.products
                     val shipping = SampleApplication.instance.shipping
