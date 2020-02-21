@@ -63,8 +63,7 @@ class PaymentMethodsActivityStarter constructor(
 
     @Parcelize
     data class Result internal constructor(
-        val paymentMethod: PaymentMethod,
-        val cvc: String?
+        val paymentMethod: PaymentMethod
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()

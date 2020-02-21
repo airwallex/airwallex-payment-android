@@ -3,7 +3,6 @@ package com.airwallex.paymentacceptance
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -15,7 +14,6 @@ import kotlinx.android.synthetic.main.activity_payment_checkout.*
 import okhttp3.*
 import java.io.IOException
 import java.util.*
-
 
 class PaymentCheckoutActivity : PaymentBaseActivity() {
 
@@ -64,12 +62,6 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
 
         rlPlay.setOnClickListener {
             paymentMethod?.let {
-                if (it.type == PaymentMethodType.CARD
-                    && paymentMethodItemView.cvc == null
-                ) {
-                    return@let
-                }
-
                 // TODO Should update payment method with billing info
 //                val shipping = paymentIntent.order.shipping
 //                val billing = this.billing ?: shipping?.let {
@@ -138,7 +130,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                     .setPaymentMethodReference(
                         PaymentMethodReference.Builder()
                             .setId(paymentMethod.id)
-                            .setCvc(paymentMethodItemView.cvc)
+                            .setCvc("123")
                             .build()
                     )
                     .setPaymentMethodOptions(paymentMethodOptions)
@@ -305,11 +297,6 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         paymentMethodItemView.onActivityResult(requestCode, resultCode, data) {
             this.paymentMethod = it
             updateButtonStatus()
-
-            // Delay to show the keyboard
-            Handler().postDelayed({
-                paymentMethodItemView.requestInputFocus()
-            }, 100)
         }
 
         billingItemView.onActivityResult(requestCode, resultCode, data) {

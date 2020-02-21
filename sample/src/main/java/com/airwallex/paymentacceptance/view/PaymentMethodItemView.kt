@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -28,29 +26,12 @@ class PaymentMethodItemView constructor(
 
     internal lateinit var paymentIntent: PaymentIntent
 
-    internal val cvc: String?
-        get() {
-            return if (isValid) {
-                etCardCvc.text.trim().toString()
-            } else {
-                null
-            }
-        }
-
     internal val isValid: Boolean
         get() {
-            return etCardCvc.text.trim().toString().length == 3 && paymentMethod != null
+            return paymentMethod != null
         }
 
     var cvcChangedCallback: () -> Unit = {}
-
-    fun requestInputFocus() {
-        if (llCardCvc.visibility == View.VISIBLE) {
-            val imm: InputMethodManager? =
-                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-            imm?.showSoftInput(etCardCvc, InputMethodManager.SHOW_IMPLICIT)
-        }
-    }
 
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
@@ -70,25 +51,10 @@ class PaymentMethodItemView constructor(
                 // TODO
             }
         }
-
-        etCardCvc.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                if (isValid) {
-                    hideKeyboard(context as Activity)
-                }
-                cvcChangedCallback()
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-        })
     }
 
     @SuppressLint("DefaultLocale")
-    fun renewalPaymentMethod(paymentMethod: PaymentMethod?, cvc: String? = null) {
+    fun renewalPaymentMethod(paymentMethod: PaymentMethod?) {
         this.paymentMethod = paymentMethod
         if (paymentMethod == null) {
             tvPaymentMethod.text = context.getString(R.string.select_payment_method)
@@ -98,13 +64,11 @@ class PaymentMethodItemView constructor(
                     R.color.airwallex_color_dark_light
                 )
             )
-            llCardCvc.visibility = View.GONE
             return
         }
 
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
             tvPaymentMethod.text = paymentMethod.type?.displayName
-            llCardCvc.visibility = View.GONE
         } else {
             tvPaymentMethod.text =
                 String.format(
@@ -112,13 +76,6 @@ class PaymentMethodItemView constructor(
                     paymentMethod.card?.brand?.capitalize(),
                     paymentMethod.card?.last4
                 )
-            if (cvc != null) {
-                llCardCvc.visibility = View.GONE
-                etCardCvc.setText(cvc)
-            } else {
-                llCardCvc.visibility = View.VISIBLE
-                etCardCvc.setText("")
-            }
         }
 
         tvPaymentMethod.setTextColor(
@@ -141,7 +98,7 @@ class PaymentMethodItemView constructor(
         when (requestCode) {
             PaymentMethodsActivityStarter.REQUEST_CODE -> {
                 val result = PaymentMethodsActivityStarter.Result.fromIntent(data)
-                renewalPaymentMethod(result?.paymentMethod, result?.cvc)
+                renewalPaymentMethod(result?.paymentMethod)
                 completion(paymentMethod)
             }
         }

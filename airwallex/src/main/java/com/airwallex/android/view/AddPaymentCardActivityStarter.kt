@@ -3,7 +3,6 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.AddPaymentCardActivityStarter.CardArgs
 import kotlinx.android.parcel.Parcelize
@@ -32,8 +31,7 @@ class AddPaymentCardActivityStarter constructor(
 
     @Parcelize
     data class Result internal constructor(
-        val paymentMethod: PaymentMethod,
-        val cvc: String
+        val paymentMethod: PaymentMethod
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()

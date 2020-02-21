@@ -99,13 +99,12 @@ class PaymentMethodsActivity : AirwallexActivity() {
             )
     }
 
-    private fun finishWithPaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
+    private fun finishWithPaymentMethod(paymentMethod: PaymentMethod) {
         setResult(
             Activity.RESULT_OK, Intent()
                 .putExtras(
                     PaymentMethodsActivityStarter.Result(
-                        paymentMethod,
-                        cvc
+                        paymentMethod
                     ).toBundle()
                 )
         )
@@ -143,7 +142,7 @@ class PaymentMethodsActivity : AirwallexActivity() {
             AddPaymentCardActivityStarter.REQUEST_CODE -> {
                 val result = AddPaymentCardActivityStarter.Result.fromIntent(data)
                 result?.let {
-                    finishWithPaymentMethod(it.paymentMethod, it.cvc)
+                    finishWithPaymentMethod(it.paymentMethod)
                 }
             }
         }
