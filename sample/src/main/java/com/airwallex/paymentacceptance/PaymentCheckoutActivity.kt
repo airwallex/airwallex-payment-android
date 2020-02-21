@@ -102,44 +102,18 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             updateButtonStatus()
         }
 
+        // update billing item
         billingItemView.renewalBilling(billing)
 
-        if (paymentIntent.customerId == null) {
-            // TODO Whether the tourist identity can go to obtain all payment methods
-            // It there only one cards, default use this.
-            fetchPaymentMethods()
-        } else {
-            val paymentMethods = paymentIntent.customerPaymentMethods
-            if (paymentMethods != null && paymentMethods.size == 1) {
-                paymentMethod = paymentMethods[0]
-                paymentMethodItemView.renewalPaymentMethod(paymentMethod)
-            }
-            updateButtonStatus()
+        // update payment method item
+        val paymentMethods = paymentIntent.customerPaymentMethods
+        if (paymentMethods != null && paymentMethods.size == 1) {
+            paymentMethod = paymentMethods[0]
+            paymentMethodItemView.renewalPaymentMethod(paymentMethod)
         }
 
-    }
-
-    private fun fetchPaymentMethods() {
-        loading.visibility = View.VISIBLE
-
-        airwallex.getPaymentMethods(
-            customerId = paymentIntent.customerId,
-            callback = object : Airwallex.GetPaymentMethodsCallback {
-                override fun onSuccess(response: PaymentMethodResponse) {
-                    val cards = response.items.filter { it.type == PaymentMethodType.CARD }
-                    if (cards.size == 1) {
-                        paymentMethod = cards[0]
-                        paymentMethodItemView.renewalPaymentMethod(paymentMethod)
-                    }
-                    updateButtonStatus()
-                    loading.visibility = View.GONE
-                }
-
-                override fun onFailed(exception: AirwallexException) {
-                    updateButtonStatus()
-                    loading.visibility = View.GONE
-                }
-            })
+        // update button status
+        updateButtonStatus()
     }
 
     private fun startConfirmPaymentIntent(paymentMethod: PaymentMethod) {
