@@ -48,7 +48,7 @@ class PaymentMethodItemView constructor(
                             .build()
                     )
             } else {
-                // TODO
+                // Need merchant's own select payment method screen
             }
         }
     }
