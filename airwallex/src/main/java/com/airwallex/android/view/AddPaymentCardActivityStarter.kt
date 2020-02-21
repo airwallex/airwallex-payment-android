@@ -20,29 +20,8 @@ class AddPaymentCardActivityStarter constructor(
     data class CardArgs internal constructor(
         internal val token: String,
         internal val clientSecret: String,
-        internal val customerId: String?
+        internal val customerId: String
     ) : Args {
-
-        class Builder(
-            private val token: String,
-            private val clientSecret: String
-        ) :
-            ObjectBuilder<CardArgs> {
-
-            private var customerId: String? = null
-
-            fun setCustomerId(customerId: String?): Builder = apply {
-                this.customerId = customerId
-            }
-
-            override fun build(): CardArgs {
-                return CardArgs(
-                    token = token,
-                    clientSecret = clientSecret,
-                    customerId = customerId
-                )
-            }
-        }
 
         internal companion object {
             internal fun getExtra(intent: Intent): CardArgs {

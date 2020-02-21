@@ -22,21 +22,17 @@ class PaymentMethodsActivityStarter constructor(
         val clientSecret: String,
         val token: String,
         val availablePaymentMethodTypes: List<String>,
-        val customerId: String?
+        val customerId: String
     ) : Args {
 
         class Builder(
             private val clientSecret: String,
-            private val token: String
+            private val token: String,
+            private val customerId: String
         ) :
             ObjectBuilder<PaymentMethodsArgs> {
             private var paymentMethod: PaymentMethod? = null
             private var availablePaymentMethodTypes: List<String> = emptyList()
-            private var customerId: String? = null
-
-            fun setCustomerId(customerId: String?): Builder = apply {
-                this.customerId = customerId
-            }
 
             fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
                 this.paymentMethod = paymentMethod

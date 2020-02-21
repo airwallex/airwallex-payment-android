@@ -56,15 +56,19 @@ class PaymentMethodItemView constructor(
         View.inflate(getContext(), R.layout.payment_method_item, this)
 
         llPaymentMethod.setOnClickListener {
-            PaymentMethodsActivityStarter(context as Activity)
-                .startForResult(
-                    PaymentMethodsActivityStarter.PaymentMethodsArgs
-                        .Builder(paymentIntent.clientSecret, Store.token)
-                        .setPaymentMethod(paymentMethod)
-                        .setAvailablePaymentMethodTypes(paymentIntent.availablePaymentMethodTypes)
-                        .setCustomerId(paymentIntent.customerId)
-                        .build()
-                )
+            val customerId = paymentIntent.customerId
+            if (customerId != null) {
+                PaymentMethodsActivityStarter(context as Activity)
+                    .startForResult(
+                        PaymentMethodsActivityStarter.PaymentMethodsArgs
+                            .Builder(paymentIntent.clientSecret, Store.token, customerId)
+                            .setPaymentMethod(paymentMethod)
+                            .setAvailablePaymentMethodTypes(paymentIntent.availablePaymentMethodTypes)
+                            .build()
+                    )
+            } else {
+                // TODO
+            }
         }
 
         etCardCvc.addTextChangedListener(object : TextWatcher {

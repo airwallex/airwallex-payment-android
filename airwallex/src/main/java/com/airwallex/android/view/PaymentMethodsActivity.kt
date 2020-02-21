@@ -91,10 +91,11 @@ class PaymentMethodsActivity : AirwallexActivity() {
     private fun startAddPaymentMethod() {
         AddPaymentCardActivityStarter(this@PaymentMethodsActivity)
             .startForResult(
-                AddPaymentCardActivityStarter.CardArgs
-                    .Builder(args.token, args.clientSecret)
-                    .setCustomerId(args.customerId)
-                    .build()
+                AddPaymentCardActivityStarter.CardArgs(
+                    args.token,
+                    args.clientSecret,
+                    args.customerId
+                )
             )
     }
 
@@ -122,7 +123,8 @@ class PaymentMethodsActivity : AirwallexActivity() {
                     srlPaymentMethods.isRefreshing = false
                     currentPageNum++
                     cardAdapter.setPaymentMethods(cards.reversed())
-                    paymentNoCards.visibility = if (cardAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
+                    paymentNoCards.visibility =
+                        if (cardAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
                 }
 
                 override fun onFailed(exception: AirwallexException) {
