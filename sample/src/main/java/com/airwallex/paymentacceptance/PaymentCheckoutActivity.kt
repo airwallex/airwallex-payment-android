@@ -110,7 +110,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
 
     private fun startConfirmPaymentIntent(paymentMethod: PaymentMethod) {
         loading.visibility = View.VISIBLE
-        val paymentIntentParams: PaymentIntentParams = when (paymentMethod.type!!) {
+        val paymentIntentParams: PaymentIntentParams = when (paymentMethod.type) {
             PaymentMethodType.CARD -> {
                 PaymentIntentParams.Builder()
                     .setRequestId(UUID.randomUUID().toString())

@@ -9,7 +9,7 @@ import kotlinx.android.parcel.RawValue
 data class PaymentMethod internal constructor(
 
     @SerializedName("id")
-    val id: String?,
+    val id: String,
 
     @SerializedName("request_id")
     val requestId: String?,
@@ -18,7 +18,7 @@ data class PaymentMethod internal constructor(
     val customerId: String?,
 
     @SerializedName("type")
-    val type: PaymentMethodType?,
+    val type: PaymentMethodType,
 
     @SerializedName("card")
     val card: Card?,
@@ -35,20 +35,20 @@ data class PaymentMethod internal constructor(
 ) : AirwallexModel, Parcelable {
 
     class Builder : ObjectBuilder<PaymentMethod> {
-        private var id: String? = null
-        private var requestId: String? = null
+        private var id: String = ""
+        private var requestId: String = ""
         private var customerId: String? = null
-        private var type: PaymentMethodType? = null
+        private var type: PaymentMethodType = PaymentMethodType.CARD
         private var card: Card? = null
         private var wechatPayFlow: WechatPayFlow? = null
         private var billing: Billing? = null
         private var metadata: Map<String, Any>? = null
 
-        fun setId(id: String?): Builder = apply {
+        fun setId(id: String): Builder = apply {
             this.id = id
         }
 
-        fun setRequestId(requestId: String?): Builder = apply {
+        fun setRequestId(requestId: String): Builder = apply {
             this.requestId = requestId
         }
 
@@ -72,7 +72,7 @@ data class PaymentMethod internal constructor(
             this.wechatPayFlow = wechatPayFlow
         }
 
-        fun setType(type: PaymentMethodType?): Builder = apply {
+        fun setType(type: PaymentMethodType): Builder = apply {
             this.type = type
         }
 
