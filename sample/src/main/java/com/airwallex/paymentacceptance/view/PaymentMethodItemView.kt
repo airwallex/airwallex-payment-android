@@ -44,7 +44,7 @@ class PaymentMethodItemView constructor(
                         PaymentMethodsActivityStarter.PaymentMethodsArgs
                             .Builder(paymentIntent.clientSecret, Store.token, customerId)
                             .setPaymentMethod(paymentMethod)
-                            .setShouldShowWechatPay(paymentIntent.availablePaymentMethodTypes.contains(PaymentMethodType.WECHAT.code))
+                            .setShouldShowWechatPay(paymentIntent.availablePaymentMethodTypes.contains(PaymentMethodType.WECHAT.type))
                             .build()
                     )
             } else {

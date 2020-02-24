@@ -48,7 +48,7 @@ class AddPaymentCardActivity : AirwallexActivity() {
         val paymentMethodParams = PaymentMethodParams.Builder()
             .setCustomerId(args.customerId)
             .setRequestId(UUID.randomUUID().toString())
-            .setType(PaymentMethodType.CARD.code)
+            .setType(PaymentMethodType.CARD.type)
             .setCard(card)
             .setBilling(billing)
             .build()
