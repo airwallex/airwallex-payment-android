@@ -21,7 +21,7 @@ class PaymentMethodsActivityStarter constructor(
         val paymentMethod: PaymentMethod?,
         val clientSecret: String,
         val token: String,
-        val availablePaymentMethodTypes: List<String>,
+        val shouldShowWechatPay: Boolean,
         val customerId: String
     ) : Args {
 
@@ -32,15 +32,15 @@ class PaymentMethodsActivityStarter constructor(
         ) :
             ObjectBuilder<PaymentMethodsArgs> {
             private var paymentMethod: PaymentMethod? = null
-            private var availablePaymentMethodTypes: List<String> = emptyList()
+            private var shouldShowWechatPay: Boolean = false
 
             fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
                 this.paymentMethod = paymentMethod
             }
 
-            fun setAvailablePaymentMethodTypes(availablePaymentMethodTypes: List<String>): Builder =
+            fun setShouldShowWechatPay(shouldShowWechatPay: Boolean): Builder =
                 apply {
-                    this.availablePaymentMethodTypes = availablePaymentMethodTypes
+                    this.shouldShowWechatPay = shouldShowWechatPay
                 }
 
             override fun build(): PaymentMethodsArgs {
@@ -48,7 +48,7 @@ class PaymentMethodsActivityStarter constructor(
                     token = token,
                     paymentMethod = paymentMethod,
                     clientSecret = clientSecret,
-                    availablePaymentMethodTypes = availablePaymentMethodTypes,
+                    shouldShowWechatPay = shouldShowWechatPay,
                     customerId = customerId
                 )
             }
@@ -81,5 +81,4 @@ class PaymentMethodsActivityStarter constructor(
     companion object {
         const val REQUEST_CODE: Int = 1001
     }
-
 }

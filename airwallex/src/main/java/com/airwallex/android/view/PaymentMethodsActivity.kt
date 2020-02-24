@@ -27,7 +27,7 @@ class PaymentMethodsActivity : AirwallexActivity() {
 
     private val shouldShowWechatPay: Boolean
         get() {
-            return args.availablePaymentMethodTypes.contains(PaymentMethodType.WECHAT.code)
+            return args.shouldShowWechatPay
         }
 
     private var currentPageNum = 0
