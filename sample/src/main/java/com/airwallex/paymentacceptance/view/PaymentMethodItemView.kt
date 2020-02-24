@@ -9,10 +9,12 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
+import com.airwallex.android.PaymentSession
+import com.airwallex.android.PaymentSessionConfig
+import com.airwallex.android.PaymentSessionData
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.view.PaymentMethodsActivityStarter
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Store
 import kotlinx.android.synthetic.main.payment_method_item.view.*
@@ -33,20 +35,29 @@ class PaymentMethodItemView constructor(
 
     var cvcChangedCallback: () -> Unit = {}
 
+    private var paymentSession: PaymentSession? = null
+
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
 
         llPaymentMethod.setOnClickListener {
             val customerId = paymentIntent.customerId
             if (customerId != null) {
-                PaymentMethodsActivityStarter(context as Activity)
-                    .startForResult(
-                        PaymentMethodsActivityStarter.PaymentMethodsArgs
-                            .Builder(paymentIntent.clientSecret, Store.token, customerId)
-                            .setPaymentMethod(paymentMethod)
-                            .setShouldShowWechatPay(paymentIntent.availablePaymentMethodTypes.contains(PaymentMethodType.WECHAT.type))
-                            .build()
+                paymentSession = PaymentSession(
+                    context as Activity,
+                    PaymentSessionData(
+                        config = PaymentSessionConfig.Builder().setShouldShowWechatPay(
+                            paymentIntent.availablePaymentMethodTypes.contains(
+                                PaymentMethodType.WECHAT.type
+                            )
+                        ).build(),
+                        clientSecret = paymentIntent.clientSecret,
+                        token = Store.token,
+                        customerId = customerId,
+                        paymentMethod = paymentMethod
                     )
+                )
+                paymentSession?.presentPaymentMethodSelection()
             } else {
                 // Need merchant's own select payment method screen
             }
@@ -68,7 +79,7 @@ class PaymentMethodItemView constructor(
         }
 
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
-            tvPaymentMethod.text = paymentMethod.type?.displayName
+            tvPaymentMethod.text = paymentMethod.type.displayName
         } else {
             tvPaymentMethod.text =
                 String.format(
@@ -92,16 +103,20 @@ class PaymentMethodItemView constructor(
         data: Intent?,
         completion: (paymentMethod: PaymentMethod?) -> Unit
     ) {
-        if (resultCode != Activity.RESULT_OK || data == null) {
-            return
-        }
-        when (requestCode) {
-            PaymentMethodsActivityStarter.REQUEST_CODE -> {
-                val result = PaymentMethodsActivityStarter.Result.fromIntent(data)
-                renewalPaymentMethod(result?.paymentMethod)
-                completion(paymentMethod)
-            }
-        }
+        paymentSession?.handlePaymentMethod(
+            requestCode,
+            resultCode,
+            data,
+            object : PaymentSession.PaymentMethodResult {
+                override fun onCancelled() {
+                    completion.invoke(null)
+                }
+
+                override fun onSuccess(paymentMethod: PaymentMethod?) {
+                    renewalPaymentMethod(paymentMethod)
+                    completion(paymentMethod)
+                }
+            })
     }
 
     override fun onDetachedFromWindow() {

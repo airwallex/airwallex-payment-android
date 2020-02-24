@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import java.util.*
 
-class AddPaymentCardActivity : AirwallexActivity() {
+internal class AddPaymentCardActivity : AirwallexActivity() {
 
     private val args: AddPaymentCardActivityStarter.CardArgs by lazy {
         AddPaymentCardActivityStarter.CardArgs.getExtra(intent)
