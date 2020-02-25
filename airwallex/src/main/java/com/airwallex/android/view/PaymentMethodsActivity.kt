@@ -91,11 +91,11 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     private fun startAddPaymentMethod() {
         AddPaymentCardActivityStarter(this@PaymentMethodsActivity)
             .startForResult(
-                AddPaymentCardActivityStarter.Args(
-                    args.token,
-                    args.clientSecret,
-                    args.customerId
-                )
+                AddPaymentCardActivityStarter.Args.Builder()
+                    .setClientSecret(args.clientSecret)
+                    .setToken(args.token)
+                    .setCustomerId(args.customerId)
+                    .build()
             )
     }
 

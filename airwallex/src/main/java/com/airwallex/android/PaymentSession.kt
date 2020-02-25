@@ -46,9 +46,9 @@ class PaymentSession internal constructor(
         paymentMethodsActivityStarter.startForResult(
             PaymentMethodsActivityStarter.Args
                 .Builder(
-                    paymentSessionData.clientSecret!!,
-                    paymentSessionData.token!!,
-                    paymentSessionData.customerId!!
+                    requireNotNull(paymentSessionData.clientSecret),
+                    requireNotNull(paymentSessionData.token),
+                    requireNotNull(paymentSessionData.customerId)
                 )
                 .setPaymentMethod(paymentSessionData.paymentMethod)
                 .setShouldShowWechatPay(paymentSessionData.shouldShowWechatPay)

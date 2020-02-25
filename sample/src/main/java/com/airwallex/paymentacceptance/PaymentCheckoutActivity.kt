@@ -17,7 +17,7 @@ import java.util.*
 
 class PaymentCheckoutActivity : PaymentBaseActivity() {
 
-    val device = Device.Builder()
+    private val device = Device.Builder()
         .setBrowserInfo("Chrome/76.0.3809.100")
         .setCookiesAccepted("true")
         .setDeviceId("IMEI-4432fsdafd31243244fdsafdfd653")
@@ -44,8 +44,8 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
     private var billing: Billing? = null
 
     companion object {
-
         private const val TAG = "PaymentPayActivity"
+        private const val PAYMENT_INTENT = "payment_intent"
 
         fun startActivity(
             activity: Activity,
@@ -239,7 +239,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                         context = this@PaymentCheckoutActivity,
                         appId = Constants.APP_ID,
                         data = data,
-                        listener = object : WechatPaymentListener {
+                        listener = object : WXPay.WechatPaymentListener {
                             override fun onSuccess() {
                                 completion.invoke()
                             }

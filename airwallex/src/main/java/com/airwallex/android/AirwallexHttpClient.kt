@@ -33,28 +33,20 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
         // Body
         val body = response.body
 
-        // Total size
-        val totalSize = response.body?.contentLength() ?: 0
-
-        // Reason phrase
-        val reasonPhrase = response.message
+        // Reason
+        val reason = response.message
 
         // Headers
         val headers: MutableMap<String, String?> = mutableMapOf()
         for (name in response.headers.names()) {
             headers[name] = response.header(name)
         }
-
-        // Content type
-        val contentType: String? = response.body?.contentType()?.toString()
         return AirwallexHttpResponse.Builder()
             .setStatusCode(statusCode)
             .setIsSuccessful(isSuccessful)
             .setBody(body)
-            .setTotalSize(totalSize)
-            .setReasonPhrase(reasonPhrase)
+            .setReason(reason)
             .setHeaders(headers)
-            .setContentType(contentType)
             .build()
     }
 

@@ -19,7 +19,7 @@ internal class AddPaymentCardActivity : AirwallexActivity() {
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(args.token, args.clientSecret)
+        Airwallex(requireNotNull(args.token), requireNotNull(args.clientSecret))
     }
 
     override fun onActionSave() {

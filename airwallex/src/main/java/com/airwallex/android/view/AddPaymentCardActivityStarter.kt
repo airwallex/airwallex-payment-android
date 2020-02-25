@@ -3,6 +3,7 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.AddPaymentCardActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
@@ -17,10 +18,36 @@ internal class AddPaymentCardActivityStarter constructor(
 
     @Parcelize
     data class Args internal constructor(
-        internal val token: String,
-        internal val clientSecret: String,
-        internal val customerId: String
+        internal val token: String?,
+        internal val clientSecret: String?,
+        internal val customerId: String?
     ) : ActivityStarter.Args {
+
+        class Builder : ObjectBuilder<Args> {
+            private var token: String? = null
+            private var clientSecret: String? = null
+            private var customerId: String? = null
+
+            fun setToken(token: String?): Builder = apply {
+                this.token = token
+            }
+
+            fun setClientSecret(clientSecret: String?): Builder = apply {
+                this.clientSecret = clientSecret
+            }
+
+            fun setCustomerId(customerId: String?): Builder = apply {
+                this.customerId = customerId
+            }
+
+            override fun build(): Args {
+                return Args(
+                    token = token,
+                    clientSecret = clientSecret,
+                    customerId = customerId
+                )
+            }
+        }
 
         internal companion object {
             internal fun getExtra(intent: Intent): Args {

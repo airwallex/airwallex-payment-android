@@ -39,9 +39,9 @@ class AirwallexDividerItemDecoration : ItemDecoration {
             val params =
                 child.layoutParams as RecyclerView.LayoutParams
             val top = child.bottom + params.bottomMargin
-            val bottom = top + divider!!.intrinsicHeight
-            divider!!.setBounds(left, top, right, bottom)
-            divider!!.draw(c)
+            val bottom = top + (divider?.intrinsicHeight ?: 0)
+            divider?.setBounds(left, top, right, bottom)
+            divider?.draw(c)
         }
     }
 

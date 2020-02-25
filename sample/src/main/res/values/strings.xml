@@ -18,4 +18,5 @@
 
     <string name="free">Free</string>
     <string name="billing">Billing</string>
+    <string name="use_merchant_payment_method_selection">Need to use merchant\'s own payment methods selection screen</string>
 </resources>
