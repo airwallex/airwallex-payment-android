@@ -5,39 +5,39 @@ import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.Shipping
-import com.airwallex.android.view.AddPaymentShippingActivityStarter.ShippingArgs
+import com.airwallex.android.view.AddPaymentShippingActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
 class AddPaymentShippingActivityStarter constructor(
     activity: Activity
-) : ActivityStarter<AddPaymentShippingActivity, ShippingArgs>(
+) : ActivityStarter<AddPaymentShippingActivity, Args>(
     activity,
     AddPaymentShippingActivity::class.java,
     REQUEST_CODE
 ) {
 
     @Parcelize
-    data class ShippingArgs internal constructor(
+    data class Args internal constructor(
         internal val shipping: Shipping?
-    ) : Args {
+    ) : ActivityStarter.Args {
 
-        class Builder : ObjectBuilder<ShippingArgs> {
+        class Builder : ObjectBuilder<Args> {
             private var shipping: Shipping? = null
 
             fun setShipping(shipping: Shipping?): Builder = apply {
                 this.shipping = shipping
             }
 
-            override fun build(): ShippingArgs {
-                return ShippingArgs(
+            override fun build(): Args {
+                return Args(
                     shipping = shipping
                 )
             }
         }
 
         internal companion object {
-            internal fun getExtra(intent: Intent): ShippingArgs {
-                return requireNotNull(intent.getParcelableExtra(Args.AIRWALLEX_EXTRA))
+            internal fun getExtra(intent: Intent): Args {
+                return requireNotNull(intent.getParcelableExtra(ActivityStarter.Args.AIRWALLEX_EXTRA))
             }
         }
     }

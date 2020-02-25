@@ -11,8 +11,8 @@ import kotlinx.android.synthetic.main.activity_airwallex.*
 
 class AddPaymentShippingActivity : AirwallexActivity() {
 
-    private val args: AddPaymentShippingActivityStarter.ShippingArgs by lazy {
-        AddPaymentShippingActivityStarter.ShippingArgs.getExtra(intent)
+    private val args: AddPaymentShippingActivityStarter.Args by lazy {
+        AddPaymentShippingActivityStarter.Args.getExtra(intent)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {

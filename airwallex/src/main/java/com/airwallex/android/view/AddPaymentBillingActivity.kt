@@ -10,8 +10,8 @@ import kotlinx.android.synthetic.main.activity_airwallex.*
 
 class AddPaymentBillingActivity : AirwallexActivity() {
 
-    private val args: AddPaymentBillingActivityStarter.BillingArgs by lazy {
-        AddPaymentBillingActivityStarter.BillingArgs.getExtra(intent)
+    private val args: AddPaymentBillingActivityStarter.Args by lazy {
+        AddPaymentBillingActivityStarter.Args.getExtra(intent)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {

@@ -27,7 +27,7 @@ class ShippingItemView constructor(
             shipping?.let {
                 AddPaymentShippingActivityStarter(context as Activity)
                     .startForResult(
-                        AddPaymentShippingActivityStarter.ShippingArgs.Builder()
+                        AddPaymentShippingActivityStarter.Args.Builder()
                             .setShipping(it)
                             .build()
                     )
