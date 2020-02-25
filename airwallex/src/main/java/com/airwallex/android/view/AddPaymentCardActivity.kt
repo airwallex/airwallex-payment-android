@@ -17,8 +17,8 @@ import java.util.*
 
 internal class AddPaymentCardActivity : AirwallexActivity() {
 
-    private val args: AddPaymentCardActivityStarter.CardArgs by lazy {
-        AddPaymentCardActivityStarter.CardArgs.getExtra(intent)
+    private val args: AddPaymentCardActivityStarter.Args by lazy {
+        AddPaymentCardActivityStarter.Args.getExtra(intent)
     }
 
     private val airwallex: Airwallex by lazy {

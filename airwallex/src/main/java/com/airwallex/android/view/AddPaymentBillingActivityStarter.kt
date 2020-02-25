@@ -5,39 +5,39 @@ import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.view.AddPaymentBillingActivityStarter.BillingArgs
+import com.airwallex.android.view.AddPaymentBillingActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
 class AddPaymentBillingActivityStarter constructor(
     activity: Activity
-) : ActivityStarter<AddPaymentBillingActivity, BillingArgs>(
+) : ActivityStarter<AddPaymentBillingActivity, Args>(
     activity,
     AddPaymentBillingActivity::class.java,
     REQUEST_CODE
 ) {
 
     @Parcelize
-    data class BillingArgs internal constructor(
+    data class Args internal constructor(
         internal val billing: PaymentMethod.Billing?
-    ) : Args {
+    ) : ActivityStarter.Args {
 
-        class Builder : ObjectBuilder<BillingArgs> {
+        class Builder : ObjectBuilder<Args> {
             private var billing: PaymentMethod.Billing? = null
 
             fun setBilling(billing: PaymentMethod.Billing?): Builder = apply {
                 this.billing = billing
             }
 
-            override fun build(): BillingArgs {
-                return BillingArgs(
+            override fun build(): Args {
+                return Args(
                     billing = billing
                 )
             }
         }
 
         internal companion object {
-            internal fun getExtra(intent: Intent): BillingArgs {
-                return requireNotNull(intent.getParcelableExtra(Args.AIRWALLEX_EXTRA))
+            internal fun getExtra(intent: Intent): Args {
+                return requireNotNull(intent.getParcelableExtra(ActivityStarter.Args.AIRWALLEX_EXTRA))
             }
         }
     }

@@ -12,7 +12,7 @@ import com.airwallex.android.view.PaymentMethodsActivityStarter
 class PaymentSession internal constructor(
     private val context: Context,
     private val paymentMethodsActivityStarter:
-    ActivityStarter<PaymentMethodsActivity, PaymentMethodsActivityStarter.PaymentMethodsArgs>,
+    ActivityStarter<PaymentMethodsActivity, PaymentMethodsActivityStarter.Args>,
     val paymentSessionData: PaymentSessionData
 ) {
 
@@ -36,7 +36,7 @@ class PaymentSession internal constructor(
     fun presentPaymentMethodSelection() {
         paymentSessionData.config
         paymentMethodsActivityStarter.startForResult(
-            PaymentMethodsActivityStarter.PaymentMethodsArgs
+            PaymentMethodsActivityStarter.Args
                 .Builder(
                     paymentSessionData.clientSecret,
                     paymentSessionData.token,

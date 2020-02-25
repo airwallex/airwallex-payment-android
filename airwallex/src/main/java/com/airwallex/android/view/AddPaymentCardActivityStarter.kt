@@ -4,27 +4,27 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.view.AddPaymentCardActivityStarter.CardArgs
+import com.airwallex.android.view.AddPaymentCardActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
 internal class AddPaymentCardActivityStarter constructor(
     activity: Activity
-) : ActivityStarter<AddPaymentCardActivity, CardArgs>(
+) : ActivityStarter<AddPaymentCardActivity, Args>(
     activity,
     AddPaymentCardActivity::class.java,
     REQUEST_CODE
 ) {
 
     @Parcelize
-    data class CardArgs internal constructor(
+    data class Args internal constructor(
         internal val token: String,
         internal val clientSecret: String,
         internal val customerId: String
-    ) : Args {
+    ) : ActivityStarter.Args {
 
         internal companion object {
-            internal fun getExtra(intent: Intent): CardArgs {
-                return requireNotNull(intent.getParcelableExtra(Args.AIRWALLEX_EXTRA))
+            internal fun getExtra(intent: Intent): Args {
+                return requireNotNull(intent.getParcelableExtra(ActivityStarter.Args.AIRWALLEX_EXTRA))
             }
         }
     }

@@ -5,32 +5,32 @@ import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.view.PaymentMethodsActivityStarter.PaymentMethodsArgs
+import com.airwallex.android.view.PaymentMethodsActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
 internal class PaymentMethodsActivityStarter constructor(
     activity: Activity
-) : ActivityStarter<PaymentMethodsActivity, PaymentMethodsArgs>(
+) : ActivityStarter<PaymentMethodsActivity, Args>(
     activity,
     PaymentMethodsActivity::class.java,
     REQUEST_CODE
 ) {
 
     @Parcelize
-    data class PaymentMethodsArgs internal constructor(
+    data class Args internal constructor(
         val paymentMethod: PaymentMethod?,
         val clientSecret: String,
         val token: String,
         val shouldShowWechatPay: Boolean,
         val customerId: String
-    ) : Args {
+    ) : ActivityStarter.Args {
 
         class Builder(
             private val clientSecret: String,
             private val token: String,
             private val customerId: String
         ) :
-            ObjectBuilder<PaymentMethodsArgs> {
+            ObjectBuilder<Args> {
             private var paymentMethod: PaymentMethod? = null
             private var shouldShowWechatPay: Boolean = false
 
@@ -43,8 +43,8 @@ internal class PaymentMethodsActivityStarter constructor(
                     this.shouldShowWechatPay = shouldShowWechatPay
                 }
 
-            override fun build(): PaymentMethodsArgs {
-                return PaymentMethodsArgs(
+            override fun build(): Args {
+                return Args(
                     token = token,
                     paymentMethod = paymentMethod,
                     clientSecret = clientSecret,
@@ -55,8 +55,8 @@ internal class PaymentMethodsActivityStarter constructor(
         }
 
         internal companion object {
-            internal fun getExtra(intent: Intent): PaymentMethodsArgs {
-                return requireNotNull(intent.getParcelableExtra(Args.AIRWALLEX_EXTRA))
+            internal fun getExtra(intent: Intent): Args {
+                return requireNotNull(intent.getParcelableExtra(ActivityStarter.Args.AIRWALLEX_EXTRA))
             }
         }
     }
