@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.airwallex.android.PaymentSession
 import com.airwallex.android.PaymentSessionData
@@ -57,7 +58,15 @@ class PaymentMethodItemView constructor(
                 )
                 paymentSession?.presentPaymentMethodSelection()
             } else {
-                // Need merchant's own select payment method screen
+                // Need to use merchant's own payment methods selection screen
+                AlertDialog.Builder(context)
+                    .setTitle(R.string.use_merchant_payment_method_selection)
+                    .setCancelable(true)
+                    .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                        dialogInterface.dismiss()
+                    }
+                    .create()
+                    .show()
             }
         }
     }

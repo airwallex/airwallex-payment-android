@@ -7,20 +7,16 @@ internal class AirwallexHttpResponse private constructor(
     val isSuccessful: Boolean,
     val statusCode: Int,
     val body: ResponseBody?,
-    val totalSize: Long,
-    val reasonPhrase: String?,
-    val allHeaders: MutableMap<String, String?>,
-    val contentType: String?
+    val reason: String?,
+    val allHeaders: MutableMap<String, String?>
 ) {
 
     class Builder {
         private var isSuccessful = false
         private var statusCode = 0
         private var body: ResponseBody? = null
-        private var totalSize: Long = 0
-        private var reasonPhrase: String? = null
+        private var reason: String? = null
         private var headers: MutableMap<String, String?> = mutableMapOf()
-        private var contentType: String? = null
 
         fun setIsSuccessful(isSuccessful: Boolean): Builder = apply {
             this.isSuccessful = isSuccessful
@@ -34,20 +30,12 @@ internal class AirwallexHttpResponse private constructor(
             this.body = body
         }
 
-        fun setTotalSize(totalSize: Long): Builder = apply {
-            this.totalSize = totalSize
-        }
-
-        fun setReasonPhrase(reasonPhrase: String?): Builder = apply {
-            this.reasonPhrase = reasonPhrase
+        fun setReason(reason: String?): Builder = apply {
+            this.reason = reason
         }
 
         fun setHeaders(headers: MutableMap<String, String?>): Builder = apply {
             this.headers = HashMap(headers)
-        }
-
-        fun setContentType(contentType: String?): Builder = apply {
-            this.contentType = contentType
         }
 
         fun build(): AirwallexHttpResponse {
@@ -55,10 +43,8 @@ internal class AirwallexHttpResponse private constructor(
                 isSuccessful = isSuccessful,
                 statusCode = statusCode,
                 body = body,
-                totalSize = totalSize,
-                reasonPhrase = reasonPhrase,
-                allHeaders = headers,
-                contentType = contentType
+                reason = reason,
+                allHeaders = headers
             )
         }
     }

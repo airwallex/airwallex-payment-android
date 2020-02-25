@@ -67,4 +67,11 @@ class WXPay {
         return weChatReq
     }
 
+    interface WechatPaymentListener {
+        fun onSuccess()
+
+        fun onFailure(errCode: String?, errMessage: String?)
+
+        fun onCancel()
+    }
 }

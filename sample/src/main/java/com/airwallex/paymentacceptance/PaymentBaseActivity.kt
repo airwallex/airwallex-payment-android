@@ -15,12 +15,7 @@ abstract class PaymentBaseActivity : AppCompatActivity() {
     abstract val inPaymentFlow: Boolean
 
     companion object {
-        const val PAYMENT_SHIPPING = "payment_shipping"
-        const val PAYMENT_INTENT = "payment_intent"
-
-        const val REQUEST_EDIT_SHIPPING_CODE = 8
-
-        const val PAYMENT_SUCCESS_ACTION = "PAYMENT_SUCCESS_ACTION"
+        private const val PAYMENT_SUCCESS_ACTION = "PAYMENT_SUCCESS_ACTION"
     }
 
     private val localBroadcastManager: LocalBroadcastManager by lazy {

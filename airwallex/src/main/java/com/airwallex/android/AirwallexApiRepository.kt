@@ -1,7 +1,6 @@
 package com.airwallex.android
 
 import android.os.Parcelable
-import androidx.annotation.VisibleForTesting
 import com.airwallex.android.model.PaymentIntentParams
 import com.airwallex.android.model.PaymentMethodParams
 import com.google.gson.JsonParser
@@ -97,36 +96,28 @@ internal class AirwallexApiRepository : ApiRepository {
     /**
      *  `/api/v1/pa/payment_intents/{id}`
      */
-    @VisibleForTesting
-    @JvmSynthetic
-    internal fun retrievePaymentIntentUrl(options: Options): String {
-        return getApiUrl("payment_intents/%s", options.paymentIntentId!!)
+    private fun retrievePaymentIntentUrl(options: Options): String {
+        return getApiUrl("payment_intents/%s", requireNotNull(options.paymentIntentId))
     }
 
     /**
      *  `/api/v1/pa/payment_intents/{id}/confirm`
      */
-    @VisibleForTesting
-    @JvmSynthetic
-    internal fun confirmPaymentIntentUrl(options: Options): String {
-        return getApiUrl("payment_intents/%s/confirm", options.paymentIntentId!!)
+    private fun confirmPaymentIntentUrl(options: Options): String {
+        return getApiUrl("payment_intents/%s/confirm", requireNotNull(options.paymentIntentId))
     }
 
     /**
      *  `/api/v1/pa/payment_methods/create`
      */
-    @VisibleForTesting
-    @JvmSynthetic
-    internal fun createPaymentMethodUrl(): String {
+    private fun createPaymentMethodUrl(): String {
         return getApiUrl("payment_methods/create")
     }
 
     /**
      *  `/api/v1/pa/payment_methods/create`
      */
-    @VisibleForTesting
-    @JvmSynthetic
-    internal fun getPaymentMethodsUrl(options: Options): String {
+    private fun getPaymentMethodsUrl(options: Options): String {
         val builder = StringBuilder("payment_methods?")
         builder.append("page_num=${options.pageNum}")
         builder.append("&page_size=${options.pageSize}")
