@@ -46,6 +46,13 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
 
+    //Cardinal Mobile SDK
+    implementation "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.1-2"
+
+    // Required libraries
+    implementation group: "com.nimbusds", name: "nimbus-jose-jwt", version: "8.3"
+    implementation group: "org.bouncycastle", name: "bcprov-jdk15on", version: "1.61"
+
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:4.3.1'
 

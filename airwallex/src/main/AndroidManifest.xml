@@ -4,17 +4,18 @@
 
     <application>
         <activity
-            android:name="com.airwallex.android.view.PaymentMethodsActivity"
+            android:name=".view.PaymentMethodsActivity"
             android:theme="@style/AirwallexDefaultTheme" />
 
         <activity
-            android:name="com.airwallex.android.view.AddPaymentCardActivity"
+            android:name=".view.AddPaymentCardActivity"
             android:theme="@style/AirwallexDefaultTheme" />
 
         <activity
-            android:name="com.airwallex.android.view.AddPaymentBillingActivity"
+            android:name=".view.AddPaymentBillingActivity"
             android:theme="@style/AirwallexDefaultTheme" />
 
+        <activity android:name=".view.ThreeDSecureActivity" />
     </application>
 
 </manifest>
