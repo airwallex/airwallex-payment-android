@@ -1,12 +1,12 @@
-package com.airwallex.paymentacceptance.view
+package com.airwallex.android.view
 
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Patterns
 import android.view.View
 import android.widget.LinearLayout
+import com.airwallex.android.R
 import com.airwallex.android.model.Shipping
-import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.widget_contact.view.*
 
 class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {

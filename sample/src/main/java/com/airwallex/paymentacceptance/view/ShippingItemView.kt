@@ -3,14 +3,12 @@ package com.airwallex.paymentacceptance.view
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.model.Shipping
-import com.airwallex.paymentacceptance.PaymentBaseActivity
-import com.airwallex.paymentacceptance.PaymentEditShippingActivity
+import com.airwallex.android.view.AddPaymentShippingActivityStarter
 import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.shipping_item.view.*
 import java.util.*
@@ -27,11 +25,12 @@ class ShippingItemView constructor(
 
         rlBilling.setOnClickListener {
             shipping?.let {
-                PaymentEditShippingActivity.startActivityForResult(
-                    context as Activity,
-                    it,
-                    PaymentBaseActivity.REQUEST_EDIT_SHIPPING_CODE
-                )
+                AddPaymentShippingActivityStarter(context as Activity)
+                    .startForResult(
+                        AddPaymentShippingActivityStarter.ShippingArgs.Builder()
+                            .setShipping(it)
+                            .build()
+                    )
             }
         }
     }
@@ -82,12 +81,15 @@ class ShippingItemView constructor(
         if (resultCode != Activity.RESULT_OK || data == null) {
             return
         }
+
         when (requestCode) {
-            PaymentBaseActivity.REQUEST_EDIT_SHIPPING_CODE -> {
-                val shipping =
-                    data.getParcelableExtra<Parcelable>(PaymentBaseActivity.PAYMENT_SHIPPING) as Shipping
-                renewalShipping(shipping)
-                completion(shipping)
+            AddPaymentShippingActivityStarter.REQUEST_CODE -> {
+                val result = AddPaymentShippingActivityStarter.Result.fromIntent(data)
+
+                result?.let {
+                    renewalShipping(result.shipping)
+                    completion(result.shipping)
+                }
             }
         }
     }

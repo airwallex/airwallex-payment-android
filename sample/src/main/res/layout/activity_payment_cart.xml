@@ -15,7 +15,7 @@
             android:paddingBottom="16dp">
 
             <fragment
-                android:id="@+id/fgOrderSummary"
+                android:id="@+id/cartFragment"
                 android:name="com.airwallex.paymentacceptance.PaymentCartFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

@@ -9,11 +9,18 @@
 
         <activity
             android:name="com.airwallex.android.view.AddPaymentCardActivity"
-            android:theme="@style/AirwallexDefaultTheme" />
+            android:theme="@style/AirwallexDefaultTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
         <activity
             android:name="com.airwallex.android.view.AddPaymentBillingActivity"
-            android:theme="@style/AirwallexDefaultTheme" />
+            android:theme="@style/AirwallexDefaultTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+
+        <activity
+            android:name="com.airwallex.android.view.AddPaymentShippingActivity"
+            android:theme="@style/AirwallexDefaultTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
     </application>
 

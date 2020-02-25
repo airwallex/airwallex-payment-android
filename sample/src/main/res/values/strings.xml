@@ -1,9 +1,5 @@
 <resources>
     <string name="app_name">Airwallex</string>
-    <string name="shipping">Shipping</string>
-    <string name="shipping_address">Shipping address</string>
-
-    <string name="contact">Contact</string>
     <string name="checkout">Checkout</string>
     <string name="subtotal">Subtotal</string>
     <string name="total">Total</string>
