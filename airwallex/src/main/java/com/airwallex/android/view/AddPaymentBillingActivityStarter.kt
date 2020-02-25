@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.Billing
 import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.AddPaymentBillingActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 

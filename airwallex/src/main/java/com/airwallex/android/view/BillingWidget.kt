@@ -8,7 +8,6 @@ import android.widget.LinearLayout
 import com.airwallex.android.R
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.Billing
-import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.widget_billing.view.*
 
 class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
