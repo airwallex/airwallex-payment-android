@@ -101,7 +101,9 @@ class PaymentCartFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         shippingItemView.onActivityResult(requestCode, resultCode, data) {
-            shipping = it
+            it?.let {
+                shipping = it
+            }
         }
     }
 

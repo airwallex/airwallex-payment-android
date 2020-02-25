@@ -7,8 +7,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
+import com.airwallex.android.PaymentSession
+import com.airwallex.android.PaymentSessionData
 import com.airwallex.android.model.Shipping
-import com.airwallex.android.view.AddPaymentShippingActivityStarter
 import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.shipping_item.view.*
 import java.util.*
@@ -20,17 +21,19 @@ class ShippingItemView constructor(
 
     private var shipping: Shipping? = null
 
+    private var paymentSession: PaymentSession? = null
+
     init {
         View.inflate(getContext(), R.layout.shipping_item, this)
 
         rlBilling.setOnClickListener {
             shipping?.let {
-                AddPaymentShippingActivityStarter(context as Activity)
-                    .startForResult(
-                        AddPaymentShippingActivityStarter.Args.Builder()
-                            .setShipping(it)
-                            .build()
-                    )
+                paymentSession = PaymentSession(
+                    context as Activity,
+                    PaymentSessionData.Builder().setShipping(shipping).build()
+                )
+                paymentSession?.presentShippingFlow()
+
             }
         }
     }
@@ -76,21 +79,21 @@ class ShippingItemView constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        completion: (shipping: Shipping) -> Unit
+        completion: (shipping: Shipping?) -> Unit
     ) {
-        if (resultCode != Activity.RESULT_OK || data == null) {
-            return
-        }
-
-        when (requestCode) {
-            AddPaymentShippingActivityStarter.REQUEST_CODE -> {
-                val result = AddPaymentShippingActivityStarter.Result.fromIntent(data)
-
-                result?.let {
-                    renewalShipping(result.shipping)
-                    completion(result.shipping)
+        paymentSession?.handlePaymentShipping(
+            requestCode,
+            resultCode,
+            data,
+            object : PaymentSession.PaymentShippingResult {
+                override fun onCancelled() {
+                    completion.invoke(null)
                 }
-            }
-        }
+
+                override fun onSuccess(shipping: Shipping?) {
+                    renewalShipping(shipping)
+                    completion(shipping)
+                }
+            })
     }
 }

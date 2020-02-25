@@ -8,7 +8,7 @@ import com.airwallex.android.R
 import kotlinx.android.synthetic.main.activity_add_billing.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 
-class AddPaymentBillingActivity : AirwallexActivity() {
+internal class AddPaymentBillingActivity : AirwallexActivity() {
 
     private val args: AddPaymentBillingActivityStarter.Args by lazy {
         AddPaymentBillingActivityStarter.Args.getExtra(intent)
