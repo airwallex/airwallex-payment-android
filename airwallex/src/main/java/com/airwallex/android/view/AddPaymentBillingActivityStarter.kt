@@ -3,6 +3,7 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import com.airwallex.android.model.Billing
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.AddPaymentBillingActivityStarter.Args
@@ -18,13 +19,13 @@ internal class AddPaymentBillingActivityStarter constructor(
 
     @Parcelize
     data class Args internal constructor(
-        internal val billing: PaymentMethod.Billing?
+        internal val billing: Billing?
     ) : ActivityStarter.Args {
 
         class Builder : ObjectBuilder<Args> {
-            private var billing: PaymentMethod.Billing? = null
+            private var billing: Billing? = null
 
-            fun setBilling(billing: PaymentMethod.Billing?): Builder = apply {
+            fun setBilling(billing: Billing?): Builder = apply {
                 this.billing = billing
             }
 
@@ -44,7 +45,7 @@ internal class AddPaymentBillingActivityStarter constructor(
 
     @Parcelize
     data class Result internal constructor(
-        val billing: PaymentMethod.Billing?
+        val billing: Billing?
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()

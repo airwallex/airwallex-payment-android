@@ -20,7 +20,7 @@ data class PaymentMethodParams internal constructor(
     val card: PaymentMethod.Card?,
 
     @SerializedName("billing")
-    val billing: PaymentMethod.Billing?,
+    val billing: Billing?,
 
     @SerializedName("metadata")
     val metadata: @RawValue Map<String, Any>?
@@ -32,7 +32,7 @@ data class PaymentMethodParams internal constructor(
         private var customerId: String? = null
         private var type: String? = null
         private var card: PaymentMethod.Card? = null
-        private var billing: PaymentMethod.Billing? = null
+        private var billing: Billing? = null
         private var metadata: @RawValue Map<String, Any>? = null
 
         fun setRequestId(requestId: String?): Builder = apply {
@@ -51,7 +51,7 @@ data class PaymentMethodParams internal constructor(
             this.card = card
         }
 
-        fun setBilling(billing: PaymentMethod.Billing?): Builder = apply {
+        fun setBilling(billing: Billing?): Builder = apply {
             this.billing = billing
         }
 

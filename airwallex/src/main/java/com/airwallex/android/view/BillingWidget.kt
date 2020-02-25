@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.LinearLayout
 import com.airwallex.android.R
 import com.airwallex.android.model.Address
+import com.airwallex.android.model.Billing
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.widget_billing.view.*
 
@@ -19,10 +20,10 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
             return swSameAsShipping.isChecked
         }
 
-    var billing: PaymentMethod.Billing? = null
+    var billing: Billing? = null
         get() {
             if (isValid && !sameAsShipping) {
-                return PaymentMethod.Billing.Builder()
+                return Billing.Builder()
                     .setFirstName(atlFirstName.value)
                     .setLastName(atlLastName.value)
                     .setEmail(atlEmail.value)

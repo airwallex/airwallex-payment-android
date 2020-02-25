@@ -7,10 +7,7 @@ import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.Address
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodParams
-import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import java.util.*
@@ -28,7 +25,7 @@ internal class AddPaymentCardActivity : AirwallexActivity() {
     override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
         // TODO Need to be removed. As the billing will be optional
-        val billing = PaymentMethod.Billing.Builder()
+        val billing = Billing.Builder()
             .setFirstName("John")
             .setLastName("Doe")
             .setPhone("13800000000")

@@ -41,7 +41,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
 
     private var paymentMethod: PaymentMethod? = null
 
-    private var billing: PaymentMethod.Billing? = null
+    private var billing: Billing? = null
 
     companion object {
 

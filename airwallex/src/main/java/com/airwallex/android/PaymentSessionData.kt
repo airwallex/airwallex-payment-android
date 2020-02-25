@@ -1,6 +1,7 @@
 package com.airwallex.android
 
 import android.os.Parcelable
+import com.airwallex.android.model.Billing
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.Shipping
@@ -12,7 +13,7 @@ data class PaymentSessionData(
     val token: String?,
     val customerId: String?,
     val paymentMethod: PaymentMethod?,
-    val billing: PaymentMethod.Billing?,
+    val billing: Billing?,
     val shipping: Shipping?,
     val shouldShowWechatPay: Boolean = false
 ) : Parcelable {
@@ -24,7 +25,7 @@ data class PaymentSessionData(
         private var customerId: String? = null
         private var paymentMethod: PaymentMethod? = null
         private var shipping: Shipping? = null
-        private var billing: PaymentMethod.Billing? = null
+        private var billing: Billing? = null
         private var shouldShowWechatPay: Boolean = false
 
         fun setClientSecret(clientSecret: String): Builder = apply {
@@ -47,7 +48,7 @@ data class PaymentSessionData(
             this.shipping = shipping
         }
 
-        fun setBilling(billing: PaymentMethod.Billing?): Builder = apply {
+        fun setBilling(billing: Billing?): Builder = apply {
             this.billing = billing
         }
 
