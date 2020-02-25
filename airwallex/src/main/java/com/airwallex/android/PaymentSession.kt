@@ -1,29 +1,27 @@
 package com.airwallex.android
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.view.ActivityStarter
-import com.airwallex.android.view.PaymentMethodsActivity
-import com.airwallex.android.view.PaymentMethodsActivityStarter
+import com.airwallex.android.model.Shipping
+import com.airwallex.android.view.*
 
 class PaymentSession internal constructor(
-    private val context: Context,
+    private val context: Activity,
     private val paymentMethodsActivityStarter:
     ActivityStarter<PaymentMethodsActivity, PaymentMethodsActivityStarter.Args>,
-    val paymentSessionData: PaymentSessionData
+    private val paymentSessionData: PaymentSessionData
 ) {
 
     constructor(activity: Activity, paymentSessionData: PaymentSessionData) : this(
-        activity.applicationContext,
+        activity,
         PaymentMethodsActivityStarter(activity),
         paymentSessionData
     )
 
     constructor(fragment: Fragment, paymentSessionData: PaymentSessionData) : this(
-        fragment.requireContext().applicationContext,
+        fragment.requireActivity(),
         PaymentMethodsActivityStarter(fragment.requireActivity()),
         paymentSessionData
     )
@@ -33,20 +31,100 @@ class PaymentSession internal constructor(
         fun onSuccess(paymentMethod: PaymentMethod?)
     }
 
+    interface PaymentBillingResult {
+        fun onCancelled()
+        fun onSuccess(billing: PaymentMethod.Billing?)
+    }
+
+    interface PaymentShippingResult {
+        fun onCancelled()
+        fun onSuccess(shipping: Shipping?)
+    }
+
     fun presentPaymentMethodSelection() {
-        paymentSessionData.config
         paymentMethodsActivityStarter.startForResult(
             PaymentMethodsActivityStarter.Args
                 .Builder(
-                    paymentSessionData.clientSecret,
-                    paymentSessionData.token,
-                    paymentSessionData.customerId
+                    paymentSessionData.clientSecret!!,
+                    paymentSessionData.token!!,
+                    paymentSessionData.customerId!!
                 )
                 .setPaymentMethod(paymentSessionData.paymentMethod)
-                .setShouldShowWechatPay(paymentSessionData.config?.shouldShowWechatPay ?: false)
+                .setShouldShowWechatPay(paymentSessionData.shouldShowWechatPay)
                 .build()
         )
     }
+
+    fun presentShippingFlow() {
+        AddPaymentShippingActivityStarter(context)
+            .startForResult(
+                AddPaymentShippingActivityStarter.Args.Builder()
+                    .setShipping(paymentSessionData.shipping)
+                    .build()
+            )
+    }
+
+    fun presentBillingFlow() {
+        AddPaymentBillingActivityStarter(context)
+            .startForResult(
+                AddPaymentBillingActivityStarter.Args.Builder()
+                    .setBilling(paymentSessionData.billing)
+                    .build()
+            )
+    }
+
+    fun handlePaymentShipping(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        callback: PaymentShippingResult
+    ): Boolean {
+        if (!VALID_REQUEST_CODES.contains(requestCode)) {
+            return false
+        }
+
+        when (requestCode) {
+            AddPaymentShippingActivityStarter.REQUEST_CODE -> {
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        val result = AddPaymentShippingActivityStarter.Result.fromIntent(data)
+                        callback.onSuccess(result?.shipping)
+                    }
+                    Activity.RESULT_CANCELED -> callback.onCancelled()
+                }
+                return true
+            }
+
+            else -> return false
+        }
+    }
+
+    fun handlePaymentBilling(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        callback: PaymentBillingResult
+    ): Boolean {
+        if (!VALID_REQUEST_CODES.contains(requestCode)) {
+            return false
+        }
+
+        when (requestCode) {
+            AddPaymentBillingActivityStarter.REQUEST_CODE -> {
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        val result = AddPaymentBillingActivityStarter.Result.fromIntent(data)
+                        callback.onSuccess(result?.billing)
+                    }
+                    Activity.RESULT_CANCELED -> callback.onCancelled()
+                }
+                return true
+            }
+
+            else -> return false
+        }
+    }
+
 
     fun handlePaymentMethod(
         requestCode: Int,
@@ -76,7 +154,9 @@ class PaymentSession internal constructor(
     internal companion object {
 
         private val VALID_REQUEST_CODES = setOf(
-            PaymentMethodsActivityStarter.REQUEST_CODE
+            PaymentMethodsActivityStarter.REQUEST_CODE,
+            AddPaymentBillingActivityStarter.REQUEST_CODE,
+            AddPaymentShippingActivityStarter.REQUEST_CODE
         )
     }
 }

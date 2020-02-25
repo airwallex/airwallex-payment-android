@@ -8,8 +8,9 @@ import android.util.Patterns
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
+import com.airwallex.android.PaymentSession
+import com.airwallex.android.PaymentSessionData
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.view.AddPaymentBillingActivityStarter
 import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.billing_item.view.*
 import java.util.*
@@ -35,16 +36,17 @@ class BillingItemView constructor(
                     && Patterns.EMAIL_ADDRESS.matcher(billing?.email ?: "").matches()
         }
 
+    private var paymentSession: PaymentSession? = null
+
     init {
         View.inflate(getContext(), R.layout.billing_item, this)
 
         rlBilling.setOnClickListener {
-            AddPaymentBillingActivityStarter(context as Activity)
-                .startForResult(
-                    AddPaymentBillingActivityStarter.Args.Builder()
-                        .setBilling(billing)
-                        .build()
-                )
+            paymentSession = PaymentSession(
+                context as Activity,
+                PaymentSessionData.Builder().setBilling(billing).build()
+            )
+            paymentSession?.presentBillingFlow()
         }
     }
 
@@ -92,18 +94,19 @@ class BillingItemView constructor(
         data: Intent?,
         completion: (billing: PaymentMethod.Billing?) -> Unit
     ) {
-        if (resultCode != Activity.RESULT_OK || data == null) {
-            return
-        }
-        when (requestCode) {
-            AddPaymentBillingActivityStarter.REQUEST_CODE -> {
-                val result = AddPaymentBillingActivityStarter.Result.fromIntent(data)
-
-                result?.let {
-                    renewalBilling(result.billing)
-                    completion(result.billing)
+        paymentSession?.handlePaymentBilling(
+            requestCode,
+            resultCode,
+            data,
+            object : PaymentSession.PaymentBillingResult {
+                override fun onCancelled() {
+                    completion.invoke(null)
                 }
-            }
-        }
+
+                override fun onSuccess(billing: PaymentMethod.Billing?) {
+                    renewalBilling(billing)
+                    completion(billing)
+                }
+            })
     }
 }

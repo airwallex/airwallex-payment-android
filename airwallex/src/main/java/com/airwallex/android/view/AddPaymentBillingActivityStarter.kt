@@ -8,7 +8,7 @@ import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.AddPaymentBillingActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
-class AddPaymentBillingActivityStarter constructor(
+internal class AddPaymentBillingActivityStarter constructor(
     activity: Activity
 ) : ActivityStarter<AddPaymentBillingActivity, Args>(
     activity,

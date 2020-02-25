@@ -10,7 +10,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.PaymentSession
-import com.airwallex.android.PaymentSessionConfig
 import com.airwallex.android.PaymentSessionData
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
@@ -45,17 +44,16 @@ class PaymentMethodItemView constructor(
             if (customerId != null) {
                 paymentSession = PaymentSession(
                     context as Activity,
-                    PaymentSessionData(
-                        config = PaymentSessionConfig.Builder().setShouldShowWechatPay(
+                    PaymentSessionData.Builder()
+                        .setClientSecret(paymentIntent.clientSecret)
+                        .setToken(Store.token)
+                        .setCustomerId(customerId)
+                        .setPaymentMethod(paymentMethod)
+                        .setShouldShowWechatPay(
                             paymentIntent.availablePaymentMethodTypes.contains(
                                 PaymentMethodType.WECHAT.type
                             )
-                        ).build(),
-                        clientSecret = paymentIntent.clientSecret,
-                        token = Store.token,
-                        customerId = customerId,
-                        paymentMethod = paymentMethod
-                    )
+                        ).build()
                 )
                 paymentSession?.presentPaymentMethodSelection()
             } else {
