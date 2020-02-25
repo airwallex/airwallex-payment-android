@@ -3,6 +3,7 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import com.airwallex.android.model.Billing
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.*
@@ -33,7 +34,7 @@ class PaymentSession internal constructor(
 
     interface PaymentBillingResult {
         fun onCancelled()
-        fun onSuccess(billing: PaymentMethod.Billing?)
+        fun onSuccess(billing: Billing?)
     }
 
     interface PaymentShippingResult {

@@ -10,6 +10,7 @@ import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.PaymentSession
 import com.airwallex.android.PaymentSessionData
+import com.airwallex.android.model.Billing
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.billing_item.view.*
@@ -20,7 +21,7 @@ class BillingItemView constructor(
     attrs: AttributeSet
 ) : RelativeLayout(context, attrs) {
 
-    private var billing: PaymentMethod.Billing? = null
+    private var billing: Billing? = null
 
     val isValid: Boolean
         get() {
@@ -50,7 +51,7 @@ class BillingItemView constructor(
         }
     }
 
-    fun renewalBilling(billing: PaymentMethod.Billing?) {
+    fun renewalBilling(billing: Billing?) {
         this.billing = billing
 
         if (billing == null) {
@@ -92,7 +93,7 @@ class BillingItemView constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        completion: (billing: PaymentMethod.Billing?) -> Unit
+        completion: (billing: Billing?) -> Unit
     ) {
         paymentSession?.handlePaymentBilling(
             requestCode,
@@ -103,7 +104,7 @@ class BillingItemView constructor(
                     completion.invoke(null)
                 }
 
-                override fun onSuccess(billing: PaymentMethod.Billing?) {
+                override fun onSuccess(billing: Billing?) {
                     renewalBilling(billing)
                     completion(billing)
                 }
