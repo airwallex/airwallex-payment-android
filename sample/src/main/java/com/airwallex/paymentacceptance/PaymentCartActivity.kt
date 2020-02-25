@@ -90,8 +90,8 @@ class PaymentCartActivity : PaymentBaseActivity() {
                     val token = responseData["token"].toString()
                     Store.token = token
                     val customerId = "cus_Dn6mVcMeTEkJgYuu9o5xEcxWRah"
-                    val products = SampleApplication.instance.products
-                    val shipping = SampleApplication.instance.shipping
+                    val products = (cartFragment as PaymentCartFragment).products
+                    val shipping = (cartFragment as PaymentCartFragment).shipping
                     api.createPaymentIntent(
                         authorization = "Bearer ${Store.token}",
                         params = mutableMapOf(
@@ -141,6 +141,6 @@ class PaymentCartActivity : PaymentBaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        fgOrderSummary.onActivityResult(requestCode, resultCode, data)
+        cartFragment.onActivityResult(requestCode, resultCode, data)
     }
 }

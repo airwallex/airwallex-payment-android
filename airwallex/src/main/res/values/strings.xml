@@ -40,4 +40,7 @@
     <string name="no_saved_cards">No saved cards</string>
     <string name="payment_methods">Payment methods</string>
     <string name="wechat_pay">WeChat pay</string>
+    <string name="shipping_address">Shipping address</string>
+    <string name="shipping">Shipping</string>
+    <string name="contact">Contact</string>
 </resources>

@@ -9,11 +9,52 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
+import com.airwallex.android.model.Address
 import com.airwallex.android.model.Product
+import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.cart_summary_item.view.*
 import kotlinx.android.synthetic.main.fragment_cart_summary.*
 
 class PaymentCartFragment : Fragment() {
+
+    var shipping: Shipping = Shipping.Builder()
+        .setFirstName("John")
+        .setLastName("Doe")
+        .setPhone("13800000000")
+        .setEmail("jim631@sina.com")
+        .setAddress(
+            Address.Builder()
+                .setCountryCode("CN")
+                .setState("Shanghai")
+                .setCity("Shanghai")
+                .setStreet("Pudong District")
+                .setPostcode("100000")
+                .build()
+        )
+        .build()
+
+    val products = mutableListOf(
+        Product.Builder()
+            .setCode("123")
+            .setName("AirPods Pro")
+            .setDesc("Buy AirPods Pro, per month with trade-in")
+            .setSku("piece")
+            .setType("Free engraving")
+            .setUnitPrice(399.00)
+            .setUrl("www.aircross.com")
+            .setQuantity(1)
+            .build(),
+        Product.Builder()
+            .setCode("123")
+            .setName("HomePod")
+            .setDesc("Buy HomePod, per month with trade-in")
+            .setSku("piece")
+            .setType("White")
+            .setUnitPrice(469.00)
+            .setUrl("www.aircross.com")
+            .setQuantity(1)
+            .build()
+    )
 
     @SuppressLint("ViewConstructor")
     class OrderSummaryItem(
@@ -53,19 +94,19 @@ class PaymentCartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        shippingItemView.renewalShipping(SampleApplication.instance.shipping)
+        shippingItemView.renewalShipping(shipping)
         refreshProducts()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         shippingItemView.onActivityResult(requestCode, resultCode, data) {
-            SampleApplication.instance.shipping = it
+            shipping = it
         }
     }
 
     private fun refreshProducts() {
-        val products = SampleApplication.instance.products
+        val products = products
         llProducts.removeAllViews()
         products.map {
             OrderSummaryItem(

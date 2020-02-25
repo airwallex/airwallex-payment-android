@@ -17,6 +17,17 @@ import java.util.*
 
 class PaymentCheckoutActivity : PaymentBaseActivity() {
 
+    val device = Device.Builder()
+        .setBrowserInfo("Chrome/76.0.3809.100")
+        .setCookiesAccepted("true")
+        .setDeviceId("IMEI-4432fsdafd31243244fdsafdfd653")
+        .setHostName("www.airwallex.com")
+        .setHttpBrowserEmail("jim631@sina.com")
+        .setHttpBrowserType("chrome")
+        .setIpAddress("123.90.0.1")
+        .setIpNetworkAddress("128.0.0.0")
+        .build()
+
     private val paymentIntent: PaymentIntent by lazy {
         intent.getParcelableExtra(PAYMENT_INTENT) as PaymentIntent
     }
@@ -115,7 +126,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                 PaymentIntentParams.Builder()
                     .setRequestId(UUID.randomUUID().toString())
                     .setCustomerId(paymentIntent.customerId)
-                    .setDevice(SampleApplication.instance.device)
+                    .setDevice(device)
                     .setPaymentMethodReference(
                         PaymentMethodReference.Builder()
                             .setId(paymentMethod.id)
@@ -141,7 +152,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                 PaymentIntentParams.Builder()
                     .setRequestId(UUID.randomUUID().toString())
                     .setCustomerId(paymentIntent.customerId)
-                    .setDevice(SampleApplication.instance.device)
+                    .setDevice(device)
                     .setPaymentMethod(paymentMethod)
                     .build()
             }
