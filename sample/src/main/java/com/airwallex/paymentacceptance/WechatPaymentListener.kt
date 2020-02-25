@@ -1,6 +1,6 @@
 package com.airwallex.paymentacceptance
 
-interface PayListener {
+interface WechatPaymentListener {
     fun onSuccess()
 
     fun onFailure(errCode: String?, errMessage: String?)

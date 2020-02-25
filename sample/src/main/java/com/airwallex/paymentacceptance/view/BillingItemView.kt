@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import com.airwallex.android.PaymentSession
 import com.airwallex.android.PaymentSessionData
 import com.airwallex.android.model.Billing
-import com.airwallex.android.model.PaymentMethod
 import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.billing_item.view.*
 import java.util.*

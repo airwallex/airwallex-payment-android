@@ -239,7 +239,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                         context = this@PaymentCheckoutActivity,
                         appId = Constants.APP_ID,
                         data = data,
-                        listener = object : PayListener {
+                        listener = object : WechatPaymentListener {
                             override fun onSuccess() {
                                 completion.invoke()
                             }
