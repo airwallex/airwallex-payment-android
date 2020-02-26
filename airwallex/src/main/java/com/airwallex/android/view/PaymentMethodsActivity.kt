@@ -64,12 +64,6 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = cardAdapter
-            addItemDecoration(
-                AirwallexDividerItemDecoration(
-                    this@PaymentMethodsActivity,
-                    R.drawable.airwallex_line_divider
-                )
-            )
         }
 
         srlPaymentMethods.setOnRefreshListener {
