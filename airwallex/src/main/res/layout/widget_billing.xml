@@ -13,9 +13,10 @@
         android:paddingRight="16dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/swSameAsShipping"
             android:fontFamily="@font/circularstd_medium"
             android:text="@string/same_as_shipping"
             android:textColor="@color/airwallex_color_dark_deep"
