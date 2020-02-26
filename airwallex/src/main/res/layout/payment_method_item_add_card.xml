@@ -20,7 +20,3 @@
         android:text="@string/enter_new_card"
         android:textColor="#6131FF" />
 </LinearLayout>
-
-
-
-
