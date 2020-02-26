@@ -118,6 +118,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             customerId = args.customerId,
             callback = object : Airwallex.GetPaymentMethodsCallback {
                 override fun onSuccess(response: PaymentMethodResponse) {
+                    srlPaymentMethods.isEnabled = response.hasMore
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }
                     srlPaymentMethods.isRefreshing = false
                     currentPageNum++
