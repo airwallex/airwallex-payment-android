@@ -30,8 +30,6 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             return args.shouldShowWechatPay
         }
 
-    private var currentPageNum = 0
-
     private lateinit var cardAdapter: PaymentMethodsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,15 +64,6 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             adapter = cardAdapter
         }
 
-        srlPaymentMethods.setOnRefreshListener {
-            fetchPaymentMethods()
-        }
-        srlPaymentMethods.setColorSchemeResources(
-            R.color.airwallex_color_primary_default,
-            R.color.airwallex_color_primary_dark_default,
-            R.color.airwallex_color_accent_default
-        )
-
         fetchPaymentMethods()
     }
 
@@ -106,24 +95,22 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     }
 
     private fun fetchPaymentMethods() {
-        srlPaymentMethods.isRefreshing = true
+        pbLoading.visibility = View.VISIBLE
         airwallex.getPaymentMethods(
-            pageNum = currentPageNum,
+            pageSize = PAGE_SIZE,
             customerId = args.customerId,
             callback = object : Airwallex.GetPaymentMethodsCallback {
                 override fun onSuccess(response: PaymentMethodResponse) {
-                    srlPaymentMethods.isEnabled = response.hasMore
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }
-                    srlPaymentMethods.isRefreshing = false
-                    currentPageNum++
-                    cardAdapter.setPaymentMethods(cards.reversed())
+                    cardAdapter.setPaymentMethods(cards)
                     paymentNoCards.visibility =
                         if (cardAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
+                    pbLoading.visibility = View.GONE
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    srlPaymentMethods.isRefreshing = false
                     showError(exception.toString())
+                    pbLoading.visibility = View.GONE
                 }
             })
     }
@@ -141,5 +128,9 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 100
     }
 }
