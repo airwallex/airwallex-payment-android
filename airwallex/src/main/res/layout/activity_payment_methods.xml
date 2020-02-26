@@ -16,23 +16,24 @@
         android:textColor="@color/airwallex_color_dark_deep"
         android:textSize="32sp" />
 
+    <ProgressBar
+        android:id="@+id/pbLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:indeterminate="true" />
+
     <include
         android:id="@+id/paymentNoCards"
         layout="@layout/payment_method_no_card"
         android:layout_width="match_parent"
         android:layout_height="58dp"
-        android:layout_marginTop="9dp" />
+        android:layout_marginTop="9dp"
+        android:visibility="gone" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/srlPaymentMethods"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPaymentMethods"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvPaymentMethods"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        android:layout_height="match_parent" />
 
 </LinearLayout>
