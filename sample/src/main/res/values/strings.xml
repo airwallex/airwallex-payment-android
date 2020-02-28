@@ -2,10 +2,8 @@
     <string name="app_name">Airwallex</string>
     <string name="checkout">Checkout</string>
     <string name="subtotal">Subtotal</string>
-    <string name="total">Total</string>
     <string name="remove">Remove</string>
     <string name="my_cart">My cart</string>
-    <string name="pay_now">Pay now</string>
     <string name="payment">Payment</string>
     <string name="select_payment_method">Select payment method</string>
     <string name="enter_shipping">Enter shipping information</string>

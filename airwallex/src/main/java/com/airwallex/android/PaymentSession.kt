@@ -3,10 +3,12 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import com.airwallex.android.model.Billing
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.Shipping
-import com.airwallex.android.view.*
+import com.airwallex.android.view.ActivityStarter
+import com.airwallex.android.view.AddPaymentShippingActivityStarter
+import com.airwallex.android.view.PaymentMethodsActivity
+import com.airwallex.android.view.PaymentMethodsActivityStarter
 
 class PaymentSession internal constructor(
     private val context: Activity,
@@ -37,17 +39,12 @@ class PaymentSession internal constructor(
         fun onSuccess(shipping: Shipping?)
     }
 
-    fun presentPaymentMethodSelection() {
+    fun presentPaymentFlow() {
         paymentMethodsActivityStarter.startForResult(
             PaymentMethodsActivityStarter.Args
-                .Builder(
-                    requireNotNull(paymentSessionData.clientSecret),
-                    requireNotNull(paymentSessionData.token),
-                    requireNotNull(paymentSessionData.customerId)
-                )
-                .setPaymentMethod(paymentSessionData.paymentMethod)
-                .setShouldShowWechatPay(paymentSessionData.shouldShowWechatPay)
-                .setShipping(paymentSessionData.shipping)
+                .Builder()
+                .setPaymentIntent(paymentSessionData.paymentIntent)
+                .setToken(paymentSessionData.token)
                 .build()
         )
     }

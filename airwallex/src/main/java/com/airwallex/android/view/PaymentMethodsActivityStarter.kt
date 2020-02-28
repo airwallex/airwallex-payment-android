@@ -4,8 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.PaymentMethodsActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
@@ -19,44 +19,27 @@ internal class PaymentMethodsActivityStarter constructor(
 
     @Parcelize
     data class Args internal constructor(
-        val paymentMethod: PaymentMethod?,
-        val clientSecret: String,
-        val token: String,
-        val shouldShowWechatPay: Boolean,
-        val customerId: String,
-        val shipping: Shipping?
+        val paymentIntent: PaymentIntent?,
+        val token: String?
     ) : ActivityStarter.Args {
 
-        class Builder(
-            private val clientSecret: String,
-            private val token: String,
-            private val customerId: String
-        ) :
+        class Builder :
             ObjectBuilder<Args> {
-            private var paymentMethod: PaymentMethod? = null
-            private var shouldShowWechatPay: Boolean = false
-            private var shipping: Shipping? = null
+            private var paymentIntent: PaymentIntent? = null
+            private var token: String? = null
 
-            fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
-                this.paymentMethod = paymentMethod
+            fun setPaymentIntent(paymentIntent: PaymentIntent?): Builder = apply {
+                this.paymentIntent = paymentIntent
             }
 
-            fun setShouldShowWechatPay(shouldShowWechatPay: Boolean): Builder = apply {
-                this.shouldShowWechatPay = shouldShowWechatPay
-            }
-
-            fun setShipping(shipping: Shipping?): Builder = apply {
-                this.shipping = shipping
+            fun setToken(token: String?): Builder = apply {
+                this.token = token
             }
 
             override fun build(): Args {
                 return Args(
                     token = token,
-                    paymentMethod = paymentMethod,
-                    clientSecret = clientSecret,
-                    shouldShowWechatPay = shouldShowWechatPay,
-                    customerId = customerId,
-                    shipping = shipping
+                    paymentIntent = paymentIntent
                 )
             }
         }

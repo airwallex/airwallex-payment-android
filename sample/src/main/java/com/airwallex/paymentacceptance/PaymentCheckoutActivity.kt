@@ -33,7 +33,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(Store.token, paymentIntent.clientSecret)
+        Airwallex("", paymentIntent.clientSecret)
     }
 
     override val inPaymentFlow: Boolean

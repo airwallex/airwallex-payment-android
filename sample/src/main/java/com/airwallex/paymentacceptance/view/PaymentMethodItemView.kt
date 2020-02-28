@@ -43,21 +43,7 @@ class PaymentMethodItemView constructor(
         llPaymentMethod.setOnClickListener {
             val customerId = paymentIntent.customerId
             if (customerId != null) {
-                paymentSession = PaymentSession(
-                    context as Activity,
-                    PaymentSessionData.Builder()
-                        .setClientSecret(paymentIntent.clientSecret)
-                        .setToken(Store.token)
-                        .setCustomerId(customerId)
-                        .setPaymentMethod(paymentMethod)
-                        .setShipping(paymentIntent.order.shipping)
-                        .setShouldShowWechatPay(
-                            paymentIntent.availablePaymentMethodTypes.contains(
-                                PaymentMethodType.WECHAT.type
-                            )
-                        ).build()
-                )
-                paymentSession?.presentPaymentMethodSelection()
+
             } else {
                 // Need to use merchant's own payment methods selection screen
                 AlertDialog.Builder(context)
