@@ -15,7 +15,15 @@ import com.airwallex.android.model.PaymentMethodType
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 
+
 internal class PaymentMethodsActivity : AirwallexActivity() {
+
+    // The minimum amount of items to have below your current scroll position
+    private var lastVisibleItem = 0
+    private var totalItemCount: Int = 0
+    private var loading = false
+    private var pageNum = 0
+    private var hasMore = true
 
     private val args: PaymentMethodsActivityStarter.Args by lazy {
         PaymentMethodsActivityStarter.Args.getExtra(intent)
@@ -52,19 +60,29 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             override fun onWechatClick(paymentMethod: PaymentMethod) {
                 finishWithPaymentMethod(paymentMethod)
             }
-
-            override fun onAddCardClick() {
-                startAddPaymentMethod()
-            }
         }
 
         rvPaymentMethods.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = cardAdapter
+
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    totalItemCount = viewManager.itemCount
+                    lastVisibleItem = viewManager.findLastVisibleItemPosition()
+                    if (!loading && totalItemCount <= lastVisibleItem + VISIBLE_THRESHOLD && hasMore) {
+                        fetchPaymentMethods(totalItemCount == 1)
+                    }
+                }
+            })
+
         }
 
-        fetchPaymentMethods()
+        addPaymentMethod.setOnClickListener {
+            startAddPaymentMethod()
+        }
     }
 
     override fun onActionSave() {
@@ -94,9 +112,13 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         finish()
     }
 
-    private fun fetchPaymentMethods() {
-        pbLoading.visibility = View.VISIBLE
+    private fun fetchPaymentMethods(showLoading: Boolean = false) {
+        if (showLoading) {
+            pbLoading.visibility = View.VISIBLE
+        }
+        loading = true
         airwallex.getPaymentMethods(
+            pageNum = pageNum,
             pageSize = PAGE_SIZE,
             customerId = args.customerId,
             callback = object : Airwallex.GetPaymentMethodsCallback {
@@ -106,11 +128,15 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                     paymentNoCards.visibility =
                         if (cardAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
                     pbLoading.visibility = View.GONE
+                    hasMore = response.hasMore
+                    pageNum++
+                    loading = false
                 }
 
                 override fun onFailed(exception: AirwallexException) {
                     showError(exception.toString())
                     pbLoading.visibility = View.GONE
+                    loading = false
                 }
             })
     }
@@ -131,6 +157,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     }
 
     companion object {
-        private const val PAGE_SIZE = 100
+        private const val VISIBLE_THRESHOLD = 3
+        private const val PAGE_SIZE = 20
     }
 }

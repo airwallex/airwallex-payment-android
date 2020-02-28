@@ -2,7 +2,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <TextView
@@ -15,6 +15,12 @@
         android:text="@string/payment_methods"
         android:textColor="@color/airwallex_color_dark_deep"
         android:textSize="32sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPaymentMethods"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <ProgressBar
         android:id="@+id/pbLoading"
@@ -31,9 +37,10 @@
         android:layout_marginTop="9dp"
         android:visibility="gone" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvPaymentMethods"
+    <include
+        android:id="@+id/addPaymentMethod"
+        layout="@layout/payment_method_item_add_card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
