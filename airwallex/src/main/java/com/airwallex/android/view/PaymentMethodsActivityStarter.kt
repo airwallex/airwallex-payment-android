@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.PaymentMethodsActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
@@ -22,7 +23,8 @@ internal class PaymentMethodsActivityStarter constructor(
         val clientSecret: String,
         val token: String,
         val shouldShowWechatPay: Boolean,
-        val customerId: String
+        val customerId: String,
+        val shipping: Shipping?
     ) : ActivityStarter.Args {
 
         class Builder(
@@ -33,15 +35,19 @@ internal class PaymentMethodsActivityStarter constructor(
             ObjectBuilder<Args> {
             private var paymentMethod: PaymentMethod? = null
             private var shouldShowWechatPay: Boolean = false
+            private var shipping: Shipping? = null
 
             fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
                 this.paymentMethod = paymentMethod
             }
 
-            fun setShouldShowWechatPay(shouldShowWechatPay: Boolean): Builder =
-                apply {
-                    this.shouldShowWechatPay = shouldShowWechatPay
-                }
+            fun setShouldShowWechatPay(shouldShowWechatPay: Boolean): Builder = apply {
+                this.shouldShowWechatPay = shouldShowWechatPay
+            }
+
+            fun setShipping(shipping: Shipping?): Builder = apply {
+                this.shipping = shipping
+            }
 
             override fun build(): Args {
                 return Args(
@@ -49,7 +55,8 @@ internal class PaymentMethodsActivityStarter constructor(
                     paymentMethod = paymentMethod,
                     clientSecret = clientSecret,
                     shouldShowWechatPay = shouldShowWechatPay,
-                    customerId = customerId
+                    customerId = customerId,
+                    shipping = shipping
                 )
             }
         }

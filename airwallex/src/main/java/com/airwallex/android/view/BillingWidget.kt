@@ -8,20 +8,52 @@ import android.widget.LinearLayout
 import com.airwallex.android.R
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.Billing
+import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.widget_billing.view.*
 
 class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     var billingChangeCallback: (() -> Unit)? = null
 
+    var shipping: Shipping? = null
+        set(value) {
+            field = value
+            if (value != null) {
+                rlSameAsShipping.visibility = View.VISIBLE
+                swSameAsShipping.isChecked = true
+            } else {
+                rlSameAsShipping.visibility = View.GONE
+                swSameAsShipping.isChecked = false
+            }
+        }
+
     private val sameAsShipping: Boolean
         get() {
             return swSameAsShipping.isChecked
         }
 
-    var billing: Billing? = null
+    val billing: Billing?
         get() {
-            if (isValid && !sameAsShipping) {
+            val shipping = this.shipping
+            if (sameAsShipping && shipping != null) {
+                return Billing.Builder()
+                    .setFirstName(shipping.firstName)
+                    .setLastName(shipping.lastName)
+                    .setEmail(shipping.email ?: "jim631@sina.com") // TODO ERROR Server without email field
+                    .setPhone(shipping.phone)
+                    .setAddress(
+                        shipping.address?.apply {
+                            Address.Builder()
+                                .setCountryCode(countryCode)
+                                .setState(state)
+                                .setCity(city)
+                                .setStreet(street)
+                                .setPostcode(postcode)
+                                .build()
+                        }
+                    )
+                    .build()
+            } else if (isValid) {
                 return Billing.Builder()
                     .setFirstName(atlFirstName.value)
                     .setLastName(atlLastName.value)
@@ -40,21 +72,6 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
             } else {
                 return null
             }
-        }
-        set(value) {
-            value?.apply {
-                atlFirstName.value = firstName ?: ""
-                atlLastName.value = lastName ?: ""
-                countryAutocomplete.country = address?.countryCode
-                atlState.value = address?.state ?: ""
-                atlCity.value = address?.city ?: ""
-                atlStreetAddress.value = address?.street ?: ""
-                atlZipCode.value = address?.postcode ?: ""
-                atlEmail.value = email ?: ""
-                atlPhoneNumber.value = phone ?: ""
-            }
-            field = value
-            swSameAsShipping.isChecked = value == null
         }
 
     val isValid: Boolean

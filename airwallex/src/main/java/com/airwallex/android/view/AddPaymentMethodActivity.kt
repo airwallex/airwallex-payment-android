@@ -7,15 +7,17 @@ import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.*
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodParams
+import com.airwallex.android.model.PaymentMethodType
 import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import java.util.*
 
-internal class AddPaymentCardActivity : AirwallexActivity() {
+internal class AddPaymentMethodActivity : AirwallexActivity() {
 
-    private val args: AddPaymentCardActivityStarter.Args by lazy {
-        AddPaymentCardActivityStarter.Args.getExtra(intent)
+    private val args: AddPaymentMethodActivityStarter.Args by lazy {
+        AddPaymentMethodActivityStarter.Args.getExtra(intent)
     }
 
     private val airwallex: Airwallex by lazy {
@@ -24,30 +26,13 @@ internal class AddPaymentCardActivity : AirwallexActivity() {
 
     override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
-        // TODO Need to be removed. As the billing will be optional
-        val billing = Billing.Builder()
-            .setFirstName("John")
-            .setLastName("Doe")
-            .setPhone("13800000000")
-            .setEmail("jim631@sina.com")
-            .setAddress(
-                Address.Builder()
-                    .setCountryCode("CN")
-                    .setState("Shanghai")
-                    .setCity("Shanghai")
-                    .setStreet("Pudong District")
-                    .setPostcode("100000")
-                    .build()
-            )
-            .build()
-
         loading.visibility = View.VISIBLE
         val paymentMethodParams = PaymentMethodParams.Builder()
             .setCustomerId(args.customerId)
             .setRequestId(UUID.randomUUID().toString())
             .setType(PaymentMethodType.CARD.type)
             .setCard(card)
-            .setBilling(billing)
+            .setBilling(billingWidget.billing)
             .build()
 
         airwallex.createPaymentMethod(
@@ -68,13 +53,18 @@ internal class AddPaymentCardActivity : AirwallexActivity() {
         loading.visibility = View.GONE
         setResult(
             Activity.RESULT_OK, Intent()
-                .putExtras(AddPaymentCardActivityStarter.Result(paymentMethod).toBundle())
+                .putExtras(AddPaymentMethodActivityStarter.Result(paymentMethod).toBundle())
         )
         finish()
     }
 
     private fun isValid(): Boolean {
-        return cardWidget.isValid
+        return cardWidget.isValid && billingWidget.isValid
+    }
+
+
+    private fun invalidateConfirmStatus() {
+        tvSaveCard.isEnabled = isValid()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,11 +73,11 @@ internal class AddPaymentCardActivity : AirwallexActivity() {
         viewStub.layoutResource = R.layout.activity_add_card
         viewStub.inflate()
 
-        cardWidget.cardChangeCallback = { tvSaveCard.isEnabled = isValid() }
-        tvSaveCard.isEnabled = isValid()
+        cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
+        billingWidget.shipping = args.shipping
+        billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
 
-        tvSaveCard.setOnClickListener {
-            onActionSave()
-        }
+        tvSaveCard.isEnabled = isValid()
+        tvSaveCard.setOnClickListener { onActionSave() }
     }
 }

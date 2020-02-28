@@ -32,11 +32,6 @@ class PaymentSession internal constructor(
         fun onSuccess(paymentMethod: PaymentMethod?)
     }
 
-    interface PaymentBillingResult {
-        fun onCancelled()
-        fun onSuccess(billing: Billing?)
-    }
-
     interface PaymentShippingResult {
         fun onCancelled()
         fun onSuccess(shipping: Shipping?)
@@ -52,6 +47,7 @@ class PaymentSession internal constructor(
                 )
                 .setPaymentMethod(paymentSessionData.paymentMethod)
                 .setShouldShowWechatPay(paymentSessionData.shouldShowWechatPay)
+                .setShipping(paymentSessionData.shipping)
                 .build()
         )
     }
@@ -61,15 +57,6 @@ class PaymentSession internal constructor(
             .startForResult(
                 AddPaymentShippingActivityStarter.Args.Builder()
                     .setShipping(paymentSessionData.shipping)
-                    .build()
-            )
-    }
-
-    fun presentBillingFlow() {
-        AddPaymentBillingActivityStarter(context)
-            .startForResult(
-                AddPaymentBillingActivityStarter.Args.Builder()
-                    .setBilling(paymentSessionData.billing)
                     .build()
             )
     }
@@ -100,33 +87,6 @@ class PaymentSession internal constructor(
         }
     }
 
-    fun handlePaymentBilling(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-        callback: PaymentBillingResult
-    ): Boolean {
-        if (!VALID_REQUEST_CODES.contains(requestCode)) {
-            return false
-        }
-
-        when (requestCode) {
-            AddPaymentBillingActivityStarter.REQUEST_CODE -> {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        val result = AddPaymentBillingActivityStarter.Result.fromIntent(data)
-                        callback.onSuccess(result?.billing)
-                    }
-                    Activity.RESULT_CANCELED -> callback.onCancelled()
-                }
-                return true
-            }
-
-            else -> return false
-        }
-    }
-
-
     fun handlePaymentMethod(
         requestCode: Int,
         resultCode: Int,
@@ -156,7 +116,6 @@ class PaymentSession internal constructor(
 
         private val VALID_REQUEST_CODES = setOf(
             PaymentMethodsActivityStarter.REQUEST_CODE,
-            AddPaymentBillingActivityStarter.REQUEST_CODE,
             AddPaymentShippingActivityStarter.REQUEST_CODE
         )
     }
