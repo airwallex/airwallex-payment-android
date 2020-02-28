@@ -12,7 +12,6 @@
     <string name="empty_cvc">Please enter your card CVC</string>
     <string name="invalid_cvc">Please enter a valid security code</string>
 
-    <string name="billing_info">Billing info</string>
     <string name="shipping_first_name_hint">First name</string>
     <string name="shipping_last_name_hint">Last name</string>
     <string name="shipping_street_hint">Street</string>
@@ -43,4 +42,5 @@
     <string name="shipping_address">Shipping address</string>
     <string name="shipping">Shipping</string>
     <string name="contact">Contact</string>
+    <string name="confirm">Confirm</string>
 </resources>

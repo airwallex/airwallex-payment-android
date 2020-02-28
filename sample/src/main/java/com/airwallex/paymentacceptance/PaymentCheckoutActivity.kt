@@ -41,8 +41,6 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
 
     private var paymentMethod: PaymentMethod? = null
 
-    private var billing: Billing? = null
-
     companion object {
         private const val TAG = "PaymentPayActivity"
         private const val PAYMENT_INTENT = "payment_intent"
@@ -104,9 +102,6 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
         paymentMethodItemView.cvcChangedCallback = {
             updateButtonStatus()
         }
-
-        // update billing item
-        billingItemView.renewalBilling(billing)
 
         // update payment method item
         val paymentMethods = paymentIntent.customerPaymentMethods
@@ -313,14 +308,9 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             this.paymentMethod = it
             updateButtonStatus()
         }
-
-        billingItemView.onActivityResult(requestCode, resultCode, data) {
-            this.billing = it
-            updateButtonStatus()
-        }
     }
 
     private fun updateButtonStatus() {
-        rlPlay.isEnabled = paymentMethodItemView.isValid && billingItemView.isValid
+        rlPlay.isEnabled = paymentMethodItemView.isValid
     }
 }

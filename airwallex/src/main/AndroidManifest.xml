@@ -8,12 +8,7 @@
             android:theme="@style/AirwallexDefaultTheme" />
 
         <activity
-            android:name="com.airwallex.android.view.AddPaymentCardActivity"
-            android:theme="@style/AirwallexDefaultTheme"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
-
-        <activity
-            android:name="com.airwallex.android.view.AddPaymentBillingActivity"
+            android:name="com.airwallex.android.view.AddPaymentMethodActivity"
             android:theme="@style/AirwallexDefaultTheme"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 

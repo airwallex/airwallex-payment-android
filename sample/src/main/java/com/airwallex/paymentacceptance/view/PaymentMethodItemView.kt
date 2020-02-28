@@ -50,6 +50,7 @@ class PaymentMethodItemView constructor(
                         .setToken(Store.token)
                         .setCustomerId(customerId)
                         .setPaymentMethod(paymentMethod)
+                        .setShipping(paymentIntent.order.shipping)
                         .setShouldShowWechatPay(
                             paymentIntent.availablePaymentMethodTypes.contains(
                                 PaymentMethodType.WECHAT.type

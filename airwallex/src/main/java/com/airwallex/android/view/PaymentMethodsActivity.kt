@@ -90,12 +90,13 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     }
 
     private fun startAddPaymentMethod() {
-        AddPaymentCardActivityStarter(this@PaymentMethodsActivity)
+        AddPaymentMethodActivityStarter(this@PaymentMethodsActivity)
             .startForResult(
-                AddPaymentCardActivityStarter.Args.Builder()
+                AddPaymentMethodActivityStarter.Args.Builder()
                     .setClientSecret(args.clientSecret)
                     .setToken(args.token)
                     .setCustomerId(args.customerId)
+                    .setShipping(args.shipping)
                     .build()
             )
     }
@@ -147,8 +148,8 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             return
         }
         when (requestCode) {
-            AddPaymentCardActivityStarter.REQUEST_CODE -> {
-                val result = AddPaymentCardActivityStarter.Result.fromIntent(data)
+            AddPaymentMethodActivityStarter.REQUEST_CODE -> {
+                val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
                 result?.let {
                     finishWithPaymentMethod(it.paymentMethod)
                 }
