@@ -6,15 +6,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import com.airwallex.android.PaymentSession
+import com.airwallex.android.PaymentSessionData
 import com.airwallex.android.model.Order
 import com.airwallex.android.model.PaymentIntent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_payment_cart.*
-import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 import java.util.*
 
 class PaymentCartActivity : PaymentBaseActivity() {
@@ -24,6 +24,8 @@ class PaymentCartActivity : PaymentBaseActivity() {
     private val api: Api by lazy {
         ApiFactory(Constants.BASE_URL).create()
     }
+
+    private lateinit var token: String
 
     companion object {
         fun startActivity(context: Context) {
@@ -87,13 +89,13 @@ class PaymentCartActivity : PaymentBaseActivity() {
                 .observeOn(Schedulers.io())
                 .flatMap {
                     val responseData = JSONObject(it.string())
-                    val token = responseData["token"].toString()
-                    Store.token = token
+                    token = responseData["token"].toString()
+
                     val customerId = "cus_Dn6mVcMeTEkJgYuu9o5xEcxWRah"
                     val products = (cartFragment as PaymentCartFragment).products
                     val shipping = (cartFragment as PaymentCartFragment).shipping
                     api.createPaymentIntent(
-                        authorization = "Bearer ${Store.token}",
+                        authorization = "Bearer $token",
                         params = mutableMapOf(
                             "request_id" to UUID.randomUUID().toString(),
                             "amount" to products.sumByDouble { product ->
@@ -127,16 +129,15 @@ class PaymentCartActivity : PaymentBaseActivity() {
 
     private fun handleResponse(paymentIntent: PaymentIntent) {
         loading.visibility = View.GONE
-        try {
-            PaymentCheckoutActivity.startActivity(
-                this,
-                paymentIntent
-            )
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
+
+        val paymentSession = PaymentSession(
+            this@PaymentCartActivity,
+            PaymentSessionData.Builder()
+                .setPaymentIntent(paymentIntent)
+                .setToken(token)
+                .build()
+        )
+        paymentSession.presentPaymentFlow()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

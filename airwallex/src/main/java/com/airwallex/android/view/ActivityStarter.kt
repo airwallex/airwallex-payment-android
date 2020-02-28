@@ -45,6 +45,17 @@ abstract class ActivityStarter<TargetActivity : Activity, ArgsType : ActivitySta
         }
     }
 
+    fun start(args: ArgsType) {
+        val intent = Intent(activity, targetActivity)
+            .putExtra(Args.AIRWALLEX_EXTRA, args)
+
+        if (fragment != null) {
+            fragment.startActivity(intent)
+        } else {
+            activity.startActivity(intent)
+        }
+    }
+
     interface Args : Parcelable {
         companion object {
             internal const val AIRWALLEX_EXTRA: String = "airwallex_activity_args"

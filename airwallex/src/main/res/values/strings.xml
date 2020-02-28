@@ -43,4 +43,6 @@
     <string name="shipping">Shipping</string>
     <string name="contact">Contact</string>
     <string name="confirm">Confirm</string>
+    <string name="pay_now">Pay now</string>
+    <string name="total">Total</string>
 </resources>

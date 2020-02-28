@@ -21,14 +21,14 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(requireNotNull(args.token), requireNotNull(args.clientSecret))
+        Airwallex(requireNotNull(args.token), requireNotNull(args.paymentIntent!!.clientSecret))
     }
 
     override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
         loading.visibility = View.VISIBLE
         val paymentMethodParams = PaymentMethodParams.Builder()
-            .setCustomerId(args.customerId)
+            .setCustomerId(args.paymentIntent!!.customerId)
             .setRequestId(UUID.randomUUID().toString())
             .setType(PaymentMethodType.CARD.type)
             .setCard(card)
@@ -74,7 +74,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         viewStub.inflate()
 
         cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
-        billingWidget.shipping = args.shipping
+        billingWidget.shipping = args.paymentIntent!!.order.shipping
         billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
 
         tvSaveCard.isEnabled = isValid()

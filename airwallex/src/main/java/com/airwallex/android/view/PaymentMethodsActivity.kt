@@ -30,12 +30,14 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(args.token, args.clientSecret)
+        Airwallex(args.token!!, args.paymentIntent!!.clientSecret)
     }
 
     private val shouldShowWechatPay: Boolean
         get() {
-            return args.shouldShowWechatPay
+            return args.paymentIntent!!.availablePaymentMethodTypes.contains(
+                PaymentMethodType.WECHAT.type
+            )
         }
 
     private lateinit var cardAdapter: PaymentMethodsAdapter
@@ -48,17 +50,16 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
 
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         cardAdapter = PaymentMethodsAdapter(
-            selectedPaymentMethod = args.paymentMethod,
             shouldShowWechatPay = shouldShowWechatPay
         )
 
         cardAdapter.callback = object : PaymentMethodsAdapter.Callback {
             override fun onPaymentMethodClick(paymentMethod: PaymentMethod) {
-                finishWithPaymentMethod(paymentMethod)
+                startPaymentConfirm(paymentMethod)
             }
 
             override fun onWechatClick(paymentMethod: PaymentMethod) {
-                finishWithPaymentMethod(paymentMethod)
+                startPaymentConfirm(paymentMethod)
             }
         }
 
@@ -93,24 +94,21 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         AddPaymentMethodActivityStarter(this@PaymentMethodsActivity)
             .startForResult(
                 AddPaymentMethodActivityStarter.Args.Builder()
-                    .setClientSecret(args.clientSecret)
-                    .setToken(args.token)
-                    .setCustomerId(args.customerId)
-                    .setShipping(args.shipping)
+                    .setPaymentIntent(args.paymentIntent!!)
+                    .setToken(args.token!!)
                     .build()
             )
     }
 
-    private fun finishWithPaymentMethod(paymentMethod: PaymentMethod) {
-        setResult(
-            Activity.RESULT_OK, Intent()
-                .putExtras(
-                    PaymentMethodsActivityStarter.Result(
-                        paymentMethod
-                    ).toBundle()
-                )
-        )
-        finish()
+    private fun startPaymentConfirm(paymentMethod: PaymentMethod) {
+        PaymentCheckoutActivityStarter(this)
+            .start(
+                PaymentCheckoutActivityStarter.Args.Builder()
+                    .setPaymentMethod(paymentMethod)
+                    .setPaymentIntent(args.paymentIntent!!)
+                    .setToken(args.token!!)
+                    .build()
+            )
     }
 
     private fun fetchPaymentMethods(showLoading: Boolean = false) {
@@ -121,7 +119,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         airwallex.getPaymentMethods(
             pageNum = pageNum,
             pageSize = PAGE_SIZE,
-            customerId = args.customerId,
+            customerId = args.paymentIntent!!.customerId!!,
             callback = object : Airwallex.GetPaymentMethodsCallback {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }
@@ -151,7 +149,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             AddPaymentMethodActivityStarter.REQUEST_CODE -> {
                 val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
                 result?.let {
-                    finishWithPaymentMethod(it.paymentMethod)
+                    startPaymentConfirm(it.paymentMethod)
                 }
             }
         }
