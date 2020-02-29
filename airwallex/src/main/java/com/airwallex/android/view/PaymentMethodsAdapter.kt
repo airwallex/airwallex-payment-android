@@ -24,7 +24,13 @@ internal class PaymentMethodsAdapter(
     internal var callback: Callback? = null
 
     internal fun setPaymentMethods(paymentMethods: List<PaymentMethod>) {
-        this.paymentMethods.addAll(0, paymentMethods)
+        this.paymentMethods.addAll(paymentMethods)
+        notifyDataSetChanged()
+    }
+
+    internal fun addNewPaymentMethod(paymentMethod: PaymentMethod) {
+        selectedPaymentMethod = paymentMethod
+        this.paymentMethods.add(0, paymentMethod)
         notifyDataSetChanged()
     }
 
