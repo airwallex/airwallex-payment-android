@@ -148,15 +148,16 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         when (requestCode) {
             AddPaymentMethodActivityStarter.REQUEST_CODE -> {
                 val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
-                result?.let {
-                    startPaymentConfirm(it.paymentMethod)
+                result?.paymentMethod?.let {
+                    cardAdapter.addNewPaymentMethod(it)
+                    startPaymentConfirm(it)
                 }
             }
         }
     }
 
     companion object {
-        private const val VISIBLE_THRESHOLD = 3
+        private const val VISIBLE_THRESHOLD = 5
         private const val PAGE_SIZE = 20
     }
 }
