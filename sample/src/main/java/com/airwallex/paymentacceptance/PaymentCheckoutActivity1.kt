@@ -10,12 +10,12 @@ import android.widget.Toast
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
-import kotlinx.android.synthetic.main.activity_payment_checkout.*
+import kotlinx.android.synthetic.main.activity_payment_checkout1.*
 import okhttp3.*
 import java.io.IOException
 import java.util.*
 
-class PaymentCheckoutActivity : PaymentBaseActivity() {
+class PaymentCheckoutActivity1 : PaymentBaseActivity() {
 
     private val device = Device.Builder()
         .setBrowserInfo("Chrome/76.0.3809.100")
@@ -50,7 +50,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
             paymentIntent: PaymentIntent
         ) {
             activity.startActivity(
-                Intent(activity, PaymentCheckoutActivity::class.java)
+                Intent(activity, PaymentCheckoutActivity1::class.java)
                     .putExtra(PAYMENT_INTENT, paymentIntent)
             )
         }
@@ -58,7 +58,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_payment_checkout)
+        setContentView(R.layout.activity_payment_checkout1)
 
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
@@ -186,7 +186,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                 if (nextAction?.data == null
                 ) {
                     Toast.makeText(
-                        this@PaymentCheckoutActivity,
+                        this@PaymentCheckoutActivity1,
                         "Server error, NextAction is null...",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -208,7 +208,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                             Log.e(TAG, "User cancel the Wechat payment")
                             loading.visibility = View.GONE
                             Toast.makeText(
-                                this@PaymentCheckoutActivity,
+                                this@PaymentCheckoutActivity1,
                                 "Failed to mock wechat pay, reason: ${e.message}",
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -223,7 +223,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                     val data = paymentIntent.nextAction?.data
                     if (data == null) {
                         Toast.makeText(
-                            this@PaymentCheckoutActivity,
+                            this@PaymentCheckoutActivity1,
                             "No Wechat data!",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -231,7 +231,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                     }
                     // launch wechat pay
                     WXPay.instance.launchWeChat(
-                        context = this@PaymentCheckoutActivity,
+                        context = this@PaymentCheckoutActivity1,
                         appId = Constants.APP_ID,
                         data = data,
                         listener = object : WXPay.WechatPaymentListener {
@@ -243,7 +243,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                                 Log.e(TAG, "Wechat pay failed, error $errMessage")
                                 loading.visibility = View.GONE
                                 Toast.makeText(
-                                    this@PaymentCheckoutActivity,
+                                    this@PaymentCheckoutActivity1,
                                     "errCode $errCode, errMessage $errMessage",
                                     Toast.LENGTH_SHORT
                                 ).show()
@@ -253,7 +253,7 @@ class PaymentCheckoutActivity : PaymentBaseActivity() {
                                 Log.e(TAG, "User cancel the Wechat payment")
                                 loading.visibility = View.GONE
                                 Toast.makeText(
-                                    this@PaymentCheckoutActivity,
+                                    this@PaymentCheckoutActivity1,
                                     "User cancel the payment",
                                     Toast.LENGTH_SHORT
                                 ).show()

@@ -105,7 +105,7 @@ class Airwallex internal constructor(
     internal fun getPaymentMethods(
         pageNum: Int = 0,
         pageSize: Int = 10,
-        customerId: String,
+        customerId: String?,
         callback: GetPaymentMethodsCallback
     ) {
         paymentController.getPaymentMethods(

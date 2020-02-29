@@ -2,14 +2,15 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Intent
+import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.view.PaymentCheckoutActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
 internal class PaymentCheckoutActivityStarter constructor(
     activity: Activity
-) : ActivityStarter<PaymentCheckoutActivity, PaymentCheckoutActivityStarter.Args>(
+) : ActivityStarter<PaymentCheckoutActivity, Args>(
     activity,
     PaymentCheckoutActivity::class.java,
     REQUEST_CODE
@@ -17,24 +18,14 @@ internal class PaymentCheckoutActivityStarter constructor(
 
     @Parcelize
     data class Args internal constructor(
-        val paymentIntent: PaymentIntent?,
-        val token: String?,
+        val customerSessionConfig: CustomerSessionConfig,
         val paymentMethod: PaymentMethod?
     ) : ActivityStarter.Args {
 
-        class Builder :
+        class Builder(private val customerSessionConfig: CustomerSessionConfig) :
             ObjectBuilder<Args> {
-            private var paymentIntent: PaymentIntent? = null
-            private var token: String? = null
             private var paymentMethod: PaymentMethod? = null
 
-            fun setPaymentIntent(paymentIntent: PaymentIntent?): Builder = apply {
-                this.paymentIntent = paymentIntent
-            }
-
-            fun setToken(token: String?): Builder = apply {
-                this.token = token
-            }
 
             fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
                 this.paymentMethod = paymentMethod
@@ -42,8 +33,7 @@ internal class PaymentCheckoutActivityStarter constructor(
 
             override fun build(): Args {
                 return Args(
-                    token = token,
-                    paymentIntent = paymentIntent,
+                    customerSessionConfig = customerSessionConfig,
                     paymentMethod = paymentMethod
                 )
             }

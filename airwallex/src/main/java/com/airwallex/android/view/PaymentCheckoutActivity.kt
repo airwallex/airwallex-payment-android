@@ -3,6 +3,7 @@ package com.airwallex.android.view
 import android.os.Bundle
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.activity_airwallex.*
+import kotlinx.android.synthetic.main.activity_payment_checkout.*
 
 internal class PaymentCheckoutActivity : AirwallexActivity() {
 
@@ -20,5 +21,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         viewStub.layoutResource = R.layout.activity_payment_checkout
         viewStub.inflate()
 
+
+        tvTotalPrice.text = String.format("$%.2f", args.customerSessionConfig.paymentIntent.amount)
     }
 }

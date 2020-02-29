@@ -6,8 +6,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.PaymentSession
-import com.airwallex.android.PaymentSessionData
 import com.airwallex.android.model.Order
 import com.airwallex.android.model.PaymentIntent
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -130,14 +130,8 @@ class PaymentCartActivity : PaymentBaseActivity() {
     private fun handleResponse(paymentIntent: PaymentIntent) {
         loading.visibility = View.GONE
 
-        val paymentSession = PaymentSession(
-            this@PaymentCartActivity,
-            PaymentSessionData.Builder()
-                .setPaymentIntent(paymentIntent)
-                .setToken(token)
-                .build()
-        )
-        paymentSession.presentPaymentFlow()
+        val paymentSession = PaymentSession(this@PaymentCartActivity)
+        paymentSession.presentPaymentFlow(CustomerSessionConfig(paymentIntent, token))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -30,12 +30,15 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex(args.token!!, args.paymentIntent!!.clientSecret)
+        Airwallex(
+            args.customerSessionConfig.token,
+            args.customerSessionConfig.paymentIntent.clientSecret
+        )
     }
 
     private val shouldShowWechatPay: Boolean
         get() {
-            return args.paymentIntent!!.availablePaymentMethodTypes.contains(
+            return args.customerSessionConfig.paymentIntent.availablePaymentMethodTypes.contains(
                 PaymentMethodType.WECHAT.type
             )
         }
@@ -93,9 +96,8 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     private fun startAddPaymentMethod() {
         AddPaymentMethodActivityStarter(this@PaymentMethodsActivity)
             .startForResult(
-                AddPaymentMethodActivityStarter.Args.Builder()
-                    .setPaymentIntent(args.paymentIntent!!)
-                    .setToken(args.token!!)
+                AddPaymentMethodActivityStarter.Args
+                    .Builder(args.customerSessionConfig)
                     .build()
             )
     }
@@ -103,10 +105,8 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     private fun startPaymentConfirm(paymentMethod: PaymentMethod) {
         PaymentCheckoutActivityStarter(this)
             .start(
-                PaymentCheckoutActivityStarter.Args.Builder()
+                PaymentCheckoutActivityStarter.Args.Builder(args.customerSessionConfig)
                     .setPaymentMethod(paymentMethod)
-                    .setPaymentIntent(args.paymentIntent!!)
-                    .setToken(args.token!!)
                     .build()
             )
     }
@@ -119,7 +119,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         airwallex.getPaymentMethods(
             pageNum = pageNum,
             pageSize = PAGE_SIZE,
-            customerId = args.paymentIntent!!.customerId!!,
+            customerId = args.customerSessionConfig.paymentIntent.customerId,
             callback = object : Airwallex.GetPaymentMethodsCallback {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }

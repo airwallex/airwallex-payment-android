@@ -11,12 +11,10 @@ import android.widget.RelativeLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.airwallex.android.PaymentSession
-import com.airwallex.android.PaymentSessionData
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.paymentacceptance.R
-import com.airwallex.paymentacceptance.Store
 import kotlinx.android.synthetic.main.payment_method_item.view.*
 
 class PaymentMethodItemView constructor(
