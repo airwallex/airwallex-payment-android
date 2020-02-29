@@ -3,8 +3,8 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.PaymentMethodsActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
@@ -19,27 +19,15 @@ internal class PaymentMethodsActivityStarter constructor(
 
     @Parcelize
     data class Args internal constructor(
-        val paymentIntent: PaymentIntent?,
-        val token: String?
+        val customerSessionConfig: CustomerSessionConfig
     ) : ActivityStarter.Args {
 
-        class Builder :
+        class Builder(private val customerSessionConfig: CustomerSessionConfig) :
             ObjectBuilder<Args> {
-            private var paymentIntent: PaymentIntent? = null
-            private var token: String? = null
-
-            fun setPaymentIntent(paymentIntent: PaymentIntent?): Builder = apply {
-                this.paymentIntent = paymentIntent
-            }
-
-            fun setToken(token: String?): Builder = apply {
-                this.token = token
-            }
 
             override fun build(): Args {
                 return Args(
-                    token = token,
-                    paymentIntent = paymentIntent
+                    customerSessionConfig = customerSessionConfig
                 )
             }
         }

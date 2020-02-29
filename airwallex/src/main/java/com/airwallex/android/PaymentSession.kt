@@ -14,19 +14,19 @@ class PaymentSession internal constructor(
     private val context: Activity,
     private val paymentMethodsActivityStarter:
     ActivityStarter<PaymentMethodsActivity, PaymentMethodsActivityStarter.Args>,
-    private val paymentSessionData: PaymentSessionData
+    private val paymentSessionConfig: PaymentSessionConfig?
 ) {
 
-    constructor(activity: Activity, paymentSessionData: PaymentSessionData) : this(
+    constructor(activity: Activity, paymentSessionConfig: PaymentSessionConfig? = null) : this(
         activity,
         PaymentMethodsActivityStarter(activity),
-        paymentSessionData
+        paymentSessionConfig
     )
 
-    constructor(fragment: Fragment, paymentSessionData: PaymentSessionData) : this(
+    constructor(fragment: Fragment, paymentSessionConfig: PaymentSessionConfig? = null) : this(
         fragment.requireActivity(),
         PaymentMethodsActivityStarter(fragment.requireActivity()),
-        paymentSessionData
+        paymentSessionConfig
     )
 
     interface PaymentMethodResult {
@@ -39,12 +39,15 @@ class PaymentSession internal constructor(
         fun onSuccess(shipping: Shipping?)
     }
 
-    fun presentPaymentFlow() {
+    @Throws(NullPointerException::class)
+    fun presentPaymentFlow(customerSessionConfig: CustomerSessionConfig) {
+        checkNotNull(
+            customerSessionConfig.paymentIntent.customerId,
+            { "Customer id should not be null" })
+
         paymentMethodsActivityStarter.startForResult(
             PaymentMethodsActivityStarter.Args
-                .Builder()
-                .setPaymentIntent(paymentSessionData.paymentIntent)
-                .setToken(paymentSessionData.token)
+                .Builder(customerSessionConfig)
                 .build()
         )
     }
@@ -53,7 +56,7 @@ class PaymentSession internal constructor(
         AddPaymentShippingActivityStarter(context)
             .startForResult(
                 AddPaymentShippingActivityStarter.Args.Builder()
-                    .setShipping(paymentSessionData.shipping)
+                    .setShipping(paymentSessionConfig?.shipping)
                     .build()
             )
     }
