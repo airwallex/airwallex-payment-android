@@ -42,7 +42,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
             paymentMethodParams,
             object : Airwallex.PaymentMethodCallback {
                 override fun onSuccess(paymentMethod: PaymentMethod) {
-                    onActionSave(paymentMethod)
+                    onActionSave(paymentMethod, card.cvc!!)
                 }
 
                 override fun onFailed(exception: AirwallexException) {
@@ -52,11 +52,11 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
             })
     }
 
-    private fun onActionSave(paymentMethod: PaymentMethod) {
+    private fun onActionSave(paymentMethod: PaymentMethod, cvc: String) {
         loading.visibility = View.GONE
         setResult(
             Activity.RESULT_OK, Intent()
-                .putExtras(AddPaymentMethodActivityStarter.Result(paymentMethod).toBundle())
+                .putExtras(AddPaymentMethodActivityStarter.Result(paymentMethod, cvc).toBundle())
         )
         finish()
     }

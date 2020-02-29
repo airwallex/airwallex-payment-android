@@ -41,7 +41,8 @@ internal class AddPaymentMethodActivityStarter constructor(
 
     @Parcelize
     data class Result internal constructor(
-        val paymentMethod: PaymentMethod
+        val paymentMethod: PaymentMethod,
+        val cvc: String
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()

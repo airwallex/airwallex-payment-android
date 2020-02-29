@@ -21,7 +21,18 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         viewStub.layoutResource = R.layout.activity_payment_checkout
         viewStub.inflate()
 
-
         tvTotalPrice.text = String.format("$%.2f", args.customerSessionConfig.paymentIntent.amount)
+        paymentMethodItemView.renewalPaymentMethod(args.paymentMethod, args.cvc)
+        paymentMethodItemView.cvcChangedCallback = {
+            updateButtonStatus()
+        }
+
+        rlPlay.setOnClickListener {
+            
+        }
+    }
+
+    private fun updateButtonStatus() {
+        rlPlay.isEnabled = paymentMethodItemView.isValid
     }
 }

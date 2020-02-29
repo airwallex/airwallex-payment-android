@@ -55,6 +55,13 @@
             android:textSize="14sp" />
     </RelativeLayout>
 
+    <com.airwallex.android.view.PaymentMethodItemView
+        android:id="@+id/paymentMethodItemView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTotalLabel"
+        android:layout_marginTop="40dp" />
+
     <include
         android:id="@+id/loading"
         layout="@layout/view_loading"
