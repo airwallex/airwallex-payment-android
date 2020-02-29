@@ -5,6 +5,7 @@ import android.content.Intent
 import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.PaymentCheckoutActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
@@ -19,22 +20,27 @@ internal class PaymentCheckoutActivityStarter constructor(
     @Parcelize
     data class Args internal constructor(
         val customerSessionConfig: CustomerSessionConfig,
-        val paymentMethod: PaymentMethod?
+        val paymentMethod: PaymentMethod,
+        val cvc: String?
     ) : ActivityStarter.Args {
 
-        class Builder(private val customerSessionConfig: CustomerSessionConfig) :
+        class Builder(
+            private val customerSessionConfig: CustomerSessionConfig,
+            private val paymentMethod: PaymentMethod
+        ) :
             ObjectBuilder<Args> {
-            private var paymentMethod: PaymentMethod? = null
 
+            private var cvc: String? = null
 
-            fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
-                this.paymentMethod = paymentMethod
+            internal fun setCvc(cvc: String?) : Builder = apply {
+                this.cvc = cvc
             }
 
             override fun build(): Args {
                 return Args(
                     customerSessionConfig = customerSessionConfig,
-                    paymentMethod = paymentMethod
+                    paymentMethod = paymentMethod,
+                    cvc = cvc
                 )
             }
         }

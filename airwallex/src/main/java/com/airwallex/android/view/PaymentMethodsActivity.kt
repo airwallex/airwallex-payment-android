@@ -102,11 +102,14 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             )
     }
 
-    private fun startPaymentConfirm(paymentMethod: PaymentMethod) {
+    private fun startPaymentConfirm(paymentMethod: PaymentMethod, cvc: String? = null) {
         PaymentCheckoutActivityStarter(this)
             .start(
-                PaymentCheckoutActivityStarter.Args.Builder(args.customerSessionConfig)
-                    .setPaymentMethod(paymentMethod)
+                PaymentCheckoutActivityStarter.Args.Builder(
+                    args.customerSessionConfig,
+                    paymentMethod
+                )
+                    .setCvc(cvc)
                     .build()
             )
     }
@@ -148,9 +151,9 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         when (requestCode) {
             AddPaymentMethodActivityStarter.REQUEST_CODE -> {
                 val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
-                result?.paymentMethod?.let {
-                    cardAdapter.addNewPaymentMethod(it)
-                    startPaymentConfirm(it)
+                result?.let {
+                    cardAdapter.addNewPaymentMethod(it.paymentMethod)
+                    startPaymentConfirm(it.paymentMethod, it.cvc)
                 }
             }
         }
