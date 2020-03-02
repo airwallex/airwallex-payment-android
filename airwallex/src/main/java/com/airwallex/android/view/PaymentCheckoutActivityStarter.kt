@@ -2,8 +2,10 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.PaymentCheckoutActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
@@ -31,7 +33,7 @@ internal class PaymentCheckoutActivityStarter constructor(
 
             private var cvc: String? = null
 
-            internal fun setCvc(cvc: String?) : Builder = apply {
+            internal fun setCvc(cvc: String?): Builder = apply {
                 this.cvc = cvc
             }
 
@@ -51,8 +53,25 @@ internal class PaymentCheckoutActivityStarter constructor(
         }
     }
 
+    @Parcelize
+    data class Result internal constructor(
+        val paymentIntent: PaymentIntent
+    ) : ActivityStarter.Result {
+        override fun toBundle(): Bundle {
+            val bundle = Bundle()
+            bundle.putParcelable(ActivityStarter.Result.AIRWALLEX_EXTRA, this)
+            return bundle
+        }
+
+        companion object {
+            fun fromIntent(intent: Intent?): Result? {
+                return intent?.getParcelableExtra(ActivityStarter.Result.AIRWALLEX_EXTRA)
+            }
+        }
+    }
+
     companion object {
-        const val REQUEST_CODE: Int = 1002
+        const val REQUEST_CODE: Int = 1004
     }
 
 }

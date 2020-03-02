@@ -66,11 +66,11 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
 
         cardAdapter.callback = object : PaymentMethodsAdapter.Callback {
             override fun onPaymentMethodClick(paymentMethod: PaymentMethod) {
-                startPaymentConfirm(paymentMethod)
+                startPaymentCheckout(paymentMethod)
             }
 
             override fun onWechatClick(paymentMethod: PaymentMethod) {
-                startPaymentConfirm(paymentMethod)
+                startPaymentCheckout(paymentMethod)
             }
         }
 
@@ -115,9 +115,9 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             )
     }
 
-    private fun startPaymentConfirm(paymentMethod: PaymentMethod, cvc: String? = null) {
-        PaymentCheckoutActivityStarter(this)
-            .start(
+    private fun startPaymentCheckout(paymentMethod: PaymentMethod, cvc: String? = null) {
+        PaymentCheckoutActivityStarter(this@PaymentMethodsActivity)
+            .startForResult(
                 PaymentCheckoutActivityStarter.Args.Builder(
                     args.customerSessionConfig,
                     paymentMethod
@@ -172,7 +172,17 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                 val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
                 result?.let {
                     cardAdapter.addNewPaymentMethod(it.paymentMethod)
-                    startPaymentConfirm(it.paymentMethod, it.cvc)
+                    startPaymentCheckout(it.paymentMethod, it.cvc)
+                }
+            }
+            PaymentCheckoutActivityStarter.REQUEST_CODE -> {
+                val result = PaymentCheckoutActivityStarter.Result.fromIntent(data)
+                result?.let {
+                    setResult(
+                        Activity.RESULT_OK, Intent()
+                            .putExtras(PaymentMethodsActivityStarter.Result(result.paymentIntent).toBundle())
+                    )
+                    finish()
                 }
             }
         }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.PaymentMethodsActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
@@ -41,7 +42,7 @@ internal class PaymentMethodsActivityStarter constructor(
 
     @Parcelize
     data class Result internal constructor(
-        val paymentMethod: PaymentMethod
+        val paymentIntent: PaymentIntent
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()

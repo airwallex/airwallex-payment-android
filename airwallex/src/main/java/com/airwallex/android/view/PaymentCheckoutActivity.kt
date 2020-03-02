@@ -1,5 +1,7 @@
 package com.airwallex.android.view
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -227,9 +229,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
     }
 
     private fun retrievePaymentIntent(airwallex: Airwallex) {
-        Logger.debug(
-            "Start retrieve PaymentIntent ${args.customerSessionConfig.paymentIntent.id}"
-        )
+        Logger.debug("Start retrieve PaymentIntent...")
         airwallex.retrievePaymentIntent(
             paymentIntentId = paymentIntent.id,
             callback = object : Airwallex.PaymentIntentCallback {
@@ -240,7 +240,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
 
                     loading.visibility = View.GONE
                     if (paymentIntent.status == "SUCCEEDED") {
-                        showPaymentSuccess()
+                        showPaymentSuccess(paymentIntent)
                     } else {
                         showPaymentError()
                     }
@@ -254,12 +254,16 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
             })
     }
 
-    fun showPaymentSuccess() {
+    fun showPaymentSuccess(paymentIntent: PaymentIntent) {
         alert(
             getString(R.string.payment_successful),
             getString(R.string.payment_successful_message)
         ) {
-            // Notify payment success
+            setResult(
+                Activity.RESULT_OK, Intent()
+                    .putExtras(PaymentCheckoutActivityStarter.Result(paymentIntent).toBundle())
+            )
+            finish()
         }
     }
 

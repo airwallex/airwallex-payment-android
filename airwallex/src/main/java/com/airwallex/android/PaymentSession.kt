@@ -3,7 +3,7 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.ActivityStarter
 import com.airwallex.android.view.AddPaymentShippingActivityStarter
@@ -29,9 +29,9 @@ class PaymentSession internal constructor(
         paymentSessionConfig
     )
 
-    interface PaymentMethodResult {
+    interface PaymentCheckoutResult {
         fun onCancelled()
-        fun onSuccess(paymentMethod: PaymentMethod?)
+        fun onSuccess(paymentIntent: PaymentIntent?)
     }
 
     interface PaymentShippingResult {
@@ -87,11 +87,11 @@ class PaymentSession internal constructor(
         }
     }
 
-    fun handlePaymentMethod(
+    fun handlePaymentCheckoutResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        callback: PaymentMethodResult
+        callback: PaymentCheckoutResult
     ): Boolean {
         if (!VALID_REQUEST_CODES.contains(requestCode)) {
             return false
@@ -102,7 +102,7 @@ class PaymentSession internal constructor(
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         val result = PaymentMethodsActivityStarter.Result.fromIntent(data)
-                        callback.onSuccess(result?.paymentMethod)
+                        callback.onSuccess(result?.paymentIntent)
                     }
                     Activity.RESULT_CANCELED -> callback.onCancelled()
                 }

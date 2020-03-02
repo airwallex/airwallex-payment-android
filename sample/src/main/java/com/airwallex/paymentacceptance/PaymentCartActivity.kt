@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -28,13 +29,7 @@ class PaymentCartActivity : AppCompatActivity() {
     }
 
     private lateinit var token: String
-
-    companion object {
-        fun startActivity(context: Context) {
-            context.startActivity(Intent(context, PaymentCartActivity::class.java))
-            (context as Activity).finish()
-        }
-    }
+    private var paymentSession: PaymentSession? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,13 +124,24 @@ class PaymentCartActivity : AppCompatActivity() {
     private fun handleResponse(paymentIntent: PaymentIntent) {
         loading.visibility = View.GONE
 
-        val paymentSession = PaymentSession(this@PaymentCartActivity)
-        paymentSession.presentPaymentFlow(CustomerSessionConfig(paymentIntent, token))
+        paymentSession = PaymentSession(this@PaymentCartActivity)
+        paymentSession?.presentPaymentFlow(CustomerSessionConfig(paymentIntent, token))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         cartFragment.onActivityResult(requestCode, resultCode, data)
+
+        paymentSession?.handlePaymentCheckoutResult(requestCode, resultCode, data,
+            object : PaymentSession.PaymentCheckoutResult {
+                override fun onCancelled() {
+                    Log.d(TAG, "Checkout cancelled")
+                }
+
+                override fun onSuccess(paymentIntent: PaymentIntent?) {
+                    Log.d(TAG, "Checkout success! ${paymentIntent?.id}")
+                }
+            })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -143,5 +149,14 @@ class PaymentCartActivity : AppCompatActivity() {
             onBackPressed()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+        private const val TAG = "PaymentCartActivity"
+
+        fun startActivity(context: Context) {
+            context.startActivity(Intent(context, PaymentCartActivity::class.java))
+            (context as Activity).finish()
+        }
     }
 }
