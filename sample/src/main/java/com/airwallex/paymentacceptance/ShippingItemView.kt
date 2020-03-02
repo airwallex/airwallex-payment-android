@@ -85,7 +85,7 @@ class ShippingItemView constructor(
             requestCode,
             resultCode,
             data,
-            object : PaymentSession.PaymentShippingResult {
+            object : PaymentSession.PaymentResult<Shipping> {
                 override fun onCancelled() {
                     Log.d(TAG, "User cancel edit shipping...")
                     completion.invoke(null)
