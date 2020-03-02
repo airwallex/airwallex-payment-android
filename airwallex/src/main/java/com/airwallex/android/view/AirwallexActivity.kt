@@ -1,5 +1,6 @@
 package com.airwallex.android.view
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.annotation.DrawableRes
@@ -24,6 +25,11 @@ abstract class AirwallexActivity : AppCompatActivity() {
 
     @DrawableRes
     abstract fun homeAsUpIndicatorResId(): Int
+
+    override fun onBackPressed() {
+        setResult(Activity.RESULT_CANCELED)
+        super.onBackPressed()
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == R.id.action_save) {

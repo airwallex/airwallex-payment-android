@@ -135,11 +135,11 @@ class PaymentCartActivity : AppCompatActivity() {
         paymentSession?.handlePaymentCheckoutResult(requestCode, resultCode, data,
             object : PaymentSession.PaymentCheckoutResult {
                 override fun onCancelled() {
-                    Log.d(TAG, "Checkout cancelled")
+                    Log.d(TAG, "User cancel the payment checkout")
                 }
 
                 override fun onSuccess(paymentIntent: PaymentIntent?) {
-                    Log.d(TAG, "Checkout success! ${paymentIntent?.id}")
+                    Log.d(TAG, "Payment checkout success! ${paymentIntent?.id}")
                 }
             })
     }

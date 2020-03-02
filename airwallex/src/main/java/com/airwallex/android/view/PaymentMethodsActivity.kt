@@ -177,10 +177,10 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             }
             PaymentCheckoutActivityStarter.REQUEST_CODE -> {
                 val result = PaymentCheckoutActivityStarter.Result.fromIntent(data)
-                result?.let {
+                result?.paymentIntent?.let { paymentIntent ->
                     setResult(
-                        Activity.RESULT_OK, Intent()
-                            .putExtras(PaymentMethodsActivityStarter.Result(result.paymentIntent).toBundle())
+                        Activity.RESULT_OK,
+                        Intent().putExtras(PaymentMethodsActivityStarter.Result(paymentIntent).toBundle())
                     )
                     finish()
                 }
