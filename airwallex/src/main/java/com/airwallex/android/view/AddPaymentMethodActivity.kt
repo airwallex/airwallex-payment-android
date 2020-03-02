@@ -52,6 +52,10 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
             })
     }
 
+    override fun homeAsUpIndicatorResId(): Int {
+        return R.drawable.airwallex_ic_back
+    }
+
     private fun onActionSave(paymentMethod: PaymentMethod, cvc: String) {
         loading.visibility = View.GONE
         setResult(

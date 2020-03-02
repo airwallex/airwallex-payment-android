@@ -2,6 +2,7 @@ package com.airwallex.android.view
 
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.R
@@ -14,11 +15,15 @@ abstract class AirwallexActivity : AppCompatActivity() {
         setContentView(R.layout.activity_airwallex)
 
         setSupportActionBar(toolbar)
+        supportActionBar?.setHomeAsUpIndicator(homeAsUpIndicatorResId())
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
     abstract fun onActionSave()
+
+    @DrawableRes
+    abstract fun homeAsUpIndicatorResId(): Int
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == R.id.action_save) {

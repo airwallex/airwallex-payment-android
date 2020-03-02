@@ -53,6 +53,10 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
 
     }
 
+    override fun homeAsUpIndicatorResId(): Int {
+        return R.drawable.airwallex_ic_back
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
