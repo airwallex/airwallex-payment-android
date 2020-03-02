@@ -15,7 +15,8 @@ import kotlinx.android.synthetic.main.payment_method_item_wechat.view.*
 import java.util.*
 
 internal class PaymentMethodsAdapter(
-    shouldShowWechatPay: Boolean = false
+    val shouldShowCard: Boolean = false,
+    val shouldShowWechatPay: Boolean = false
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val wechatCount = if (shouldShowWechatPay) 1 else 0
@@ -35,7 +36,7 @@ internal class PaymentMethodsAdapter(
     }
 
     override fun getItemCount(): Int {
-        return wechatCount + paymentMethods.size
+        return wechatCount + (if (shouldShowCard) paymentMethods.size else 0)
     }
 
     override fun getItemViewType(position: Int): Int {

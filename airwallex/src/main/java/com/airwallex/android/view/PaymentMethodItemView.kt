@@ -53,13 +53,15 @@ class PaymentMethodItemView constructor(
         this.paymentMethod = paymentMethod
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
             tvPaymentMethod.text = paymentMethod.type.displayName
+            llCardCvc.visibility = View.GONE
         } else {
-            tvPaymentMethod.text =
-                String.format(
-                    "%s •••• %s",
-                    paymentMethod.card?.brand?.capitalize(),
-                    paymentMethod.card?.last4
-                )
+            tvPaymentMethod.text = String.format(
+                "%s •••• %s",
+                paymentMethod.card?.brand?.capitalize(),
+                paymentMethod.card?.last4
+            )
+            llCardCvc.visibility = View.VISIBLE
+            etCardCvc.setText(cvc)
         }
 
         tvPaymentMethod.setTextColor(
@@ -68,8 +70,6 @@ class PaymentMethodItemView constructor(
                 R.color.airwallex_color_dark_deep
             )
         )
-
-        etCardCvc.setText(cvc)
     }
 
     override fun onDetachedFromWindow() {

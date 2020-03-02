@@ -43,6 +43,13 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             )
         }
 
+    private val shouldShowCard: Boolean
+        get() {
+            return args.customerSessionConfig.paymentIntent.availablePaymentMethodTypes.contains(
+                PaymentMethodType.CARD.type
+            )
+        }
+
     private lateinit var cardAdapter: PaymentMethodsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +60,8 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
 
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         cardAdapter = PaymentMethodsAdapter(
-            shouldShowWechatPay = shouldShowWechatPay
+            shouldShowWechatPay = shouldShowWechatPay,
+            shouldShowCard = shouldShowCard
         )
 
         cardAdapter.callback = object : PaymentMethodsAdapter.Callback {
@@ -66,6 +74,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             }
         }
 
+        addPaymentMethod.visibility = if (shouldShowCard) View.VISIBLE else View.GONE
         rvPaymentMethods.apply {
             setHasFixedSize(true)
             layoutManager = viewManager
@@ -115,8 +124,12 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     }
 
     private fun fetchPaymentMethods(showLoading: Boolean = false) {
+        if (!shouldShowCard) {
+            return
+        }
         if (showLoading) {
             pbLoading.visibility = View.VISIBLE
+            addPaymentMethod.visibility = View.GONE
         }
         loading = true
         airwallex.getPaymentMethods(
@@ -129,6 +142,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                     cardAdapter.setPaymentMethods(cards)
                     paymentNoCards.visibility =
                         if (cardAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
+                    addPaymentMethod.visibility = View.VISIBLE
                     pbLoading.visibility = View.GONE
                     hasMore = response.hasMore
                     pageNum++
@@ -138,6 +152,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                 override fun onFailed(exception: AirwallexException) {
                     alert(exception.toString())
                     pbLoading.visibility = View.GONE
+                    addPaymentMethod.visibility = View.VISIBLE
                     loading = false
                 }
             })
