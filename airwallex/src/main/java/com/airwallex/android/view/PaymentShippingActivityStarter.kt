@@ -5,14 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.Shipping
-import com.airwallex.android.view.AddPaymentShippingActivityStarter.Args
+import com.airwallex.android.view.PaymentShippingActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
-internal class AddPaymentShippingActivityStarter constructor(
+internal class PaymentShippingActivityStarter constructor(
     activity: Activity
-) : ActivityStarter<AddPaymentShippingActivity, Args>(
+) : ActivityStarter<PaymentShippingActivity, Args>(
     activity,
-    AddPaymentShippingActivity::class.java,
+    PaymentShippingActivity::class.java,
     REQUEST_CODE
 ) {
 
