@@ -47,7 +47,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
 
     //Cardinal Mobile SDK
-    implementation "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.2-1"
+    implementation "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.1-2"
 
     // Required libraries
     implementation group: "com.nimbusds", name: "nimbus-jose-jwt", version: "8.3"
