@@ -81,20 +81,20 @@ class ShippingItemView constructor(
         data: Intent?,
         completion: (shipping: Shipping?) -> Unit
     ) {
-        paymentSession?.handlePaymentShipping(
+        paymentSession?.handlePaymentShippingResult(
             requestCode,
             resultCode,
             data,
-            object : PaymentSession.PaymentResult<Shipping> {
+            paymentShippingCallback = object : PaymentSession.PaymentResult<Shipping> {
                 override fun onCancelled() {
                     Log.d(TAG, "User cancel edit shipping...")
                     completion.invoke(null)
                 }
 
-                override fun onSuccess(shipping: Shipping?) {
+                override fun onSuccess(model: Shipping?) {
                     Log.d(TAG, "Save the shipping success")
-                    renewalShipping(shipping)
-                    completion(shipping)
+                    renewalShipping(model)
+                    completion(model)
                 }
             })
     }

@@ -9,10 +9,10 @@ import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.activity_add_shipping.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 
-internal class AddPaymentShippingActivity : AirwallexActivity() {
+internal class PaymentShippingActivity : AirwallexActivity() {
 
-    private val args: AddPaymentShippingActivityStarter.Args by lazy {
-        AddPaymentShippingActivityStarter.Args.getExtra(intent)
+    private val args: PaymentShippingActivityStarter.Args by lazy {
+        PaymentShippingActivityStarter.Args.getExtra(intent)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -58,7 +58,7 @@ internal class AddPaymentShippingActivity : AirwallexActivity() {
         setResult(
             Activity.RESULT_OK, Intent()
                 .putExtras(
-                    AddPaymentShippingActivityStarter.Result(
+                    PaymentShippingActivityStarter.Result(
                         shipping
                     ).toBundle()
                 )

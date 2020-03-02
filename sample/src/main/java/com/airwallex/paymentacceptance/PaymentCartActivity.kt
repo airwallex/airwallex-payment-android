@@ -132,14 +132,14 @@ class PaymentCartActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         cartFragment.onActivityResult(requestCode, resultCode, data)
 
-        paymentSession?.handlePaymentCheckoutResult(requestCode, resultCode, data,
-            object : PaymentSession.PaymentResult<PaymentIntent> {
+        paymentSession?.handlePaymentIntentResult(requestCode, resultCode, data,
+            paymentIntentCallback = object : PaymentSession.PaymentResult<PaymentIntent> {
                 override fun onCancelled() {
                     Log.d(TAG, "User cancel the payment checkout")
                 }
 
-                override fun onSuccess(paymentIntent: PaymentIntent?) {
-                    Log.d(TAG, "Payment checkout success! ${paymentIntent?.id}")
+                override fun onSuccess(model: PaymentIntent?) {
+                    Log.d(TAG, "Payment checkout success! ${model?.id}")
                 }
             })
     }

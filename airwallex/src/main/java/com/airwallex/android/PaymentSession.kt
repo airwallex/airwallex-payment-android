@@ -9,27 +9,29 @@ import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.*
 
 class PaymentSession internal constructor(
-    private val context: Activity,
-    private val paymentMethodsActivityStarter:
-    ActivityStarter<PaymentMethodsActivity, PaymentMethodsActivityStarter.Args>,
+    private val paymentMethodsActivityStarter: ActivityStarter<PaymentMethodsActivity, PaymentMethodsActivityStarter.Args>,
+    private val paymentShippingActivityStarter: ActivityStarter<PaymentShippingActivity, PaymentShippingActivityStarter.Args>,
+    private val addPaymentMethodActivityStarter: ActivityStarter<AddPaymentMethodActivity, AddPaymentMethodActivityStarter.Args>,
     private val paymentSessionConfig: PaymentSessionConfig?
 ) {
 
     constructor(activity: Activity, paymentSessionConfig: PaymentSessionConfig? = null) : this(
-        activity,
         PaymentMethodsActivityStarter(activity),
+        PaymentShippingActivityStarter(activity),
+        AddPaymentMethodActivityStarter(activity),
         paymentSessionConfig
     )
 
     constructor(fragment: Fragment, paymentSessionConfig: PaymentSessionConfig? = null) : this(
-        fragment.requireActivity(),
         PaymentMethodsActivityStarter(fragment.requireActivity()),
+        PaymentShippingActivityStarter(fragment.requireActivity()),
+        AddPaymentMethodActivityStarter(fragment.requireActivity()),
         paymentSessionConfig
     )
 
     interface PaymentResult<T> {
         fun onCancelled()
-        fun onSuccess(t: T?)
+        fun onSuccess(model: T?)
     }
 
     @Throws(NullPointerException::class)
@@ -38,102 +40,122 @@ class PaymentSession internal constructor(
             customerSessionConfig.paymentIntent.customerId,
             { "Customer id should not be null" })
 
-        paymentMethodsActivityStarter.startForResult(
-            PaymentMethodsActivityStarter.Args
-                .Builder(customerSessionConfig)
-                .build()
-        )
+        paymentMethodsActivityStarter
+            .startForResult(
+                PaymentMethodsActivityStarter.Args
+                    .Builder(customerSessionConfig)
+                    .build()
+            )
     }
 
     fun presentShippingFlow() {
-        AddPaymentShippingActivityStarter(context)
+        paymentShippingActivityStarter
             .startForResult(
-                AddPaymentShippingActivityStarter.Args.Builder()
+                PaymentShippingActivityStarter.Args.Builder()
                     .setShipping(paymentSessionConfig?.shipping)
                     .build()
             )
     }
 
     fun presentAddPaymentMethodFlow(customerSessionConfig: CustomerSessionConfig) {
-        AddPaymentMethodActivityStarter(context)
+        addPaymentMethodActivityStarter
             .startForResult(
                 AddPaymentMethodActivityStarter.Args.Builder(customerSessionConfig)
                     .build()
             )
     }
 
-    fun handlePaymentResult(
+    fun handlePaymentMethodResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        callback: PaymentResult<PaymentMethod>
+        paymentMethodCallback: PaymentResult<PaymentMethod>
+    ) {
+        handlePaymentResult(
+            requestCode,
+            resultCode,
+            data,
+            paymentMethodCallback = paymentMethodCallback
+        )
+    }
+
+    fun handlePaymentShippingResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        paymentShippingCallback: PaymentResult<Shipping>
+    ) {
+        handlePaymentResult(
+            requestCode,
+            resultCode,
+            data,
+            paymentShippingCallback = paymentShippingCallback
+        )
+    }
+
+    fun handlePaymentIntentResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        paymentIntentCallback: PaymentResult<PaymentIntent>
+    ) {
+        handlePaymentResult(
+            requestCode,
+            resultCode,
+            data,
+            paymentIntentCallback = paymentIntentCallback
+        )
+    }
+
+    private fun handlePaymentResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        paymentMethodCallback: PaymentResult<PaymentMethod>? = null,
+        paymentShippingCallback: PaymentResult<Shipping>? = null,
+        paymentIntentCallback: PaymentResult<PaymentIntent>? = null
     ): Boolean {
         if (!VALID_REQUEST_CODES.contains(requestCode)) {
             return false
         }
 
-        when (requestCode) {
-            AddPaymentMethodActivityStarter.REQUEST_CODE -> {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                return when (requestCode) {
+                    AddPaymentMethodActivityStarter.REQUEST_CODE -> {
                         val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
-                        callback.onSuccess(result?.paymentMethod)
+                        paymentMethodCallback?.onSuccess(result?.paymentMethod)
+                        true
                     }
-                    Activity.RESULT_CANCELED -> callback.onCancelled()
-                }
-                return true
-            }
-
-            else -> return false
-        }
-    }
-
-    fun handlePaymentShipping(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-        callback: PaymentResult<Shipping>
-    ): Boolean {
-        if (!VALID_REQUEST_CODES.contains(requestCode)) {
-            return false
-        }
-
-        when (requestCode) {
-            AddPaymentShippingActivityStarter.REQUEST_CODE -> {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        val result = AddPaymentShippingActivityStarter.Result.fromIntent(data)
-                        callback.onSuccess(result?.shipping)
+                    PaymentShippingActivityStarter.REQUEST_CODE -> {
+                        val result = PaymentShippingActivityStarter.Result.fromIntent(data)
+                        paymentShippingCallback?.onSuccess(result?.shipping)
+                        true
                     }
-                    Activity.RESULT_CANCELED -> callback.onCancelled()
-                }
-                return true
-            }
-
-            else -> return false
-        }
-    }
-
-    fun handlePaymentCheckoutResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-        callback: PaymentResult<PaymentIntent>
-    ): Boolean {
-        if (!VALID_REQUEST_CODES.contains(requestCode)) {
-            return false
-        }
-
-        when (requestCode) {
-            PaymentMethodsActivityStarter.REQUEST_CODE -> {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
+                    PaymentMethodsActivityStarter.REQUEST_CODE -> {
                         val result = PaymentMethodsActivityStarter.Result.fromIntent(data)
-                        callback.onSuccess(result?.paymentIntent)
+                        paymentIntentCallback?.onSuccess(result?.paymentIntent)
+                        true
                     }
-                    Activity.RESULT_CANCELED -> callback.onCancelled()
+                    else -> false
                 }
-                return true
+            }
+            Activity.RESULT_CANCELED -> {
+                return when (requestCode) {
+                    AddPaymentMethodActivityStarter.REQUEST_CODE -> {
+                        paymentMethodCallback?.onCancelled()
+                        true
+                    }
+                    PaymentShippingActivityStarter.REQUEST_CODE -> {
+                        paymentShippingCallback?.onCancelled()
+                        true
+                    }
+                    PaymentMethodsActivityStarter.REQUEST_CODE -> {
+                        paymentIntentCallback?.onCancelled()
+                        true
+                    }
+                    else -> false
+                }
             }
             else -> return false
         }
@@ -143,7 +165,7 @@ class PaymentSession internal constructor(
 
         private val VALID_REQUEST_CODES = setOf(
             PaymentMethodsActivityStarter.REQUEST_CODE,
-            AddPaymentShippingActivityStarter.REQUEST_CODE,
+            PaymentShippingActivityStarter.REQUEST_CODE,
             AddPaymentMethodActivityStarter.REQUEST_CODE
         )
     }
