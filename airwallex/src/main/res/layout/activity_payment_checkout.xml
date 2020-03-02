@@ -28,7 +28,7 @@
         android:textSize="14sp" />
 
     <RelativeLayout
-        android:id="@+id/rlPlay"
+        android:id="@+id/rlPayNow"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_alignParentBottom="true"
@@ -39,7 +39,6 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/btnPlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -61,10 +60,5 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tvTotalLabel"
         android:layout_marginTop="40dp" />
-
-    <include
-        android:id="@+id/loading"
-        layout="@layout/view_loading"
-        android:visibility="gone" />
 
 </RelativeLayout>

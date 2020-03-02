@@ -34,7 +34,7 @@
 
     </RelativeLayout>
 
-    <com.airwallex.paymentacceptance.view.ShippingItemView
+    <com.airwallex.paymentacceptance.ShippingItemView
         android:id="@+id/shippingItemView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

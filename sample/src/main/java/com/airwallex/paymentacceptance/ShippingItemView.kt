@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance.view
+package com.airwallex.paymentacceptance
 
 import android.app.Activity
 import android.content.Context
@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat
 import com.airwallex.android.PaymentSession
 import com.airwallex.android.PaymentSessionConfig
 import com.airwallex.android.model.Shipping
-import com.airwallex.paymentacceptance.R
 import kotlinx.android.synthetic.main.shipping_item.view.*
 import java.util.*
 

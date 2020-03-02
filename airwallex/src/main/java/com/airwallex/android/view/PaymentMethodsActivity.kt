@@ -136,7 +136,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    showError(exception.toString())
+                    alert(exception.toString())
                     pbLoading.visibility = View.GONE
                     loading = false
                 }

@@ -33,13 +33,23 @@ abstract class AirwallexActivity : AppCompatActivity() {
         }
     }
 
-    fun showError(message: String) {
+    fun alert(message: String, completion: (() -> Unit)? = null) {
+        showAlert(title = "", message = message, completion = completion)
+    }
+
+    fun alert(title: String, message: String, completion: (() -> Unit)? = null) {
+        showAlert(title = title, message = message, completion = completion)
+    }
+
+    private fun showAlert(title: String, message: String, completion: (() -> Unit)? = null) {
         if (!isFinishing) {
             AlertDialog.Builder(this)
+                .setTitle(title)
                 .setMessage(message)
                 .setCancelable(false)
                 .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
                     dialogInterface.dismiss()
+                    completion?.invoke()
                 }
                 .create()
                 .show()
