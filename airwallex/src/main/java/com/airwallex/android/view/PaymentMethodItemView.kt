@@ -3,6 +3,7 @@ package com.airwallex.android.view
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -24,13 +25,17 @@ class PaymentMethodItemView constructor(
 
     internal val isValid: Boolean
         get() {
-            return etCardCvc.text.trim().toString().length == 3
+            return etCardCvc.text?.trim().toString().length == 3
         }
 
     var cvcChangedCallback: () -> Unit = {}
 
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            etCardCvc.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE)
+        }
 
         etCardCvc.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
