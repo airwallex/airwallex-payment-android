@@ -2,9 +2,6 @@ package com.airwallex.android
 
 import android.app.Activity
 import android.content.Intent
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.AddPaymentMethodActivityStarter
 import com.airwallex.android.view.PaymentMethodsActivityStarter
 import com.airwallex.android.view.PaymentShippingActivityStarter
@@ -16,7 +13,7 @@ class PaymentSession constructor(
 
     interface PaymentResult<T> {
         fun onCancelled()
-        fun onSuccess(model: T?)
+        fun onSuccess(result: T?)
     }
 
     @Throws(NullPointerException::class)
@@ -58,7 +55,7 @@ class PaymentSession constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        paymentMethodCallback: PaymentResult<PaymentMethod>
+        paymentMethodCallback: PaymentResult<AddPaymentMethodActivityStarter.Result>
     ) {
         handlePaymentResult(
             requestCode,
@@ -72,7 +69,7 @@ class PaymentSession constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        paymentShippingCallback: PaymentResult<Shipping>
+        paymentShippingCallback: PaymentResult<PaymentShippingActivityStarter.Result>
     ) {
         handlePaymentResult(
             requestCode,
@@ -86,7 +83,7 @@ class PaymentSession constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        paymentIntentCallback: PaymentResult<PaymentIntent>
+        paymentIntentCallback: PaymentResult<PaymentMethodsActivityStarter.Result>
     ) {
         handlePaymentResult(
             requestCode,
@@ -100,9 +97,9 @@ class PaymentSession constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        paymentMethodCallback: PaymentResult<PaymentMethod>? = null,
-        paymentShippingCallback: PaymentResult<Shipping>? = null,
-        paymentIntentCallback: PaymentResult<PaymentIntent>? = null
+        paymentMethodCallback: PaymentResult<AddPaymentMethodActivityStarter.Result>? = null,
+        paymentShippingCallback: PaymentResult<PaymentShippingActivityStarter.Result>? = null,
+        paymentIntentCallback: PaymentResult<PaymentMethodsActivityStarter.Result>? = null
     ): Boolean {
         if (!VALID_REQUEST_CODES.contains(requestCode)) {
             return false
@@ -112,18 +109,27 @@ class PaymentSession constructor(
             Activity.RESULT_OK -> {
                 return when (requestCode) {
                     AddPaymentMethodActivityStarter.REQUEST_CODE -> {
-                        val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
-                        paymentMethodCallback?.onSuccess(result?.paymentMethod)
+                        paymentMethodCallback?.onSuccess(
+                            AddPaymentMethodActivityStarter.Result.fromIntent(
+                                data
+                            )
+                        )
                         true
                     }
                     PaymentShippingActivityStarter.REQUEST_CODE -> {
-                        val result = PaymentShippingActivityStarter.Result.fromIntent(data)
-                        paymentShippingCallback?.onSuccess(result?.shipping)
+                        paymentShippingCallback?.onSuccess(
+                            PaymentShippingActivityStarter.Result.fromIntent(
+                                data
+                            )
+                        )
                         true
                     }
                     PaymentMethodsActivityStarter.REQUEST_CODE -> {
-                        val result = PaymentMethodsActivityStarter.Result.fromIntent(data)
-                        paymentIntentCallback?.onSuccess(result?.paymentIntent)
+                        paymentIntentCallback?.onSuccess(
+                            PaymentMethodsActivityStarter.Result.fromIntent(
+                                data
+                            )
+                        )
                         true
                     }
                     else -> false

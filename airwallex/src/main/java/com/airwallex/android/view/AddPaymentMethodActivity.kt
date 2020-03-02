@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import java.util.*
 
-internal class AddPaymentMethodActivity : AirwallexActivity() {
+class AddPaymentMethodActivity : AirwallexActivity() {
 
     private val args: AddPaymentMethodActivityStarter.Args by lazy {
         AddPaymentMethodActivityStarter.Args.getExtra(intent)
@@ -47,7 +47,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
 
                 override fun onFailed(exception: AirwallexException) {
                     loading.visibility = View.GONE
-                    alert(exception.toString())
+                    alert(message = exception.toString())
                 }
             })
     }

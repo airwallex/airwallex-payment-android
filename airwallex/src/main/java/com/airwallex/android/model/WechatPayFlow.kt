@@ -8,5 +8,5 @@ import kotlinx.android.parcel.Parcelize
 data class WechatPayFlow constructor(
 
     @SerializedName("flow")
-    val flow: WechatPayFlowType
+    val flow: WechatPayFlowType?
 ) : AirwallexModel, Parcelable

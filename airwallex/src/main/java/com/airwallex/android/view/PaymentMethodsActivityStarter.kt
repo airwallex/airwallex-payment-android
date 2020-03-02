@@ -6,11 +6,11 @@ import android.os.Bundle
 import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.view.PaymentMethodsActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
-internal class PaymentMethodsActivityStarter constructor(
+class PaymentMethodsActivityStarter constructor(
     activity: Activity
 ) : ActivityStarter<PaymentMethodsActivity, Args>(
     activity,
@@ -42,7 +42,8 @@ internal class PaymentMethodsActivityStarter constructor(
 
     @Parcelize
     data class Result internal constructor(
-        val paymentIntent: PaymentIntent
+        val paymentIntent: PaymentIntent,
+        val paymentMethodType: PaymentMethodType
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()

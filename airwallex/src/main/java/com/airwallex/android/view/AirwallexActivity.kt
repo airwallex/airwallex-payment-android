@@ -44,15 +44,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
         }
     }
 
-    fun alert(message: String, completion: (() -> Unit)? = null) {
-        showAlert(title = "", message = message, completion = completion)
-    }
-
-    fun alert(title: String, message: String, completion: (() -> Unit)? = null) {
-        showAlert(title = title, message = message, completion = completion)
-    }
-
-    private fun showAlert(title: String, message: String, completion: (() -> Unit)? = null) {
+    fun alert(title: String = "", message: String) {
         if (!isFinishing) {
             AlertDialog.Builder(this)
                 .setTitle(title)
@@ -60,7 +52,6 @@ abstract class AirwallexActivity : AppCompatActivity() {
                 .setCancelable(false)
                 .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
                     dialogInterface.dismiss()
-                    completion?.invoke()
                 }
                 .create()
                 .show()

@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import com.airwallex.android.PaymentSession
 import com.airwallex.android.PaymentSessionConfig
 import com.airwallex.android.model.Shipping
+import com.airwallex.android.view.PaymentShippingActivityStarter
 import kotlinx.android.synthetic.main.shipping_item.view.*
 import java.util.*
 
@@ -85,16 +86,17 @@ class ShippingItemView constructor(
             requestCode,
             resultCode,
             data,
-            paymentShippingCallback = object : PaymentSession.PaymentResult<Shipping> {
+            paymentShippingCallback = object :
+                PaymentSession.PaymentResult<PaymentShippingActivityStarter.Result> {
                 override fun onCancelled() {
                     Log.d(TAG, "User cancel edit shipping...")
                     completion.invoke(null)
                 }
 
-                override fun onSuccess(model: Shipping?) {
+                override fun onSuccess(result: PaymentShippingActivityStarter.Result?) {
                     Log.d(TAG, "Save the shipping success")
-                    renewalShipping(model)
-                    completion(model)
+                    renewalShipping(result?.shipping)
+                    completion(result?.shipping)
                 }
             })
     }
