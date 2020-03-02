@@ -23,7 +23,7 @@ class PaymentMethodTest {
                     .build()
             )
             .setBilling(
-                PaymentMethod.Billing.Builder()
+                Billing.Builder()
                     .setFirstName("Jim")
                     .setLastName("He")
                     .setPhone("1367875786")

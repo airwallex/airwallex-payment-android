@@ -42,7 +42,7 @@ class PaymentIntentTest {
                             .build()
                     )
                     .setBilling(
-                        PaymentMethod.Billing.Builder()
+                        Billing.Builder()
                             .setFirstName("John")
                             .setLastName("Doe")
                             .setPhone("13800000000")
