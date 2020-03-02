@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
@@ -65,8 +66,11 @@ class PaymentMethodItemView constructor(
                 paymentMethod.card?.brand?.capitalize(),
                 paymentMethod.card?.last4
             )
-            llCardCvc.visibility = View.VISIBLE
-            etCardCvc.setText(cvc)
+            if (!TextUtils.isEmpty(cvc)) {
+                llCardCvc.visibility = View.GONE
+            } else {
+                llCardCvc.visibility = View.VISIBLE
+            }
         }
 
         tvPaymentMethod.setTextColor(
