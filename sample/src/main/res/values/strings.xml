@@ -5,13 +5,10 @@
     <string name="remove">Remove</string>
     <string name="my_cart">My cart</string>
     <string name="payment">Payment</string>
-    <string name="select_payment_method">Select payment method</string>
     <string name="enter_shipping">Enter shipping information</string>
 
     <string name="payment_successful">Payment successful</string>
     <string name="payment_successful_message">Your payment has been charged</string>
 
     <string name="free">Free</string>
-    <string name="billing">Billing</string>
-    <string name="use_merchant_payment_method_selection">Need to use merchant\'s own payment methods selection screen</string>
 </resources>
