@@ -102,6 +102,10 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         // Ignore
     }
 
+    override fun homeAsUpIndicatorResId(): Int {
+        return R.drawable.airwallex_ic_close
+    }
+
     private fun startAddPaymentMethod() {
         AddPaymentMethodActivityStarter(this@PaymentMethodsActivity)
             .startForResult(

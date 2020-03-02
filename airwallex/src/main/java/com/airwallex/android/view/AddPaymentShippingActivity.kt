@@ -65,4 +65,8 @@ internal class AddPaymentShippingActivity : AirwallexActivity() {
         )
         finish()
     }
+
+    override fun homeAsUpIndicatorResId(): Int {
+        return R.drawable.airwallex_ic_back
+    }
 }
