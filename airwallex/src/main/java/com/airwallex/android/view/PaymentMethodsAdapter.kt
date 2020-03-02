@@ -108,15 +108,13 @@ internal class PaymentMethodsAdapter(
                 if (selectedPaymentMethod?.type == PaymentMethodType.WECHAT) View.VISIBLE else View.GONE
 
             itemView.rlWechatPay.setOnClickListener {
-                if (selectedPaymentMethod?.type == PaymentMethodType.WECHAT) {
-                    return@setOnClickListener
+                if (selectedPaymentMethod?.type != PaymentMethodType.WECHAT) {
+                    selectedPaymentMethod = PaymentMethod.Builder()
+                        .setType(PaymentMethodType.WECHAT)
+                        .setWechatPayFlow(WechatPayFlow(WechatPayFlowType.INAPP))
+                        .build()
+                    notifyDataSetChanged()
                 }
-                selectedPaymentMethod = PaymentMethod.Builder()
-                    .setType(PaymentMethodType.WECHAT)
-                    .setWechatPayFlow(WechatPayFlow(WechatPayFlowType.INAPP))
-                    .build()
-
-                notifyDataSetChanged()
                 selectedPaymentMethod?.let {
                     callback?.onWechatClick(it)
                 }
