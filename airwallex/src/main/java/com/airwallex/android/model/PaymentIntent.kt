@@ -48,7 +48,7 @@ data class PaymentIntent internal constructor(
     val customerPaymentMethods: List<PaymentMethod>? = null,
 
     @SerializedName("client_secret")
-    val clientSecret: String,
+    val clientSecret: String?,
 
     @SerializedName("next_action")
     val nextAction: NextAction? = null

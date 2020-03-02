@@ -12,7 +12,7 @@ abstract class ActivityStarter<TargetActivity : Activity, ArgsType : ActivitySta
     private val targetActivity: Class<TargetActivity>,
     private val requestCode: Int
 ) {
-    internal constructor(
+    constructor(
         activity: Activity,
         targetActivity: Class<TargetActivity>,
         requestCode: Int
@@ -23,7 +23,7 @@ abstract class ActivityStarter<TargetActivity : Activity, ArgsType : ActivitySta
         requestCode = requestCode
     )
 
-    internal constructor(
+    constructor(
         fragment: Fragment,
         targetActivity: Class<TargetActivity>,
         requestCode: Int

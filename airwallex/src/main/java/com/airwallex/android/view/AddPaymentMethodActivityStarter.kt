@@ -9,7 +9,7 @@ import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.AddPaymentMethodActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
-internal class AddPaymentMethodActivityStarter constructor(
+class AddPaymentMethodActivityStarter constructor(
     activity: Activity
 ) : ActivityStarter<AddPaymentMethodActivity, Args>(
     activity,

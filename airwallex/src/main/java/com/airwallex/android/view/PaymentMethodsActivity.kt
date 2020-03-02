@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 
 
-internal class PaymentMethodsActivity : AirwallexActivity() {
+class PaymentMethodsActivity : AirwallexActivity() {
 
     // The minimum amount of items to have below your current scroll position
     private var lastVisibleItem = 0
@@ -32,7 +32,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     private val airwallex: Airwallex by lazy {
         Airwallex(
             args.customerSessionConfig.token,
-            args.customerSessionConfig.paymentIntent.clientSecret
+            args.customerSessionConfig.paymentIntent.clientSecret!!
         )
     }
 
@@ -154,7 +154,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    alert(exception.toString())
+                    alert(message = exception.toString())
                     pbLoading.visibility = View.GONE
                     addPaymentMethod.visibility = View.VISIBLE
                     loading = false
@@ -177,10 +177,15 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             }
             PaymentCheckoutActivityStarter.REQUEST_CODE -> {
                 val result = PaymentCheckoutActivityStarter.Result.fromIntent(data)
-                result?.paymentIntent?.let { paymentIntent ->
+                result?.let {
                     setResult(
                         Activity.RESULT_OK,
-                        Intent().putExtras(PaymentMethodsActivityStarter.Result(paymentIntent).toBundle())
+                        Intent().putExtras(
+                            PaymentMethodsActivityStarter.Result(
+                                it.paymentIntent,
+                                it.paymentMethodType
+                            ).toBundle()
+                        )
                     )
                     finish()
                 }
