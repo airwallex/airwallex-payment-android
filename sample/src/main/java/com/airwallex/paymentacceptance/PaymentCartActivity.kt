@@ -4,7 +4,9 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -18,6 +20,7 @@ import com.airwallex.android.model.Order
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.view.PaymentMethodsActivityStarter
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -34,6 +37,20 @@ class PaymentCartActivity : AppCompatActivity() {
     private val api: Api by lazy {
         ApiFactory(Constants.BASE_URL).create()
     }
+
+    private val prefs: SharedPreferences by lazy {
+        application.getSharedPreferences(TAG, 0)
+    }
+
+    private var cachedCustomerId: String
+        set(value) {
+            prefs.edit()
+                .putString(CUSTOMER_ID, value)
+                .apply()
+        }
+        get() {
+            return prefs.getString(CUSTOMER_ID, "") ?: ""
+        }
 
     private lateinit var token: String
     private var paymentSession: PaymentSession? = null
@@ -64,37 +81,47 @@ class PaymentCartActivity : AppCompatActivity() {
                 .doOnSubscribe {
                     loading.visibility = View.VISIBLE
                 }
-//                .observeOn(Schedulers.io())
-//                .flatMap {
-//                    val responseData = JSONObject(it.string())
-//                    val token = responseData["token"].toString()
-//                    Store.token = token
-//                    api.createCustomer(
-//                        authorization = "Bearer $token",
-//                        params = mutableMapOf(
-//                            "request_id" to UUID.randomUUID().toString(),
-//                            "merchant_customer_id" to "79fc248c-a2fc-4863-b1ea-fac2e2c16dac",
-//                            "first_name" to "John",
-//                            "last_name" to "Doe",
-//                            "email" to "john.doe@airwallex.com",
-//                            "phone_number" to "13800000000",
-//                            "additional_info" to mapOf(
-//                                "registered_via_social_media" to false,
-//                                "registration_date" to "2019-09-18",
-//                                "first_successful_order_date" to "2019-09-18"
-//                            ),
-//                            "metadata" to mapOf(
-//                                "id" to 1
-//                            )
-//                        )
-//                    )
-//                }
                 .observeOn(Schedulers.io())
                 .flatMap {
                     val responseData = JSONObject(it.string())
                     token = responseData["token"].toString()
 
-                    val customerId = "cus_Dn6mVcMeTEkJgYuu9o5xEcxWRah"
+                    val customerId = cachedCustomerId
+                    if (TextUtils.isEmpty(customerId)) {
+                        api.createCustomer(
+                            authorization = "Bearer $token",
+                            params = mutableMapOf(
+                                "request_id" to UUID.randomUUID().toString(),
+                                "merchant_customer_id" to UUID.randomUUID().toString(),
+                                "first_name" to "John",
+                                "last_name" to "Doe",
+                                "email" to "john.doe@airwallex.com",
+                                "phone_number" to "13800000000",
+                                "additional_info" to mapOf(
+                                    "registered_via_social_media" to false,
+                                    "registration_date" to "2019-09-18",
+                                    "first_successful_order_date" to "2019-09-18"
+                                ),
+                                "metadata" to mapOf(
+                                    "id" to 1
+                                )
+                            )
+                        )
+                    } else {
+                        Observable.just(customerId)
+                    }
+                }
+                .observeOn(Schedulers.io())
+                .flatMap {
+                    val customerId = if (it is String) {
+                        it
+                    } else {
+                        val responseData = JSONObject((it as ResponseBody).string())
+                        val customerId = responseData["id"].toString()
+                        cachedCustomerId = customerId
+                        customerId
+                    }
+
                     val products = (cartFragment as PaymentCartFragment).products
                     val shipping = (cartFragment as PaymentCartFragment).shipping
                     api.createPaymentIntent(
@@ -322,6 +349,7 @@ class PaymentCartActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "PaymentCartActivity"
+        private const val CUSTOMER_ID = "customerId"
 
         fun startActivity(context: Context) {
             context.startActivity(Intent(context, PaymentCartActivity::class.java))
