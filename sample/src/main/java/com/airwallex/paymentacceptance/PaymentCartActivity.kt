@@ -125,7 +125,7 @@ class PaymentCartActivity : AppCompatActivity() {
         loading.visibility = View.GONE
 
         paymentSession = PaymentSession(this@PaymentCartActivity)
-        paymentSession?.presentPaymentFlow(CustomerSessionConfig(paymentIntent, token))
+        paymentSession?.presentPaymentCheckoutFlow(CustomerSessionConfig(paymentIntent, token))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -133,7 +133,7 @@ class PaymentCartActivity : AppCompatActivity() {
         cartFragment.onActivityResult(requestCode, resultCode, data)
 
         paymentSession?.handlePaymentCheckoutResult(requestCode, resultCode, data,
-            object : PaymentSession.PaymentCheckoutResult {
+            object : PaymentSession.PaymentResult<PaymentIntent> {
                 override fun onCancelled() {
                     Log.d(TAG, "User cancel the payment checkout")
                 }
