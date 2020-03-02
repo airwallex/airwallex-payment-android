@@ -5,7 +5,6 @@ import android.content.Intent
 import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.PaymentCheckoutActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 

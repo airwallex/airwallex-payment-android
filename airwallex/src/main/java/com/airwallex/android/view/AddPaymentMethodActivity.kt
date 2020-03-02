@@ -47,7 +47,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
 
                 override fun onFailed(exception: AirwallexException) {
                     loading.visibility = View.GONE
-                    showError(exception.toString())
+                    alert(exception.toString())
                 }
             })
     }

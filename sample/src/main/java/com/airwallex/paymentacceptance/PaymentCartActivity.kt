@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.PaymentSession
 import com.airwallex.android.model.Order
@@ -17,7 +19,7 @@ import kotlinx.android.synthetic.main.activity_payment_cart.*
 import org.json.JSONObject
 import java.util.*
 
-class PaymentCartActivity : PaymentBaseActivity() {
+class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
 
@@ -33,9 +35,6 @@ class PaymentCartActivity : PaymentBaseActivity() {
             (context as Activity).finish()
         }
     }
-
-    override val inPaymentFlow: Boolean
-        get() = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,5 +136,12 @@ class PaymentCartActivity : PaymentBaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         cartFragment.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

@@ -1,6 +1,7 @@
 package com.airwallex.paymentacceptance
 
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.tencent.mm.opensdk.modelbase.BaseReq
 import com.tencent.mm.opensdk.modelbase.BaseResp
 import com.tencent.mm.opensdk.modelpay.PayResp
@@ -8,11 +9,8 @@ import com.tencent.mm.opensdk.openapi.IWXAPI
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
 
-abstract class BaseWXPayEntryActivity : PaymentBaseActivity(), IWXAPIEventHandler {
+abstract class BaseWXPayEntryActivity : AppCompatActivity(), IWXAPIEventHandler {
     private lateinit var weChatApi: IWXAPI
-
-    override val inPaymentFlow: Boolean
-        get() = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
