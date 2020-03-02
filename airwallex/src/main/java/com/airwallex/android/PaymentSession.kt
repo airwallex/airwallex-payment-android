@@ -2,32 +2,17 @@ package com.airwallex.android
 
 import android.app.Activity
 import android.content.Intent
-import androidx.fragment.app.Fragment
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.Shipping
-import com.airwallex.android.view.*
+import com.airwallex.android.view.AddPaymentMethodActivityStarter
+import com.airwallex.android.view.PaymentMethodsActivityStarter
+import com.airwallex.android.view.PaymentShippingActivityStarter
 
-class PaymentSession internal constructor(
-    private val paymentMethodsActivityStarter: ActivityStarter<PaymentMethodsActivity, PaymentMethodsActivityStarter.Args>,
-    private val paymentShippingActivityStarter: ActivityStarter<PaymentShippingActivity, PaymentShippingActivityStarter.Args>,
-    private val addPaymentMethodActivityStarter: ActivityStarter<AddPaymentMethodActivity, AddPaymentMethodActivityStarter.Args>,
-    private val paymentSessionConfig: PaymentSessionConfig?
+class PaymentSession constructor(
+    private val context: Activity,
+    private val paymentSessionConfig: PaymentSessionConfig? = null
 ) {
-
-    constructor(activity: Activity, paymentSessionConfig: PaymentSessionConfig? = null) : this(
-        PaymentMethodsActivityStarter(activity),
-        PaymentShippingActivityStarter(activity),
-        AddPaymentMethodActivityStarter(activity),
-        paymentSessionConfig
-    )
-
-    constructor(fragment: Fragment, paymentSessionConfig: PaymentSessionConfig? = null) : this(
-        PaymentMethodsActivityStarter(fragment.requireActivity()),
-        PaymentShippingActivityStarter(fragment.requireActivity()),
-        AddPaymentMethodActivityStarter(fragment.requireActivity()),
-        paymentSessionConfig
-    )
 
     interface PaymentResult<T> {
         fun onCancelled()
@@ -40,7 +25,7 @@ class PaymentSession internal constructor(
             customerSessionConfig.paymentIntent.customerId,
             { "Customer id should not be null" })
 
-        paymentMethodsActivityStarter
+        PaymentMethodsActivityStarter(context)
             .startForResult(
                 PaymentMethodsActivityStarter.Args
                     .Builder(customerSessionConfig)
@@ -49,7 +34,7 @@ class PaymentSession internal constructor(
     }
 
     fun presentShippingFlow() {
-        paymentShippingActivityStarter
+        PaymentShippingActivityStarter(context)
             .startForResult(
                 PaymentShippingActivityStarter.Args.Builder()
                     .setShipping(paymentSessionConfig?.shipping)
@@ -57,8 +42,12 @@ class PaymentSession internal constructor(
             )
     }
 
+    @Throws(NullPointerException::class)
     fun presentAddPaymentMethodFlow(customerSessionConfig: CustomerSessionConfig) {
-        addPaymentMethodActivityStarter
+        checkNotNull(
+            customerSessionConfig.paymentIntent.customerId,
+            { "Customer id should not be null" })
+        AddPaymentMethodActivityStarter(context)
             .startForResult(
                 AddPaymentMethodActivityStarter.Args.Builder(customerSessionConfig)
                     .build()
