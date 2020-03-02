@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
@@ -86,13 +87,19 @@ class ShippingItemView constructor(
             data,
             object : PaymentSession.PaymentShippingResult {
                 override fun onCancelled() {
+                    Log.d(TAG, "User cancel edit shipping...")
                     completion.invoke(null)
                 }
 
                 override fun onSuccess(shipping: Shipping?) {
+                    Log.d(TAG, "Save the shipping success")
                     renewalShipping(shipping)
                     completion(shipping)
                 }
             })
+    }
+
+    companion object {
+        private const val TAG = "ShippingItemView"
     }
 }
