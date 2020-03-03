@@ -21,10 +21,10 @@ abstract class AirwallexActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
-    abstract fun onActionSave()
+    internal abstract fun onActionSave()
 
     @DrawableRes
-    abstract fun homeAsUpIndicatorResId(): Int
+    internal abstract fun homeAsUpIndicatorResId(): Int
 
     override fun onBackPressed() {
         setResult(Activity.RESULT_CANCELED)
@@ -44,7 +44,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
         }
     }
 
-    fun alert(title: String = "", message: String) {
+    internal fun alert(title: String = "", message: String) {
         if (!isFinishing) {
             AlertDialog.Builder(this)
                 .setTitle(title)

@@ -16,7 +16,7 @@ internal class CardNumberTextInputLayout constructor(
             field = value
         }
 
-    val isValid: Boolean
+    internal val isValid: Boolean
         get() = (teInput as CardNumberEditText).isCardNumberValid
 
     internal val cardNumber: String?

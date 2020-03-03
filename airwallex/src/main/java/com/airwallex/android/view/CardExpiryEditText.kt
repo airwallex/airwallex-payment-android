@@ -35,9 +35,9 @@ class CardExpiryEditText @JvmOverloads constructor(
 
     internal var completionCallback: () -> Unit = {}
 
-    var isDateValid: Boolean = false
+    internal var isDateValid: Boolean = false
 
-    val validDateFields: Pair<Int, Int>?
+    internal val validDateFields: Pair<Int, Int>?
         get() {
             val rawInput = text?.toString().takeIf { isDateValid } ?: return null
             val rawNumericInput = rawInput.replace("/".toRegex(), "")

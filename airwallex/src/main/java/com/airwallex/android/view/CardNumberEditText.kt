@@ -44,9 +44,8 @@ class CardNumberEditText @JvmOverloads constructor(
         }
 
     internal var completionCallback: () -> Unit = {}
+    internal var isCardNumberValid: Boolean = false
 
-    var isCardNumberValid: Boolean = false
-    // When we format the card number, we need to ignore the text change event.
     private var ignoreTextChanges = false
 
     init {
@@ -93,7 +92,7 @@ class CardNumberEditText @JvmOverloads constructor(
             private var latestInsertionSize: Int = 0
 
             private var cursorPosition: Int? = null
-            private var formattedNumber: String? = null
+            private var formatNumber: String? = null
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 if (!ignoreTextChanges) {
@@ -117,16 +116,16 @@ class CardNumberEditText @JvmOverloads constructor(
                     return
                 }
 
-                val spacelessNumber = CardUtils.removeSpacesAndHyphens(inputText) ?: return
-                val formattedNumber =
-                    createFormattedNumber(separateCardNumberGroups(spacelessNumber))
+                val spaceLessNumber = CardUtils.removeSpacesAndHyphens(inputText) ?: return
+                val formatNumber =
+                    createFormattedNumber(separateCardNumberGroups(spaceLessNumber))
 
                 this.cursorPosition = updateSelectionIndex(
-                    newLength = formattedNumber.length,
+                    newLength = formatNumber.length,
                     editActionStart = latestChangeStart,
                     editActionAddition = latestInsertionSize
                 )
-                this.formattedNumber = formattedNumber
+                this.formatNumber = formatNumber
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -135,13 +134,13 @@ class CardNumberEditText @JvmOverloads constructor(
                 }
 
                 ignoreTextChanges = true
-                if (formattedNumber != null) {
-                    setText(formattedNumber)
+                if (formatNumber != null) {
+                    setText(formatNumber)
                     cursorPosition?.let {
                         setSelection(it)
                     }
                 }
-                formattedNumber = null
+                formatNumber = null
                 cursorPosition = null
                 ignoreTextChanges = false
 
@@ -154,7 +153,6 @@ class CardNumberEditText @JvmOverloads constructor(
                     }
                 } else {
                     isCardNumberValid = CardUtils.isValidCardNumber(fieldText)
-                    // Don't show errors if we aren't full-length.
                     errorCallback.invoke(false)
                 }
             }
@@ -167,7 +165,7 @@ class CardNumberEditText @JvmOverloads constructor(
         brandChangeCallback.invoke(brand)
     }
 
-    fun separateCardNumberGroups(cardNumber: String): Array<String?> {
+    private fun separateCardNumberGroups(cardNumber: String): Array<String?> {
         val numberGroups = arrayOfNulls<String?>(4)
         var i = 0
         var previousStart = 0

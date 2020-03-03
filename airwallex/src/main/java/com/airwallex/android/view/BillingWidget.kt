@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.widget_billing.view.*
 
 class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    var billingChangeCallback: (() -> Unit)? = null
+    internal var billingChangeCallback: (() -> Unit)? = null
 
     var shipping: Shipping? = null
         set(value) {
@@ -32,7 +32,7 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
             return swSameAsShipping.isChecked
         }
 
-    val billing: Billing?
+    internal val billing: Billing?
         get() {
             val shipping = this.shipping
             if (sameAsShipping && shipping != null) {
@@ -74,7 +74,7 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
             }
         }
 
-    val isValid: Boolean
+    internal val isValid: Boolean
         get() {
             return sameAsShipping
                     || !sameAsShipping

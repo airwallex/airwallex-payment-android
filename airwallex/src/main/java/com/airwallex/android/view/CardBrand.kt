@@ -28,7 +28,7 @@ enum class CardBrand(
     );
 
     companion object {
-        fun fromCardNumber(number: String?): CardBrand {
+        internal fun fromCardNumber(number: String?): CardBrand {
             return values().firstOrNull { brand ->
                 brand.prefixes.takeIf { it.isNotEmpty() }?.any {
                     number?.startsWith(

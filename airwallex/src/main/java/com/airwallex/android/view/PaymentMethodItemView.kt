@@ -29,7 +29,7 @@ class PaymentMethodItemView constructor(
             return etCardCvc.text?.trim().toString().length == 3
         }
 
-    var cvcChangedCallback: () -> Unit = {}
+    internal var cvcChangedCallback: () -> Unit = {}
 
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
@@ -55,7 +55,7 @@ class PaymentMethodItemView constructor(
     }
 
     @SuppressLint("DefaultLocale")
-    fun renewalPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
+    internal fun renewalPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
         this.paymentMethod = paymentMethod
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
             tvPaymentMethod.text = paymentMethod.type.displayName

@@ -10,11 +10,11 @@ import kotlinx.android.synthetic.main.widget_card.view.*
 
 class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    var completionCallback: () -> Unit = {}
+    internal var completionCallback: () -> Unit = {}
 
-    var cardChangeCallback: () -> Unit = {}
+    internal var cardChangeCallback: () -> Unit = {}
 
-    val paymentMethodCard: PaymentMethod.Card?
+    internal val paymentMethodCard: PaymentMethod.Card?
         get() {
             return if (isValid) {
                 atlCardExpiry.validDateFields?.let { (month, year) ->
@@ -31,7 +31,7 @@ class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, 
             }
         }
 
-    val isValid: Boolean
+    internal val isValid: Boolean
         get() {
             val cardNumberIsValid = CardUtils.isValidCardNumber(atlCardNumber.cardNumber)
             val cardNameIsValid = atlCardName.value.isNotEmpty()
