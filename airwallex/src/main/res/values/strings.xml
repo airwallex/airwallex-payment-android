@@ -34,7 +34,7 @@
 
     <string name="save">Save</string>
     <string name="new_card">New card</string>
-    <string name="same_as_shipping">Same as shipping information</string>
+    <string name="same_as_shipping">Same as shipping address</string>
     <string name="enter_new_card">Enter a new card</string>
     <string name="no_saved_cards">No saved cards</string>
     <string name="payment_methods">Payment methods</string>

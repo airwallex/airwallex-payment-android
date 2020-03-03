@@ -48,7 +48,6 @@
         android:layout_marginBottom="20dp"
         android:orientation="horizontal"
         android:paddingLeft="24dp"
-        android:paddingRight="24dp"
         tools:ignore="RtlHardcoded">
 
         <com.google.android.material.textfield.TextInputEditText
