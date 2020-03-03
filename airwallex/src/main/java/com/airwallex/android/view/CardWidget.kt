@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.widget_card.view.*
 
 class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    internal var completionCallback: () -> Unit = {}
+    private var completionCallback: () -> Unit = {}
 
     internal var cardChangeCallback: () -> Unit = {}
 

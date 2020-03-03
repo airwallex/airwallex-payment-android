@@ -12,7 +12,7 @@ data class AirwallexConfiguration internal constructor(
             ContextProvider.init(context)
         }
 
-        var enableLogging: Boolean = false
+        private var enableLogging: Boolean = false
 
         fun enableLogging(enable: Boolean): Builder = apply {
             this.enableLogging = enable
