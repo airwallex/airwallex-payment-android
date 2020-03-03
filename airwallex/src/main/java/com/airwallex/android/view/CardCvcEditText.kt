@@ -33,7 +33,7 @@ class CardCvcEditText @JvmOverloads constructor(
             return text.toString().trim()
         }
 
-    val isValid: Boolean
+    internal val isValid: Boolean
         get() {
             return rawCvcValue.length == CVC_LENGTH
         }

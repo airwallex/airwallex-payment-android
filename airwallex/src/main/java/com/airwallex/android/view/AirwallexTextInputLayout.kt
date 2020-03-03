@@ -26,7 +26,7 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
     private var vBorder: View
     private var tvError: TextView
 
-    var error: String?
+    internal var error: String?
         set(value) {
             tvError.visibility = when (value) {
                 null -> View.GONE
@@ -40,7 +40,7 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
             return tvError.text.toString()
         }
 
-    var value: String
+    internal var value: String
         get() {
             return teInput.text?.trim().toString()
         }
@@ -110,21 +110,21 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
         }
     }
 
-    fun requestInputFocus() {
+    internal fun requestInputFocus() {
         teInput.requestFocus()
     }
 
-    fun afterTextChanged(afterTextChanged: (String) -> Unit) {
+    internal fun afterTextChanged(afterTextChanged: (String) -> Unit) {
         teInput.afterTextChanged(afterTextChanged)
     }
 
-    fun afterFocusChanged(afterFocusChanged: (Boolean) -> Unit) {
+    internal fun afterFocusChanged(afterFocusChanged: (Boolean) -> Unit) {
         teInput.setOnFocusChangeListener { _, hasFocus ->
             afterFocusChanged.invoke(hasFocus)
         }
     }
 
-    fun setOnEditorActionListener(l: (actionId: Int, event: KeyEvent?) -> Boolean) {
+    internal fun setOnEditorActionListener(l: (actionId: Int, event: KeyEvent?) -> Boolean) {
         teInput.setOnEditorActionListener { _, actionId, event ->
             l.invoke(actionId, event)
         }

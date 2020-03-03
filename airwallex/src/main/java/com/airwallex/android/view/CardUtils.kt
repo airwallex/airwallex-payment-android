@@ -6,8 +6,7 @@ object CardUtils {
 
     private const val LENGTH_CARD = 16
 
-    @JvmStatic
-    fun isValidCardNumber(cardNumber: String?): Boolean {
+    internal fun isValidCardNumber(cardNumber: String?): Boolean {
         val normalizedNumber = removeSpacesAndHyphens(cardNumber)
         return isValidLuhnNumber(normalizedNumber) && isValidCardLength(normalizedNumber)
     }
@@ -59,7 +58,7 @@ object CardUtils {
         return cardNumber.length == LENGTH_CARD
     }
 
-    fun getPossibleCardBrand(cardNumber: String?, shouldNormalize: Boolean): CardBrand {
+    internal fun getPossibleCardBrand(cardNumber: String?, shouldNormalize: Boolean): CardBrand {
         if (cardNumber.isNullOrBlank()) {
             return CardBrand.Unknown
         }
@@ -74,7 +73,7 @@ object CardUtils {
         return fromCardNumber(normalizeCardNumber)
     }
 
-    fun removeSpacesAndHyphens(cardNumberWithSpaces: String?): String? {
+    internal fun removeSpacesAndHyphens(cardNumberWithSpaces: String?): String? {
         return cardNumberWithSpaces
             .takeUnless { it.isNullOrBlank() }
             ?.replace("\\s|-".toRegex(), "")

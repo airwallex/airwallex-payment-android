@@ -9,15 +9,15 @@ class CardCvcTextInputLayout constructor(
     attrs: AttributeSet
 ) : AirwallexTextInputLayout(context, attrs, R.layout.card_cvc_input_layout) {
 
-    val isValid: Boolean
+    internal val isValid: Boolean
         get() = (teInput as CardCvcEditText).isValid
 
-    var completionCallback: () -> Unit = {}
+    internal var completionCallback: () -> Unit = {}
         set(value) {
             (teInput as CardCvcEditText).completionCallback = value
             field = value
         }
 
-    val cvcValue: String?
+    internal val cvcValue: String?
         get() = (teInput as CardCvcEditText).cvcValue
 }

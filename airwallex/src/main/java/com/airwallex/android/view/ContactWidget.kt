@@ -18,9 +18,9 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         val email: String
     )
 
-    var contactChangeCallback: (() -> Unit)? = null
+    internal var contactChangeCallback: (() -> Unit)? = null
 
-    val isValidContact: Boolean
+    internal val isValidContact: Boolean
         get() {
             return atlLastName.value.isNotEmpty()
                     && atlFirstName.value.isNotEmpty()
@@ -47,7 +47,7 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         listenFocusChanged()
     }
 
-    fun initializeView(shipping: Shipping) {
+    internal fun initializeView(shipping: Shipping) {
         with(shipping) {
             atlLastName.value = lastName ?: ""
             atlFirstName.value = firstName ?: ""

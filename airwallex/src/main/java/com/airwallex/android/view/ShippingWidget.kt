@@ -11,11 +11,11 @@ import kotlinx.android.synthetic.main.widget_shipping.view.*
 
 class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    var shippingChangeCallback: (() -> Unit)? = null
+    internal var shippingChangeCallback: (() -> Unit)? = null
 
     private var country: CountryAutoCompleteView.Country? = null
 
-    val address: Address
+    internal val address: Address
         get() {
             return Address.Builder()
                 .setCountryCode(country?.code)
@@ -26,7 +26,7 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
                 .build()
         }
 
-    val isValidShipping: Boolean
+    internal val isValidShipping: Boolean
         get() {
             return country != null
                     && atlState.value.isNotEmpty()
@@ -50,7 +50,7 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
         listenFocusChanged()
     }
 
-    fun initializeView(shipping: Shipping) {
+    internal fun initializeView(shipping: Shipping) {
         with(shipping) {
             atlStreetAddress.value = address?.street ?: ""
             atlZipCode.value = address?.postcode ?: ""
