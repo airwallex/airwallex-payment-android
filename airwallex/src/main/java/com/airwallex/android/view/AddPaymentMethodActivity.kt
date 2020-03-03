@@ -1,9 +1,11 @@
 package com.airwallex.android.view
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
@@ -69,9 +71,18 @@ class AddPaymentMethodActivity : AirwallexActivity() {
         return cardWidget.isValid && billingWidget.isValid
     }
 
-
     private fun invalidateConfirmStatus() {
+        val isValid = isValid()
         tvSaveCard.isEnabled = isValid()
+        if (isValid) {
+            hideKeyboard(this)
+        }
+    }
+
+    private fun hideKeyboard(activity: Activity) {
+        val inputMethodManager =
+            activity.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        inputMethodManager?.hideSoftInputFromWindow(activity.currentFocus?.windowToken, 0)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
