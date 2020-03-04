@@ -1,7 +1,6 @@
 package com.airwallex.android.view
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.card_number_input_layout.view.*
