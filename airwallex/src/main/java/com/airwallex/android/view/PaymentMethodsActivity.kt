@@ -15,8 +15,7 @@ import com.airwallex.android.model.PaymentMethodType
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 
-
-class PaymentMethodsActivity : AirwallexActivity() {
+internal class PaymentMethodsActivity : AirwallexActivity() {
 
     private var pageNum = 0
     private var hasMore = true

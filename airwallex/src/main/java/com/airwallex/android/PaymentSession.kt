@@ -3,6 +3,10 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.AddPaymentMethodActivityStarter
 import com.airwallex.android.view.PaymentMethodsActivityStarter
 import com.airwallex.android.view.PaymentShippingActivityStarter
@@ -12,15 +16,21 @@ class PaymentSession constructor(
     private val paymentSessionConfig: PaymentSessionConfig? = null
 ) {
 
-    interface PaymentResult<T> {
+    interface PaymentResult {
         fun onCancelled()
+    }
 
-        fun onSuccess(result: T)
+    interface PaymentShippingResult : PaymentResult {
+        fun onSuccess(shipping: Shipping)
+    }
 
-        // TODO Some don't need
-        fun onFailed(exception: AirwallexException) {
+    interface PaymentIntentResult : PaymentResult {
+        fun onSuccess(paymentIntent: PaymentIntent, paymentMethodType: PaymentMethodType)
+        fun onFailed(exception: AirwallexException)
+    }
 
-        }
+    interface PaymentMethodResult : PaymentResult {
+        fun onSuccess(paymentMethod: PaymentMethod)
     }
 
     @Throws(NullPointerException::class)
@@ -62,13 +72,13 @@ class PaymentSession constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        paymentMethodCallback: PaymentResult<AddPaymentMethodActivityStarter.Result>
+        callback: PaymentMethodResult
     ) {
         handlePaymentResult(
             requestCode,
             resultCode,
             data,
-            paymentMethodCallback = paymentMethodCallback
+            callback
         )
     }
 
@@ -76,13 +86,13 @@ class PaymentSession constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        paymentShippingCallback: PaymentResult<PaymentShippingActivityStarter.Result>
+        callback: PaymentShippingResult
     ) {
         handlePaymentResult(
             requestCode,
             resultCode,
             data,
-            paymentShippingCallback = paymentShippingCallback
+            callback
         )
     }
 
@@ -90,13 +100,13 @@ class PaymentSession constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        paymentIntentCallback: PaymentResult<PaymentMethodsActivityStarter.Result>
+        callback: PaymentIntentResult
     ) {
         handlePaymentResult(
             requestCode,
             resultCode,
             data,
-            paymentIntentCallback = paymentIntentCallback
+            callback
         )
     }
 
@@ -104,9 +114,7 @@ class PaymentSession constructor(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
-        paymentMethodCallback: PaymentResult<AddPaymentMethodActivityStarter.Result>? = null,
-        paymentShippingCallback: PaymentResult<PaymentShippingActivityStarter.Result>? = null,
-        paymentIntentCallback: PaymentResult<PaymentMethodsActivityStarter.Result>? = null
+        callback: PaymentResult? = null
     ): Boolean {
         if (!VALID_REQUEST_CODES.contains(requestCode)) {
             return false
@@ -117,21 +125,23 @@ class PaymentSession constructor(
                 return when (requestCode) {
                     AddPaymentMethodActivityStarter.REQUEST_CODE -> {
                         val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
-                        paymentMethodCallback?.onSuccess(requireNotNull(result))
+                        (callback as PaymentMethodResult).onSuccess(requireNotNull(result?.paymentMethod))
                         true
                     }
                     PaymentShippingActivityStarter.REQUEST_CODE -> {
                         val result = PaymentShippingActivityStarter.Result.fromIntent(data)
-                        paymentShippingCallback?.onSuccess(requireNotNull(result))
+                        (callback as PaymentShippingResult).onSuccess(requireNotNull(result?.shipping))
                         true
                     }
                     PaymentMethodsActivityStarter.REQUEST_CODE -> {
                         val result = PaymentMethodsActivityStarter.Result.fromIntent(data)
-                        requireNotNull(result)
-                        if (result.exception != null) {
-                            paymentIntentCallback?.onFailed(result.exception)
+                        if (result?.exception != null) {
+                            (callback as PaymentIntentResult).onFailed(result.exception)
                         } else {
-                            paymentIntentCallback?.onSuccess(result)
+                            (callback as PaymentIntentResult).onSuccess(
+                                requireNotNull(result?.paymentIntent),
+                                requireNotNull(result?.paymentMethodType)
+                            )
                         }
                         true
                     }
@@ -141,15 +151,15 @@ class PaymentSession constructor(
             Activity.RESULT_CANCELED -> {
                 return when (requestCode) {
                     AddPaymentMethodActivityStarter.REQUEST_CODE -> {
-                        paymentMethodCallback?.onCancelled()
+                        (callback as PaymentMethodResult).onCancelled()
                         true
                     }
                     PaymentShippingActivityStarter.REQUEST_CODE -> {
-                        paymentShippingCallback?.onCancelled()
+                        (callback as PaymentShippingResult).onCancelled()
                         true
                     }
                     PaymentMethodsActivityStarter.REQUEST_CODE -> {
-                        paymentIntentCallback?.onCancelled()
+                        (callback as PaymentIntentResult).onCancelled()
                         true
                     }
                     else -> false

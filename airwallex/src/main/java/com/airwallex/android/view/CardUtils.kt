@@ -2,7 +2,7 @@ package com.airwallex.android.view
 
 import com.airwallex.android.view.CardBrand.Companion.fromCardNumber
 
-object CardUtils {
+internal object CardUtils {
 
     private const val LENGTH_CARD = 16
 

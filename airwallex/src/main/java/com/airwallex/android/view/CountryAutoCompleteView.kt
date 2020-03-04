@@ -12,7 +12,7 @@ import com.airwallex.android.R
 import kotlinx.android.synthetic.main.view_country_autocomplete.view.*
 import java.util.*
 
-class CountryAutoCompleteView constructor(
+internal class CountryAutoCompleteView constructor(
     context: Context,
     attrs: AttributeSet
 ) : FrameLayout(context, attrs) {

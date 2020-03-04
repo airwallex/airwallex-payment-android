@@ -17,7 +17,7 @@ import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization
 import org.json.JSONArray
 
-object ThreeDSecure {
+internal object ThreeDSecure {
 
     fun onActivityResult(
         resultCode: Int,

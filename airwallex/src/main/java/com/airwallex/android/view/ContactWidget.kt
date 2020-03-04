@@ -8,7 +8,7 @@ import com.airwallex.android.R
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.widget_contact.view.*
 
-class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+internal class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     internal data class Contact(
         val lastName: String,

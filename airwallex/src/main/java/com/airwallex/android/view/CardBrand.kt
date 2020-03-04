@@ -3,7 +3,7 @@ package com.airwallex.android.view
 import androidx.annotation.DrawableRes
 import com.airwallex.android.R
 
-enum class CardBrand(
+internal enum class CardBrand(
     val type: String,
     @DrawableRes val icon: Int,
     private val prefixes: Set<String> = emptySet()

@@ -19,7 +19,6 @@ import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.Order
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.view.PaymentMethodsActivityStarter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -169,24 +168,21 @@ class PaymentCartActivity : AppCompatActivity() {
         cartFragment.onActivityResult(requestCode, resultCode, data)
 
         paymentSession?.handlePaymentIntentResult(requestCode, resultCode, data,
-            paymentIntentCallback = object :
-                PaymentSession.PaymentResult<PaymentMethodsActivityStarter.Result> {
+            object :
+                PaymentSession.PaymentIntentResult {
                 override fun onCancelled() {
                     Log.d(TAG, "User cancel the payment checkout")
                 }
 
-                override fun onSuccess(result: PaymentMethodsActivityStarter.Result) {
+                override fun onSuccess(
+                    paymentIntent: PaymentIntent,
+                    paymentMethodType: PaymentMethodType
+                ) {
                     loading.visibility = View.VISIBLE
-
-                    val paymentIntent = result.paymentIntent
-                    val paymentMethodType = result.paymentMethodType
-
-                    if (paymentIntent != null && paymentMethodType != null) {
-                        handlePaymentResult(paymentMethodType, paymentIntent) {
-                            val paymentIntentId = paymentIntent.id
-                            airwallex?.let { airwallex ->
-                                retrievePaymentIntent(airwallex, paymentIntentId)
-                            }
+                    handlePaymentResult(paymentMethodType, paymentIntent) {
+                        val paymentIntentId = paymentIntent.id
+                        airwallex?.let {
+                            retrievePaymentIntent(it, paymentIntentId)
                         }
                     }
                 }

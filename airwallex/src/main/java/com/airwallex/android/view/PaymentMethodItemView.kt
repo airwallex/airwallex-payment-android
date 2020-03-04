@@ -17,7 +17,7 @@ import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 import kotlinx.android.synthetic.main.payment_method_item.view.*
 
-class PaymentMethodItemView constructor(
+internal class PaymentMethodItemView constructor(
     context: Context,
     attrs: AttributeSet
 ) : RelativeLayout(context, attrs) {

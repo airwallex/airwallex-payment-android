@@ -11,7 +11,7 @@ import com.airwallex.android.model.Billing
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.widget_billing.view.*
 
-class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     internal var billingChangeCallback: () -> Unit = {}
 

@@ -8,7 +8,7 @@ import com.airwallex.android.R
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.widget_card.view.*
 
-class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     private var completionCallback: () -> Unit = {}
 
