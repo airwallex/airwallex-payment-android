@@ -165,7 +165,8 @@ class PaymentMethodsActivity : AirwallexActivity() {
                         Intent().putExtras(
                             PaymentMethodsActivityStarter.Result(
                                 it.paymentIntent,
-                                it.paymentMethodType
+                                it.paymentMethodType,
+                                it.exception
                             ).toBundle()
                         )
                     )

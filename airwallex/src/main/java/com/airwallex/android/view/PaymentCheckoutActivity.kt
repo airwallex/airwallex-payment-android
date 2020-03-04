@@ -116,25 +116,31 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
             paymentIntentParams = paymentIntentParams,
             callback = object : Airwallex.PaymentIntentCallback {
                 override fun onSuccess(paymentIntent: PaymentIntent) {
-                    finishWithPaymentIntent(paymentIntent, paymentMethod.type)
+                    finishPaymentCheckout(paymentIntent = paymentIntent, type = paymentMethod.type)
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    setLoadingProgress(false)
-                    alert(
-                        getString(R.string.payment_failed),
-                        getString(R.string.payment_failed_message)
-                    )
+                    finishPaymentCheckout(exception = exception)
                 }
             }
         )
     }
 
-    private fun finishWithPaymentIntent(paymentIntent: PaymentIntent, type: PaymentMethodType) {
+    private fun finishPaymentCheckout(
+        paymentIntent: PaymentIntent? = null,
+        type: PaymentMethodType? = null,
+        exception: AirwallexException? = null
+    ) {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent()
-                .putExtras(PaymentCheckoutActivityStarter.Result(paymentIntent, type).toBundle())
+                .putExtras(
+                    PaymentCheckoutActivityStarter.Result(
+                        paymentIntent = paymentIntent,
+                        paymentMethodType = type,
+                        exception = exception
+                    ).toBundle()
+                )
         )
         finish()
     }

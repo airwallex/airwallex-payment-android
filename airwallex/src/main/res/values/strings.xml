@@ -46,7 +46,4 @@
     <string name="pay_now">Pay now</string>
     <string name="total">Total</string>
     <string name="payment">Payment</string>
-
-    <string name="payment_failed">Payment failed</string>
-    <string name="payment_failed_message">There was an error while processing your payment. Please try again.</string>
 </resources>
