@@ -3,7 +3,6 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
@@ -74,7 +73,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
     }
 
     override fun onActionSave() {
-        loading.visibility = View.VISIBLE
+        setLoadingProgress(true)
         val paymentIntentParams: PaymentIntentParams = when (paymentMethod.type) {
             PaymentMethodType.CARD -> {
                 PaymentIntentParams.Builder()
@@ -122,7 +121,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    loading.visibility = View.GONE
+                    setLoadingProgress(false)
                     alert(
                         getString(R.string.payment_failed),
                         getString(R.string.payment_failed_message)
@@ -133,7 +132,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
     }
 
     private fun finishWithPaymentIntent(paymentIntent: PaymentIntent, type: PaymentMethodType) {
-        loading.visibility = View.GONE
+        setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent()
                 .putExtras(PaymentCheckoutActivityStarter.Result(paymentIntent, type).toBundle())
