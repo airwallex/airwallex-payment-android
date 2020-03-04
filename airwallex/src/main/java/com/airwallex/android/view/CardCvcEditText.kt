@@ -18,7 +18,7 @@ class CardCvcEditText @JvmOverloads constructor(
 ) : TextInputEditText(context, attrs, defStyleAttr) {
 
     companion object {
-        private const val CVC_LENGTH = 3
+        const val CVC_LENGTH = 3
     }
 
     internal val cvcValue: String?
