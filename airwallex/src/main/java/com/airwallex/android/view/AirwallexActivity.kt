@@ -3,6 +3,7 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -55,6 +56,14 @@ abstract class AirwallexActivity : AppCompatActivity() {
                 }
                 .create()
                 .show()
+        }
+    }
+
+    protected open fun setLoadingProgress(communicating: Boolean) {
+        loading.visibility = if (communicating) {
+            View.VISIBLE
+        } else {
+            View.GONE
         }
     }
 }

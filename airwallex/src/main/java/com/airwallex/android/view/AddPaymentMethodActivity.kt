@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
@@ -31,7 +30,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
 
     override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
-        loading.visibility = View.VISIBLE
+        setLoadingProgress(true)
         val paymentMethodParams = PaymentMethodParams.Builder()
             .setCustomerId(args.customerSessionConfig.paymentIntent.customerId)
             .setRequestId(UUID.randomUUID().toString())
@@ -48,7 +47,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    loading.visibility = View.GONE
+                    setLoadingProgress(false)
                     alert(message = exception.toString())
                 }
             })
@@ -59,7 +58,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
     }
 
     private fun onActionSave(paymentMethod: PaymentMethod, cvc: String) {
-        loading.visibility = View.GONE
+        setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent()
                 .putExtras(AddPaymentMethodActivityStarter.Result(paymentMethod, cvc).toBundle())

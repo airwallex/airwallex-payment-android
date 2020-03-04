@@ -83,9 +83,10 @@ class PaymentMethodsActivity : AirwallexActivity() {
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
+                    if (loading) return
                     totalItemCount = viewManager.itemCount
                     lastVisibleItem = viewManager.findLastVisibleItemPosition()
-                    if (!loading && totalItemCount <= lastVisibleItem + VISIBLE_THRESHOLD && hasMore) {
+                    if (totalItemCount <= lastVisibleItem + VISIBLE_THRESHOLD && hasMore) {
                         fetchPaymentMethods(totalItemCount == 1)
                     }
                 }
@@ -132,8 +133,7 @@ class PaymentMethodsActivity : AirwallexActivity() {
             return
         }
         if (showLoading) {
-            pbLoading.visibility = View.VISIBLE
-            addPaymentMethod.visibility = View.GONE
+            setLoadingProgress(true)
         }
         loading = true
         airwallex.getPaymentMethods(
@@ -146,18 +146,14 @@ class PaymentMethodsActivity : AirwallexActivity() {
                     cardAdapter.setPaymentMethods(cards)
                     paymentNoCards.visibility =
                         if (cardAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
-                    addPaymentMethod.visibility = View.VISIBLE
-                    pbLoading.visibility = View.GONE
+                    setLoadingProgress(false)
                     hasMore = response.hasMore
                     pageNum++
-                    loading = false
                 }
 
                 override fun onFailed(exception: AirwallexException) {
                     alert(message = exception.toString())
-                    pbLoading.visibility = View.GONE
-                    addPaymentMethod.visibility = View.VISIBLE
-                    loading = false
+                    setLoadingProgress(false)
                 }
             })
     }
@@ -190,6 +186,17 @@ class PaymentMethodsActivity : AirwallexActivity() {
                     finish()
                 }
             }
+        }
+    }
+
+    override fun setLoadingProgress(loading: Boolean) {
+        if (loading) {
+            pbLoading.visibility = View.VISIBLE
+            addPaymentMethod.visibility = View.GONE
+        } else {
+            pbLoading.visibility = View.GONE
+            addPaymentMethod.visibility = View.VISIBLE
+            this.loading = false
         }
     }
 
