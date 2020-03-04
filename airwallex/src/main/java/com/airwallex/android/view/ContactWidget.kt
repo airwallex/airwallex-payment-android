@@ -16,7 +16,7 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         val phone: String
     )
 
-    internal var contactChangeCallback: (() -> Unit)? = null
+    internal var contactChangeCallback: () -> Unit = {}
 
     internal val isValidContact: Boolean
         get() {
@@ -52,8 +52,8 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
     }
 
     private fun listenTextChanged() {
-        atlLastName.afterTextChanged { contactChangeCallback?.invoke() }
-        atlFirstName.afterTextChanged { contactChangeCallback?.invoke() }
+        atlLastName.afterTextChanged { contactChangeCallback.invoke() }
+        atlFirstName.afterTextChanged { contactChangeCallback.invoke() }
     }
 
     private fun listenFocusChanged() {
