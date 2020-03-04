@@ -10,7 +10,7 @@ import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver
 
-class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver {
+internal class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver {
 
     companion object {
         const val EXTRA_THREE_D_SECURE_LOOKUP = "EXTRA_THREE_D_SECURE_LOOKUP"

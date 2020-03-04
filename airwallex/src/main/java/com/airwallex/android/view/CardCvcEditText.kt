@@ -11,7 +11,7 @@ import android.view.View
 import com.airwallex.android.R
 import com.google.android.material.textfield.TextInputEditText
 
-class CardCvcEditText @JvmOverloads constructor(
+internal class CardCvcEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle

@@ -9,7 +9,7 @@ import android.util.AttributeSet
 import com.airwallex.android.R
 import com.google.android.material.textfield.TextInputEditText
 
-class CardNumberEditText @JvmOverloads constructor(
+internal class CardNumberEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle

@@ -8,7 +8,7 @@ import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.PaymentShippingActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
-class PaymentShippingActivityStarter constructor(
+internal class PaymentShippingActivityStarter constructor(
     activity: Activity
 ) : ActivityStarter<PaymentShippingActivity, Args>(
     activity,

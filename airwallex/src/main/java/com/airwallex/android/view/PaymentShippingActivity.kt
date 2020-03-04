@@ -9,7 +9,7 @@ import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.activity_add_shipping.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 
-class PaymentShippingActivity : AirwallexActivity() {
+internal class PaymentShippingActivity : AirwallexActivity() {
 
     private val args: PaymentShippingActivityStarter.Args by lazy {
         PaymentShippingActivityStarter.Args.getExtra(intent)

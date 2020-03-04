@@ -9,7 +9,7 @@ import com.airwallex.android.model.Address
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.widget_shipping.view.*
 
-class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+internal class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     internal var shippingChangeCallback: () -> Unit = {}
 

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import com.airwallex.android.R
 
-class CardCvcTextInputLayout constructor(
+internal class CardCvcTextInputLayout constructor(
     context: Context,
     attrs: AttributeSet
 ) : AirwallexTextInputLayout(context, attrs, R.layout.card_cvc_input_layout) {

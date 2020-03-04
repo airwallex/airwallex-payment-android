@@ -2,7 +2,7 @@ package com.airwallex.android
 
 import android.content.Context
 
-class ContextProvider {
+internal class ContextProvider {
 
     companion object {
 

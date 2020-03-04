@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.activity_airwallex.*
 
-abstract class AirwallexActivity : AppCompatActivity() {
+internal abstract class AirwallexActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

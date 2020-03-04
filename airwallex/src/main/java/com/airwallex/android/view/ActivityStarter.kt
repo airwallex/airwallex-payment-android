@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.fragment.app.Fragment
 
-abstract class ActivityStarter<TargetActivity : Activity, ArgsType : ActivityStarter.Args> internal constructor(
+internal abstract class ActivityStarter<TargetActivity : Activity, ArgsType : ActivityStarter.Args> internal constructor(
     private val activity: Activity,
     private val fragment: Fragment? = null,
     private val targetActivity: Class<TargetActivity>,

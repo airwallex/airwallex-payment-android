@@ -10,7 +10,7 @@ import com.airwallex.android.R
 import com.google.android.material.textfield.TextInputEditText
 import kotlin.math.min
 
-class CardExpiryEditText @JvmOverloads constructor(
+internal class CardExpiryEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
