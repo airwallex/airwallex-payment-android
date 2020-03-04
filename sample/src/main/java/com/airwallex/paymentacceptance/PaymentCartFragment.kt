@@ -12,8 +12,8 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.Product
 import com.airwallex.android.model.Shipping
-import kotlinx.android.synthetic.main.cart_summary_item.view.*
-import kotlinx.android.synthetic.main.fragment_cart_summary.*
+import kotlinx.android.synthetic.main.cart_item.view.*
+import kotlinx.android.synthetic.main.fragment_cart.*
 
 class PaymentCartFragment : Fragment() {
 
@@ -56,7 +56,7 @@ class PaymentCartFragment : Fragment() {
     )
 
     @SuppressLint("ViewConstructor")
-    class OrderSummaryItem(
+    class CartItem(
         order: Product,
         context: Context?,
         private val removeHandler: () -> Unit
@@ -66,7 +66,7 @@ class PaymentCartFragment : Fragment() {
         init {
             View.inflate(
                 context,
-                R.layout.cart_summary_item, this
+                R.layout.cart_item, this
             )
 
             tvProductName.text = order.name
@@ -86,7 +86,7 @@ class PaymentCartFragment : Fragment() {
     ): View? {
         return View.inflate(
             context,
-            R.layout.fragment_cart_summary, null
+            R.layout.fragment_cart, null
         )
     }
 
@@ -110,7 +110,7 @@ class PaymentCartFragment : Fragment() {
         val products = products
         llProducts.removeAllViews()
         products.map {
-            OrderSummaryItem(
+            CartItem(
                 it,
                 context
             ) {
