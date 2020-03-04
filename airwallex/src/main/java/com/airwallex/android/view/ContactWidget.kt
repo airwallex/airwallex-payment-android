@@ -2,7 +2,6 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Patterns
 import android.view.View
 import android.widget.LinearLayout
 import com.airwallex.android.R
@@ -14,8 +13,7 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
     internal data class Contact(
         val lastName: String,
         val firstName: String,
-        val phone: String,
-        val email: String
+        val phone: String
     )
 
     internal var contactChangeCallback: (() -> Unit)? = null
@@ -24,7 +22,6 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         get() {
             return atlLastName.value.isNotEmpty()
                     && atlFirstName.value.isNotEmpty()
-                    && atlEmail.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches()
         }
 
     internal val contact: Contact
@@ -32,8 +29,7 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
             return Contact(
                 lastName = atlLastName.value,
                 firstName = atlFirstName.value,
-                phone = atlPhoneNumber.value,
-                email = atlEmail.value
+                phone = atlPhoneNumber.value
             )
         }
 
@@ -52,14 +48,12 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
             atlLastName.value = lastName ?: ""
             atlFirstName.value = firstName ?: ""
             atlPhoneNumber.value = phone ?: ""
-            atlEmail.value = email ?: ""
         }
     }
 
     private fun listenTextChanged() {
         atlLastName.afterTextChanged { contactChangeCallback?.invoke() }
         atlFirstName.afterTextChanged { contactChangeCallback?.invoke() }
-        atlEmail.afterTextChanged { contactChangeCallback?.invoke() }
     }
 
     private fun listenFocusChanged() {
@@ -84,24 +78,6 @@ class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
                 }
             } else {
                 atlFirstName.error = null
-            }
-        }
-
-        atlEmail.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                when {
-                    atlEmail.value.isEmpty() -> {
-                        atlEmail.error = resources.getString(R.string.empty_email)
-                    }
-                    !Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches() -> {
-                        atlEmail.error = resources.getString(R.string.invalid_email)
-                    }
-                    else -> {
-                        atlEmail.error = null
-                    }
-                }
-            } else {
-                atlEmail.error = null
             }
         }
     }
