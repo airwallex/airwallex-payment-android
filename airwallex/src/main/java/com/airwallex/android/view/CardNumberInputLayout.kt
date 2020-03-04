@@ -1,6 +1,7 @@
 package com.airwallex.android.view
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.card_number_input_layout.view.*
@@ -24,11 +25,14 @@ internal class CardNumberTextInputLayout constructor(
 
     init {
         val input = teInput as CardNumberEditText
+        tlInput.errorIconDrawable = null
         input.errorCallback = { showError ->
-            error = if (showError) {
-                resources.getString(R.string.invalid_card_number)
+            if (showError) {
+                error = resources.getString(R.string.invalid_card_number)
+                tlInput.error = " "
             } else {
-                null
+                error = null
+                tlInput.error = null
             }
         }
 

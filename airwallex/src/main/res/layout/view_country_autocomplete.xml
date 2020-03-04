@@ -21,6 +21,7 @@
             android:textColorHint="@color/airwallex_color_edit_text_accent"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
+            app:errorTextColor="@color/airwallex_color_edit_text_error"
             app:hintTextColor="@color/airwallex_color_edit_text_accent">
 
             <AutoCompleteTextView
