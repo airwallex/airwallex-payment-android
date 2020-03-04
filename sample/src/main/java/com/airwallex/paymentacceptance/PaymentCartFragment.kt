@@ -21,7 +21,6 @@ class PaymentCartFragment : Fragment() {
         .setFirstName("John")
         .setLastName("Doe")
         .setPhone("13800000000")
-        .setEmail("jim631@sina.com")
         .setAddress(
             Address.Builder()
                 .setCountryCode("CN")

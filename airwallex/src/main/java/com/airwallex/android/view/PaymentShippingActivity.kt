@@ -52,7 +52,6 @@ class PaymentShippingActivity : AirwallexActivity() {
             .setLastName(contact.lastName)
             .setFirstName(contact.firstName)
             .setPhone(contact.phone)
-            .setEmail(contact.email)
             .setAddress(shippingWidget.address)
             .build()
         setResult(

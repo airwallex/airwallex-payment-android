@@ -16,7 +16,6 @@ internal object PaymentMethodFixtures {
 	        },
             "billing": {
                 "date_of_birth": "2011-10-12",
-                "email": "jim631@sina.com",
                 "first_name": "Jim",
                 "last_name": "He",
                 "phone_number": "1367875786",

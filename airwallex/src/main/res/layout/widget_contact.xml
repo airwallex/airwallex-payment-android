@@ -33,15 +33,6 @@
         app:hint="@string/shipping_last_name_hint" />
 
     <com.airwallex.android.view.AirwallexTextInputLayout
-        android:id="@+id/atlEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:imeOptions="actionNext"
-        android:inputType="text"
-        app:hint="@string/contact_email_hint" />
-
-    <com.airwallex.android.view.AirwallexTextInputLayout
         android:id="@+id/atlPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
