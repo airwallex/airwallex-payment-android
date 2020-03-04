@@ -70,6 +70,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         rlPayNow.setOnClickListener {
             startConfirmPaymentIntent(paymentMethod)
         }
+        updateButtonStatus()
     }
 
     private fun startConfirmPaymentIntent(paymentMethod: PaymentMethod) {
