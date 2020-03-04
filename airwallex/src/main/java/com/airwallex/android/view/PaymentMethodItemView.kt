@@ -24,6 +24,8 @@ class PaymentMethodItemView constructor(
 
     private lateinit var paymentMethod: PaymentMethod
 
+    internal var cvc: String? = null
+
     internal val isValid: Boolean
         get() {
             return etCardCvc.text?.trim().toString().length == 3
@@ -43,6 +45,7 @@ class PaymentMethodItemView constructor(
                 if (isValid) {
                     hideKeyboard(context as Activity)
                 }
+                cvc = etCardCvc.text?.trim().toString()
                 cvcChangedCallback()
             }
 
@@ -57,6 +60,7 @@ class PaymentMethodItemView constructor(
     @SuppressLint("DefaultLocale")
     internal fun renewalPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
         this.paymentMethod = paymentMethod
+        this.cvc = cvc
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
             tvPaymentMethod.text = paymentMethod.type.displayName
             llCardCvc.visibility = View.GONE

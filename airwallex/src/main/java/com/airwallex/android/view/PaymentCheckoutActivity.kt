@@ -47,10 +47,6 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         PaymentCheckoutActivityStarter.Args.getExtra(intent)
     }
 
-    override fun onActionSave() {
-
-    }
-
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_back
     }
@@ -72,12 +68,12 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         }
 
         rlPayNow.setOnClickListener {
-            startConfirmPaymentIntent(paymentMethod)
+            onActionSave()
         }
         updateButtonStatus()
     }
 
-    private fun startConfirmPaymentIntent(paymentMethod: PaymentMethod) {
+    override fun onActionSave() {
         loading.visibility = View.VISIBLE
         val paymentIntentParams: PaymentIntentParams = when (paymentMethod.type) {
             PaymentMethodType.CARD -> {
@@ -88,7 +84,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
                     .setPaymentMethodReference(
                         PaymentMethodReference.Builder()
                             .setId(paymentMethod.id)
-                            .setCvc("123")
+                            .setCvc(paymentMethodItemView.cvc)
                             .build()
                     )
                     .setPaymentMethodOptions(
