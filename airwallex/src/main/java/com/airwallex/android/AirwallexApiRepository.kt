@@ -122,7 +122,7 @@ internal class AirwallexApiRepository : ApiRepository {
         builder.append("page_num=${options.pageNum}")
         builder.append("&page_size=${options.pageSize}")
         options.customerId?.let {
-            builder.append("&customer_id=$it")
+//            builder.append("&customer_id=$it")
         }
         return getApiUrl(builder.toString())
     }

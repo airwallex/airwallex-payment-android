@@ -16,7 +16,7 @@
         android:layout_below="@id/toolbar" />
 
     <include
-        android:id="@+id/loading"
+        android:id="@+id/loadingView"
         layout="@layout/view_loading"
         android:visibility="gone" />
 
