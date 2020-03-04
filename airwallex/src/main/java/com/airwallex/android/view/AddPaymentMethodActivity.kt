@@ -48,7 +48,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
 
                 override fun onFailed(exception: AirwallexException) {
                     setLoadingProgress(false)
-                    alert(message = exception.toString())
+                    alert(message = exception.error?.message ?: exception.toString())
                 }
             })
     }

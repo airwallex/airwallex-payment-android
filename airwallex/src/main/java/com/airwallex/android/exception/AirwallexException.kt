@@ -3,7 +3,7 @@ package com.airwallex.android.exception
 import com.airwallex.android.model.AirwallexError
 
 abstract class AirwallexException @JvmOverloads constructor(
-    private val error: AirwallexError?,
+    val error: AirwallexError?,
     message: String?,
     val traceId: String?,
     val statusCode: Int,

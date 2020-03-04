@@ -138,7 +138,7 @@ class PaymentMethodsActivity : AirwallexActivity() {
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    alert(message = exception.toString())
+                    alert(message = exception.error?.message ?: exception.toString())
                     cardAdapter.endLoadingMore()
                 }
             })
