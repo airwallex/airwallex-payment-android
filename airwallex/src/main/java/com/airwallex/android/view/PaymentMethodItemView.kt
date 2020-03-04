@@ -28,7 +28,8 @@ class PaymentMethodItemView constructor(
 
     internal val isValid: Boolean
         get() {
-            return etCardCvc.text?.trim().toString().length == 3
+            return cvc?.length == CardCvcEditText.CVC_LENGTH
+                    || etCardCvc.text?.trim().toString().length == CardCvcEditText.CVC_LENGTH
         }
 
     internal var cvcChangedCallback: () -> Unit = {}

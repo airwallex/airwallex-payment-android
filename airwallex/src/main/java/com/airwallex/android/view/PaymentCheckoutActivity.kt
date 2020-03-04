@@ -24,7 +24,6 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         .setIpNetworkAddress("128.0.0.0")
         .build()
 
-
     private val airwallex: Airwallex by lazy {
         Airwallex(
             args.customerSessionConfig.token,
