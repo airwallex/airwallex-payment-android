@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.widget_shipping.view.*
 
 class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    internal var shippingChangeCallback: (() -> Unit)? = null
+    internal var shippingChangeCallback: () -> Unit = {}
 
     private var country: CountryAutoCompleteView.Country? = null
 
@@ -42,7 +42,7 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
 
         countryAutocomplete.countryChangeCallback = { country ->
             this.country = country
-            shippingChangeCallback?.invoke()
+            shippingChangeCallback.invoke()
             atlState.requestInputFocus()
         }
 
@@ -61,10 +61,10 @@ class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(conte
     }
 
     private fun listenTextChanged() {
-        atlState.afterTextChanged { shippingChangeCallback?.invoke() }
-        atlCity.afterTextChanged { shippingChangeCallback?.invoke() }
-        atlStreetAddress.afterTextChanged { shippingChangeCallback?.invoke() }
-        atlZipCode.afterTextChanged { shippingChangeCallback?.invoke() }
+        atlState.afterTextChanged { shippingChangeCallback.invoke() }
+        atlCity.afterTextChanged { shippingChangeCallback.invoke() }
+        atlStreetAddress.afterTextChanged { shippingChangeCallback.invoke() }
+        atlZipCode.afterTextChanged { shippingChangeCallback.invoke() }
     }
 
     private fun listenFocusChanged() {

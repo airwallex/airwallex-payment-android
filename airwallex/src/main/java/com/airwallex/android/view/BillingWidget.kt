@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.widget_billing.view.*
 
 class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    internal var billingChangeCallback: (() -> Unit)? = null
+    internal var billingChangeCallback: () -> Unit = {}
 
     var shipping: Shipping? = null
         set(value) {
@@ -91,13 +91,13 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
         View.inflate(getContext(), R.layout.widget_billing, this)
 
         countryAutocomplete.countryChangeCallback = {
-            billingChangeCallback?.invoke()
+            billingChangeCallback.invoke()
             atlState.requestInputFocus()
         }
 
         swSameAsShipping.setOnCheckedChangeListener { _, isChecked ->
             llBilling.visibility = if (isChecked) View.GONE else View.VISIBLE
-            billingChangeCallback?.invoke()
+            billingChangeCallback.invoke()
         }
 
         listenTextChanged()
@@ -105,13 +105,13 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
     }
 
     private fun listenTextChanged() {
-        atlFirstName.afterTextChanged { billingChangeCallback?.invoke() }
-        atlLastName.afterTextChanged { billingChangeCallback?.invoke() }
-        atlEmail.afterTextChanged { billingChangeCallback?.invoke() }
-        atlState.afterTextChanged { billingChangeCallback?.invoke() }
-        atlCity.afterTextChanged { billingChangeCallback?.invoke() }
-        atlStreetAddress.afterTextChanged { billingChangeCallback?.invoke() }
-        atlZipCode.afterTextChanged { billingChangeCallback?.invoke() }
+        atlFirstName.afterTextChanged { billingChangeCallback.invoke() }
+        atlLastName.afterTextChanged { billingChangeCallback.invoke() }
+        atlEmail.afterTextChanged { billingChangeCallback.invoke() }
+        atlState.afterTextChanged { billingChangeCallback.invoke() }
+        atlCity.afterTextChanged { billingChangeCallback.invoke() }
+        atlStreetAddress.afterTextChanged { billingChangeCallback.invoke() }
+        atlZipCode.afterTextChanged { billingChangeCallback.invoke() }
     }
 
     private fun listenFocusChanged() {

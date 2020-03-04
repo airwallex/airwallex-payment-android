@@ -28,7 +28,7 @@ internal class PaymentMethodsAdapter(
     private var lastVisibleItem = 0
     private var totalItemCount: Int = 0
     private var isLoading: Boolean = false
-    internal var onLoadMoreCallback: (() -> Unit)? = null
+    internal var onLoadMoreCallback: () -> Unit = {}
 
     internal fun addOnScrollListener(recyclerView: RecyclerView) {
         val viewManager = recyclerView.layoutManager as LinearLayoutManager
@@ -41,7 +41,7 @@ internal class PaymentMethodsAdapter(
 
                 if (!isLoading && totalItemCount <= lastVisibleItem + VISIBLE_THRESHOLD) {
                     isLoading = true
-                    onLoadMoreCallback?.invoke()
+                    onLoadMoreCallback.invoke()
                 }
             }
         })
