@@ -33,7 +33,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:contentDescription="@null"
-        android:src="@drawable/airwallex_tick"
+        android:src="@drawable/airwallex_ic_tick"
         android:visibility="gone" />
 
     <View
