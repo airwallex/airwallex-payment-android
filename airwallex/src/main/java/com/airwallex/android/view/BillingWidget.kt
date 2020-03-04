@@ -39,7 +39,7 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
                 return Billing.Builder()
                     .setFirstName(shipping.firstName)
                     .setLastName(shipping.lastName)
-                    .setEmail(shipping.email ?: "jim631@sina.com") // TODO ERROR Server without email field
+                    .setEmail("jim631@sina.com") // TODO ERROR Server without email field
                     .setPhone(shipping.phone)
                     .setAddress(
                         shipping.address?.apply {

@@ -19,9 +19,6 @@ data class Shipping internal constructor(
     @SerializedName("date_of_birth")
     val dateOfBirth: String? = null,
 
-    @SerializedName("email")
-    val email: String? = null,
-
     @SerializedName("address")
     val address: Address? = null
 ) : AirwallexModel, Parcelable {
@@ -31,7 +28,6 @@ data class Shipping internal constructor(
         private var lastName: String? = null
         private var phone: String? = null
         private var dateOfBirth: String? = null
-        private var email: String? = null
         private var address: Address? = null
 
         fun setFirstName(firstName: String?): Builder = apply {
@@ -50,10 +46,6 @@ data class Shipping internal constructor(
             this.dateOfBirth = dateOfBirth
         }
 
-        fun setEmail(email: String?): Builder = apply {
-            this.email = email
-        }
-
         fun setAddress(address: Address?): Builder = apply {
             this.address = address
         }
@@ -64,7 +56,6 @@ data class Shipping internal constructor(
                 lastName = lastName,
                 phone = phone,
                 dateOfBirth = dateOfBirth,
-                email = email,
                 address = address
             )
         }
