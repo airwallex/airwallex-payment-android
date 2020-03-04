@@ -2,6 +2,7 @@ package com.airwallex.android
 
 import android.app.Activity
 import android.content.Intent
+import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.view.AddPaymentMethodActivityStarter
 import com.airwallex.android.view.PaymentMethodsActivityStarter
 import com.airwallex.android.view.PaymentShippingActivityStarter
@@ -13,7 +14,13 @@ class PaymentSession constructor(
 
     interface PaymentResult<T> {
         fun onCancelled()
-        fun onSuccess(result: T?)
+
+        fun onSuccess(result: T)
+
+        // TODO Some don't need
+        fun onFailed(exception: AirwallexException) {
+
+        }
     }
 
     @Throws(NullPointerException::class)
@@ -109,27 +116,23 @@ class PaymentSession constructor(
             Activity.RESULT_OK -> {
                 return when (requestCode) {
                     AddPaymentMethodActivityStarter.REQUEST_CODE -> {
-                        paymentMethodCallback?.onSuccess(
-                            AddPaymentMethodActivityStarter.Result.fromIntent(
-                                data
-                            )
-                        )
+                        val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
+                        paymentMethodCallback?.onSuccess(requireNotNull(result))
                         true
                     }
                     PaymentShippingActivityStarter.REQUEST_CODE -> {
-                        paymentShippingCallback?.onSuccess(
-                            PaymentShippingActivityStarter.Result.fromIntent(
-                                data
-                            )
-                        )
+                        val result = PaymentShippingActivityStarter.Result.fromIntent(data)
+                        paymentShippingCallback?.onSuccess(requireNotNull(result))
                         true
                     }
                     PaymentMethodsActivityStarter.REQUEST_CODE -> {
-                        paymentIntentCallback?.onSuccess(
-                            PaymentMethodsActivityStarter.Result.fromIntent(
-                                data
-                            )
-                        )
+                        val result = PaymentMethodsActivityStarter.Result.fromIntent(data)
+                        requireNotNull(result)
+                        if (result.exception != null) {
+                            paymentIntentCallback?.onFailed(result.exception)
+                        } else {
+                            paymentIntentCallback?.onSuccess(result)
+                        }
                         true
                     }
                     else -> false

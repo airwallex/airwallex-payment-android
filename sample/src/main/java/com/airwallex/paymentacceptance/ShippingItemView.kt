@@ -93,10 +93,10 @@ class ShippingItemView constructor(
                     completion.invoke(null)
                 }
 
-                override fun onSuccess(result: PaymentShippingActivityStarter.Result?) {
+                override fun onSuccess(result: PaymentShippingActivityStarter.Result) {
                     Log.d(TAG, "Save the shipping success")
-                    renewalShipping(result?.shipping)
-                    completion(result?.shipping)
+                    renewalShipping(result.shipping)
+                    completion(result.shipping)
                 }
             })
     }

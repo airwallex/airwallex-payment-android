@@ -175,16 +175,24 @@ class PaymentCartActivity : AppCompatActivity() {
                     Log.d(TAG, "User cancel the payment checkout")
                 }
 
-                override fun onSuccess(result: PaymentMethodsActivityStarter.Result?) {
+                override fun onSuccess(result: PaymentMethodsActivityStarter.Result) {
                     loading.visibility = View.VISIBLE
-                    result?.let {
-                        handlePaymentResult(it.paymentMethodType, it.paymentIntent) {
-                            val paymentIntentId = it.paymentIntent.id
+
+                    val paymentIntent = result.paymentIntent
+                    val paymentMethodType = result.paymentMethodType
+
+                    if (paymentIntent != null && paymentMethodType != null) {
+                        handlePaymentResult(paymentMethodType, paymentIntent) {
+                            val paymentIntentId = paymentIntent.id
                             airwallex?.let { airwallex ->
                                 retrievePaymentIntent(airwallex, paymentIntentId)
                             }
                         }
                     }
+                }
+
+                override fun onFailed(exception: AirwallexException) {
+                    showPaymentError()
                 }
             })
     }
