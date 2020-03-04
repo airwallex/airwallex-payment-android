@@ -17,6 +17,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textColorHint="@color/airwallex_color_edit_text_accent"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:errorTextColor="@color/airwallex_color_edit_text_error"
             app:hintTextColor="@color/airwallex_color_edit_text_accent">
 
             <com.airwallex.android.view.CardCvcEditText

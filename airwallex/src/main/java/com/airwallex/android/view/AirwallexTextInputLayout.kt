@@ -28,9 +28,15 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
 
     internal var error: String?
         set(value) {
-            tvError.visibility = when (value) {
-                null -> View.GONE
-                else -> View.VISIBLE
+            when (value) {
+                null -> {
+                    tvError.visibility = View.GONE
+                    tlInput.error = null
+                }
+                else -> {
+                    tvError.visibility = View.VISIBLE
+                    tlInput.error = " "
+                }
             }
 
             tvError.text = value
@@ -55,6 +61,8 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
         teInput = findViewById(R.id.teInput)
         vBorder = findViewById(R.id.vBorder)
         tvError = findViewById(R.id.tvError)
+
+        tlInput.errorIconDrawable = null
 
         context.theme.obtainStyledAttributes(
             attrs,
@@ -98,7 +106,6 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
                     R.drawable.airwallex_input_layout_border,
                     null
                 )
-//            teInput.setHintTextColor(ContextCompat.getColor(context, R.color.colorEditTextAccent))
         } else {
             vBorder.background =
                 ResourcesCompat.getDrawable(
@@ -106,7 +113,6 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
                     R.drawable.airwallex_input_layout_border_error,
                     null
                 )
-//            teInput.setHintTextColor(ContextCompat.getColor(context, R.color.colorEditTextError))
         }
     }
 
