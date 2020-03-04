@@ -26,7 +26,7 @@
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/cart_count_bg"
+            android:background="@drawable/ic_cart_count_bg"
             android:fontFamily="@font/circularstd_bold"
             android:gravity="center"
             android:textColor="#612FFF"

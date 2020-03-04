@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_toEndOf="@id/tvShippingTitle"
-            android:drawableEnd="@drawable/right_arrow"
+            android:drawableEnd="@drawable/ic_right_arrow"
             android:drawablePadding="10dp"
             android:fontFamily="@font/circularstd_medium"
             android:gravity="end"
