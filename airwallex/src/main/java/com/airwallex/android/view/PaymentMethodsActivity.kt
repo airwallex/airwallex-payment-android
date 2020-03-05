@@ -155,6 +155,8 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                 val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
                 result?.let {
                     paymentMethodsAdapter.addNewPaymentMethod(it.paymentMethod)
+                    paymentNoCards.visibility =
+                        if (paymentMethodsAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
                     startPaymentCheckout(it.paymentMethod, it.cvc)
                 }
             }
