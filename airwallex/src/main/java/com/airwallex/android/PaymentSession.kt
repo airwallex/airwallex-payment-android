@@ -2,7 +2,6 @@ package com.airwallex.android
 
 import android.app.Activity
 import android.content.Intent
-import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import com.airwallex.android.view.AddPaymentMethodActivityStarter
 import com.airwallex.android.view.PaymentCheckoutActivityStarter
@@ -11,7 +10,7 @@ import com.airwallex.android.view.PaymentShippingActivityStarter
 
 class PaymentSession constructor(
     private val context: Activity,
-    private val paymentSessionConfig: PaymentSessionConfig? = null
+    private val paymentSessionConfig: PaymentSessionConfig
 ) {
 
     interface PaymentResult {
@@ -32,15 +31,14 @@ class PaymentSession constructor(
     }
 
     @Throws(NullPointerException::class)
-    fun presentPaymentFlow(customerSessionConfig: CustomerSessionConfig) {
-        checkNotNull(
-            customerSessionConfig.paymentIntent.customerId,
-            { "Customer id should not be null" })
-
+    fun presentPaymentFlow() {
+        val paymentIntent = requireNotNull(paymentSessionConfig.paymentIntent)
+        val token = requireNotNull(paymentSessionConfig.token)
         PaymentMethodsActivityStarter(context)
             .startForResult(
-                PaymentMethodsActivityStarter.Args
-                    .Builder(customerSessionConfig)
+                PaymentMethodsActivityStarter.Args.Builder()
+                    .setPaymentIntent(paymentIntent)
+                    .setToken(token)
                     .build()
             )
     }
@@ -49,30 +47,34 @@ class PaymentSession constructor(
         PaymentShippingActivityStarter(context)
             .startForResult(
                 PaymentShippingActivityStarter.Args.Builder()
-                    .setShipping(paymentSessionConfig?.shipping)
+                    .setShipping(paymentSessionConfig.shipping)
                     .build()
             )
     }
 
     @Throws(NullPointerException::class)
-    fun presentAddPaymentMethodFlow(customerSessionConfig: CustomerSessionConfig) {
-        checkNotNull(
-            customerSessionConfig.paymentIntent.customerId,
-            { "Customer id should not be null" })
+    fun presentAddPaymentMethodFlow() {
+        val paymentIntent = requireNotNull(paymentSessionConfig.paymentIntent)
+        val token = requireNotNull(paymentSessionConfig.token)
         AddPaymentMethodActivityStarter(context)
             .startForResult(
-                AddPaymentMethodActivityStarter.Args.Builder(customerSessionConfig)
+                AddPaymentMethodActivityStarter.Args.Builder()
+                    .setPaymentIntent(paymentIntent)
+                    .setToken(token)
                     .build()
             )
     }
 
-    fun presentPaymentCheckoutFlow(
-        customerSessionConfig: CustomerSessionConfig,
-        paymentMethod: PaymentMethod
-    ) {
+    fun presentPaymentCheckoutFlow() {
+        val paymentIntent = requireNotNull(paymentSessionConfig.paymentIntent)
+        val token = requireNotNull(paymentSessionConfig.token)
+        val paymentMethod = requireNotNull(paymentSessionConfig.paymentMethod)
         PaymentCheckoutActivityStarter(context)
             .startForResult(
-                PaymentCheckoutActivityStarter.Args.Builder(customerSessionConfig, paymentMethod)
+                PaymentCheckoutActivityStarter.Args.Builder()
+                    .setPaymentIntent(paymentIntent)
+                    .setToken(token)
+                    .setPaymentMethod(paymentMethod)
                     .build()
             )
     }

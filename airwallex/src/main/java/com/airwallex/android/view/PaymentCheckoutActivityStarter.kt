@@ -3,10 +3,7 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.airwallex.android.CustomerSessionConfig
-import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
-import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.view.PaymentCheckoutActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
@@ -20,26 +17,39 @@ internal class PaymentCheckoutActivityStarter constructor(
 
     @Parcelize
     data class Args internal constructor(
-        val customerSessionConfig: CustomerSessionConfig,
+        val paymentIntent: PaymentIntent,
+        val token: String,
         val paymentMethod: PaymentMethod,
         val cvc: String?
     ) : ActivityStarter.Args {
 
-        class Builder(
-            private val customerSessionConfig: CustomerSessionConfig,
-            private val paymentMethod: PaymentMethod
-        ) :
-            ObjectBuilder<Args> {
+        class Builder : ObjectBuilder<Args> {
 
+            private lateinit var paymentIntent: PaymentIntent
+            private lateinit var token: String
+            private lateinit var paymentMethod: PaymentMethod
             private var cvc: String? = null
 
             internal fun setCvc(cvc: String?): Builder = apply {
                 this.cvc = cvc
             }
 
+            fun setPaymentIntent(paymentIntent: PaymentIntent): Builder = apply {
+                this.paymentIntent = paymentIntent
+            }
+
+            fun setToken(token: String): Builder = apply {
+                this.token = token
+            }
+
+            internal fun setPaymentMethod(paymentMethod: PaymentMethod): Builder = apply {
+                this.paymentMethod = paymentMethod
+            }
+
             override fun build(): Args {
                 return Args(
-                    customerSessionConfig = customerSessionConfig,
+                    paymentIntent = paymentIntent,
+                    token = token,
                     paymentMethod = paymentMethod,
                     cvc = cvc
                 )
