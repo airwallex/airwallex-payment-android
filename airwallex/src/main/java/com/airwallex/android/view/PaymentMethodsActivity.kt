@@ -165,7 +165,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                             PaymentMethodsActivityStarter.Result(
                                 it.paymentIntent,
                                 it.paymentMethodType,
-                                it.exception
+                                it.error
                             ).toBundle()
                         )
                     )

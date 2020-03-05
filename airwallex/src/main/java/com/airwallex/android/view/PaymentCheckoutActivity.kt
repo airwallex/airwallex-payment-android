@@ -110,7 +110,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    finishPaymentCheckout(exception = exception)
+                    finishPaymentCheckout(error = exception.error)
                 }
             }
         )
@@ -119,7 +119,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
     private fun finishPaymentCheckout(
         paymentIntent: PaymentIntent? = null,
         type: PaymentMethodType? = null,
-        exception: AirwallexException? = null
+        error: AirwallexError? = null
     ) {
         setLoadingProgress(false)
         setResult(
@@ -128,7 +128,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
                     PaymentCheckoutActivityStarter.Result(
                         paymentIntent = paymentIntent,
                         paymentMethodType = type,
-                        exception = exception
+                        error = error
                     ).toBundle()
                 )
         )

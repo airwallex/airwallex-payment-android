@@ -3,10 +3,7 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.model.Shipping
+import com.airwallex.android.model.*
 import com.airwallex.android.view.AddPaymentMethodActivityStarter
 import com.airwallex.android.view.PaymentCheckoutActivityStarter
 import com.airwallex.android.view.PaymentMethodsActivityStarter
@@ -27,7 +24,7 @@ class PaymentSession constructor(
 
     interface PaymentIntentResult : PaymentResult {
         fun onSuccess(paymentIntent: PaymentIntent, paymentMethodType: PaymentMethodType)
-        fun onFailed(exception: AirwallexException)
+        fun onFailed(error: AirwallexError)
     }
 
     interface PaymentMethodResult : PaymentResult {
@@ -161,8 +158,8 @@ class PaymentSession constructor(
                     }
                     PaymentMethodsActivityStarter.REQUEST_CODE -> {
                         val result = PaymentMethodsActivityStarter.Result.fromIntent(data)
-                        if (result?.exception != null) {
-                            (callback as PaymentIntentResult).onFailed(result.exception)
+                        if (result?.error != null) {
+                            (callback as PaymentIntentResult).onFailed(result.error)
                         } else {
                             (callback as PaymentIntentResult).onSuccess(
                                 requireNotNull(result?.paymentIntent),
@@ -173,8 +170,8 @@ class PaymentSession constructor(
                     }
                     PaymentCheckoutActivityStarter.REQUEST_CODE -> {
                         val result = PaymentCheckoutActivityStarter.Result.fromIntent(data)
-                        if (result?.exception != null) {
-                            (callback as PaymentIntentResult).onFailed(result.exception)
+                        if (result?.error != null) {
+                            (callback as PaymentIntentResult).onFailed(result.error)
                         } else {
                             (callback as PaymentIntentResult).onSuccess(
                                 requireNotNull(result?.paymentIntent),
