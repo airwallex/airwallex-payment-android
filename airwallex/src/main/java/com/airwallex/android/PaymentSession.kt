@@ -122,7 +122,7 @@ class PaymentSession constructor(
         )
     }
 
-    fun handlePaymentResult(
+    fun handlePaymentIntentResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
