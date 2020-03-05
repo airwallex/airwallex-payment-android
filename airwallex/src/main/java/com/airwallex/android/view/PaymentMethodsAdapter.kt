@@ -22,7 +22,7 @@ internal class PaymentMethodsAdapter(
 
     private val wechatCount = if (shouldShowWechatPay) 1 else 0
     private var selectedPaymentMethod: PaymentMethod? = null
-    internal val paymentMethods = ArrayList<PaymentMethod?>()
+    internal val paymentMethods = mutableListOf<PaymentMethod?>()
     internal var callback: Callback? = null
 
     private var lastVisibleItem = 0

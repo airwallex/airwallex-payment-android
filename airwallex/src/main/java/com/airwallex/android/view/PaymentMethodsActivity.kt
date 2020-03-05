@@ -157,6 +157,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                     paymentMethodsAdapter.addNewPaymentMethod(it.paymentMethod)
                     paymentNoCards.visibility =
                         if (paymentMethodsAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
+                    rvPaymentMethods.requestLayout()
                     startPaymentCheckout(it.paymentMethod, it.cvc)
                 }
             }
