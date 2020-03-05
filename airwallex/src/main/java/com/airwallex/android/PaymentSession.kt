@@ -10,7 +10,7 @@ import com.airwallex.android.view.PaymentShippingActivityStarter
 
 class PaymentSession constructor(
     private val context: Activity,
-    private val paymentSessionConfig: PaymentSessionConfig
+    private val configuration: PaymentSessionConfiguration
 ) {
 
     interface PaymentResult {
@@ -32,8 +32,8 @@ class PaymentSession constructor(
 
     @Throws(NullPointerException::class)
     fun presentPaymentFlow() {
-        val paymentIntent = requireNotNull(paymentSessionConfig.paymentIntent)
-        val token = requireNotNull(paymentSessionConfig.token)
+        val paymentIntent = requireNotNull(configuration.paymentIntent)
+        val token = requireNotNull(configuration.token)
         PaymentMethodsActivityStarter(context)
             .startForResult(
                 PaymentMethodsActivityStarter.Args.Builder()
@@ -47,15 +47,15 @@ class PaymentSession constructor(
         PaymentShippingActivityStarter(context)
             .startForResult(
                 PaymentShippingActivityStarter.Args.Builder()
-                    .setShipping(paymentSessionConfig.shipping)
+                    .setShipping(configuration.shipping)
                     .build()
             )
     }
 
     @Throws(NullPointerException::class)
     fun presentAddPaymentMethodFlow() {
-        val paymentIntent = requireNotNull(paymentSessionConfig.paymentIntent)
-        val token = requireNotNull(paymentSessionConfig.token)
+        val paymentIntent = requireNotNull(configuration.paymentIntent)
+        val token = requireNotNull(configuration.token)
         AddPaymentMethodActivityStarter(context)
             .startForResult(
                 AddPaymentMethodActivityStarter.Args.Builder()
@@ -65,10 +65,11 @@ class PaymentSession constructor(
             )
     }
 
+    @Throws(NullPointerException::class)
     fun presentPaymentCheckoutFlow() {
-        val paymentIntent = requireNotNull(paymentSessionConfig.paymentIntent)
-        val token = requireNotNull(paymentSessionConfig.token)
-        val paymentMethod = requireNotNull(paymentSessionConfig.paymentMethod)
+        val paymentIntent = requireNotNull(configuration.paymentIntent)
+        val token = requireNotNull(configuration.token)
+        val paymentMethod = requireNotNull(configuration.paymentMethod)
         PaymentCheckoutActivityStarter(context)
             .startForResult(
                 PaymentCheckoutActivityStarter.Args.Builder()

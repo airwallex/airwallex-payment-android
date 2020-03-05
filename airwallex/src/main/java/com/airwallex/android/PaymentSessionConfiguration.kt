@@ -8,14 +8,14 @@ import com.airwallex.android.model.Shipping
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class PaymentSessionConfig(
+data class PaymentSessionConfiguration(
     val shipping: Shipping?,
     val paymentIntent: PaymentIntent?,
     val token: String?,
     val paymentMethod: PaymentMethod?
 ) : Parcelable {
 
-    class Builder : ObjectBuilder<PaymentSessionConfig> {
+    class Builder : ObjectBuilder<PaymentSessionConfiguration> {
 
         private var shipping: Shipping? = null
         private var paymentIntent: PaymentIntent? = null
@@ -38,8 +38,8 @@ data class PaymentSessionConfig(
             this.paymentMethod = paymentMethod
         }
 
-        override fun build(): PaymentSessionConfig {
-            return PaymentSessionConfig(
+        override fun build(): PaymentSessionConfiguration {
+            return PaymentSessionConfiguration(
                 shipping = shipping,
                 paymentIntent = paymentIntent,
                 token = token,
