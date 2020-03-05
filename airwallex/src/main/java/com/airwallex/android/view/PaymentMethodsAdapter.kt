@@ -55,7 +55,7 @@ internal class PaymentMethodsAdapter(
     internal fun addNewPaymentMethod(paymentMethod: PaymentMethod) {
         selectedPaymentMethod = paymentMethod
         this.paymentMethods.add(0, paymentMethod)
-        notifyItemInserted(wechatCount)
+        notifyDataSetChanged()
     }
 
     internal fun startLoadingMore() {
