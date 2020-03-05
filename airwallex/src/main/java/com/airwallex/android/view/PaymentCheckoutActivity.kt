@@ -16,7 +16,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
 
     private val airwallex: Airwallex by lazy {
         Airwallex(
-            args.customerSessionConfig.token,
+            args.token,
             paymentIntent.clientSecret!!
         )
     }
@@ -28,7 +28,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
 
     private val paymentIntent: PaymentIntent
         get() {
-            return args.customerSessionConfig.paymentIntent
+            return args.paymentIntent
         }
 
     private val args: PaymentCheckoutActivityStarter.Args by lazy {

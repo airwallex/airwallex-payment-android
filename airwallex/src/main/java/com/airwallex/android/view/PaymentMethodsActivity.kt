@@ -26,21 +26,21 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
 
     private val airwallex: Airwallex by lazy {
         Airwallex(
-            args.customerSessionConfig.token,
-            args.customerSessionConfig.paymentIntent.clientSecret!!
+            args.token,
+            args.paymentIntent.clientSecret!!
         )
     }
 
     private val shouldShowWechatPay: Boolean
         get() {
-            return args.customerSessionConfig.paymentIntent.availablePaymentMethodTypes.contains(
+            return args.paymentIntent.availablePaymentMethodTypes.contains(
                 PaymentMethodType.WECHAT.type
             )
         }
 
     private val shouldShowCard: Boolean
         get() {
-            return args.customerSessionConfig.paymentIntent.availablePaymentMethodTypes.contains(
+            return args.paymentIntent.availablePaymentMethodTypes.contains(
                 PaymentMethodType.CARD.type
             )
         }
@@ -99,7 +99,9 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         AddPaymentMethodActivityStarter(this@PaymentMethodsActivity)
             .startForResult(
                 AddPaymentMethodActivityStarter.Args
-                    .Builder(args.customerSessionConfig)
+                    .Builder()
+                    .setPaymentIntent(args.paymentIntent)
+                    .setToken(args.token)
                     .build()
             )
     }
@@ -107,10 +109,10 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     private fun startPaymentCheckout(paymentMethod: PaymentMethod, cvc: String? = null) {
         PaymentCheckoutActivityStarter(this@PaymentMethodsActivity)
             .startForResult(
-                PaymentCheckoutActivityStarter.Args.Builder(
-                    args.customerSessionConfig,
-                    paymentMethod
-                )
+                PaymentCheckoutActivityStarter.Args.Builder()
+                    .setPaymentIntent(args.paymentIntent)
+                    .setToken(args.token)
+                    .setPaymentMethod(paymentMethod)
                     .setCvc(cvc)
                     .build()
             )
@@ -124,7 +126,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         airwallex.getPaymentMethods(
             pageNum = pageNum,
             pageSize = PAGE_SIZE,
-            customerId = args.customerSessionConfig.paymentIntent.customerId,
+            customerId = args.paymentIntent.customerId,
             callback = object : Airwallex.GetPaymentMethodsCallback {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     cardAdapter.endLoadingMore()

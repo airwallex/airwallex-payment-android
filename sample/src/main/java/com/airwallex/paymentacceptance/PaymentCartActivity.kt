@@ -13,8 +13,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
-import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.PaymentSession
+import com.airwallex.android.PaymentSessionConfig
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.Order
@@ -160,8 +160,11 @@ class PaymentCartActivity : AppCompatActivity() {
     private fun handleResponse(paymentIntent: PaymentIntent) {
         loading.visibility = View.GONE
         airwallex = Airwallex(token, paymentIntent.clientSecret!!)
-        paymentSession = PaymentSession(this@PaymentCartActivity)
-        paymentSession?.presentPaymentFlow(CustomerSessionConfig(paymentIntent, token))
+        paymentSession = PaymentSession(
+            this@PaymentCartActivity,
+            PaymentSessionConfig.Builder().setPaymentIntent(paymentIntent).setToken(token).build()
+        )
+        paymentSession?.presentPaymentFlow()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
