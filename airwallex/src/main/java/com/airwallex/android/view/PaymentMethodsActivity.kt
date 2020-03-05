@@ -45,7 +45,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             )
         }
 
-    private lateinit var cardAdapter: PaymentMethodsAdapter
+    private lateinit var paymentMethodsAdapter: PaymentMethodsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,12 +54,12 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         viewStub.inflate()
 
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        cardAdapter = PaymentMethodsAdapter(
+        paymentMethodsAdapter = PaymentMethodsAdapter(
             shouldShowWechatPay = shouldShowWechatPay,
             shouldShowCard = shouldShowCard
         )
 
-        cardAdapter.callback = object : PaymentMethodsAdapter.Callback {
+        paymentMethodsAdapter.callback = object : PaymentMethodsAdapter.Callback {
             override fun onPaymentMethodClick(paymentMethod: PaymentMethod) {
                 startPaymentCheckout(paymentMethod)
             }
@@ -71,15 +71,15 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
 
         rvPaymentMethods.apply {
             layoutManager = viewManager
-            adapter = cardAdapter
+            adapter = paymentMethodsAdapter
         }
 
-        cardAdapter.onLoadMoreCallback = {
-            cardAdapter.startLoadingMore()
+        paymentMethodsAdapter.onLoadMoreCallback = {
+            paymentMethodsAdapter.startLoadingMore()
             fetchPaymentMethods()
         }
 
-        cardAdapter.addOnScrollListener(rvPaymentMethods)
+        paymentMethodsAdapter.addOnScrollListener(rvPaymentMethods)
 
         addPaymentMethod.visibility = if (shouldShowCard) View.VISIBLE else View.GONE
         addPaymentMethod.setOnClickListener {
@@ -129,18 +129,18 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             customerId = args.paymentIntent.customerId,
             callback = object : Airwallex.GetPaymentMethodsCallback {
                 override fun onSuccess(response: PaymentMethodResponse) {
-                    cardAdapter.endLoadingMore()
+                    paymentMethodsAdapter.endLoadingMore()
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }
-                    cardAdapter.setPaymentMethods(cards)
+                    paymentMethodsAdapter.setPaymentMethods(cards)
                     paymentNoCards.visibility =
-                        if (cardAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
+                        if (paymentMethodsAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
                     hasMore = response.hasMore
                     pageNum++
                 }
 
                 override fun onFailed(exception: AirwallexException) {
                     alert(message = exception.error?.message ?: exception.toString())
-                    cardAdapter.endLoadingMore()
+                    paymentMethodsAdapter.endLoadingMore()
                 }
             })
     }
@@ -154,7 +154,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             AddPaymentMethodActivityStarter.REQUEST_CODE -> {
                 val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
                 result?.let {
-                    cardAdapter.addNewPaymentMethod(it.paymentMethod)
+                    paymentMethodsAdapter.addNewPaymentMethod(it.paymentMethod)
                     startPaymentCheckout(it.paymentMethod, it.cvc)
                 }
             }
