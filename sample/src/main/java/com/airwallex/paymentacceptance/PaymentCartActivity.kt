@@ -167,7 +167,7 @@ class PaymentCartActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         cartFragment.onActivityResult(requestCode, resultCode, data)
 
-        paymentSession?.handlePaymentResult(requestCode, resultCode, data,
+        paymentSession?.handlePaymentIntentResult(requestCode, resultCode, data,
             object :
                 PaymentSession.PaymentIntentResult {
                 override fun onCancelled() {
