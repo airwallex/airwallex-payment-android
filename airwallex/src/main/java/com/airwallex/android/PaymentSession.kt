@@ -8,6 +8,7 @@ import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.AddPaymentMethodActivityStarter
+import com.airwallex.android.view.PaymentCheckoutActivityStarter
 import com.airwallex.android.view.PaymentMethodsActivityStarter
 import com.airwallex.android.view.PaymentShippingActivityStarter
 
@@ -34,7 +35,7 @@ class PaymentSession constructor(
     }
 
     @Throws(NullPointerException::class)
-    fun presentPaymentCheckoutFlow(customerSessionConfig: CustomerSessionConfig) {
+    fun presentPaymentFlow(customerSessionConfig: CustomerSessionConfig) {
         checkNotNull(
             customerSessionConfig.paymentIntent.customerId,
             { "Customer id should not be null" })
@@ -68,6 +69,31 @@ class PaymentSession constructor(
             )
     }
 
+    fun presentPaymentCheckoutFlow(
+        customerSessionConfig: CustomerSessionConfig,
+        paymentMethod: PaymentMethod
+    ) {
+        PaymentCheckoutActivityStarter(context)
+            .startForResult(
+                PaymentCheckoutActivityStarter.Args.Builder(customerSessionConfig, paymentMethod)
+                    .build()
+            )
+    }
+
+    fun handlePaymentCheckoutResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        callback: PaymentIntentResult
+    ) {
+        handlePaymentResult(
+            requestCode,
+            resultCode,
+            data,
+            callback
+        )
+    }
+
     fun handlePaymentMethodResult(
         requestCode: Int,
         resultCode: Int,
@@ -96,7 +122,7 @@ class PaymentSession constructor(
         )
     }
 
-    fun handlePaymentIntentResult(
+    fun handlePaymentResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
@@ -145,6 +171,18 @@ class PaymentSession constructor(
                         }
                         true
                     }
+                    PaymentCheckoutActivityStarter.REQUEST_CODE -> {
+                        val result = PaymentCheckoutActivityStarter.Result.fromIntent(data)
+                        if (result?.exception != null) {
+                            (callback as PaymentIntentResult).onFailed(result.exception)
+                        } else {
+                            (callback as PaymentIntentResult).onSuccess(
+                                requireNotNull(result?.paymentIntent),
+                                requireNotNull(result?.paymentMethodType)
+                            )
+                        }
+                        true
+                    }
                     else -> false
                 }
             }
@@ -162,6 +200,10 @@ class PaymentSession constructor(
                         (callback as PaymentIntentResult).onCancelled()
                         true
                     }
+                    PaymentCheckoutActivityStarter.REQUEST_CODE -> {
+                        (callback as PaymentIntentResult).onCancelled()
+                        true
+                    }
                     else -> false
                 }
             }
@@ -174,7 +216,8 @@ class PaymentSession constructor(
         private val VALID_REQUEST_CODES = setOf(
             PaymentMethodsActivityStarter.REQUEST_CODE,
             PaymentShippingActivityStarter.REQUEST_CODE,
-            AddPaymentMethodActivityStarter.REQUEST_CODE
+            AddPaymentMethodActivityStarter.REQUEST_CODE,
+            PaymentCheckoutActivityStarter.REQUEST_CODE
         )
     }
 }
