@@ -151,20 +151,20 @@ class PaymentSession constructor(
                 return when (requestCode) {
                     AddPaymentMethodActivityStarter.REQUEST_CODE -> {
                         val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
-                        (callback as PaymentMethodResult).onSuccess(requireNotNull(result?.paymentMethod))
+                        (callback as? PaymentMethodResult)?.onSuccess(requireNotNull(result?.paymentMethod))
                         true
                     }
                     PaymentShippingActivityStarter.REQUEST_CODE -> {
                         val result = PaymentShippingActivityStarter.Result.fromIntent(data)
-                        (callback as PaymentShippingResult).onSuccess(requireNotNull(result?.shipping))
+                        (callback as? PaymentShippingResult)?.onSuccess(requireNotNull(result?.shipping))
                         true
                     }
                     PaymentMethodsActivityStarter.REQUEST_CODE -> {
                         val result = PaymentMethodsActivityStarter.Result.fromIntent(data)
                         if (result?.error != null) {
-                            (callback as PaymentIntentResult).onFailed(result.error)
+                            (callback as? PaymentIntentResult)?.onFailed(result.error)
                         } else {
-                            (callback as PaymentIntentResult).onSuccess(
+                            (callback as? PaymentIntentResult)?.onSuccess(
                                 requireNotNull(result?.paymentIntent),
                                 requireNotNull(result?.paymentMethodType)
                             )
@@ -174,9 +174,9 @@ class PaymentSession constructor(
                     PaymentCheckoutActivityStarter.REQUEST_CODE -> {
                         val result = PaymentCheckoutActivityStarter.Result.fromIntent(data)
                         if (result?.error != null) {
-                            (callback as PaymentIntentResult).onFailed(result.error)
+                            (callback as? PaymentIntentResult)?.onFailed(result.error)
                         } else {
-                            (callback as PaymentIntentResult).onSuccess(
+                            (callback as? PaymentIntentResult)?.onSuccess(
                                 requireNotNull(result?.paymentIntent),
                                 requireNotNull(result?.paymentMethodType)
                             )
@@ -189,19 +189,19 @@ class PaymentSession constructor(
             Activity.RESULT_CANCELED -> {
                 return when (requestCode) {
                     AddPaymentMethodActivityStarter.REQUEST_CODE -> {
-                        (callback as PaymentMethodResult).onCancelled()
+                        (callback as? PaymentMethodResult)?.onCancelled()
                         true
                     }
                     PaymentShippingActivityStarter.REQUEST_CODE -> {
-                        (callback as PaymentShippingResult).onCancelled()
+                        (callback as? PaymentShippingResult)?.onCancelled()
                         true
                     }
                     PaymentMethodsActivityStarter.REQUEST_CODE -> {
-                        (callback as PaymentIntentResult).onCancelled()
+                        (callback as? PaymentIntentResult)?.onCancelled()
                         true
                     }
                     PaymentCheckoutActivityStarter.REQUEST_CODE -> {
-                        (callback as PaymentIntentResult).onCancelled()
+                        (callback as? PaymentIntentResult)?.onCancelled()
                         true
                     }
                     else -> false
