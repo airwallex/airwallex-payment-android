@@ -160,14 +160,14 @@ class PaymentCartActivity : AppCompatActivity() {
         loading.visibility = View.GONE
         airwallex = Airwallex(token, paymentIntent.clientSecret!!)
         paymentSession = PaymentSession(this@PaymentCartActivity)
-        paymentSession?.presentPaymentCheckoutFlow(CustomerSessionConfig(paymentIntent, token))
+        paymentSession?.presentPaymentFlow(CustomerSessionConfig(paymentIntent, token))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         cartFragment.onActivityResult(requestCode, resultCode, data)
 
-        paymentSession?.handlePaymentIntentResult(requestCode, resultCode, data,
+        paymentSession?.handlePaymentResult(requestCode, resultCode, data,
             object :
                 PaymentSession.PaymentIntentResult {
                 override fun onCancelled() {
