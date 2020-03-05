@@ -5,10 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.model.*
 import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.view.PaymentCheckoutActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
@@ -59,7 +57,7 @@ internal class PaymentCheckoutActivityStarter constructor(
     data class Result internal constructor(
         val paymentIntent: PaymentIntent? = null,
         val paymentMethodType: PaymentMethodType? = null,
-        val exception: AirwallexException? = null
+        val error: AirwallexError? = null
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()

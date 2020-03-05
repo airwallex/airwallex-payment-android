@@ -16,6 +16,7 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.CustomerSessionConfig
 import com.airwallex.android.PaymentSession
 import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.Order
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethodType
@@ -187,8 +188,8 @@ class PaymentCartActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailed(exception: AirwallexException) {
-                    showPaymentError()
+                override fun onFailed(error: AirwallexError) {
+                    showPaymentError(error)
                 }
             })
     }
@@ -311,7 +312,7 @@ class PaymentCartActivity : AppCompatActivity() {
                 override fun onFailed(exception: AirwallexException) {
                     Log.e(TAG, "Retrieve PaymentIntent failed", exception)
                     loading.visibility = View.GONE
-                    showPaymentError()
+                    showPaymentError(exception.error)
                 }
             })
     }
@@ -323,10 +324,10 @@ class PaymentCartActivity : AppCompatActivity() {
         )
     }
 
-    fun showPaymentError() {
+    fun showPaymentError(error: AirwallexError? = null) {
         showAlert(
             getString(R.string.payment_failed),
-            getString(R.string.payment_failed_message)
+            error?.message ?: getString(R.string.payment_failed_message)
         )
     }
 
