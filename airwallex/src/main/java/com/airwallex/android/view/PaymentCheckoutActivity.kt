@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.Airwallex
+import com.airwallex.android.DeviceUtils
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
@@ -12,17 +13,6 @@ import kotlinx.android.synthetic.main.activity_payment_checkout.*
 import java.util.*
 
 internal class PaymentCheckoutActivity : AirwallexActivity() {
-
-    private val device = Device.Builder()
-        .setBrowserInfo("Chrome/76.0.3809.100")
-        .setCookiesAccepted("true")
-        .setDeviceId("IMEI-4432fsdafd31243244fdsafdfd653")
-        .setHostName("www.airwallex.com")
-        .setHttpBrowserEmail("jim631@sina.com")
-        .setHttpBrowserType("chrome")
-        .setIpAddress("123.90.0.1")
-        .setIpNetworkAddress("128.0.0.0")
-        .build()
 
     private val airwallex: Airwallex by lazy {
         Airwallex(
@@ -78,7 +68,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
                 PaymentIntentParams.Builder()
                     .setRequestId(UUID.randomUUID().toString())
                     .setCustomerId(paymentIntent.customerId)
-                    .setDevice(device)
+                    .setDevice(DeviceUtils.device)
                     .setPaymentMethodReference(
                         PaymentMethodReference.Builder()
                             .setId(paymentMethod.id)
@@ -104,7 +94,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
                 PaymentIntentParams.Builder()
                     .setRequestId(UUID.randomUUID().toString())
                     .setCustomerId(paymentIntent.customerId)
-                    .setDevice(device)
+                    .setDevice(DeviceUtils.device)
                     .setPaymentMethod(paymentMethod)
                     .build()
             }
