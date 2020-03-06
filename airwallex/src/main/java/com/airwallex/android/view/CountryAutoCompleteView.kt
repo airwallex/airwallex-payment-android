@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
-import kotlinx.android.synthetic.main.view_country_autocomplete.view.*
+import kotlinx.android.synthetic.main.country_autocomplete_view.view.*
 import java.util.*
 
 internal class CountryAutoCompleteView constructor(
@@ -103,7 +103,7 @@ internal class CountryAutoCompleteView constructor(
     }
 
     init {
-        View.inflate(getContext(), R.layout.view_country_autocomplete, this)
+        View.inflate(getContext(), R.layout.country_autocomplete_view, this)
 
         actCountry.threshold = 0
         actCountry.setAdapter(countryAdapter)
@@ -162,7 +162,7 @@ internal class CountryAutoCompleteView constructor(
     internal class CountryAdapter(
         context: Context,
         var countries: List<Country>
-    ) : ArrayAdapter<Country>(context, R.layout.view_country_item) {
+    ) : ArrayAdapter<Country>(context, R.layout.country_textview) {
 
         private val countryFilter: CountryFilter = CountryFilter(
             countries,
@@ -187,7 +187,7 @@ internal class CountryAutoCompleteView constructor(
                 view
             } else {
                 val countryText = LayoutInflater.from(context).inflate(
-                    R.layout.view_country_item, viewGroup, false
+                    R.layout.country_textview, viewGroup, false
                 ) as TextView
                 countryText.text = getItem(i).name
                 countryText
