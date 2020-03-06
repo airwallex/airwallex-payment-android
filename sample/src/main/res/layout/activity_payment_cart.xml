@@ -38,6 +38,6 @@
 
     <include
         android:id="@+id/loading"
-        layout="@layout/view_loading"
+        layout="@layout/loading"
         android:visibility="gone" />
 </merge>
