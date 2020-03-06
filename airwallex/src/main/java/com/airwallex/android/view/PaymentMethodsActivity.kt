@@ -18,7 +18,6 @@ import kotlinx.android.synthetic.main.activity_payment_methods.*
 internal class PaymentMethodsActivity : AirwallexActivity() {
 
     private var pageNum = 0
-    private var hasMore = true
 
     private val args: PaymentMethodsActivityStarter.Args by lazy {
         PaymentMethodsActivityStarter.Args.getExtra(intent)
@@ -75,7 +74,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         }
 
         paymentMethodsAdapter.onLoadMoreCallback = {
-            paymentMethodsAdapter.startLoadingMore()
+            paymentMethodsAdapter.startLoadingMore(rvPaymentMethods)
             fetchPaymentMethods()
         }
 
@@ -131,10 +130,9 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     paymentMethodsAdapter.endLoadingMore()
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }
-                    paymentMethodsAdapter.setPaymentMethods(cards)
+                    paymentMethodsAdapter.setPaymentMethods(cards, response.hasMore)
                     paymentNoCards.visibility =
-                        if (paymentMethodsAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
-                    hasMore = response.hasMore
+                        if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
                     pageNum++
                 }
 
@@ -156,7 +154,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                 result?.let {
                     paymentMethodsAdapter.addNewPaymentMethod(it.paymentMethod)
                     paymentNoCards.visibility =
-                        if (paymentMethodsAdapter.paymentMethods.isEmpty()) View.VISIBLE else View.GONE
+                        if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
                     rvPaymentMethods.requestLayout()
                     startPaymentCheckout(it.paymentMethod, it.cvc)
                 }
