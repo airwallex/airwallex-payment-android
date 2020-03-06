@@ -24,6 +24,8 @@ internal object PaymentIntentFixtures {
             ],
             "customer_payment_methods": [
                 {
+                    "id": "",
+                    "request_id": "",
                     "type": "card",
                     "card": {
                         "expiry_month": "12",
