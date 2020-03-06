@@ -3,10 +3,7 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.airwallex.android.model.AirwallexError
-import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.model.*
 import com.airwallex.android.view.PaymentMethodsActivityStarter.Args
 import kotlinx.android.parcel.Parcelize
 
@@ -21,12 +18,14 @@ internal class PaymentMethodsActivityStarter constructor(
     @Parcelize
     data class Args internal constructor(
         val paymentIntent: PaymentIntent,
-        val token: String
+        val token: String,
+        val includeCheckoutFlow: Boolean
     ) : ActivityStarter.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var paymentIntent: PaymentIntent
             private lateinit var token: String
+            private var includeCheckoutFlow: Boolean = true
 
             fun setPaymentIntent(paymentIntent: PaymentIntent): Builder = apply {
                 this.paymentIntent = paymentIntent
@@ -36,10 +35,15 @@ internal class PaymentMethodsActivityStarter constructor(
                 this.token = token
             }
 
+            fun setIncludeCheckoutFlow(includeCheckoutFlow: Boolean): Builder = apply {
+                this.includeCheckoutFlow = includeCheckoutFlow
+            }
+
             override fun build(): Args {
                 return Args(
                     paymentIntent = paymentIntent,
-                    token = token
+                    token = token,
+                    includeCheckoutFlow = includeCheckoutFlow
                 )
             }
         }
@@ -56,7 +60,9 @@ internal class PaymentMethodsActivityStarter constructor(
     data class Result internal constructor(
         val paymentIntent: PaymentIntent? = null,
         val paymentMethodType: PaymentMethodType? = null,
-        val error: AirwallexError? = null
+        val error: AirwallexError? = null,
+        val paymentMethod: PaymentMethod? = null,
+        val cvc: String? = null
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()

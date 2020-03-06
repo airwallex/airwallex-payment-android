@@ -27,7 +27,7 @@ class PaymentSession constructor(
     }
 
     interface PaymentMethodResult : PaymentResult {
-        fun onSuccess(paymentMethod: PaymentMethod)
+        fun onSuccess(paymentMethod: PaymentMethod, cvc: String?)
     }
 
     @Throws(NullPointerException::class)
@@ -39,6 +39,7 @@ class PaymentSession constructor(
                 PaymentMethodsActivityStarter.Args.Builder()
                     .setPaymentIntent(paymentIntent)
                     .setToken(token)
+                    .setIncludeCheckoutFlow(true)
                     .build()
             )
     }
@@ -66,6 +67,20 @@ class PaymentSession constructor(
     }
 
     @Throws(NullPointerException::class)
+    fun presentSelectPaymentMethodFlow() {
+        val paymentIntent = requireNotNull(configuration.paymentIntent)
+        val token = requireNotNull(configuration.token)
+        PaymentMethodsActivityStarter(context)
+            .startForResult(
+                PaymentMethodsActivityStarter.Args.Builder()
+                    .setPaymentIntent(paymentIntent)
+                    .setToken(token)
+                    .setIncludeCheckoutFlow(false)
+                    .build()
+            )
+    }
+
+    @Throws(NullPointerException::class)
     fun presentPaymentCheckoutFlow() {
         val paymentIntent = requireNotNull(configuration.paymentIntent)
         val token = requireNotNull(configuration.token)
@@ -86,7 +101,7 @@ class PaymentSession constructor(
         data: Intent?,
         callback: PaymentIntentResult
     ) {
-        handlePaymentResult(
+        handleResult(
             requestCode,
             resultCode,
             data,
@@ -94,13 +109,27 @@ class PaymentSession constructor(
         )
     }
 
-    fun handlePaymentMethodResult(
+    fun handleAddPaymentMethodResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
         callback: PaymentMethodResult
     ) {
-        handlePaymentResult(
+        handleResult(
+            requestCode,
+            resultCode,
+            data,
+            callback
+        )
+    }
+
+    fun handleSelectPaymentMethodResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        callback: PaymentMethodResult
+    ) {
+        handleResult(
             requestCode,
             resultCode,
             data,
@@ -114,7 +143,7 @@ class PaymentSession constructor(
         data: Intent?,
         callback: PaymentShippingResult
     ) {
-        handlePaymentResult(
+        handleResult(
             requestCode,
             resultCode,
             data,
@@ -128,7 +157,7 @@ class PaymentSession constructor(
         data: Intent?,
         callback: PaymentIntentResult
     ) {
-        handlePaymentResult(
+        handleResult(
             requestCode,
             resultCode,
             data,
@@ -136,7 +165,7 @@ class PaymentSession constructor(
         )
     }
 
-    private fun handlePaymentResult(
+    private fun handleResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,
@@ -151,7 +180,10 @@ class PaymentSession constructor(
                 return when (requestCode) {
                     AddPaymentMethodActivityStarter.REQUEST_CODE -> {
                         val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
-                        (callback as? PaymentMethodResult)?.onSuccess(requireNotNull(result?.paymentMethod))
+                        (callback as? PaymentMethodResult)?.onSuccess(
+                            requireNotNull(result?.paymentMethod),
+                            result?.cvc
+                        )
                         true
                     }
                     PaymentShippingActivityStarter.REQUEST_CODE -> {
@@ -164,10 +196,17 @@ class PaymentSession constructor(
                         if (result?.error != null) {
                             (callback as? PaymentIntentResult)?.onFailed(result.error)
                         } else {
-                            (callback as? PaymentIntentResult)?.onSuccess(
-                                requireNotNull(result?.paymentIntent),
-                                requireNotNull(result?.paymentMethodType)
-                            )
+                            if (result?.paymentMethod != null) {
+                                (callback as? PaymentMethodResult)?.onSuccess(
+                                    requireNotNull(result.paymentMethod),
+                                    result.cvc
+                                )
+                            } else {
+                                (callback as? PaymentIntentResult)?.onSuccess(
+                                    requireNotNull(result?.paymentIntent),
+                                    requireNotNull(result?.paymentMethodType)
+                                )
+                            }
                         }
                         true
                     }

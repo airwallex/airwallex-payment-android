@@ -106,15 +106,28 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     }
 
     private fun startPaymentCheckout(paymentMethod: PaymentMethod, cvc: String? = null) {
-        PaymentCheckoutActivityStarter(this@PaymentMethodsActivity)
-            .startForResult(
-                PaymentCheckoutActivityStarter.Args.Builder()
-                    .setPaymentIntent(args.paymentIntent)
-                    .setToken(args.token)
-                    .setPaymentMethod(paymentMethod)
-                    .setCvc(cvc)
-                    .build()
+        if (args.includeCheckoutFlow) {
+            PaymentCheckoutActivityStarter(this@PaymentMethodsActivity)
+                .startForResult(
+                    PaymentCheckoutActivityStarter.Args.Builder()
+                        .setPaymentIntent(args.paymentIntent)
+                        .setToken(args.token)
+                        .setPaymentMethod(paymentMethod)
+                        .setCvc(cvc)
+                        .build()
+                )
+        } else {
+            setResult(
+                Activity.RESULT_OK,
+                Intent().putExtras(
+                    PaymentMethodsActivityStarter.Result(
+                        paymentMethod = paymentMethod,
+                        cvc = cvc
+                    ).toBundle()
+                )
             )
+            finish()
+        }
     }
 
     private fun fetchPaymentMethods() {
@@ -166,9 +179,9 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                         Activity.RESULT_OK,
                         Intent().putExtras(
                             PaymentMethodsActivityStarter.Result(
-                                it.paymentIntent,
-                                it.paymentMethodType,
-                                it.error
+                                paymentIntent = it.paymentIntent,
+                                paymentMethodType = it.paymentMethodType,
+                                error = it.error
                             ).toBundle()
                         )
                     )
