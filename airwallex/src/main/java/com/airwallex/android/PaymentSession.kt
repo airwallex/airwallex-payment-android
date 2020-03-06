@@ -2,16 +2,23 @@ package com.airwallex.android
 
 import android.app.Activity
 import android.content.Intent
+import androidx.fragment.app.Fragment
 import com.airwallex.android.model.*
+import com.airwallex.android.view.*
 import com.airwallex.android.view.AddPaymentMethodActivityStarter
 import com.airwallex.android.view.PaymentCheckoutActivityStarter
 import com.airwallex.android.view.PaymentMethodsActivityStarter
 import com.airwallex.android.view.PaymentShippingActivityStarter
 
 class PaymentSession constructor(
-    private val context: Activity,
+    private val activity: Activity,
     private val configuration: PaymentSessionConfiguration
 ) {
+
+    constructor(
+        fragment: Fragment,
+        configuration: PaymentSessionConfiguration
+    ) : this(fragment.requireActivity(), configuration)
 
     interface PaymentResult {
         fun onCancelled()
@@ -30,11 +37,14 @@ class PaymentSession constructor(
         fun onSuccess(paymentMethod: PaymentMethod, cvc: String?)
     }
 
+    /**
+     * Launch the [PaymentMethodsActivity] to allow the user to finish the payment checkout flow
+     */
     @Throws(NullPointerException::class)
     fun presentPaymentFlow() {
         val paymentIntent = requireNotNull(configuration.paymentIntent)
         val token = requireNotNull(configuration.token)
-        PaymentMethodsActivityStarter(context)
+        PaymentMethodsActivityStarter(activity)
             .startForResult(
                 PaymentMethodsActivityStarter.Args.Builder()
                     .setPaymentIntent(paymentIntent)
@@ -44,8 +54,11 @@ class PaymentSession constructor(
             )
     }
 
+    /**
+     * Launch the [PaymentShippingActivity] to allow the user to fill the shipping information
+     */
     fun presentShippingFlow() {
-        PaymentShippingActivityStarter(context)
+        PaymentShippingActivityStarter(activity)
             .startForResult(
                 PaymentShippingActivityStarter.Args.Builder()
                     .setShipping(configuration.shipping)
@@ -53,11 +66,15 @@ class PaymentSession constructor(
             )
     }
 
+    /**
+     * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
+     *
+     */
     @Throws(NullPointerException::class)
     fun presentAddPaymentMethodFlow() {
         val paymentIntent = requireNotNull(configuration.paymentIntent)
         val token = requireNotNull(configuration.token)
-        AddPaymentMethodActivityStarter(context)
+        AddPaymentMethodActivityStarter(activity)
             .startForResult(
                 AddPaymentMethodActivityStarter.Args.Builder()
                     .setPaymentIntent(paymentIntent)
@@ -66,11 +83,15 @@ class PaymentSession constructor(
             )
     }
 
+    /**
+     * Launch the [PaymentMethodsActivity] to allow the user to select a payment method,
+     * or to add a new one.
+     */
     @Throws(NullPointerException::class)
     fun presentSelectPaymentMethodFlow() {
         val paymentIntent = requireNotNull(configuration.paymentIntent)
         val token = requireNotNull(configuration.token)
-        PaymentMethodsActivityStarter(context)
+        PaymentMethodsActivityStarter(activity)
             .startForResult(
                 PaymentMethodsActivityStarter.Args.Builder()
                     .setPaymentIntent(paymentIntent)
@@ -80,12 +101,15 @@ class PaymentSession constructor(
             )
     }
 
+    /**
+     * Launch the [PaymentCheckoutActivity] to allow the user to checkout
+     */
     @Throws(NullPointerException::class)
     fun presentPaymentCheckoutFlow() {
         val paymentIntent = requireNotNull(configuration.paymentIntent)
         val token = requireNotNull(configuration.token)
         val paymentMethod = requireNotNull(configuration.paymentMethod)
-        PaymentCheckoutActivityStarter(context)
+        PaymentCheckoutActivityStarter(activity)
             .startForResult(
                 PaymentCheckoutActivityStarter.Args.Builder()
                     .setPaymentIntent(paymentIntent)
