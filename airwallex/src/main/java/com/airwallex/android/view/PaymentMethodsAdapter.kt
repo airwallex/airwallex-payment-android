@@ -13,7 +13,6 @@ import com.airwallex.android.model.WechatPayFlow
 import com.airwallex.android.model.WechatPayFlowType
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_wechat.view.*
-import java.util.*
 
 internal class PaymentMethodsAdapter(
     val shouldShowCard: Boolean = false,
@@ -22,13 +21,14 @@ internal class PaymentMethodsAdapter(
 
     private val wechatCount = if (shouldShowWechatPay) 1 else 0
     private var selectedPaymentMethod: PaymentMethod? = null
-    internal val paymentMethods = mutableListOf<PaymentMethod?>()
+    private val paymentMethods = mutableListOf<PaymentMethod?>()
     internal var callback: Callback? = null
 
     private var lastVisibleItem = 0
     private var totalItemCount: Int = 0
     private var isLoading: Boolean = false
     internal var onLoadMoreCallback: () -> Unit = {}
+    internal var hasMore = true
 
     internal fun addOnScrollListener(recyclerView: RecyclerView) {
         val viewManager = recyclerView.layoutManager as LinearLayoutManager
@@ -39,7 +39,7 @@ internal class PaymentMethodsAdapter(
                 totalItemCount = viewManager.itemCount
                 lastVisibleItem = viewManager.findLastVisibleItemPosition()
 
-                if (!isLoading && totalItemCount <= lastVisibleItem + VISIBLE_THRESHOLD) {
+                if (!isLoading && totalItemCount <= lastVisibleItem + VISIBLE_THRESHOLD && hasMore) {
                     isLoading = true
                     onLoadMoreCallback.invoke()
                 }
@@ -47,7 +47,12 @@ internal class PaymentMethodsAdapter(
         })
     }
 
-    internal fun setPaymentMethods(paymentMethods: List<PaymentMethod>) {
+    internal fun isEmpty(): Boolean {
+        return paymentMethods.isEmpty()
+    }
+
+    internal fun setPaymentMethods(paymentMethods: List<PaymentMethod>, hasMore: Boolean) {
+        this.hasMore = hasMore
         this.paymentMethods.addAll(paymentMethods)
         notifyDataSetChanged()
     }
@@ -58,9 +63,11 @@ internal class PaymentMethodsAdapter(
         notifyDataSetChanged()
     }
 
-    internal fun startLoadingMore() {
-        paymentMethods.add(null)
-        notifyItemInserted(itemCount - 1)
+    internal fun startLoadingMore(recyclerView: RecyclerView) {
+        recyclerView.post {
+            paymentMethods.add(null)
+            notifyItemInserted(itemCount - 1)
+        }
     }
 
     internal fun endLoadingMore() {
