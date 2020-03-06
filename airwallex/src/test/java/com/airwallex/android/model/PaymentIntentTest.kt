@@ -27,6 +27,8 @@ class PaymentIntentTest {
             availablePaymentMethodTypes = arrayListOf("card", "wechatpay"),
             customerPaymentMethods = arrayListOf(
                 PaymentMethod.Builder()
+                    .setId("")
+                    .setRequestId("")
                     .setType(PaymentMethodType.CARD)
                     .setCard(
                         PaymentMethod.Card.Builder()

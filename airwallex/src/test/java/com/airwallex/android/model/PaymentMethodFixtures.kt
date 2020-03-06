@@ -6,6 +6,8 @@ internal object PaymentMethodFixtures {
     val PAYMENT_METHOD: PaymentMethod = AirwallexPlugins.gson.fromJson(
         """
         {
+            "id": "",
+            "request_id": "",
             "type": "card",
 	        "card": {
 	            "number": "4012000300001003",
