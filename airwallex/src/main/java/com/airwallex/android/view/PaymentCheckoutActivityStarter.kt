@@ -85,5 +85,4 @@ internal class PaymentCheckoutActivityStarter constructor(
     companion object {
         const val REQUEST_CODE: Int = 1004
     }
-
 }

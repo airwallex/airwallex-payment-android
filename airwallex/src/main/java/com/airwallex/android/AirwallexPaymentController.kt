@@ -37,7 +37,6 @@ internal class AirwallexPaymentController(
                 override fun onError(e: AirwallexException) {
                     callback.onFailed(e)
                 }
-
             }
         ).execute()
     }
@@ -66,7 +65,6 @@ internal class AirwallexPaymentController(
                 override fun onError(e: AirwallexException) {
                     callback.onFailed(e)
                 }
-
             }
         ).execute()
     }

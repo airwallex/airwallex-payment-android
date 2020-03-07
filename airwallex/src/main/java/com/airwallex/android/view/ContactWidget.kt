@@ -20,8 +20,8 @@ internal class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayo
 
     internal val isValidContact: Boolean
         get() {
-            return atlLastName.value.isNotEmpty()
-                    && atlFirstName.value.isNotEmpty()
+            return atlLastName.value.isNotEmpty() &&
+                    atlFirstName.value.isNotEmpty()
         }
 
     internal val contact: Contact

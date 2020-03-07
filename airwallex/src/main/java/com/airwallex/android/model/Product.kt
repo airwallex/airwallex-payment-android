@@ -73,7 +73,6 @@ data class Product internal constructor(
             this.quantity = quantity
         }
 
-
         override fun build(): Product {
             return Product(
                 code = code,

@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply from: "./ktlint.gradle"
 android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -29,6 +30,10 @@ android {
     testOptions.unitTests.includeAndroidResources = true
 }
 
+configurations {
+    javadocDeps
+}
+
 ext {
     okhttpVersion = "4.2.0"
     gsonVersion = '2.8.5'
@@ -52,6 +57,10 @@ dependencies {
     // Required libraries
     implementation group: "com.nimbusds", name: "nimbus-jose-jwt", version: "8.3"
     implementation group: "org.bouncycastle", name: "bcprov-jdk15on", version: "1.61"
+
+    javadocDeps 'androidx.annotation:annotation:1.1.0'
+    javadocDeps 'androidx.appcompat:appcompat:1.1.0'
+    javadocDeps 'com.google.android.material:material:1.1.0'
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:4.3.1'
