@@ -48,7 +48,6 @@ internal class PaymentMethodsActivityStarter constructor(
             }
         }
 
-
         internal companion object {
             internal fun getExtra(intent: Intent): Args {
                 return requireNotNull(intent.getParcelableExtra(ActivityStarter.Args.AIRWALLEX_EXTRA))

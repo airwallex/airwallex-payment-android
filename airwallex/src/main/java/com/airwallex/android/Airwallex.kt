@@ -100,7 +100,6 @@ class Airwallex internal constructor(
         )
     }
 
-
     @UiThread
     internal fun getPaymentMethods(
         pageNum: Int = 0,

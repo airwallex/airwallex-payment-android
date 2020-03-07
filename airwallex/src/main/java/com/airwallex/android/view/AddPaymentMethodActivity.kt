@@ -11,9 +11,9 @@ import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodParams
 import com.airwallex.android.model.PaymentMethodType
+import java.util.*
 import kotlinx.android.synthetic.main.activity_add_card.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
-import java.util.*
 
 internal class AddPaymentMethodActivity : AirwallexActivity() {
 

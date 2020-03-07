@@ -2,8 +2,8 @@ package com.airwallex.android.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import kotlinx.android.parcel.Parcelize
 import java.util.*
+import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class PaymentIntent internal constructor(
@@ -134,5 +134,4 @@ data class PaymentIntent internal constructor(
         val sign: String?
 
     ) : AirwallexModel, Parcelable
-
 }

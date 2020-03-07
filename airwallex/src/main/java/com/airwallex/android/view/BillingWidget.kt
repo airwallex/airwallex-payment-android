@@ -76,15 +76,15 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
 
     internal val isValid: Boolean
         get() {
-            return sameAsShipping
-                    || !sameAsShipping
-                    && atlFirstName.value.isNotEmpty()
-                    && atlLastName.value.isNotEmpty()
-                    && countryAutocomplete.country != null
-                    && atlState.value.isNotEmpty()
-                    && atlCity.value.isNotEmpty()
-                    && atlStreetAddress.value.isNotEmpty()
-                    && atlEmail.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches()
+            return sameAsShipping ||
+                    !sameAsShipping &&
+                    atlFirstName.value.isNotEmpty() &&
+                    atlLastName.value.isNotEmpty() &&
+                    countryAutocomplete.country != null &&
+                    atlState.value.isNotEmpty() &&
+                    atlCity.value.isNotEmpty() &&
+                    atlStreetAddress.value.isNotEmpty() &&
+                    atlEmail.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches()
         }
 
     init {

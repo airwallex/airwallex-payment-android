@@ -28,10 +28,10 @@ internal class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLay
 
     internal val isValidShipping: Boolean
         get() {
-            return country != null
-                    && atlState.value.isNotEmpty()
-                    && atlCity.value.isNotEmpty()
-                    && atlStreetAddress.value.isNotEmpty()
+            return country != null &&
+                    atlState.value.isNotEmpty() &&
+                    atlCity.value.isNotEmpty() &&
+                    atlStreetAddress.value.isNotEmpty()
         }
 
     init {

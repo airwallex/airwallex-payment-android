@@ -4,8 +4,8 @@ import android.os.Parcelable
 import com.airwallex.android.model.PaymentIntentParams
 import com.airwallex.android.model.PaymentMethodParams
 import com.google.gson.JsonParser
-import kotlinx.android.parcel.Parcelize
 import java.util.*
+import kotlinx.android.parcel.Parcelize
 
 internal class AirwallexApiRepository : ApiRepository {
 
@@ -128,6 +128,6 @@ internal class AirwallexApiRepository : ApiRepository {
     }
 
     private fun getApiUrl(path: String, vararg args: Any): String {
-        return "${API_HOST}/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
+        return "$API_HOST/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
     }
 }
