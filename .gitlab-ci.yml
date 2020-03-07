@@ -39,6 +39,11 @@ assembleRelease:
     paths:
       - app/build/outputs/
 
+lint:
+  stage: test
+  script:
+    - ./gradlew ktlint
+
 releaseTests:
   stage: test
   script:
