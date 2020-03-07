@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: "./ktlint.gradle"
+
 android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -71,3 +72,5 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
 }
+
+apply from: "./deploy.gradle"

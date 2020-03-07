@@ -1,0 +1,21 @@
+ext {
+    siteUrl = ''            // git repo url
+    gitUrl = ''             // git repo vcs url
+    publishedGroupId = ''   // this is the ID we want to see in implementation line
+
+    bintrayRepo = ''        // Repo name in bintray dashboard
+    bintrayName = 'airwalllex'        // package name of the bintray repo
+
+    libraryName = ''                    // this is the module name of library
+    libraryDescription = 'Test project library description' // description of library
+    libraryVersion = '1.0.0'            // library version
+    artifact = 'airwalllex'             // this is the artifact we want to see in implementation line
+
+    licenseName = 'The MIT License (MIT)'
+    licenseSite = 'https://opensource.org/licenses/MIT'
+    licenseCode = 'MIT'
+
+    developerId = ''                // This is your bintray username
+    developerName = ''              // Developer's name
+    developerEmail = ''             // Developer's email
+}
