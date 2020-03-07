@@ -11,8 +11,8 @@ import androidx.core.content.ContextCompat
 import com.airwallex.android.PaymentSession
 import com.airwallex.android.PaymentSessionConfiguration
 import com.airwallex.android.model.Shipping
-import kotlinx.android.synthetic.main.shipping_item.view.*
 import java.util.*
+import kotlinx.android.synthetic.main.shipping_item.view.*
 
 class ShippingItemView constructor(
     context: Context,
@@ -33,7 +33,6 @@ class ShippingItemView constructor(
                     PaymentSessionConfiguration.Builder().setShipping(shipping).build()
                 )
                 paymentSession?.presentShippingFlow()
-
             }
         }
     }
