@@ -26,6 +26,5 @@ abstract class BaseWXPayEntryActivity : AppCompatActivity(), IWXAPIEventHandler 
     }
 
     override fun onReq(req: BaseReq?) {
-
     }
 }
