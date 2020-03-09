@@ -1,7 +1,7 @@
 package com.airwallex.android
 
-import java.util.*
 import okhttp3.ResponseBody
+import java.util.*
 
 internal class AirwallexHttpResponse private constructor(
     val isSuccessful: Boolean,

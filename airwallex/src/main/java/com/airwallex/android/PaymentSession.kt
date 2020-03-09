@@ -5,10 +5,6 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.model.*
 import com.airwallex.android.view.*
-import com.airwallex.android.view.AddPaymentMethodActivityStarter
-import com.airwallex.android.view.PaymentCheckoutActivityStarter
-import com.airwallex.android.view.PaymentMethodsActivityStarter
-import com.airwallex.android.view.PaymentShippingActivityStarter
 
 class PaymentSession constructor(
     private val activity: Activity,
@@ -44,6 +40,7 @@ class PaymentSession constructor(
     fun presentPaymentFlow() {
         val paymentIntent = requireNotNull(configuration.paymentIntent)
         val token = requireNotNull(configuration.token)
+        requireNotNull(configuration.paymentIntent.customerId)
         PaymentMethodsActivityStarter(activity)
             .startForResult(
                 PaymentMethodsActivityStarter.Args.Builder()

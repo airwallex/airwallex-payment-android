@@ -7,13 +7,9 @@ import com.airwallex.android.model.*
 class Airwallex internal constructor(
     private val token: String,
     private val clientSecret: String,
+    private val baseUrl: String,
     private val paymentController: PaymentController
 ) {
-    companion object {
-        fun initialize(configuration: AirwallexConfiguration) {
-            AirwallexPlugins.initialize(configuration)
-        }
-    }
 
     interface PaymentCallback<T> {
         fun onFailed(exception: AirwallexException)
@@ -23,20 +19,24 @@ class Airwallex internal constructor(
     // TODO token need to be removed after API changed
     constructor(
         token: String,
-        clientSecret: String
+        clientSecret: String,
+        baseUrl: String = BASE_URL
     ) : this(
         token,
         clientSecret,
+        baseUrl,
         AirwallexApiRepository()
     )
 
     private constructor(
         token: String,
         clientSecret: String,
+        baseUrl: String = BASE_URL,
         repository: ApiRepository
     ) : this(
         token,
         clientSecret,
+        baseUrl,
         AirwallexPaymentController(repository)
     )
 
@@ -50,7 +50,10 @@ class Airwallex internal constructor(
             AirwallexApiRepository.Options(
                 token = token,
                 clientSecret = clientSecret,
-                paymentIntentId = paymentIntentId
+                baseUrl = baseUrl,
+                paymentIntentOptions = AirwallexApiRepository.PaymentIntentOptions(
+                    paymentIntentId = paymentIntentId
+                )
             ),
             paymentIntentParams,
             callback
@@ -66,7 +69,10 @@ class Airwallex internal constructor(
             AirwallexApiRepository.Options(
                 token = token,
                 clientSecret = clientSecret,
-                paymentIntentId = paymentIntentId
+                baseUrl = baseUrl,
+                paymentIntentOptions = AirwallexApiRepository.PaymentIntentOptions(
+                    paymentIntentId = paymentIntentId
+                )
             ),
             callback
         )
@@ -80,7 +86,8 @@ class Airwallex internal constructor(
         paymentController.createPaymentMethod(
             AirwallexApiRepository.Options(
                 token = token,
-                clientSecret = clientSecret
+                clientSecret = clientSecret,
+                baseUrl = baseUrl
             ),
             paymentMethodParams,
             callback
@@ -91,18 +98,29 @@ class Airwallex internal constructor(
     internal fun getPaymentMethods(
         pageNum: Int = 0,
         pageSize: Int = 10,
-        customerId: String?,
+        customerId: String,
         callback: PaymentCallback<PaymentMethodResponse>
     ) {
         paymentController.getPaymentMethods(
             AirwallexApiRepository.Options(
                 token = token,
                 clientSecret = clientSecret,
-                pageNum = pageNum,
-                pageSize = pageSize,
-                customerId = customerId
+                baseUrl = baseUrl,
+                paymentMethodOptions = AirwallexApiRepository.PaymentMethodOptions(
+                    pageNum = pageNum,
+                    pageSize = pageSize,
+                    customerId = customerId
+                )
             ),
             callback
         )
+    }
+
+    companion object {
+        private const val BASE_URL = "https://staging-pci-api.airwallex.com"
+
+        fun initialize(configuration: AirwallexConfiguration) {
+            AirwallexPlugins.initialize(configuration)
+        }
     }
 }
