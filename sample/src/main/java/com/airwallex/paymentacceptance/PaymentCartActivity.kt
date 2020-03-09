@@ -297,15 +297,15 @@ class PaymentCartActivity : AppCompatActivity() {
         )
         airwallex.retrievePaymentIntent(
             paymentIntentId = paymentIntentId,
-            callback = object : Airwallex.PaymentIntentCallback {
-                override fun onSuccess(paymentIntent: PaymentIntent) {
+            callback = object : Airwallex.PaymentCallback<PaymentIntent> {
+                override fun onSuccess(response: PaymentIntent) {
                     Log.d(
                         TAG,
-                        "Retrieve PaymentIntent success, PaymentIntent status: ${paymentIntent.status}"
+                        "Retrieve PaymentIntent success, PaymentIntent status: ${response.status}"
                     )
 
                     loading.visibility = View.GONE
-                    if (paymentIntent.status == "SUCCEEDED") {
+                    if (response.status == "SUCCEEDED") {
                         showPaymentSuccess()
                     } else {
                         showPaymentError()

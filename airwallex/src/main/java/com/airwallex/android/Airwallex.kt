@@ -15,22 +15,9 @@ class Airwallex internal constructor(
         }
     }
 
-    interface PaymentIntentCallback {
-        fun onSuccess(paymentIntent: PaymentIntent)
-
+    interface PaymentCallback<T> {
         fun onFailed(exception: AirwallexException)
-    }
-
-    interface PaymentMethodCallback {
-        fun onSuccess(paymentMethod: PaymentMethod)
-
-        fun onFailed(exception: AirwallexException)
-    }
-
-    interface GetPaymentMethodsCallback {
-        fun onSuccess(response: PaymentMethodResponse)
-
-        fun onFailed(exception: AirwallexException)
+        fun onSuccess(response: T)
     }
 
     // TODO token need to be removed after API changed
@@ -57,7 +44,7 @@ class Airwallex internal constructor(
     fun confirmPaymentIntent(
         paymentIntentId: String,
         paymentIntentParams: PaymentIntentParams,
-        callback: PaymentIntentCallback
+        callback: PaymentCallback<PaymentIntent>
     ) {
         paymentController.confirmPaymentIntent(
             AirwallexApiRepository.Options(
@@ -73,7 +60,7 @@ class Airwallex internal constructor(
     @UiThread
     fun retrievePaymentIntent(
         paymentIntentId: String,
-        callback: PaymentIntentCallback
+        callback: PaymentCallback<PaymentIntent>
     ) {
         paymentController.retrievePaymentIntent(
             AirwallexApiRepository.Options(
@@ -88,7 +75,7 @@ class Airwallex internal constructor(
     @UiThread
     internal fun createPaymentMethod(
         paymentMethodParams: PaymentMethodParams,
-        callback: PaymentMethodCallback
+        callback: PaymentCallback<PaymentMethod>
     ) {
         paymentController.createPaymentMethod(
             AirwallexApiRepository.Options(
@@ -105,7 +92,7 @@ class Airwallex internal constructor(
         pageNum: Int = 0,
         pageSize: Int = 10,
         customerId: String?,
-        callback: GetPaymentMethodsCallback
+        callback: PaymentCallback<PaymentMethodResponse>
     ) {
         paymentController.getPaymentMethods(
             AirwallexApiRepository.Options(
