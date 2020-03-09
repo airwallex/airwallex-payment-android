@@ -35,12 +35,6 @@ android {
     }
 
     signingConfigs {
-        debug {
-            storeFile file(AIRWALLEX_STORE_FILE)
-            storePassword AIRWALLEX_STORE_PASSWORD
-            keyAlias AIRWALLEX_KEY_ALIAS
-            keyPassword AIRWALLEX_KEY_PASSWORD
-        }
         release {
             storeFile file(AIRWALLEX_STORE_FILE)
             storePassword AIRWALLEX_STORE_PASSWORD
@@ -50,12 +44,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            debuggable true
-            minifyEnabled false
-            signingConfig signingConfigs.debug
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
         release {
             debuggable false
             minifyEnabled false
