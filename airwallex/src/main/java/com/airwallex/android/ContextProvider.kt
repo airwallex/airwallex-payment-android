@@ -6,6 +6,9 @@ internal class ContextProvider {
 
     companion object {
 
+        /**
+         * The Application Context that used on the SDK
+         */
         internal lateinit var applicationContext: Context
 
         fun init(context: Context) {

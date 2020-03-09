@@ -134,7 +134,7 @@ internal class AirwallexPaymentController(
             AirwallexError::class.java
         ) else null
         return APIException(
-            message = null,
+            message = result.message,
             traceId = result.allHeaders["x-awx-traceid"],
             statusCode = result.statusCode,
             error = error,
@@ -144,51 +144,51 @@ internal class AirwallexPaymentController(
 
     private class ConfirmIntentTask(
         private val options: AirwallexApiRepository.Options,
-        private val paymentIntentParams: PaymentIntentParams,
-        private val airwallexRepository: ApiRepository,
+        private val params: PaymentIntentParams,
+        private val repository: ApiRepository,
         workScope: CoroutineScope,
         callback: ApiResultCallback<AirwallexHttpResponse>
     ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
 
         override suspend fun getResult(): AirwallexHttpResponse? {
-            return airwallexRepository.confirmPaymentIntent(options, paymentIntentParams)
+            return repository.confirmPaymentIntent(options, params)
         }
     }
 
     private class RetrieveIntentTask(
         private val options: AirwallexApiRepository.Options,
-        private val airwallexRepository: ApiRepository,
+        private val repository: ApiRepository,
         workScope: CoroutineScope,
         callback: ApiResultCallback<AirwallexHttpResponse>
     ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
 
         override suspend fun getResult(): AirwallexHttpResponse? {
-            return airwallexRepository.retrievePaymentIntent(options)
+            return repository.retrievePaymentIntent(options)
         }
     }
 
     private class CreatePaymentMethodTask(
         private val options: AirwallexApiRepository.Options,
-        private val paymentMethodParams: PaymentMethodParams,
-        private val airwallexRepository: ApiRepository,
+        private val params: PaymentMethodParams,
+        private val repository: ApiRepository,
         workScope: CoroutineScope,
         callback: ApiResultCallback<AirwallexHttpResponse>
     ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
 
         override suspend fun getResult(): AirwallexHttpResponse? {
-            return airwallexRepository.createPaymentMethod(options, paymentMethodParams)
+            return repository.createPaymentMethod(options, params)
         }
     }
 
     private class GetPaymentMethodsTask(
         private val options: AirwallexApiRepository.Options,
-        private val airwallexRepository: ApiRepository,
+        private val repository: ApiRepository,
         workScope: CoroutineScope,
         callback: ApiResultCallback<AirwallexHttpResponse>
     ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
 
         override suspend fun getResult(): AirwallexHttpResponse? {
-            return airwallexRepository.getPaymentMethods(options)
+            return repository.getPaymentMethods(options)
         }
     }
 }

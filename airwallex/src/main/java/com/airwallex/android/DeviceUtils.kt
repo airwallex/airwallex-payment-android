@@ -6,6 +6,7 @@ import com.airwallex.android.model.Device
 
 internal object DeviceUtils {
 
+    // TODO Device_id should use the CyberSource fingerprint
     @SuppressLint("HardwareIds")
     internal val device = Device.Builder()
         .setCookiesAccepted("true")

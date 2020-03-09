@@ -7,7 +7,7 @@ internal class AirwallexHttpResponse private constructor(
     val isSuccessful: Boolean,
     val statusCode: Int,
     val body: ResponseBody?,
-    val reason: String?,
+    val message: String?,
     val allHeaders: MutableMap<String, String?>
 ) {
 
@@ -15,7 +15,7 @@ internal class AirwallexHttpResponse private constructor(
         private var isSuccessful = false
         private var statusCode = 0
         private var body: ResponseBody? = null
-        private var reason: String? = null
+        private var message: String? = null
         private var headers: MutableMap<String, String?> = mutableMapOf()
 
         fun setIsSuccessful(isSuccessful: Boolean): Builder = apply {
@@ -30,8 +30,8 @@ internal class AirwallexHttpResponse private constructor(
             this.body = body
         }
 
-        fun setReason(reason: String?): Builder = apply {
-            this.reason = reason
+        fun setMessage(message: String?): Builder = apply {
+            this.message = message
         }
 
         fun setHeaders(headers: MutableMap<String, String?>): Builder = apply {
@@ -43,7 +43,7 @@ internal class AirwallexHttpResponse private constructor(
                 isSuccessful = isSuccessful,
                 statusCode = statusCode,
                 body = body,
-                reason = reason,
+                message = message,
                 allHeaders = headers
             )
         }
