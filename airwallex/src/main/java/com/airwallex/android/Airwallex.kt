@@ -21,7 +21,7 @@ class Airwallex internal constructor(
 
     /**
      * @param token
-     * @param clientSecret
+     * @param clientSecret All API requests need to take this parameter
      * @param baseUrl You can set different values to test on different environments
      */
     // TODO token need to be removed after API changed

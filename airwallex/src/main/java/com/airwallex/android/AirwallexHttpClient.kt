@@ -1,10 +1,10 @@
 package com.airwallex.android
 
-import java.io.IOException
-import java.nio.charset.StandardCharsets
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okio.BufferedSink
+import java.io.IOException
+import java.nio.charset.StandardCharsets
 
 internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
 
@@ -33,8 +33,8 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
         // Body
         val body = response.body
 
-        // Reason
-        val reason = response.message
+        // Message
+        val message = response.message
 
         // Headers
         val headers: MutableMap<String, String?> = mutableMapOf()
@@ -45,7 +45,7 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
             .setStatusCode(statusCode)
             .setIsSuccessful(isSuccessful)
             .setBody(body)
-            .setReason(reason)
+            .setMessage(message)
             .setHeaders(headers)
             .build()
     }
