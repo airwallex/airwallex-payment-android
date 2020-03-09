@@ -7,14 +7,12 @@ import com.airwallex.android.model.*
 import com.airwallex.android.view.*
 
 class PaymentSession constructor(
-    private val activity: Activity,
-    private val configuration: PaymentSessionConfiguration
+    private val activity: Activity
 ) {
 
     constructor(
-        fragment: Fragment,
-        configuration: PaymentSessionConfiguration
-    ) : this(fragment.requireActivity(), configuration)
+        fragment: Fragment
+    ) : this(fragment.requireActivity())
 
     interface PaymentResult {
         fun onCancelled()
@@ -36,11 +34,10 @@ class PaymentSession constructor(
     /**
      * Launch the [PaymentMethodsActivity] to allow the user to finish the payment checkout flow
      */
-    @Throws(NullPointerException::class)
-    fun presentPaymentFlow() {
-        val paymentIntent = requireNotNull(configuration.paymentIntent)
-        val token = requireNotNull(configuration.token)
-        requireNotNull(configuration.paymentIntent.customerId)
+    fun presentPaymentFlow(paymentIntent: PaymentIntent, token: String) {
+        requireNotNull(paymentIntent.customerId, {
+            "Customer id must be provided"
+        })
         PaymentMethodsActivityStarter(activity)
             .startForResult(
                 PaymentMethodsActivityStarter.Args.Builder()
@@ -54,11 +51,11 @@ class PaymentSession constructor(
     /**
      * Launch the [PaymentShippingActivity] to allow the user to fill the shipping information
      */
-    fun presentShippingFlow() {
+    fun presentShippingFlow(shipping: Shipping? = null) {
         PaymentShippingActivityStarter(activity)
             .startForResult(
                 PaymentShippingActivityStarter.Args.Builder()
-                    .setShipping(configuration.shipping)
+                    .setShipping(shipping)
                     .build()
             )
     }
@@ -67,10 +64,10 @@ class PaymentSession constructor(
      * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
      *
      */
-    @Throws(NullPointerException::class)
-    fun presentAddPaymentMethodFlow() {
-        val paymentIntent = requireNotNull(configuration.paymentIntent)
-        val token = requireNotNull(configuration.token)
+    fun presentAddPaymentMethodFlow(paymentIntent: PaymentIntent, token: String) {
+        requireNotNull(paymentIntent.customerId, {
+            "Customer id must be provided"
+        })
         AddPaymentMethodActivityStarter(activity)
             .startForResult(
                 AddPaymentMethodActivityStarter.Args.Builder()
@@ -81,13 +78,14 @@ class PaymentSession constructor(
     }
 
     /**
-     * Launch the [PaymentMethodsActivity] to allow the user to select a payment method,
+     * Launch the [PaymentMethodsActivity] to allow the user to select or create a payment method,
      * or to add a new one.
      */
     @Throws(NullPointerException::class)
-    fun presentSelectPaymentMethodFlow() {
-        val paymentIntent = requireNotNull(configuration.paymentIntent)
-        val token = requireNotNull(configuration.token)
+    fun presentSelectPaymentMethodFlow(paymentIntent: PaymentIntent, token: String) {
+        requireNotNull(paymentIntent.customerId, {
+            "Customer id must be provided"
+        })
         PaymentMethodsActivityStarter(activity)
             .startForResult(
                 PaymentMethodsActivityStarter.Args.Builder()
@@ -99,13 +97,14 @@ class PaymentSession constructor(
     }
 
     /**
-     * Launch the [PaymentCheckoutActivity] to allow the user to checkout
+     * Launch the [PaymentCheckoutActivity] to allow the user to confirm payment intent
      */
     @Throws(NullPointerException::class)
-    fun presentPaymentCheckoutFlow() {
-        val paymentIntent = requireNotNull(configuration.paymentIntent)
-        val token = requireNotNull(configuration.token)
-        val paymentMethod = requireNotNull(configuration.paymentMethod)
+    fun presentPaymentCheckoutFlow(
+        paymentIntent: PaymentIntent,
+        paymentMethod: PaymentMethod,
+        token: String
+    ) {
         PaymentCheckoutActivityStarter(activity)
             .startForResult(
                 PaymentCheckoutActivityStarter.Args.Builder()

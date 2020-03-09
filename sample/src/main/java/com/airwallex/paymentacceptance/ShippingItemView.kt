@@ -9,7 +9,6 @@ import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.PaymentSession
-import com.airwallex.android.PaymentSessionConfiguration
 import com.airwallex.android.model.Shipping
 import java.util.*
 import kotlinx.android.synthetic.main.shipping_item.view.*
@@ -29,10 +28,9 @@ class ShippingItemView constructor(
         rlBilling.setOnClickListener {
             shipping?.let {
                 paymentSession = PaymentSession(
-                    context as Activity,
-                    PaymentSessionConfiguration.Builder().setShipping(shipping).build()
+                    context as Activity
                 )
-                paymentSession?.presentShippingFlow()
+                paymentSession?.presentShippingFlow(shipping)
             }
         }
     }
