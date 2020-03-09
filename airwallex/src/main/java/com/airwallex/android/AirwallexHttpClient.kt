@@ -1,10 +1,10 @@
 package com.airwallex.android
 
-import java.io.IOException
-import java.nio.charset.StandardCharsets
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okio.BufferedSink
+import java.io.IOException
+import java.nio.charset.StandardCharsets
 
 internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
 

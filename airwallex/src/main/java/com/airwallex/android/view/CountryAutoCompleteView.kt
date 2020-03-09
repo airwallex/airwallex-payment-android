@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
-import java.util.*
 import kotlinx.android.synthetic.main.country_autocomplete_view.view.*
+import java.util.*
 
 internal class CountryAutoCompleteView constructor(
     context: Context,

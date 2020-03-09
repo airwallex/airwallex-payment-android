@@ -4,23 +4,31 @@ import android.os.Parcelable
 import com.airwallex.android.model.PaymentIntentParams
 import com.airwallex.android.model.PaymentMethodParams
 import com.google.gson.JsonParser
-import java.util.*
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 internal class AirwallexApiRepository : ApiRepository {
 
-    companion object {
-        internal const val API_HOST = "https://staging-pci-api.airwallex.com"
-    }
-
+    // TODO Token should be removed after server changed
     @Parcelize
     internal data class Options internal constructor(
         internal val token: String,
         internal val clientSecret: String,
-        internal val paymentIntentId: String? = null,
+        internal val baseUrl: String,
+        internal val paymentIntentOptions: PaymentIntentOptions? = null,
+        internal val paymentMethodOptions: PaymentMethodOptions? = null
+    ) : Parcelable
+
+    @Parcelize
+    internal data class PaymentIntentOptions internal constructor(
+        internal val paymentIntentId: String
+    ) : Parcelable
+
+    @Parcelize
+    internal data class PaymentMethodOptions internal constructor(
         internal val pageNum: Int = 0,
         internal val pageSize: Int = 10,
-        internal val customerId: String? = null
+        internal val customerId: String
     ) : Parcelable
 
     override fun confirmPaymentIntent(
@@ -68,7 +76,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
         return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                createPaymentMethodUrl(),
+                createPaymentMethodUrl(options),
                 AirwallexHttpRequest.Method.POST
             )
                 .setBody(
@@ -97,21 +105,32 @@ internal class AirwallexApiRepository : ApiRepository {
      *  `/api/v1/pa/payment_intents/{id}`
      */
     private fun retrievePaymentIntentUrl(options: Options): String {
-        return getApiUrl("payment_intents/%s", requireNotNull(options.paymentIntentId))
+        return getApiUrl(
+            options.baseUrl,
+            "payment_intents/%s",
+            requireNotNull(options.paymentIntentOptions?.paymentIntentId)
+        )
     }
 
     /**
      *  `/api/v1/pa/payment_intents/{id}/confirm`
      */
     private fun confirmPaymentIntentUrl(options: Options): String {
-        return getApiUrl("payment_intents/%s/confirm", requireNotNull(options.paymentIntentId))
+        return getApiUrl(
+            options.baseUrl,
+            "payment_intents/%s/confirm",
+            requireNotNull(options.paymentIntentOptions?.paymentIntentId)
+        )
     }
 
     /**
      *  `/api/v1/pa/payment_methods/create`
      */
-    private fun createPaymentMethodUrl(): String {
-        return getApiUrl("payment_methods/create")
+    private fun createPaymentMethodUrl(options: Options): String {
+        return getApiUrl(
+            options.baseUrl,
+            "payment_methods/create"
+        )
     }
 
     /**
@@ -119,15 +138,18 @@ internal class AirwallexApiRepository : ApiRepository {
      */
     private fun getPaymentMethodsUrl(options: Options): String {
         val builder = StringBuilder("payment_methods?")
-        builder.append("page_num=${options.pageNum}")
-        builder.append("&page_size=${options.pageSize}")
-        options.customerId?.let {
-            builder.append("&customer_id=$it")
+        options.paymentMethodOptions?.apply {
+            builder.append("page_num=${pageNum}")
+            builder.append("&page_size=${pageSize}")
+            builder.append("&customer_id=$customerId")
         }
-        return getApiUrl(builder.toString())
+        return getApiUrl(
+            options.baseUrl,
+            builder.toString()
+        )
     }
 
-    private fun getApiUrl(path: String, vararg args: Any): String {
-        return "$API_HOST/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
+    private fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
+        return "$baseUrl/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
     }
 }

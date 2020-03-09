@@ -14,10 +14,13 @@ import com.airwallex.android.model.PaymentMethodResponse
 import com.airwallex.android.model.PaymentMethodType
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
+import java.util.concurrent.atomic.AtomicInteger
 
 internal class PaymentMethodsActivity : AirwallexActivity() {
 
-    private var pageNum = 0
+    private var pageNum: AtomicInteger = AtomicInteger(0)
+
+    private lateinit var paymentMethodsAdapter: PaymentMethodsAdapter
 
     private val args: PaymentMethodsActivityStarter.Args by lazy {
         PaymentMethodsActivityStarter.Args.getExtra(intent)
@@ -25,8 +28,8 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
 
     private val airwallex: Airwallex by lazy {
         Airwallex(
-            args.token,
-            args.paymentIntent.clientSecret!!
+            token = args.token,
+            clientSecret = args.paymentIntent.clientSecret!!
         )
     }
 
@@ -43,8 +46,6 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                 PaymentMethodType.CARD.type
             )
         }
-
-    private lateinit var paymentMethodsAdapter: PaymentMethodsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,9 +137,9 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         }
 
         airwallex.getPaymentMethods(
-            pageNum = pageNum,
+            pageNum = pageNum.get(),
             pageSize = PAGE_SIZE,
-            customerId = args.paymentIntent.customerId,
+            customerId = args.paymentIntent.customerId!!,
             callback = object : Airwallex.PaymentCallback<PaymentMethodResponse> {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     paymentMethodsAdapter.endLoadingMore()
@@ -146,7 +147,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                     paymentMethodsAdapter.setPaymentMethods(cards, response.hasMore)
                     paymentNoCards.visibility =
                         if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
-                    pageNum++
+                    pageNum.incrementAndGet()
                 }
 
                 override fun onFailed(exception: AirwallexException) {
