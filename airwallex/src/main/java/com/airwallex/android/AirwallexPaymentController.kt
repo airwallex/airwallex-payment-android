@@ -14,7 +14,7 @@ internal class AirwallexPaymentController(
     override fun confirmPaymentIntent(
         options: AirwallexApiRepository.Options,
         paymentIntentParams: PaymentIntentParams,
-        callback: Airwallex.PaymentIntentCallback
+        callback: Airwallex.PaymentCallback<PaymentIntent>
     ) {
         ConfirmIntentTask(
             options,
@@ -43,7 +43,7 @@ internal class AirwallexPaymentController(
 
     override fun retrievePaymentIntent(
         options: AirwallexApiRepository.Options,
-        callback: Airwallex.PaymentIntentCallback
+        callback: Airwallex.PaymentCallback<PaymentIntent>
     ) {
         RetrieveIntentTask(
             options,
@@ -72,7 +72,7 @@ internal class AirwallexPaymentController(
     override fun createPaymentMethod(
         options: AirwallexApiRepository.Options,
         paymentMethodParams: PaymentMethodParams,
-        callback: Airwallex.PaymentMethodCallback
+        callback: Airwallex.PaymentCallback<PaymentMethod>
     ) {
         CreatePaymentMethodTask(
             options,
@@ -101,7 +101,7 @@ internal class AirwallexPaymentController(
 
     override fun getPaymentMethods(
         options: AirwallexApiRepository.Options,
-        callback: Airwallex.GetPaymentMethodsCallback
+        callback: Airwallex.PaymentCallback<PaymentMethodResponse>
     ) {
         GetPaymentMethodsTask(
             options,

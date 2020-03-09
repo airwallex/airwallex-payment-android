@@ -139,7 +139,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             pageNum = pageNum,
             pageSize = PAGE_SIZE,
             customerId = args.paymentIntent.customerId,
-            callback = object : Airwallex.GetPaymentMethodsCallback {
+            callback = object : Airwallex.PaymentCallback<PaymentMethodResponse> {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     paymentMethodsAdapter.endLoadingMore()
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }

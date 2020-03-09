@@ -41,9 +41,9 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
 
         airwallex.createPaymentMethod(
             paymentMethodParams,
-            object : Airwallex.PaymentMethodCallback {
-                override fun onSuccess(paymentMethod: PaymentMethod) {
-                    onActionSave(paymentMethod, card.cvc!!)
+            object : Airwallex.PaymentCallback<PaymentMethod> {
+                override fun onSuccess(response: PaymentMethod) {
+                    onActionSave(response, card.cvc!!)
                 }
 
                 override fun onFailed(exception: AirwallexException) {

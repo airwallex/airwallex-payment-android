@@ -3,14 +3,15 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.DeviceUtils
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
-import java.util.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
+import java.util.*
 
 internal class PaymentCheckoutActivity : AirwallexActivity() {
 
@@ -61,6 +62,12 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         updateButtonStatus()
     }
 
+    override fun onBackPressed() {
+        if (loadingView.visibility == View.GONE) {
+            super.onBackPressed()
+        }
+    }
+
     override fun onActionSave() {
         setLoadingProgress(true)
         val paymentIntentParams: PaymentIntentParams = when (paymentMethod.type) {
@@ -104,9 +111,9 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         airwallex.confirmPaymentIntent(
             paymentIntentId = paymentIntent.id,
             paymentIntentParams = paymentIntentParams,
-            callback = object : Airwallex.PaymentIntentCallback {
-                override fun onSuccess(paymentIntent: PaymentIntent) {
-                    finishPaymentCheckout(paymentIntent = paymentIntent, type = paymentMethod.type)
+            callback = object : Airwallex.PaymentCallback<PaymentIntent> {
+                override fun onSuccess(response: PaymentIntent) {
+                    finishPaymentCheckout(paymentIntent = response, type = paymentMethod.type)
                 }
 
                 override fun onFailed(exception: AirwallexException) {
