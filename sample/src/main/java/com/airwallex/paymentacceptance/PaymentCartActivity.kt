@@ -13,7 +13,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
-import com.airwallex.android.PaymentSession
+import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.Order
@@ -52,7 +52,7 @@ class PaymentCartActivity : AppCompatActivity() {
         }
 
     private lateinit var token: String
-    private var paymentSession: PaymentSession? = null
+    private var paymentSession: AirwallexStarter? = null
 
     private var airwallex: Airwallex? = null
 
@@ -159,7 +159,7 @@ class PaymentCartActivity : AppCompatActivity() {
     private fun handleResponse(paymentIntent: PaymentIntent) {
         loading.visibility = View.GONE
         airwallex = Airwallex(token = token, clientSecret = paymentIntent.clientSecret!!)
-        paymentSession = PaymentSession(
+        paymentSession = AirwallexStarter(
             this@PaymentCartActivity
         )
         paymentSession?.presentPaymentFlow(paymentIntent, token)
@@ -169,9 +169,9 @@ class PaymentCartActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         cartFragment.onActivityResult(requestCode, resultCode, data)
 
-        paymentSession?.handlePaymentIntentResult(requestCode, resultCode, data,
+        paymentSession?.handlePaymentResult(requestCode, resultCode, data,
             object :
-                PaymentSession.PaymentIntentResult {
+                AirwallexStarter.PaymentIntentResult {
                 override fun onCancelled() {
                     Log.d(TAG, "User cancel the payment checkout")
                 }

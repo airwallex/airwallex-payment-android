@@ -18,7 +18,7 @@ internal class AddPaymentMethodActivityStarter constructor(
 ) {
 
     @Parcelize
-    data class Args internal constructor(
+    internal data class Args internal constructor(
         val paymentIntent: PaymentIntent,
         val token: String
     ) : ActivityStarter.Args {
@@ -51,7 +51,7 @@ internal class AddPaymentMethodActivityStarter constructor(
     }
 
     @Parcelize
-    data class Result internal constructor(
+    internal data class Result internal constructor(
         val paymentMethod: PaymentMethod,
         val cvc: String
     ) : ActivityStarter.Result {

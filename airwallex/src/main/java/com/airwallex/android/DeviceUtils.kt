@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.provider.Settings
 import com.airwallex.android.model.Device
 
-object DeviceUtils {
+internal object DeviceUtils {
 
     @SuppressLint("HardwareIds")
-    val device = Device.Builder()
+    internal val device = Device.Builder()
         .setCookiesAccepted("true")
         .setDeviceId(
             Settings.Secure.getString(

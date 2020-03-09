@@ -6,7 +6,7 @@ internal class ContextProvider {
 
     companion object {
 
-        lateinit var applicationContext: Context
+        internal lateinit var applicationContext: Context
 
         fun init(context: Context) {
             applicationContext = context.applicationContext

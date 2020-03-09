@@ -12,7 +12,7 @@ internal abstract class ActivityStarter<TargetActivity : Activity, ArgsType : Ac
     private val targetActivity: Class<TargetActivity>,
     private val requestCode: Int
 ) {
-    constructor(
+    internal constructor(
         activity: Activity,
         targetActivity: Class<TargetActivity>,
         requestCode: Int
@@ -23,7 +23,7 @@ internal abstract class ActivityStarter<TargetActivity : Activity, ArgsType : Ac
         requestCode = requestCode
     )
 
-    constructor(
+    internal constructor(
         fragment: Fragment,
         targetActivity: Class<TargetActivity>,
         requestCode: Int
@@ -34,7 +34,7 @@ internal abstract class ActivityStarter<TargetActivity : Activity, ArgsType : Ac
         requestCode = requestCode
     )
 
-    fun startForResult(args: ArgsType) {
+    internal fun startForResult(args: ArgsType) {
         val intent = Intent(activity, targetActivity)
             .putExtra(Args.AIRWALLEX_EXTRA, args)
 
