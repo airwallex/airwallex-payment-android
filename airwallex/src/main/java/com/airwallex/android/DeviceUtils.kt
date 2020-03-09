@@ -11,7 +11,7 @@ object DeviceUtils {
         .setCookiesAccepted("true")
         .setDeviceId(
             Settings.Secure.getString(
-                ContextProvider.appContext.contentResolver,
+                ContextProvider.applicationContext.contentResolver,
                 Settings.Secure.ANDROID_ID
             )
         )
