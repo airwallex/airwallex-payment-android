@@ -10,8 +10,6 @@ import kotlinx.android.synthetic.main.widget_card.view.*
 
 internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    private var completionCallback: () -> Unit = {}
-
     internal var cardChangeCallback: () -> Unit = {}
 
     internal val paymentMethodCard: PaymentMethod.Card?
@@ -126,6 +124,5 @@ internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(
     private fun listenCompletionCallback() {
         atlCardNumber.completionCallback = { atlCardName.requestInputFocus() }
         atlCardExpiry.completionCallback = { atlCardCvc.requestInputFocus() }
-        atlCardCvc.completionCallback = { completionCallback.invoke() }
     }
 }
