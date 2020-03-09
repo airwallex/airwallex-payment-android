@@ -6,10 +6,10 @@ data class AirwallexConfiguration internal constructor(
     val enableLogging: Boolean
 ) {
 
-    class Builder(context: Context) {
+    class Builder(applicationContext: Context) {
 
         init {
-            ContextProvider.init(context)
+            ContextProvider.init(applicationContext)
         }
 
         private var enableLogging: Boolean = false
