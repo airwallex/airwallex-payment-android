@@ -11,13 +11,13 @@ internal object AirwallexPlugins {
 
     private lateinit var configuration: AirwallexConfiguration
 
-    fun initialize(configuration: AirwallexConfiguration) {
+    internal fun initialize(configuration: AirwallexConfiguration) {
         this.configuration = configuration
     }
 
-    val enableLogging by lazy { configuration.enableLogging }
+    internal val enableLogging by lazy { configuration.enableLogging }
 
-    val restClient by lazy {
+    internal val restClient by lazy {
         val clientBuilder = OkHttpClient.Builder()
         clientBuilder.interceptors().add(0, object : Interceptor {
             @Throws(IOException::class)
@@ -36,7 +36,7 @@ internal object AirwallexPlugins {
         AirwallexHttpClient.createClient(clientBuilder)
     }
 
-    val gson by lazy {
+    internal val gson by lazy {
         Gson()
     }
 }

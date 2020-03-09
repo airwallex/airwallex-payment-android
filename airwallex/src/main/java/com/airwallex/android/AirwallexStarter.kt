@@ -6,7 +6,13 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.model.*
 import com.airwallex.android.view.*
 
-class PaymentSession constructor(
+/**
+ *  Create a AirwallexStarter attached to the given host Activity.
+ *
+ *  @param activity This Activity will receive results in `Activity#onActivityResult(int, int, Intent)`
+ *  that should be passed back to this session.
+ */
+class AirwallexStarter constructor(
     private val activity: Activity
 ) {
 
@@ -33,6 +39,8 @@ class PaymentSession constructor(
 
     /**
      * Launch the [PaymentMethodsActivity] to allow the user to finish the payment checkout flow
+     *
+     * [handlePaymentResult] to handle the PaymentIntent
      */
     fun presentPaymentFlow(paymentIntent: PaymentIntent, token: String) {
         requireNotNull(paymentIntent.customerId, {
@@ -49,7 +57,26 @@ class PaymentSession constructor(
     }
 
     /**
+     * Handle [presentPaymentFlow] results. Pass data here from your onActivityResult(int, int, Intent)` function.
+     */
+    fun handlePaymentResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        callback: PaymentIntentResult
+    ) {
+        handleResult(
+            requestCode,
+            resultCode,
+            data,
+            callback
+        )
+    }
+
+    /**
      * Launch the [PaymentShippingActivity] to allow the user to fill the shipping information
+     *
+     * [handlePaymentShippingResult] to handle the Shipping
      */
     fun presentShippingFlow(shipping: Shipping? = null) {
         PaymentShippingActivityStarter(activity)
@@ -61,8 +88,26 @@ class PaymentSession constructor(
     }
 
     /**
+     * Handle [presentShippingFlow] results. Pass data here from your onActivityResult(int, int, Intent)` function.
+     */
+    fun handlePaymentShippingResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        callback: PaymentShippingResult
+    ) {
+        handleResult(
+            requestCode,
+            resultCode,
+            data,
+            callback
+        )
+    }
+
+    /**
      * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
      *
+     * [handleAddPaymentMethodResult] to handle the PaymentMethod
      */
     fun presentAddPaymentMethodFlow(paymentIntent: PaymentIntent, token: String) {
         requireNotNull(paymentIntent.customerId, {
@@ -78,8 +123,27 @@ class PaymentSession constructor(
     }
 
     /**
-     * Launch the [PaymentMethodsActivity] to allow the user to select or create a payment method,
+     * Handle [presentAddPaymentMethodFlow] results. Pass data here from your onActivityResult(int, int, Intent)` function.
+     */
+    fun handleAddPaymentMethodResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        callback: PaymentMethodResult
+    ) {
+        handleResult(
+            requestCode,
+            resultCode,
+            data,
+            callback
+        )
+    }
+
+    /**
+     * Launch the [PaymentMethodsActivity] to allow the user to select a payment method,
      * or to add a new one.
+     *
+     * [handleSelectPaymentMethodResult] to handle the PaymentMethod
      */
     @Throws(NullPointerException::class)
     fun presentSelectPaymentMethodFlow(paymentIntent: PaymentIntent, token: String) {
@@ -97,52 +161,8 @@ class PaymentSession constructor(
     }
 
     /**
-     * Launch the [PaymentCheckoutActivity] to allow the user to confirm payment intent
+     * Handle [presentSelectPaymentMethodFlow] results. Pass data here from your onActivityResult(int, int, Intent)` function.
      */
-    @Throws(NullPointerException::class)
-    fun presentPaymentCheckoutFlow(
-        paymentIntent: PaymentIntent,
-        paymentMethod: PaymentMethod,
-        token: String
-    ) {
-        PaymentCheckoutActivityStarter(activity)
-            .startForResult(
-                PaymentCheckoutActivityStarter.Args.Builder()
-                    .setPaymentIntent(paymentIntent)
-                    .setToken(token)
-                    .setPaymentMethod(paymentMethod)
-                    .build()
-            )
-    }
-
-    fun handlePaymentCheckoutResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-        callback: PaymentIntentResult
-    ) {
-        handleResult(
-            requestCode,
-            resultCode,
-            data,
-            callback
-        )
-    }
-
-    fun handleAddPaymentMethodResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-        callback: PaymentMethodResult
-    ) {
-        handleResult(
-            requestCode,
-            resultCode,
-            data,
-            callback
-        )
-    }
-
     fun handleSelectPaymentMethodResult(
         requestCode: Int,
         resultCode: Int,
@@ -157,21 +177,31 @@ class PaymentSession constructor(
         )
     }
 
-    fun handlePaymentShippingResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-        callback: PaymentShippingResult
+    /**
+     * Launch the [PaymentCheckoutActivity] to allow the user to confirm payment intent
+     *
+     * [handlePaymentConfirmResult] to handle the PaymentIntent
+     */
+    @Throws(NullPointerException::class)
+    fun presentPaymentConfirmFlow(
+        paymentIntent: PaymentIntent,
+        paymentMethod: PaymentMethod,
+        token: String
     ) {
-        handleResult(
-            requestCode,
-            resultCode,
-            data,
-            callback
-        )
+        PaymentCheckoutActivityStarter(activity)
+            .startForResult(
+                PaymentCheckoutActivityStarter.Args.Builder()
+                    .setPaymentIntent(paymentIntent)
+                    .setToken(token)
+                    .setPaymentMethod(paymentMethod)
+                    .build()
+            )
     }
 
-    fun handlePaymentIntentResult(
+    /**
+     * Handle [presentPaymentConfirmFlow] results. Pass data here from your onActivityResult(int, int, Intent)` function.
+     */
+    fun handlePaymentConfirmResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?,

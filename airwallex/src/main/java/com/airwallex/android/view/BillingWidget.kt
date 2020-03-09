@@ -15,7 +15,7 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
 
     internal var billingChangeCallback: () -> Unit = {}
 
-    var shipping: Shipping? = null
+    internal var shipping: Shipping? = null
         set(value) {
             field = value
             if (value != null) {

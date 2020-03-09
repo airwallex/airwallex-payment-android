@@ -8,7 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
-import com.airwallex.android.PaymentSession
+import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.model.Shipping
 import java.util.*
 import kotlinx.android.synthetic.main.shipping_item.view.*
@@ -20,14 +20,14 @@ class ShippingItemView constructor(
 
     private var shipping: Shipping? = null
 
-    private var paymentSession: PaymentSession? = null
+    private var paymentSession: AirwallexStarter? = null
 
     init {
         View.inflate(getContext(), R.layout.shipping_item, this)
 
         rlBilling.setOnClickListener {
             shipping?.let {
-                paymentSession = PaymentSession(
+                paymentSession = AirwallexStarter(
                     context as Activity
                 )
                 paymentSession?.presentShippingFlow(shipping)
@@ -83,7 +83,7 @@ class ShippingItemView constructor(
             resultCode,
             data,
             object :
-                PaymentSession.PaymentShippingResult {
+                AirwallexStarter.PaymentShippingResult {
                 override fun onSuccess(shipping: Shipping) {
                     Log.d(TAG, "Save the shipping success")
                     renewalShipping(shipping)
