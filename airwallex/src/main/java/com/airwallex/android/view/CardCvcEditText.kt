@@ -2,10 +2,8 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.os.Build
-import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
-import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import com.airwallex.android.R
@@ -25,8 +23,6 @@ internal class CardCvcEditText @JvmOverloads constructor(
         get() {
             return rawCvcValue.takeIf { isValid }
         }
-
-    internal var completionCallback: () -> Unit = {}
 
     private val rawCvcValue: String
         get() {
@@ -48,19 +44,5 @@ internal class CardCvcEditText @JvmOverloads constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE)
         }
-
-        addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                if (isValid) {
-                    completionCallback()
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-        })
     }
 }
