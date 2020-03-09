@@ -9,9 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodResponse
-import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.model.*
 import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
@@ -108,26 +106,41 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
 
     private fun startPaymentCheckout(paymentMethod: PaymentMethod, cvc: String? = null) {
         if (args.includeCheckoutFlow) {
-            PaymentCheckoutActivityStarter(this@PaymentMethodsActivity)
-                .startForResult(
-                    PaymentCheckoutActivityStarter.Args.Builder()
-                        .setPaymentIntent(args.paymentIntent)
-                        .setToken(args.token)
-                        .setPaymentMethod(paymentMethod)
-                        .setCvc(cvc)
-                        .build()
+            setLoadingProgress(true)
+            if (paymentMethod.type == PaymentMethodType.WECHAT) {
+                // Start Confirm PaymentIntent
+                airwallex.confirmPaymentIntent(
+                    paymentIntentId = args.paymentIntent.id,
+                    paymentIntentParams = buildPaymentIntentParams(
+                        paymentMethod,
+                        args.paymentIntent.customerId
+                    ),
+                    callback = object : Airwallex.PaymentCallback<PaymentIntent> {
+                        override fun onSuccess(response: PaymentIntent) {
+                            finishWithPaymentIntent(
+                                paymentIntent = response,
+                                type = paymentMethod.type
+                            )
+                        }
+
+                        override fun onFailed(exception: AirwallexException) {
+                            finishWithPaymentIntent(error = exception.error)
+                        }
+                    }
                 )
+            } else {
+                PaymentCheckoutActivityStarter(this@PaymentMethodsActivity)
+                    .startForResult(
+                        PaymentCheckoutActivityStarter.Args.Builder()
+                            .setPaymentIntent(args.paymentIntent)
+                            .setToken(args.token)
+                            .setPaymentMethod(paymentMethod)
+                            .setCvc(cvc)
+                            .build()
+                    )
+            }
         } else {
-            setResult(
-                Activity.RESULT_OK,
-                Intent().putExtras(
-                    PaymentMethodsActivityStarter.Result(
-                        paymentMethod = paymentMethod,
-                        cvc = cvc
-                    ).toBundle()
-                )
-            )
-            finish()
+            finishWithPaymentMethod(paymentMethod, cvc)
         }
     }
 
@@ -176,20 +189,42 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
             PaymentCheckoutActivityStarter.REQUEST_CODE -> {
                 val result = PaymentCheckoutActivityStarter.Result.fromIntent(data)
                 result?.let {
-                    setResult(
-                        Activity.RESULT_OK,
-                        Intent().putExtras(
-                            PaymentMethodsActivityStarter.Result(
-                                paymentIntent = it.paymentIntent,
-                                paymentMethodType = it.paymentMethodType,
-                                error = it.error
-                            ).toBundle()
-                        )
-                    )
-                    finish()
+                    finishWithPaymentIntent(it.paymentIntent, it.paymentMethodType, it.error)
                 }
             }
         }
+    }
+
+    private fun finishWithPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
+        setResult(
+            Activity.RESULT_OK,
+            Intent().putExtras(
+                PaymentMethodsActivityStarter.Result(
+                    paymentMethod = paymentMethod,
+                    cvc = cvc
+                ).toBundle()
+            )
+        )
+        finish()
+    }
+
+    private fun finishWithPaymentIntent(
+        paymentIntent: PaymentIntent? = null,
+        type: PaymentMethodType? = null,
+        error: AirwallexError? = null
+    ) {
+        setLoadingProgress(false)
+        setResult(
+            Activity.RESULT_OK, Intent()
+                .putExtras(
+                    PaymentMethodsActivityStarter.Result(
+                        paymentIntent = paymentIntent,
+                        paymentMethodType = type,
+                        error = error
+                    ).toBundle()
+                )
+        )
+        finish()
     }
 
     companion object {

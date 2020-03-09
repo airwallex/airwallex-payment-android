@@ -145,7 +145,6 @@ class AirwallexStarter constructor(
      *
      * [handleSelectPaymentMethodResult] to handle the PaymentMethod
      */
-    @Throws(NullPointerException::class)
     fun presentSelectPaymentMethodFlow(paymentIntent: PaymentIntent, token: String) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided"
@@ -182,7 +181,6 @@ class AirwallexStarter constructor(
      *
      * [handlePaymentConfirmResult] to handle the PaymentIntent
      */
-    @Throws(NullPointerException::class)
     fun presentPaymentConfirmFlow(
         paymentIntent: PaymentIntent,
         paymentMethod: PaymentMethod,

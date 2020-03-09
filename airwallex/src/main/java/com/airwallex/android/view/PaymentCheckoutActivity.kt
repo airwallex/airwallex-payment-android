@@ -5,10 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.airwallex.android.Airwallex
-import com.airwallex.android.DeviceUtils
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.*
+import com.airwallex.android.model.AirwallexError
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodType
 import java.util.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
@@ -70,60 +72,23 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
 
     override fun onActionSave() {
         setLoadingProgress(true)
-        val paymentIntentParams: PaymentIntentParams = when (paymentMethod.type) {
-            PaymentMethodType.CARD -> {
-                PaymentIntentParams.Builder()
-                    .setRequestId(UUID.randomUUID().toString())
-                    .setCustomerId(paymentIntent.customerId)
-                    .setDevice(DeviceUtils.device)
-                    .setPaymentMethodReference(
-                        PaymentMethodReference.Builder()
-                            .setId(paymentMethod.id)
-                            .setCvc(paymentMethodItemView.cvc)
-                            .build()
-                    )
-                    .setPaymentMethodOptions(
-                        PaymentMethodOptions.Builder()
-                            .setCardOptions(
-                                PaymentMethodOptions.CardOptions.Builder()
-                                    .setAutoCapture(true)
-                                    .setThreeDs(
-                                        PaymentMethodOptions.CardOptions.ThreeDs.Builder()
-                                            .setOption(false)
-                                            .build()
-                                    ).build()
-                            )
-                            .build()
-                    )
-                    .build()
-            }
-            PaymentMethodType.WECHAT -> {
-                PaymentIntentParams.Builder()
-                    .setRequestId(UUID.randomUUID().toString())
-                    .setCustomerId(paymentIntent.customerId)
-                    .setDevice(DeviceUtils.device)
-                    .setPaymentMethod(paymentMethod)
-                    .build()
-            }
-        }
-
         // Start Confirm PaymentIntent
         airwallex.confirmPaymentIntent(
             paymentIntentId = paymentIntent.id,
-            paymentIntentParams = paymentIntentParams,
+            paymentIntentParams = buildPaymentIntentParams(paymentMethod, paymentIntent.customerId),
             callback = object : Airwallex.PaymentCallback<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
-                    finishPaymentCheckout(paymentIntent = response, type = paymentMethod.type)
+                    finishWithPaymentIntent(paymentIntent = response, type = paymentMethod.type)
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    finishPaymentCheckout(error = exception.error)
+                    finishWithPaymentIntent(error = exception.error)
                 }
             }
         )
     }
 
-    private fun finishPaymentCheckout(
+    private fun finishWithPaymentIntent(
         paymentIntent: PaymentIntent? = null,
         type: PaymentMethodType? = null,
         error: AirwallexError? = null
