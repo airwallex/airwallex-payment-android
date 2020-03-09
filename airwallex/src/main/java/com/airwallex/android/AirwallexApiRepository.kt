@@ -4,8 +4,8 @@ import android.os.Parcelable
 import com.airwallex.android.model.PaymentIntentParams
 import com.airwallex.android.model.PaymentMethodParams
 import com.google.gson.JsonParser
-import kotlinx.android.parcel.Parcelize
 import java.util.*
+import kotlinx.android.parcel.Parcelize
 
 internal class AirwallexApiRepository : ApiRepository {
 
@@ -139,8 +139,8 @@ internal class AirwallexApiRepository : ApiRepository {
     private fun getPaymentMethodsUrl(options: Options): String {
         val builder = StringBuilder("payment_methods?")
         options.paymentMethodOptions?.apply {
-            builder.append("page_num=${pageNum}")
-            builder.append("&page_size=${pageSize}")
+            builder.append("page_num=$pageNum")
+            builder.append("&page_size=$pageSize")
             builder.append("&customer_id=$customerId")
         }
         return getApiUrl(

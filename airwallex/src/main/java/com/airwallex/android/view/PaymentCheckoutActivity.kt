@@ -9,9 +9,9 @@ import com.airwallex.android.DeviceUtils
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
+import java.util.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
-import java.util.*
 
 internal class PaymentCheckoutActivity : AirwallexActivity() {
 
