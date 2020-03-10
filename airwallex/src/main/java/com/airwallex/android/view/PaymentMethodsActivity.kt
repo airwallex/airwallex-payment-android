@@ -197,8 +197,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
 
     private fun finishWithPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
         setResult(
-            Activity.RESULT_OK,
-            Intent().putExtras(
+            Activity.RESULT_OK, Intent().putExtras(
                 PaymentMethodsActivityStarter.Result(
                     paymentMethod = paymentMethod,
                     cvc = cvc
@@ -215,8 +214,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
     ) {
         setLoadingProgress(false)
         setResult(
-            Activity.RESULT_OK, Intent()
-                .putExtras(
+            Activity.RESULT_OK, Intent().putExtras(
                     PaymentMethodsActivityStarter.Result(
                         paymentIntent = paymentIntent,
                         paymentMethodType = type,

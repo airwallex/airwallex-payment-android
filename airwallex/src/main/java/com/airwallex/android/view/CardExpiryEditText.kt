@@ -41,12 +41,12 @@ internal class CardExpiryEditText @JvmOverloads constructor(
         get() {
             val rawInput = text?.toString().takeIf { isDateValid } ?: return null
             val rawNumericInput = rawInput.replace("/".toRegex(), "")
-            val dateFields = DateUtils.separateDateStringParts(rawNumericInput)
+            val dateFields = ExpiryDateUtils.separateDateParts(rawNumericInput)
 
             return try {
                 Pair(
                     dateFields[0].toInt(),
-                    DateUtils.convertTwoDigitYearToFour(dateFields[1].toInt())
+                    ExpiryDateUtils.convertTwoDigitYearToFour(dateFields[1].toInt())
                 )
             } catch (numEx: NumberFormatException) {
                 null
@@ -117,9 +117,9 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                 }
 
                 // Date input is MM/YY, so the separated parts will be {MM, YY}
-                parts = DateUtils.separateDateStringParts(rawNumericInput)
+                parts = ExpiryDateUtils.separateDateParts(rawNumericInput)
 
-                if (!DateUtils.isValidMonth(month)) {
+                if (!ExpiryDateUtils.isValidMonth(month)) {
                     inErrorState = true
                 }
 
@@ -163,7 +163,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
 
                 // This covers the case where the user has entered a month of 15, for instance.
                 var shouldShowError = month.length == 2 &&
-                        !DateUtils.isValidMonth(month)
+                        !ExpiryDateUtils.isValidMonth(month)
 
                 // Note that we have to check the parts array because afterTextChanged has odd
                 // behavior when it comes to pasting, where a paste of "1212" triggers this
@@ -230,12 +230,12 @@ internal class CardExpiryEditText @JvmOverloads constructor(
             INVALID_INPUT
         } else {
             try {
-                DateUtils.convertTwoDigitYearToFour(year.toInt())
+                ExpiryDateUtils.convertTwoDigitYearToFour(year.toInt())
             } catch (numEx: NumberFormatException) {
                 INVALID_INPUT
             }
         }
 
-        isDateValid = DateUtils.isExpiryDataValid(inputMonth, inputYear)
+        isDateValid = ExpiryDateUtils.isExpiryDateValid(inputMonth, inputYear)
     }
 }
