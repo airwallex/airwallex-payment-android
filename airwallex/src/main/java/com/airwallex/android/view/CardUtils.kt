@@ -4,7 +4,7 @@ import com.airwallex.android.view.CardBrand.Companion.fromCardNumber
 
 internal object CardUtils {
 
-    private const val LENGTH_CARD = 16
+    private const val VALID_CARD_LENGTH = 16
 
     internal fun isValidCardNumber(cardNumber: String?): Boolean {
         val normalizedNumber = removeSpacesAndHyphens(cardNumber)
@@ -55,7 +55,7 @@ internal object CardUtils {
         if (cardNumber == null || cardBrand == null) {
             return false
         }
-        return cardNumber.length == LENGTH_CARD
+        return cardNumber.length == VALID_CARD_LENGTH
     }
 
     internal fun getPossibleCardBrand(cardNumber: String?, shouldNormalize: Boolean): CardBrand {

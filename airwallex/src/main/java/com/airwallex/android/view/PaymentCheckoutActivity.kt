@@ -72,7 +72,6 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
 
     override fun onActionSave() {
         setLoadingProgress(true)
-        // Start Confirm PaymentIntent
         airwallex.confirmPaymentIntent(
             paymentIntentId = paymentIntent.id,
             paymentIntentParams = buildPaymentIntentParams(paymentMethod, paymentIntent.customerId),
@@ -95,8 +94,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
     ) {
         setLoadingProgress(false)
         setResult(
-            Activity.RESULT_OK, Intent()
-                .putExtras(
+            Activity.RESULT_OK, Intent().putExtras(
                     PaymentCheckoutActivityStarter.Result(
                         paymentIntent = paymentIntent,
                         paymentMethodType = type,

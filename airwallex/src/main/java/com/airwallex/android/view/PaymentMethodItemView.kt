@@ -9,7 +9,6 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.R
@@ -28,11 +27,15 @@ internal class PaymentMethodItemView constructor(
 
     internal val isValid: Boolean
         get() {
-            return paymentMethod.type == PaymentMethodType.CARD && (cvc?.length == CardCvcEditText.CVC_LENGTH || etCardCvc.text?.trim().toString().length == CardCvcEditText.CVC_LENGTH) ||
+            return paymentMethod.type == PaymentMethodType.CARD && (cvc?.length == CardCvcEditText.VALID_CVC_LENGTH || etCardCvc.text?.trim().toString().length == CardCvcEditText.VALID_CVC_LENGTH) ||
                     paymentMethod.type == PaymentMethodType.WECHAT
         }
 
     internal var cvcChangedCallback: () -> Unit = {}
+
+    private val keyboardController: KeyboardController by lazy {
+        KeyboardController(context as Activity)
+    }
 
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
@@ -44,7 +47,7 @@ internal class PaymentMethodItemView constructor(
         etCardCvc.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if (isValid) {
-                    hideKeyboard(context as Activity)
+                    keyboardController.hide()
                 }
                 cvc = etCardCvc.text?.trim().toString()
                 cvcChangedCallback()
@@ -87,13 +90,7 @@ internal class PaymentMethodItemView constructor(
     }
 
     override fun onDetachedFromWindow() {
-        hideKeyboard(context as Activity)
+        keyboardController.hide()
         super.onDetachedFromWindow()
-    }
-
-    private fun hideKeyboard(activity: Activity) {
-        val inputMethodManager =
-            activity.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        inputMethodManager?.hideSoftInputFromWindow(activity.currentFocus?.windowToken, 0)
     }
 }

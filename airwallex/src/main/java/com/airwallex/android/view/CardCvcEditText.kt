@@ -16,7 +16,7 @@ internal class CardCvcEditText @JvmOverloads constructor(
 ) : TextInputEditText(context, attrs, defStyleAttr) {
 
     companion object {
-        const val CVC_LENGTH = 3
+        const val VALID_CVC_LENGTH = 3
     }
 
     internal val cvcValue: String?
@@ -31,13 +31,13 @@ internal class CardCvcEditText @JvmOverloads constructor(
 
     internal val isValid: Boolean
         get() {
-            return rawCvcValue.length == CVC_LENGTH
+            return rawCvcValue.length == VALID_CVC_LENGTH
         }
 
     init {
         setHint(R.string.cvc_hint)
         maxLines = 1
-        filters = arrayOf(InputFilter.LengthFilter(CVC_LENGTH))
+        filters = arrayOf(InputFilter.LengthFilter(VALID_CVC_LENGTH))
 
         inputType = InputType.TYPE_CLASS_NUMBER
 
