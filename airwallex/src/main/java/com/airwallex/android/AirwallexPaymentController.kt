@@ -23,15 +23,7 @@ internal class AirwallexPaymentController(
             workScope,
             object : ApiResultCallback<AirwallexHttpResponse> {
                 override fun onSuccess(result: AirwallexHttpResponse) {
-                    if (result.isSuccessful && result.body != null) {
-                        val paymentIntent = AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
-                            PaymentIntent::class.java
-                        )
-                        callback.onSuccess(paymentIntent)
-                    } else {
-                        callback.onFailed(handleAPIError(result))
-                    }
+                    handleResponse(result, callback, PaymentIntent::class.java)
                 }
 
                 override fun onError(e: AirwallexException) {
@@ -51,15 +43,7 @@ internal class AirwallexPaymentController(
             workScope,
             object : ApiResultCallback<AirwallexHttpResponse> {
                 override fun onSuccess(result: AirwallexHttpResponse) {
-                    if (result.isSuccessful && result.body != null) {
-                        val paymentIntent = AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
-                            PaymentIntent::class.java
-                        )
-                        callback.onSuccess(paymentIntent)
-                    } else {
-                        callback.onFailed(handleAPIError(result))
-                    }
+                    handleResponse(result, callback, PaymentIntent::class.java)
                 }
 
                 override fun onError(e: AirwallexException) {
@@ -81,15 +65,7 @@ internal class AirwallexPaymentController(
             workScope,
             object : ApiResultCallback<AirwallexHttpResponse> {
                 override fun onSuccess(result: AirwallexHttpResponse) {
-                    if (result.isSuccessful && result.body != null) {
-                        val paymentMethod = AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
-                            PaymentMethod::class.java
-                        )
-                        callback.onSuccess(paymentMethod)
-                    } else {
-                        callback.onFailed(handleAPIError(result))
-                    }
+                    handleResponse(result, callback, PaymentMethod::class.java)
                 }
 
                 override fun onError(e: AirwallexException) {
@@ -109,16 +85,7 @@ internal class AirwallexPaymentController(
             workScope,
             object : ApiResultCallback<AirwallexHttpResponse> {
                 override fun onSuccess(result: AirwallexHttpResponse) {
-                    if (result.isSuccessful && result.body != null) {
-                        val response: PaymentMethodResponse = AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
-                            PaymentMethodResponse::class.java
-                        )
-
-                        callback.onSuccess(response)
-                    } else {
-                        callback.onFailed(handleAPIError(result))
-                    }
+                    handleResponse(result, callback, PaymentMethodResponse::class.java)
                 }
 
                 override fun onError(e: AirwallexException) {
@@ -128,18 +95,32 @@ internal class AirwallexPaymentController(
         ).execute()
     }
 
-    private fun handleAPIError(result: AirwallexHttpResponse): APIException {
-        val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
-            result.body.string(),
-            AirwallexError::class.java
-        ) else null
-        return APIException(
-            message = result.message,
-            traceId = result.allHeaders["x-awx-traceid"],
-            statusCode = result.statusCode,
-            error = error,
-            e = null
-        )
+    private fun <T> handleResponse(
+        result: AirwallexHttpResponse,
+        callback: Airwallex.PaymentCallback<T>,
+        classOfT: Class<T>
+    ) {
+        if (result.isSuccessful && result.body != null) {
+            val response: T = AirwallexPlugins.gson.fromJson(
+                result.body.string(),
+                classOfT
+            )
+            callback.onSuccess(response)
+        } else {
+            val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
+                result.body.string(),
+                AirwallexError::class.java
+            ) else null
+            callback.onFailed(
+                APIException(
+                    message = result.message,
+                    traceId = result.allHeaders["x-awx-traceid"],
+                    statusCode = result.statusCode,
+                    error = error,
+                    e = null
+                )
+            )
+        }
     }
 
     private class ConfirmIntentTask(
