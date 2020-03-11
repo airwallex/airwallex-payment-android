@@ -25,27 +25,15 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
     }
 
     private fun getResponse(response: Response): AirwallexHttpResponse {
-        // Status code
-        val statusCode = response.code
-
-        val isSuccessful = response.isSuccessful
-
-        // Body
-        val body = response.body
-
-        // Message
-        val message = response.message
-
-        // Headers
         val headers: MutableMap<String, String?> = mutableMapOf()
         for (name in response.headers.names()) {
             headers[name] = response.header(name)
         }
         return AirwallexHttpResponse.Builder()
-            .setStatusCode(statusCode)
-            .setIsSuccessful(isSuccessful)
-            .setBody(body)
-            .setMessage(message)
+            .setStatusCode(response.code)
+            .setIsSuccessful(response.isSuccessful)
+            .setBody(response.body)
+            .setMessage(response.message)
             .setHeaders(headers)
             .build()
     }
@@ -68,8 +56,7 @@ internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
         }
 
         // OkHttp automatically add gzip header so we do not need to deal with it
-        val okHttpHeaders = okHttpHeadersBuilder.build()
-        builder.headers(okHttpHeaders)
+        builder.headers(okHttpHeadersBuilder.build())
 
         // Set Body
         val parseBody: AirwallexHttpBody? = request.body

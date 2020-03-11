@@ -10,9 +10,9 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
+import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
-import java.util.concurrent.atomic.AtomicInteger
 
 internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
@@ -55,7 +55,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             shouldShowCard = shouldShowCard
         )
 
-        paymentMethodsAdapter.callback = object : PaymentMethodsAdapter.Callback {
+        paymentMethodsAdapter.listener = object : PaymentMethodsAdapter.Listener {
             override fun onPaymentMethodClick(paymentMethod: PaymentMethod) {
                 startPaymentCheckout(paymentMethod)
             }

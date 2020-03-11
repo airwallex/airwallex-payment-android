@@ -22,7 +22,7 @@ internal class PaymentMethodsAdapter(
     private val wechatCount = if (shouldShowWechatPay) 1 else 0
     private var selectedPaymentMethod: PaymentMethod? = null
     private val paymentMethods = mutableListOf<PaymentMethod?>()
-    internal var callback: Callback? = null
+    internal var listener: Listener? = null
 
     private var lastVisibleItem = 0
     private var totalItemCount: Int = 0
@@ -143,7 +143,7 @@ internal class PaymentMethodsAdapter(
                     notifyDataSetChanged()
                 }
                 selectedPaymentMethod?.let {
-                    callback?.onPaymentMethodClick(it)
+                    listener?.onPaymentMethodClick(it)
                 }
             }
             itemView.ivCardChecked.visibility =
@@ -166,7 +166,7 @@ internal class PaymentMethodsAdapter(
                     notifyDataSetChanged()
                 }
                 selectedPaymentMethod?.let {
-                    callback?.onWechatClick(it)
+                    listener?.onWechatClick(it)
                 }
             }
         }
@@ -174,7 +174,7 @@ internal class PaymentMethodsAdapter(
 
     inner class LoadingHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-    internal interface Callback {
+    internal interface Listener {
         fun onPaymentMethodClick(paymentMethod: PaymentMethod)
         fun onWechatClick(paymentMethod: PaymentMethod)
     }
