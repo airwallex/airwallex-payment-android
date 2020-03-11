@@ -10,9 +10,9 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
-import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
+import java.util.concurrent.atomic.AtomicInteger
 
 internal class PaymentMethodsActivity : AirwallexActivity() {
 
@@ -26,24 +26,22 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
 
     private val airwallex: Airwallex by lazy {
         Airwallex(
-            token = args.token,
-            clientSecret = args.paymentIntent.clientSecret!!
+            token = requireNotNull(args.token),
+            clientSecret = requireNotNull(args.paymentIntent.clientSecret)
         )
     }
 
-    private val shouldShowWechatPay: Boolean
-        get() {
-            return args.paymentIntent.availablePaymentMethodTypes.contains(
-                PaymentMethodType.WECHAT.type
-            )
-        }
+    private val shouldShowWechatPay: Boolean by lazy {
+        args.paymentIntent.availablePaymentMethodTypes.contains(
+            PaymentMethodType.WECHAT.type
+        )
+    }
 
-    private val shouldShowCard: Boolean
-        get() {
-            return args.paymentIntent.availablePaymentMethodTypes.contains(
-                PaymentMethodType.CARD.type
-            )
-        }
+    private val shouldShowCard: Boolean by lazy {
+        args.paymentIntent.availablePaymentMethodTypes.contains(
+            PaymentMethodType.CARD.type
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,7 +150,7 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         airwallex.getPaymentMethods(
             pageNum = pageNum.get(),
             pageSize = PAGE_SIZE,
-            customerId = args.paymentIntent.customerId!!,
+            customerId = requireNotNull(args.paymentIntent.customerId),
             callback = object : Airwallex.PaymentCallback<PaymentMethodResponse> {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     paymentMethodsAdapter.endLoadingMore()
@@ -215,12 +213,12 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
-                    PaymentMethodsActivityStarter.Result(
-                        paymentIntent = paymentIntent,
-                        paymentMethodType = type,
-                        error = error
-                    ).toBundle()
-                )
+                PaymentMethodsActivityStarter.Result(
+                    paymentIntent = paymentIntent,
+                    paymentMethodType = type,
+                    error = error
+                ).toBundle()
+            )
         )
         finish()
     }

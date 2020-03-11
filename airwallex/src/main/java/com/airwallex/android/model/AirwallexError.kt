@@ -8,13 +8,13 @@ import kotlinx.android.parcel.Parcelize
 data class AirwallexError internal constructor(
 
     @SerializedName("code")
-    val code: String?,
+    val code: String? = null,
 
     @SerializedName("source")
-    val source: String?,
+    val source: String? = null,
 
     @SerializedName("message")
-    val message: String?
+    val message: String? = null
 ) : AirwallexModel, Parcelable {
 
     override fun toString(): String {

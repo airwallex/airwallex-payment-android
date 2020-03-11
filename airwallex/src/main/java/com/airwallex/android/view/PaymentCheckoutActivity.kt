@@ -11,31 +11,29 @@ import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
-import java.util.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
+import java.util.*
 
 internal class PaymentCheckoutActivity : AirwallexActivity() {
 
     private val airwallex: Airwallex by lazy {
         Airwallex(
-            args.token,
-            paymentIntent.clientSecret!!
+            requireNotNull(args.token),
+            requireNotNull(paymentIntent.clientSecret)
         )
     }
 
-    private val paymentMethod: PaymentMethod
-        get() {
-            return args.paymentMethod
-        }
-
-    private val paymentIntent: PaymentIntent
-        get() {
-            return args.paymentIntent
-        }
-
     private val args: PaymentCheckoutActivityStarter.Args by lazy {
         PaymentCheckoutActivityStarter.Args.getExtra(intent)
+    }
+
+    private val paymentMethod: PaymentMethod by lazy {
+        args.paymentMethod
+    }
+
+    private val paymentIntent: PaymentIntent by lazy {
+        args.paymentIntent
     }
 
     override fun homeAsUpIndicatorResId(): Int {
@@ -95,12 +93,12 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
-                    PaymentCheckoutActivityStarter.Result(
-                        paymentIntent = paymentIntent,
-                        paymentMethodType = type,
-                        error = error
-                    ).toBundle()
-                )
+                PaymentCheckoutActivityStarter.Result(
+                    paymentIntent = paymentIntent,
+                    paymentMethodType = type,
+                    error = error
+                ).toBundle()
+            )
         )
         finish()
     }
