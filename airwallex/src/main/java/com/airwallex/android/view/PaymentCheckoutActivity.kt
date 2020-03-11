@@ -15,6 +15,9 @@ import java.util.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
 
+/**
+ * Activity to confirm payment intent
+ */
 internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override val airwallex: Airwallex by lazy {

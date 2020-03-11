@@ -11,9 +11,12 @@ import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import java.util.concurrent.atomic.AtomicInteger
-import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 
+/**
+ * Allow the customer to select from their attached payment methods, or add a new one via [AddPaymentMethodActivity].
+ *
+ */
 internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private var pageNum: AtomicInteger = AtomicInteger(0)

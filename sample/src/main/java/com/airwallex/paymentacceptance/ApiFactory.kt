@@ -1,6 +1,5 @@
 package com.airwallex.paymentacceptance
 
-import com.airwallex.android.BuildConfig
 import com.google.gson.GsonBuilder
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -25,8 +24,6 @@ internal class ApiFactory internal constructor(private val baseUrl: String) {
                 val builder = chain.request().newBuilder()
                 builder.addHeader("Accept", "application/json")
                 builder.addHeader("Content-Type", "application/json")
-                builder.addHeader("Airwallex-User-Agent", "Airwallex-Android-SDK")
-                builder.addHeader("Airwallex-User-Agent-Version", BuildConfig.VERSION_NAME)
                 return chain.proceed(builder.build())
             }
         })
