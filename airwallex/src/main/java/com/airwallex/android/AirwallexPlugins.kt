@@ -9,6 +9,10 @@ import okhttp3.Response
 
 internal object AirwallexPlugins {
 
+    private const val HTTP_CONNECTION_TIMEOUT_SECOND = 5L
+
+    private const val HTTP_READ_TIMEOUT_SECOND = 30L
+
     private lateinit var configuration: AirwallexConfiguration
 
     internal fun initialize(configuration: AirwallexConfiguration) {
@@ -28,8 +32,8 @@ internal object AirwallexPlugins {
                 return chain.proceed(builder.build())
             }
         })
-        clientBuilder.connectTimeout(5, TimeUnit.SECONDS)
-        clientBuilder.readTimeout(30, TimeUnit.SECONDS)
+        clientBuilder.connectTimeout(HTTP_CONNECTION_TIMEOUT_SECOND, TimeUnit.SECONDS)
+        clientBuilder.readTimeout(HTTP_READ_TIMEOUT_SECOND, TimeUnit.SECONDS)
         clientBuilder.followRedirects(false)
         AirwallexHttpClient.createClient(clientBuilder)
     }

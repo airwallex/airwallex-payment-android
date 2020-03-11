@@ -11,75 +11,87 @@ internal class AirwallexPaymentController(
     private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : PaymentController {
 
+    /**
+     * Confirm the Airwallex PaymentIntent
+     */
     override fun confirmPaymentIntent(
         options: AirwallexApiRepository.Options,
         paymentIntentParams: PaymentIntentParams,
         callback: Airwallex.PaymentCallback<PaymentIntent>
     ) {
-        Logger.debug("Start Confirm PaymentIntent")
+        Logger.debug("Start confirm PaymentIntent")
         executeApiOperation(
+            ApiOperationType.CONFIRM_PAYMENT_INTENT,
             options,
             null,
             paymentIntentParams,
             callback,
-            PaymentIntent::class.java,
-            ApiOperationType.CONFIRM_PAYMENT_INTENT
+            PaymentIntent::class.java
         )
     }
 
+    /**
+     * Retrieve the Airwallex Payment Intent
+     */
     override fun retrievePaymentIntent(
         options: AirwallexApiRepository.Options,
         callback: Airwallex.PaymentCallback<PaymentIntent>
     ) {
-        Logger.debug("Start Retrieve PaymentIntent")
+        Logger.debug("Start retrieve PaymentIntent")
         executeApiOperation(
+            ApiOperationType.RETRIEVE_PAYMENT_INTENT,
             options,
             null,
             null,
             callback,
-            PaymentIntent::class.java,
-            ApiOperationType.RETRIEVE_PAYMENT_INTENT
+            PaymentIntent::class.java
         )
     }
 
+    /**
+     * Create the Airwallex PaymentMethod
+     */
     override fun createPaymentMethod(
         options: AirwallexApiRepository.Options,
         paymentMethodParams: PaymentMethodParams,
         callback: Airwallex.PaymentCallback<PaymentMethod>
     ) {
-        Logger.debug("Start Create PaymentMethod")
+        Logger.debug("Start create PaymentMethod")
         executeApiOperation(
+            ApiOperationType.CREATE_PAYMENT_METHOD,
             options,
             paymentMethodParams,
             null,
             callback,
-            PaymentMethod::class.java,
-            ApiOperationType.CREATE_PAYMENT_METHOD
+            PaymentMethod::class.java
         )
     }
 
+    /**
+     * Get all of customer's PaymentMethods
+     */
     override fun getPaymentMethods(
         options: AirwallexApiRepository.Options,
         callback: Airwallex.PaymentCallback<PaymentMethodResponse>
     ) {
-        Logger.debug("Get All PaymentMethods by customerId")
+        Logger.debug("Get all customer's PaymentMethods")
         executeApiOperation(
+            ApiOperationType.GET_PAYMENT_METHODS,
             options,
             null,
             null,
             callback,
-            PaymentMethodResponse::class.java,
-            ApiOperationType.GET_PAYMENT_METHODS
+            PaymentMethodResponse::class.java
         )
     }
 
     private fun <T> executeApiOperation(
+        apiOperationType: ApiOperationType,
         options: AirwallexApiRepository.Options,
         paymentMethodParams: PaymentMethodParams?,
         paymentIntentParams: PaymentIntentParams?,
         callback: Airwallex.PaymentCallback<T>,
-        classOfT: Class<T>,
-        apiOperationType: ApiOperationType
+        classOfT: Class<T>
     ) {
         AirwallexApiOperation(
             options,
