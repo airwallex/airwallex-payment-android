@@ -7,6 +7,7 @@ import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.Logger
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.activity_airwallex.*
 
@@ -20,6 +21,13 @@ internal abstract class AirwallexActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(homeAsUpIndicatorResId())
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        Logger.debug("$localClassName#onCreate()")
+    }
+
+    override fun onDestroy() {
+        Logger.debug("$localClassName#onDestroy()")
+        super.onDestroy()
     }
 
     internal abstract fun onActionSave()
@@ -33,6 +41,7 @@ internal abstract class AirwallexActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Logger.debug("$localClassName#onCreateOptionsMenu()")
         return if (item.itemId == R.id.action_save) {
             onActionSave()
             true

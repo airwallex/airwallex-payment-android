@@ -16,6 +16,7 @@ internal class AirwallexPaymentController(
         paymentIntentParams: PaymentIntentParams,
         callback: Airwallex.PaymentCallback<PaymentIntent>
     ) {
+        Logger.debug("Start Confirm PaymentIntent")
         executeApiOperation(
             options,
             null,
@@ -30,6 +31,7 @@ internal class AirwallexPaymentController(
         options: AirwallexApiRepository.Options,
         callback: Airwallex.PaymentCallback<PaymentIntent>
     ) {
+        Logger.debug("Start Retrieve PaymentIntent")
         executeApiOperation(
             options,
             null,
@@ -45,6 +47,7 @@ internal class AirwallexPaymentController(
         paymentMethodParams: PaymentMethodParams,
         callback: Airwallex.PaymentCallback<PaymentMethod>
     ) {
+        Logger.debug("Start Create PaymentMethod")
         executeApiOperation(
             options,
             paymentMethodParams,
@@ -59,6 +62,7 @@ internal class AirwallexPaymentController(
         options: AirwallexApiRepository.Options,
         callback: Airwallex.PaymentCallback<PaymentMethodResponse>
     ) {
+        Logger.debug("Get All PaymentMethods by customerId")
         executeApiOperation(
             options,
             null,
