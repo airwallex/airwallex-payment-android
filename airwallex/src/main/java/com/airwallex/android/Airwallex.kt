@@ -14,9 +14,9 @@ class Airwallex internal constructor(
     private val paymentController: PaymentController
 ) {
 
-    interface PaymentCallback<T> {
+    interface PaymentCallback<Response> {
         fun onFailed(exception: AirwallexException)
-        fun onSuccess(response: T)
+        fun onSuccess(response: Response)
     }
 
     /**

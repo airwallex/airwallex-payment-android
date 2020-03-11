@@ -93,9 +93,6 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewStub.layoutResource = R.layout.activity_add_card
-        viewStub.inflate()
-
         cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
         billingWidget.shipping = args.paymentIntent.order.shipping
         billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
@@ -103,4 +100,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         tvSaveCard.isEnabled = isValid
         tvSaveCard.setOnClickListener { onActionSave() }
     }
+
+    override val layoutResource: Int
+        get() = R.layout.activity_add_card
 }

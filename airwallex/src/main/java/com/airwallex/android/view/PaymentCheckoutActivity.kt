@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_payment_checkout.*
 
 internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
-    private val airwallex: Airwallex by lazy {
+    override val airwallex: Airwallex by lazy {
         Airwallex(
             requireNotNull(args.token),
             requireNotNull(paymentIntent.clientSecret)
@@ -32,7 +32,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         args.paymentMethod
     }
 
-    private val paymentIntent: PaymentIntent by lazy {
+    override val paymentIntent: PaymentIntent by lazy {
         args.paymentIntent
     }
 
@@ -42,9 +42,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        viewStub.layoutResource = R.layout.activity_payment_checkout
-        viewStub.inflate()
 
         tvTotalPrice.text = String.format(
             "%s%.2f",
@@ -62,6 +59,9 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         updateButtonStatus()
     }
 
+    override val layoutResource: Int
+        get() = R.layout.activity_payment_checkout
+
     override fun onBackPressed() {
         if (loadingView.visibility == View.GONE) {
             super.onBackPressed()
@@ -69,10 +69,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun startConfirmPaymentIntent() {
-        setLoadingProgress(true)
-        airwallex.confirmPaymentIntent(
-            paymentIntentId = paymentIntent.id,
-            paymentIntentParams = buildPaymentIntentParams(paymentMethod, paymentIntent.customerId),
+        confirmPaymentIntent(paymentMethod = paymentMethod,
             callback = object : Airwallex.PaymentCallback<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     finishWithPaymentIntent(paymentIntent = response, type = paymentMethod.type)
@@ -81,8 +78,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                 override fun onFailed(exception: AirwallexException) {
                     finishWithPaymentIntent(error = exception.error)
                 }
-            }
-        )
+            })
     }
 
     private fun finishWithPaymentIntent(

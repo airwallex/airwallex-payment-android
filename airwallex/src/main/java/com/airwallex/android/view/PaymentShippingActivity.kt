@@ -29,9 +29,6 @@ internal class PaymentShippingActivity : AirwallexActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewStub.layoutResource = R.layout.activity_add_shipping
-        viewStub.inflate()
-
         args.shipping?.let {
             contactWidget.initializeView(it)
             shippingWidget.initializeView(it)
@@ -45,6 +42,9 @@ internal class PaymentShippingActivity : AirwallexActivity() {
             invalidateOptionsMenu()
         }
     }
+
+    override val layoutResource: Int
+        get() = R.layout.activity_add_shipping
 
     override fun onActionSave() {
         val contact = contactWidget.contact
