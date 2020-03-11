@@ -1,21 +1,22 @@
 ext {
-    siteUrl = ''            // git repo url
-    gitUrl = ''             // git repo vcs url
-    publishedGroupId = ''   // this is the ID we want to see in implementation line
+    siteUrl = 'https://github.com/airwallex/airwallex-payment-android'       // git repo url
+    gitUrl = 'https://github.com/airwallex/airwallex-payment-android.git'    // git repo vcs url
 
-    bintrayRepo = ''        // Repo name in bintray dashboard
-    bintrayName = 'airwalllex'        // package name of the bintray repo
+    artifact = 'com.airwallex'                      // this is the artifact we want to see in implementation line
+    publishedGroupId = 'airwallex-android'          // this is the ID we want to see in implementation line
+    libraryVersion = '1.0.0'                        // library version
 
-    libraryName = ''                    // this is the module name of library
-    libraryDescription = 'Test project library description' // description of library
-    libraryVersion = '1.0.0'            // library version
-    artifact = 'airwalllex'             // this is the artifact we want to see in implementation line
+    bintrayRepo = ''                                // Repo name in bintray dashboard
+    bintrayName = 'com.airwalllex.android'          // package name of the bintray repo
+
+    libraryName = 'airwallex'                       // this is the module name of library
+    libraryDescription = 'Airwallex Android SDK'    // description of library
 
     licenseName = 'The MIT License (MIT)'
     licenseSite = 'https://opensource.org/licenses/MIT'
     licenseCode = 'MIT'
 
-    developerId = ''                // This is your bintray username
-    developerName = ''              // Developer's name
-    developerEmail = ''             // Developer's email
+    developerId = ''                                // This is your bintray username
+    developerName = 'Airwallex'                     // Developer's name
+    developerEmail = 'pa_mobile_sdk@airwallex.com'  // Developer's email
 }
