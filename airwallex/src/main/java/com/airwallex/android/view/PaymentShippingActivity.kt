@@ -7,8 +7,10 @@ import android.view.Menu
 import com.airwallex.android.R
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.activity_add_shipping.*
-import kotlinx.android.synthetic.main.activity_airwallex.*
 
+/**
+ * Activity to edit shipping address
+ */
 internal class PaymentShippingActivity : AirwallexActivity() {
 
     private val args: PaymentShippingActivityStarter.Args by lazy {
@@ -56,10 +58,10 @@ internal class PaymentShippingActivity : AirwallexActivity() {
             .build()
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
-                    PaymentShippingActivityStarter.Result(
-                        shipping = shipping
-                    ).toBundle()
-                )
+                PaymentShippingActivityStarter.Result(
+                    shipping = shipping
+                ).toBundle()
+            )
         )
         finish()
     }

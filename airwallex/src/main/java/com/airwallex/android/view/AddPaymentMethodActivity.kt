@@ -11,8 +11,10 @@ import com.airwallex.android.model.PaymentMethodParams
 import com.airwallex.android.model.PaymentMethodType
 import java.util.*
 import kotlinx.android.synthetic.main.activity_add_card.*
-import kotlinx.android.synthetic.main.activity_airwallex.*
 
+/**
+ * Activity to add new payment method
+ */
 internal class AddPaymentMethodActivity : AirwallexActivity() {
 
     private val keyboardController: KeyboardController by lazy {
