@@ -11,11 +11,11 @@ import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
+import java.util.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
-import java.util.*
 
-internal class PaymentCheckoutActivity : AirwallexActivity() {
+internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     private val airwallex: Airwallex by lazy {
         Airwallex(
@@ -57,7 +57,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         }
 
         rlPayNow.setOnClickListener {
-            onActionSave()
+            startConfirmPaymentIntent()
         }
         updateButtonStatus()
     }
@@ -68,7 +68,7 @@ internal class PaymentCheckoutActivity : AirwallexActivity() {
         }
     }
 
-    override fun onActionSave() {
+    private fun startConfirmPaymentIntent() {
         setLoadingProgress(true)
         airwallex.confirmPaymentIntent(
             paymentIntentId = paymentIntent.id,

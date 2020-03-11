@@ -16,7 +16,7 @@ internal class PaymentMethodsActivityStarter constructor(
 ) {
 
     @Parcelize
-    data class Args internal constructor(
+    internal data class Args internal constructor(
         val paymentIntent: PaymentIntent,
         val token: String,
         val includeCheckoutFlow: Boolean
@@ -56,7 +56,7 @@ internal class PaymentMethodsActivityStarter constructor(
     }
 
     @Parcelize
-    data class Result internal constructor(
+    internal data class Result internal constructor(
         val paymentIntent: PaymentIntent? = null,
         val paymentMethodType: PaymentMethodType? = null,
         val error: AirwallexError? = null,

@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 import java.util.concurrent.atomic.AtomicInteger
 
-internal class PaymentMethodsActivity : AirwallexActivity() {
+internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private var pageNum: AtomicInteger = AtomicInteger(0)
 
@@ -83,65 +83,6 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         }
     }
 
-    override fun onActionSave() {
-        // Ignore
-    }
-
-    override fun homeAsUpIndicatorResId(): Int {
-        return R.drawable.airwallex_ic_close
-    }
-
-    private fun startAddPaymentMethod() {
-        AddPaymentMethodActivityStarter(this@PaymentMethodsActivity)
-            .startForResult(
-                AddPaymentMethodActivityStarter.Args
-                    .Builder()
-                    .setPaymentIntent(args.paymentIntent)
-                    .setToken(args.token)
-                    .build()
-            )
-    }
-
-    private fun startPaymentCheckout(paymentMethod: PaymentMethod, cvc: String? = null) {
-        if (args.includeCheckoutFlow) {
-            setLoadingProgress(true)
-            if (paymentMethod.type == PaymentMethodType.WECHAT) {
-                // Start Confirm PaymentIntent
-                airwallex.confirmPaymentIntent(
-                    paymentIntentId = args.paymentIntent.id,
-                    paymentIntentParams = buildPaymentIntentParams(
-                        paymentMethod,
-                        args.paymentIntent.customerId
-                    ),
-                    callback = object : Airwallex.PaymentCallback<PaymentIntent> {
-                        override fun onSuccess(response: PaymentIntent) {
-                            finishWithPaymentIntent(
-                                paymentIntent = response,
-                                type = paymentMethod.type
-                            )
-                        }
-
-                        override fun onFailed(exception: AirwallexException) {
-                            finishWithPaymentIntent(error = exception.error)
-                        }
-                    }
-                )
-            } else {
-                PaymentCheckoutActivityStarter(this@PaymentMethodsActivity)
-                    .startForResult(
-                        PaymentCheckoutActivityStarter.Args.Builder()
-                            .setPaymentIntent(args.paymentIntent)
-                            .setToken(args.token)
-                            .setPaymentMethod(paymentMethod)
-                            .setCvc(cvc)
-                            .build()
-                    )
-            }
-        } else {
-            finishWithPaymentMethod(paymentMethod, cvc)
-        }
-    }
-
     private fun fetchPaymentMethods() {
         if (!shouldShowCard) {
             return
@@ -166,6 +107,67 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
                     paymentMethodsAdapter.endLoadingMore()
                 }
             })
+    }
+
+    override fun homeAsUpIndicatorResId(): Int {
+        return R.drawable.airwallex_ic_close
+    }
+
+    private fun startAddPaymentMethod() {
+        AddPaymentMethodActivityStarter(this@PaymentMethodsActivity)
+            .startForResult(
+                AddPaymentMethodActivityStarter.Args
+                    .Builder()
+                    .setPaymentIntent(args.paymentIntent)
+                    .setToken(args.token)
+                    .build()
+            )
+    }
+
+    private fun startPaymentCheckout(paymentMethod: PaymentMethod, cvc: String? = null) {
+        if (args.includeCheckoutFlow) {
+            setLoadingProgress(true)
+            if (paymentMethod.type == PaymentMethodType.WECHAT) {
+                // Confirm API is directly called by Wechat
+                airwallex.confirmPaymentIntent(
+                    paymentIntentId = args.paymentIntent.id,
+                    paymentIntentParams = buildPaymentIntentParams(
+                        paymentMethod,
+                        args.paymentIntent.customerId
+                    ),
+                    callback = object : Airwallex.PaymentCallback<PaymentIntent> {
+                        override fun onSuccess(response: PaymentIntent) {
+                            finishWithPaymentIntent(
+                                paymentIntent = response,
+                                type = paymentMethod.type
+                            )
+                        }
+
+                        override fun onFailed(exception: AirwallexException) {
+                            finishWithPaymentIntent(
+                                error = exception.error
+                            )
+                        }
+                    }
+                )
+            } else {
+                // Start [PaymentCheckoutActivity] to start confirm PaymentIntent
+                PaymentCheckoutActivityStarter(this@PaymentMethodsActivity)
+                    .startForResult(
+                        PaymentCheckoutActivityStarter.Args.Builder()
+                            .setPaymentIntent(args.paymentIntent)
+                            .setToken(args.token)
+                            .setPaymentMethod(paymentMethod)
+                            .setCvc(cvc)
+                            .build()
+                    )
+            }
+        } else {
+            finishWithPaymentMethod(
+                paymentMethod = paymentMethod,
+                cvc = cvc
+            )
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -193,7 +195,10 @@ internal class PaymentMethodsActivity : AirwallexActivity() {
         }
     }
 
-    private fun finishWithPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
+    private fun finishWithPaymentMethod(
+        paymentMethod: PaymentMethod,
+        cvc: String?
+    ) {
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
                 PaymentMethodsActivityStarter.Result(

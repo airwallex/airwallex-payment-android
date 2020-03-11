@@ -230,7 +230,7 @@ class AirwallexStarter constructor(
                         val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
                         (callback as? PaymentMethodResult)?.onSuccess(
                             requireNotNull(result?.paymentMethod),
-                            result?.cvc
+                            requireNotNull(result?.cvc)
                         )
                         true
                     }

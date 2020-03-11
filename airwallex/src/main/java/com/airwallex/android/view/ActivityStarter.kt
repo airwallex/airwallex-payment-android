@@ -45,13 +45,13 @@ internal abstract class ActivityStarter<TargetActivity : Activity, ArgsType : Ac
         }
     }
 
-    interface Args : Parcelable {
+    internal interface Args : Parcelable {
         companion object {
             internal const val AIRWALLEX_EXTRA: String = "airwallex_activity_args"
         }
     }
 
-    interface Result : Parcelable {
+    internal interface Result : Parcelable {
         fun toBundle(): Bundle
 
         companion object {
