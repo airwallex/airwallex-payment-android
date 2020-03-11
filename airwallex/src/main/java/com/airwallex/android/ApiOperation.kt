@@ -31,7 +31,7 @@ internal abstract class ApiOperation<ResultType>(
     private fun dispatchResult(resultWrapper: ResultWrapper<ResultType>) {
         when {
             resultWrapper.result != null -> callback.onSuccess(resultWrapper.result)
-            resultWrapper.error != null -> callback.onError(resultWrapper.error)
+            resultWrapper.exception != null -> callback.onError(resultWrapper.exception)
             else -> callback.onError(
                 APIConnectionException(
                     message = "The API operation returned neither a result or exception",

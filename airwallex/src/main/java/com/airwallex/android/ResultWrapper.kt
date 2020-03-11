@@ -4,7 +4,7 @@ import com.airwallex.android.exception.AirwallexException
 
 internal data class ResultWrapper<ResultType> internal constructor(
     val result: ResultType? = null,
-    val error: AirwallexException? = null
+    val exception: AirwallexException? = null
 ) {
     internal companion object {
         @JvmSynthetic
@@ -14,7 +14,7 @@ internal data class ResultWrapper<ResultType> internal constructor(
 
         @JvmSynthetic
         internal fun <ResultType> create(error: AirwallexException): ResultWrapper<ResultType> {
-            return ResultWrapper(error = error)
+            return ResultWrapper(exception = error)
         }
     }
 }

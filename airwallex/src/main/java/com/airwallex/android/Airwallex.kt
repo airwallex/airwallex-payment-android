@@ -20,7 +20,7 @@ class Airwallex internal constructor(
     }
 
     /**
-     * @param token
+     * @param token The token that should be removed on SDK later
      * @param clientSecret All API requests need to take this parameter
      * @param baseUrl You can set different values to test on different environments
      */

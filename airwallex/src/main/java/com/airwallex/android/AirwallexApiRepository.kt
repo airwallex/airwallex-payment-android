@@ -27,7 +27,7 @@ internal class AirwallexApiRepository : ApiRepository {
     @Parcelize
     internal data class PaymentMethodOptions internal constructor(
         internal val pageNum: Int = 0,
-        internal val pageSize: Int = 10,
+        internal val pageSize: Int = 20,
         internal val customerId: String
     ) : Parcelable
 
