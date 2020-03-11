@@ -25,8 +25,6 @@ internal object AirwallexPlugins {
                 val builder = chain.request().newBuilder()
                 builder.addHeader("Accept", "application/json")
                 builder.addHeader("Content-Type", "application/json")
-                builder.addHeader("Airwallex-User-Agent", "Airwallex-Android-SDK")
-                builder.addHeader("Airwallex-User-Agent-Version", BuildConfig.VERSION_NAME)
                 return chain.proceed(builder.build())
             }
         })
