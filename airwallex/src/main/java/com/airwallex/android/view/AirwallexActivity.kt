@@ -22,6 +22,9 @@ internal abstract class AirwallexActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
+        viewStub.layoutResource = layoutResource
+        viewStub.inflate()
+
         Logger.debug("$localClassName#onCreate()")
     }
 
@@ -30,10 +33,12 @@ internal abstract class AirwallexActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    internal abstract fun onActionSave()
+    protected abstract val layoutResource: Int
+
+    protected abstract fun onActionSave()
 
     @DrawableRes
-    internal abstract fun homeAsUpIndicatorResId(): Int
+    protected abstract fun homeAsUpIndicatorResId(): Int
 
     override fun onBackPressed() {
         setResult(Activity.RESULT_CANCELED)

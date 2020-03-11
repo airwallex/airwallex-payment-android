@@ -12,7 +12,7 @@ internal abstract class ActivityStarter<TargetActivity : Activity, ArgsType : Ac
     private val targetActivity: Class<TargetActivity>,
     private val requestCode: Int
 ) {
-    internal constructor(
+    protected constructor(
         activity: Activity,
         targetActivity: Class<TargetActivity>,
         requestCode: Int

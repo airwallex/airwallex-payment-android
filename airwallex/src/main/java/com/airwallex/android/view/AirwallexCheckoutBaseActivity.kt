@@ -1,5 +1,6 @@
 package com.airwallex.android.view
 
+import com.airwallex.android.Airwallex
 import com.airwallex.android.DeviceUtils
 import com.airwallex.android.model.*
 import java.util.*
@@ -7,11 +8,15 @@ import kotlinx.android.synthetic.main.activity_payment_checkout.*
 
 internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
 
+    abstract val airwallex: Airwallex
+
+    abstract val paymentIntent: PaymentIntent
+
     override fun onActionSave() {
         // Ignore
     }
 
-    internal fun buildPaymentIntentParams(
+    private fun buildPaymentIntentParams(
         paymentMethod: PaymentMethod,
         customerId: String?
     ): PaymentIntentParams {
@@ -51,5 +56,17 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     .build()
             }
         }
+    }
+
+    protected fun confirmPaymentIntent(
+        paymentMethod: PaymentMethod,
+        callback: Airwallex.PaymentCallback<PaymentIntent>
+    ) {
+        setLoadingProgress(true)
+        airwallex.confirmPaymentIntent(
+            paymentIntentId = paymentIntent.id,
+            paymentIntentParams = buildPaymentIntentParams(paymentMethod, paymentIntent.customerId),
+            callback = callback
+        )
     }
 }
