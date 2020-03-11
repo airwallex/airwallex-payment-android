@@ -23,11 +23,11 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.io.IOException
-import java.util.*
 import kotlinx.android.synthetic.main.activity_payment_cart.*
 import okhttp3.*
 import org.json.JSONObject
+import java.io.IOException
+import java.util.*
 
 class PaymentCartActivity : AppCompatActivity() {
 
@@ -158,7 +158,8 @@ class PaymentCartActivity : AppCompatActivity() {
 
     private fun handleResponse(paymentIntent: PaymentIntent) {
         loading.visibility = View.GONE
-        airwallex = Airwallex(token = token, clientSecret = paymentIntent.clientSecret!!)
+        airwallex =
+            Airwallex(token = token, clientSecret = requireNotNull(paymentIntent.clientSecret))
         paymentSession = AirwallexStarter(
             this@PaymentCartActivity
         )
