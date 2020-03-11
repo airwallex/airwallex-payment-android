@@ -17,7 +17,7 @@ internal class PaymentShippingActivityStarter constructor(
 ) {
 
     @Parcelize
-    data class Args internal constructor(
+    internal data class Args internal constructor(
         internal val shipping: Shipping?
     ) : ActivityStarter.Args {
 
@@ -43,7 +43,7 @@ internal class PaymentShippingActivityStarter constructor(
     }
 
     @Parcelize
-    data class Result internal constructor(
+    internal data class Result internal constructor(
         val shipping: Shipping
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {

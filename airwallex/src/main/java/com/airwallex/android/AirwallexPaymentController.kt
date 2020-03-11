@@ -156,5 +156,4 @@ internal class AirwallexPaymentController(
         CONFIRM_PAYMENT_INTENT,
         RETRIEVE_PAYMENT_INTENT
     }
-
 }
