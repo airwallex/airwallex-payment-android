@@ -50,7 +50,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
 
         airwallex.createPaymentMethod(
             paymentMethodParams,
-            object : Airwallex.PaymentCallback<PaymentMethod> {
+            object : Airwallex.PaymentListener<PaymentMethod> {
                 override fun onSuccess(response: PaymentMethod) {
                     finishWithPaymentMethod(response, card.cvc!!)
                 }
