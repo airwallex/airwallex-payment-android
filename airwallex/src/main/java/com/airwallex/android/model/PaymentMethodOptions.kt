@@ -59,31 +59,61 @@ data class PaymentMethodOptions internal constructor(
         @Parcelize
         data class ThreeDs internal constructor(
 
-            @SerializedName("option")
-            val option: Boolean,
-
             @SerializedName("pa_res")
-            val paRes: String?
+            val paRes: String?,
+
+            @SerializedName("return_url")
+            val returnUrl: String?,
+
+            @SerializedName("attempt_id")
+            val attemptId: String?,
+
+            @SerializedName("device_data_collection_res")
+            val deviceDataCollectionRes: String?,
+
+            @SerializedName("ds_transaction_id")
+            private var dsTransactionId: String?
 
         ) : AirwallexModel, Parcelable {
 
             class Builder : ObjectBuilder<ThreeDs> {
-                private var option: Boolean = false
-
                 private var paRes: String? = null
 
-                fun setPaRes(paRes: String): Builder = apply {
+                private var returnUrl: String? = null
+
+                private var attemptId: String? = null
+
+                private var deviceDataCollectionRes: String? = null
+
+                private var dsTransactionId: String? = null
+
+                fun setPaRes(paRes: String?): Builder = apply {
                     this.paRes = paRes
                 }
 
-                fun setOption(option: Boolean): Builder = apply {
-                    this.option = option
+                fun setReturnUrl(returnUrl: String?): Builder = apply {
+                    this.returnUrl = returnUrl
+                }
+
+                fun setAttemptId(attemptId: String?): Builder = apply {
+                    this.attemptId = attemptId
+                }
+
+                fun setDeviceDataCollectionRes(deviceDataCollectionRes: String?): Builder = apply {
+                    this.deviceDataCollectionRes = deviceDataCollectionRes
+                }
+
+                fun setDsTransactionId(dsTransactionId: String?): Builder = apply {
+                    this.dsTransactionId = dsTransactionId
                 }
 
                 override fun build(): ThreeDs {
                     return ThreeDs(
-                        option = option,
-                        paRes = paRes
+                        paRes = paRes,
+                        returnUrl = returnUrl,
+                        attemptId = attemptId,
+                        deviceDataCollectionRes = deviceDataCollectionRes,
+                        dsTransactionId = dsTransactionId
                     )
                 }
             }
