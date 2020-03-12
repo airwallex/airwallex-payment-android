@@ -6,7 +6,7 @@ ext {
     publishedGroupId = 'airwallex-android'          // this is the ID we want to see in implementation line
     libraryVersion = '1.0.0'                        // library version
 
-    bintrayRepo = ''                                // Repo name in bintray dashboard
+    bintrayRepo = 'airwallex-payment-android'                                // Repo name in bintray dashboard
     bintrayName = 'com.airwalllex.android'          // package name of the bintray repo
 
     libraryName = 'airwallex'                       // this is the module name of library
