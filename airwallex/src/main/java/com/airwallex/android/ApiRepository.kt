@@ -13,12 +13,16 @@ internal interface ApiRepository {
         paymentIntentParams: PaymentIntentParams
     ): AirwallexHttpResponse?
 
-    fun retrievePaymentIntent(options: AirwallexApiRepository.Options): AirwallexHttpResponse?
+    fun retrievePaymentIntent(
+        options: AirwallexApiRepository.Options
+    ): AirwallexHttpResponse?
 
     fun createPaymentMethod(
         options: AirwallexApiRepository.Options,
         paymentMethodParams: PaymentMethodParams
     ): AirwallexHttpResponse?
 
-    fun getPaymentMethods(options: AirwallexApiRepository.Options): AirwallexHttpResponse?
+    fun getPaymentMethods(
+        options: AirwallexApiRepository.Options
+    ): AirwallexHttpResponse?
 }
