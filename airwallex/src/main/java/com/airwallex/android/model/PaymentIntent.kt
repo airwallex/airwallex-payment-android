@@ -131,7 +131,9 @@ data class PaymentIntent internal constructor(
         val packageValue: String?,
 
         @SerializedName("sign")
-        val sign: String?
+        val sign: String?,
 
+        @SerializedName("jwt")
+        val jwt: String?
     ) : AirwallexModel, Parcelable
 }

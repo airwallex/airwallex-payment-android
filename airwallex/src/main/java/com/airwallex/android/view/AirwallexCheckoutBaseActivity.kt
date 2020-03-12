@@ -63,6 +63,8 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
     ) {
         setLoadingProgress(true)
         airwallex.confirmPaymentIntent(
+            activity = this,
+            paymentMethodType = paymentMethod.type,
             paymentIntentId = paymentIntent.id,
             paymentIntentParams = buildPaymentIntentParams(paymentMethod, paymentIntent.customerId),
             callback = callback

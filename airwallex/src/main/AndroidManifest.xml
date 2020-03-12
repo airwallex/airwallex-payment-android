@@ -22,7 +22,6 @@
             android:theme="@style/AirwallexDefaultTheme"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
-        <activity android:name=".view.ThreeDSecureActivity" />
     </application>
 
 </manifest>
