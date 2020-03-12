@@ -39,7 +39,6 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                                     .setAutoCapture(true)
                                     .setThreeDs(
                                         PaymentMethodOptions.CardOptions.ThreeDs.Builder()
-                                            .setOption(false)
                                             .build()
                                     ).build()
                             )
