@@ -17,7 +17,7 @@ internal class AirwallexPaymentController(
     override fun confirmPaymentIntent(
         options: AirwallexApiRepository.Options,
         paymentIntentParams: PaymentIntentParams,
-        callback: Airwallex.PaymentCallback<PaymentIntent>
+        listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         Logger.debug("Start confirm PaymentIntent")
         executeApiOperation(
@@ -25,7 +25,7 @@ internal class AirwallexPaymentController(
             options,
             null,
             paymentIntentParams,
-            callback,
+            listener,
             PaymentIntent::class.java
         )
     }
@@ -35,7 +35,7 @@ internal class AirwallexPaymentController(
      */
     override fun retrievePaymentIntent(
         options: AirwallexApiRepository.Options,
-        callback: Airwallex.PaymentCallback<PaymentIntent>
+        listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         Logger.debug("Start retrieve PaymentIntent")
         executeApiOperation(
@@ -43,7 +43,7 @@ internal class AirwallexPaymentController(
             options,
             null,
             null,
-            callback,
+            listener,
             PaymentIntent::class.java
         )
     }
@@ -54,7 +54,7 @@ internal class AirwallexPaymentController(
     override fun createPaymentMethod(
         options: AirwallexApiRepository.Options,
         paymentMethodParams: PaymentMethodParams,
-        callback: Airwallex.PaymentCallback<PaymentMethod>
+        listener: Airwallex.PaymentListener<PaymentMethod>
     ) {
         Logger.debug("Start create PaymentMethod")
         executeApiOperation(
@@ -62,7 +62,7 @@ internal class AirwallexPaymentController(
             options,
             paymentMethodParams,
             null,
-            callback,
+            listener,
             PaymentMethod::class.java
         )
     }
@@ -72,7 +72,7 @@ internal class AirwallexPaymentController(
      */
     override fun getPaymentMethods(
         options: AirwallexApiRepository.Options,
-        callback: Airwallex.PaymentCallback<PaymentMethodResponse>
+        listener: Airwallex.PaymentListener<PaymentMethodResponse>
     ) {
         Logger.debug("Get all customer's PaymentMethods")
         executeApiOperation(
@@ -80,7 +80,7 @@ internal class AirwallexPaymentController(
             options,
             null,
             null,
-            callback,
+            listener,
             PaymentMethodResponse::class.java
         )
     }
@@ -90,7 +90,7 @@ internal class AirwallexPaymentController(
         options: AirwallexApiRepository.Options,
         paymentMethodParams: PaymentMethodParams?,
         paymentIntentParams: PaymentIntentParams?,
-        callback: Airwallex.PaymentCallback<T>,
+        callback: Airwallex.PaymentListener<T>,
         classOfT: Class<T>
     ) {
         AirwallexApiOperation(

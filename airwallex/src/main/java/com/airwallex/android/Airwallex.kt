@@ -16,7 +16,7 @@ class Airwallex internal constructor(
     private val paymentController: PaymentController
 ) {
 
-    interface PaymentCallback<Response> {
+    interface PaymentListener<Response> {
         fun onFailed(exception: AirwallexException)
         fun onSuccess(response: Response)
     }
@@ -55,7 +55,7 @@ class Airwallex internal constructor(
      *
      * @param paymentIntentId the paymentIntentId that you want to confirm
      * @param paymentIntentParams [PaymentIntentParams] used to confirm the [PaymentIntent]
-     * @param callback the callback of confirm [PaymentIntent]
+     * @param listener the callback of confirm [PaymentIntent]
      */
     @UiThread
     fun confirmPaymentIntent(
@@ -63,7 +63,7 @@ class Airwallex internal constructor(
         paymentMethodType: PaymentMethodType,
         paymentIntentId: String,
         paymentIntentParams: PaymentIntentParams,
-        callback: PaymentCallback<PaymentIntent>
+        listener: PaymentListener<PaymentIntent>
     ) {
         val options = AirwallexApiRepository.Options(
             token = token,
@@ -76,9 +76,9 @@ class Airwallex internal constructor(
 
         val paymentCallback = when (paymentMethodType) {
             PaymentMethodType.CARD -> {
-                object : PaymentCallback<PaymentIntent> {
+                object : PaymentListener<PaymentIntent> {
                     override fun onFailed(exception: AirwallexException) {
-                        callback.onFailed(exception)
+                        listener.onFailed(exception)
                     }
 
                     override fun onSuccess(response: PaymentIntent) {
@@ -89,7 +89,7 @@ class Airwallex internal constructor(
                             // Need 3ds
                             ThreeDSecure.performVerification(activity, jwt) { referenceId ->
                                 if (referenceId == null) {
-                                    callback.onFailed(APIConnectionException(message = "Setup 3ds failed"))
+                                    listener.onFailed(APIConnectionException(message = "Setup 3ds failed"))
                                     return@performVerification
                                 }
 
@@ -112,9 +112,9 @@ class Airwallex internal constructor(
                                 paymentController.confirmPaymentIntent(
                                     options,
                                     paymentIntentParams,
-                                    object : PaymentCallback<PaymentIntent> {
+                                    object : PaymentListener<PaymentIntent> {
                                         override fun onFailed(exception: AirwallexException) {
-                                            callback.onFailed(exception)
+                                            listener.onFailed(exception)
                                         }
 
                                         override fun onSuccess(response: PaymentIntent) {
@@ -125,7 +125,7 @@ class Airwallex internal constructor(
                                             ) { threeDSecureLookup, validateResponse, jwt ->
 
                                                 if (!validateResponse.isValidated) {
-                                                    callback.onFailed(APIConnectionException(message = "Valid 3ds failed"))
+                                                    listener.onFailed(APIConnectionException(message = "Valid 3ds failed"))
                                                     return@performCardinalAuthentication
                                                 }
 
@@ -148,13 +148,13 @@ class Airwallex internal constructor(
                                                 paymentController.confirmPaymentIntent(
                                                     options,
                                                     paymentIntentParams,
-                                                    object : PaymentCallback<PaymentIntent> {
+                                                    object : PaymentListener<PaymentIntent> {
                                                         override fun onFailed(exception: AirwallexException) {
-                                                            callback.onFailed(exception)
+                                                            listener.onFailed(exception)
                                                         }
 
                                                         override fun onSuccess(response: PaymentIntent) {
-                                                            callback.onSuccess(response)
+                                                            listener.onSuccess(response)
                                                         }
                                                     }
                                                 )
@@ -165,13 +165,13 @@ class Airwallex internal constructor(
                             }
                         } else {
                             // Not not need 3ds
-                            callback.onSuccess(response)
+                            listener.onSuccess(response)
                         }
                     }
                 }
             }
             PaymentMethodType.WECHAT -> {
-                callback
+                listener
             }
         }
 
@@ -187,12 +187,12 @@ class Airwallex internal constructor(
      * Retrieve a payment intent
      *
      * @param paymentIntentId the paymentIntentId that you want to retrieve
-     * @param callback the callback of retrieve [PaymentIntent]
+     * @param listener the callback of retrieve [PaymentIntent]
      */
     @UiThread
     fun retrievePaymentIntent(
         paymentIntentId: String,
-        callback: PaymentCallback<PaymentIntent>
+        listener: PaymentListener<PaymentIntent>
     ) {
         paymentController.retrievePaymentIntent(
             AirwallexApiRepository.Options(
@@ -203,7 +203,7 @@ class Airwallex internal constructor(
                     paymentIntentId = paymentIntentId
                 )
             ),
-            callback
+            listener
         )
     }
 
@@ -211,12 +211,12 @@ class Airwallex internal constructor(
      * Create a payment method
      *
      * @param paymentMethodParams [PaymentMethodParams] used to create the [PaymentMethod]
-     * @param callback the callback of create [PaymentMethod]
+     * @param listener the callback of create [PaymentMethod]
      */
     @UiThread
     internal fun createPaymentMethod(
         paymentMethodParams: PaymentMethodParams,
-        callback: PaymentCallback<PaymentMethod>
+        listener: PaymentListener<PaymentMethod>
     ) {
         paymentController.createPaymentMethod(
             AirwallexApiRepository.Options(
@@ -225,7 +225,7 @@ class Airwallex internal constructor(
                 baseUrl = baseUrl
             ),
             paymentMethodParams,
-            callback
+            listener
         )
     }
 
@@ -235,14 +235,14 @@ class Airwallex internal constructor(
      * @param pageNum Page number starting from 0
      * @param pageSize Number of payment intents to be listed per page, default is 10
      * @param customerId The customerId that you want to use
-     * @param callback the callback of get [PaymentMethod]
+     * @param listener the callback of get [PaymentMethod]
      */
     @UiThread
     internal fun getPaymentMethods(
         pageNum: Int = 0,
         pageSize: Int = 10,
         customerId: String,
-        callback: PaymentCallback<PaymentMethodResponse>
+        listener: PaymentListener<PaymentMethodResponse>
     ) {
         paymentController.getPaymentMethods(
             AirwallexApiRepository.Options(
@@ -255,7 +255,7 @@ class Airwallex internal constructor(
                     customerId = customerId
                 )
             ),
-            callback
+            listener
         )
     }
 

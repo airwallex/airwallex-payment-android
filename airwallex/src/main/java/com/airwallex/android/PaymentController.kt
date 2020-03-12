@@ -10,7 +10,7 @@ internal interface PaymentController {
     fun confirmPaymentIntent(
         options: AirwallexApiRepository.Options,
         paymentIntentParams: PaymentIntentParams,
-        callback: Airwallex.PaymentCallback<PaymentIntent>
+        listener: Airwallex.PaymentListener<PaymentIntent>
     )
 
     /**
@@ -18,7 +18,7 @@ internal interface PaymentController {
      */
     fun retrievePaymentIntent(
         options: AirwallexApiRepository.Options,
-        callback: Airwallex.PaymentCallback<PaymentIntent>
+        listener: Airwallex.PaymentListener<PaymentIntent>
     )
 
     /**
@@ -27,7 +27,7 @@ internal interface PaymentController {
     fun createPaymentMethod(
         options: AirwallexApiRepository.Options,
         paymentMethodParams: PaymentMethodParams,
-        callback: Airwallex.PaymentCallback<PaymentMethod>
+        listener: Airwallex.PaymentListener<PaymentMethod>
     )
 
     /**
@@ -35,6 +35,6 @@ internal interface PaymentController {
      */
     fun getPaymentMethods(
         options: AirwallexApiRepository.Options,
-        callback: Airwallex.PaymentCallback<PaymentMethodResponse>
+        listener: Airwallex.PaymentListener<PaymentMethodResponse>
     )
 }

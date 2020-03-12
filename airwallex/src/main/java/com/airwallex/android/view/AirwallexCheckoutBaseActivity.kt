@@ -59,7 +59,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
 
     protected fun confirmPaymentIntent(
         paymentMethod: PaymentMethod,
-        callback: Airwallex.PaymentCallback<PaymentIntent>
+        callback: Airwallex.PaymentListener<PaymentIntent>
     ) {
         setLoadingProgress(true)
         airwallex.confirmPaymentIntent(
@@ -67,7 +67,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
             paymentMethodType = paymentMethod.type,
             paymentIntentId = paymentIntent.id,
             paymentIntentParams = buildPaymentIntentParams(paymentMethod, paymentIntent.customerId),
-            callback = callback
+            listener = callback
         )
     }
 }

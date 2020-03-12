@@ -99,7 +99,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             pageNum = pageNum.get(),
             pageSize = PAGE_SIZE,
             customerId = requireNotNull(paymentIntent.customerId),
-            callback = object : Airwallex.PaymentCallback<PaymentMethodResponse> {
+            listener = object : Airwallex.PaymentListener<PaymentMethodResponse> {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     paymentMethodsAdapter.endLoadingMore()
                     val cards = response.items.filter { it.type == PaymentMethodType.CARD }
@@ -137,7 +137,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 // Confirm API is directly called by Wechat
                 confirmPaymentIntent(
                     paymentMethod = paymentMethod,
-                    callback = object : Airwallex.PaymentCallback<PaymentIntent> {
+                    callback = object : Airwallex.PaymentListener<PaymentIntent> {
                         override fun onSuccess(response: PaymentIntent) {
                             finishWithPaymentIntent(
                                 paymentIntent = response,

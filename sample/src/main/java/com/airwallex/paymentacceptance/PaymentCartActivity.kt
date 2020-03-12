@@ -296,7 +296,7 @@ class PaymentCartActivity : AppCompatActivity() {
         )
         airwallex.retrievePaymentIntent(
             paymentIntentId = paymentIntentId,
-            callback = object : Airwallex.PaymentCallback<PaymentIntent> {
+            listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     Log.d(
                         TAG,
