@@ -168,7 +168,6 @@ class Airwallex internal constructor(
                             callback.onSuccess(response)
                         }
                     }
-
                 }
             }
             PaymentMethodType.WECHAT -> {
