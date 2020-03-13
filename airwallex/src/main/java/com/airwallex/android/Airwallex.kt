@@ -5,6 +5,7 @@ import androidx.annotation.UiThread
 import com.airwallex.android.exception.APIConnectionException
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
+import java.util.*
 
 /**
  * Entry-point to the Airwallex SDK.
@@ -53,18 +54,28 @@ class Airwallex internal constructor(
     /**
      * Confirm a payment intent
      *
+     * @param activity
      * @param paymentIntentId the paymentIntentId that you want to confirm
-     * @param paymentIntentParams [PaymentIntentParams] used to confirm the [PaymentIntent]
+     * @param paymentMethod [PaymentMethod] used to confirm the [PaymentIntent]
+     * @param customerId
+     * @param cvc
      * @param listener the callback of confirm [PaymentIntent]
      */
     @UiThread
     fun confirmPaymentIntent(
         activity: Activity,
-        paymentMethodType: PaymentMethodType,
         paymentIntentId: String,
-        paymentIntentParams: PaymentIntentParams,
+        customerId: String,
+        paymentMethod: PaymentMethod,
+        cvc: String,
         listener: PaymentListener<PaymentIntent>
     ) {
+        val paymentIntentParams = buildPaymentIntentParams(
+            paymentMethod = paymentMethod,
+            customerId = customerId,
+            cvc = cvc
+        )
+
         val options = AirwallexApiRepository.Options(
             token = token,
             clientSecret = clientSecret,
@@ -74,7 +85,7 @@ class Airwallex internal constructor(
             )
         )
 
-        val paymentCallback = when (paymentMethodType) {
+        val paymentCallback = when (paymentMethod.type) {
             PaymentMethodType.CARD -> {
                 object : PaymentListener<PaymentIntent> {
                     override fun onFailed(exception: AirwallexException) {
@@ -84,87 +95,17 @@ class Airwallex internal constructor(
                     override fun onSuccess(response: PaymentIntent) {
                         val jwt = response.nextAction?.data?.jwt
 
-                        var threeDs: PaymentMethodOptions.CardOptions.ThreeDs
                         if (jwt != null) {
-                            // Need 3ds
-                            ThreeDSecure.performVerification(activity, jwt) { referenceId ->
-                                if (referenceId == null) {
-                                    listener.onFailed(APIConnectionException(message = "Setup 3ds failed"))
-                                    return@performVerification
-                                }
-
-                                // Step 2: Fetch pareq & transactionId from server
-                                threeDs = PaymentMethodOptions.CardOptions.ThreeDs.Builder()
-                                    .setAttemptId(response.latestPaymentAttempt?.id)
-                                    .setDeviceDataCollectionRes(referenceId)
-                                    .setReturnUrl("http://requestbin.net/r/1il2qkm1")
-                                    .build()
-
-                                paymentIntentParams.copy(
-                                    paymentMethodOptions = PaymentMethodOptions.Builder()
-                                        .setCardOptions(
-                                            PaymentMethodOptions.CardOptions.Builder()
-                                                .setAutoCapture(true)
-                                                .setThreeDs(threeDs).build()
-                                        )
-                                        .build()
-                                )
-                                paymentController.confirmPaymentIntent(
-                                    options,
-                                    paymentIntentParams,
-                                    object : PaymentListener<PaymentIntent> {
-                                        override fun onFailed(exception: AirwallexException) {
-                                            listener.onFailed(exception)
-                                        }
-
-                                        override fun onSuccess(response: PaymentIntent) {
-                                            // TODO transaction id & pareq
-                                            ThreeDSecure.performCardinalAuthentication(
-                                                activity,
-                                                ThreeDSecureLookup("", "")
-                                            ) { threeDSecureLookup, validateResponse, jwt ->
-
-                                                if (!validateResponse.isValidated) {
-                                                    listener.onFailed(APIConnectionException(message = "Valid 3ds failed"))
-                                                    return@performCardinalAuthentication
-                                                }
-
-                                                // Step 3: Perform 3ds page of sdk
-                                                threeDs =
-                                                    PaymentMethodOptions.CardOptions.ThreeDs.Builder()
-                                                        .setAttemptId(response.latestPaymentAttempt?.id)
-                                                        .setDsTransactionId(validateResponse.payment.processorTransactionId)
-                                                        .setReturnUrl("http://requestbin.net/r/1il2qkm1")
-                                                        .build()
-                                                paymentIntentParams.copy(
-                                                    paymentMethodOptions = PaymentMethodOptions.Builder()
-                                                        .setCardOptions(
-                                                            PaymentMethodOptions.CardOptions.Builder()
-                                                                .setAutoCapture(true)
-                                                                .setThreeDs(threeDs).build()
-                                                        )
-                                                        .build()
-                                                )
-                                                paymentController.confirmPaymentIntent(
-                                                    options,
-                                                    paymentIntentParams,
-                                                    object : PaymentListener<PaymentIntent> {
-                                                        override fun onFailed(exception: AirwallexException) {
-                                                            listener.onFailed(exception)
-                                                        }
-
-                                                        override fun onSuccess(response: PaymentIntent) {
-                                                            listener.onSuccess(response)
-                                                        }
-                                                    }
-                                                )
-                                            }
-                                        }
-                                    }
-                                )
-                            }
+                            // 3DS Flow
+                            performThreeDsFlow(
+                                activity = activity,
+                                jwt = jwt,
+                                paymentIntent = response,
+                                paymentIntentParams = paymentIntentParams,
+                                options = options,
+                                listener = listener
+                            )
                         } else {
-                            // Not not need 3ds
                             listener.onSuccess(response)
                         }
                     }
@@ -175,12 +116,141 @@ class Airwallex internal constructor(
             }
         }
 
-        // Step 1: Check JWT, to see if need 3ds
         paymentController.confirmPaymentIntent(
             options,
             paymentIntentParams,
             paymentCallback
         )
+    }
+
+    private fun performThreeDsFlow(
+        activity: Activity,
+        jwt: String,
+        paymentIntent: PaymentIntent,
+        paymentIntentParams: PaymentIntentParams,
+        options: AirwallexApiRepository.Options,
+        listener: PaymentListener<PaymentIntent>
+    ) {
+        var threeDs: PaymentMethodOptions.CardOptions.ThreeDs
+        ThreeDSecure.performVerification(activity, jwt) { referenceId ->
+            if (referenceId == null) {
+                listener.onFailed(APIConnectionException(message = "Setup 3ds failed"))
+                return@performVerification
+            }
+
+            // Fetch pareq & transactionId from server
+            threeDs = PaymentMethodOptions.CardOptions.ThreeDs.Builder()
+                .setAttemptId(paymentIntent.latestPaymentAttempt?.id)
+                .setDeviceDataCollectionRes(referenceId)
+                .setReturnUrl("http://requestbin.net/r/1il2qkm1")
+                .build()
+
+            paymentIntentParams.copy(
+                paymentMethodOptions = PaymentMethodOptions.Builder()
+                    .setCardOptions(
+                        PaymentMethodOptions.CardOptions.Builder()
+                            .setAutoCapture(true)
+                            .setThreeDs(threeDs).build()
+                    )
+                    .build()
+            )
+            paymentController.confirmPaymentIntent(
+                options,
+                paymentIntentParams,
+                object : PaymentListener<PaymentIntent> {
+                    override fun onFailed(exception: AirwallexException) {
+                        listener.onFailed(exception)
+                    }
+
+                    override fun onSuccess(response: PaymentIntent) {
+                        // TODO transaction id & pareq
+                        // Perform 3ds auth page
+                        ThreeDSecure.performCardinalAuthentication(
+                            activity,
+                            ThreeDSecureLookup("", "")
+                        ) { threeDSecureLookup, validateResponse, jwt ->
+
+                            if (!validateResponse.isValidated) {
+                                listener.onFailed(APIConnectionException(message = "Valid 3ds failed"))
+                                return@performCardinalAuthentication
+                            }
+
+                            // Confirm transactionId
+                            threeDs =
+                                PaymentMethodOptions.CardOptions.ThreeDs.Builder()
+                                    .setAttemptId(response.latestPaymentAttempt?.id)
+                                    .setDsTransactionId(validateResponse.payment.processorTransactionId)
+                                    .setReturnUrl("http://requestbin.net/r/1il2qkm1")
+                                    .build()
+                            paymentIntentParams.copy(
+                                paymentMethodOptions = PaymentMethodOptions.Builder()
+                                    .setCardOptions(
+                                        PaymentMethodOptions.CardOptions.Builder()
+                                            .setAutoCapture(true)
+                                            .setThreeDs(threeDs).build()
+                                    )
+                                    .build()
+                            )
+                            paymentController.confirmPaymentIntent(
+                                options,
+                                paymentIntentParams,
+                                object : PaymentListener<PaymentIntent> {
+                                    override fun onFailed(exception: AirwallexException) {
+                                        listener.onFailed(exception)
+                                    }
+
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        listener.onSuccess(response)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    private fun buildPaymentIntentParams(
+        paymentMethod: PaymentMethod,
+        customerId: String,
+        cvc: String
+    ): PaymentIntentParams {
+        return when (paymentMethod.type) {
+            PaymentMethodType.CARD -> {
+                PaymentIntentParams.Builder()
+                    .setRequestId(UUID.randomUUID().toString())
+                    .setCustomerId(customerId)
+                    .setDevice(DeviceUtils.device)
+                    .setPaymentMethodReference(
+                        PaymentMethodReference.Builder()
+                            .setId(paymentMethod.id)
+                            .setCvc(cvc)
+                            .build()
+                    )
+                    .setPaymentMethodOptions(
+                        PaymentMethodOptions.Builder()
+                            .setCardOptions(
+                                PaymentMethodOptions.CardOptions.Builder()
+                                    .setAutoCapture(true)
+                                    .setThreeDs(
+                                        PaymentMethodOptions.CardOptions.ThreeDs.Builder()
+                                            .build()
+                                    ).build()
+                            )
+                            .build()
+                    )
+                    .build()
+            }
+            PaymentMethodType.WECHAT -> {
+                PaymentIntentParams.Builder()
+                    .setRequestId(UUID.randomUUID().toString())
+                    .setCustomerId(customerId)
+                    .setDevice(DeviceUtils.device)
+                    .setPaymentMethod(paymentMethod)
+                    .build()
+            }
+        }
     }
 
     /**
