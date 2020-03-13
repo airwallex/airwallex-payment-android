@@ -7,9 +7,6 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodParams
-import com.airwallex.android.model.PaymentMethodType
-import java.util.*
 import kotlinx.android.synthetic.main.activity_add_card.*
 
 /**
@@ -40,16 +37,10 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
     override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
         setLoadingProgress(true)
-        val paymentMethodParams = PaymentMethodParams.Builder()
-            .setCustomerId(args.paymentIntent.customerId)
-            .setRequestId(UUID.randomUUID().toString())
-            .setType(PaymentMethodType.CARD.type)
-            .setCard(card)
-            .setBilling(billingWidget.billing)
-            .build()
-
         airwallex.createPaymentMethod(
-            paymentMethodParams,
+            requireNotNull(args.paymentIntent.customerId),
+            card,
+            requireNotNull(billingWidget.billing),
             object : Airwallex.PaymentListener<PaymentMethod> {
                 override fun onSuccess(response: PaymentMethod) {
                     finishWithPaymentMethod(response, card.cvc!!)

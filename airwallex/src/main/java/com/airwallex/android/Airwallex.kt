@@ -2,9 +2,10 @@ package com.airwallex.android
 
 import android.app.Activity
 import androidx.annotation.UiThread
-import com.airwallex.android.exception.APIConnectionException
 import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.exception.InvalidRequestException
 import com.airwallex.android.model.*
+import com.airwallex.android.view.CardCvcEditText.Companion.VALID_CVC_LENGTH
 import java.util.*
 
 /**
@@ -54,11 +55,11 @@ class Airwallex internal constructor(
     /**
      * Confirm a payment intent
      *
-     * @param activity
+     * @param activity the `Activity` that is launching the confirm payment intent flow
      * @param paymentIntentId the paymentIntentId that you want to confirm
      * @param paymentMethod [PaymentMethod] used to confirm the [PaymentIntent]
-     * @param customerId
-     * @param cvc
+     * @param customerId The customer id of user
+     * @param cvc The cvc/cvv of the card
      * @param listener the callback of confirm [PaymentIntent]
      */
     @UiThread
@@ -70,21 +71,18 @@ class Airwallex internal constructor(
         cvc: String,
         listener: PaymentListener<PaymentIntent>
     ) {
-        val paymentIntentParams = buildPaymentIntentParams(
-            paymentMethod = paymentMethod,
-            customerId = customerId,
-            cvc = cvc
-        )
-
-        val options = AirwallexApiRepository.Options(
-            token = token,
-            clientSecret = clientSecret,
-            baseUrl = baseUrl,
-            paymentIntentOptions = AirwallexApiRepository.PaymentIntentOptions(
-                paymentIntentId = paymentIntentId
+        if (cvc.length != VALID_CVC_LENGTH) {
+            listener.onFailed(
+                InvalidRequestException(
+                    message = ContextProvider.applicationContext.getString(
+                        R.string.invalid_cvc
+                    )
+                )
             )
-        )
-
+            return
+        }
+        val paymentIntentParams = buildPaymentIntentParams(paymentMethod, customerId, cvc)
+        val options = buildPaymentIntentOptions(paymentIntentId)
         val paymentCallback = when (paymentMethod.type) {
             PaymentMethodType.CARD -> {
                 object : PaymentListener<PaymentIntent> {
@@ -123,6 +121,9 @@ class Airwallex internal constructor(
         )
     }
 
+    /**
+     * Perform 3ds flow
+     */
     private fun performThreeDsFlow(
         activity: Activity,
         jwt: String,
@@ -134,7 +135,13 @@ class Airwallex internal constructor(
         var threeDs: PaymentMethodOptions.CardOptions.ThreeDs
         ThreeDSecure.performVerification(activity, jwt) { referenceId ->
             if (referenceId == null) {
-                listener.onFailed(APIConnectionException(message = "Setup 3ds failed"))
+                listener.onFailed(
+                    InvalidRequestException(
+                        message = ContextProvider.applicationContext.getString(
+                            R.string.threeds_validation_failed
+                        )
+                    )
+                )
                 return@performVerification
             }
 
@@ -171,7 +178,13 @@ class Airwallex internal constructor(
                         ) { threeDSecureLookup, validateResponse, jwt ->
 
                             if (!validateResponse.isValidated) {
-                                listener.onFailed(APIConnectionException(message = "Valid 3ds failed"))
+                                listener.onFailed(
+                                    InvalidRequestException(
+                                        message = ContextProvider.applicationContext.getString(
+                                            R.string.threeds_validation_failed
+                                        )
+                                    )
+                                )
                                 return@performCardinalAuthentication
                             }
 
@@ -209,6 +222,17 @@ class Airwallex internal constructor(
                 }
             )
         }
+    }
+
+    private fun buildPaymentIntentOptions(paymentIntentId: String): AirwallexApiRepository.Options {
+        return AirwallexApiRepository.Options(
+            token = token,
+            clientSecret = clientSecret,
+            baseUrl = baseUrl,
+            paymentIntentOptions = AirwallexApiRepository.PaymentIntentOptions(
+                paymentIntentId = paymentIntentId
+            )
+        )
     }
 
     private fun buildPaymentIntentParams(
@@ -280,12 +304,16 @@ class Airwallex internal constructor(
     /**
      * Create a payment method
      *
-     * @param paymentMethodParams [PaymentMethodParams] used to create the [PaymentMethod]
+     * @param customerId The customer id of user
+     * @param card [PaymentMethod.Card] used to create the [PaymentMethod]
+     * @param billing [Billing] used to create the [PaymentMethod]
      * @param listener the callback of create [PaymentMethod]
      */
     @UiThread
     internal fun createPaymentMethod(
-        paymentMethodParams: PaymentMethodParams,
+        customerId: String,
+        card: PaymentMethod.Card,
+        billing: Billing,
         listener: PaymentListener<PaymentMethod>
     ) {
         paymentController.createPaymentMethod(
@@ -294,7 +322,13 @@ class Airwallex internal constructor(
                 clientSecret = clientSecret,
                 baseUrl = baseUrl
             ),
-            paymentMethodParams,
+            PaymentMethodParams.Builder()
+                .setCustomerId(customerId)
+                .setRequestId(UUID.randomUUID().toString())
+                .setType(PaymentMethodType.CARD.type)
+                .setCard(card)
+                .setBilling(billing)
+                .build(),
             listener
         )
     }
