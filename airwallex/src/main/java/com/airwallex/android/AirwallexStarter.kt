@@ -109,18 +109,17 @@ class AirwallexStarter constructor(
      *
      * [handleAddPaymentMethodResult] to handle the PaymentMethod
      */
-    fun presentAddPaymentMethodFlow(
-        shipping: Shipping?,
-        customerId: String,
-        clientSecret: String,
-        token: String
-    ) {
+    fun presentAddPaymentMethodFlow(paymentIntent: PaymentIntent, token: String) {
         AddPaymentMethodActivityStarter(activity)
             .startForResult(
                 AddPaymentMethodActivityStarter.Args.Builder()
-                    .setShipping(shipping)
-                    .setCustomerId(customerId)
-                    .setClientSecret(clientSecret)
+                    .setShipping(paymentIntent.order.shipping)
+                    .setCustomerId(requireNotNull(paymentIntent.customerId, {
+                        "Customer id must be provided"
+                    }))
+                    .setClientSecret(requireNotNull(paymentIntent.clientSecret, {
+                        "Client Secret must be not null"
+                    }))
                     .setToken(token)
                     .build()
             )
