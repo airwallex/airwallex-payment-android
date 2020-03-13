@@ -17,7 +17,7 @@
 
     <include
         android:id="@+id/loadingView"
-        layout="@layout/loading"
+        layout="@layout/airwallex_loading"
         android:visibility="gone" />
 
 </RelativeLayout>
