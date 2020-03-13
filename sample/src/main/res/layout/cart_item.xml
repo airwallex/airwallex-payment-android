@@ -55,7 +55,7 @@
                 android:layout_alignParentEnd="true"
                 android:fontFamily="@font/circularstd_bold"
                 android:text="@string/remove"
-                android:textColor="#612FFF" />
+                android:textColor="@color/airwallex_color_primary_default" />
         </RelativeLayout>
 
 

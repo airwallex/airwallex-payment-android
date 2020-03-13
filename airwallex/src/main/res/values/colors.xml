@@ -12,4 +12,9 @@
     <color name="airwallex_color_dark_deep">#2A2A2A</color>
     <color name="airwallex_color_dark_light">#A9A9A9</color>
     <color name="airwallex_color_bg">#F7F7F9</color>
+
+    <color name="airwallex_color_border">#EBECF0</color>
+    <color name="airwallex_color_price">#1E272E</color>
+    <color name="airwallex_color_item_label">#54545E</color>
+
 </resources>

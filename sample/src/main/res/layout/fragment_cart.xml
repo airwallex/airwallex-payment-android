@@ -29,7 +29,7 @@
             android:background="@drawable/ic_cart_count_bg"
             android:fontFamily="@font/circularstd_bold"
             android:gravity="center"
-            android:textColor="#612FFF"
+            android:textColor="@color/airwallex_color_primary_default"
             android:textSize="14sp" />
 
     </RelativeLayout>
@@ -71,7 +71,7 @@
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/circularstd_medium"
                 android:text="@string/subtotal"
-                android:textColor="#54545E"
+                android:textColor="@color/airwallex_color_item_label"
                 android:textSize="14sp" />
 
             <TextView
@@ -101,7 +101,7 @@
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/circularstd_medium"
                 android:text="@string/shipping"
-                android:textColor="#54545E"
+                android:textColor="@color/airwallex_color_item_label"
                 android:textSize="14sp" />
 
             <TextView

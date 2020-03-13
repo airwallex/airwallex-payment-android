@@ -12,7 +12,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:fontFamily="@font/circularstd_bold"
-        android:textColor="#1E272E"
+        android:textColor="@color/airwallex_color_price"
         android:textSize="40sp" />
 
     <TextView
@@ -24,7 +24,7 @@
         android:layout_marginTop="10dp"
         android:fontFamily="@font/circularstd_medium"
         android:text="@string/total"
-        android:textColor="#1E272E"
+        android:textColor="@color/airwallex_color_price"
         android:textSize="14sp" />
 
     <RelativeLayout
