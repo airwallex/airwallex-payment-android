@@ -125,7 +125,9 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             .startForResult(
                 AddPaymentMethodActivityStarter.Args
                     .Builder()
-                    .setPaymentIntent(paymentIntent)
+                    .setShipping(paymentIntent.order.shipping)
+                    .setCustomerId(requireNotNull(paymentIntent.customerId))
+                    .setClientSecret(requireNotNull(paymentIntent.clientSecret))
                     .setToken(args.token)
                     .build()
             )
