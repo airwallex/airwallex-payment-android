@@ -4,8 +4,8 @@ import android.os.Parcelable
 import com.airwallex.android.model.PaymentIntentParams
 import com.airwallex.android.model.PaymentMethodParams
 import com.google.gson.JsonParser
-import java.util.*
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 internal class AirwallexApiRepository : ApiRepository {
 
@@ -46,11 +46,11 @@ internal class AirwallexApiRepository : ApiRepository {
             )
                 .setBody(
                     AirwallexHttpBody(
-                        "application/json; charset=utf-8",
+                        CONTENT_TYPE,
                         paramsJson.toString()
                     )
                 )
-                .addHeader("client-secret", options.clientSecret)
+                .addClientSecretHeader(options.clientSecret)
                 .build()
         )
     }
@@ -61,7 +61,7 @@ internal class AirwallexApiRepository : ApiRepository {
                 retrievePaymentIntentUrl(options),
                 AirwallexHttpRequest.Method.GET
             )
-                .addHeader("Authorization", "Bearer ${options.token}")
+                .addTokenHeader(options.token)
                 .build()
         )
     }
@@ -81,11 +81,11 @@ internal class AirwallexApiRepository : ApiRepository {
             )
                 .setBody(
                     AirwallexHttpBody(
-                        "application/json; charset=utf-8",
+                        CONTENT_TYPE,
                         paramsJson.toString()
                     )
                 )
-                .addHeader("Authorization", "Bearer ${options.token}")
+                .addTokenHeader(options.token)
                 .build()
         )
     }
@@ -96,9 +96,22 @@ internal class AirwallexApiRepository : ApiRepository {
                 getPaymentMethodsUrl(options),
                 AirwallexHttpRequest.Method.GET
             )
-                .addHeader("Authorization", "Bearer ${options.token}")
+                .addTokenHeader(options.token)
                 .build()
         )
+    }
+
+    // TODO token should be removed.
+    private fun AirwallexHttpRequest.Builder.addTokenHeader(
+        token: String
+    ): AirwallexHttpRequest.Builder {
+        return addHeader("Authorization", "Bearer $token")
+    }
+
+    private fun AirwallexHttpRequest.Builder.addClientSecretHeader(
+        clientSecret: String
+    ): AirwallexHttpRequest.Builder {
+        return addHeader("client-secret", clientSecret)
     }
 
     /**
@@ -151,5 +164,9 @@ internal class AirwallexApiRepository : ApiRepository {
 
     private fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
         return "$baseUrl/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
+    }
+
+    companion object {
+        private const val CONTENT_TYPE = "application/json; charset=utf-8"
     }
 }
