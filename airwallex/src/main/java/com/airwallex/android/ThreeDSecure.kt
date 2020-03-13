@@ -59,7 +59,7 @@ internal object ThreeDSecure {
              * If there was an error with setup, cardinal will call this function with
              * validate response and empty serverJWT
              * @param validateResponse
-             * @param serverJwt will be an empty
+             * @param serverJWT will be an empty
              */
             override fun onValidated(validateResponse: ValidateResponse, serverJWT: String) {
                 onSetupCompleted.invoke(null)

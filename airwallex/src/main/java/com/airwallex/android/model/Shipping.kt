@@ -14,10 +14,10 @@ data class Shipping internal constructor(
     val lastName: String? = null,
 
     @SerializedName("phone_number")
-    val phone: String? = null,
+    val phoneNumber: String? = null,
 
-    @SerializedName("date_of_birth")
-    val dateOfBirth: String? = null,
+    @SerializedName("shipping_method")
+    val shippingMethod: String? = null,
 
     @SerializedName("address")
     val address: Address? = null
@@ -26,8 +26,8 @@ data class Shipping internal constructor(
     class Builder : ObjectBuilder<Shipping> {
         private var firstName: String? = null
         private var lastName: String? = null
-        private var phone: String? = null
-        private var dateOfBirth: String? = null
+        private var phoneNumber: String? = null
+        private var shippingMethod: String? = null
         private var address: Address? = null
 
         fun setFirstName(firstName: String?): Builder = apply {
@@ -39,11 +39,11 @@ data class Shipping internal constructor(
         }
 
         fun setPhone(phone: String?): Builder = apply {
-            this.phone = phone
+            this.phoneNumber = phone
         }
 
-        fun setDateForBirth(dateOfBirth: String?): Builder = apply {
-            this.dateOfBirth = dateOfBirth
+        fun setShippingMethod(shippingMethod: String?): Builder = apply {
+            this.shippingMethod = shippingMethod
         }
 
         fun setAddress(address: Address?): Builder = apply {
@@ -54,8 +54,8 @@ data class Shipping internal constructor(
             return Shipping(
                 firstName = firstName,
                 lastName = lastName,
-                phone = phone,
-                dateOfBirth = dateOfBirth,
+                phoneNumber = phoneNumber,
+                shippingMethod = shippingMethod,
                 address = address
             )
         }

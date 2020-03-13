@@ -40,7 +40,7 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
                     .setFirstName(shipping.firstName)
                     .setLastName(shipping.lastName)
                     .setEmail("jim631@sina.com") // TODO ERROR Server without email field
-                    .setPhone(shipping.phone)
+                    .setPhone(shipping.phoneNumber)
                     .setAddress(
                         shipping.address?.apply {
                             Address.Builder()

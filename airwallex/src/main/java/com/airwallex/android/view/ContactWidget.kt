@@ -47,7 +47,7 @@ internal class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayo
         with(shipping) {
             atlLastName.value = lastName ?: ""
             atlFirstName.value = firstName ?: ""
-            atlPhoneNumber.value = phone ?: ""
+            atlPhoneNumber.value = phoneNumber ?: ""
         }
     }
 
