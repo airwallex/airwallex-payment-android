@@ -5,7 +5,6 @@
     <application>
         <activity
             android:name="com.airwallex.android.view.PaymentMethodsActivity"
-            android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme" />
 
         <activity
