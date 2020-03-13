@@ -20,5 +20,13 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+# Rules for Cardinal Mobile SDK
 -keep class org.bouncycastle.**
 -keep class com.nimbusds.**
+
+# Rules for Airwallex
+-keep class com.airwallex.android.** { *; }
+-dontwarn com.airwallex.android.view.**
+
+# Rules for IconTextInputLayout
+-keep class com.google.android.material.textfield.TextInputLayout { *; }
