@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="#3711AE">
+    android:color="@color/airwallex_color_primary_dark_default">
 
     <item>
         <selector>
@@ -13,7 +13,7 @@
 
             <item>
                 <shape android:shape="rectangle">
-                    <solid android:color="#612FFF" />
+                    <solid android:color="@color/airwallex_color_primary_default" />
                     <corners android:radius="6dp" />
                 </shape>
             </item>
