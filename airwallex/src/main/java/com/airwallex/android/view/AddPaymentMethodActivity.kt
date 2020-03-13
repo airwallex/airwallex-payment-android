@@ -25,7 +25,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
     private val airwallex: Airwallex by lazy {
         Airwallex(
             token = requireNotNull(args.token),
-            clientSecret = requireNotNull(args.paymentIntent.clientSecret)
+            clientSecret = requireNotNull(args.clientSecret)
         )
     }
 
@@ -38,7 +38,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         val card = cardWidget.paymentMethodCard ?: return
         setLoadingProgress(true)
         airwallex.createPaymentMethod(
-            requireNotNull(args.paymentIntent.customerId),
+            requireNotNull(args.customerId),
             card,
             requireNotNull(billingWidget.billing),
             object : Airwallex.PaymentListener<PaymentMethod> {
@@ -87,7 +87,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         super.onCreate(savedInstanceState)
 
         cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
-        billingWidget.shipping = args.paymentIntent.order.shipping
+        billingWidget.shipping = args.shipping
         billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
 
         tvSaveCard.isEnabled = isValid
