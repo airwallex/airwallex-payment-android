@@ -55,4 +55,4 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
 }
 
-apply from: "./deploy.gradle"
+apply from: rootProject.file('publish.gradle')

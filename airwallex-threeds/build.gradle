@@ -29,3 +29,5 @@ android {
 dependencies {
     api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.2-1'
 }
+
+apply from: rootProject.file('publish.gradle')
