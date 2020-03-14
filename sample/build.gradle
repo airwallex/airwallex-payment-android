@@ -36,10 +36,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(AIRWALLEX_STORE_FILE)
-            storePassword AIRWALLEX_STORE_PASSWORD
-            keyAlias AIRWALLEX_KEY_ALIAS
-            keyPassword AIRWALLEX_KEY_PASSWORD
+            storeFile file('airwallex.jks')
+            storePassword 'airwallex'
+            keyAlias 'airwallex'
+            keyPassword 'airwallex'
         }
     }
 

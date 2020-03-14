@@ -36,7 +36,7 @@ lintRelease:
 assembleRelease:
   stage: build
   script:
-    - ./gradlew assembleRelease
+    - ./gradlew :sample:assembleRelease
   artifacts:
     paths:
       - app/build/outputs/
