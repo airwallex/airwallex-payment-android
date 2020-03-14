@@ -2,12 +2,13 @@ ext {
     siteUrl = 'https://github.com/airwallex/airwallex-payment-android'       // git repo url
     gitUrl = 'https://github.com/airwallex/airwallex-payment-android.git'    // git repo vcs url
 
+    bintrayuUserOrg = 'airwallex'
     artifact = 'com.airwallex'                      // this is the artifact we want to see in implementation line
     publishedGroupId = POM_PUBLISHED_GROUP_ID       // this is the ID we want to see in implementation line
     libraryVersion = POM_LIBRARY_VERSION            // library version
 
     bintrayRepo = 'airwallex-payment-android'       // Repo name in bintray dashboard
-    bintrayName = 'com.airwalllex.android'          // package name of the bintray repo
+    bintrayName = POM_BINTRAY_NAME                  // package name of the bintray repo
 
     libraryName = POM_LIBRARY_NAME                  // this is the module name of library
     libraryDescription = POM_LIBRARY_DESCRIPTION    // description of library
