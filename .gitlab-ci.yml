@@ -20,6 +20,8 @@ before_script:
   - set +o pipefail
   - yes | android-sdk-linux/tools/bin/sdkmanager --licenses
   - set -o pipefail
+  # Prevent failure with no `local.properties`
+  - touch local.properties
 
 stages:
   - build
