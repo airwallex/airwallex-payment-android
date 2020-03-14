@@ -3,18 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: "./ktlint.gradle"
 
-rootProject.allprojects {
-    repositories {
-        maven {
-            url "https://cardinalcommerce.bintray.com/android"
-            credentials {
-                username 'braintree-team-sdk@cardinalcommerce'
-                password '220cc9476025679c4e5c843666c27d97cfb0f951'
-            }
-        }
-    }
-}
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -47,12 +35,11 @@ dependencies {
     api "com.squareup.okhttp3:okhttp:$okhttpVersion"
     api "com.google.code.gson:gson:${gsonVersion}"
 
+    compileOnly project(':airwallex-threeds')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
-
-    //Cardinal Mobile SDK
-    implementation "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.2-1"
 
     javadocDeps 'androidx.annotation:annotation:1.1.0'
     javadocDeps 'androidx.appcompat:appcompat:1.1.0'

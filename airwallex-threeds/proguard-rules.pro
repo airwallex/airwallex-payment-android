@@ -20,9 +20,5 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# Rules for Airwallex
--keep class com.airwallex.android.** { *; }
--dontwarn com.airwallex.android.view.**
-
-# Rules for IconTextInputLayout
--keep class com.google.android.material.textfield.TextInputLayout { *; }
+-keep class org.bouncycastle.**
+-keep class com.nimbusds.**
