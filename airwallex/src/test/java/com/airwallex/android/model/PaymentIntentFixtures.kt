@@ -43,7 +43,6 @@ internal object PaymentIntentFixtures {
                         "last_name": "Doe",
                         "email": "john.doe@airwallex.com",
                         "phone_number": "13800000000",
-                        "date_of_birth": "2011-10-23",
                         "address": {
                             "country_code": "CN",
                             "state": "Shanghai",
