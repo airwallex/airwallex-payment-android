@@ -30,6 +30,9 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     override val paymentIntent: PaymentIntent by lazy {
         args.paymentIntent
     }
+    override val requestThreeDSecure: Boolean by lazy {
+        args.requestThreeDSecure
+    }
 
     override val airwallex: Airwallex by lazy {
         Airwallex(
@@ -161,6 +164,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                             .setToken(args.token)
                             .setPaymentMethod(paymentMethod)
                             .setCvc(cvc)
+                            .setRequestThreeDSecure(requestThreeDSecure)
                             .build()
                     )
             }

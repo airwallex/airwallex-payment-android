@@ -1,20 +1,15 @@
-Airwallex Android SDK
-==================
+# Airwallex Android SDK
 This library makes it quick and easy to build an excellent payment experience in your Android app.
 
+Airwallex's Android SDK is available for Android SDK >= 19.
+
 ## Installation
-
-### Requirements
-
-* Android 4.4 (API level 19) and above
-
-### Configuration
 Add the dependency in your `build.gradle`.
-```
+```groovy
 dependencies {
     implementation 'com.airwallex:airwallex-core:0.0.1'
     
-    // 3DS
+    // If you want to support 3ds, you must set requestThreeDSecure to true and add the following dependencies
     implementation 'com.airwallex:airwallex-threeds:0.0.1'
 }
 ```
@@ -28,10 +23,9 @@ buildscript {
 ```
 
 ## Documentation
-Read [integration guides](https://www.airwallex.com/docs/api).
+Read [integration guides](https://www.airwallex.com/docs/api) fro more information.
 
 ## Feedback
-
 The Airwallex Android SDK is in active development, we welcome your feedback!
 
 Here are a few ways to get in touch:

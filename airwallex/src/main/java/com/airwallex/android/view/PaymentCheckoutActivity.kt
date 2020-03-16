@@ -39,6 +39,10 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         args.paymentIntent
     }
 
+    override val requestThreeDSecure: Boolean by lazy {
+        args.requestThreeDSecure
+    }
+
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_back
     }
