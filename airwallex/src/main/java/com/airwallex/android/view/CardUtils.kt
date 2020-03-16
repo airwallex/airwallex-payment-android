@@ -11,7 +11,7 @@ internal object CardUtils {
         return isValidLuhnNumber(normalizedNumber) && isValidCardLength(normalizedNumber)
     }
 
-    private fun isValidLuhnNumber(number: String?): Boolean {
+    internal fun isValidLuhnNumber(number: String?): Boolean {
         if (number == null) {
             return false
         }
@@ -41,7 +41,7 @@ internal object CardUtils {
         return sum % 10 == 0
     }
 
-    private fun isValidCardLength(cardNumber: String?): Boolean {
+    internal fun isValidCardLength(cardNumber: String?): Boolean {
         return cardNumber != null && isValidCardLength(
             cardNumber,
             getPossibleCardBrand(cardNumber, false)
