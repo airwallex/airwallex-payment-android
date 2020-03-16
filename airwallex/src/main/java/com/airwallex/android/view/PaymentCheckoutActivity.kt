@@ -39,9 +39,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         args.paymentIntent
     }
 
-    override val requestThreeDSecure: Boolean by lazy {
-        args.requestThreeDSecure
-    }
     override val cvc: String?
         get() = paymentMethodItemView.cvc
 

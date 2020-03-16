@@ -42,7 +42,7 @@ class AirwallexStarter constructor(
      *
      * [handlePaymentResult] to handle the PaymentIntent
      */
-    fun presentPaymentFlow(paymentIntent: PaymentIntent, token: String, requestThreeDSecure: Boolean) {
+    fun presentPaymentFlow(paymentIntent: PaymentIntent, token: String) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided"
         })
@@ -52,7 +52,6 @@ class AirwallexStarter constructor(
                     .setPaymentIntent(paymentIntent)
                     .setToken(token)
                     .setIncludeCheckoutFlow(true)
-                    .setRequestThreeDSecure(requestThreeDSecure)
                     .build()
             )
     }

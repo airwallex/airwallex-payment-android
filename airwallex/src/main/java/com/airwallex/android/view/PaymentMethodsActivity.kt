@@ -30,9 +30,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     override val paymentIntent: PaymentIntent by lazy {
         args.paymentIntent
     }
-    override val requestThreeDSecure: Boolean by lazy {
-        args.requestThreeDSecure
-    }
 
     // Only wechat will confirm in this page
     override val cvc: String?
@@ -168,7 +165,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                             .setToken(args.token)
                             .setPaymentMethod(paymentMethod)
                             .setCvc(cvc)
-                            .setRequestThreeDSecure(requestThreeDSecure)
                             .build()
                     )
             }

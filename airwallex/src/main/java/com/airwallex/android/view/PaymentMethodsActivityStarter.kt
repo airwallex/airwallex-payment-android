@@ -19,15 +19,13 @@ internal class PaymentMethodsActivityStarter constructor(
     internal data class Args internal constructor(
         val paymentIntent: PaymentIntent,
         val token: String,
-        val includeCheckoutFlow: Boolean,
-        val requestThreeDSecure: Boolean
+        val includeCheckoutFlow: Boolean
     ) : ActivityStarter.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var paymentIntent: PaymentIntent
             private lateinit var token: String
             private var includeCheckoutFlow: Boolean = true
-            private var requestThreeDSecure: Boolean = false
 
             fun setPaymentIntent(paymentIntent: PaymentIntent): Builder = apply {
                 this.paymentIntent = paymentIntent
@@ -41,16 +39,11 @@ internal class PaymentMethodsActivityStarter constructor(
                 this.includeCheckoutFlow = includeCheckoutFlow
             }
 
-            fun setRequestThreeDSecure(requestThreeDSecure: Boolean): Builder = apply {
-                this.requestThreeDSecure = requestThreeDSecure
-            }
-
             override fun build(): Args {
                 return Args(
                     paymentIntent = paymentIntent,
                     token = token,
-                    includeCheckoutFlow = includeCheckoutFlow,
-                    requestThreeDSecure = requestThreeDSecure
+                    includeCheckoutFlow = includeCheckoutFlow
                 )
             }
         }
