@@ -31,7 +31,7 @@ internal object ExpiryDateUtils {
         return isExpiryDateValid(expiryMonth, expiryYear, Calendar.getInstance())
     }
 
-    private fun isExpiryDateValid(expiryMonth: Int, expiryYear: Int, calendar: Calendar): Boolean {
+    internal fun isExpiryDateValid(expiryMonth: Int, expiryYear: Int, calendar: Calendar): Boolean {
         if (expiryMonth < 1 || expiryMonth > 12) {
             return false
         }
@@ -57,7 +57,7 @@ internal object ExpiryDateUtils {
     }
 
     @IntRange(from = 1000, to = 9999)
-    private fun convertTwoDigitYearToFour(
+    internal fun convertTwoDigitYearToFour(
         @IntRange(from = 0, to = 99) inputYear: Int,
         calendar: Calendar
     ): Int {

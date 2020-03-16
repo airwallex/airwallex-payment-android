@@ -33,37 +33,6 @@ internal class CountryAutoCompleteView constructor(
             return tvError.text.toString()
         }
 
-    private val legalCountries by lazy {
-        arrayOf(
-            "AC", "AD", "AE", "AG", "AI", "AL", "AM", "AN", "AO", "AQ", "AR", "AS", "AT", "AU", "AW",
-            "AX", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH", "BJ", "BL", "BM", "BN", "BO", "BQ",
-            "BR", "BS", "BT", "BU", "BV", "BW", "BZ", "CA", "CC", "CG", "CH", "CI", "CK", "CL", "CM",
-            "CN", "CO", "CP", "CR", "CS", "CV", "CW", "CX", "CY", "CZ", "DE", "DG", "DJ", "DK", "DM",
-            "DO", "DZ", "EA", "EC", "EE", "EG", "EH", "ES", "ET", "EU", "EZ", "FI", "FJ", "FK", "FM",
-            "FO", "FR", "FX", "GA", "GB", "GD", "GE", "GF", "GG", "GH", "GI", "GL", "GM", "GN", "GP",
-            "GQ", "GR", "GS", "GT", "GU", "GY", "HK", "HM", "HN", "HR", "HT", "HU", "IC", "ID", "IE",
-            "IL", "IM", "IN", "IO", "IS", "IT", "JE", "JM", "JO", "JP", "KE", "KG", "KH", "KI", "KM",
-            "KN", "KR", "KW", "KY", "KZ", "LA", "LB", "LC", "LI", "LK", "LS", "LT", "LU", "LV", "MA",
-            "MC", "MD", "ME", "MF", "MG", "MH", "MK", "ML", "MN", "MO", "MP", "MQ", "MR", "MS", "MT",
-            "MU", "MV", "MW", "MX", "MY", "MZ", "NA", "NC", "NE", "NF", "NG", "NI", "NL", "NO", "NP",
-            "NR", "NT", "NU", "NZ", "OM", "PA", "PE", "PF", "PG", "PH", "PK", "PL", "PM", "PN", "PR",
-            "PS", "PT", "PW", "PY", "QA", "RE", "RO", "RS", "RU", "SA", "SB", "SC", "SE", "SF", "SG",
-            "SH", "SI", "SJ", "SK", "SM", "SN", "SR", "ST", "SU", "SV", "SX", "SZ", "TA", "TC", "TD",
-            "TF", "TG", "TH", "TJ", "TK", "TL", "TM", "TN", "TO", "TP", "TR", "TT", "TV", "TW", "TZ",
-            "UA", "UG", "UK", "UM", "US", "UY", "UZ", "VA", "VC", "VE", "VG", "VI", "VN", "VU", "WF",
-            "WS", "XK", "YT", "YU", "ZA", "ZM", "ZR"
-        )
-    }
-
-    private val countries: List<Country> by lazy {
-        Locale.getISOCountries()
-            .filter { code -> legalCountries.indexOf(code) >= 0 }
-            .map { code ->
-                Country(code, Locale("", code).displayCountry)
-            }
-            .sortedBy { it.name.toLowerCase(Locale.ROOT) }
-    }
-
     private val countryAdapter: CountryAdapter
 
     internal var countryChangeCallback: (Country) -> Unit = {}
@@ -71,21 +40,13 @@ internal class CountryAutoCompleteView constructor(
     internal var country: String? = null
         set(value) {
             value?.let {
-                actCountry.setText(getCountryByCode(it)?.name)
+                actCountry.setText(CountryUtils.getCountryByCode(it)?.name)
             }
             field = value
         }
         get() {
-            return getCountryByName(actCountry.text.toString())?.code
+            return CountryUtils.getCountryByName(actCountry.text.toString())?.code
         }
-
-    private fun getCountryByName(countryName: String): Country? {
-        return countries.firstOrNull { it.name == countryName }
-    }
-
-    private fun getCountryByCode(countryCode: String): Country? {
-        return countries.firstOrNull { it.code == countryCode }
-    }
 
     private fun updateLayoutColor() {
         if (error.isNullOrEmpty()) {
@@ -108,7 +69,7 @@ internal class CountryAutoCompleteView constructor(
     init {
         View.inflate(getContext(), R.layout.country_autocomplete_view, this)
 
-        countryAdapter = CountryAdapter(getContext(), countries)
+        countryAdapter = CountryAdapter(getContext(), CountryUtils.COUNTRIES)
         actCountry.threshold = 0
         actCountry.setAdapter(countryAdapter)
 
@@ -121,7 +82,7 @@ internal class CountryAutoCompleteView constructor(
                 error = null
             } else {
                 val enteredCountry = actCountry.text.toString()
-                val country = getCountryByName(enteredCountry)
+                val country = CountryUtils.getCountryByName(enteredCountry)
 
                 val displayCountry = country?.let {
                     updatedSelectedCountryCode(it)
@@ -141,7 +102,7 @@ internal class CountryAutoCompleteView constructor(
 
     internal fun setInitCountry(countryCode: String?) {
         countryCode?.let {
-            selectedCountry = getCountryByCode(it)
+            selectedCountry = CountryUtils.getCountryByCode(it)
             selectedCountry?.let { country ->
                 actCountry.setText(country.name)
                 countryChangeCallback.invoke(country)
