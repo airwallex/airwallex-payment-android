@@ -3,7 +3,6 @@ package com.airwallex.android.view
 import com.airwallex.android.Airwallex
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
-import kotlinx.android.synthetic.main.activity_payment_checkout.*
 
 internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
 
@@ -12,6 +11,8 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
     abstract val paymentIntent: PaymentIntent
 
     abstract val requestThreeDSecure: Boolean
+
+    abstract val cvc: String?
 
     override fun onActionSave() {
         // Ignore
@@ -27,7 +28,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
             paymentIntentId = paymentIntent.id,
             customerId = requireNotNull(paymentIntent.customerId),
             paymentMethod = paymentMethod,
-            cvc = requireNotNull(paymentMethodItemView.cvc),
+            cvc = cvc,
             requestThreeDSecure = requestThreeDSecure,
             listener = callback
         )

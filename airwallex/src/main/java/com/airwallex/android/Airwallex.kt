@@ -68,18 +68,12 @@ class Airwallex internal constructor(
         paymentIntentId: String,
         customerId: String,
         paymentMethod: PaymentMethod,
-        cvc: String,
+        cvc: String?,
         requestThreeDSecure: Boolean = false,
         listener: PaymentListener<PaymentIntent>
     ) {
-        if (cvc.length != VALID_CVC_LENGTH) {
-            listener.onFailed(
-                InvalidRequestException(
-                    message = ContextProvider.applicationContext.getString(
-                        R.string.invalid_cvc
-                    )
-                )
-            )
+        if (paymentMethod.type == PaymentMethodType.CARD && (cvc == null || cvc.length != VALID_CVC_LENGTH)) {
+            listener.onFailed(InvalidRequestException(message = activity.getString(R.string.invalid_cvc)))
             return
         }
         val paymentIntentParams = buildPaymentIntentParams(paymentMethod, customerId, cvc)
@@ -136,13 +130,7 @@ class Airwallex internal constructor(
         var threeDs: PaymentMethodOptions.CardOptions.ThreeDs
         ThreeDSecure.performVerification(activity, jwt) { referenceId ->
             if (referenceId == null) {
-                listener.onFailed(
-                    InvalidRequestException(
-                        message = ContextProvider.applicationContext.getString(
-                            R.string.threeds_validation_failed
-                        )
-                    )
-                )
+                listener.onFailed(InvalidRequestException(message = activity.getString(R.string.threeds_validation_failed)))
                 return@performVerification
             }
 
@@ -181,7 +169,7 @@ class Airwallex internal constructor(
                             if (!validateResponse.isValidated) {
                                 listener.onFailed(
                                     InvalidRequestException(
-                                        message = ContextProvider.applicationContext.getString(
+                                        message = activity.getString(
                                             R.string.threeds_validation_failed
                                         )
                                     )
@@ -239,7 +227,7 @@ class Airwallex internal constructor(
     private fun buildPaymentIntentParams(
         paymentMethod: PaymentMethod,
         customerId: String,
-        cvc: String
+        cvc: String?
     ): PaymentIntentParams {
         return when (paymentMethod.type) {
             PaymentMethodType.CARD -> {
@@ -367,12 +355,5 @@ class Airwallex internal constructor(
     companion object {
         // The default url, that you can change in the constructor for test on different environments
         private const val BASE_URL = "https://staging-pci-api.airwallex.com"
-
-        /**
-         * Initialize some global configurations, that need call on Application
-         */
-        fun initialize(configuration: AirwallexConfiguration) {
-            AirwallexPlugins.initialize(configuration)
-        }
     }
 }

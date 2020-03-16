@@ -10,8 +10,8 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
-import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.android.synthetic.main.activity_payment_methods.*
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Allow the customer to select from their attached payment methods, or add a new one via [AddPaymentMethodActivity].
@@ -33,6 +33,10 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     override val requestThreeDSecure: Boolean by lazy {
         args.requestThreeDSecure
     }
+
+    // Only wechat will confirm in this page
+    override val cvc: String?
+        get() = null
 
     override val airwallex: Airwallex by lazy {
         Airwallex(

@@ -13,14 +13,6 @@ internal object AirwallexPlugins {
 
     private const val HTTP_READ_TIMEOUT_SECOND = 30L
 
-    private lateinit var configuration: AirwallexConfiguration
-
-    internal fun initialize(configuration: AirwallexConfiguration) {
-        this.configuration = configuration
-    }
-
-    internal val enableLogging by lazy { configuration.enableLogging }
-
     internal val restClient by lazy {
         val clientBuilder = OkHttpClient.Builder()
         clientBuilder.interceptors().add(0, object : Interceptor {

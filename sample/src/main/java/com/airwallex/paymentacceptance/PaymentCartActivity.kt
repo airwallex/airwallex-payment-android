@@ -191,7 +191,7 @@ class PaymentCartActivity : AppCompatActivity() {
                 }
 
                 override fun onFailed(error: AirwallexError) {
-                    showPaymentError(error)
+                    showPaymentError(error.message)
                 }
             })
     }
@@ -307,14 +307,14 @@ class PaymentCartActivity : AppCompatActivity() {
                     if (response.status == "SUCCEEDED") {
                         showPaymentSuccess()
                     } else {
-                        showPaymentError()
+                        showPaymentError(response.status)
                     }
                 }
 
                 override fun onFailed(exception: AirwallexException) {
                     Log.e(TAG, "Retrieve PaymentIntent failed", exception)
                     loading.visibility = View.GONE
-                    showPaymentError(exception.error)
+                    showPaymentError(exception.error?.message)
                 }
             })
     }
@@ -326,10 +326,10 @@ class PaymentCartActivity : AppCompatActivity() {
         )
     }
 
-    fun showPaymentError(error: AirwallexError? = null) {
+    fun showPaymentError(error: String? = null) {
         showAlert(
             getString(R.string.payment_failed),
-            error?.message ?: getString(R.string.payment_failed_message)
+            error ?: getString(R.string.payment_failed_message)
         )
     }
 

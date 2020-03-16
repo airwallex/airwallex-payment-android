@@ -42,6 +42,8 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     override val requestThreeDSecure: Boolean by lazy {
         args.requestThreeDSecure
     }
+    override val cvc: String?
+        get() = paymentMethodItemView.cvc
 
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_back
