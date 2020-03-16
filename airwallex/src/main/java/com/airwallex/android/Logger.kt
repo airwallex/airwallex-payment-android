@@ -4,6 +4,8 @@ import android.util.Log
 
 internal object Logger {
 
+    private var loggingEnabled: Boolean = BuildConfig.DEBUG
+
     internal enum class Level {
         VERBOSE, DEBUG, INFO, WARNING, ERROR
     }
@@ -26,15 +28,9 @@ internal object Logger {
         }
     }
 
-    @JvmStatic
-    internal var loggingEnabled: Boolean = AirwallexPlugins.enableLogging
-
-    @JvmStatic
-    internal var logWorker: LogWorker =
+    private var logWorker: LogWorker =
         DEFAULT_LOG_WORKER
 
-    @JvmStatic
-    @JvmOverloads
     internal fun error(message: String?, throwable: Throwable? = null) =
         error("ERROR", message, throwable)
 
@@ -44,8 +40,6 @@ internal object Logger {
         )
     }
 
-    @JvmStatic
-    @JvmOverloads
     internal fun warn(tag: String, message: String?, throwable: Throwable? = null) {
         if (loggingEnabled) logWorker.log(
             Level.WARNING, tag, message, throwable
@@ -55,8 +49,6 @@ internal object Logger {
     internal fun warn(message: String?, throwable: Throwable? = null) =
         warn("WARN", message, throwable)
 
-    @JvmStatic
-    @JvmOverloads
     internal fun info(message: String?, throwable: Throwable? = null) =
         info("INFO", message, throwable)
 
@@ -66,8 +58,6 @@ internal object Logger {
         )
     }
 
-    @JvmStatic
-    @JvmOverloads
     internal fun debug(message: String?, throwable: Throwable? = null) =
         debug("DEBUG", message, throwable)
 
@@ -77,8 +67,6 @@ internal object Logger {
         )
     }
 
-    @JvmStatic
-    @JvmOverloads
     internal fun verbose(message: String?, throwable: Throwable? = null) =
         verbose("VERBOSE", message, throwable)
 
