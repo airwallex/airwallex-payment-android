@@ -17,7 +17,6 @@ internal object PaymentMethodFixtures {
 	            "name": "Adam"
 	        },
             "billing": {
-                "date_of_birth": "2011-10-12",
                 "first_name": "Jim",
                 "last_name": "He",
                 "phone_number": "1367875786",

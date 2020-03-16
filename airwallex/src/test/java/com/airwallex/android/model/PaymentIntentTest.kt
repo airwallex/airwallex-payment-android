@@ -48,7 +48,6 @@ class PaymentIntentTest {
                             .setFirstName("John")
                             .setLastName("Doe")
                             .setPhone("13800000000")
-                            .setDateForBirth("2011-10-23")
                             .setEmail("john.doe@airwallex.com")
                             .setAddress(
                                 Address.Builder()

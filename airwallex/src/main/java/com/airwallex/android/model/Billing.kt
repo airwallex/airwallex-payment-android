@@ -16,9 +16,6 @@ data class Billing internal constructor(
     @SerializedName("phone_number")
     val phone: String? = null,
 
-    @SerializedName("date_of_birth")
-    val dateOfBirth: String? = null,
-
     @SerializedName("email")
     val email: String? = null,
 
@@ -30,7 +27,6 @@ data class Billing internal constructor(
         private var firstName: String? = null
         private var lastName: String? = null
         private var phone: String? = null
-        private var dateOfBirth: String? = null
         private var email: String? = null
         private var address: Address? = null
 
@@ -46,10 +42,6 @@ data class Billing internal constructor(
             this.phone = phone
         }
 
-        fun setDateForBirth(dateOfBirth: String?): Builder = apply {
-            this.dateOfBirth = dateOfBirth
-        }
-
         fun setEmail(email: String?): Builder = apply {
             this.email = email
         }
@@ -63,7 +55,6 @@ data class Billing internal constructor(
                 firstName = firstName,
                 lastName = lastName,
                 phone = phone,
-                dateOfBirth = dateOfBirth,
                 email = email,
                 address = address
             )

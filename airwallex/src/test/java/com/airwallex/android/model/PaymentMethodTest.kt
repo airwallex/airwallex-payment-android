@@ -29,7 +29,6 @@ class PaymentMethodTest {
                     .setFirstName("Jim")
                     .setLastName("He")
                     .setPhone("1367875786")
-                    .setDateForBirth("2011-10-12")
                     .setAddress(
                         Address.Builder()
                             .setCountryCode("CN")
