@@ -163,7 +163,7 @@ class PaymentCartActivity : AppCompatActivity() {
         paymentSession = AirwallexStarter(
             this@PaymentCartActivity
         )
-        paymentSession?.presentPaymentFlow(paymentIntent, token)
+        paymentSession?.presentPaymentFlow(paymentIntent, token, true)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

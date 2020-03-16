@@ -20,7 +20,8 @@ internal class PaymentCheckoutActivityStarter constructor(
         val paymentIntent: PaymentIntent,
         val token: String,
         val paymentMethod: PaymentMethod,
-        val cvc: String?
+        val cvc: String?,
+        val requestThreeDSecure: Boolean = false
     ) : ActivityStarter.Args {
 
         class Builder : ObjectBuilder<Args> {
@@ -29,8 +30,9 @@ internal class PaymentCheckoutActivityStarter constructor(
             private lateinit var token: String
             private lateinit var paymentMethod: PaymentMethod
             private var cvc: String? = null
+            private var requestThreeDSecure: Boolean = false
 
-            internal fun setCvc(cvc: String?): Builder = apply {
+            fun setCvc(cvc: String?): Builder = apply {
                 this.cvc = cvc
             }
 
@@ -42,8 +44,12 @@ internal class PaymentCheckoutActivityStarter constructor(
                 this.token = token
             }
 
-            internal fun setPaymentMethod(paymentMethod: PaymentMethod): Builder = apply {
+            fun setPaymentMethod(paymentMethod: PaymentMethod): Builder = apply {
                 this.paymentMethod = paymentMethod
+            }
+
+            fun setRequestThreeDSecure(requestThreeDSecure: Boolean): Builder = apply {
+                this.requestThreeDSecure = requestThreeDSecure
             }
 
             override fun build(): Args {
@@ -51,7 +57,8 @@ internal class PaymentCheckoutActivityStarter constructor(
                     paymentIntent = paymentIntent,
                     token = token,
                     paymentMethod = paymentMethod,
-                    cvc = cvc
+                    cvc = cvc,
+                    requestThreeDSecure = requestThreeDSecure
                 )
             }
         }

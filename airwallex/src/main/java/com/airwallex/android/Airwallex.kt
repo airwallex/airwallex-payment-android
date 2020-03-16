@@ -69,6 +69,7 @@ class Airwallex internal constructor(
         customerId: String,
         paymentMethod: PaymentMethod,
         cvc: String,
+        requestThreeDSecure: Boolean = false,
         listener: PaymentListener<PaymentIntent>
     ) {
         if (cvc.length != VALID_CVC_LENGTH) {
@@ -93,7 +94,7 @@ class Airwallex internal constructor(
                     override fun onSuccess(response: PaymentIntent) {
                         val jwt = response.nextAction?.data?.jwt
 
-                        if (jwt != null) {
+                        if (requestThreeDSecure && jwt != null) {
                             // 3DS Flow
                             performThreeDsFlow(
                                 activity = activity,
