@@ -8,8 +8,6 @@ Add the dependency in your `build.gradle`.
 ```groovy
 dependencies {
     implementation 'com.airwallex:airwallex-core:0.0.1'
-    
-    // If you want to support 3ds, you must set requestThreeDSecure to true and add the following dependencies
     implementation 'com.airwallex:airwallex-threeds:0.0.1'
 }
 ```

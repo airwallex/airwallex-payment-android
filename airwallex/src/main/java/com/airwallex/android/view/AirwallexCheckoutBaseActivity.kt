@@ -10,8 +10,6 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
 
     abstract val paymentIntent: PaymentIntent
 
-    abstract val requestThreeDSecure: Boolean
-
     abstract val cvc: String?
 
     override fun onActionSave() {
@@ -29,7 +27,6 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
             customerId = requireNotNull(paymentIntent.customerId),
             paymentMethod = paymentMethod,
             cvc = cvc,
-            requestThreeDSecure = requestThreeDSecure,
             listener = callback
         )
     }
