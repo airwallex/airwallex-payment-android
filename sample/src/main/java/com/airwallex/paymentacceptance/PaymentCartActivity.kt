@@ -52,7 +52,7 @@ class PaymentCartActivity : AppCompatActivity() {
         }
 
     private lateinit var token: String
-    private var paymentSession: AirwallexStarter? = null
+    private var airwallexStarter: AirwallexStarter? = null
 
     private var airwallex: Airwallex? = null
 
@@ -160,17 +160,17 @@ class PaymentCartActivity : AppCompatActivity() {
         loading.visibility = View.GONE
         airwallex =
             Airwallex(token = token, clientSecret = requireNotNull(paymentIntent.clientSecret))
-        paymentSession = AirwallexStarter(
+        airwallexStarter = AirwallexStarter(
             this@PaymentCartActivity
         )
-        paymentSession?.presentPaymentFlow(paymentIntent, token)
+        airwallexStarter?.presentPaymentFlow(paymentIntent, token)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         cartFragment.onActivityResult(requestCode, resultCode, data)
 
-        paymentSession?.handlePaymentResult(requestCode, resultCode, data,
+        airwallexStarter?.handlePaymentResult(requestCode, resultCode, data,
             object :
                 AirwallexStarter.PaymentIntentResult {
                 override fun onCancelled() {
