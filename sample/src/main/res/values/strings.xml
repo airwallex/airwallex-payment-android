@@ -4,7 +4,6 @@
     <string name="subtotal">Subtotal</string>
     <string name="remove">Remove</string>
     <string name="my_cart">My cart</string>
-    <string name="payment">Payment</string>
     <string name="enter_shipping">Enter shipping information</string>
 
     <string name="payment_successful">Payment successful</string>

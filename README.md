@@ -8,7 +8,6 @@ Add the dependency in your `build.gradle`.
 ```groovy
 dependencies {
     implementation 'com.airwallex:airwallex-core:0.0.1'
-    implementation 'com.airwallex:airwallex-threeds:0.0.1'
 }
 ```
 You may also need to add the following to your project/build.gradle file.

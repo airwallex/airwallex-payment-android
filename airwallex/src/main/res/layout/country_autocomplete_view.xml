@@ -12,7 +12,6 @@
         android:layout_height="53dp">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tlCountry"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
