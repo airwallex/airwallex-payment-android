@@ -23,7 +23,6 @@ internal class AirwallexPaymentController(
         executeApiOperation(
             ApiOperationType.CONFIRM_PAYMENT_INTENT,
             options,
-            null,
             paymentIntentParams,
             listener,
             PaymentIntent::class.java
@@ -42,60 +41,20 @@ internal class AirwallexPaymentController(
             ApiOperationType.RETRIEVE_PAYMENT_INTENT,
             options,
             null,
-            null,
             listener,
             PaymentIntent::class.java
-        )
-    }
-
-    /**
-     * Create the Airwallex PaymentMethod
-     */
-    override fun createPaymentMethod(
-        options: AirwallexApiRepository.Options,
-        paymentMethodParams: PaymentMethodParams,
-        listener: Airwallex.PaymentListener<PaymentMethod>
-    ) {
-        Logger.debug("Start create PaymentMethod")
-        executeApiOperation(
-            ApiOperationType.CREATE_PAYMENT_METHOD,
-            options,
-            paymentMethodParams,
-            null,
-            listener,
-            PaymentMethod::class.java
-        )
-    }
-
-    /**
-     * Get all of customer's PaymentMethods
-     */
-    override fun getPaymentMethods(
-        options: AirwallexApiRepository.Options,
-        listener: Airwallex.PaymentListener<PaymentMethodResponse>
-    ) {
-        Logger.debug("Get all customer's PaymentMethods")
-        executeApiOperation(
-            ApiOperationType.GET_PAYMENT_METHODS,
-            options,
-            null,
-            null,
-            listener,
-            PaymentMethodResponse::class.java
         )
     }
 
     private fun <T> executeApiOperation(
         apiOperationType: ApiOperationType,
         options: AirwallexApiRepository.Options,
-        paymentMethodParams: PaymentMethodParams?,
         paymentIntentParams: PaymentIntentParams?,
         callback: Airwallex.PaymentListener<T>,
         classOfT: Class<T>
     ) {
         AirwallexApiOperation(
             options,
-            paymentMethodParams,
             paymentIntentParams,
             repository,
             workScope,
@@ -134,7 +93,6 @@ internal class AirwallexPaymentController(
 
     private class AirwallexApiOperation(
         private val options: AirwallexApiRepository.Options,
-        private val paymentMethodParams: PaymentMethodParams?,
         private val paymentIntentParams: PaymentIntentParams?,
         private val repository: ApiRepository,
         workScope: CoroutineScope,
@@ -144,15 +102,6 @@ internal class AirwallexPaymentController(
 
         override suspend fun getResult(): AirwallexHttpResponse? {
             return when (apiOperationType) {
-                ApiOperationType.CREATE_PAYMENT_METHOD -> {
-                    repository.createPaymentMethod(
-                        options,
-                        requireNotNull(paymentMethodParams)
-                    )
-                }
-                ApiOperationType.GET_PAYMENT_METHODS -> {
-                    repository.getPaymentMethods(options)
-                }
                 ApiOperationType.CONFIRM_PAYMENT_INTENT -> {
                     repository.confirmPaymentIntent(
                         options,
@@ -167,8 +116,6 @@ internal class AirwallexPaymentController(
     }
 
     enum class ApiOperationType {
-        CREATE_PAYMENT_METHOD,
-        GET_PAYMENT_METHODS,
         CONFIRM_PAYMENT_INTENT,
         RETRIEVE_PAYMENT_INTENT
     }

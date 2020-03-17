@@ -61,7 +61,6 @@ android {
 
 dependencies {
     implementation project(':airwallex')
-    implementation project(':airwallex-threeds')
     implementation 'com.google.android.material:material:1.1.0'
 
     // RX
