@@ -158,9 +158,11 @@ class PaymentCartActivity : AppCompatActivity() {
             paymentIntent.customerId,
             object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
-                    val nextAction = paymentIntent.nextAction
+                    val paymentIntentId = response.id
+                    val nextAction = response.nextAction
                     if (nextAction?.data == null
                     ) {
+                        loading.visibility = View.GONE
                         Toast.makeText(
                             this@PaymentCartActivity,
                             "Server error, NextAction is null...",
@@ -192,12 +194,12 @@ class PaymentCartActivity : AppCompatActivity() {
                             }
 
                             override fun onResponse(call: Call, response: Response) {
-                                retrievePaymentIntent(airwallex, paymentIntent.id)
+                                retrievePaymentIntent(airwallex, paymentIntentId)
                             }
                         })
                     } else {
                         Log.d(TAG, "Confirm PaymentIntent success, launch REAL Wechat pay.")
-                        val data = paymentIntent.nextAction?.data
+                        val data = response.nextAction?.data
                         if (data == null) {
                             Toast.makeText(
                                 this@PaymentCartActivity,
@@ -213,7 +215,7 @@ class PaymentCartActivity : AppCompatActivity() {
                             data = data,
                             listener = object : WXPay.WechatPaymentListener {
                                 override fun onSuccess() {
-                                    retrievePaymentIntent(airwallex, paymentIntent.id)
+                                    retrievePaymentIntent(airwallex, response.id)
                                 }
 
                                 override fun onFailure(errCode: String?, errMessage: String?) {
@@ -240,7 +242,8 @@ class PaymentCartActivity : AppCompatActivity() {
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-
+                    loading.visibility = View.GONE
+                    showPaymentError(exception.error?.message)
                 }
             })
 
@@ -250,7 +253,6 @@ class PaymentCartActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         cartFragment.onActivityResult(requestCode, resultCode, data)
     }
-
 
     private fun retrievePaymentIntent(airwallex: Airwallex, paymentIntentId: String) {
         Log.d(
@@ -308,13 +310,6 @@ class PaymentCartActivity : AppCompatActivity() {
                 .create()
                 .show()
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     companion object {
