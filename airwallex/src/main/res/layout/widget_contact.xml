@@ -39,5 +39,5 @@
         android:layout_marginTop="20dp"
         android:imeOptions="actionNext"
         android:inputType="text"
-        app:hint="@string/contact_phone_number_hint" />
+        app:hint="@string/shipping_number_hint" />
 </LinearLayout>
