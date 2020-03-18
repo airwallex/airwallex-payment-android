@@ -2,6 +2,9 @@ package com.airwallex.android.exception
 
 import java.io.IOException
 
+/**
+ * An exception that represents a failure to connect to Airwallex's API.
+ */
 class APIConnectionException(
     message: String? = null,
     e: Throwable? = null
