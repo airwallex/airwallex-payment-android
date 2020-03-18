@@ -2,6 +2,9 @@ package com.airwallex.android.view
 
 import java.util.*
 
+/**
+ * Utility class for functions to do with countries.
+ */
 internal object CountryUtils {
 
     private val legalCountries by lazy {

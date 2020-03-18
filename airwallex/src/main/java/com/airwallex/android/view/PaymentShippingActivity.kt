@@ -23,11 +23,6 @@ internal class PaymentShippingActivity : AirwallexActivity() {
         return super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.airwallex_menu_save, menu)
-        return true
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

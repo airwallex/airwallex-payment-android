@@ -2,6 +2,7 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
@@ -10,6 +11,9 @@ import com.airwallex.android.Logger
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.activity_airwallex.*
 
+/**
+ * Base Airwallex Activity, provide same toolbar, save button...
+ */
 internal abstract class AirwallexActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +46,11 @@ internal abstract class AirwallexActivity : AppCompatActivity() {
     override fun onBackPressed() {
         setResult(Activity.RESULT_CANCELED)
         super.onBackPressed()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.airwallex_menu_save, menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

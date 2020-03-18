@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 
 internal abstract class ApiOperation<Result>(
     private val workScope: CoroutineScope = CoroutineScope(IO),
-    private val callback: ApiResultCallback<Result>
+    private val callback: ApiResponseCallback<Result>
 ) {
     internal abstract suspend fun getResult(): Result?
 

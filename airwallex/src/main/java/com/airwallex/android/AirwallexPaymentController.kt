@@ -44,7 +44,7 @@ internal class AirwallexPaymentController(
             options,
             repository,
             workScope,
-            object : ApiResultCallback<AirwallexHttpResponse> {
+            object : ApiResponseCallback<AirwallexHttpResponse> {
                 override fun onSuccess(result: AirwallexHttpResponse) {
                     if (result.isSuccessful && result.body != null) {
                         val response: T = AirwallexPlugins.gson.fromJson(
@@ -81,7 +81,7 @@ internal class AirwallexPaymentController(
         private val options: AirwallexApiRepository.Options,
         private val repository: ApiRepository,
         workScope: CoroutineScope,
-        callback: ApiResultCallback<AirwallexHttpResponse>,
+        callback: ApiResponseCallback<AirwallexHttpResponse>,
         private val apiOperationType: ApiOperationType
     ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
 
