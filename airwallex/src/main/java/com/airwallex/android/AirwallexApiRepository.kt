@@ -97,6 +97,5 @@ internal class AirwallexApiRepository : ApiRepository {
         private fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
             return "$baseUrl/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
         }
-
     }
 }
