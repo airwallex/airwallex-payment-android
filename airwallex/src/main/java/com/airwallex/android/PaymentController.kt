@@ -9,7 +9,6 @@ internal interface PaymentController {
      */
     fun confirmPaymentIntent(
         options: AirwallexApiRepository.Options,
-        paymentIntentParams: PaymentIntentConfirmRequest,
         listener: Airwallex.PaymentListener<PaymentIntent>
     )
 

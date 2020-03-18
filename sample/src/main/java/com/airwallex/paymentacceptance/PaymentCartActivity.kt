@@ -12,18 +12,18 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.PurchaseOrder
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentStatus
+import com.airwallex.android.model.PurchaseOrder
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.io.IOException
+import java.util.*
 import kotlinx.android.synthetic.main.activity_payment_cart.*
 import okhttp3.*
 import org.json.JSONObject
-import java.io.IOException
-import java.util.*
 
 class PaymentCartActivity : AppCompatActivity() {
 
@@ -229,7 +229,6 @@ class PaymentCartActivity : AppCompatActivity() {
                 }
             })
     }
-
 
     private fun setLoadingProgress(loading: Boolean) {
         loadingView.visibility = if (loading) {

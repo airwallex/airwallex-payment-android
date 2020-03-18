@@ -8,15 +8,15 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-internal abstract class ApiOperation<ResultType>(
+internal abstract class ApiOperation<Result>(
     private val workScope: CoroutineScope = CoroutineScope(IO),
-    private val callback: ApiResultCallback<ResultType>
+    private val callback: ApiResultCallback<Result>
 ) {
-    internal abstract suspend fun getResult(): ResultType?
+    internal abstract suspend fun getResult(): Result?
 
     internal fun execute() {
         workScope.launch {
-            val resultWrapper: ResultWrapper<ResultType> = try {
+            val resultWrapper: ResultWrapper<Result> = try {
                 ResultWrapper.create(getResult())
             } catch (e: IOException) {
                 ResultWrapper.create(APIConnectionException.create(e))
@@ -28,7 +28,7 @@ internal abstract class ApiOperation<ResultType>(
         }
     }
 
-    private fun dispatchResult(resultWrapper: ResultWrapper<ResultType>) {
+    private fun dispatchResult(resultWrapper: ResultWrapper<Result>) {
         when {
             resultWrapper.result != null -> callback.onSuccess(resultWrapper.result)
             resultWrapper.exception != null -> callback.onError(resultWrapper.exception)
