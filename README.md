@@ -20,7 +20,7 @@ buildscript {
 ```
 
 ## Documentation
-Read [integration guides](https://github.com/Affirm/affirm-merchant-sdk-android/blob/wechat/GUIDE.md) for more information.
+Read [integration guides](https://github.com/airwallex/airwallex-payment-android/blob/wechat/GUIDE.md) for more information.
 
 ## Feedback
 The Airwallex Android SDK is in active development, we welcome your feedback!
