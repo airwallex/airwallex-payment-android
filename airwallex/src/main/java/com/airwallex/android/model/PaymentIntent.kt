@@ -2,56 +2,88 @@ package com.airwallex.android.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import java.util.*
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 @Parcelize
 data class PaymentIntent internal constructor(
 
+    // Unique identifier for the payment intent
     @SerializedName("id")
     val id: String,
 
+    // Unique request ID specified by the merchant in the last operation
     @SerializedName("request_id")
     val requestId: String,
 
+    // Payment amount. This is the order amount you would like to charge your customer
     @SerializedName("amount")
     val amount: Float,
 
+    // Amount currency
     @SerializedName("currency")
     val currency: String,
 
+    // The order ID created in merchant's order system that corresponds to this payment intent
     @SerializedName("merchant_order_id")
     val merchantOrderId: String? = null,
 
     @SerializedName("order")
     val order: PaymentIntentOrder,
 
+    // The customer who is paying for this payment intent
     @SerializedName("customer_id")
     val customerId: String?,
 
+    // Descriptor that will be displayed to the customer
     @SerializedName("descriptor")
     val descriptor: String,
+
+    // A set of key-value pairs that you can attach to this customer
+    @SerializedName("metadata")
+    val metadata: Map<String, String>? = null,
 
     @SerializedName("status")
     val status: PaymentIntentStatus,
 
+    // Amount that captured from this payment intent
     @SerializedName("captured_amount")
     val capturedAmount: Float? = null,
 
+    // Time at which this payment intent was created
     @SerializedName("latest_payment_attempt")
     val latestPaymentAttempt: PaymentAttempt? = null,
 
     @SerializedName("available_payment_method_types")
     val availablePaymentMethodTypes: List<String>,
 
+    // Payment methods of the customer if customer ID is provided
     @SerializedName("customer_payment_methods")
     val customerPaymentMethods: List<PaymentMethod>? = null,
 
+    // Client secret for browser or app
     @SerializedName("client_secret")
     val clientSecret: String?,
 
     @SerializedName("next_action")
-    val nextAction: NextAction? = null
+    val nextAction: NextAction? = null,
+
+    // Time at which this payment intent was created
+    @SerializedName("created_at")
+    val createdAt: Date? = null,
+
+    // Last time at which this payment intent was updated or operated on
+    @SerializedName("updated_at")
+    val updatedAt: Date? = null,
+
+    // Last time at which this payment intent was cancelled. Only present when the payment intent was successfully cancelled, i.e. status is CANCELLED
+    @SerializedName("cancelled_at")
+    val cancelledAt: Date? = null,
+
+    // Reason for cancelling the payment intent. Only present when the payment intent was successfully cancelled, i.e. status is CANCELLED
+    @SerializedName("cancellation_reason")
+    val cancellationReason: String? = null
+
 ) : AirwallexModel, Parcelable {
 
     @Parcelize
