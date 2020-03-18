@@ -12,4 +12,5 @@
     <string name="payment_failed_message">There was an error while processing your payment. Please try again.</string>
 
     <string name="free">Free</string>
+    <string name="total">Total</string>
 </resources>
