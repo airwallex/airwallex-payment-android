@@ -33,7 +33,7 @@ data class PaymentMethod internal constructor(
     @SerializedName("billing")
     val billing: Billing?,
 
-    //A set of key-value pairs that you can attach to the payment method
+    // A set of key-value pairs that you can attach to the payment method
     @SerializedName("metadata")
     val metadata: @RawValue Map<String, Any>?,
 

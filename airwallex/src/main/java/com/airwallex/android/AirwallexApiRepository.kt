@@ -19,16 +19,15 @@ internal class AirwallexApiRepository : ApiRepository {
 
     @Parcelize
     internal data class PaymentIntentOptions internal constructor(
-        internal val paymentIntentId: String
+        internal val paymentIntentId: String,
+        internal val paymentIntentConfirmRequest: PaymentIntentConfirmRequest? = null
     ) : Parcelable
 
-    override fun confirmPaymentIntent(
-        options: Options,
-        paymentIntentParams: PaymentIntentConfirmRequest
-    ): AirwallexHttpResponse? {
+    override fun confirmPaymentIntent(options: Options): AirwallexHttpResponse? {
         val jsonParser = JsonParser()
         val paramsJson =
-            jsonParser.parse(AirwallexPlugins.gson.toJson(paymentIntentParams)).asJsonObject
+            jsonParser.parse(AirwallexPlugins.gson.toJson(requireNotNull(options.paymentIntentOptions?.paymentIntentConfirmRequest)))
+                .asJsonObject
 
         return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
