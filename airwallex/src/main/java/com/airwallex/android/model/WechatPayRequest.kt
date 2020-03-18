@@ -5,10 +5,10 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class PaymentMethodResponse internal constructor(
-    @SerializedName("has_more")
-    val hasMore: Boolean,
+data class WechatPayRequest constructor(
 
-    @SerializedName("items")
-    val items: List<PaymentMethod>
+    // The specific WeChat Pay flow to use. One of WechatPayFlowType
+    @SerializedName("flow")
+    val flow: WechatPayRequestFlow?
+
 ) : AirwallexModel, Parcelable

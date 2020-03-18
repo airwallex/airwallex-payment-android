@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-enum class PaymentMethodType(val type: String, val displayName: String) : Parcelable {
+enum class PaymentMethodType(val type: String) : Parcelable {
 
     @SerializedName("card")
-    CARD("card", "Card"),
+    CARD("card"),
 
     @SerializedName("wechatpay")
-    WECHAT("wechatpay", "Wechat pay")
+    WECHAT("wechatpay")
 }

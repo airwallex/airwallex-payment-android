@@ -3,7 +3,7 @@ package com.airwallex.android.model
 import com.airwallex.android.AirwallexPlugins
 
 internal object OrderFixtures {
-    val ORDER: Order = AirwallexPlugins.gson.fromJson(
+    val ORDER: PurchaseOrder = AirwallexPlugins.gson.fromJson(
         """
         {
             "products": [
@@ -43,6 +43,6 @@ internal object OrderFixtures {
             "type": "physical_goods"
         }
         """.trimIndent(),
-        Order::class.java
+        PurchaseOrder::class.java
     )
 }

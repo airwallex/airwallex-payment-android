@@ -1,7 +1,7 @@
 package com.airwallex.android
 
 import android.os.Parcelable
-import com.airwallex.android.model.PaymentIntentParams
+import com.airwallex.android.model.PaymentIntentConfirmRequest
 import com.google.gson.JsonParser
 import kotlinx.android.parcel.Parcelize
 import java.util.*
@@ -24,7 +24,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
     override fun confirmPaymentIntent(
         options: Options,
-        paymentIntentParams: PaymentIntentParams
+        paymentIntentParams: PaymentIntentConfirmRequest
     ): AirwallexHttpResponse? {
         val jsonParser = JsonParser()
         val paramsJson =

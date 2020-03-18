@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.airwallex.android.model.Address
-import com.airwallex.android.model.Product
+import com.airwallex.android.model.PhysicalProduct
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.cart_item.view.*
 import kotlinx.android.synthetic.main.fragment_cart.*
@@ -33,7 +33,7 @@ class PaymentCartFragment : Fragment() {
         .build()
 
     val products = mutableListOf(
-        Product.Builder()
+        PhysicalProduct.Builder()
             .setCode("123")
             .setName("AirPods Pro")
             .setDesc("Buy AirPods Pro, per month with trade-in")
@@ -43,7 +43,7 @@ class PaymentCartFragment : Fragment() {
             .setUrl("www.aircross.com")
             .setQuantity(1)
             .build(),
-        Product.Builder()
+        PhysicalProduct.Builder()
             .setCode("123")
             .setName("HomePod")
             .setDesc("Buy HomePod, per month with trade-in")
@@ -57,7 +57,7 @@ class PaymentCartFragment : Fragment() {
 
     @SuppressLint("ViewConstructor")
     class CartItem(
-        order: Product,
+        order: PhysicalProduct,
         context: Context?,
         private val removeHandler: () -> Unit
     ) :
