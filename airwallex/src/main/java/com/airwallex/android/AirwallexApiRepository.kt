@@ -31,7 +31,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
         return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                confirmPaymentIntentUrl(options),
+                confirmPaymentIntentUrl(options.baseUrl, requireNotNull(options.paymentIntentOptions?.paymentIntentId)),
                 AirwallexHttpRequest.Method.POST
             )
                 .setBody(
@@ -48,7 +48,7 @@ internal class AirwallexApiRepository : ApiRepository {
     override fun retrievePaymentIntent(options: Options): AirwallexHttpResponse? {
         return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                retrievePaymentIntentUrl(options),
+                retrievePaymentIntentUrl(options.baseUrl, requireNotNull(options.paymentIntentOptions?.paymentIntentId)),
                 AirwallexHttpRequest.Method.GET
             )
                 .addTokenHeader(options.token)
@@ -69,33 +69,34 @@ internal class AirwallexApiRepository : ApiRepository {
         return addHeader("client-secret", clientSecret)
     }
 
-    /**
-     *  `/api/v1/pa/payment_intents/{id}`
-     */
-    private fun retrievePaymentIntentUrl(options: Options): String {
-        return getApiUrl(
-            options.baseUrl,
-            "payment_intents/%s",
-            requireNotNull(options.paymentIntentOptions?.paymentIntentId)
-        )
-    }
-
-    /**
-     *  `/api/v1/pa/payment_intents/{id}/confirm`
-     */
-    private fun confirmPaymentIntentUrl(options: Options): String {
-        return getApiUrl(
-            options.baseUrl,
-            "payment_intents/%s/confirm",
-            requireNotNull(options.paymentIntentOptions?.paymentIntentId)
-        )
-    }
-
-    private fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
-        return "$baseUrl/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
-    }
-
     companion object {
         private const val CONTENT_TYPE = "application/json; charset=utf-8"
+
+        /**
+         *  `/api/v1/pa/payment_intents/{id}`
+         */
+        internal fun retrievePaymentIntentUrl(baseUrl: String, paymentIntentId: String): String {
+            return getApiUrl(
+                baseUrl,
+                "payment_intents/%s",
+                paymentIntentId
+            )
+        }
+
+        /**
+         *  `/api/v1/pa/payment_intents/{id}/confirm`
+         */
+        internal fun confirmPaymentIntentUrl(baseUrl: String, paymentIntentId: String): String {
+            return getApiUrl(
+                baseUrl,
+                "payment_intents/%s/confirm",
+                paymentIntentId
+            )
+        }
+
+        private fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
+            return "$baseUrl/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
+        }
+
     }
 }
