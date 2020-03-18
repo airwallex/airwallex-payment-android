@@ -12,7 +12,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.Order
+import com.airwallex.android.model.PurchaseOrder
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentStatus
 import io.reactivex.Observable
@@ -125,7 +125,7 @@ class PaymentCartActivity : AppCompatActivity() {
                             },
                             "currency" to "USD",
                             "merchant_order_id" to UUID.randomUUID().toString(),
-                            "order" to Order.Builder()
+                            "order" to PurchaseOrder.Builder()
                                 .setProducts(products)
                                 .setShipping(shipping)
                                 .setType("physical_goods")

@@ -5,33 +5,43 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Product internal constructor(
-    @SerializedName("code")
-    val code: String?,
+data class PhysicalProduct internal constructor(
 
-    @SerializedName("name")
-    val name: String?,
-
-    @SerializedName("desc")
-    val desc: String?,
-
-    @SerializedName("sku")
-    val sku: String?,
-
+    // Type of product, such as electronic, handling, physical, service, or shipping
     @SerializedName("type")
     val type: String?,
 
+    // Merchant’s product identifier code
+    @SerializedName("code")
+    val code: String?,
+
+    // Name of the product
+    @SerializedName("name")
+    val name: String?,
+
+    // Product stock keeping unit
+    @SerializedName("sku")
+    val sku: String?,
+
+    // Product quantity
+    @SerializedName("quantity")
+    val quantity: Int?,
+
+    // Product unit price
     @SerializedName("unit_price")
     val unitPrice: Double?,
 
-    @SerializedName("url")
-    val url: String?,
+    // Product description
+    @SerializedName("desc")
+    val desc: String?,
 
-    @SerializedName("quantity")
-    val quantity: Int?
+    // Product url
+    @SerializedName("url")
+    val url: String?
+
 ) : AirwallexModel, Parcelable {
 
-    class Builder : ObjectBuilder<Product> {
+    class Builder : ObjectBuilder<PhysicalProduct> {
         private var code: String? = null
         private var name: String? = null
         private var desc: String? = null
@@ -73,8 +83,8 @@ data class Product internal constructor(
             this.quantity = quantity
         }
 
-        override fun build(): Product {
-            return Product(
+        override fun build(): PhysicalProduct {
+            return PhysicalProduct(
                 code = code,
                 name = name,
                 desc = desc,

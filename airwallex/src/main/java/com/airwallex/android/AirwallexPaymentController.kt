@@ -16,7 +16,7 @@ internal class AirwallexPaymentController(
      */
     override fun confirmPaymentIntent(
         options: AirwallexApiRepository.Options,
-        paymentIntentParams: PaymentIntentParams,
+        paymentIntentParams: PaymentIntentConfirmRequest,
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         Logger.debug("Start confirm PaymentIntent")
@@ -49,7 +49,7 @@ internal class AirwallexPaymentController(
     private fun <T> executeApiOperation(
         apiOperationType: ApiOperationType,
         options: AirwallexApiRepository.Options,
-        paymentIntentParams: PaymentIntentParams?,
+        paymentIntentParams: PaymentIntentConfirmRequest?,
         callback: Airwallex.PaymentListener<T>,
         classOfT: Class<T>
     ) {
@@ -93,7 +93,7 @@ internal class AirwallexPaymentController(
 
     private class AirwallexApiOperation(
         private val options: AirwallexApiRepository.Options,
-        private val paymentIntentParams: PaymentIntentParams?,
+        private val paymentIntentParams: PaymentIntentConfirmRequest?,
         private val repository: ApiRepository,
         workScope: CoroutineScope,
         callback: ApiResultCallback<AirwallexHttpResponse>,

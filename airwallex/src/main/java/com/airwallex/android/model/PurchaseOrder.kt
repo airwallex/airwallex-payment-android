@@ -5,24 +5,26 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Order internal constructor(
+data class PurchaseOrder internal constructor(
 
-    // Industry category of the order
+    // Product list
     @SerializedName("products")
-    val products: List<Product>? = null,
+    val products: List<PhysicalProduct>? = null,
 
+    // shipping address
     @SerializedName("shipping")
     val shipping: Shipping? = null,
 
+    // Industry category of the order
     @SerializedName("type")
     val type: String? = null
 ) : AirwallexModel, Parcelable {
-    class Builder : ObjectBuilder<Order> {
-        private var products: List<Product>? = null
+    class Builder : ObjectBuilder<PurchaseOrder> {
+        private var products: List<PhysicalProduct>? = null
         private var shipping: Shipping? = null
         private var type: String? = null
 
-        fun setProducts(products: List<Product>?): Builder = apply {
+        fun setProducts(products: List<PhysicalProduct>?): Builder = apply {
             this.products = products
         }
 
@@ -34,8 +36,8 @@ data class Order internal constructor(
             this.type = type
         }
 
-        override fun build(): Order {
-            return Order(
+        override fun build(): PurchaseOrder {
+            return PurchaseOrder(
                 products = products,
                 shipping = shipping,
                 type = type

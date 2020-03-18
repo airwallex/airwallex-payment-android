@@ -5,11 +5,13 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class PaymentIntentParams internal constructor(
+data class PaymentIntentConfirmRequest internal constructor(
 
+    // Unique request ID specified by the merchant
     @SerializedName("request_id")
     val requestId: String? = null,
 
+    // Customer who intends to pay for the payment intent
     @SerializedName("customer_id")
     val customerId: String? = null,
 
@@ -27,7 +29,7 @@ data class PaymentIntentParams internal constructor(
 
 ) : AirwallexModel, Parcelable {
 
-    class Builder : ObjectBuilder<PaymentIntentParams> {
+    class Builder : ObjectBuilder<PaymentIntentConfirmRequest> {
         private var requestId: String? = null
         private var customerId: String? = null
         private var paymentMethod: PaymentMethod? = null
@@ -61,8 +63,8 @@ data class PaymentIntentParams internal constructor(
                 this.paymentMethodOptions = paymentMethodOptions
             }
 
-        override fun build(): PaymentIntentParams {
-            return PaymentIntentParams(
+        override fun build(): PaymentIntentConfirmRequest {
+            return PaymentIntentConfirmRequest(
                 requestId = requestId,
                 paymentMethod = paymentMethod,
                 device = device,

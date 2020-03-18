@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-enum class WechatPayFlowType : Parcelable {
+enum class WechatPayRequestFlow : Parcelable {
 
     @SerializedName("inapp")
     INAPP

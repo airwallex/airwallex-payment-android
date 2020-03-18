@@ -3,6 +3,7 @@ package com.airwallex.android.model
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
+import java.math.BigDecimal
 import java.util.*
 
 @Parcelize
@@ -18,7 +19,7 @@ data class PaymentIntent internal constructor(
 
     // Payment amount. This is the order amount you would like to charge your customer
     @SerializedName("amount")
-    val amount: Float,
+    val amount: BigDecimal,
 
     // Amount currency
     @SerializedName("currency")
@@ -93,7 +94,7 @@ data class PaymentIntent internal constructor(
         val type: String?,
 
         @SerializedName("products")
-        val products: List<Product>? = null,
+        val products: List<PhysicalProduct>? = null,
 
         @SerializedName("shipping")
         val shipping: Shipping? = null

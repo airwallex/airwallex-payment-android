@@ -3,7 +3,7 @@ package com.airwallex.android.model
 import com.airwallex.android.AirwallexPlugins
 
 internal object ProductFixtures {
-    val PRODUCT: Product = AirwallexPlugins.gson.fromJson(
+    val PRODUCT: PhysicalProduct = AirwallexPlugins.gson.fromJson(
         """
         {
             "code": "123",
@@ -16,6 +16,6 @@ internal object ProductFixtures {
             "quantity": 1
         }
         """.trimIndent(),
-        Product::class.java
+        PhysicalProduct::class.java
     )
 }
