@@ -6,6 +6,8 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Order internal constructor(
+
+    // Industry category of the order
     @SerializedName("products")
     val products: List<Product>? = null,
 

@@ -7,17 +7,25 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class Billing internal constructor(
 
+    // First name of the customer
     @SerializedName("first_name")
     val firstName: String? = null,
 
+    // Last name of the customer
     @SerializedName("last_name")
     val lastName: String? = null,
 
+    // Phone number of the customer
     @SerializedName("phone_number")
     val phone: String? = null,
 
+    // Email address of the customer
     @SerializedName("email")
     val email: String? = null,
+
+    // Date of birth of the customer in the format: YYYY-MM-DD
+    @SerializedName("date_of_birth")
+    val dateOfBirth: String? = null,
 
     @SerializedName("address")
     val address: Address? = null
@@ -28,6 +36,7 @@ data class Billing internal constructor(
         private var lastName: String? = null
         private var phone: String? = null
         private var email: String? = null
+        private var dateOfBirth: String? = null
         private var address: Address? = null
 
         fun setFirstName(firstName: String?): Builder = apply {
@@ -46,6 +55,10 @@ data class Billing internal constructor(
             this.email = email
         }
 
+        fun setDateOfBirth(dateOfBirth: String?): Builder = apply {
+            this.dateOfBirth = dateOfBirth
+        }
+
         fun setAddress(address: Address?): Builder = apply {
             this.address = address
         }
@@ -56,6 +69,7 @@ data class Billing internal constructor(
                 lastName = lastName,
                 phone = phone,
                 email = email,
+                dateOfBirth = dateOfBirth,
                 address = address
             )
         }

@@ -6,6 +6,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class PaymentIntentParams internal constructor(
+
     @SerializedName("request_id")
     val requestId: String? = null,
 
