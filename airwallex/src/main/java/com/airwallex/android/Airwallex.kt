@@ -59,7 +59,7 @@ class Airwallex internal constructor(
     @UiThread
     fun confirmPaymentIntent(
         paymentIntentId: String,
-        customerId: String?,
+        customerId: String? = null,
         listener: PaymentListener<PaymentIntent>
     ) {
         paymentController.confirmPaymentIntent(
@@ -112,6 +112,6 @@ class Airwallex internal constructor(
 
     companion object {
         // The default url, that you can change in the constructor for test on different environments
-        private const val BASE_URL = "https://staging-pci-api.airwallex.com"
+        private const val BASE_URL = "https://api.airwallex.com"
     }
 }

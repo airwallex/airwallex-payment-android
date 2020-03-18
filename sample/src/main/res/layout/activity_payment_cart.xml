@@ -37,7 +37,7 @@
     </LinearLayout>
 
     <include
-        android:id="@+id/loading"
+        android:id="@+id/loadingView"
         layout="@layout/airwallex_loading"
         android:visibility="gone" />
 </merge>

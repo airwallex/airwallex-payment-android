@@ -33,7 +33,7 @@ data class PaymentIntent internal constructor(
     val descriptor: String,
 
     @SerializedName("status")
-    val status: String,
+    val status: PaymentIntentStatus,
 
     @SerializedName("captured_amount")
     val capturedAmount: Float? = null,
