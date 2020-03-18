@@ -72,12 +72,4 @@ internal abstract class AirwallexActivity : AppCompatActivity() {
                 .show()
         }
     }
-
-    protected open fun setLoadingProgress(loading: Boolean) {
-        loadingView.visibility = if (loading) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-    }
 }

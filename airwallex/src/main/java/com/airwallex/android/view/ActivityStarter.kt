@@ -44,7 +44,7 @@ internal abstract class ActivityStarter<TargetActivity : Activity, ArgsType : Ac
         fun toBundle(): Bundle
 
         companion object {
-            internal const val AIRWALLEX_EXTRA: String = "airwallexa_activity_result"
+            internal const val AIRWALLEX_EXTRA: String = "airwallex_activity_result"
         }
     }
 }
