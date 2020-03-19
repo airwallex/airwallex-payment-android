@@ -9,46 +9,46 @@ import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.AirwallexStarter
+import com.airwallex.android.model.Address
 import com.airwallex.android.model.Shipping
-import java.util.*
 import kotlinx.android.synthetic.main.shipping_item.view.*
+import java.util.*
 
 class ShippingItemView constructor(
     context: Context,
     attrs: AttributeSet
 ) : RelativeLayout(context, attrs) {
 
-    private var shipping: Shipping? = null
+    var shipping: Shipping = Shipping.Builder()
+        .setFirstName("John")
+        .setLastName("Doe")
+        .setPhone("13800000000")
+        .setAddress(
+            Address.Builder()
+                .setCountryCode("CN")
+                .setState("Shanghai")
+                .setCity("Shanghai")
+                .setStreet("Pudong District")
+                .setPostcode("100000")
+                .build()
+        )
+        .build()
 
-    private var airwallexStarter: AirwallexStarter? = null
+    private val airwallexStarter: AirwallexStarter by lazy {
+        AirwallexStarter(context as Activity)
+    }
 
     init {
         View.inflate(getContext(), R.layout.shipping_item, this)
 
         rlBilling.setOnClickListener {
-            shipping?.let {
-                airwallexStarter = AirwallexStarter(
-                    context as Activity
-                )
-                airwallexStarter?.presentShippingFlow(shipping)
-            }
+            airwallexStarter.presentShippingFlow(shipping)
         }
+        renewalShipping(shipping)
     }
 
-    fun renewalShipping(shipping: Shipping?) {
+    fun renewalShipping(shipping: Shipping) {
         this.shipping = shipping
-        if (shipping == null) {
-            tvShippingAddress.text =
-                context.getString(R.string.enter_shipping)
-            tvShippingAddress.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.airwallex_color_dark_light
-                )
-            )
-            return
-        }
-
         val countryName = shipping.address?.countryCode?.let {
             val loc = Locale("", it)
             loc.displayCountry
@@ -75,10 +75,9 @@ class ShippingItemView constructor(
     fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
-        data: Intent?,
-        completion: (shipping: Shipping?) -> Unit
+        data: Intent?
     ) {
-        airwallexStarter?.handlePaymentShippingResult(
+        airwallexStarter.handlePaymentShippingResult(
             requestCode,
             resultCode,
             data,
@@ -87,12 +86,10 @@ class ShippingItemView constructor(
                 override fun onSuccess(shipping: Shipping) {
                     Log.d(TAG, "Save the shipping success")
                     renewalShipping(shipping)
-                    completion(shipping)
                 }
 
                 override fun onCancelled() {
                     Log.d(TAG, "User cancel edit shipping...")
-                    completion.invoke(null)
                 }
             })
     }

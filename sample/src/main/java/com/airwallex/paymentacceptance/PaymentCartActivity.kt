@@ -148,7 +148,7 @@ class PaymentCartActivity : AppCompatActivity() {
         val airwallex = Airwallex(
             token = token,
             clientSecret = requireNotNull(paymentIntent.clientSecret),
-            baseUrl = "https://staging-pci-api.airwallex.com"
+            baseUrl = Constants.BASE_URL
         )
         airwallex.confirmPaymentIntent(
             paymentIntentId = paymentIntent.id,
