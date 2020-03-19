@@ -37,6 +37,9 @@ class PaymentCartActivity : AppCompatActivity() {
         application.getSharedPreferences(TAG, 0)
     }
 
+    /**
+     * Cache customerId is just to prevent creating multiple customers
+     */
     private var cachedCustomerId: String
         set(value) {
             prefs.edit()
@@ -47,6 +50,7 @@ class PaymentCartActivity : AppCompatActivity() {
             return prefs.getString(CUSTOMER_ID, "") ?: ""
         }
 
+    // token cannot appear on the merchant side, this is just for Demo purposes only
     private lateinit var token: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +67,9 @@ class PaymentCartActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    /**
+     * `IMPORTANT` This code must be placed on the merchant server, this is just for Demo purposes only
+     */
     private fun authAndCreatePaymentIntent() {
         compositeSubscription.add(
             api.authentication(
@@ -144,6 +151,9 @@ class PaymentCartActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * PaymentIntent must come from merchant's server, only wechat pay is currently supported
+     */
     private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
         val airwallex = Airwallex(
             token = token,
@@ -189,6 +199,7 @@ class PaymentCartActivity : AppCompatActivity() {
                             data = nextActionData,
                             listener = object : WXPay.WechatPaymentListener {
                                 override fun onSuccess() {
+                                    Log.d(TAG, "wechatpay successful, retrieve the payment intent status.")
                                     retrievePaymentIntent(airwallex, response.id)
                                 }
 
