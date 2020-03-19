@@ -4,7 +4,6 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
-import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -22,7 +21,7 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
 ) : LinearLayout(context, attrs) {
 
     private var tlInput: TextInputLayout
-    var teInput: TextInputEditText
+    private var teInput: TextInputEditText
     private var vBorder: View
     private var tvError: TextView
 
@@ -128,12 +127,6 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
     internal fun afterFocusChanged(afterFocusChanged: (Boolean) -> Unit) {
         teInput.setOnFocusChangeListener { _, hasFocus ->
             afterFocusChanged.invoke(hasFocus)
-        }
-    }
-
-    internal fun setOnEditorActionListener(l: (actionId: Int, event: KeyEvent?) -> Boolean) {
-        teInput.setOnEditorActionListener { _, actionId, event ->
-            l.invoke(actionId, event)
         }
     }
 }
