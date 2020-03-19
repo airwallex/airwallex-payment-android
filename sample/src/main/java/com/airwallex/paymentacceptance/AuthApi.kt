@@ -10,4 +10,3 @@ interface AuthApi {
     @POST("/api/v1/authentication/login")
     fun authentication(@Header("x-api-key") apiKey: String, @Header("x-client-id") clientId: String): Observable<ResponseBody>
 }
-
