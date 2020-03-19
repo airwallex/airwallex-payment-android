@@ -30,7 +30,7 @@ data class PaymentIntent internal constructor(
     val merchantOrderId: String? = null,
 
     @SerializedName("order")
-    val order: PaymentIntentOrder,
+    val order: PurchaseOrder,
 
     // The customer who is paying for this payment intent
     @SerializedName("customer_id")
@@ -86,19 +86,6 @@ data class PaymentIntent internal constructor(
     val cancellationReason: String? = null
 
 ) : AirwallexModel, Parcelable {
-
-    @Parcelize
-    data class PaymentIntentOrder internal constructor(
-
-        @SerializedName("type")
-        val type: String?,
-
-        @SerializedName("products")
-        val products: List<PhysicalProduct>? = null,
-
-        @SerializedName("shipping")
-        val shipping: Shipping? = null
-    ) : AirwallexModel, Parcelable
 
     @Parcelize
     data class PaymentAttempt internal constructor(
