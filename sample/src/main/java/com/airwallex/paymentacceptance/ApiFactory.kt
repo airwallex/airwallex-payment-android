@@ -11,9 +11,9 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-internal class ApiFactory internal constructor(private val baseUrl: String) {
+internal class ApiFactory internal constructor(private val baseUrl: String ) {
 
-    fun create(): Api {
+    fun buildRetrofit(): Retrofit {
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BODY
 
@@ -42,7 +42,6 @@ internal class ApiFactory internal constructor(private val baseUrl: String) {
             .baseUrl(baseUrl)
             .client(httpClient)
             .build()
-            .create(Api::class.java)
     }
 
     private companion object {

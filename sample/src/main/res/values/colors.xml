@@ -9,10 +9,8 @@
     <color name="airwallex_color_dark_deep">#2A2A2A</color>
     <color name="airwallex_color_border">#EBECF0</color>
 
-
-    <color name="colorPrimary">@color/airwallex_color_primary_default</color>
-    <color name="colorPrimaryDark">@color/airwallex_color_primary_dark_default</color>
-    <color name="colorAccent">@color/airwallex_color_accent_default</color>
-
     <color name="airwallex_color_item_label">#54545E</color>
+
+    <string name="reset">Reset</string>
+    <string name="settings">Settings</string>
 </resources>
