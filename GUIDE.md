@@ -1,4 +1,4 @@
-# Getting started with the Android SDK
+# Getting started with the Android SDK (Wechat Pay Only)
 This section gives an introduction to the core features of the Airwallex Android SDK and lists all the requirements for adding the SDK in an Android Project. This guide assumes that you have basic understanding of Android development and that you are familiar with Android Studio and Gradle.
 
 ## Introduction
@@ -26,10 +26,9 @@ dependencies {
 
 2. Initializes a `Airwallex` object, `confirmPaymentIntent` this method will confirm the Payment Intent. `customerId` is optional.
 ```kotlin
-    val airwallex = Airwallex(clientSecret)
+    val airwallex = Airwallex(clientSecret, customerId)
     airwallexStarter.confirmPaymentIntent(
         paymentIntentId = paymentIntentId,
-        customerId = customerId,
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
                 val nextActionData = response.nextAction?.data
