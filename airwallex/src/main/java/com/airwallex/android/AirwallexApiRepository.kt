@@ -60,16 +60,18 @@ internal class AirwallexApiRepository : ApiRepository {
     private fun AirwallexHttpRequest.Builder.addTokenHeader(
         token: String
     ): AirwallexHttpRequest.Builder {
-        return addHeader("Authorization", "Bearer $token")
+        return addHeader(AUTHORIZATION_HEADER, "Bearer $token")
     }
 
     private fun AirwallexHttpRequest.Builder.addClientSecretHeader(
         clientSecret: String
     ): AirwallexHttpRequest.Builder {
-        return addHeader("client-secret", clientSecret)
+        return addHeader(CLIENT_SECRET_HEADER, clientSecret)
     }
 
     companion object {
+        private const val AUTHORIZATION_HEADER = "Authorization"
+        private const val CLIENT_SECRET_HEADER = "client-secret"
         private const val CONTENT_TYPE = "application/json; charset=utf-8"
 
         /**

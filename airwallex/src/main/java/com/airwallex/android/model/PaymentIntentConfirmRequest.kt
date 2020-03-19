@@ -9,17 +9,17 @@ data class PaymentIntentConfirmRequest internal constructor(
 
     // Unique request ID specified by the merchant
     @SerializedName("request_id")
-    val requestId: String? = null,
+    val requestId: String,
 
     // Customer who intends to pay for the payment intent
     @SerializedName("customer_id")
     val customerId: String? = null,
 
     @SerializedName("payment_method")
-    val paymentMethod: PaymentMethod? = null,
+    val paymentMethod: PaymentMethod,
 
     @SerializedName("device")
-    val device: Device? = null,
+    val device: Device,
 
     @SerializedName("payment_method_reference")
     val paymentMethodReference: PaymentMethodReference?,
@@ -29,28 +29,17 @@ data class PaymentIntentConfirmRequest internal constructor(
 
 ) : AirwallexModel, Parcelable {
 
-    class Builder : ObjectBuilder<PaymentIntentConfirmRequest> {
-        private var requestId: String? = null
+    class Builder(
+        private val requestId: String,
+        private val paymentMethod: PaymentMethod,
+        private val device: Device
+    ) : ObjectBuilder<PaymentIntentConfirmRequest> {
         private var customerId: String? = null
-        private var paymentMethod: PaymentMethod? = null
-        private var device: Device? = null
         private var paymentMethodReference: PaymentMethodReference? = null
         private var paymentMethodOptions: PaymentMethodOptions? = null
 
-        fun setRequestId(requestId: String?): Builder = apply {
-            this.requestId = requestId
-        }
-
         fun setCustomerId(customerId: String?): Builder = apply {
             this.customerId = customerId
-        }
-
-        fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
-            this.paymentMethod = paymentMethod
-        }
-
-        fun setDevice(device: Device?): Builder = apply {
-            this.device = device
         }
 
         fun setPaymentMethodReference(paymentMethodReference: PaymentMethodReference?): Builder =
