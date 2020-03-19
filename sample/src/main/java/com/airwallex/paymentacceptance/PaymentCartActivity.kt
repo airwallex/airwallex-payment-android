@@ -76,11 +76,10 @@ class PaymentCartActivity : AppCompatActivity() {
         return true
     }
 
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.reset -> {
-                // TODO
+                Settings.clearPreferences()
                 true
             }
             R.id.settings -> {
@@ -90,7 +89,6 @@ class PaymentCartActivity : AppCompatActivity() {
             else -> false
         }
     }
-
 
     override fun onDestroy() {
         compositeSubscription.dispose()

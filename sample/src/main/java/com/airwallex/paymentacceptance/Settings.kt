@@ -3,10 +3,14 @@ package com.airwallex.paymentacceptance
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 
-internal object Settings {
+object Settings {
 
     private val sharedPreferences: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(ContextProvider.applicationContext)
+    }
+
+    fun clearPreferences() {
+        sharedPreferences.edit().clear().apply()
     }
 
     val authUrl: String
@@ -47,6 +51,7 @@ internal object Settings {
         get() {
             val defaultAppSignature =
                 ContextProvider.applicationContext.getString(R.string.wechat_app_signature_value)
-            return sharedPreferences.getString("wechat_app_signature", defaultAppSignature) ?: defaultAppSignature
+            return sharedPreferences.getString("wechat_app_signature", defaultAppSignature)
+                ?: defaultAppSignature
         }
 }
