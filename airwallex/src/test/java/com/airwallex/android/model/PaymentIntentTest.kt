@@ -19,7 +19,7 @@ class PaymentIntentTest {
             amount = BigDecimal.valueOf(100.01),
             currency = "USD",
             merchantOrderId = "cc9bfc13-ba30-483b-a62c-ee9250c9bfev",
-            order = PaymentIntent.PaymentIntentOrder(
+            order = PurchaseOrder(
                 type = "physical_goods"
             ),
             customerId = "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
