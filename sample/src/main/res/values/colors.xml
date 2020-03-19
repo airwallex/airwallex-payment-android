@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="airwallex_color_edit_text_error">#FF4F42</color>
-    <color name="airwallex_color_edit_text_accent">#A9A9AE</color>
-    <color name="airwallex_color_edit_text_default">#DE000000</color>
-
     <color name="airwallex_color_accent_default">#3711AE</color>
     <color name="airwallex_color_primary_default">#612FFF</color>
     <color name="airwallex_color_primary_dark_default">#3711AE</color>
@@ -19,5 +15,4 @@
     <color name="colorAccent">@color/airwallex_color_accent_default</color>
 
     <color name="airwallex_color_item_label">#54545E</color>
-    <color name="airwallex_color_dark_light">#A9A9A9</color>
 </resources>
