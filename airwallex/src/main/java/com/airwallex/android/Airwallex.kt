@@ -11,6 +11,7 @@ import java.util.*
 class Airwallex internal constructor(
     private val token: String,
     private val clientSecret: String,
+    private val customerId: String?,
     private val baseUrl: String,
     private val paymentController: PaymentController
 ) {
@@ -23,16 +24,19 @@ class Airwallex internal constructor(
     /**
      * @param token The token that should be removed on SDK later
      * @param clientSecret All API requests need to take this parameter
+     * @param customerId The customer id of user
      * @param baseUrl You can set different values to test on different environments
      */
     // TODO token need to be removed after API changed
     constructor(
         token: String,
         clientSecret: String,
+        customerId: String? = null,
         baseUrl: String = BASE_URL
     ) : this(
         token,
         clientSecret,
+        customerId,
         baseUrl,
         AirwallexApiRepository()
     )
@@ -40,11 +44,13 @@ class Airwallex internal constructor(
     private constructor(
         token: String,
         clientSecret: String,
+        customerId: String? = null,
         baseUrl: String = BASE_URL,
         repository: ApiRepository
     ) : this(
         token,
         clientSecret,
+        customerId,
         baseUrl,
         AirwallexPaymentController(repository)
     )
@@ -53,13 +59,11 @@ class Airwallex internal constructor(
      * Confirm a payment intent
      *
      * @param paymentIntentId the paymentIntentId that you want to confirm
-     * @param customerId The customer id of user
      * @param listener the callback of confirm [PaymentIntent]
      */
     @UiThread
     fun confirmPaymentIntent(
         paymentIntentId: String,
-        customerId: String? = null,
         listener: PaymentListener<PaymentIntent>
     ) {
         paymentController.confirmPaymentIntent(

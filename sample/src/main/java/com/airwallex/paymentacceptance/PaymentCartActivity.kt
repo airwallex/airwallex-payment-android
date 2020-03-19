@@ -148,11 +148,11 @@ class PaymentCartActivity : AppCompatActivity() {
         val airwallex = Airwallex(
             token = token,
             clientSecret = requireNotNull(paymentIntent.clientSecret),
+            customerId = paymentIntent.customerId,
             baseUrl = Constants.BASE_URL
         )
         airwallex.confirmPaymentIntent(
             paymentIntentId = paymentIntent.id,
-            customerId = paymentIntent.customerId,
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     val paymentIntentId = response.id
