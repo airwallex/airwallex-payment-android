@@ -73,16 +73,15 @@ class Airwallex internal constructor(
                 baseUrl = baseUrl,
                 paymentIntentOptions = AirwallexApiRepository.PaymentIntentOptions(
                     paymentIntentId = paymentIntentId,
-                    paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder()
-                        .setRequestId(UUID.randomUUID().toString())
+                    paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+                        requestId = UUID.randomUUID().toString(),
+                        device = DeviceUtils.device,
+                        paymentMethod = PaymentMethod.Builder()
+                            .setType(PaymentMethodType.WECHAT)
+                            .setWechatPayFlow(WechatPayRequest(WechatPayRequestFlow.INAPP))
+                            .build()
+                    )
                         .setCustomerId(customerId)
-                        .setDevice(DeviceUtils.device)
-                        .setPaymentMethod(
-                            PaymentMethod.Builder()
-                                .setType(PaymentMethodType.WECHAT)
-                                .setWechatPayFlow(WechatPayRequest(WechatPayRequestFlow.INAPP))
-                                .build()
-                        )
                         .build()
                 )
             ),
