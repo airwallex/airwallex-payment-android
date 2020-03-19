@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
-import com.airwallex.android.model.Address
 import com.airwallex.android.model.PhysicalProduct
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.cart_item.view.*
@@ -17,20 +16,10 @@ import kotlinx.android.synthetic.main.fragment_cart.*
 
 class PaymentCartFragment : Fragment() {
 
-    var shipping: Shipping = Shipping.Builder()
-        .setFirstName("John")
-        .setLastName("Doe")
-        .setPhone("13800000000")
-        .setAddress(
-            Address.Builder()
-                .setCountryCode("CN")
-                .setState("Shanghai")
-                .setCity("Shanghai")
-                .setStreet("Pudong District")
-                .setPostcode("100000")
-                .build()
-        )
-        .build()
+    val shipping: Shipping
+        get() {
+            return shippingItemView.shipping
+        }
 
     val products = mutableListOf(
         PhysicalProduct.Builder()
@@ -92,18 +81,12 @@ class PaymentCartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        shippingItemView.renewalShipping(shipping)
         refreshProducts()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        shippingItemView.onActivityResult(requestCode, resultCode, data) {
-            it?.let {
-                shipping = it
-            }
-        }
+        shippingItemView.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun refreshProducts() {
