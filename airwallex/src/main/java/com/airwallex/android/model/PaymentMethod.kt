@@ -24,9 +24,11 @@ data class PaymentMethod internal constructor(
     @SerializedName("type")
     val type: PaymentMethodType,
 
+    // The card info
     @SerializedName("card")
     val card: Card?,
 
+    // The wechat request that contains Wechat pay flow
     @SerializedName("wechatpay")
     val wechatPayRequest: WechatPayRequest?,
 

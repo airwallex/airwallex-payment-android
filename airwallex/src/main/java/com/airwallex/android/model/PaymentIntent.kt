@@ -29,6 +29,7 @@ data class PaymentIntent internal constructor(
     @SerializedName("merchant_order_id")
     val merchantOrderId: String? = null,
 
+    // The purchase order info
     @SerializedName("order")
     val order: PurchaseOrder,
 
