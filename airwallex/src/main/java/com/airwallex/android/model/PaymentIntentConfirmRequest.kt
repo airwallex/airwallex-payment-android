@@ -15,9 +15,11 @@ data class PaymentIntentConfirmRequest internal constructor(
     @SerializedName("customer_id")
     val customerId: String? = null,
 
+    // The payment method that you want to confirm
     @SerializedName("payment_method")
     val paymentMethod: PaymentMethod,
 
+    // The user device info
     @SerializedName("device")
     val device: Device,
 
