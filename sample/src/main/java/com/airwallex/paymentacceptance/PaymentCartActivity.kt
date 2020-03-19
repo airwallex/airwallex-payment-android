@@ -8,6 +8,8 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
@@ -19,18 +21,22 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.io.IOException
-import java.util.*
 import kotlinx.android.synthetic.main.activity_payment_cart.*
 import okhttp3.*
 import org.json.JSONObject
+import java.io.IOException
+import java.util.*
 
 class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
 
     private val api: Api by lazy {
-        ApiFactory(Constants.BASE_URL).create()
+        ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
+    }
+
+    private val authApi: AuthApi by lazy {
+        ApiFactory(Settings.authUrl).buildRetrofit().create(AuthApi::class.java)
     }
 
     private val prefs: SharedPreferences by lazy {
@@ -57,10 +63,34 @@ class PaymentCartActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment_cart)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
         btnCheckout.setOnClickListener {
             authAndCreatePaymentIntent()
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.reset -> {
+                // TODO
+                true
+            }
+            R.id.settings -> {
+                startActivity(Intent(this, PaymentConfigActivity::class.java))
+                true
+            }
+            else -> false
+        }
+    }
+
 
     override fun onDestroy() {
         compositeSubscription.dispose()
@@ -72,9 +102,9 @@ class PaymentCartActivity : AppCompatActivity() {
      */
     private fun authAndCreatePaymentIntent() {
         compositeSubscription.add(
-            api.authentication(
-                apiKey = Constants.API_KEY,
-                clientId = Constants.CLIENT_ID
+            authApi.authentication(
+                apiKey = Settings.apiKey,
+                clientId = Settings.clientId
             )
                 .subscribeOn(Schedulers.io())
                 .doOnSubscribe {
@@ -159,7 +189,7 @@ class PaymentCartActivity : AppCompatActivity() {
             token = token,
             clientSecret = requireNotNull(paymentIntent.clientSecret),
             customerId = paymentIntent.customerId,
-            baseUrl = Constants.BASE_URL
+            baseUrl = Settings.baseUrl
         )
         airwallex.confirmPaymentIntent(
             paymentIntentId = paymentIntent.id,
@@ -195,11 +225,14 @@ class PaymentCartActivity : AppCompatActivity() {
                         // launch wechat pay
                         WXPay.instance.launchWeChat(
                             context = this@PaymentCartActivity,
-                            appId = Constants.APP_ID,
+                            appId = Settings.wechatAppId,
                             data = nextActionData,
                             listener = object : WXPay.WechatPaymentListener {
                                 override fun onSuccess() {
-                                    Log.d(TAG, "wechatpay successful, retrieve the payment intent status.")
+                                    Log.d(
+                                        TAG,
+                                        "wechatpay successful, retrieve the payment intent status."
+                                    )
                                     retrievePaymentIntent(airwallex, response.id)
                                 }
 
