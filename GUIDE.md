@@ -61,26 +61,3 @@ airwallex.retrievePaymentIntent(
         }
     })
 ```
-
-## Shipping Flow(optional)
-We provide some custom UIs that can be easily integrated into your app
-
-1. Initializes a `AirwallexStarter` object, then call `presentShippingFlow` method, that you can edit shipping addrees.
-```kotlin
-val airwallexStarter = AirwallexStarter(activity)
-airwallexStarter?.presentShippingFlow(shipping)
-```
-
-2. You need to call `handlePaymentShippingResult` from your onActivityResult(int, int, Intent)` function.
-```kotlin
-airwallexStarter?.handlePaymentShippingResult(
-    requestCode, resultCode, data, object : AirwallexStarter.PaymentShippingResult {
-        override fun onSuccess(shipping: Shipping) {
-           // shipping response
-        }
-
-        override fun onCancelled() {
-            // User cancel edit shipping...
-        }
-    })
-```

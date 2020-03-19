@@ -3,10 +3,7 @@
     package="com.airwallex.android">
 
     <application>
-        <activity
-            android:name="com.airwallex.android.view.PaymentShippingActivity"
-            android:theme="@style/AirwallexDefaultTheme"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+
     </application>
 
 </manifest>
