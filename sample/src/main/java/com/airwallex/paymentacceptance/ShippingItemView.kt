@@ -11,8 +11,8 @@ import androidx.core.content.ContextCompat
 import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.Shipping
-import kotlinx.android.synthetic.main.shipping_item.view.*
 import java.util.*
+import kotlinx.android.synthetic.main.shipping_item.view.*
 
 class ShippingItemView constructor(
     context: Context,
