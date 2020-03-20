@@ -1,13 +1,13 @@
 # Getting started with the Android SDK (Wechat Pay Only)
-This section gives an introduction to the core features of the Airwallex Android SDK and lists all the requirements for adding the SDK in an Android Project. This guide assumes that you have basic understanding of Android development and that you are familiar with Android Studio and Gradle.
+This section mainly introduces the main process of integrating Airwallex Android SDK. This guide assumes that you are an Android developer and familiar with Android Studio and Gradle
 
 ## Introduction
-With Airwallex Android SDK, you can integrate Airwallex payments into your existing in-person checkout flow or build in-person payments into your application.
+With Airwallex Android SDK, you can integrate Airwallex Wechat payment into your application.
 
 Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to include the Airwallex Android SDK in your Android project.
 
 ## Install the SDK
-The Android SDK is compatible with apps supporting Android API level 19 and above. Apps can be written using Kotlin or Java 8, but must use AndroidX.
+The Android SDK is compatible with apps supporting Android API level 19 and above.
 
 To install the SDK, in your app-level `build.gradle`, add the following:
 
@@ -17,23 +17,26 @@ dependencies {
 }
 ```
 
-## Confirm/Retrieve Payment Intent
+## Confirm Payment Intent
 
-1. First, you have to create a `PaymentIntent` on your own server
-
-`POST /api/v1/pa/payment_intents/create`.
+1. First you must create a `PaymentIntent` object on your own server via `/api/v1/pa/payment_intents/create` and pass it to your client
 
 
-2. Initializes a `Airwallex` object, `confirmPaymentIntent` this method will confirm the Payment Intent. `customerId` is optional.
+2. Initializes an `Airwallex` object, `clientSecret`&`customerId` are parameters of `PaymentIntent`. `clientSecret` is required, `customerId` is optional.
+    
 ```kotlin
     val airwallex = Airwallex(clientSecret, customerId)
-    airwallexStarter.confirmPaymentIntent(
+```
+
+3. Call the `confirmPaymentIntent` method to start confirm the Payment Intent. `paymentIntentId` is the ID of the `PaymentIntent` and is required.
+```kotlin
+    airwallex.confirmPaymentIntent(
         paymentIntentId = paymentIntentId,
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
                 val nextActionData = response.nextAction?.data
-                // Then you need to send `nextActionData` to wechat sdk.
-                // You can check the demo on [Sample](https://github.com/airwallex/airwallex-payment-android)
+                // `nextActionData` contains all the data needed for wechat pay, then you need to send `nextActionData` to wechat sdk.
+                // You can check the demo on [Sample](https://github.com/airwallex/airwallex-payment-android) for more informations
             }
                 
             override fun onFailed(exception: AirwallexException) {
@@ -43,7 +46,9 @@ dependencies {
      )
 ```
 
-3. Finally on the wechat callback, you can call `retrievePaymentIntent` method to determine whether the PaymentIntent was successful
+## Retrieve Payment Intent
+
+After wechat payment is successful, You can check whether the payment is successful by calling the `retrievePaymentIntent` method and checking the `status` of the payment intent.
 ```kotlin
 airwallex.retrievePaymentIntent(
     paymentIntentId = paymentIntentId,
