@@ -69,7 +69,8 @@ class PaymentCartActivity : AppCompatActivity() {
         setContentView(R.layout.activity_payment_cart)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayShowTitleEnabled(true)
+        supportActionBar?.setTitle(R.string.app_name)
 
         btnCheckout.setOnClickListener {
             authAndCreatePaymentIntent()

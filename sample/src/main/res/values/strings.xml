@@ -17,7 +17,7 @@
     <string name="wechat_app_id">App Id</string>
     <string name="wechat_app_signature">App Signature</string>
 
-    <string name="app_name">Airwallex</string>
+    <string name="app_name">Airwallex Sample</string>
     <string name="checkout">Checkout With Wechat</string>
     <string name="subtotal">Subtotal</string>
     <string name="remove">Remove</string>
