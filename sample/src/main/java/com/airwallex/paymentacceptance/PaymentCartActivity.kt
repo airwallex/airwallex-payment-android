@@ -161,10 +161,11 @@ class PaymentCartActivity : AppCompatActivity() {
                         authorization = "Bearer $token",
                         params = mutableMapOf(
                             "request_id" to UUID.randomUUID().toString(),
-                            "amount" to products.sumByDouble { product ->
-                                product.unitPrice ?: 0 * (product.quantity ?: 0).toDouble()
-                            },
-                            "currency" to "USD",
+//                            "amount" to products.sumByDouble { product ->
+//                                product.unitPrice ?: 0 * (product.quantity ?: 0).toDouble()
+//                            },
+                            "amount" to Settings.price.toDouble(),
+                            "currency" to Settings.currency,
                             "merchant_order_id" to UUID.randomUUID().toString(),
                             "order" to PurchaseOrder.Builder()
                                 .setProducts(products)
