@@ -8,10 +8,8 @@ import java.util.*
 
 internal class AirwallexApiRepository : ApiRepository {
 
-    // TODO Token should be removed after server changed
     @Parcelize
     internal data class Options internal constructor(
-        internal val token: String,
         internal val clientSecret: String,
         internal val baseUrl: String,
         internal val paymentIntentOptions: PaymentIntentOptions? = null
@@ -51,16 +49,9 @@ internal class AirwallexApiRepository : ApiRepository {
                 retrievePaymentIntentUrl(options.baseUrl, requireNotNull(options.paymentIntentOptions?.paymentIntentId)),
                 AirwallexHttpRequest.Method.GET
             )
-                .addTokenHeader(options.token)
+                .addClientSecretHeader(options.clientSecret)
                 .build()
         )
-    }
-
-    // TODO token should be removed.
-    private fun AirwallexHttpRequest.Builder.addTokenHeader(
-        token: String
-    ): AirwallexHttpRequest.Builder {
-        return addHeader(AUTHORIZATION_HEADER, "Bearer $token")
     }
 
     private fun AirwallexHttpRequest.Builder.addClientSecretHeader(
@@ -70,7 +61,6 @@ internal class AirwallexApiRepository : ApiRepository {
     }
 
     companion object {
-        private const val AUTHORIZATION_HEADER = "Authorization"
         private const val CLIENT_SECRET_HEADER = "client-secret"
         private const val CONTENT_TYPE = "application/json; charset=utf-8"
 
