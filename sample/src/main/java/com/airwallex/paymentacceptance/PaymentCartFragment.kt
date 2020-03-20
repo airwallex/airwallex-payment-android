@@ -91,11 +91,14 @@ class PaymentCartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        refreshProducts()
+        initializeProductsViews(products.toMutableList())
     }
 
-    private fun refreshProducts() {
-        val products = products
+    fun reset() {
+        initializeProductsViews(products.toMutableList())
+    }
+
+    private fun initializeProductsViews(products: MutableList<PhysicalProduct>) {
         llProducts.removeAllViews()
         products.map {
             CartItem(
@@ -103,7 +106,7 @@ class PaymentCartFragment : Fragment() {
                 context
             ) {
                 products.remove(it)
-                refreshProducts()
+                initializeProductsViews(products)
             }
         }.forEach { llProducts.addView(it) }
 
