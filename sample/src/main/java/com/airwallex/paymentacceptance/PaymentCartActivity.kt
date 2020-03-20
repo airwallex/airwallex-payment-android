@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
@@ -31,13 +32,17 @@ class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
 
-    private val api: Api by lazy {
-        ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
-    }
+    private val handler: Handler = Handler()
 
-    private val authApi: AuthApi by lazy {
-        ApiFactory(Settings.authUrl).buildRetrofit().create(AuthApi::class.java)
-    }
+    private val api: Api
+        get() {
+            return ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
+        }
+
+    private val authApi: AuthApi
+        get() {
+            return ApiFactory(Settings.authUrl).buildRetrofit().create(AuthApi::class.java)
+        }
 
     private val prefs: SharedPreferences by lazy {
         application.getSharedPreferences(TAG, 0)
@@ -72,7 +77,7 @@ class PaymentCartActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
+        menuInflater.inflate(R.menu.menu_cart, menu)
         return true
     }
 
@@ -215,7 +220,9 @@ class PaymentCartActivity : AppCompatActivity() {
                             }
 
                             override fun onResponse(call: Call, response: Response) {
-                                retrievePaymentIntent(airwallex, paymentIntentId)
+                                handler.postDelayed({
+                                    retrievePaymentIntent(airwallex, paymentIntentId)
+                                }, 200)
                             }
                         })
                     } else {
