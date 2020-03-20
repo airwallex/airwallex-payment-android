@@ -26,7 +26,7 @@
             android:theme="@style/ActivityAnimTheme" />
 
         <activity
-            android:name="com.airwallex.paymentacceptance.PaymentConfigActivity"
+            android:name="com.airwallex.paymentacceptance.PaymentSettingsActivity"
             android:theme="@style/ActivityAnimTheme" />
 
         <activity

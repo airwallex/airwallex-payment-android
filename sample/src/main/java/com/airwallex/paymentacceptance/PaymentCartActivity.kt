@@ -63,7 +63,7 @@ class PaymentCartActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment_cart)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         btnCheckout.setOnClickListener {
@@ -79,11 +79,11 @@ class PaymentCartActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.reset -> {
-                Settings.clearPreferences()
+                (cartFragment as PaymentCartFragment).reset()
                 true
             }
             R.id.settings -> {
-                startActivity(Intent(this, PaymentConfigActivity::class.java))
+                startActivity(Intent(this, PaymentSettingsActivity::class.java))
                 true
             }
             else -> false
