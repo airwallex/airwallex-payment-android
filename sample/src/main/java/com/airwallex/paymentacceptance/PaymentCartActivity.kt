@@ -25,6 +25,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_payment_cart.*
 import okhttp3.*
 import org.json.JSONObject
+import retrofit2.HttpException
 import java.io.IOException
 import java.util.*
 
@@ -181,7 +182,13 @@ class PaymentCartActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { handlePaymentIntentResponse(it) },
-                    { showPaymentError(it.localizedMessage) }
+                    {
+                        if (it is HttpException) {
+                            showCreatePaymentIntentError(it.response()?.errorBody()?.string() ?: it.localizedMessage)
+                        } else {
+                            showCreatePaymentIntentError(it.localizedMessage)
+                        }
+                    }
                 )
         )
     }
@@ -193,7 +200,7 @@ class PaymentCartActivity : AppCompatActivity() {
         val airwallex = Airwallex(
             clientSecret = requireNotNull(paymentIntent.clientSecret),
             customerId = paymentIntent.customerId,
-            baseUrl = Settings.baseUrl  // You can change the baseUrl to test other environments
+            baseUrl = Settings.baseUrl // You can change the baseUrl to test other environments
         )
         airwallex.confirmPaymentIntent(
             paymentIntentId = paymentIntent.id,
@@ -293,6 +300,14 @@ class PaymentCartActivity : AppCompatActivity() {
         showAlert(
             getString(R.string.payment_successful),
             getString(R.string.payment_successful_message)
+        )
+    }
+
+    private fun showCreatePaymentIntentError(error: String? = null) {
+        setLoadingProgress(false)
+        showAlert(
+            getString(R.string.create_payment_intent_failed),
+            error ?: getString(R.string.payment_failed_message)
         )
     }
 
