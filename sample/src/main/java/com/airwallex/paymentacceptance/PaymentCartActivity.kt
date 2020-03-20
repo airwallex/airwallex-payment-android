@@ -190,10 +190,9 @@ class PaymentCartActivity : AppCompatActivity() {
      */
     private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
         val airwallex = Airwallex(
-            token = token,
             clientSecret = requireNotNull(paymentIntent.clientSecret),
             customerId = paymentIntent.customerId,
-            baseUrl = Settings.baseUrl
+            baseUrl = Settings.baseUrl  // You can change the baseUrl to test other environments
         )
         airwallex.confirmPaymentIntent(
             paymentIntentId = paymentIntent.id,

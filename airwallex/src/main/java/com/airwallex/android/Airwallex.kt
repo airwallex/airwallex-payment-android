@@ -9,7 +9,6 @@ import java.util.*
  * Entry-point to the Airwallex SDK.
  */
 class Airwallex internal constructor(
-    private val token: String,
     private val clientSecret: String,
     private val customerId: String?,
     private val baseUrl: String,
@@ -22,19 +21,15 @@ class Airwallex internal constructor(
     }
 
     /**
-     * @param token The token that should be removed on SDK later
      * @param clientSecret All API requests need to take this parameter
      * @param customerId The customer id of user
      * @param baseUrl You can set different values to test on different environments
      */
-    // TODO token need to be removed after API changed
     constructor(
-        token: String,
         clientSecret: String,
         customerId: String? = null,
         baseUrl: String = BASE_URL
     ) : this(
-        token,
         clientSecret,
         customerId,
         baseUrl,
@@ -42,13 +37,11 @@ class Airwallex internal constructor(
     )
 
     private constructor(
-        token: String,
         clientSecret: String,
         customerId: String? = null,
         baseUrl: String = BASE_URL,
         repository: ApiRepository
     ) : this(
-        token,
         clientSecret,
         customerId,
         baseUrl,
@@ -68,7 +61,6 @@ class Airwallex internal constructor(
     ) {
         paymentController.confirmPaymentIntent(
             AirwallexApiRepository.Options(
-                token = token,
                 clientSecret = clientSecret,
                 baseUrl = baseUrl,
                 paymentIntentOptions = AirwallexApiRepository.PaymentIntentOptions(
@@ -102,7 +94,6 @@ class Airwallex internal constructor(
     ) {
         paymentController.retrievePaymentIntent(
             AirwallexApiRepository.Options(
-                token = token,
                 clientSecret = clientSecret,
                 baseUrl = baseUrl,
                 paymentIntentOptions = AirwallexApiRepository.PaymentIntentOptions(
