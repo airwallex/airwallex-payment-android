@@ -22,7 +22,3 @@
 
 # Rules for Airwallex
 -keep class com.airwallex.android.** { *; }
--dontwarn com.airwallex.android.view.**
-
-# Rules for IconTextInputLayout
--keep class com.google.android.material.textfield.TextInputLayout { *; }
