@@ -27,6 +27,21 @@
     </PreferenceCategory>
 
 
+    <PreferenceCategory android:title="@string/price_currency">
+
+        <EditTextPreference
+            android:defaultValue="@string/price_value"
+            android:key="@string/price"
+            android:title="@string/price" />
+
+        <EditTextPreference
+            android:defaultValue="@string/currency_value"
+            android:key="@string/currency"
+            android:title="@string/currency" />
+
+    </PreferenceCategory>
+
+
     <PreferenceCategory android:title="@string/wechat">
         <EditTextPreference
             android:defaultValue="@string/wechat_app_id_value"

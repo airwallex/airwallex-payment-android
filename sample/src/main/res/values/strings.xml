@@ -33,4 +33,9 @@
 
     <string name="shipping">Shipping</string>
     <string name="options">Options</string>
+    <string name="price_value">0.1</string>
+    <string name="currency_value">USD</string>
+    <string name="currency">Currency</string>
+    <string name="price">Price</string>
+    <string name="price_currency"><![CDATA[Price & Currency]]></string>
 </resources>

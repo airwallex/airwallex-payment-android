@@ -45,6 +45,23 @@ object Settings {
             ) ?: defaultClientId
         }
 
+    val price: String
+        get() {
+            val defaultPrice = ContextProvider.applicationContext.getString(R.string.price_value)
+            return sharedPreferences.getString(context.getString(R.string.price), defaultPrice)
+                ?: defaultPrice
+        }
+
+    val currency: String
+        get() {
+            val defaultCurrency =
+                ContextProvider.applicationContext.getString(R.string.currency_value)
+            return sharedPreferences.getString(
+                context.getString(R.string.currency),
+                defaultCurrency
+            ) ?: defaultCurrency
+        }
+
     val wechatAppId: String
         get() {
             val defaultAppId =
