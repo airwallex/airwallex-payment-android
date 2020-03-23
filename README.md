@@ -1,4 +1,4 @@
-# Airwallex Android SDK (Wechat Pay Only)
+# Airwallex Android SDK
 This library makes it quick and easy to build an excellent payment experience in your Android app.
 
 Airwallex's Android SDK is available for Android SDK >= 19.
