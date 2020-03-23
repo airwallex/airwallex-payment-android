@@ -2,6 +2,9 @@ package com.airwallex.android
 
 import android.util.Log
 
+/**
+ * Formatted log for Airwallex
+ */
 internal object Logger {
 
     private var loggingEnabled: Boolean = BuildConfig.DEBUG

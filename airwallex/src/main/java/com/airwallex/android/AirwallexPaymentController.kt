@@ -14,7 +14,7 @@ internal class AirwallexPaymentController(
 ) : PaymentController {
 
     /**
-     * Confirm the Airwallex PaymentIntent
+     * Confirm the [PaymentIntent] using [AirwallexApiRepository.Options]
      */
     override fun confirmPaymentIntent(
         options: AirwallexApiRepository.Options,
@@ -25,7 +25,7 @@ internal class AirwallexPaymentController(
     }
 
     /**
-     * Retrieve the Airwallex Payment Intent
+     * Retrieve the [PaymentIntent] using [AirwallexApiRepository.Options]
      */
     override fun retrievePaymentIntent(
         options: AirwallexApiRepository.Options,

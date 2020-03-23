@@ -5,7 +5,7 @@ import com.airwallex.android.model.*
 internal interface PaymentController {
 
     /**
-     * Confirm the Airwallex PaymentIntent
+     * Confirm the [PaymentIntent] using [AirwallexApiRepository.Options]
      */
     fun confirmPaymentIntent(
         options: AirwallexApiRepository.Options,
@@ -13,7 +13,7 @@ internal interface PaymentController {
     )
 
     /**
-     * Retrieve the Airwallex Payment Intent
+     * Retrieve the [PaymentIntent] using [AirwallexApiRepository.Options]
      */
     fun retrievePaymentIntent(
         options: AirwallexApiRepository.Options,

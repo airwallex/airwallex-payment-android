@@ -9,27 +9,32 @@ import java.util.*
 internal class AirwallexApiRepository : ApiRepository {
 
     @Parcelize
-    internal data class Options internal constructor(
-        internal val clientSecret: String,
-        internal val baseUrl: String,
-        internal val paymentIntentOptions: PaymentIntentOptions? = null
+    internal open class Options internal constructor(
+        internal open val clientSecret: String,
+        internal open val baseUrl: String
     ) : Parcelable
 
     @Parcelize
-    internal data class PaymentIntentOptions internal constructor(
+    internal class PaymentIntentOptions internal constructor(
+        override val clientSecret: String,
+        override val baseUrl: String,
         internal val paymentIntentId: String,
         internal val paymentIntentConfirmRequest: PaymentIntentConfirmRequest? = null
-    ) : Parcelable
+    ) : Options(clientSecret = clientSecret, baseUrl = baseUrl)
 
+    @Suppress("DEPRECATION")
     override fun confirmPaymentIntent(options: Options): AirwallexHttpResponse? {
         val jsonParser = JsonParser()
         val paramsJson =
-            jsonParser.parse(AirwallexPlugins.gson.toJson(requireNotNull(options.paymentIntentOptions?.paymentIntentConfirmRequest)))
+            jsonParser.parse(AirwallexPlugins.gson.toJson(requireNotNull((options as PaymentIntentOptions).paymentIntentConfirmRequest)))
                 .asJsonObject
 
         return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                confirmPaymentIntentUrl(options.baseUrl, requireNotNull(options.paymentIntentOptions?.paymentIntentId)),
+                confirmPaymentIntentUrl(
+                    options.baseUrl,
+                    requireNotNull(options.paymentIntentId)
+                ),
                 AirwallexHttpRequest.Method.POST
             )
                 .setBody(
@@ -46,7 +51,10 @@ internal class AirwallexApiRepository : ApiRepository {
     override fun retrievePaymentIntent(options: Options): AirwallexHttpResponse? {
         return AirwallexPlugins.restClient.execute(
             AirwallexHttpRequest.Builder(
-                retrievePaymentIntentUrl(options.baseUrl, requireNotNull(options.paymentIntentOptions?.paymentIntentId)),
+                retrievePaymentIntentUrl(
+                    options.baseUrl,
+                    (options as PaymentIntentOptions).paymentIntentId
+                ),
                 AirwallexHttpRequest.Method.GET
             )
                 .addClientSecretHeader(options.clientSecret)
