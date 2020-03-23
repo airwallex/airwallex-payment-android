@@ -7,6 +7,9 @@ import okhttp3.Response
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
+/**
+ * Provide some internal plugins
+ */
 internal object AirwallexPlugins {
 
     internal val restClient by lazy {

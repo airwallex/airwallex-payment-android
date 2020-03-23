@@ -215,8 +215,8 @@ class PaymentCartActivity : AppCompatActivity() {
 
                     val prepayId = nextActionData.prepayId
                     if (prepayId?.startsWith("http") == true) {
-                        Log.d(TAG, "Confirm PaymentIntent success, launch MOCK wechatpay.")
-                        // launch mock wechat pay
+                        Log.d(TAG, "Confirm PaymentIntent success, MOCK wechatpay on staging env.")
+                        // mock wechat pay
                         val client = OkHttpClient()
                         val builder = Request.Builder()
                         builder.url(prepayId)
@@ -228,7 +228,12 @@ class PaymentCartActivity : AppCompatActivity() {
                             }
 
                             override fun onResponse(call: Call, response: Response) {
+                                // Delay some time to make sure the mock MOCK has been updated on the server
                                 handler.postDelayed({
+                                    Log.d(
+                                        TAG,
+                                        "MOCK wechatpay successful, start retrieve the payment intent status."
+                                    )
                                     retrievePaymentIntent(airwallex, paymentIntentId)
                                 }, 200)
                             }
@@ -244,7 +249,7 @@ class PaymentCartActivity : AppCompatActivity() {
                                 override fun onSuccess() {
                                     Log.d(
                                         TAG,
-                                        "wechatpay successful, retrieve the payment intent status."
+                                        "REAL wechatpay successful, start retrieve the payment intent status."
                                     )
                                     retrievePaymentIntent(airwallex, response.id)
                                 }
@@ -254,7 +259,7 @@ class PaymentCartActivity : AppCompatActivity() {
                                 }
 
                                 override fun onCancel() {
-                                    showPaymentError("User cancel the payment")
+                                    showPaymentError("User cancel the wechatpay")
                                 }
                             })
                     }
