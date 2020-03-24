@@ -4,6 +4,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
 class AirwallexHttpRequestTest {
@@ -42,7 +43,9 @@ class AirwallexHttpRequestTest {
         assertEquals(url, request.url)
         assertEquals(method.toString(), request.method.toString())
         assertEquals(1, request.allHeaders.size)
-        assertEquals(contentType, request.body!!.contentType)
+
+        assertNotNull(request.body)
+        assertEquals(contentType, request.body.contentType)
         assertEquals(content, request.body.content)
     }
 }
