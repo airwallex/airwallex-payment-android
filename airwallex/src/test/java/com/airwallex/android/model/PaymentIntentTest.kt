@@ -24,7 +24,7 @@ class PaymentIntentTest {
             customerId = "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
             descriptor = "Airwallex - T-shirt",
             status = PaymentIntentStatus.REQUIRES_PAYMENT_METHOD,
-            capturedAmount = 0f,
+            capturedAmount = BigDecimal.valueOf(0),
             availablePaymentMethodTypes = arrayListOf("card", "wechatpay"),
             customerPaymentMethods = arrayListOf(
                 PaymentMethod.Builder()
