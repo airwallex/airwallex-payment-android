@@ -27,7 +27,7 @@ data class PaymentIntent internal constructor(
 
     // The order ID created in merchant's order system that corresponds to this payment intent
     @SerializedName("merchant_order_id")
-    val merchantOrderId: String? = null,
+    val merchantOrderId: String,
 
     // The purchase order info
     @SerializedName("order")
@@ -39,7 +39,7 @@ data class PaymentIntent internal constructor(
 
     // Descriptor that will be displayed to the customer
     @SerializedName("descriptor")
-    val descriptor: String,
+    val descriptor: String?,
 
     // A set of key-value pairs that you can attach to this customer
     @SerializedName("metadata")
@@ -50,9 +50,9 @@ data class PaymentIntent internal constructor(
 
     // Amount that captured from this payment intent
     @SerializedName("captured_amount")
-    val capturedAmount: Float? = null,
+    val capturedAmount: BigDecimal,
 
-    // Time at which this payment intent was created
+    // Latest payment attempt that was created under the payment intent
     @SerializedName("latest_payment_attempt")
     val latestPaymentAttempt: PaymentAttempt? = null,
 
@@ -65,7 +65,7 @@ data class PaymentIntent internal constructor(
 
     // Client secret for browser or app
     @SerializedName("client_secret")
-    val clientSecret: String?,
+    val clientSecret: String,
 
     @SerializedName("next_action")
     val nextAction: NextAction? = null,
@@ -92,28 +92,28 @@ data class PaymentIntent internal constructor(
     data class PaymentAttempt internal constructor(
 
         @SerializedName("id")
-        val id: String?,
+        val id: String,
 
         @SerializedName("currency")
-        val currency: String?,
+        val currency: String,
 
         @SerializedName("payment_method")
-        val paymentMethod: PaymentMethod?,
+        val paymentMethod: PaymentMethod,
 
         @SerializedName("status")
-        val status: String?,
+        val status: String,
 
         @SerializedName("captured_amount")
-        val capturedAmount: Float?,
+        val capturedAmount: BigDecimal,
 
         @SerializedName("refunded_amount")
-        val refundedAmount: Float?,
+        val refundedAmount: BigDecimal,
 
         @SerializedName("created_at")
-        val createdAt: Date?,
+        val createdAt: Date,
 
         @SerializedName("updated_at")
-        val updatedAt: Date?,
+        val updatedAt: Date,
 
         @SerializedName("device")
         val device: Device?
@@ -124,7 +124,7 @@ data class PaymentIntent internal constructor(
     data class NextAction internal constructor(
 
         @SerializedName("type")
-        val type: String?,
+        val type: String,
 
         @SerializedName("data")
         val data: NextActionData?
