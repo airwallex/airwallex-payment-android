@@ -21,9 +21,9 @@ class Airwallex internal constructor(
     }
 
     /**
-     * @param clientSecret The client secret of the PaymentIntent.
-     * @param customerId The id of a Customer, it's optional.
-     * @param baseUrl You can set to different value to test on different environment
+     * @param clientSecret The client secret of [PaymentIntent].
+     * @param customerId The ID of a Customer, it's optional.
+     * @param baseUrl You can set different url to test
      */
     constructor(
         clientSecret: String,
@@ -49,9 +49,9 @@ class Airwallex internal constructor(
     )
 
     /**
-     * Confirm a [PaymentIntent] using the paymentIntentId
+     * Confirm a [PaymentIntent] by ID
      *
-     * @param paymentIntentId the paymentIntentId that you want to confirm
+     * @param paymentIntentId ID of [PaymentIntent]
      * @param listener the callback of confirm [PaymentIntent]
      */
     @UiThread
@@ -80,9 +80,9 @@ class Airwallex internal constructor(
     }
 
     /**
-     * Retrieve a [PaymentIntent] using the paymentIntentId
+     * Retrieve a [PaymentIntent] by ID
      *
-     * @param paymentIntentId the paymentIntentId that you want to retrieve
+     * @param paymentIntentId ID of [PaymentIntent]
      * @param listener the callback of retrieve [PaymentIntent]
      */
     @UiThread
