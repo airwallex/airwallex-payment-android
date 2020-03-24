@@ -45,23 +45,23 @@ internal class AirwallexPaymentController(
             repository,
             workScope,
             object : ApiResponseCallback<AirwallexHttpResponse> {
-                override fun onSuccess(result: AirwallexHttpResponse) {
-                    if (result.isSuccessful && result.body != null) {
+                override fun onSuccess(response: AirwallexHttpResponse) {
+                    if (response.isSuccessful && response.body != null) {
                         val response: T = AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
+                            response.body.string(),
                             classType(apiOperationType)
                         )
                         listener.onSuccess(response)
                     } else {
-                        val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
+                        val error = if (response.body != null) AirwallexPlugins.gson.fromJson(
+                            response.body.string(),
                             AirwallexError::class.java
                         ) else null
                         listener.onFailed(
                             APIException(
-                                message = result.message,
-                                traceId = result.allHeaders["x-awx-traceid"],
-                                statusCode = result.statusCode,
+                                message = response.message,
+                                traceId = response.allHeaders["x-awx-traceid"],
+                                statusCode = response.statusCode,
                                 error = error,
                                 e = null
                             )
@@ -83,9 +83,9 @@ internal class AirwallexPaymentController(
         workScope: CoroutineScope,
         callback: ApiResponseCallback<AirwallexHttpResponse>,
         private val apiOperationType: ApiOperationType
-    ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
+    ) : ApiExecutor<AirwallexHttpResponse>(workScope, callback) {
 
-        override suspend fun getResult(): AirwallexHttpResponse? {
+        override suspend fun getResponse(): AirwallexHttpResponse? {
             return when (apiOperationType) {
                 ApiOperationType.CONFIRM_PAYMENT_INTENT -> {
                     repository.confirmPaymentIntent(options)

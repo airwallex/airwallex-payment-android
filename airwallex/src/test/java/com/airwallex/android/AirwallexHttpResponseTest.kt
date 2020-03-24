@@ -28,5 +28,4 @@ class AirwallexHttpResponseTest {
         assertEquals(statusCode, response.statusCode)
         assertEquals(isSuccessful, response.isSuccessful)
     }
-
 }

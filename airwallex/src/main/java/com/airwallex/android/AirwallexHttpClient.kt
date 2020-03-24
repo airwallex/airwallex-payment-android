@@ -9,7 +9,7 @@ import okio.BufferedSink
 /**
  * Http client that wraps OkHttpClient
  */
-internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
+internal class AirwallexHttpClient(val builder: OkHttpClient.Builder) {
 
     private val okHttpClient: OkHttpClient = builder.build()
 
