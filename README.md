@@ -11,8 +11,8 @@ dependencies {
 }
 ```
 
-## Documentation
-Read [integration guides](https://github.com/airwallex/airwallex-payment-android/blob/wechat/GUIDE.md) for more information.
+## Getting Start
+Get started with [Integration Guides](https://github.com/airwallex/airwallex-payment-android/blob/wechat/GUIDE.md).
 
 ## Feedback
 We appreciate the time you take to try out our sample code and welcome your feedback. Here are a few ways to get in touch:
