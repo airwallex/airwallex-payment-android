@@ -110,6 +110,5 @@ bintray {
         version {
             desc = libraryDescription
         }
-        userOrg = bintrayuUserOrg
     }
 }
