@@ -2,7 +2,6 @@ ext {
     siteUrl = 'https://github.com/airwallex/airwallex-payment-android'       // git repo url
     gitUrl = 'https://github.com/airwallex/airwallex-payment-android.git'    // git repo vcs url
 
-    bintrayuUserOrg = 'airwallex'
     artifact = POM_ARTIFACT                         // this is the artifact we want to see in implementation line
     publishedGroupId = 'com.airwallex'              // this is the ID we want to see in implementation line
     libraryVersion = POM_LIBRARY_VERSION            // library version
