@@ -12,7 +12,7 @@ dependencies {
 ```
 
 ## Getting Start
-Get started with [Integration Guides](https://github.com/airwallex/airwallex-payment-android/blob/wechat/GUIDE.md).
+[Quick start and guides](GUIDE.md) for integrating Airwallex Android SDK in your Android app.
 
 ## Feedback
 We appreciate the time you take to try out our sample code and welcome your feedback. Here are a few ways to get in touch:
@@ -21,4 +21,4 @@ We appreciate the time you take to try out our sample code and welcome your feed
 * [pa_mobile_sdk@airwallex.com](mailto:pa_mobile_sdk@airwallex.com) - for personal support at any phase of integration
 
 ## License
-The Airwallex Android SDK is open source and available under the MIT license. See the [LICENSE](https://github.com/airwallex/airwallex-payment-android/blob/wechat/LICENSE) file for more info.
+The Airwallex Android SDK is open source and available under the MIT license. See the [LICENSE](LICENSE) file for more info.
