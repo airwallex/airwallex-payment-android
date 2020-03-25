@@ -19,6 +19,11 @@ internal class AirwallexHttpClient(val builder: OkHttpClient.Builder) {
         }
     }
 
+    /**
+     * Execute the Airwallex API by okhttp
+     *
+     * @return a [AirwallexHttpResponse] from Airwallex server
+     */
     @Throws(IOException::class)
     fun execute(parseRequest: AirwallexHttpRequest): AirwallexHttpResponse {
         val request = getRequest(parseRequest)

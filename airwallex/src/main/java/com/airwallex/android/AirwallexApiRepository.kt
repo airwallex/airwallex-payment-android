@@ -1,18 +1,14 @@
 package com.airwallex.android
 
-import android.os.Parcelable
 import com.airwallex.android.model.PaymentIntentConfirmRequest
 import com.google.gson.JsonParser
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
+/**
+ * The implementation of [ApiRepository] to request the Airwallex API.
+ */
 internal class AirwallexApiRepository : ApiRepository {
-
-    @Parcelize
-    internal open class Options internal constructor(
-        internal open val clientSecret: String,
-        internal open val baseUrl: String
-    ) : Parcelable
 
     @Parcelize
     internal class PaymentIntentOptions internal constructor(
@@ -20,16 +16,22 @@ internal class AirwallexApiRepository : ApiRepository {
         override val baseUrl: String,
         internal val paymentIntentId: String,
         internal val paymentIntentConfirmRequest: PaymentIntentConfirmRequest? = null
-    ) : Options(clientSecret = clientSecret, baseUrl = baseUrl)
+    ) : ApiRepository.Options(clientSecret = clientSecret, baseUrl = baseUrl)
 
+    /**
+     * Confirm a PaymentIntent using the provided [ApiRepository.Options]
+     *
+     * @param options contains the confirm params
+     * @return a [AirwallexHttpResponse] from Airwallex server
+     */
     @Suppress("DEPRECATION")
-    override fun confirmPaymentIntent(options: Options): AirwallexHttpResponse? {
+    override fun confirmPaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
         val jsonParser = JsonParser()
         val paramsJson =
             jsonParser.parse(AirwallexPlugins.gson.toJson(requireNotNull((options as PaymentIntentOptions).paymentIntentConfirmRequest)))
                 .asJsonObject
 
-        return AirwallexPlugins.restClient.execute(
+        return AirwallexPlugins.httpClient.execute(
             AirwallexHttpRequest.Builder(
                 confirmPaymentIntentUrl(
                     options.baseUrl,
@@ -48,8 +50,14 @@ internal class AirwallexApiRepository : ApiRepository {
         )
     }
 
-    override fun retrievePaymentIntent(options: Options): AirwallexHttpResponse? {
-        return AirwallexPlugins.restClient.execute(
+    /**
+     * Retrieve a PaymentIntent using the provided [ApiRepository.Options]
+     *
+     * @param options contains the retrieve params
+     * @return a [AirwallexHttpResponse] from Airwallex server
+     */
+    override fun retrievePaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
+        return AirwallexPlugins.httpClient.execute(
             AirwallexHttpRequest.Builder(
                 retrievePaymentIntentUrl(
                     options.baseUrl,

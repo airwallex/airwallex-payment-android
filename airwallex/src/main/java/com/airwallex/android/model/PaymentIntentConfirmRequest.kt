@@ -4,6 +4,9 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * The request params to confirm [PaymentIntent]
+ */
 @Parcelize
 data class PaymentIntentConfirmRequest internal constructor(
 
