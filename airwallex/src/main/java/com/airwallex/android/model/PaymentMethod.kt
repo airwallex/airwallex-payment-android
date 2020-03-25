@@ -4,33 +4,48 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
+import java.util.*
 
 @Parcelize
 data class PaymentMethod internal constructor(
 
+    // Unique identifier for the payment method
     @SerializedName("id")
     val id: String,
 
     @SerializedName("request_id")
     val requestId: String?,
 
+    // Customer id
     @SerializedName("customer_id")
     val customerId: String?,
 
+    // Type of the payment method. One of card, wechatpay
     @SerializedName("type")
     val type: PaymentMethodType,
 
+    // The card info
     @SerializedName("card")
     val card: Card?,
 
+    // The wechat request that contains Wechat pay flow
     @SerializedName("wechatpay")
-    val wechatPayFlow: WechatPayFlow?,
+    val wechatPayRequest: WechatPayRequest?,
 
     @SerializedName("billing")
     val billing: Billing?,
 
+    // A set of key-value pairs that you can attach to the payment method
     @SerializedName("metadata")
-    val metadata: @RawValue Map<String, Any>?
+    val metadata: @RawValue Map<String, Any>?,
+
+    // Time at which the payment method was created
+    @SerializedName("created_at")
+    val createdAt: Date?,
+
+    // Last time at which the payment method was updated
+    @SerializedName("updated_at")
+    val updatedAt: Date?
 
 ) : AirwallexModel, Parcelable {
 
@@ -40,9 +55,11 @@ data class PaymentMethod internal constructor(
         private var customerId: String? = null
         private var type: PaymentMethodType = PaymentMethodType.CARD
         private var card: Card? = null
-        private var wechatPayFlow: WechatPayFlow? = null
+        private var wechatPayFlow: WechatPayRequest? = null
         private var billing: Billing? = null
         private var metadata: Map<String, Any>? = null
+        private var createdAt: Date? = null
+        private var updatedAt: Date? = null
 
         fun setId(id: String): Builder = apply {
             this.id = id
@@ -68,12 +85,20 @@ data class PaymentMethod internal constructor(
             this.card = card
         }
 
-        fun setWechatPayFlow(wechatPayFlow: WechatPayFlow?): Builder = apply {
+        fun setWechatPayFlow(wechatPayFlow: WechatPayRequest?): Builder = apply {
             this.wechatPayFlow = wechatPayFlow
         }
 
         fun setType(type: PaymentMethodType): Builder = apply {
             this.type = type
+        }
+
+        fun setCreatedAt(createdAt: Date?): Builder = apply {
+            this.createdAt = createdAt
+        }
+
+        fun setUpdatedAt(updatedAt: Date?): Builder = apply {
+            this.updatedAt = updatedAt
         }
 
         override fun build(): PaymentMethod {
@@ -84,8 +109,10 @@ data class PaymentMethod internal constructor(
                 billing = billing,
                 card = card,
                 type = type,
-                wechatPayFlow = wechatPayFlow,
-                metadata = metadata
+                wechatPayRequest = wechatPayFlow,
+                metadata = metadata,
+                createdAt = createdAt,
+                updatedAt = updatedAt
             )
         }
     }

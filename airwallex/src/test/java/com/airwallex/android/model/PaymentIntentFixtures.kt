@@ -50,9 +50,7 @@ internal object PaymentIntentFixtures {
                             "street": "Pudong District",
                             "postcode": "100000"
                         }
-                    },
-                    "created_at": "2020-02-13T06:13:05+0000",
-                    "updated_at": "2020-02-13T06:13:05+0000"
+                    }
                 }
             ],
             "client_secret": "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="

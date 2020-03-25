@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 class ProductTest {
     @Test
     fun builderConstructor() {
-        val product = Product.Builder()
+        val product = PhysicalProduct.Builder()
             .setCode("123")
             .setName("AirPods Pro")
             .setDesc("Buy AirPods Pro, per month with trade-in")

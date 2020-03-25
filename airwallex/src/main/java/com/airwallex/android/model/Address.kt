@@ -7,18 +7,24 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Address internal constructor(
+
+    // Country code of the address. Use the two-character ISO Standard Country Codes
     @SerializedName("country_code")
     val countryCode: String? = null,
 
+    // State or province of the address
     @SerializedName("state")
     val state: String? = null,
 
+    // City of the address
     @SerializedName("city")
     val city: String? = null,
 
+    // Street of the address
     @SerializedName("street")
     val street: String? = null,
 
+    // Postcode of the address
     @SerializedName("postcode")
     val postcode: String? = null
 ) : AirwallexModel, Parcelable {

@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: "./ktlint.gradle"
+apply from: "./dokka.gradle"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -30,12 +31,9 @@ ext {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
 
     api "com.squareup.okhttp3:okhttp:$okhttpVersion"
     api "com.google.code.gson:gson:${gsonVersion}"
-
-    compileOnly project(':airwallex-threeds')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
@@ -43,7 +41,6 @@ dependencies {
 
     javadocDeps 'androidx.annotation:annotation:1.1.0'
     javadocDeps 'androidx.appcompat:appcompat:1.1.0'
-    javadocDeps 'com.google.android.material:material:1.1.0'
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:4.3.1'

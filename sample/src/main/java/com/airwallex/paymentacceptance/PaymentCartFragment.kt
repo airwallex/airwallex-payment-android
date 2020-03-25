@@ -2,7 +2,6 @@ package com.airwallex.paymentacceptance
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,14 +9,14 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.airwallex.android.model.Address
-import com.airwallex.android.model.Product
+import com.airwallex.android.model.PhysicalProduct
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.cart_item.view.*
 import kotlinx.android.synthetic.main.fragment_cart.*
 
 class PaymentCartFragment : Fragment() {
 
-    var shipping: Shipping = Shipping.Builder()
+    val shipping: Shipping = Shipping.Builder()
         .setFirstName("John")
         .setLastName("Doe")
         .setPhone("13800000000")
@@ -33,7 +32,7 @@ class PaymentCartFragment : Fragment() {
         .build()
 
     val products = mutableListOf(
-        Product.Builder()
+        PhysicalProduct.Builder()
             .setCode("123")
             .setName("AirPods Pro")
             .setDesc("Buy AirPods Pro, per month with trade-in")
@@ -43,7 +42,7 @@ class PaymentCartFragment : Fragment() {
             .setUrl("www.aircross.com")
             .setQuantity(1)
             .build(),
-        Product.Builder()
+        PhysicalProduct.Builder()
             .setCode("123")
             .setName("HomePod")
             .setDesc("Buy HomePod, per month with trade-in")
@@ -57,7 +56,7 @@ class PaymentCartFragment : Fragment() {
 
     @SuppressLint("ViewConstructor")
     class CartItem(
-        order: Product,
+        order: PhysicalProduct,
         context: Context?,
         private val removeHandler: () -> Unit
     ) :
@@ -92,22 +91,14 @@ class PaymentCartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        shippingItemView.renewalShipping(shipping)
-        refreshProducts()
+        initializeProductsViews(products.toMutableList())
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        shippingItemView.onActivityResult(requestCode, resultCode, data) {
-            it?.let {
-                shipping = it
-            }
-        }
+    fun reset() {
+        initializeProductsViews(products.toMutableList())
     }
 
-    private fun refreshProducts() {
-        val products = products
+    private fun initializeProductsViews(products: MutableList<PhysicalProduct>) {
         llProducts.removeAllViews()
         products.map {
             CartItem(
@@ -115,7 +106,7 @@ class PaymentCartFragment : Fragment() {
                 context
             ) {
                 products.remove(it)
-                refreshProducts()
+                initializeProductsViews(products)
             }
         }.forEach { llProducts.addView(it) }
 

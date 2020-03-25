@@ -6,41 +6,52 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
 import android.text.TextUtils
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
-import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.AirwallexError
-import com.airwallex.android.model.Order
 import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.model.PaymentIntentStatus
+import com.airwallex.android.model.PurchaseOrder
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.io.IOException
-import java.util.*
 import kotlinx.android.synthetic.main.activity_payment_cart.*
 import okhttp3.*
 import org.json.JSONObject
+import retrofit2.HttpException
+import java.io.IOException
+import java.util.*
 
 class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
 
-    private val api: Api by lazy {
-        ApiFactory(Constants.BASE_URL).create()
-    }
+    private val handler: Handler = Handler()
+
+    private val api: Api
+        get() {
+            return ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
+        }
+
+    private val authApi: AuthApi
+        get() {
+            return ApiFactory(Settings.authUrl).buildRetrofit().create(AuthApi::class.java)
+        }
 
     private val prefs: SharedPreferences by lazy {
         application.getSharedPreferences(TAG, 0)
     }
 
+    /**
+     * Cache customerId is just to prevent creating multiple customers
+     */
     private var cachedCustomerId: String
         set(value) {
             prefs.edit()
@@ -51,17 +62,38 @@ class PaymentCartActivity : AppCompatActivity() {
             return prefs.getString(CUSTOMER_ID, "") ?: ""
         }
 
+    // token cannot appear on the merchant side, this is just for Demo purposes only
     private lateinit var token: String
-    private var airwallexStarter: AirwallexStarter? = null
-
-    private var airwallex: Airwallex? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment_cart)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        supportActionBar?.setDisplayShowTitleEnabled(true)
+        supportActionBar?.setTitle(R.string.app_name)
+
         btnCheckout.setOnClickListener {
             authAndCreatePaymentIntent()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_cart, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.reset -> {
+                (cartFragment as PaymentCartFragment).reset()
+                true
+            }
+            R.id.settings -> {
+                startActivity(Intent(this, PaymentSettingsActivity::class.java))
+                true
+            }
+            else -> false
         }
     }
 
@@ -70,15 +102,18 @@ class PaymentCartActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    /**
+     * `IMPORTANT` This code must be placed on the merchant server, this is just for Demo purposes only
+     */
     private fun authAndCreatePaymentIntent() {
         compositeSubscription.add(
-            api.authentication(
-                apiKey = Constants.API_KEY,
-                clientId = Constants.CLIENT_ID
+            authApi.authentication(
+                apiKey = Settings.apiKey,
+                clientId = Settings.clientId
             )
                 .subscribeOn(Schedulers.io())
                 .doOnSubscribe {
-                    loading.visibility = View.VISIBLE
+                    setLoadingProgress(true)
                 }
                 .observeOn(Schedulers.io())
                 .flatMap {
@@ -127,12 +162,13 @@ class PaymentCartActivity : AppCompatActivity() {
                         authorization = "Bearer $token",
                         params = mutableMapOf(
                             "request_id" to UUID.randomUUID().toString(),
-                            "amount" to products.sumByDouble { product ->
-                                product.unitPrice ?: 0 * (product.quantity ?: 0).toDouble()
-                            },
-                            "currency" to "USD",
+//                            "amount" to products.sumByDouble { product ->
+//                                product.unitPrice ?: 0 * (product.quantity ?: 0).toDouble()
+//                            },
+                            "amount" to Settings.price.toDouble(),
+                            "currency" to Settings.currency,
                             "merchant_order_id" to UUID.randomUUID().toString(),
-                            "order" to Order.Builder()
+                            "order" to PurchaseOrder.Builder()
                                 .setProducts(products)
                                 .setShipping(shipping)
                                 .setType("physical_goods")
@@ -145,188 +181,143 @@ class PaymentCartActivity : AppCompatActivity() {
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { handleResponse(it) },
-                    { handleError(it) }
+                    { handlePaymentIntentResponse(it) },
+                    {
+                        if (it is HttpException) {
+                            showCreatePaymentIntentError(it.response()?.errorBody()?.string() ?: it.localizedMessage)
+                        } else {
+                            showCreatePaymentIntentError(it.localizedMessage)
+                        }
+                    }
                 )
         )
     }
 
-    private fun handleError(err: Throwable) {
-        loading.visibility = View.GONE
-        Toast.makeText(this, err.localizedMessage, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun handleResponse(paymentIntent: PaymentIntent) {
-        loading.visibility = View.GONE
-        airwallex =
-            Airwallex(token = token, clientSecret = requireNotNull(paymentIntent.clientSecret))
-        airwallexStarter = AirwallexStarter(
-            this@PaymentCartActivity
+    /**
+     * PaymentIntent must come from merchant's server, only wechat pay is currently supported
+     */
+    private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
+        val airwallex = Airwallex(
+            clientSecret = requireNotNull(paymentIntent.clientSecret),
+            customerId = paymentIntent.customerId,
+            baseUrl = Settings.baseUrl // You can change the baseUrl to test other environments
         )
-        airwallexStarter?.presentPaymentFlow(paymentIntent, token)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        cartFragment.onActivityResult(requestCode, resultCode, data)
-
-        airwallexStarter?.handlePaymentResult(requestCode, resultCode, data,
-            object :
-                AirwallexStarter.PaymentIntentResult {
-                override fun onCancelled() {
-                    Log.d(TAG, "User cancel the payment checkout")
-                }
-
-                override fun onSuccess(
-                    paymentIntent: PaymentIntent,
-                    paymentMethodType: PaymentMethodType
-                ) {
-                    loading.visibility = View.VISIBLE
-                    handlePaymentResult(paymentMethodType, paymentIntent) {
-                        val paymentIntentId = paymentIntent.id
-                        airwallex?.let {
-                            retrievePaymentIntent(it, paymentIntentId)
-                        }
-                    }
-                }
-
-                override fun onFailed(error: AirwallexError) {
-                    showPaymentError(error.message)
-                }
-            })
-    }
-
-    private fun handlePaymentResult(
-        paymentMethodType: PaymentMethodType,
-        paymentIntent: PaymentIntent,
-        completion: () -> Unit
-    ) {
-        when (paymentMethodType) {
-            PaymentMethodType.CARD -> {
-                completion.invoke()
-            }
-            PaymentMethodType.WECHAT -> {
-                val nextAction = paymentIntent.nextAction
-                if (nextAction?.data == null
-                ) {
-                    Toast.makeText(
-                        this@PaymentCartActivity,
-                        "Server error, NextAction is null...",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return
-                }
-
-                val prepayId = nextAction.data?.prepayId
-
-                Log.d(TAG, "prepayId $prepayId")
-
-                if (prepayId?.startsWith("http") == true) {
-                    Log.d(TAG, "Confirm PaymentIntent success, launch MOCK Wechat pay.")
-                    // launch mock wechat pay
-                    val client = OkHttpClient()
-                    val builder = Request.Builder()
-                    builder.url(prepayId)
-                    client.newCall(builder.build()).enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            loading.visibility = View.GONE
-                            runOnUiThread {
-                                Toast.makeText(
-                                    this@PaymentCartActivity,
-                                    "Failed to mock wechat pay, reason: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
-                            completion.invoke()
-                        }
-                    })
-                } else {
-                    Log.d(TAG, "Confirm PaymentIntent success, launch REAL Wechat pay.")
-                    val data = paymentIntent.nextAction?.data
-                    if (data == null) {
-                        Toast.makeText(
-                            this@PaymentCartActivity,
-                            "No Wechat data!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return
-                    }
-                    // launch wechat pay
-                    WXPay.instance.launchWeChat(
-                        context = this@PaymentCartActivity,
-                        appId = Constants.APP_ID,
-                        data = data,
-                        listener = object : WXPay.WechatPaymentListener {
-                            override fun onSuccess() {
-                                completion.invoke()
-                            }
-
-                            override fun onFailure(errCode: String?, errMessage: String?) {
-                                Log.e(TAG, "Wechat pay failed, error $errMessage")
-                                loading.visibility = View.GONE
-                                Toast.makeText(
-                                    this@PaymentCartActivity,
-                                    "errCode $errCode, errMessage $errMessage",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-
-                            override fun onCancel() {
-                                Log.e(TAG, "User cancel the Wechat payment")
-                                loading.visibility = View.GONE
-                                Toast.makeText(
-                                    this@PaymentCartActivity,
-                                    "User cancel the payment",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        })
-                }
-            }
-        }
-    }
-
-    private fun retrievePaymentIntent(airwallex: Airwallex, paymentIntentId: String) {
-        Log.d(
-            TAG,
-            "Start Retrieve PaymentIntent"
-        )
-        airwallex.retrievePaymentIntent(
-            paymentIntentId = paymentIntentId,
+        airwallex.confirmPaymentIntent(
+            paymentIntentId = paymentIntent.id,
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
-                    Log.d(
-                        TAG,
-                        "Retrieve PaymentIntent success, PaymentIntent status: ${response.status}"
-                    )
+                    val paymentIntentId = response.id
+                    val nextActionData = response.nextAction?.data
+                    if (nextActionData == null) {
+                        showPaymentError("Server error, nextAction data is null...")
+                        return
+                    }
 
-                    loading.visibility = View.GONE
-                    if (response.status == "SUCCEEDED") {
-                        showPaymentSuccess()
+                    val prepayId = nextActionData.prepayId
+                    if (prepayId?.startsWith("http") == true) {
+                        Log.d(TAG, "Confirm PaymentIntent success, MOCK wechatpay on staging env.")
+                        // mock wechat pay
+                        val client = OkHttpClient()
+                        val builder = Request.Builder()
+                        builder.url(prepayId)
+                        client.newCall(builder.build()).enqueue(object : Callback {
+                            override fun onFailure(call: Call, e: IOException) {
+                                runOnUiThread {
+                                    showPaymentError("Failed to mock wechat pay, reason: ${e.message}")
+                                }
+                            }
+
+                            override fun onResponse(call: Call, response: Response) {
+                                // Delay some time to make sure the mock MOCK has been updated on the server
+                                handler.postDelayed({
+                                    Log.d(
+                                        TAG,
+                                        "MOCK wechatpay successful, start retrieve the payment intent status."
+                                    )
+                                    retrievePaymentIntent(airwallex, paymentIntentId)
+                                }, 200)
+                            }
+                        })
                     } else {
-                        showPaymentError(response.status)
+                        Log.d(TAG, "Confirm PaymentIntent success, launch REAL wechatpay.")
+                        // launch wechat pay
+                        WXPay.instance.launchWeChat(
+                            context = this@PaymentCartActivity,
+                            appId = Settings.wechatAppId,
+                            data = nextActionData,
+                            listener = object : WXPay.WechatPaymentListener {
+                                override fun onSuccess() {
+                                    Log.d(
+                                        TAG,
+                                        "REAL wechatpay successful, start retrieve the payment intent status."
+                                    )
+                                    retrievePaymentIntent(airwallex, response.id)
+                                }
+
+                                override fun onFailure(errCode: String?, errMessage: String?) {
+                                    showPaymentError(errMessage)
+                                }
+
+                                override fun onCancel() {
+                                    showPaymentError("User cancel the wechatpay")
+                                }
+                            })
                     }
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    Log.e(TAG, "Retrieve PaymentIntent failed", exception)
-                    loading.visibility = View.GONE
                     showPaymentError(exception.error?.message)
                 }
             })
     }
 
-    fun showPaymentSuccess() {
+    /**
+     * You can retrieve PaymentIntent to determine whether the PaymentIntent was successful by `status`
+     */
+    private fun retrievePaymentIntent(airwallex: Airwallex, paymentIntentId: String) {
+        airwallex.retrievePaymentIntent(
+            paymentIntentId = paymentIntentId,
+            listener = object : Airwallex.PaymentListener<PaymentIntent> {
+                override fun onSuccess(response: PaymentIntent) {
+                    if (response.status == PaymentIntentStatus.SUCCEEDED) {
+                        showPaymentSuccess()
+                    } else {
+                        showPaymentError(response.status.name)
+                    }
+                }
+
+                override fun onFailed(exception: AirwallexException) {
+                    showPaymentError(exception.error?.message)
+                }
+            })
+    }
+
+    private fun setLoadingProgress(loading: Boolean) {
+        loadingView.visibility = if (loading) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    }
+
+    private fun showPaymentSuccess() {
+        setLoadingProgress(false)
         showAlert(
             getString(R.string.payment_successful),
             getString(R.string.payment_successful_message)
         )
     }
 
-    fun showPaymentError(error: String? = null) {
+    private fun showCreatePaymentIntentError(error: String? = null) {
+        setLoadingProgress(false)
+        showAlert(
+            getString(R.string.create_payment_intent_failed),
+            error ?: getString(R.string.payment_failed_message)
+        )
+    }
+
+    private fun showPaymentError(error: String? = null) {
+        setLoadingProgress(false)
         showAlert(
             getString(R.string.payment_failed),
             error ?: getString(R.string.payment_failed_message)
@@ -347,11 +338,9 @@ class PaymentCartActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-        }
-        return super.onOptionsItemSelected(item)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        cartFragment.onActivityResult(requestCode, resultCode, data)
     }
 
     companion object {

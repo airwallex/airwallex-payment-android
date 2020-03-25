@@ -28,6 +28,7 @@ data class PaymentMethodOptions internal constructor(
     @Parcelize
     data class CardOptions internal constructor(
 
+        // Should capture automatically when confirm. Default to false. The payment intent will be captured automatically if it is true, and authorized only if it is false
         @SerializedName("auto_capture")
         val autoCapture: Boolean,
 
@@ -59,6 +60,7 @@ data class PaymentMethodOptions internal constructor(
         @Parcelize
         data class ThreeDs internal constructor(
 
+            // Three domain request
             @SerializedName("pa_res")
             val paRes: String?,
 

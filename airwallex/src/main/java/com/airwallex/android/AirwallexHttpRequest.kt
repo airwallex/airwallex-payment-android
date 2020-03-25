@@ -1,5 +1,8 @@
 package com.airwallex.android
 
+/**
+ * The http request we send to Airwallex server.
+ */
 internal class AirwallexHttpRequest private constructor(
     val url: String,
     val method: Method,

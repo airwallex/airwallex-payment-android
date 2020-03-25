@@ -1,11 +1,27 @@
 <resources>
-    <string name="app_name">Airwallex</string>
-    <string name="checkout">Checkout</string>
+
+    <string name="auth_url_value">https://api-staging.airwallex.com</string>
+    <string name="base_url_value">https://staging-pci-api.airwallex.com</string>
+    <string name="api_key_value">e70420bb90a34c6c2be422387f4209eaf3a7aa84bc8cc4fc2af23cfde121370407833f0649261723e2a91aec552f56ee</string>
+    <string name="client_id_value">dPH0tQnxRaijLH7ILl0nDQ</string>
+
+    <string name="wechat_app_id_value">wxfad13fd6681a62b0</string>
+    <string name="wechat_app_signature_value">eb1b3de47de134a321442cad974db87e</string>
+
+    <string name="authorization">Authorization</string>
+    <string name="wechat">Wechat</string>
+    <string name="auth_url">Auth Url</string>
+    <string name="base_url">Base Url</string>
+    <string name="api_key">Api Key</string>
+    <string name="client_id">Client Id</string>
+    <string name="wechat_app_id">App Id</string>
+    <string name="wechat_app_signature">App Signature</string>
+
+    <string name="app_name">Airwallex Sample</string>
+    <string name="checkout">Checkout With Wechat</string>
     <string name="subtotal">Subtotal</string>
     <string name="remove">Remove</string>
     <string name="my_cart">My cart</string>
-    <string name="payment">Payment</string>
-    <string name="enter_shipping">Enter shipping information</string>
 
     <string name="payment_successful">Payment successful</string>
     <string name="payment_successful_message">Your payment has been charged</string>
@@ -13,4 +29,14 @@
     <string name="payment_failed_message">There was an error while processing your payment. Please try again.</string>
 
     <string name="free">Free</string>
+    <string name="total">Total</string>
+
+    <string name="shipping">Shipping</string>
+    <string name="options">Options</string>
+    <string name="price_value">0.1</string>
+    <string name="currency_value">USD</string>
+    <string name="currency">Currency</string>
+    <string name="price">Price</string>
+    <string name="price_currency"><![CDATA[Price & Currency]]></string>
+    <string name="create_payment_intent_failed">Create PaymentIntent Failed.</string>
 </resources>
