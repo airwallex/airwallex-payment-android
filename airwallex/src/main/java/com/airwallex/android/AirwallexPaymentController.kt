@@ -14,10 +14,10 @@ internal class AirwallexPaymentController(
 ) : PaymentController {
 
     /**
-     * Confirm the [PaymentIntent] using [AirwallexApiRepository.Options]
+     * Confirm the [PaymentIntent] using [ApiRepository.Options]
      */
     override fun confirmPaymentIntent(
-        options: AirwallexApiRepository.Options,
+        options: ApiRepository.Options,
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         Logger.debug("Start confirm PaymentIntent")
@@ -25,10 +25,10 @@ internal class AirwallexPaymentController(
     }
 
     /**
-     * Retrieve the [PaymentIntent] using [AirwallexApiRepository.Options]
+     * Retrieve the [PaymentIntent] using [ApiRepository.Options]
      */
     override fun retrievePaymentIntent(
-        options: AirwallexApiRepository.Options,
+        options: ApiRepository.Options,
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         Logger.debug("Start retrieve PaymentIntent")
@@ -37,21 +37,22 @@ internal class AirwallexPaymentController(
 
     private fun <T> executeApiOperation(
         apiOperationType: ApiOperationType,
-        options: AirwallexApiRepository.Options,
+        options: ApiRepository.Options,
         listener: Airwallex.PaymentListener<T>
     ) {
         AirwallexApiOperation(
             options,
             repository,
             workScope,
-            object : ApiResponseCallback<AirwallexHttpResponse> {
+            apiOperationType,
+            object : ApiExecutor.ApiResponseListener<AirwallexHttpResponse> {
                 override fun onSuccess(response: AirwallexHttpResponse) {
                     if (response.isSuccessful && response.body != null) {
-                        val response: T = AirwallexPlugins.gson.fromJson(
+                        val result: T = AirwallexPlugins.gson.fromJson(
                             response.body.string(),
                             classType(apiOperationType)
                         )
-                        listener.onSuccess(response)
+                        listener.onSuccess(result)
                     } else {
                         val error = if (response.body != null) AirwallexPlugins.gson.fromJson(
                             response.body.string(),
@@ -72,18 +73,17 @@ internal class AirwallexPaymentController(
                 override fun onError(e: AirwallexException) {
                     listener.onFailed(e)
                 }
-            },
-            apiOperationType
+            }
         ).execute()
     }
 
     private class AirwallexApiOperation(
-        private val options: AirwallexApiRepository.Options,
+        private val options: ApiRepository.Options,
         private val repository: ApiRepository,
         workScope: CoroutineScope,
-        callback: ApiResponseCallback<AirwallexHttpResponse>,
-        private val apiOperationType: ApiOperationType
-    ) : ApiExecutor<AirwallexHttpResponse>(workScope, callback) {
+        private val apiOperationType: ApiOperationType,
+        listener: ApiResponseListener<AirwallexHttpResponse>
+    ) : ApiExecutor<AirwallexHttpResponse>(workScope, listener) {
 
         override suspend fun getResponse(): AirwallexHttpResponse? {
             return when (apiOperationType) {

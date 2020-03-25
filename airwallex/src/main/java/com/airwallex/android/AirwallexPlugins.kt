@@ -12,7 +12,10 @@ import java.util.concurrent.TimeUnit
  */
 internal object AirwallexPlugins {
 
-    internal val restClient by lazy {
+    /**
+     * Provide [AirwallexHttpClient] to request the Airwallex API
+     */
+    internal val httpClient by lazy {
         val clientBuilder = OkHttpClient.Builder()
         clientBuilder.interceptors().add(0, object : Interceptor {
             @Throws(IOException::class)
@@ -29,6 +32,9 @@ internal object AirwallexPlugins {
         AirwallexHttpClient.createClient(clientBuilder)
     }
 
+    /**
+     * Provide [Gson] to parse the response of Airwallex API
+     */
     internal val gson by lazy {
         Gson()
     }

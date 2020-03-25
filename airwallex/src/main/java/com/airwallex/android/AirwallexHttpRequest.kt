@@ -10,10 +10,16 @@ internal class AirwallexHttpRequest private constructor(
     val body: AirwallexHttpBody?
 ) {
 
+    /**
+     * The method type of [AirwallexHttpRequest]
+     */
     enum class Method {
         GET, POST, PUT, DELETE;
     }
 
+    /**
+     * Builder of [AirwallexHttpRequest]
+     */
     class Builder(private val url: String, private val method: Method) {
         private var headers: MutableMap<String, String> = mutableMapOf()
         private var body: AirwallexHttpBody? = null

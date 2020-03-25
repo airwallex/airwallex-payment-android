@@ -1,15 +1,24 @@
 package com.airwallex.android
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
 /**
- * An interface for data operations on Airwallex API objects.
+ * An interface for making Airwallex API requests
  */
 internal interface ApiRepository {
 
+    @Parcelize
+    open class Options internal constructor(
+        internal open val clientSecret: String,
+        internal open val baseUrl: String
+    ) : Parcelable
+
     fun confirmPaymentIntent(
-        options: AirwallexApiRepository.Options
+        options: Options
     ): AirwallexHttpResponse?
 
     fun retrievePaymentIntent(
-        options: AirwallexApiRepository.Options
+        options: Options
     ): AirwallexHttpResponse?
 }
