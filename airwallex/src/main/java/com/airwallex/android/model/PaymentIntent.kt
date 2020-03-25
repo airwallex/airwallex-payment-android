@@ -6,6 +6,12 @@ import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 import java.util.*
 
+/**
+ * A PaymentIntent guides you through the process of collecting a payment from your customer.
+ * It tracks a payment when your customer first checks out, through to when payment is successfully
+ * paid by your customer. A PaymentIntent transitions through a number of states throughout the
+ * customer's payment journey.
+ */
 @Parcelize
 data class PaymentIntent internal constructor(
 

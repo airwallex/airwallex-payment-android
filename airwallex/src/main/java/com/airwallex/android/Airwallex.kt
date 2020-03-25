@@ -15,15 +15,20 @@ class Airwallex internal constructor(
     private val paymentController: PaymentController
 ) {
 
+    /**
+     * Generic interface for an API operation callback that either returns a [Response], or an [Exception]
+     */
     interface PaymentListener<Response> {
         fun onFailed(exception: AirwallexException)
         fun onSuccess(response: Response)
     }
 
     /**
+     * Constructor with clientSecret and customerId.
+     *
      * @param clientSecret The client secret of [PaymentIntent].
      * @param customerId The ID of a Customer, it's optional.
-     * @param baseUrl You can set different url to test
+     * @param baseUrl You can set it to different urls and test on different environments
      */
     constructor(
         clientSecret: String,
@@ -52,7 +57,7 @@ class Airwallex internal constructor(
      * Confirm a [PaymentIntent] by ID
      *
      * @param paymentIntentId ID of [PaymentIntent]
-     * @param listener the callback of confirm [PaymentIntent]
+     * @param listener a [PaymentListener] to receive the result or error
      */
     @UiThread
     fun confirmPaymentIntent(
@@ -83,7 +88,7 @@ class Airwallex internal constructor(
      * Retrieve a [PaymentIntent] by ID
      *
      * @param paymentIntentId ID of [PaymentIntent]
-     * @param listener the callback of retrieve [PaymentIntent]
+     * @param listener a [PaymentListener] to receive the result or error
      */
     @UiThread
     fun retrievePaymentIntent(
@@ -101,7 +106,7 @@ class Airwallex internal constructor(
     }
 
     companion object {
-        // The default url, that you can change in the constructor for test on different environments
+        // The default url, that you can change it in the constructor to test on different environments
         private const val BASE_URL = "https://api.airwallex.com"
     }
 }
