@@ -11,7 +11,7 @@ class AirwallexPluginsTest {
 
     @Test
     fun restClientTest() {
-        val restClient = AirwallexPlugins.restClient
+        val restClient = AirwallexPlugins.httpClient
 
         assertNotNull(restClient.builder)
         assertEquals(1, restClient.builder.interceptors().size)

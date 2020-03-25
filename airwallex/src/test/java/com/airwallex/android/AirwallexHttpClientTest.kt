@@ -10,7 +10,7 @@ class AirwallexHttpClientTest {
 
     @Test
     fun httpExecuteWithResponse() {
-        val response = AirwallexPlugins.restClient.execute(
+        val response = AirwallexPlugins.httpClient.execute(
             AirwallexHttpRequest.Builder(
                 AirwallexApiRepository.retrievePaymentIntentUrl(
                     "https://api-staging.airwallex.com",

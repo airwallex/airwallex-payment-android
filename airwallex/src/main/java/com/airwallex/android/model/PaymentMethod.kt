@@ -6,6 +6,11 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import java.util.*
 
+/**
+ * A PaymentMethod represents the funding source that is used by your customer when making a
+ * payment. You may create and add multiple payment methods to a customer as saved payment methods
+ * to help streamline your customers' checkout experience.
+ */
 @Parcelize
 data class PaymentMethod internal constructor(
 

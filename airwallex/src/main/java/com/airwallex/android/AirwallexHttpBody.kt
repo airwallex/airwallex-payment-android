@@ -1,9 +1,9 @@
 package com.airwallex.android
 
 /**
- * The base http body class
+ * A data class that contains http request body details
  */
-internal class AirwallexHttpBody(
+internal data class AirwallexHttpBody(
     val contentType: String,
     val content: String
 )

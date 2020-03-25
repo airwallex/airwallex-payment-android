@@ -14,6 +14,9 @@ internal class AirwallexHttpResponse private constructor(
     val allHeaders: MutableMap<String, String?>
 ) {
 
+    /**
+     * Builder of [AirwallexHttpResponse]
+     */
     class Builder {
         private var isSuccessful = false
         private var statusCode = 0
