@@ -6,7 +6,10 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okio.BufferedSink
 
-internal class AirwallexHttpClient(builder: OkHttpClient.Builder) {
+/**
+ * Http client that wraps OkHttpClient
+ */
+internal class AirwallexHttpClient(val builder: OkHttpClient.Builder) {
 
     private val okHttpClient: OkHttpClient = builder.build()
 

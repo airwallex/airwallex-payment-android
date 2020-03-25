@@ -2,121 +2,66 @@ package com.airwallex.android
 
 import com.airwallex.android.exception.APIException
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.*
+import com.airwallex.android.model.AirwallexError
+import com.airwallex.android.model.PaymentIntent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
+@Suppress("UNCHECKED_CAST")
 internal class AirwallexPaymentController(
     private val repository: ApiRepository,
     private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : PaymentController {
 
     /**
-     * Confirm the Airwallex PaymentIntent
+     * Confirm the [PaymentIntent] using [AirwallexApiRepository.Options]
      */
     override fun confirmPaymentIntent(
         options: AirwallexApiRepository.Options,
-        paymentIntentParams: PaymentIntentParams,
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         Logger.debug("Start confirm PaymentIntent")
-        executeApiOperation(
-            ApiOperationType.CONFIRM_PAYMENT_INTENT,
-            options,
-            null,
-            paymentIntentParams,
-            listener,
-            PaymentIntent::class.java
-        )
+        executeApiOperation(ApiOperationType.CONFIRM_PAYMENT_INTENT, options, listener)
     }
 
     /**
-     * Retrieve the Airwallex Payment Intent
+     * Retrieve the [PaymentIntent] using [AirwallexApiRepository.Options]
      */
     override fun retrievePaymentIntent(
         options: AirwallexApiRepository.Options,
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         Logger.debug("Start retrieve PaymentIntent")
-        executeApiOperation(
-            ApiOperationType.RETRIEVE_PAYMENT_INTENT,
-            options,
-            null,
-            null,
-            listener,
-            PaymentIntent::class.java
-        )
-    }
-
-    /**
-     * Create the Airwallex PaymentMethod
-     */
-    override fun createPaymentMethod(
-        options: AirwallexApiRepository.Options,
-        paymentMethodParams: PaymentMethodParams,
-        listener: Airwallex.PaymentListener<PaymentMethod>
-    ) {
-        Logger.debug("Start create PaymentMethod")
-        executeApiOperation(
-            ApiOperationType.CREATE_PAYMENT_METHOD,
-            options,
-            paymentMethodParams,
-            null,
-            listener,
-            PaymentMethod::class.java
-        )
-    }
-
-    /**
-     * Get all of customer's PaymentMethods
-     */
-    override fun getPaymentMethods(
-        options: AirwallexApiRepository.Options,
-        listener: Airwallex.PaymentListener<PaymentMethodResponse>
-    ) {
-        Logger.debug("Get all customer's PaymentMethods")
-        executeApiOperation(
-            ApiOperationType.GET_PAYMENT_METHODS,
-            options,
-            null,
-            null,
-            listener,
-            PaymentMethodResponse::class.java
-        )
+        executeApiOperation(ApiOperationType.RETRIEVE_PAYMENT_INTENT, options, listener)
     }
 
     private fun <T> executeApiOperation(
         apiOperationType: ApiOperationType,
         options: AirwallexApiRepository.Options,
-        paymentMethodParams: PaymentMethodParams?,
-        paymentIntentParams: PaymentIntentParams?,
-        callback: Airwallex.PaymentListener<T>,
-        classOfT: Class<T>
+        listener: Airwallex.PaymentListener<T>
     ) {
         AirwallexApiOperation(
             options,
-            paymentMethodParams,
-            paymentIntentParams,
             repository,
             workScope,
-            object : ApiResultCallback<AirwallexHttpResponse> {
-                override fun onSuccess(result: AirwallexHttpResponse) {
-                    if (result.isSuccessful && result.body != null) {
+            object : ApiResponseCallback<AirwallexHttpResponse> {
+                override fun onSuccess(response: AirwallexHttpResponse) {
+                    if (response.isSuccessful && response.body != null) {
                         val response: T = AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
-                            classOfT
+                            response.body.string(),
+                            classType(apiOperationType)
                         )
-                        callback.onSuccess(response)
+                        listener.onSuccess(response)
                     } else {
-                        val error = if (result.body != null) AirwallexPlugins.gson.fromJson(
-                            result.body.string(),
+                        val error = if (response.body != null) AirwallexPlugins.gson.fromJson(
+                            response.body.string(),
                             AirwallexError::class.java
                         ) else null
-                        callback.onFailed(
+                        listener.onFailed(
                             APIException(
-                                message = result.message,
-                                traceId = result.allHeaders["x-awx-traceid"],
-                                statusCode = result.statusCode,
+                                message = response.message,
+                                traceId = response.allHeaders["x-awx-traceid"],
+                                statusCode = response.statusCode,
                                 error = error,
                                 e = null
                             )
@@ -125,7 +70,7 @@ internal class AirwallexPaymentController(
                 }
 
                 override fun onError(e: AirwallexException) {
-                    callback.onFailed(e)
+                    listener.onFailed(e)
                 }
             },
             apiOperationType
@@ -134,30 +79,16 @@ internal class AirwallexPaymentController(
 
     private class AirwallexApiOperation(
         private val options: AirwallexApiRepository.Options,
-        private val paymentMethodParams: PaymentMethodParams?,
-        private val paymentIntentParams: PaymentIntentParams?,
         private val repository: ApiRepository,
         workScope: CoroutineScope,
-        callback: ApiResultCallback<AirwallexHttpResponse>,
+        callback: ApiResponseCallback<AirwallexHttpResponse>,
         private val apiOperationType: ApiOperationType
-    ) : ApiOperation<AirwallexHttpResponse>(workScope, callback) {
+    ) : ApiExecutor<AirwallexHttpResponse>(workScope, callback) {
 
-        override suspend fun getResult(): AirwallexHttpResponse? {
+        override suspend fun getResponse(): AirwallexHttpResponse? {
             return when (apiOperationType) {
-                ApiOperationType.CREATE_PAYMENT_METHOD -> {
-                    repository.createPaymentMethod(
-                        options,
-                        requireNotNull(paymentMethodParams)
-                    )
-                }
-                ApiOperationType.GET_PAYMENT_METHODS -> {
-                    repository.getPaymentMethods(options)
-                }
                 ApiOperationType.CONFIRM_PAYMENT_INTENT -> {
-                    repository.confirmPaymentIntent(
-                        options,
-                        requireNotNull(paymentIntentParams)
-                    )
+                    repository.confirmPaymentIntent(options)
                 }
                 ApiOperationType.RETRIEVE_PAYMENT_INTENT -> {
                     repository.retrievePaymentIntent(options)
@@ -166,9 +97,16 @@ internal class AirwallexPaymentController(
         }
     }
 
+    private fun <T> classType(type: ApiOperationType): Class<T> {
+        when (type) {
+            ApiOperationType.CONFIRM_PAYMENT_INTENT,
+            ApiOperationType.RETRIEVE_PAYMENT_INTENT -> {
+                return PaymentIntent::class.java as Class<T>
+            }
+        }
+    }
+
     enum class ApiOperationType {
-        CREATE_PAYMENT_METHOD,
-        GET_PAYMENT_METHODS,
         CONFIRM_PAYMENT_INTENT,
         RETRIEVE_PAYMENT_INTENT
     }

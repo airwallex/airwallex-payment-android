@@ -3,6 +3,9 @@ package com.airwallex.android
 import java.util.*
 import okhttp3.ResponseBody
 
+/**
+ * The http response we receive from Airwallex server.
+ */
 internal class AirwallexHttpResponse private constructor(
     val isSuccessful: Boolean,
     val statusCode: Int,

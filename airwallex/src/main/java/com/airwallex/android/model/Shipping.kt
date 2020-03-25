@@ -7,15 +7,19 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class Shipping internal constructor(
 
+    // First name of the recipient
     @SerializedName("first_name")
     val firstName: String? = null,
 
+    // Last name of the recipient
     @SerializedName("last_name")
     val lastName: String? = null,
 
+    // Phone number of the recipient
     @SerializedName("phone_number")
     val phoneNumber: String? = null,
 
+    // Shipping method for the product
     @SerializedName("shipping_method")
     val shippingMethod: String? = null,
 

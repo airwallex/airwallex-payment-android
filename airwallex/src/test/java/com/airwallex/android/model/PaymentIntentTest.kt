@@ -5,6 +5,7 @@ import kotlin.test.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.math.BigDecimal
 
 @RunWith(RobolectricTestRunner::class)
 class PaymentIntentTest {
@@ -14,16 +15,16 @@ class PaymentIntentTest {
         val paymentIntent = PaymentIntent(
             id = "int_6hJ72Y7zich939UCz8j6BLkonH",
             requestId = "a750e597-c30e-4d2b-ad41-cac601a15b25",
-            amount = 100.01f,
+            amount = BigDecimal.valueOf(100.01),
             currency = "USD",
             merchantOrderId = "cc9bfc13-ba30-483b-a62c-ee9250c9bfev",
-            order = PaymentIntent.PaymentIntentOrder(
+            order = PurchaseOrder(
                 type = "physical_goods"
             ),
             customerId = "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
             descriptor = "Airwallex - T-shirt",
-            status = "REQUIRES_PAYMENT_METHOD",
-            capturedAmount = 0f,
+            status = PaymentIntentStatus.REQUIRES_PAYMENT_METHOD,
+            capturedAmount = BigDecimal.valueOf(0),
             availablePaymentMethodTypes = arrayListOf("card", "wechatpay"),
             customerPaymentMethods = arrayListOf(
                 PaymentMethod.Builder()

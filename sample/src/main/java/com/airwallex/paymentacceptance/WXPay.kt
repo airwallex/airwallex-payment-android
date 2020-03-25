@@ -49,14 +49,14 @@ class WXPay {
     }
 
     private fun launchWeChat(data: PaymentIntent.NextActionData) {
-        val success = weChatApi.registerApp(Constants.APP_SIGNATURE)
+        val success = weChatApi.registerApp(Settings.wechatAppSignature)
         assert(success)
         weChatApi.sendReq(createPayReq(data))
     }
 
     private fun createPayReq(weChat: PaymentIntent.NextActionData): PayReq {
         val weChatReq = PayReq()
-        weChatReq.appId = Constants.APP_ID
+        weChatReq.appId = Settings.wechatAppId
         weChatReq.partnerId = weChat.partnerId
         weChatReq.prepayId = weChat.prepayId
         weChatReq.packageValue = weChat.packageValue

@@ -25,7 +25,7 @@ class OrderTest {
             )
             .build()
         val products = mutableListOf(
-            Product.Builder()
+            PhysicalProduct.Builder()
                 .setCode("123")
                 .setName("AirPods Pro")
                 .setDesc("Buy AirPods Pro, per month with trade-in")
@@ -35,7 +35,7 @@ class OrderTest {
                 .setUrl("www.aircross.com")
                 .setQuantity(1)
                 .build(),
-            Product.Builder()
+            PhysicalProduct.Builder()
                 .setCode("123")
                 .setName("HomePod")
                 .setDesc("Buy HomePod, per month with trade-in")
@@ -46,7 +46,7 @@ class OrderTest {
                 .setQuantity(1)
                 .build()
         )
-        val order = Order.Builder()
+        val order = PurchaseOrder.Builder()
             .setProducts(products)
             .setShipping(shipping)
             .setType("physical_goods")
