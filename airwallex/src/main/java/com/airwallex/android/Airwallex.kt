@@ -24,21 +24,23 @@ class Airwallex internal constructor(
     }
 
     /**
-     * Constructor with clientSecret, customerId and baseUrl.
+     * Constructor with clientSecret and customerId.
      *
      * @param clientSecret The client secret of [PaymentIntent].
      * @param customerId optional, the ID of a Customer.
+     * @param enableLogging enable log in sdk, default false
      * @param baseUrl optional, you can set it to different urls and test on different environments
      */
     constructor(
         clientSecret: String,
         customerId: String? = null,
+        enableLogging: Boolean = false,
         baseUrl: String = BASE_URL
     ) : this(
         clientSecret,
         customerId,
         baseUrl,
-        AirwallexApiRepository()
+        AirwallexApiRepository(enableLogging)
     )
 
     private constructor(
