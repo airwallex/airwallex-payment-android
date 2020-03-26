@@ -2,7 +2,7 @@ package com.airwallex.android
 
 import com.airwallex.android.model.*
 
-internal interface PaymentController {
+internal interface PaymentManager {
 
     /**
      * Confirm the [PaymentIntent] using [ApiRepository.Options]

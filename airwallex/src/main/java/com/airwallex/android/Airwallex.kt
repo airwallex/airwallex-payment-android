@@ -12,11 +12,11 @@ class Airwallex internal constructor(
     private val clientSecret: String,
     private val customerId: String?,
     private val baseUrl: String,
-    private val paymentController: PaymentController
+    private val paymentController: PaymentManager
 ) {
 
     /**
-     * Generic interface for an API operation callback that either returns a [Response], or an [Exception]
+     * Generic interface for an Airwallex API operation callback that either returns a [Response], or an [Exception]
      */
     interface PaymentListener<Response> {
         fun onFailed(exception: AirwallexException)
@@ -24,11 +24,11 @@ class Airwallex internal constructor(
     }
 
     /**
-     * Constructor with clientSecret and customerId.
+     * Constructor with clientSecret, customerId and baseUrl.
      *
      * @param clientSecret The client secret of [PaymentIntent].
-     * @param customerId The ID of a Customer, it's optional.
-     * @param baseUrl You can set it to different urls and test on different environments
+     * @param customerId optional, the ID of a Customer.
+     * @param baseUrl optional, you can set it to different urls and test on different environments
      */
     constructor(
         clientSecret: String,
@@ -50,14 +50,14 @@ class Airwallex internal constructor(
         clientSecret,
         customerId,
         baseUrl,
-        AirwallexPaymentController(repository)
+        AirwallexPaymentManager(repository)
     )
 
     /**
      * Confirm a [PaymentIntent] by ID
      *
      * @param paymentIntentId ID of [PaymentIntent]
-     * @param listener a [PaymentListener] to receive the result or error
+     * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
     fun confirmPaymentIntent(
@@ -88,7 +88,7 @@ class Airwallex internal constructor(
      * Retrieve a [PaymentIntent] by ID
      *
      * @param paymentIntentId ID of [PaymentIntent]
-     * @param listener a [PaymentListener] to receive the result or error
+     * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
     fun retrievePaymentIntent(
@@ -107,6 +107,6 @@ class Airwallex internal constructor(
 
     companion object {
         // The default url, that you can change it in the constructor to test on different environments
-        private const val BASE_URL = "https://api.airwallex.com"
+        private const val BASE_URL = "https://pci-api.ariwallex.com"
     }
 }
