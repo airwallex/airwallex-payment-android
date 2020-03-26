@@ -22,7 +22,6 @@ internal class AirwallexPaymentManager(
         options: ApiRepository.Options,
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
-        Logger.debug("Start confirm PaymentIntent")
         executeApiOperation(ApiOperationType.CONFIRM_PAYMENT_INTENT, options, listener)
     }
 
@@ -33,7 +32,6 @@ internal class AirwallexPaymentManager(
         options: ApiRepository.Options,
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
-        Logger.debug("Start retrieve PaymentIntent")
         executeApiOperation(ApiOperationType.RETRIEVE_PAYMENT_INTENT, options, listener)
     }
 
