@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
@@ -32,8 +31,6 @@ import java.util.*
 class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
-
-    private val handler: Handler = Handler()
 
     private val api: Api
         get() {
@@ -184,7 +181,9 @@ class PaymentCartActivity : AppCompatActivity() {
                     { handlePaymentIntentResponse(it) },
                     {
                         if (it is HttpException) {
-                            showCreatePaymentIntentError(it.response()?.errorBody()?.string() ?: it.localizedMessage)
+                            showCreatePaymentIntentError(
+                                it.response()?.errorBody()?.string() ?: it.localizedMessage
+                            )
                         } else {
                             showCreatePaymentIntentError(it.localizedMessage)
                         }
@@ -206,7 +205,6 @@ class PaymentCartActivity : AppCompatActivity() {
             paymentIntentId = paymentIntent.id,
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
-                    val paymentIntentId = response.id
                     val nextActionData = response.nextAction?.data
                     if (nextActionData == null) {
                         showPaymentError("Server error, nextAction data is null...")
@@ -214,8 +212,11 @@ class PaymentCartActivity : AppCompatActivity() {
                     }
 
                     val prepayId = nextActionData.prepayId
+                    // We use the `URL mock` method to simulate WeChat Pay in the `Staging` environment.
+                    // By requesting this URL, we will set the status of the `PaymentIntent` to success.
                     if (prepayId?.startsWith("http") == true) {
-                        Log.d(TAG, "Confirm PaymentIntent success, MOCK wechatpay on staging env.")
+                        // **This is just for test on Staging env**
+                        Log.d(TAG, "Confirm PaymentIntent success, MOCK WeChat Pay on staging env.")
                         // mock wechat pay
                         val client = OkHttpClient()
                         val builder = Request.Builder()
@@ -223,23 +224,25 @@ class PaymentCartActivity : AppCompatActivity() {
                         client.newCall(builder.build()).enqueue(object : Callback {
                             override fun onFailure(call: Call, e: IOException) {
                                 runOnUiThread {
-                                    showPaymentError("Failed to mock wechat pay, reason: ${e.message}")
+                                    Log.e(TAG, "Mock WeChat Pay failed, reason: $e.message")
+                                    showPaymentError(e.message)
                                 }
                             }
 
                             override fun onResponse(call: Call, response: Response) {
-                                // Delay some time to make sure the mock MOCK has been updated on the server
-                                handler.postDelayed({
-                                    Log.d(
-                                        TAG,
-                                        "MOCK wechatpay successful, start retrieve the payment intent status."
-                                    )
-                                    retrievePaymentIntent(airwallex, paymentIntentId)
-                                }, 200)
+                                runOnUiThread {
+                                    if (response.isSuccessful) {
+                                        Log.d(TAG, "Mock WeChat Pay successful.")
+                                        showPaymentSuccess()
+                                    } else {
+                                        Log.e(TAG, "Mock WeChat Pay failed.")
+                                        showPaymentError("Mock WeChat Pay failed.")
+                                    }
+                                }
                             }
                         })
                     } else {
-                        Log.d(TAG, "Confirm PaymentIntent success, launch REAL wechatpay.")
+                        Log.d(TAG, "Confirm PaymentIntent success, launch REAL WeChat Pay.")
                         // launch wechat pay
                         WXPay.instance.launchWeChat(
                             context = this@PaymentCartActivity,
@@ -247,19 +250,18 @@ class PaymentCartActivity : AppCompatActivity() {
                             data = nextActionData,
                             listener = object : WXPay.WechatPaymentListener {
                                 override fun onSuccess() {
-                                    Log.d(
-                                        TAG,
-                                        "REAL wechatpay successful, start retrieve the payment intent status."
-                                    )
-                                    retrievePaymentIntent(airwallex, response.id)
+                                    Log.d(TAG, "REAL WeChat Pay successful.")
+                                    showPaymentSuccess()
                                 }
 
                                 override fun onFailure(errCode: String?, errMessage: String?) {
+                                    Log.e(TAG, "REAL WeChat Pay failed, reason: $errMessage")
                                     showPaymentError(errMessage)
                                 }
 
                                 override fun onCancel() {
-                                    showPaymentError("User cancel the wechatpay")
+                                    Log.d(TAG, "REAL WeChat Pay cancelled.")
+                                    showPaymentError("REAL WeChat Pay cancelled.")
                                 }
                             })
                     }
@@ -272,7 +274,8 @@ class PaymentCartActivity : AppCompatActivity() {
     }
 
     /**
-     * You can retrieve PaymentIntent to determine whether the PaymentIntent was successful by `status`
+     * After successful payment, Airwallex server will notify the Merchant,
+     * Then Merchant can retrieve the `PaymentIntent` to check the `status` of the PaymentIntent.
      */
     private fun retrievePaymentIntent(airwallex: Airwallex, paymentIntentId: String) {
         airwallex.retrievePaymentIntent(
@@ -280,14 +283,11 @@ class PaymentCartActivity : AppCompatActivity() {
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     if (response.status == PaymentIntentStatus.SUCCEEDED) {
-                        showPaymentSuccess()
-                    } else {
-                        showPaymentError(response.status.name)
+                        // payment successful
                     }
                 }
 
                 override fun onFailed(exception: AirwallexException) {
-                    showPaymentError(exception.error?.message)
                 }
             })
     }
