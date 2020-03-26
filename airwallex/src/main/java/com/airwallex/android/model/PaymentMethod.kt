@@ -14,41 +14,63 @@ import java.util.*
 @Parcelize
 data class PaymentMethod internal constructor(
 
-    // Unique identifier for the payment method
+    /**
+     * Unique identifier for the payment method
+     */
     @SerializedName("id")
     val id: String,
 
+    /**
+     * Request id for the payment method
+     */
     @SerializedName("request_id")
     val requestId: String?,
 
-    // Customer id
+    /**
+     * Customer id for the payment method
+     */
     @SerializedName("customer_id")
     val customerId: String?,
 
-    // Type of the payment method. One of card, wechatpay
+    /**
+     * Type of the payment method. One of card, wechatpay
+     */
     @SerializedName("type")
     val type: PaymentMethodType,
 
-    // The card info
+    /**
+     * The card info
+     */
     @SerializedName("card")
     val card: Card?,
 
-    // The wechat request that contains Wechat pay flow
+    /**
+     * The wechat request that contains Wechat pay flow
+     */
     @SerializedName("wechatpay")
     val wechatPayRequest: WechatPayRequest?,
 
+    /**
+     * Billing info for the payment method
+     */
     @SerializedName("billing")
     val billing: Billing?,
 
-    // A set of key-value pairs that you can attach to the payment method
+    /**
+     * A set of key-value pairs that you can attach to the payment method
+     */
     @SerializedName("metadata")
     val metadata: @RawValue Map<String, Any>?,
 
-    // Time at which the payment method was created
+    /**
+     * Time at which the payment method was created
+     */
     @SerializedName("created_at")
     val createdAt: Date?,
 
-    // Last time at which the payment method was updated
+    /**
+     * Last time at which the payment method was updated
+     */
     @SerializedName("updated_at")
     val updatedAt: Date?
 

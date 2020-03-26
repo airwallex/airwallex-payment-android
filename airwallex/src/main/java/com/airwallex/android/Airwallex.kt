@@ -108,7 +108,9 @@ class Airwallex internal constructor(
     }
 
     companion object {
-        // The default url, that you can change it in the constructor to test on different environments
+        /**
+         * The default url, that you can change it in the constructor to test on different environments
+         */
         private const val BASE_URL = "https://pci-api.ariwallex.com"
     }
 }
