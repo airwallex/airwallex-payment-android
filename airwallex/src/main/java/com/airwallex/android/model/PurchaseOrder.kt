@@ -7,15 +7,21 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class PurchaseOrder internal constructor(
 
-    // Product list
+    /**
+     * Product list
+     */
     @SerializedName("products")
     val products: List<PhysicalProduct>? = null,
 
-    // shipping address
+    /**
+     * Shipping address
+     */
     @SerializedName("shipping")
     val shipping: Shipping? = null,
 
-    // Industry category of the order
+    /**
+     * Industry category of the order
+     */
     @SerializedName("type")
     val type: String? = null
 ) : AirwallexModel, Parcelable {
