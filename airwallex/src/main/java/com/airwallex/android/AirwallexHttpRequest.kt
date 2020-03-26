@@ -16,7 +16,11 @@ internal class AirwallexHttpRequest private constructor(
     internal data class AirwallexHttpRequestBody(
         val contentType: String,
         val content: String
-    )
+    ) {
+        override fun toString(): String {
+            return "contentType $contentType, content $content"
+        }
+    }
 
     /**
      * The method type of [AirwallexHttpRequest]
@@ -48,5 +52,12 @@ internal class AirwallexHttpRequest private constructor(
                 body = body
             )
         }
+    }
+
+    override fun toString(): String {
+        return "\nmethod: $method" +
+                "\nurl: $url" +
+                "\nallHeaders: $allHeaders" +
+                "\nbody: $body"
     }
 }

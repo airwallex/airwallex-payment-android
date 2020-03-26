@@ -8,7 +8,7 @@ import java.util.*
 /**
  * The implementation of [ApiRepository] to request the Airwallex API.
  */
-internal class AirwallexApiRepository : ApiRepository {
+internal class AirwallexApiRepository(enableLogging: Boolean) : ApiRepository {
 
     @Parcelize
     internal class PaymentIntentOptions internal constructor(
@@ -17,6 +17,8 @@ internal class AirwallexApiRepository : ApiRepository {
         internal val paymentIntentId: String,
         internal val paymentIntentConfirmRequest: PaymentIntentConfirmRequest? = null
     ) : ApiRepository.Options(clientSecret = clientSecret, baseUrl = baseUrl)
+
+    private val logWorker = Logger.getLogWorker(enableLogging)
 
     /**
      * Confirm a PaymentIntent using the provided [ApiRepository.Options]
@@ -31,23 +33,23 @@ internal class AirwallexApiRepository : ApiRepository {
             jsonParser.parse(AirwallexPlugins.gson.toJson(requireNotNull((options as PaymentIntentOptions).paymentIntentConfirmRequest)))
                 .asJsonObject
 
-        return AirwallexPlugins.httpClient.execute(
-            AirwallexHttpRequest.Builder(
-                confirmPaymentIntentUrl(
-                    options.baseUrl,
-                    requireNotNull(options.paymentIntentId)
-                ),
-                AirwallexHttpRequest.Method.POST
-            )
-                .setBody(
-                    AirwallexHttpRequest.AirwallexHttpRequestBody(
-                        CONTENT_TYPE,
-                        paramsJson.toString()
-                    )
-                )
-                .addClientSecretHeader(options.clientSecret)
-                .build()
+        val request = AirwallexHttpRequest.Builder(
+            confirmPaymentIntentUrl(
+                options.baseUrl,
+                requireNotNull(options.paymentIntentId)
+            ),
+            AirwallexHttpRequest.Method.POST
         )
+            .setBody(
+                AirwallexHttpRequest.AirwallexHttpRequestBody(
+                    CONTENT_TYPE,
+                    paramsJson.toString()
+                )
+            )
+            .addClientSecretHeader(options.clientSecret)
+            .build()
+        logWorker.log(Logger.Level.DEBUG, "Confirm PaymentIntent Request: $request")
+        return AirwallexPlugins.httpClient.execute(request)
     }
 
     /**
@@ -57,17 +59,17 @@ internal class AirwallexApiRepository : ApiRepository {
      * @return a [AirwallexHttpResponse] from Airwallex server
      */
     override fun retrievePaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
-        return AirwallexPlugins.httpClient.execute(
-            AirwallexHttpRequest.Builder(
-                retrievePaymentIntentUrl(
-                    options.baseUrl,
-                    (options as PaymentIntentOptions).paymentIntentId
-                ),
-                AirwallexHttpRequest.Method.GET
-            )
-                .addClientSecretHeader(options.clientSecret)
-                .build()
+        val request = AirwallexHttpRequest.Builder(
+            retrievePaymentIntentUrl(
+                options.baseUrl,
+                (options as PaymentIntentOptions).paymentIntentId
+            ),
+            AirwallexHttpRequest.Method.GET
         )
+            .addClientSecretHeader(options.clientSecret)
+            .build()
+        logWorker.log(Logger.Level.DEBUG, "Retrieve PaymentIntent Request: $request")
+        return AirwallexPlugins.httpClient.execute(request)
     }
 
     /**
