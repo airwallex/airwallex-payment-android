@@ -33,7 +33,7 @@ class AirwallexHttpRequestTest {
             AirwallexHttpRequest.Builder("https://api-staging.airwallex.com", method)
                 .addHeader("name", "value")
                 .setBody(
-                    AirwallexHttpBody(
+                    AirwallexHttpRequest.AirwallexHttpRequestBody(
                         contentType,
                         content
                     )
