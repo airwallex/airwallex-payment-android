@@ -7,11 +7,13 @@ import com.airwallex.android.model.PaymentIntent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
-@Suppress("UNCHECKED_CAST")
-internal class AirwallexPaymentController(
+/**
+ * The implementation of [PaymentManager] to request the payment.
+ */
+internal class AirwallexPaymentManager(
     private val repository: ApiRepository,
     private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-) : PaymentController {
+) : PaymentManager {
 
     /**
      * Confirm the [PaymentIntent] using [ApiRepository.Options]
@@ -97,6 +99,7 @@ internal class AirwallexPaymentController(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun <T> classType(type: ApiOperationType): Class<T> {
         when (type) {
             ApiOperationType.CONFIRM_PAYMENT_INTENT,

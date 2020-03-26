@@ -67,7 +67,7 @@ internal class AirwallexHttpClient(val builder: OkHttpClient.Builder) {
         builder.headers(okHttpHeadersBuilder.build())
 
         // Set Body
-        val parseBody: AirwallexHttpBody? = request.body
+        val parseBody: AirwallexHttpRequest.AirwallexHttpRequestBody? = request.body
         if (parseBody != null) {
             val okHttpRequestBody = AirwallexOkHttpRequestBody(parseBody)
             when (method) {
@@ -83,7 +83,7 @@ internal class AirwallexHttpClient(val builder: OkHttpClient.Builder) {
         return builder.build()
     }
 
-    private class AirwallexOkHttpRequestBody internal constructor(val body: AirwallexHttpBody) :
+    private class AirwallexOkHttpRequestBody internal constructor(val body: AirwallexHttpRequest.AirwallexHttpRequestBody) :
         RequestBody() {
         private val content: ByteArray = body.content.toByteArray(StandardCharsets.UTF_8)
         private val offset = 0
