@@ -40,7 +40,7 @@ internal class AirwallexApiRepository : ApiRepository {
                 AirwallexHttpRequest.Method.POST
             )
                 .setBody(
-                    AirwallexHttpBody(
+                    AirwallexHttpRequest.AirwallexHttpRequestBody(
                         CONTENT_TYPE,
                         paramsJson.toString()
                     )
@@ -70,6 +70,9 @@ internal class AirwallexApiRepository : ApiRepository {
         )
     }
 
+    /**
+     * Extension to add `clientSecret`
+     */
     private fun AirwallexHttpRequest.Builder.addClientSecretHeader(
         clientSecret: String
     ): AirwallexHttpRequest.Builder {

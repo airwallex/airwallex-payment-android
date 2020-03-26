@@ -4,7 +4,7 @@ import java.util.*
 import okhttp3.ResponseBody
 
 /**
- * The http response we receive from Airwallex server.
+ * The http response received from Airwallex server.
  */
 internal class AirwallexHttpResponse private constructor(
     val isSuccessful: Boolean,
