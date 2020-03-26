@@ -7,35 +7,51 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class PhysicalProduct internal constructor(
 
-    // Type of product, such as electronic, handling, physical, service, or shipping
+    /**
+     * Type of product, such as electronic, handling, physical, service, or shipping
+     */
     @SerializedName("type")
     val type: String?,
 
-    // Merchant’s product identifier code
+    /**
+     * Merchant’s product identifier code
+     */
     @SerializedName("code")
     val code: String?,
 
-    // Name of the product
+    /**
+     * Name of the product
+     */
     @SerializedName("name")
     val name: String?,
 
-    // Product stock keeping unit
+    /**
+     * Product stock keeping unit
+     */
     @SerializedName("sku")
     val sku: String?,
 
-    // Product quantity
+    /**
+     * Product quantity
+     */
     @SerializedName("quantity")
     val quantity: Int?,
 
-    // Product unit price
+    /**
+     * Product unit price
+     */
     @SerializedName("unit_price")
     val unitPrice: Double?,
 
-    // Product description
+    /**
+     * Product description
+     */
     @SerializedName("desc")
     val desc: String?,
 
-    // Product url
+    /**
+     * Product url
+     */
     @SerializedName("url")
     val url: String?
 

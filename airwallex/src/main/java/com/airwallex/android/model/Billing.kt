@@ -7,26 +7,39 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class Billing internal constructor(
 
-    // First name of the customer
+    /**
+     * First name of the customer
+     */
     @SerializedName("first_name")
     val firstName: String? = null,
 
-    // Last name of the customer
+    /**
+     * Last name of the customer
+     */
     @SerializedName("last_name")
     val lastName: String? = null,
 
-    // Phone number of the customer
+    /**
+     * Phone number of the customer
+     */
     @SerializedName("phone_number")
     val phone: String? = null,
 
-    // Email address of the customer
+    /**
+     * Email address of the customer
+     */
     @SerializedName("email")
     val email: String? = null,
 
-    // Date of birth of the customer in the format: YYYY-MM-DD
+    /**
+     * Date of birth of the customer in the format: YYYY-MM-DD
+     */
     @SerializedName("date_of_birth")
     val dateOfBirth: String? = null,
 
+    /**
+     * Address of the billing info
+     */
     @SerializedName("address")
     val address: Address? = null
 ) : AirwallexModel, Parcelable {

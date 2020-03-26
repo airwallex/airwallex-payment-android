@@ -10,19 +10,27 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class PaymentIntentConfirmRequest internal constructor(
 
-    // Unique request ID specified by the merchant
+    /**
+     * Unique request ID specified by the merchant
+     */
     @SerializedName("request_id")
     val requestId: String,
 
-    // Customer who intends to pay for the payment intent
+    /**
+     * Customer who intends to pay for the payment intent
+     */
     @SerializedName("customer_id")
     val customerId: String? = null,
 
-    // The payment method that you want to confirm
+    /**
+     * The payment method that you want to confirm
+     */
     @SerializedName("payment_method")
     val paymentMethod: PaymentMethod,
 
-    // The user device info
+    /**
+     * The user device info
+     */
     @SerializedName("device")
     val device: Device,
 
