@@ -39,7 +39,7 @@ assembleRelease:
     - ./gradlew :sample:assembleRelease
   artifacts:
     paths:
-      - app/build/outputs/
+      - sample/build/outputs/
 
 lint:
   stage: test
