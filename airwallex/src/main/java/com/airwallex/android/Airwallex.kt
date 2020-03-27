@@ -111,6 +111,6 @@ class Airwallex internal constructor(
         /**
          * The default url, that you can change it in the constructor to test on different environments
          */
-        private const val BASE_URL = "https://pci-api.ariwallex.com"
+        private const val BASE_URL = "https://pci-api.airwallex.com"
     }
 }
