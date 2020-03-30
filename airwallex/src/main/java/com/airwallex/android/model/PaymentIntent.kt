@@ -245,12 +245,38 @@ data class PaymentIntent internal constructor(
     @Parcelize
     data class NextAction internal constructor(
 
+        /**
+         * Type of next action, can be one of render_qr_code, call_sdk, redirect, display
+         */
         @SerializedName("type")
-        val type: String,
+        val type: NextActionType,
 
+        /**
+         * The additional data that can be used to complete this action
+         */
         @SerializedName("data")
         val data: NextActionData?
     ) : AirwallexModel, Parcelable
+
+
+    /**
+     * The status of a [PaymentIntent]
+     */
+    @Parcelize
+    enum class NextActionType : Parcelable {
+
+        @SerializedName("render_qr_code")
+        RENDER_QR_CODE,
+
+        @SerializedName("call_sdk")
+        CALL_SDK,
+
+        @SerializedName("redirect")
+        REDIRECT,
+
+        @SerializedName("display")
+        DISPLAY
+    }
 
     @Parcelize
     data class NextActionData internal constructor(
