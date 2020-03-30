@@ -34,6 +34,9 @@ data class PaymentMethodOptions internal constructor(
         @SerializedName("auto_capture")
         val autoCapture: Boolean,
 
+        /**
+         * Three ds for card options
+         */
         @SerializedName("three_ds")
         val threeDs: ThreeDs?
 
@@ -62,7 +65,9 @@ data class PaymentMethodOptions internal constructor(
         @Parcelize
         data class ThreeDs internal constructor(
 
-            // Three domain request
+            /**
+             * Three domain request
+             */
             @SerializedName("pa_res")
             val paRes: String?,
 
