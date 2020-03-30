@@ -39,7 +39,7 @@ data class PaymentMethod internal constructor(
     val type: PaymentMethodType,
 
     /**
-     * The card info
+     * Card information for the payment method
      */
     @SerializedName("card")
     val card: Card?,
@@ -51,7 +51,7 @@ data class PaymentMethod internal constructor(
     val wechatPayRequest: WechatPayRequest?,
 
     /**
-     * Billing info for the payment method
+     * Billing information for the payment method
      */
     @SerializedName("billing")
     val billing: Billing?,
@@ -69,6 +69,12 @@ data class PaymentMethod internal constructor(
     val createdAt: Date?,
 
     /**
+     * Status of the payment method, can be one of CREATED, VERIFIED, EXPIRED, INVALID
+     */
+    @SerializedName("status")
+    val status: PaymentMethodStatus? = null,
+
+    /**
      * Last time at which the payment method was updated
      */
     @SerializedName("updated_at")
@@ -78,7 +84,7 @@ data class PaymentMethod internal constructor(
 
     class Builder : ObjectBuilder<PaymentMethod> {
         private var id: String = ""
-        private var requestId: String = ""
+        private var requestId: String? = null
         private var customerId: String? = null
         private var type: PaymentMethodType = PaymentMethodType.CARD
         private var card: Card? = null
@@ -87,12 +93,13 @@ data class PaymentMethod internal constructor(
         private var metadata: Map<String, Any>? = null
         private var createdAt: Date? = null
         private var updatedAt: Date? = null
+        private var status: PaymentMethodStatus? = null
 
         fun setId(id: String): Builder = apply {
             this.id = id
         }
 
-        fun setRequestId(requestId: String): Builder = apply {
+        fun setRequestId(requestId: String?): Builder = apply {
             this.requestId = requestId
         }
 
@@ -128,6 +135,10 @@ data class PaymentMethod internal constructor(
             this.updatedAt = updatedAt
         }
 
+        fun setStatus(status: PaymentMethodStatus?): Builder = apply {
+            this.status = status
+        }
+
         override fun build(): PaymentMethod {
             return PaymentMethod(
                 id = id,
@@ -139,56 +150,121 @@ data class PaymentMethod internal constructor(
                 wechatPayRequest = wechatPayFlow,
                 metadata = metadata,
                 createdAt = createdAt,
-                updatedAt = updatedAt
+                updatedAt = updatedAt,
+                status = status
             )
         }
+    }
+
+    /**
+     * The status of a [PaymentMethod]
+     */
+    @Parcelize
+    enum class PaymentMethodStatus : Parcelable {
+
+        @SerializedName("CREATED")
+        CREATED,
+
+        @SerializedName("VERIFIED")
+        VERIFIED,
+
+        @SerializedName("EXPIRED")
+        EXPIRED,
+
+        @SerializedName("INVALID")
+        INVALID
     }
 
     @Parcelize
     data class Card internal constructor(
 
+        /**
+         * CVC holder name
+         */
         @SerializedName("cvc")
         val cvc: String?,
 
+        /**
+         * Two digit number representing the card’s expiration month
+         */
         @SerializedName("expiry_month")
         val expiryMonth: String?,
 
+        /**
+         * Four digit number representing the card’s expiration year
+         */
         @SerializedName("expiry_year")
         val expiryYear: String?,
 
+        /**
+         * Card holder name
+         */
         @SerializedName("name")
         val name: String?,
 
+        /**
+         * Number of the card
+         */
         @SerializedName("number")
         val number: String?,
 
+        /**
+         * Bank identify number of this card
+         */
         @SerializedName("bin")
         val bin: String?,
 
+        /**
+         * Last four digits of the card number
+         */
         @SerializedName("last4")
         val last4: String?,
 
+        /**
+         * Brand of the card
+         */
         @SerializedName("brand")
         val brand: String?,
 
+        /**
+         * Country of the card
+         */
         @SerializedName("country")
         val country: String?,
 
+        /**
+         * Funding of the card
+         */
         @SerializedName("funding")
         val funding: String?,
 
+        /**
+         * Fingerprint of the card
+         */
         @SerializedName("fingerprint")
         val fingerprint: String?,
 
+        /**
+         * Whether CVC pass the check
+         */
         @SerializedName("cvc_check")
         val cvcCheck: String?,
 
+        /**
+         * Whether address pass the check
+         */
         @SerializedName("avs_check")
         val avsCheck: String?,
 
+        /**
+         * Country code of the card issuer
+         */
         @SerializedName("issuer_country_code")
         val issuerCountryCode: String?,
 
+        /**
+         * Card type of the card
+         */
         @SerializedName("card_type")
         val cardType: String?
 
