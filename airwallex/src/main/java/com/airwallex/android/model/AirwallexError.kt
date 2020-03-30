@@ -14,12 +14,21 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class AirwallexError internal constructor(
 
+    /**
+     * Error code
+     */
     @SerializedName("code")
     val code: String? = null,
 
+    /**
+     * Name of the request parameter that caused the error
+     */
     @SerializedName("source")
     val source: String? = null,
 
+    /**
+     * Description of the error
+     */
     @SerializedName("message")
     val message: String? = null
 ) : AirwallexModel, Parcelable {
