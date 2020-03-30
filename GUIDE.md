@@ -1,17 +1,24 @@
-# Getting started with the Android SDK
+# Airwallex Android SDK (Wechat Only)
 This section mainly introduces the main process of integrating Airwallex Android SDK. This guide assumes that you are an Android developer and familiar with Android Studio and Gradle.
 
-## Introduction
-With Airwallex Android SDK, you can integrate Airwallex WeChat Pay into your application.
-
 Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to include the Airwallex Android SDK in your Android project.
+
+Get started with our integration guide and example project.
+
+## Contents
+* [Requirements](#Requirements)
+* [Integration](#Integration)
+* [Features](#Features)
+* [Examples](#Examples)
+* [Contributing](#Contributing)
+
+## Requirements
+The Airwallex Android SDK is compatible with apps supporting Android API level 19 and above.
 
 ## Integration 
 Getting started with the Android SDK, please follow below steps:
 
 ### Step 1: Install the SDK
-The Android SDK is compatible with apps supporting Android API level 19 and above.
-
 To install the SDK, in your app-level `build.gradle`, add the following:
 
 ```groovy
@@ -21,7 +28,7 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 ```
 
 ### Step 2: Confirm Payment Intent
-Before confirm the `PaymentIntent`, you must create a `PaymentIntent` on the server and pass it to the client.
+Before confirming the `PaymentIntent`, you must create a `PaymentIntent` on the server and pass it to the client.
 
 > Merchant's server
 >1. To begin you will need to obtain an access token to allow you to reach all other API endpoints. Using your unique Client ID and API key (these can be generated within [Account settings > API keys](https://www.airwallex.com/app/settings/api)) you can call the Authentication API endpoint. On success, an access token will be granted.
@@ -57,7 +64,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
         }
      )
 ```
-3. After successful confirm the `PaymentIntent`, Airwallex will return all the parameters that needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay) to complete the final payment.
+3. After successfully confirming the `PaymentIntent`, Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay) to complete the final payment.
 Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/blob/master) for more details.
 
 ### Step 3: Retrieve Payment Intent to confirm the charge has succeeded
@@ -79,5 +86,26 @@ After successful payment, the Airwallex server will notify the Merchant, then yo
         })
 ```
 
-## More information
+## Features
+
+### WeChat Pay 
+We provide a seamless integration with WeChat Pay.
+
+### Airwallex API
+We provide low-level APIs that correspond to objects and methods in the Airwallex API. You can build your own entirely custom UI on top of this layer.
+
+## Examples
+To run the example project, you should follow these steps.
+
+* **Step 1:** Clone the repository to your local machine
+
+* **Step 2:** Open Android Studio and import the project by selecting the build.gradle file from the cloned repository
+
+* **Step 3:** Goto [Account settings > API keys](https://www.airwallex.com/app/settings/api) to get `Client ID` and `API key`, then fill in the `strings.xml`
+
+* **Step 4:** Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then fill `App ID` and `App Signature` in the `strings.xml`
+            
+* **Step 5:** Run the `sample` project
+
+## Contributing
 If you’d like more help, check out our [example app](https://github.com/airwallex/airwallex-payment-android/blob/master) on Github that demonstrates the use of the entire payment process. Also, you can read the [Airwallex API](https://www.airwallex.com/docs/api#/Introduction) for more details.
