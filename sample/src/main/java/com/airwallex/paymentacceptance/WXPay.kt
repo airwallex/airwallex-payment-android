@@ -1,7 +1,6 @@
 package com.airwallex.paymentacceptance
 
 import android.content.Context
-import com.airwallex.android.model.PaymentIntent
 import com.tencent.mm.opensdk.modelbase.BaseResp
 import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI
