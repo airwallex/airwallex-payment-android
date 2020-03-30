@@ -4,9 +4,15 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * Options for payment method
+ */
 @Parcelize
 data class PaymentMethodOptions internal constructor(
 
+    /**
+     * The payment method options for card
+     */
     @SerializedName("card")
     val cardOptions: CardOptions? = null
 ) : AirwallexModel, Parcelable {
@@ -66,22 +72,40 @@ data class PaymentMethodOptions internal constructor(
         data class ThreeDs internal constructor(
 
             /**
-             * Three domain request
+             * PA response
              */
             @SerializedName("pa_res")
             val paRes: String?,
 
+            /**
+             * Return url
+             */
             @SerializedName("return_url")
             val returnUrl: String?,
 
+            /**
+             * Last attempt id
+             */
             @SerializedName("attempt_id")
             val attemptId: String?,
 
+            /**
+             * Device data collection response
+             */
             @SerializedName("device_data_collection_res")
             val deviceDataCollectionRes: String?,
 
+            /**
+             * 3DS transactionId
+             */
             @SerializedName("ds_transaction_id")
-            private var dsTransactionId: String?
+            private var dsTransactionId: String?,
+
+            /**
+             * Enable three domain secure
+             */
+            @SerializedName("option")
+            private var option: Boolean
 
         ) : AirwallexModel, Parcelable {
 
@@ -95,6 +119,8 @@ data class PaymentMethodOptions internal constructor(
                 private var deviceDataCollectionRes: String? = null
 
                 private var dsTransactionId: String? = null
+
+                private var option: Boolean = false
 
                 fun setPaRes(paRes: String?): Builder = apply {
                     this.paRes = paRes
@@ -116,13 +142,18 @@ data class PaymentMethodOptions internal constructor(
                     this.dsTransactionId = dsTransactionId
                 }
 
+                fun setOption(option: Boolean): Builder = apply {
+                    this.option = option
+                }
+
                 override fun build(): ThreeDs {
                     return ThreeDs(
                         paRes = paRes,
                         returnUrl = returnUrl,
                         attemptId = attemptId,
                         deviceDataCollectionRes = deviceDataCollectionRes,
-                        dsTransactionId = dsTransactionId
+                        dsTransactionId = dsTransactionId,
+                        option = option
                     )
                 }
             }
