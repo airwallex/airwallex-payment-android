@@ -1,11 +1,12 @@
 package com.airwallex.android.model
 
 import com.airwallex.android.ParcelUtils
-import kotlin.test.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.math.BigDecimal
+import java.util.*
+import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class PaymentIntentTest {
@@ -64,7 +65,59 @@ class PaymentIntentTest {
                     .build()
 
             ),
-            clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="
+            clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
+            createdAt = Date(1585537417000),
+            updatedAt = Date(1585537442000),
+            latestPaymentAttempt = PaymentIntent.PaymentAttempt(
+                id = "att_7P9rxcJzs06b3Bt7zLWArVk3xi",
+                currency = null,
+                paymentMethod = PaymentMethod.Builder()
+                    .setId("mtd_4iyImkz7wglVXRad6hZWreqRJY0")
+                    .setRequestId(null)
+                    .setStatus(PaymentMethod.PaymentMethodStatus.VERIFIED)
+                    .setType(PaymentMethodType.CARD)
+                    .setCard(
+                        PaymentMethod.Card.Builder()
+                            .setExpiryMonth("01")
+                            .setExpiryYear("2023")
+                            .setName("Adam")
+                            .setBin("520000")
+                            .setLast4("1005")
+                            .setBrand("mastercard")
+                            .setIssuerCountryCode("MY")
+                            .setCardType("credit")
+                            .setFingerprint("290a1f394301fa8bd83be3f081a5d308d7f9fd89dd72c7c4108029dec75f72ae")
+                            .setCvcCheck("unknown")
+                            .setAvsCheck("unknown")
+                            .build()
+                    )
+                    .setBilling(
+                        Billing.Builder()
+                            .setFirstName("Jim")
+                            .setLastName("passlist")
+                            .setDateOfBirth("2011-10-12")
+                            .setEmail("jim631@sina.com")
+                            .setPhone("1367875788")
+                            .setAddress(
+                                Address.Builder()
+                                    .setCountryCode("CN")
+                                    .setState("Beijing")
+                                    .setCity("Shanghai")
+                                    .setStreet("Pudong District")
+                                    .setPostcode("33333")
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .setCreatedAt(Date(1585537440000))
+                    .setUpdatedAt(Date(1585537440000))
+                    .build(),
+                status = PaymentIntent.PaymentAttemptStatus.SUCCEEDED,
+                capturedAmount = BigDecimal.valueOf(0),
+                refundedAmount = BigDecimal.valueOf(0),
+                createdAt = Date(1585537440000),
+                updatedAt = Date(1585537440000)
+            )
         )
         assertEquals(paymentIntent, PaymentIntentFixtures.PAYMENT_INTENT)
     }

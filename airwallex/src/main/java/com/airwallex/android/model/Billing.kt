@@ -38,7 +38,7 @@ data class Billing internal constructor(
     val dateOfBirth: String? = null,
 
     /**
-     * Address of the billing info
+     * The billing address as it appears on the credit card issuer’s records
      */
     @SerializedName("address")
     val address: Address? = null
