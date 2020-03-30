@@ -3,6 +3,7 @@ package com.airwallex.android.model
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
 import java.math.BigDecimal
 import java.util.*
 
@@ -255,7 +256,7 @@ data class PaymentIntent internal constructor(
          * The additional data that can be used to complete this action
          */
         @SerializedName("data")
-        val data: NextActionData?
+        val data: @RawValue Map<String, Any>?
     ) : AirwallexModel, Parcelable
 
 
@@ -277,32 +278,4 @@ data class PaymentIntent internal constructor(
         @SerializedName("display")
         DISPLAY
     }
-
-    @Parcelize
-    data class NextActionData internal constructor(
-
-        @SerializedName("appId")
-        val appId: String?,
-
-        @SerializedName("timeStamp")
-        val timeStamp: String?,
-
-        @SerializedName("nonceStr")
-        val nonceStr: String?,
-
-        @SerializedName("prepayId")
-        val prepayId: String?,
-
-        @SerializedName("partnerId")
-        val partnerId: String?,
-
-        @SerializedName("package")
-        val packageValue: String?,
-
-        @SerializedName("sign")
-        val sign: String?,
-
-        @SerializedName("jwt")
-        val jwt: String?
-    ) : AirwallexModel, Parcelable
 }

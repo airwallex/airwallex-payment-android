@@ -205,13 +205,14 @@ class PaymentCartActivity : AppCompatActivity() {
             paymentIntentId = paymentIntent.id,
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
+                    val nextActionType = response.nextAction?.type
                     val nextActionData = response.nextAction?.data
-                    if (nextActionData == null) {
+                    if (nextActionType != PaymentIntent.NextActionType.CALL_SDK || nextActionData == null) {
                         showPaymentError("Server error, nextAction data is null...")
                         return
                     }
 
-                    val prepayId = nextActionData.prepayId
+                    val prepayId = nextActionData["prepayId"] as? String?
                     // We use the `URL mock` method to simulate WeChat Pay in the `Staging` environment.
                     // By requesting this URL, we will set the status of the `PaymentIntent` to success.
                     if (prepayId?.startsWith("http") == true) {
