@@ -259,7 +259,6 @@ data class PaymentIntent internal constructor(
         val data: @RawValue Map<String, Any>?
     ) : AirwallexModel, Parcelable
 
-
     /**
      * The status of a [PaymentIntent]
      */
