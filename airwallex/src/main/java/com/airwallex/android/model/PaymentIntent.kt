@@ -3,6 +3,7 @@ package com.airwallex.android.model
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
 import java.math.BigDecimal
 import java.util.*
 
@@ -85,7 +86,7 @@ data class PaymentIntent internal constructor(
      * Latest payment attempt that was created under the payment intent
      */
     @SerializedName("latest_payment_attempt")
-    val latestPaymentAttempt: PaymentAttempt? = null,
+    val latestPaymentAttempt: PaymentAttempt,
 
     /**
      * Available payment method types
@@ -105,6 +106,9 @@ data class PaymentIntent internal constructor(
     @SerializedName("client_secret")
     val clientSecret: String,
 
+    /**
+     * Next action for the payment intent
+     */
     @SerializedName("next_action")
     val nextAction: NextAction? = null,
 
@@ -112,13 +116,13 @@ data class PaymentIntent internal constructor(
      * Time at which this payment intent was created
      */
     @SerializedName("created_at")
-    val createdAt: Date? = null,
+    val createdAt: Date,
 
     /**
      * Last time at which this payment intent was updated or operated on
      */
     @SerializedName("updated_at")
-    val updatedAt: Date? = null,
+    val updatedAt: Date,
 
     /**
      * Last time at which this payment intent was cancelled. Only present when the payment intent was successfully cancelled, i.e. status is CANCELLED
@@ -137,70 +141,140 @@ data class PaymentIntent internal constructor(
     @Parcelize
     data class PaymentAttempt internal constructor(
 
+        /**
+         * Unique identifier for the payment attempt
+         */
         @SerializedName("id")
         val id: String,
 
+        /**
+         * Currency of the captured and refunded amounts
+         */
         @SerializedName("currency")
-        val currency: String,
+        val currency: String? = null,
 
+        /**
+         * Payment method for the payment attempt
+         */
         @SerializedName("payment_method")
         val paymentMethod: PaymentMethod,
 
+        /**
+         * Payment attempt status. One of PENDING, SUCCEEDED, CANCELLED, FAILED
+         */
         @SerializedName("status")
-        val status: String,
+        val status: PaymentAttemptStatus,
 
+        /**
+         * Captured amount
+         */
         @SerializedName("captured_amount")
         val capturedAmount: BigDecimal,
 
+        /**
+         * Refunded amount
+         */
         @SerializedName("refunded_amount")
         val refundedAmount: BigDecimal,
 
+        /**
+         * Time at which this payment attempt was created
+         */
         @SerializedName("created_at")
         val createdAt: Date,
 
+        /**
+         * Last time at which this payment attempt was updated or operated on
+         */
         @SerializedName("updated_at")
         val updatedAt: Date,
 
         @SerializedName("device")
-        val device: Device?
+        val device: Device? = null
 
     ) : AirwallexModel, Parcelable
+
+    @Parcelize
+    enum class PaymentAttemptStatus : Parcelable {
+
+        @SerializedName("PENDING_AUTHORIZATION")
+        PENDING_AUTHORIZATION,
+
+        @SerializedName("PENDING_AUTHENTICATION")
+        PENDING_AUTHENTICATION,
+
+        @SerializedName("AUTHENTICATION_FAILED")
+        AUTHENTICATION_FAILED,
+
+        @SerializedName("AUTHORIZED")
+        AUTHORIZED,
+
+        @SerializedName("AUTHORIZATION_FAILED")
+        AUTHORIZATION_FAILED,
+
+        @SerializedName("PENDING_CAPTURE")
+        PENDING_CAPTURE,
+
+        @SerializedName("VOIDED")
+        VOIDED,
+
+        @SerializedName("CAPTURED")
+        CAPTURED,
+
+        @SerializedName("CAPTURE_FAILED")
+        CAPTURE_FAILED,
+
+        @SerializedName("PENDING_PAYMENT_CODE_GENERATION")
+        PENDING_PAYMENT_CODE_GENERATION,
+
+        @SerializedName("PAYMENT_CODE_GENERATION_FAILED")
+        PAYMENT_CODE_GENERATION_FAILED,
+
+        @SerializedName("PAYMENT_CODE_GENERATED")
+        PAYMENT_CODE_GENERATED,
+
+        @SerializedName("CANCELLED")
+        CANCELLED,
+
+        @SerializedName("SUCCEEDED")
+        SUCCEEDED,
+
+        @SerializedName("PAYMENT_FAILED")
+        PAYMENT_FAILED,
+    }
 
     @Parcelize
     data class NextAction internal constructor(
 
+        /**
+         * Type of next action, can be one of render_qr_code, call_sdk, redirect, display
+         */
         @SerializedName("type")
-        val type: String,
+        val type: NextActionType,
 
+        /**
+         * The additional data that can be used to complete this action
+         */
         @SerializedName("data")
-        val data: NextActionData?
+        val data: @RawValue Map<String, Any>?
     ) : AirwallexModel, Parcelable
 
+    /**
+     * The status of a [PaymentIntent]
+     */
     @Parcelize
-    data class NextActionData internal constructor(
+    enum class NextActionType : Parcelable {
 
-        @SerializedName("appId")
-        val appId: String?,
+        @SerializedName("render_qr_code")
+        RENDER_QR_CODE,
 
-        @SerializedName("timeStamp")
-        val timeStamp: String?,
+        @SerializedName("call_sdk")
+        CALL_SDK,
 
-        @SerializedName("nonceStr")
-        val nonceStr: String?,
+        @SerializedName("redirect")
+        REDIRECT,
 
-        @SerializedName("prepayId")
-        val prepayId: String?,
-
-        @SerializedName("partnerId")
-        val partnerId: String?,
-
-        @SerializedName("package")
-        val packageValue: String?,
-
-        @SerializedName("sign")
-        val sign: String?,
-
-        @SerializedName("jwt")
-        val jwt: String?
-    ) : AirwallexModel, Parcelable
+        @SerializedName("display")
+        DISPLAY
+    }
 }
