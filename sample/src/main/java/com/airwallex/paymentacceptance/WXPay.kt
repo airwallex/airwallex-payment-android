@@ -1,6 +1,7 @@
 package com.airwallex.paymentacceptance
 
 import android.content.Context
+import com.airwallex.android.model.WeChat
 import com.tencent.mm.opensdk.modelbase.BaseResp
 import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI
@@ -21,7 +22,7 @@ class WXPay {
     fun launchWeChat(
         context: Context,
         appId: String,
-        data: Map<String, Any>,
+        data: WeChat,
         listener: WechatPaymentListener
     ) {
         this.listener = listener
@@ -47,22 +48,21 @@ class WXPay {
         weChatApi.registerApp(appId)
     }
 
-    private fun launchWeChat(data: Map<String, Any>) {
+    private fun launchWeChat(data: WeChat) {
         val success = weChatApi.registerApp(Settings.wechatAppSignature)
         assert(success)
         weChatApi.sendReq(createPayReq(data))
     }
 
-    private fun createPayReq(weChat: Map<String, Any>): PayReq {
+    private fun createPayReq(weChat: WeChat): PayReq {
         val weChatReq = PayReq()
-        weChatReq.appId = Settings.wechatAppId
-        weChatReq.partnerId = weChat["partnerId"] as String
-        weChatReq.prepayId = weChat["prepayId"] as String
-        weChatReq.packageValue = weChat["package"] as String
-        weChatReq.nonceStr = weChat["nonceStr"] as String
-        weChatReq.timeStamp = weChat["timeStamp"] as String
-        weChatReq.sign = weChat["sign"] as String
-
+        weChatReq.appId = weChat.appId
+        weChatReq.partnerId = weChat.partnerId
+        weChatReq.prepayId = weChat.prepayId
+        weChatReq.packageValue = weChat.packageValue
+        weChatReq.nonceStr = weChat.nonceStr
+        weChatReq.timeStamp = weChat.timestamp
+        weChatReq.sign = weChat.sign
         return weChatReq
     }
 
