@@ -140,8 +140,9 @@ data class PaymentIntent internal constructor(
 
     val weChat: WeChat?
         get() {
-            if (nextAction?.type != NextActionType.CALL_SDK ||
-                nextAction.data == null
+            if (latestPaymentAttempt.paymentMethod.type != PaymentMethodType.WECHAT
+                || nextAction?.type != NextActionType.CALL_SDK
+                || nextAction.data == null
             ) {
                 return null
             }
