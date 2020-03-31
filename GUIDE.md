@@ -58,8 +58,17 @@ After completing all the steps on the server, the client will get a `PaymentInte
             .build(),
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
-                val nextActionData = response.nextAction?.data
-                // `nextActionData` contains all the data needed for WeChat Pay, then you need to send `nextActionData` to [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay).
+                val weChat = response.weChat
+                // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay).
+                val weChatReq = PayReq()
+                weChatReq.appId = weChat.appId
+                weChatReq.partnerId = weChat.partnerId
+                weChatReq.prepayId = weChat.prepayId
+                weChatReq.packageValue = weChat.packageValue
+                weChatReq.nonceStr = weChat.nonceStr
+                weChatReq.timeStamp = weChat.timestamp
+                weChatReq.sign = weChat.sign
+                weChatApi.sendReq(weChatReq)
             }
                 
             override fun onFailed(exception: AirwallexException) {

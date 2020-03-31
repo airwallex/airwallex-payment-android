@@ -138,6 +138,25 @@ data class PaymentIntent internal constructor(
 
 ) : AirwallexModel, Parcelable {
 
+    val weChat: WeChat?
+        get() {
+            if (nextAction?.type != NextActionType.CALL_SDK ||
+                nextAction.data == null
+            ) {
+                return null
+            }
+
+            return WeChat(
+                appId = nextAction.data["appId"] as? String,
+                partnerId = nextAction.data["partnerId"] as? String,
+                prepayId = nextAction.data["prepayId"] as? String,
+                packageValue = nextAction.data["package"] as? String,
+                nonceStr = nextAction.data["nonceStr"] as? String,
+                timestamp = nextAction.data["timeStamp"] as? String,
+                sign = nextAction.data["sign"] as? String
+            )
+        }
+
     @Parcelize
     data class PaymentAttempt internal constructor(
 
