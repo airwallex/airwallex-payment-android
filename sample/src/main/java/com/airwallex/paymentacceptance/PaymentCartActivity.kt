@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -41,26 +40,6 @@ class PaymentCartActivity : AppCompatActivity() {
         get() {
             return ApiFactory(Settings.authUrl).buildRetrofit().create(AuthApi::class.java)
         }
-
-    private val prefs: SharedPreferences by lazy {
-        application.getSharedPreferences(TAG, 0)
-    }
-
-    /**
-     * Cache customerId is just to prevent creating multiple customers
-     */
-    private var cachedCustomerId: String
-        set(value) {
-            prefs.edit()
-                .putString(CUSTOMER_ID, value)
-                .apply()
-        }
-        get() {
-            return prefs.getString(CUSTOMER_ID, "") ?: ""
-        }
-
-    // token cannot appear on the merchant side, this is just for Demo purposes only
-    private lateinit var token: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,18 +89,17 @@ class PaymentCartActivity : AppCompatActivity() {
             )
                 .subscribeOn(Schedulers.io())
                 .doOnSubscribe {
+                    Settings.token = null
                     setLoadingProgress(true)
                 }
                 .observeOn(Schedulers.io())
                 .flatMap {
                     val responseData = JSONObject(it.string())
-                    token = responseData["token"].toString()
+                    Settings.token = responseData["token"].toString()
 
-                    val customerId = cachedCustomerId
-                    if (TextUtils.isEmpty(customerId)) {
+                    if (TextUtils.isEmpty(Settings.cachedCustomerId)) {
                         api.createCustomer(
-                            authorization = "Bearer $token",
-                            params = mutableMapOf(
+                            mutableMapOf(
                                 "request_id" to UUID.randomUUID().toString(),
                                 "merchant_customer_id" to UUID.randomUUID().toString(),
                                 "first_name" to "John",
@@ -139,7 +117,7 @@ class PaymentCartActivity : AppCompatActivity() {
                             )
                         )
                     } else {
-                        Observable.just(customerId)
+                        Observable.just(Settings.cachedCustomerId)
                     }
                 }
                 .observeOn(Schedulers.io())
@@ -149,15 +127,14 @@ class PaymentCartActivity : AppCompatActivity() {
                     } else {
                         val responseData = JSONObject((it as ResponseBody).string())
                         val customerId = responseData["id"].toString()
-                        cachedCustomerId = customerId
+                        Settings.cachedCustomerId = customerId
                         customerId
                     }
 
                     val products = (cartFragment as PaymentCartFragment).products
                     val shipping = (cartFragment as PaymentCartFragment).shipping
                     api.createPaymentIntent(
-                        authorization = "Bearer $token",
-                        params = mutableMapOf(
+                        mutableMapOf(
                             "request_id" to UUID.randomUUID().toString(),
 //                            "amount" to products.sumByDouble { product ->
 //                                product.unitPrice ?: 0 * (product.quantity ?: 0).toDouble()
@@ -346,7 +323,6 @@ class PaymentCartActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "PaymentCartActivity"
-        private const val CUSTOMER_ID = "customerId"
 
         fun startActivity(context: Context) {
             context.startActivity(Intent(context, PaymentCartActivity::class.java))
