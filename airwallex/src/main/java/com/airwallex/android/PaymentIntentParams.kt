@@ -2,15 +2,15 @@ package com.airwallex.android
 
 import com.airwallex.android.model.PaymentIntent
 
-data class RetrievePaymentIntentParams(
+open class PaymentIntentParams(
 
     /**
      * ID of [PaymentIntent]
      */
-    val paymentIntentId: String,
+    open val paymentIntentId: String,
 
     /**
      * The client secret of [PaymentIntent]
      */
-    val clientSecret: String
+    open val clientSecret: String
 )

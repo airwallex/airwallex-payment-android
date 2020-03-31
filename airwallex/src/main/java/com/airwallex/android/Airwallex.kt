@@ -46,7 +46,7 @@ class Airwallex internal constructor(
     /**
      * Confirm a [PaymentIntent] by ID
      *
-     * @param params a [ConfirmPaymentIntentParams] to confirm [PaymentIntent]
+     * @param params [ConfirmPaymentIntentParams] used to confirm [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
@@ -77,12 +77,12 @@ class Airwallex internal constructor(
     /**
      * Retrieve a [PaymentIntent] by ID
      *
-     * @param params a [RetrievePaymentIntentParams] to retrieve [PaymentIntent]
+     * @param params [PaymentIntentParams] used to receive the [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
     fun retrievePaymentIntent(
-        params: RetrievePaymentIntentParams,
+        params: PaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
         paymentController.retrievePaymentIntent(
