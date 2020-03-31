@@ -60,15 +60,6 @@ After completing all the steps on the server, the client will get a `PaymentInte
             override fun onSuccess(response: PaymentIntent) {
                 val weChat = response.weChat
                 // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay).
-                val weChatReq = PayReq()
-                weChatReq.appId = weChat.appId
-                weChatReq.partnerId = weChat.partnerId
-                weChatReq.prepayId = weChat.prepayId
-                weChatReq.packageValue = weChat.packageValue
-                weChatReq.nonceStr = weChat.nonceStr
-                weChatReq.timeStamp = weChat.timestamp
-                weChatReq.sign = weChat.sign
-                weChatApi.sendReq(weChatReq)
             }
                 
             override fun onFailed(exception: AirwallexException) {
@@ -79,6 +70,19 @@ After completing all the steps on the server, the client will get a `PaymentInte
 ```
 3. After successfully confirming the `PaymentIntent`, Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay) to complete the final payment.
 Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/blob/master) for more details.
+```kotlin
+    val weChatReq = PayReq()
+    weChatReq.appId = weChat.appId
+    weChatReq.partnerId = weChat.partnerId
+    weChatReq.prepayId = weChat.prepayId
+    weChatReq.packageValue = weChat.packageValue
+    weChatReq.nonceStr = weChat.nonceStr
+    weChatReq.timeStamp = weChat.timestamp
+    weChatReq.sign = weChat.sign
+    
+    val weChatApi = WXAPIFactory.createWXAPI(applicationContext, appId)
+    weChatApi.sendReq(weChatReq)
+```
 
 ### Step 3: Retrieve Payment Intent to confirm the charge has succeeded
 Since WeChat Pay is a synchronous payment method and the customer has already authorized the payment using the WeChat application. 
