@@ -42,16 +42,21 @@ After completing all the steps on the server, the client will get a `PaymentInte
 1. Initializes an `Airwallex` object, it's the Entry-point of the Airwallex SDK.
 
 ```kotlin
-    // `clientSecret`&`customerId` are parameters of `PaymentIntent`. 
-    // `clientSecret` is required, `customerId` is optional.
-    val airwallex = Airwallex(clientSecret, customerId)
+    val airwallex = Airwallex()
 ```
 
 2. Then you can call the `confirmPaymentIntent` method to start confirm the `PaymentIntent` by ID.
 ```kotlin
     // `paymentIntentId` is the ID of the `PaymentIntent` and is required.
+    // `clientSecret` is the parameter of `PaymentIntent`and is required.
+    // `customerId` is the parameter of `PaymentIntent` and is optional
     airwallex.confirmPaymentIntent(
-        paymentIntentId = paymentIntentId,
+        params = ConfirmPaymentIntentParams.Builder(
+            paymentIntentId = paymentIntent.id,
+            clientSecret = paymentIntent.clientSecret
+        )   
+            .setCustomerId(paymentIntent.customerId)
+            .build(),
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
                 val nextActionData = response.nextAction?.data
@@ -71,8 +76,13 @@ Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-and
 Since WeChat Pay is a synchronous payment method and the customer has already authorized the payment using the WeChat application. 
 After successful payment, the Airwallex server will notify the Merchant, then you can make sure if the `PaymentIntent` is successful by calling the `retrievePaymentIntent` method and checking the `status` of the response.
 ```kotlin
+    // `paymentIntentId` is the ID of the `PaymentIntent` and is required.
+    // `clientSecret` is the parameter of `PaymentIntent`and is required.
     airwallex.retrievePaymentIntent(
-        paymentIntentId = paymentIntentId,
+        params = RetrievePaymentIntentParams(
+            paymentIntentId = paymentIntentId,
+            clientSecret = clientSecret
+        ),
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
                 if (response.status == PaymentIntentStatus.SUCCEEDED) {
