@@ -6,11 +6,41 @@ import androidx.preference.PreferenceManager
 
 object Settings {
 
+    private const val TOKEN_KEY = "tokenKey"
+    private const val CUSTOMER_ID = "customerId"
     private val context: Context by lazy { ContextProvider.applicationContext }
 
     private val sharedPreferences: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(ContextProvider.applicationContext)
     }
+
+    /**
+     * Cache customerId is just to prevent creating multiple customers
+     */
+    var cachedCustomerId: String
+        set(value) {
+            sharedPreferences.edit()
+                .putString(CUSTOMER_ID, value)
+                .apply()
+        }
+        get() {
+            return sharedPreferences.getString(CUSTOMER_ID, "") ?: ""
+        }
+
+    /**
+     * `IMPORTANT` Token cannot appear on the merchant side, this is just for Demo purposes only
+     */
+    var token: String?
+        get() {
+            return sharedPreferences.getString(TOKEN_KEY, null)
+        }
+        set(newValue) {
+            if (newValue == null) {
+                sharedPreferences.edit().remove(TOKEN_KEY).apply()
+            } else {
+                sharedPreferences.edit().putString(TOKEN_KEY, newValue).apply()
+            }
+        }
 
     val authUrl: String
         get() {
