@@ -9,8 +9,6 @@ import java.util.*
  * Entry-point to the Airwallex SDK.
  */
 class Airwallex internal constructor(
-    private val clientSecret: String,
-    private val customerId: String?,
     private val baseUrl: String,
     private val paymentController: PaymentManager
 ) {
@@ -26,31 +24,21 @@ class Airwallex internal constructor(
     /**
      * Constructor with clientSecret and customerId.
      *
-     * @param clientSecret The client secret of [PaymentIntent].
-     * @param customerId optional, the ID of a Customer.
      * @param enableLogging enable log in sdk, default false
      * @param baseUrl optional, you can set it to different urls and test on different environments
      */
     constructor(
-        clientSecret: String,
-        customerId: String? = null,
         enableLogging: Boolean = false,
         baseUrl: String = BASE_URL
     ) : this(
-        clientSecret,
-        customerId,
         baseUrl,
         AirwallexApiRepository(enableLogging)
     )
 
     private constructor(
-        clientSecret: String,
-        customerId: String? = null,
         baseUrl: String = BASE_URL,
         repository: ApiRepository
     ) : this(
-        clientSecret,
-        customerId,
         baseUrl,
         AirwallexPaymentManager(repository)
     )
@@ -58,19 +46,19 @@ class Airwallex internal constructor(
     /**
      * Confirm a [PaymentIntent] by ID
      *
-     * @param paymentIntentId ID of [PaymentIntent]
+     * @param params [ConfirmPaymentIntentParams] used to confirm [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
     fun confirmPaymentIntent(
-        paymentIntentId: String,
+        params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
         paymentController.confirmPaymentIntent(
             AirwallexApiRepository.PaymentIntentOptions(
-                clientSecret = clientSecret,
+                clientSecret = params.clientSecret,
                 baseUrl = baseUrl,
-                paymentIntentId = paymentIntentId,
+                paymentIntentId = params.paymentIntentId,
                 paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
                     requestId = UUID.randomUUID().toString(),
                     device = DeviceUtils.device,
@@ -79,7 +67,7 @@ class Airwallex internal constructor(
                         .setWechatPayFlow(WechatPayRequest(WechatPayRequestFlow.INAPP))
                         .build()
                 )
-                    .setCustomerId(customerId)
+                    .setCustomerId(params.customerId)
                     .build()
             ),
             listener
@@ -89,19 +77,19 @@ class Airwallex internal constructor(
     /**
      * Retrieve a [PaymentIntent] by ID
      *
-     * @param paymentIntentId ID of [PaymentIntent]
+     * @param params [PaymentIntentParams] used to receive the [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
     fun retrievePaymentIntent(
-        paymentIntentId: String,
+        params: PaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
         paymentController.retrievePaymentIntent(
             AirwallexApiRepository.PaymentIntentOptions(
-                clientSecret = clientSecret,
+                clientSecret = params.clientSecret,
                 baseUrl = baseUrl,
-                paymentIntentId = paymentIntentId
+                paymentIntentId = params.paymentIntentId
             ),
             listener
         )
