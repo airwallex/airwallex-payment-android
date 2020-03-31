@@ -13,7 +13,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ConfirmPaymentIntentParams
-import com.airwallex.android.RetrievePaymentIntentParams
+import com.airwallex.android.PaymentIntentParams
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentStatus
@@ -267,7 +267,7 @@ class PaymentCartActivity : AppCompatActivity() {
         clientSecret: String
     ) {
         airwallex.retrievePaymentIntent(
-            params = RetrievePaymentIntentParams(
+            params = PaymentIntentParams(
                 paymentIntentId = paymentIntentId,
                 clientSecret = clientSecret
             ),
