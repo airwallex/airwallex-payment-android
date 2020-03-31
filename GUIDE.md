@@ -47,7 +47,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
     val airwallex = Airwallex(enableLogging, baseUrl)
 ```
 
-2. Then you can call the `confirmPaymentIntent` method to start confirm the `PaymentIntent` by ID.
+2. Then you can call the `confirmPaymentIntent` method to start confirming the `PaymentIntent` by ID.
 ```kotlin
     airwallex.confirmPaymentIntent(
         params = ConfirmPaymentIntentParams.Builder(

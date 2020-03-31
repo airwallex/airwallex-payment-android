@@ -181,9 +181,12 @@ class PaymentCartActivity : AppCompatActivity() {
 
         airwallex.confirmPaymentIntent(
             params = ConfirmPaymentIntentParams.Builder(
+                // the ID of the `PaymentIntent`, required.
                 paymentIntentId = paymentIntent.id,
+                // the clientSecret of `PaymentIntent`, required.
                 clientSecret = paymentIntent.clientSecret
             )
+                // the customerId of `PaymentIntent`, optional.
                 .setCustomerId(paymentIntent.customerId)
                 .build(),
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
@@ -268,7 +271,9 @@ class PaymentCartActivity : AppCompatActivity() {
     ) {
         airwallex.retrievePaymentIntent(
             params = PaymentIntentParams(
+                // the ID of the `PaymentIntent`, required.
                 paymentIntentId = paymentIntentId,
+                // the clientSecret of `PaymentIntent`, required.
                 clientSecret = clientSecret
             ),
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
