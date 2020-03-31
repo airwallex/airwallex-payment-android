@@ -12,6 +12,8 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
+import com.airwallex.android.ConfirmPaymentIntentParams
+import com.airwallex.android.RetrievePaymentIntentParams
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentStatus
@@ -174,12 +176,16 @@ class PaymentCartActivity : AppCompatActivity() {
      */
     private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
         val airwallex = Airwallex(
-            clientSecret = requireNotNull(paymentIntent.clientSecret),
-            customerId = paymentIntent.customerId,
             baseUrl = Settings.baseUrl // You can change the baseUrl to test other environments
         )
+
         airwallex.confirmPaymentIntent(
-            paymentIntentId = paymentIntent.id,
+            params = ConfirmPaymentIntentParams.Builder(
+                paymentIntentId = paymentIntent.id,
+                clientSecret = paymentIntent.clientSecret
+            )
+                .setCustomerId(paymentIntent.customerId)
+                .build(),
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     val nextActionType = response.nextAction?.type
@@ -255,9 +261,16 @@ class PaymentCartActivity : AppCompatActivity() {
      * After successful payment, Airwallex server will notify the Merchant,
      * Then Merchant can retrieve the `PaymentIntent` to check the `status` of the PaymentIntent.
      */
-    private fun retrievePaymentIntent(airwallex: Airwallex, paymentIntentId: String) {
+    private fun retrievePaymentIntent(
+        airwallex: Airwallex,
+        paymentIntentId: String,
+        clientSecret: String
+    ) {
         airwallex.retrievePaymentIntent(
-            paymentIntentId = paymentIntentId,
+            params = RetrievePaymentIntentParams(
+                paymentIntentId = paymentIntentId,
+                clientSecret = clientSecret
+            ),
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     if (response.status == PaymentIntentStatus.SUCCEEDED) {
