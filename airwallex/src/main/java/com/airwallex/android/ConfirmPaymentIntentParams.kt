@@ -9,7 +9,7 @@ data class ConfirmPaymentIntentParams internal constructor(
      * optional, the ID of a Customer.
      */
     val customerId: String?
-) : PaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
+) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
     class Builder(
         private val paymentIntentId: String,
         private val clientSecret: String

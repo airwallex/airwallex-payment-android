@@ -99,7 +99,7 @@ Since WeChat Pay is a synchronous payment method and the customer has already au
 After successful payment, the Airwallex server will notify the Merchant, then you can make sure if the `PaymentIntent` is successful by calling the `retrievePaymentIntent` method and checking the `status` of the response.
 ```kotlin
     airwallex.retrievePaymentIntent(
-        params = PaymentIntentParams(
+        params = RetrievePaymentIntentParams(
             paymentIntentId = paymentIntentId, // the ID of the `PaymentIntent`, required.
             clientSecret = clientSecret // the clientSecret of `PaymentIntent`, required.
         ),
