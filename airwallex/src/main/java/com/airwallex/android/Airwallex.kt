@@ -9,7 +9,7 @@ import java.util.*
  * Entry-point to the Airwallex SDK.
  */
 class Airwallex internal constructor(
-    private val paymentController: PaymentManager
+    private val paymentManager: PaymentManager
 ) {
 
     /**
@@ -44,7 +44,7 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
-        paymentController.confirmPaymentIntent(
+        paymentManager.confirmPaymentIntent(
             AirwallexApiRepository.PaymentIntentOptions(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId,
@@ -73,7 +73,7 @@ class Airwallex internal constructor(
         params: PaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
-        paymentController.retrievePaymentIntent(
+        paymentManager.retrievePaymentIntent(
             AirwallexApiRepository.PaymentIntentOptions(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId
