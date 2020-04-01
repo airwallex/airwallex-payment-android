@@ -12,6 +12,22 @@ import java.util.concurrent.TimeUnit
  */
 internal object AirwallexPlugins {
 
+    private var configuration: AirwallexConfiguration = AirwallexConfiguration.Builder().build()
+
+    internal fun initialize(configuration: AirwallexConfiguration) {
+        this.configuration = configuration
+    }
+
+    internal val enableLogging: Boolean
+        get() {
+            return configuration.enableLogging
+        }
+
+    internal val baseUrl: String
+        get() {
+            return configuration.baseUrl
+        }
+
     /**
      * Provide [AirwallexHttpClient] to request the Airwallex API
      */
