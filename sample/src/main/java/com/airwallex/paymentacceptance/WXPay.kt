@@ -59,7 +59,7 @@ class WXPay {
         weChatReq.appId = weChat.appId
         weChatReq.partnerId = weChat.partnerId
         weChatReq.prepayId = weChat.prepayId
-        weChatReq.packageValue = weChat.packageValue
+        weChatReq.packageValue = weChat.`package`
         weChatReq.nonceStr = weChat.nonceStr
         weChatReq.timeStamp = weChat.timestamp
         weChatReq.sign = weChat.sign
