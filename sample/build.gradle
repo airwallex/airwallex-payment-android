@@ -3,15 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: "./ktlint.gradle"
 
-def computeVersionCode = { ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'rev-list', 'HEAD', '--count'
-        standardOutput = stdout
-    }
-    return stdout.toString().trim().toInteger()
-}
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -27,7 +18,7 @@ android {
         targetSdkVersion rootProject.ext.compileSdkVersion
         multiDexEnabled true
 
-        versionCode computeVersionCode()
+        versionCode 1
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -59,7 +50,7 @@ android {
 
             applicationVariants.all { variant ->
                 variant.outputs.all {
-                    outputFileName = "${variant.versionName}-${variant.versionCode}-release.apk"
+                    outputFileName = "${variant.versionName}-release.apk"
                 }
             }
         }
@@ -68,7 +59,7 @@ android {
 
 dependencies {
     implementation project(':airwallex')
-//    implementation 'com.airwallex:airwallex-core:0.0.3'
+//    implementation 'com.airwallex:airwallex-core:0.0.4'
 
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.preference:preference:1.1.0'
