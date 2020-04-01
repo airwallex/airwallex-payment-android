@@ -27,7 +27,19 @@ To install the SDK, in your app-level `build.gradle`, add the following:
     }
 ```
 
-### Step 2: Confirm Payment Intent
+### Step 2: Configuration the SDK (optional)
+We provide some parameters that can be used to debug the SDK, better to be called in `Application`
+
+```groovy
+    Airwallex.initialize(
+        AirwallexConfiguration.Builder()
+            .enableLogging(true)    // Enable log in sdk, best set to false in release version
+            .setBaseUrl(Settings.baseUrl)  // You can change the baseUrl to test other environments
+            .build()
+    )
+```
+
+### Step 3: Confirm Payment Intent
 Before confirming the `PaymentIntent`, you must create a `PaymentIntent` on the server and pass it to the client.
 
 > Merchant's server
@@ -42,9 +54,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
 1. Initializes an `Airwallex` object, it's the Entry-point of the Airwallex SDK.
 
 ```kotlin
-    // @param enableLogging optional, enable log in sdk, default false
-    // @param baseUrl optional, you can set it to different urls and test on different environments
-    val airwallex = Airwallex(enableLogging, baseUrl)
+    val airwallex = Airwallex()
 ```
 
 2. Then you can call the `confirmPaymentIntent` method to start confirming the `PaymentIntent` by ID.
@@ -84,7 +94,7 @@ Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-and
     weChatApi.sendReq(weChatReq)
 ```
 
-### Step 3: Retrieve Payment Intent to confirm the charge has succeeded
+### Step 4: Retrieve Payment Intent to confirm the charge has succeeded
 Since WeChat Pay is a synchronous payment method and the customer has already authorized the payment using the WeChat application. 
 After successful payment, the Airwallex server will notify the Merchant, then you can make sure if the `PaymentIntent` is successful by calling the `retrievePaymentIntent` method and checking the `status` of the response.
 ```kotlin

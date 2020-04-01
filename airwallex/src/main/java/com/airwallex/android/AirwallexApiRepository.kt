@@ -8,17 +8,14 @@ import java.util.*
 /**
  * The implementation of [ApiRepository] to request the Airwallex API.
  */
-internal class AirwallexApiRepository(enableLogging: Boolean) : ApiRepository {
+internal class AirwallexApiRepository : ApiRepository {
 
     @Parcelize
     internal class PaymentIntentOptions internal constructor(
         override val clientSecret: String,
-        override val baseUrl: String,
         internal val paymentIntentId: String,
         internal val paymentIntentConfirmRequest: PaymentIntentConfirmRequest? = null
-    ) : ApiRepository.Options(clientSecret = clientSecret, baseUrl = baseUrl)
-
-    private val logWorker = Logger.getLogWorker(enableLogging)
+    ) : ApiRepository.Options(clientSecret = clientSecret)
 
     /**
      * Confirm a PaymentIntent using the provided [ApiRepository.Options]
@@ -35,7 +32,7 @@ internal class AirwallexApiRepository(enableLogging: Boolean) : ApiRepository {
 
         val request = AirwallexHttpRequest.Builder(
             confirmPaymentIntentUrl(
-                options.baseUrl,
+                AirwallexPlugins.baseUrl,
                 requireNotNull(options.paymentIntentId)
             ),
             AirwallexHttpRequest.Method.POST
@@ -48,7 +45,7 @@ internal class AirwallexApiRepository(enableLogging: Boolean) : ApiRepository {
             )
             .addClientSecretHeader(options.clientSecret)
             .build()
-        logWorker.log(Logger.Level.DEBUG, "Confirm PaymentIntent Request: $request")
+        Logger.debug("Confirm PaymentIntent Request: $request")
         return AirwallexPlugins.httpClient.execute(request)
     }
 
@@ -61,14 +58,14 @@ internal class AirwallexApiRepository(enableLogging: Boolean) : ApiRepository {
     override fun retrievePaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
         val request = AirwallexHttpRequest.Builder(
             retrievePaymentIntentUrl(
-                options.baseUrl,
+                AirwallexPlugins.baseUrl,
                 (options as PaymentIntentOptions).paymentIntentId
             ),
             AirwallexHttpRequest.Method.GET
         )
             .addClientSecretHeader(options.clientSecret)
             .build()
-        logWorker.log(Logger.Level.DEBUG, "Retrieve PaymentIntent Request: $request")
+        Logger.debug("Retrieve PaymentIntent Request: $request")
         return AirwallexPlugins.httpClient.execute(request)
     }
 
