@@ -39,4 +39,9 @@ class PaymentSettingsActivity : AppCompatActivity() {
             else -> false
         }
     }
+
+    override fun onDestroy() {
+        SampleApplication.instance.configAirwallex()
+        super.onDestroy()
+    }
 }

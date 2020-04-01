@@ -9,7 +9,6 @@ import java.util.*
  * Entry-point to the Airwallex SDK.
  */
 class Airwallex internal constructor(
-    private val baseUrl: String,
     private val paymentController: PaymentManager
 ) {
 
@@ -22,24 +21,15 @@ class Airwallex internal constructor(
     }
 
     /**
-     * Constructor with clientSecret and customerId.
-     *
-     * @param enableLogging enable log in sdk, default false
-     * @param baseUrl optional, you can set it to different urls and test on different environments
+     * Constructor of [Airwallex]
      */
-    constructor(
-        enableLogging: Boolean = false,
-        baseUrl: String = BASE_URL
-    ) : this(
-        baseUrl,
-        AirwallexApiRepository(enableLogging)
+    constructor() : this(
+        AirwallexApiRepository()
     )
 
     private constructor(
-        baseUrl: String = BASE_URL,
         repository: ApiRepository
     ) : this(
-        baseUrl,
         AirwallexPaymentManager(repository)
     )
 
@@ -57,7 +47,6 @@ class Airwallex internal constructor(
         paymentController.confirmPaymentIntent(
             AirwallexApiRepository.PaymentIntentOptions(
                 clientSecret = params.clientSecret,
-                baseUrl = baseUrl,
                 paymentIntentId = params.paymentIntentId,
                 paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
                     requestId = UUID.randomUUID().toString(),
@@ -88,7 +77,6 @@ class Airwallex internal constructor(
         paymentController.retrievePaymentIntent(
             AirwallexApiRepository.PaymentIntentOptions(
                 clientSecret = params.clientSecret,
-                baseUrl = baseUrl,
                 paymentIntentId = params.paymentIntentId
             ),
             listener
@@ -96,9 +84,14 @@ class Airwallex internal constructor(
     }
 
     companion object {
+        // The default url, that you can change in the constructor for test on different environments
+        internal const val BASE_URL = "https://pci-api.airwallex.com"
+
         /**
-         * The default url, that you can change it in the constructor to test on different environments
+         * Initialize some global configurations, better to be called on Application
          */
-        private const val BASE_URL = "https://pci-api.airwallex.com"
+        fun initialize(configuration: AirwallexConfiguration) {
+            AirwallexPlugins.initialize(configuration)
+        }
     }
 }

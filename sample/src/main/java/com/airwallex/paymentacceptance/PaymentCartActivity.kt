@@ -33,6 +33,10 @@ class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
 
+    private val airwallex by lazy {
+        Airwallex()
+    }
+
     private val api: Api
         get() {
             return ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
@@ -175,10 +179,6 @@ class PaymentCartActivity : AppCompatActivity() {
      * PaymentIntent must come from merchant's server, only wechat pay is currently supported
      */
     private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
-        val airwallex = Airwallex(
-            baseUrl = Settings.baseUrl // You can change the baseUrl to test other environments
-        )
-
         airwallex.confirmPaymentIntent(
             params = ConfirmPaymentIntentParams.Builder(
                 // the ID of the `PaymentIntent`, required.

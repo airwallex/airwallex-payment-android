@@ -10,8 +10,7 @@ internal interface ApiRepository {
 
     @Parcelize
     open class Options internal constructor(
-        internal open val clientSecret: String,
-        internal open val baseUrl: String
+        internal open val clientSecret: String
     ) : Parcelable
 
     fun confirmPaymentIntent(
