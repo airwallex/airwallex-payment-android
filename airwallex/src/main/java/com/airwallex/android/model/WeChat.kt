@@ -8,7 +8,7 @@ data class WeChat internal constructor(
     val appId: String?,
     val partnerId: String?,
     val prepayId: String?,
-    val packageValue: String?,
+    val `package`: String?,
     val nonceStr: String?,
     val timestamp: String?,
     val sign: String?

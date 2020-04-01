@@ -153,7 +153,7 @@ data class PaymentIntent internal constructor(
                 appId = nextAction.data["appId"] as? String,
                 partnerId = nextAction.data["partnerId"] as? String,
                 prepayId = nextAction.data["prepayId"] as? String,
-                packageValue = nextAction.data["package"] as? String,
+                `package` = nextAction.data["package"] as? String,
                 nonceStr = nextAction.data["nonceStr"] as? String,
                 timestamp = nextAction.data["timeStamp"] as? String,
                 sign = nextAction.data["sign"] as? String

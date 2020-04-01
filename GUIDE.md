@@ -23,7 +23,7 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 
 ```groovy
     dependencies {
-        implementation 'com.airwallex:airwallex-core:0.0.5'
+        implementation 'com.airwallex:airwallex-core:0.0.6'
     }
 ```
 
@@ -85,7 +85,7 @@ Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-and
     weChatReq.appId = weChat.appId
     weChatReq.partnerId = weChat.partnerId
     weChatReq.prepayId = weChat.prepayId
-    weChatReq.packageValue = weChat.packageValue
+    weChatReq.packageValue = weChat.`package`
     weChatReq.nonceStr = weChat.nonceStr
     weChatReq.timeStamp = weChat.timestamp
     weChatReq.sign = weChat.sign
