@@ -50,7 +50,6 @@ class Airwallex internal constructor(
                 paymentIntentId = params.paymentIntentId,
                 paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
                     requestId = UUID.randomUUID().toString(),
-                    device = DeviceUtils.device,
                     paymentMethod = PaymentMethod.Builder()
                         .setType(PaymentMethodType.WECHAT)
                         .setWechatPayFlow(WechatPayRequest(WechatPayRequestFlow.INAPP))

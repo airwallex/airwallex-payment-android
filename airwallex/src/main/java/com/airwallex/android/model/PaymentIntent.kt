@@ -209,10 +209,7 @@ data class PaymentIntent internal constructor(
          * Last time at which this payment attempt was updated or operated on
          */
         @SerializedName("updated_at")
-        val updatedAt: Date,
-
-        @SerializedName("device")
-        val device: Device? = null
+        val updatedAt: Date
 
     ) : AirwallexModel, Parcelable
 
