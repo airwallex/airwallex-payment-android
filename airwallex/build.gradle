@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android-extensions'
 apply from: "./ktlint.gradle"
 apply from: "./dokka.gradle"
 
+def VERSION_CODE = 1
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -11,6 +13,10 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
+
+        versionCode VERSION_CODE.toInteger()
+        versionName "0.0.2"
+
         consumerProguardFiles 'proguard-rules.pro'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

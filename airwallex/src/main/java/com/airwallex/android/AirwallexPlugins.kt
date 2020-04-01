@@ -39,6 +39,8 @@ internal object AirwallexPlugins {
                 val builder = chain.request().newBuilder()
                 builder.addHeader(ACCEPT_HEADER_KEY, ACCEPT_HEADER_VALUE)
                 builder.addHeader(CONTENT_TYPE_HEADER_KEY, CONTENT_TYPE_HEADER_VALUE)
+                builder.addHeader(USER_AGENT_KEY, USER_AGENT_VALUE)
+                builder.addHeader(USER_AGENT_VERSION_KEY, USER_AGENT_VERSION_VALUE)
                 return chain.proceed(builder.build())
             }
         })
@@ -61,4 +63,9 @@ internal object AirwallexPlugins {
     private const val ACCEPT_HEADER_VALUE = "application/json"
     private const val CONTENT_TYPE_HEADER_KEY = "Content-Type"
     private const val CONTENT_TYPE_HEADER_VALUE = "application/json"
+    private const val USER_AGENT_KEY = "Airwallex-User-Agent"
+    private const val USER_AGENT_VALUE = "Airwallex-Android-SDK"
+    private const val USER_AGENT_VERSION_KEY = "Airwallex-User-Agent-Version"
+    private const val USER_AGENT_VERSION_VALUE = BuildConfig.VERSION_NAME
+
 }
