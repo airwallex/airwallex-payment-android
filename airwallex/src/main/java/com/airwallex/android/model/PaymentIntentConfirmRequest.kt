@@ -29,12 +29,6 @@ data class PaymentIntentConfirmRequest internal constructor(
     val paymentMethod: PaymentMethod,
 
     /**
-     * The user device info
-     */
-    @SerializedName("device")
-    val device: Device,
-
-    /**
      * The payment method reference that you want to confirm
      */
     @SerializedName("payment_method_reference")
@@ -50,8 +44,7 @@ data class PaymentIntentConfirmRequest internal constructor(
 
     class Builder(
         private val requestId: String,
-        private val paymentMethod: PaymentMethod,
-        private val device: Device
+        private val paymentMethod: PaymentMethod
     ) : ObjectBuilder<PaymentIntentConfirmRequest> {
         private var customerId: String? = null
         private var paymentMethodReference: PaymentMethodReference? = null
@@ -75,7 +68,6 @@ data class PaymentIntentConfirmRequest internal constructor(
             return PaymentIntentConfirmRequest(
                 requestId = requestId,
                 paymentMethod = paymentMethod,
-                device = device,
                 paymentMethodReference = paymentMethodReference,
                 paymentMethodOptions = paymentMethodOptions
             )
