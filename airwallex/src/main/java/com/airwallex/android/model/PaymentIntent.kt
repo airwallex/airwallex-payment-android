@@ -86,7 +86,7 @@ data class PaymentIntent internal constructor(
      * Latest payment attempt that was created under the payment intent
      */
     @SerializedName("latest_payment_attempt")
-    val latestPaymentAttempt: PaymentAttempt,
+    val latestPaymentAttempt: PaymentAttempt?,
 
     /**
      * Available payment method types
@@ -140,8 +140,10 @@ data class PaymentIntent internal constructor(
 
     val weChat: WeChat?
         get() {
-            if (latestPaymentAttempt.paymentMethod.type != PaymentMethodType.WECHAT ||
-                nextAction?.type != NextActionType.CALL_SDK ||
+            if (latestPaymentAttempt == null ||
+                latestPaymentAttempt.paymentMethod.type != PaymentMethodType.WECHAT ||
+                nextAction == null ||
+                nextAction.type != NextActionType.CALL_SDK ||
                 nextAction.data == null
             ) {
                 return null
