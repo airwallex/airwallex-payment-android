@@ -15,7 +15,7 @@ android {
         targetSdkVersion rootProject.ext.compileSdkVersion
 
         versionCode VERSION_CODE.toInteger()
-        versionName "0.0.2"
+        versionName "0.0.3"
 
         consumerProguardFiles 'proguard-rules.pro'
 
