@@ -43,6 +43,7 @@
     <string name="price">Price</string>
     <string name="price_currency"><![CDATA[Price & Currency]]></string>
     <string name="create_payment_intent_failed">Create PaymentIntent Failed.</string>
+
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
 </resources>
