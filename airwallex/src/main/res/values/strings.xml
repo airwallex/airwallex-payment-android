@@ -1,0 +1,50 @@
+<resources>
+
+    <string name="valid_digits">0123456789</string>
+    <string name="shipping_country_name_hint">Country / Region</string>
+    <string name="card_number_hint">Card number</string>
+    <string name="empty_card_number">Please enter your card number</string>
+    <string name="invalid_card_number">Please enter a valid credit card number</string>
+    <string name="empty_card_name">Please enter your card name</string>
+    <string name="expires_hint">Expires MM / YY</string>
+    <string name="empty_expiry">Please enter your card expiry date</string>
+    <string name="invalid_expiry_date">Please enter a valid expiry date</string>
+    <string name="cvc_hint">CVC / CVV</string>
+    <string name="empty_cvc">Please enter your card CVC</string>
+    <string name="invalid_cvc">Please enter a valid security code</string>
+
+    <string name="shipping_first_name_hint">First name</string>
+    <string name="shipping_last_name_hint">Last name</string>
+    <string name="shipping_street_hint">Street</string>
+    <string name="shipping_zip_code_hint">Zip code (optional)</string>
+    <string name="shipping_city_name_hint">City</string>
+    <string name="shipping_state_name_hint">State</string>
+    <string name="contact_email_hint">Email</string>
+    <string name="contact_phone_number_hint">Phone number (optional)</string>
+    <string name="card_name_hint">Name on card</string>
+
+    <string name="empty_last_name">Please enter your last name</string>
+    <string name="empty_first_name">Please enter your first name</string>
+    <string name="empty_email">Please enter your email</string>
+    <string name="invalid_email">Please enter valid email</string>
+    <string name="empty_state">Please enter your state</string>
+    <string name="empty_city">Please enter your city</string>
+    <string name="empty_street">Please enter your street</string>
+    <string name="empty_country">Please enter your country</string>
+
+    <string name="save">Save</string>
+    <string name="new_card">New card</string>
+    <string name="same_as_shipping">Same as shipping address</string>
+    <string name="enter_new_card">Enter a new card</string>
+    <string name="no_saved_cards">No saved cards</string>
+    <string name="payment_methods">Payment methods</string>
+    <string name="wechat_pay">WeChat pay</string>
+    <string name="shipping_address">Shipping address</string>
+    <string name="shipping">Shipping</string>
+    <string name="contact">Contact</string>
+    <string name="confirm">Confirm</string>
+    <string name="pay_now">Pay now</string>
+    <string name="total">Total</string>
+    <string name="payment">Payment</string>
+    <string name="threeds_validation_failed">3ds validation failed</string>
+</resources>

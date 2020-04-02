@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/tvSaveCard">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/circularstd_bold"
+                android:text="@string/new_card"
+                android:textColor="@color/airwallex_color_dark_deep"
+                android:textSize="32sp"
+                tools:ignore="RtlSymmetry" />
+
+            <com.airwallex.android.view.CardWidget
+                android:id="@+id/cardWidget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:background="@android:color/white"
+                android:paddingLeft="16dp"
+                android:paddingTop="20dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="43dp" />
+
+            <com.airwallex.android.view.BillingWidget
+                android:id="@+id/billingWidget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/tvSaveCard"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/airwallex_button_solid"
+        android:fontFamily="@font/circularstd_bold"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:text="@string/confirm"
+        android:textColor="@color/airwallex_button_text"
+        android:textSize="14sp" />
+</RelativeLayout>

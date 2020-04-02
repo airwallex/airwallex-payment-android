@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/circularstd_bold"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="@string/payment_methods"
+        android:textColor="@color/airwallex_color_dark_deep"
+        android:textSize="32sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPaymentMethods"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <include
+        android:id="@+id/paymentNoCards"
+        layout="@layout/payment_method_no_card"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:layout_marginTop="9dp"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/addPaymentMethod"
+        layout="@layout/payment_method_item_add_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

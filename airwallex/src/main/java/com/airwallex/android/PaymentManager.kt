@@ -19,4 +19,20 @@ internal interface PaymentManager {
         options: ApiRepository.Options,
         listener: Airwallex.PaymentListener<PaymentIntent>
     )
+
+    /**
+     * Create the Airwallex PaymentMethod
+     */
+    fun createPaymentMethod(
+        options: ApiRepository.Options,
+        listener: Airwallex.PaymentListener<PaymentMethod>
+    )
+
+    /**
+     * Retrieve all of the customer's PaymentMethods
+     */
+    fun retrievePaymentMethods(
+        options: ApiRepository.Options,
+        listener: Airwallex.PaymentListener<PaymentMethodResponse>
+    )
 }
