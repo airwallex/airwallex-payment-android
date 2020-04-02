@@ -66,7 +66,7 @@ internal class PaymentMethodItemView constructor(
         this.paymentMethod = paymentMethod
         this.cvc = cvc
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
-            tvPaymentMethod.text = paymentMethod.type.type
+            tvPaymentMethod.text = paymentMethod.type.value
             llCardCvc.visibility = View.GONE
         } else {
             tvPaymentMethod.text = String.format(
