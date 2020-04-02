@@ -1,0 +1,29 @@
+<resources>
+
+    <style name="AirwallexDefaultTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorAccent">@color/airwallex_color_accent_default</item>
+        <item name="colorPrimary">@color/airwallex_color_primary_default</item>
+        <item name="colorPrimaryDark">@color/airwallex_color_primary_dark_default</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:actionMenuTextColor">@color/airwallex_menu_text</item>
+        <item name="android:windowBackground">@color/airwallex_color_bg</item>
+    </style>
+
+    <style name="AirwallexTextInputLayout" parent="Base.Widget.MaterialComponents.TextInputLayout">
+        <item name="materialThemeOverlay">@style/AirwallexMaterialThemeOverlay</item>
+        <item name="android:background">#00000000</item>
+        <item name="boxBackgroundMode">filled</item>
+        <item name="boxBackgroundColor">@null</item>
+        <item name="boxCollapsedPaddingTop">9dp</item>
+        <item name="boxStrokeColor">@color/airwallex_stroke_color</item>
+    </style>
+
+    <style name="AirwallexMaterialThemeOverlay">
+        <item name="editTextStyle">@style/AirwallexEditTextPadding</item>
+    </style>
+
+    <style name="AirwallexEditTextPadding" parent="Base.Widget.MaterialComponents.TextInputEditText">
+        <item name="android:paddingTop">26dp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+</resources>

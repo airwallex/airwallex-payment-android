@@ -4,6 +4,8 @@ import com.airwallex.android.exception.APIException
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -33,6 +35,20 @@ internal class AirwallexPaymentManager(
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         executeApiOperation(ApiOperationType.RETRIEVE_PAYMENT_INTENT, options, listener)
+    }
+
+    override fun createPaymentMethod(
+        options: ApiRepository.Options,
+        listener: Airwallex.PaymentListener<PaymentMethod>
+    ) {
+        executeApiOperation(ApiOperationType.CREATE_PAYMENT_METHOD, options, listener)
+    }
+
+    override fun retrievePaymentMethods(
+        options: ApiRepository.Options,
+        listener: Airwallex.PaymentListener<PaymentMethodResponse>
+    ) {
+        executeApiOperation(ApiOperationType.RETRIEVE_PAYMENT_METHOD, options, listener)
     }
 
     private fun <T> executeApiOperation(
@@ -93,22 +109,34 @@ internal class AirwallexPaymentManager(
                 ApiOperationType.RETRIEVE_PAYMENT_INTENT -> {
                     repository.retrievePaymentIntent(options)
                 }
+                ApiOperationType.CREATE_PAYMENT_METHOD -> {
+                    repository.createPaymentMethod(options)
+                }
+                ApiOperationType.RETRIEVE_PAYMENT_METHOD -> {
+                    repository.retrievePaymentMethods(options)
+                }
             }
         }
     }
 
     @Suppress("UNCHECKED_CAST")
     private fun <T> classType(type: ApiOperationType): Class<T> {
-        when (type) {
+        return when (type) {
             ApiOperationType.CONFIRM_PAYMENT_INTENT,
             ApiOperationType.RETRIEVE_PAYMENT_INTENT -> {
-                return PaymentIntent::class.java as Class<T>
+                PaymentIntent::class.java as Class<T>
+            }
+            ApiOperationType.CREATE_PAYMENT_METHOD,
+            ApiOperationType.RETRIEVE_PAYMENT_METHOD -> {
+                PaymentMethod::class.java as Class<T>
             }
         }
     }
 
     enum class ApiOperationType {
         CONFIRM_PAYMENT_INTENT,
-        RETRIEVE_PAYMENT_INTENT
+        RETRIEVE_PAYMENT_INTENT,
+        CREATE_PAYMENT_METHOD,
+        RETRIEVE_PAYMENT_METHOD
     }
 }

@@ -82,6 +82,55 @@ class Airwallex internal constructor(
         )
     }
 
+    /**
+     * Create a payment method
+     *
+     * @param params [CreatePaymentMethodParams] used to create the [PaymentMethod]
+     * @param listener the callback of create [PaymentMethod]
+     */
+    @UiThread
+    internal fun createPaymentMethod(
+        params: CreatePaymentMethodParams,
+        listener: PaymentListener<PaymentMethod>
+    ) {
+        paymentManager.createPaymentMethod(
+            AirwallexApiRepository.CreatePaymentMethodOptions(
+                clientSecret = params.clientSecret,
+                customerId = params.customerId,
+                paymentMethodParams = PaymentMethodParams.Builder()
+                    .setCustomerId(params.customerId)
+                    .setRequestId(UUID.randomUUID().toString())
+                    .setType(PaymentMethodType.CARD.type)
+                    .setCard(params.card)
+                    .setBilling(params.billing)
+                    .build()
+            ),
+            listener
+        )
+    }
+
+    /**
+     * Retrieve payment methods
+     *
+     * @param params [RetrievePaymentMethodParams] used to retrieve the [PaymentMethod]
+     * @param listener the callback of get [PaymentMethod]
+     */
+    @UiThread
+    internal fun retrievePaymentMethods(
+        params: RetrievePaymentMethodParams,
+        listener: PaymentListener<PaymentMethodResponse>
+    ) {
+        paymentManager.retrievePaymentMethods(
+            AirwallexApiRepository.RetrievePaymentMethodOptions(
+                clientSecret = params.clientSecret,
+                customerId = params.customerId,
+                pageNum = params.pageNum,
+                pageSize = params.pageSize
+            ),
+            listener
+        )
+    }
+
     companion object {
         // The default url, that you can change in the constructor for test on different environments
         internal const val BASE_URL = "https://pci-api.airwallex.com"

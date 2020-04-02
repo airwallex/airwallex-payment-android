@@ -1,3 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.airwallex.android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.airwallex.android">
+
+    <application>
+        <activity
+            android:name="com.airwallex.android.view.PaymentMethodsActivity"
+            android:theme="@style/AirwallexDefaultTheme" />
+
+        <activity
+            android:name="com.airwallex.android.view.PaymentCheckoutActivity"
+            android:theme="@style/AirwallexDefaultTheme" />
+
+        <activity
+            android:name="com.airwallex.android.view.AddPaymentMethodActivity"
+            android:theme="@style/AirwallexDefaultTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+
+        <activity
+            android:name="com.airwallex.android.view.PaymentShippingActivity"
+            android:theme="@style/AirwallexDefaultTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+
+    </application>
+
 </manifest>
