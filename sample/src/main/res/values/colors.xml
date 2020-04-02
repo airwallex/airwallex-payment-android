@@ -10,7 +10,4 @@
     <color name="airwallex_color_border">#EBECF0</color>
 
     <color name="airwallex_color_item_label">#54545E</color>
-
-    <string name="reset">Reset</string>
-    <string name="settings">Settings</string>
 </resources>
