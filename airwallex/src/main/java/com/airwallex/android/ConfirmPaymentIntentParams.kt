@@ -3,6 +3,7 @@ package com.airwallex.android
 import com.airwallex.android.model.ObjectBuilder
 
 data class ConfirmPaymentIntentParams internal constructor(
+    val type: ConfirmPaymentIntentType,
     override val paymentIntentId: String,
     override val clientSecret: String,
     /**
@@ -10,7 +11,9 @@ data class ConfirmPaymentIntentParams internal constructor(
      */
     val customerId: String?
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
+
     class Builder(
+        private val type: ConfirmPaymentIntentType = ConfirmPaymentIntentType.WECHAT,
         private val paymentIntentId: String,
         private val clientSecret: String
     ) : ObjectBuilder<ConfirmPaymentIntentParams> {
@@ -23,10 +26,15 @@ data class ConfirmPaymentIntentParams internal constructor(
 
         override fun build(): ConfirmPaymentIntentParams {
             return ConfirmPaymentIntentParams(
+                type = type,
                 paymentIntentId = paymentIntentId,
                 clientSecret = clientSecret,
                 customerId = customerId
             )
         }
+    }
+
+    enum class ConfirmPaymentIntentType {
+        WECHAT
     }
 }
