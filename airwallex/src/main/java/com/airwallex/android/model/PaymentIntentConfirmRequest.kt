@@ -26,7 +26,7 @@ data class PaymentIntentConfirmRequest internal constructor(
      * The payment method that you want to confirm
      */
     @SerializedName("payment_method")
-    val paymentMethod: PaymentMethod,
+    val paymentMethod: PaymentMethod?,
 
     /**
      * The payment method reference that you want to confirm
@@ -43,15 +43,19 @@ data class PaymentIntentConfirmRequest internal constructor(
 ) : AirwallexModel, Parcelable {
 
     class Builder(
-        private val requestId: String,
-        private val paymentMethod: PaymentMethod
+        private val requestId: String
     ) : ObjectBuilder<PaymentIntentConfirmRequest> {
         private var customerId: String? = null
+        private var paymentMethod: PaymentMethod? = null
         private var paymentMethodReference: PaymentMethodReference? = null
         private var paymentMethodOptions: PaymentMethodOptions? = null
 
         fun setCustomerId(customerId: String?): Builder = apply {
             this.customerId = customerId
+        }
+
+        fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
+            this.paymentMethod = paymentMethod
         }
 
         fun setPaymentMethodReference(paymentMethodReference: PaymentMethodReference?): Builder =

@@ -49,12 +49,14 @@ class Airwallex internal constructor(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId,
                 paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
-                    requestId = UUID.randomUUID().toString(),
-                    paymentMethod = PaymentMethod.Builder()
-                        .setType(PaymentMethodType.WECHAT)
-                        .setWechatPayFlow(WechatPayRequest(WechatPayRequestFlow.INAPP))
-                        .build()
+                    requestId = UUID.randomUUID().toString()
                 )
+                    .setPaymentMethod(
+                        PaymentMethod.Builder()
+                            .setType(PaymentMethodType.WECHAT)
+                            .setWechatPayFlow(WechatPayRequest(WechatPayRequestFlow.INAPP))
+                            .build()
+                    )
                     .setCustomerId(params.customerId)
                     .build()
             ),
