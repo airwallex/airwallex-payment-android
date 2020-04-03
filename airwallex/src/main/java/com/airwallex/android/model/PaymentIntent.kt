@@ -251,8 +251,14 @@ data class PaymentIntent internal constructor(
         @SerializedName("PAYMENT_CODE_GENERATED")
         PAYMENT_CODE_GENERATED,
 
+        @SerializedName("PENDING")
+        PENDING,
+
         @SerializedName("CANCELLED")
         CANCELLED,
+
+        @SerializedName("FAILED")
+        FAILED,
 
         @SerializedName("SUCCEEDED")
         SUCCEEDED,
