@@ -39,9 +39,6 @@ enum class PaymentIntentStatus : Parcelable {
     /**
      * See `next_action` for the details. For example `next_action=capture` indicates that capture is outstanding.
      */
-    @SerializedName("REQUIRES_MERCHANT_ACTION")
-    REQUIRES_MERCHANT_ACTION,
-
     @SerializedName("REQUIRES_CAPTURE")
-    REQUIRES_CAPTURE,
+    REQUIRES_CAPTURE
 }
