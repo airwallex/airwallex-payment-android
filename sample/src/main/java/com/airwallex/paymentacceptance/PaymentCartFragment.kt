@@ -2,6 +2,7 @@ package com.airwallex.paymentacceptance
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_cart.*
 
 class PaymentCartFragment : Fragment() {
 
-    val shipping: Shipping = Shipping.Builder()
+    var shipping: Shipping = Shipping.Builder()
         .setFirstName("John")
         .setLastName("Doe")
         .setPhone("13800000000")
@@ -91,7 +92,18 @@ class PaymentCartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        shippingItemView.renewalShipping(shipping)
         initializeProductsViews(products.toMutableList())
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        shippingItemView.onActivityResult(requestCode, resultCode, data) {
+            it?.let {
+                shipping = it
+            }
+        }
     }
 
     fun reset() {

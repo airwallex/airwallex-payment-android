@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rlBilling"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/airwallex_item_bg"
+        android:minHeight="58dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="20dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/tvShippingTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/circularstd_medium"
+            android:text="@string/shipping"
+            android:textColor="@color/airwallex_color_item_label"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvShippingAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@id/tvShippingTitle"
+            android:drawableEnd="@drawable/ic_right_arrow"
+            android:drawablePadding="10dp"
+            android:fontFamily="@font/circularstd_medium"
+            android:gravity="end"
+            android:lineSpacingExtra="4dp"
+            android:textColor="@color/airwallex_color_dark_deep"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/airwallex_line_divider" />
+</LinearLayout>

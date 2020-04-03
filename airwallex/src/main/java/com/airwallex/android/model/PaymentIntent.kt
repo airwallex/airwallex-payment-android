@@ -104,7 +104,7 @@ data class PaymentIntent internal constructor(
      * Client secret for browser or app
      */
     @SerializedName("client_secret")
-    val clientSecret: String,
+    val clientSecret: String?,
 
     /**
      * Next action for the payment intent
@@ -140,8 +140,7 @@ data class PaymentIntent internal constructor(
 
     val weChat: WeChat?
         get() {
-            if (latestPaymentAttempt == null ||
-                latestPaymentAttempt.paymentMethod.type != PaymentMethodType.WECHAT ||
+            if (
                 nextAction == null ||
                 nextAction.type != NextActionType.CALL_SDK ||
                 nextAction.data == null
@@ -185,7 +184,7 @@ data class PaymentIntent internal constructor(
          * Payment attempt status. One of PENDING, SUCCEEDED, CANCELLED, FAILED
          */
         @SerializedName("status")
-        val status: PaymentAttemptStatus,
+        val status: PaymentAttemptStatus?,
 
         /**
          * Captured amount

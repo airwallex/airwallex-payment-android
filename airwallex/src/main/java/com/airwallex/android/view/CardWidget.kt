@@ -19,7 +19,7 @@ internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(
                     PaymentMethod.Card.Builder()
                         .setNumber(atlCardNumber.cardNumber)
                         .setName(atlCardName.value)
-                        .setExpiryMonth(month.toString())
+                        .setExpiryMonth(if (month < 10) "0$month" else month.toString())
                         .setExpiryYear(year.toString())
                         .setCvc(atlCardCvc.cvcValue)
                         .build()

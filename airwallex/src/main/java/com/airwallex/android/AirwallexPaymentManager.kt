@@ -126,9 +126,11 @@ internal class AirwallexPaymentManager(
             ApiOperationType.RETRIEVE_PAYMENT_INTENT -> {
                 PaymentIntent::class.java as Class<T>
             }
-            ApiOperationType.CREATE_PAYMENT_METHOD,
-            ApiOperationType.RETRIEVE_PAYMENT_METHOD -> {
+            ApiOperationType.CREATE_PAYMENT_METHOD -> {
                 PaymentMethod::class.java as Class<T>
+            }
+            ApiOperationType.RETRIEVE_PAYMENT_METHOD -> {
+                PaymentMethodResponse::class.java as Class<T>
             }
         }
     }
