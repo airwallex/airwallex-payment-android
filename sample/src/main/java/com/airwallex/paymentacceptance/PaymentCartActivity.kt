@@ -184,7 +184,7 @@ class PaymentCartActivity : AppCompatActivity() {
                 // the ID of the `PaymentIntent`, required.
                 paymentIntentId = paymentIntent.id,
                 // the clientSecret of `PaymentIntent`, required.
-                clientSecret = paymentIntent.clientSecret
+                clientSecret = requireNotNull(paymentIntent.clientSecret)
             )
                 // the customerId of `PaymentIntent`, optional.
                 .setCustomerId(paymentIntent.customerId)
