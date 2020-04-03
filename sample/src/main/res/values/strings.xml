@@ -22,7 +22,7 @@
     <string name="wechat_app_signature">App Signature</string>
 
     <string name="app_name">Airwallex Sample</string>
-    <string name="checkout">Checkout With Wechat</string>
+    <string name="checkout">Checkout</string>
     <string name="subtotal">Subtotal</string>
     <string name="remove">Remove</string>
     <string name="my_cart">My cart</string>
@@ -31,6 +31,8 @@
     <string name="payment_successful_message">Your payment has been charged</string>
     <string name="payment_failed">Payment failed</string>
     <string name="payment_failed_message">There was an error while processing your payment. Please try again.</string>
+    <string name="payment_cancelled">Payment cancelled</string>
+    <string name="payment_cancelled_message">User cancel the payment</string>
 
     <string name="free">Free</string>
     <string name="total">Total</string>
@@ -46,4 +48,6 @@
 
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
+
+    <string name="enter_shipping">Enter shipping information</string>
 </resources>

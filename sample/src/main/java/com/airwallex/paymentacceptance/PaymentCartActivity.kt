@@ -12,12 +12,10 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
-import com.airwallex.android.ConfirmPaymentIntentParams
+import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.RetrievePaymentIntentParams
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentIntentStatus
-import com.airwallex.android.model.PurchaseOrder
+import com.airwallex.android.model.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -33,8 +31,8 @@ class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
 
-    private val airwallex by lazy {
-        Airwallex()
+    private val airwallexStarter by lazy {
+        AirwallexStarter(this@PaymentCartActivity)
     }
 
     private val api: Api
@@ -179,19 +177,26 @@ class PaymentCartActivity : AppCompatActivity() {
      * PaymentIntent must come from merchant's server, only wechat pay is currently supported
      */
     private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
-        airwallex.confirmPaymentIntent(
-            params = ConfirmPaymentIntentParams.Builder(
-                // the ID of the `PaymentIntent`, required.
-                paymentIntentId = paymentIntent.id,
-                // the clientSecret of `PaymentIntent`, required.
-                clientSecret = paymentIntent.clientSecret
-            )
-                // the customerId of `PaymentIntent`, optional.
-                .setCustomerId(paymentIntent.customerId)
-                .build(),
-            listener = object : Airwallex.PaymentListener<PaymentIntent> {
-                override fun onSuccess(response: PaymentIntent) {
-                    val weChat = response.weChat
+        airwallexStarter.presentPaymentFlow(paymentIntent, requireNotNull(Settings.token))
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        cartFragment.onActivityResult(requestCode, resultCode, data)
+
+        airwallexStarter.handlePaymentResult(requestCode, resultCode, data,
+            object :
+                AirwallexStarter.PaymentIntentResult {
+                override fun onCancelled() {
+                    Log.d(TAG, "User cancel the payment")
+                    showPaymentCancelled()
+                }
+
+                override fun onSuccess(
+                    paymentIntent: PaymentIntent,
+                    paymentMethodType: PaymentMethodType
+                ) {
+                    val weChat = paymentIntent.weChat
                     if (weChat == null) {
                         showPaymentError("Server error, WeChat data is null...")
                         return
@@ -253,8 +258,8 @@ class PaymentCartActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailed(exception: AirwallexException) {
-                    showPaymentError(exception.error?.message)
+                override fun onFailed(error: AirwallexError) {
+                    showPaymentError(error.message)
                 }
             })
     }
@@ -319,6 +324,14 @@ class PaymentCartActivity : AppCompatActivity() {
         )
     }
 
+    private fun showPaymentCancelled(error: String? = null) {
+        setLoadingProgress(false)
+        showAlert(
+            getString(R.string.payment_cancelled),
+            error ?: getString(R.string.payment_cancelled_message)
+        )
+    }
+
     private fun showAlert(title: String, message: String) {
         if (!isFinishing) {
             AlertDialog.Builder(this)
@@ -331,11 +344,6 @@ class PaymentCartActivity : AppCompatActivity() {
                 .create()
                 .show()
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        cartFragment.onActivityResult(requestCode, resultCode, data)
     }
 
     companion object {

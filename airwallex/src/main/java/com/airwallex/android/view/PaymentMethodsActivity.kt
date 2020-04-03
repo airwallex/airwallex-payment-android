@@ -100,7 +100,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         airwallex.retrievePaymentMethods(
             params = RetrievePaymentMethodParams.Builder(
                 customerId = requireNotNull(paymentIntent.customerId),
-                clientSecret = paymentIntent.clientSecret,
+                clientSecret = requireNotNull(paymentIntent.clientSecret),
                 pageNum = pageNum.get()
             )
                 .setPageSize(PAGE_SIZE)
