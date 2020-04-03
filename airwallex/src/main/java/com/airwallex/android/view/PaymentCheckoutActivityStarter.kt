@@ -66,7 +66,6 @@ internal class PaymentCheckoutActivityStarter constructor(
     @Parcelize
     internal data class Result internal constructor(
         val paymentIntent: PaymentIntent? = null,
-        val paymentMethodType: PaymentMethodType? = null,
         val error: AirwallexError? = null
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {

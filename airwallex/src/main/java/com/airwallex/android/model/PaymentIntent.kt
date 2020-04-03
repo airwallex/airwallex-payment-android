@@ -138,9 +138,18 @@ data class PaymentIntent internal constructor(
 
 ) : AirwallexModel, Parcelable {
 
+    val paymentMethodType: PaymentMethodType?
+        get() {
+            if (latestPaymentAttempt == null) {
+                return null
+            }
+            return latestPaymentAttempt.paymentMethod.type
+        }
+
     val weChat: WeChat?
         get() {
-            if (
+            if (latestPaymentAttempt == null ||
+                latestPaymentAttempt.paymentMethod.type != PaymentMethodType.WECHAT ||
                 nextAction == null ||
                 nextAction.type != NextActionType.CALL_SDK ||
                 nextAction.data == null

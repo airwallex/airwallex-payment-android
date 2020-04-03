@@ -29,7 +29,7 @@ class AirwallexStarter constructor(
     }
 
     interface PaymentIntentResult : PaymentResult {
-        fun onSuccess(paymentIntent: PaymentIntent, paymentMethodType: PaymentMethodType)
+        fun onSuccess(paymentIntent: PaymentIntent)
         fun onFailed(error: AirwallexError)
     }
 
@@ -254,8 +254,7 @@ class AirwallexStarter constructor(
                                 )
                             } else {
                                 (callback as? PaymentIntentResult)?.onSuccess(
-                                    requireNotNull(result?.paymentIntent),
-                                    requireNotNull(result?.paymentMethodType)
+                                    requireNotNull(result?.paymentIntent)
                                 )
                             }
                         }
@@ -267,8 +266,7 @@ class AirwallexStarter constructor(
                             (callback as? PaymentIntentResult)?.onFailed(result.error)
                         } else {
                             (callback as? PaymentIntentResult)?.onSuccess(
-                                requireNotNull(result?.paymentIntent),
-                                requireNotNull(result?.paymentMethodType)
+                                requireNotNull(result?.paymentIntent)
                             )
                         }
                         true

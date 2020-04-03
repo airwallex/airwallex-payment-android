@@ -9,7 +9,9 @@ data class ConfirmPaymentIntentParams internal constructor(
     /**
      * optional, the ID of a Customer.
      */
-    val customerId: String?
+    val customerId: String?,
+    val paymentMethodId: String?,
+    val cvc: String?
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
 
     class Builder(
@@ -19,9 +21,19 @@ data class ConfirmPaymentIntentParams internal constructor(
     ) : ObjectBuilder<ConfirmPaymentIntentParams> {
 
         private var customerId: String? = null
+        private var paymentMethodId: String? = null
+        private var cvc: String? = null
 
         fun setCustomerId(customerId: String?): Builder = apply {
             this.customerId = customerId
+        }
+
+        fun setPaymentMethodId(paymentMethodId: String?): Builder = apply {
+            this.paymentMethodId = paymentMethodId
+        }
+
+        fun setCvc(cvc: String?): Builder = apply {
+            this.cvc = cvc
         }
 
         override fun build(): ConfirmPaymentIntentParams {
@@ -29,12 +41,14 @@ data class ConfirmPaymentIntentParams internal constructor(
                 type = type,
                 paymentIntentId = paymentIntentId,
                 clientSecret = clientSecret,
-                customerId = customerId
+                customerId = customerId,
+                paymentMethodId = paymentMethodId,
+                cvc = cvc
             )
         }
     }
 
     enum class ConfirmPaymentIntentType {
-        WECHAT
+        WECHAT, CARD
     }
 }

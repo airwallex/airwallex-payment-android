@@ -18,7 +18,6 @@ internal class AirwallexApiRepository : ApiRepository {
         internal val paymentIntentConfirmRequest: PaymentIntentConfirmRequest? = null
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
-
     @Parcelize
     internal data class CreatePaymentMethodOptions internal constructor(
         override val clientSecret: String,

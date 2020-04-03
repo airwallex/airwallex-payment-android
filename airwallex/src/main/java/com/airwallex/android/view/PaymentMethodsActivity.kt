@@ -148,8 +148,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     callback = object : Airwallex.PaymentListener<PaymentIntent> {
                         override fun onSuccess(response: PaymentIntent) {
                             finishWithPaymentIntent(
-                                paymentIntent = response,
-                                type = paymentMethod.type
+                                paymentIntent = response
                             )
                         }
 
@@ -197,7 +196,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             PaymentCheckoutActivityStarter.REQUEST_CODE -> {
                 val result = PaymentCheckoutActivityStarter.Result.fromIntent(data)
                 result?.let {
-                    finishWithPaymentIntent(it.paymentIntent, it.paymentMethodType, it.error)
+                    finishWithPaymentIntent(it.paymentIntent, it.error)
                 }
             }
         }
@@ -220,7 +219,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private fun finishWithPaymentIntent(
         paymentIntent: PaymentIntent? = null,
-        type: PaymentMethodType? = null,
         error: AirwallexError? = null
     ) {
         setLoadingProgress(false)
@@ -228,7 +226,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             Activity.RESULT_OK, Intent().putExtras(
                 PaymentMethodsActivityStarter.Result(
                     paymentIntent = paymentIntent,
-                    paymentMethodType = type,
                     error = error
                 ).toBundle()
             )
