@@ -10,7 +10,6 @@ import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodType
 import java.util.*
 import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
@@ -75,7 +74,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         confirmPaymentIntent(paymentMethod = paymentMethod,
             callback = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
-                    finishWithPaymentIntent(paymentIntent = response, type = paymentMethod.type)
+                    finishWithPaymentIntent(paymentIntent = response)
                 }
 
                 override fun onFailed(exception: AirwallexException) {
@@ -86,7 +85,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     private fun finishWithPaymentIntent(
         paymentIntent: PaymentIntent? = null,
-        type: PaymentMethodType? = null,
         error: AirwallexError? = null
     ) {
         setLoadingProgress(false)
@@ -94,7 +92,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             Activity.RESULT_OK, Intent().putExtras(
                 PaymentCheckoutActivityStarter.Result(
                     paymentIntent = paymentIntent,
-                    paymentMethodType = type,
                     error = error
                 ).toBundle()
             )

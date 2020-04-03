@@ -4,6 +4,7 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.ConfirmPaymentIntentParams
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodType
 
 internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
 
@@ -22,17 +23,35 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         callback: Airwallex.PaymentListener<PaymentIntent>
     ) {
         setLoadingProgress(true)
-        airwallex.confirmPaymentIntent(
-            params = ConfirmPaymentIntentParams.Builder(
-                // the ID of the `PaymentIntent`, required.
-                paymentIntentId = paymentIntent.id,
-                // the clientSecret of `PaymentIntent`, required.
-                clientSecret = requireNotNull(paymentIntent.clientSecret)
-            )
-                // the customerId of `PaymentIntent`, optional.
-                .setCustomerId(paymentIntent.customerId)
-                .build(),
-            listener = callback
-        )
+
+        val params = when (paymentMethod.type) {
+            PaymentMethodType.WECHAT -> {
+                ConfirmPaymentIntentParams.Builder(
+                    type = ConfirmPaymentIntentParams.ConfirmPaymentIntentType.WECHAT,
+                    // the ID of the `PaymentIntent`, required.
+                    paymentIntentId = paymentIntent.id,
+                    // the clientSecret of `PaymentIntent`, required.
+                    clientSecret = requireNotNull(paymentIntent.clientSecret)
+                )
+                    // the customerId of `PaymentIntent`, optional.
+                    .setCustomerId(paymentIntent.customerId)
+                    .build()
+            }
+            PaymentMethodType.CARD -> {
+                ConfirmPaymentIntentParams.Builder(
+                    type = ConfirmPaymentIntentParams.ConfirmPaymentIntentType.CARD,
+                    // the ID of the `PaymentIntent`, required.
+                    paymentIntentId = paymentIntent.id,
+                    // the clientSecret of `PaymentIntent`, required.
+                    clientSecret = requireNotNull(paymentIntent.clientSecret)
+                )
+                    // the customerId of `PaymentIntent`, optional.
+                    .setCustomerId(paymentIntent.customerId)
+                    .setPaymentMethodId(paymentMethod.id)
+                    .setCvc(cvc)
+                    .build()
+            }
+        }
+        airwallex.confirmPaymentIntent(params, callback)
     }
 }
