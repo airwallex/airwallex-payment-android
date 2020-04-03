@@ -18,21 +18,15 @@ internal class PaymentMethodsActivityStarter constructor(
     @Parcelize
     internal data class Args internal constructor(
         val paymentIntent: PaymentIntent,
-        val token: String,
         val includeCheckoutFlow: Boolean
     ) : ActivityStarter.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var paymentIntent: PaymentIntent
-            private lateinit var token: String
             private var includeCheckoutFlow: Boolean = true
 
             fun setPaymentIntent(paymentIntent: PaymentIntent): Builder = apply {
                 this.paymentIntent = paymentIntent
-            }
-
-            fun setToken(token: String): Builder = apply {
-                this.token = token
             }
 
             fun setIncludeCheckoutFlow(includeCheckoutFlow: Boolean): Builder = apply {
@@ -42,7 +36,6 @@ internal class PaymentMethodsActivityStarter constructor(
             override fun build(): Args {
                 return Args(
                     paymentIntent = paymentIntent,
-                    token = token,
                     includeCheckoutFlow = includeCheckoutFlow
                 )
             }

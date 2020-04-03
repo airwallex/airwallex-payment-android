@@ -20,17 +20,17 @@ class ShippingItemView constructor(
 
     private var shipping: Shipping? = null
 
-    private var paymentSession: AirwallexStarter? = null
+    private var airwallexStarter: AirwallexStarter? = null
 
     init {
         View.inflate(getContext(), R.layout.shipping_item, this)
 
         rlBilling.setOnClickListener {
             shipping?.let {
-                paymentSession = AirwallexStarter(
+                airwallexStarter = AirwallexStarter(
                     context as Activity
                 )
-                paymentSession?.presentShippingFlow(shipping)
+                airwallexStarter?.presentShippingFlow(shipping)
             }
         }
     }
@@ -78,7 +78,7 @@ class ShippingItemView constructor(
         data: Intent?,
         completion: (shipping: Shipping?) -> Unit
     ) {
-        paymentSession?.handlePaymentShippingResult(
+        airwallexStarter?.handlePaymentShippingResult(
             requestCode,
             resultCode,
             data,

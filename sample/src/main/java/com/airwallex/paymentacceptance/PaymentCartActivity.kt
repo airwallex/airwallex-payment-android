@@ -177,7 +177,7 @@ class PaymentCartActivity : AppCompatActivity() {
      * PaymentIntent must come from merchant's server, only wechat pay is currently supported
      */
     private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
-        airwallexStarter.presentPaymentFlow(paymentIntent, requireNotNull(Settings.token))
+        airwallexStarter.presentPaymentFlow(paymentIntent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

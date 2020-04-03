@@ -42,7 +42,7 @@ class AirwallexStarter constructor(
      *
      * [handlePaymentResult] to handle the PaymentIntent
      */
-    fun presentPaymentFlow(paymentIntent: PaymentIntent, token: String) {
+    fun presentPaymentFlow(paymentIntent: PaymentIntent) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided"
         })
@@ -50,7 +50,6 @@ class AirwallexStarter constructor(
             .startForResult(
                 PaymentMethodsActivityStarter.Args.Builder()
                     .setPaymentIntent(paymentIntent)
-                    .setToken(token)
                     .setIncludeCheckoutFlow(true)
                     .build()
             )
@@ -109,18 +108,13 @@ class AirwallexStarter constructor(
      *
      * [handleAddPaymentMethodResult] to handle the PaymentMethod
      */
-    fun presentAddPaymentMethodFlow(paymentIntent: PaymentIntent, token: String) {
+    fun presentAddPaymentMethodFlow(paymentIntent: PaymentIntent) {
         AddPaymentMethodActivityStarter(activity)
             .startForResult(
                 AddPaymentMethodActivityStarter.Args.Builder()
                     .setShipping(paymentIntent.order.shipping)
-                    .setCustomerId(requireNotNull(paymentIntent.customerId, {
-                        "Customer id must be provided"
-                    }))
-                    .setClientSecret(requireNotNull(paymentIntent.clientSecret, {
-                        "Client Secret must be not null"
-                    }))
-                    .setToken(token)
+                    .setCustomerId(requireNotNull(paymentIntent.customerId))
+                    .setClientSecret(requireNotNull(paymentIntent.clientSecret))
                     .build()
             )
     }
@@ -148,7 +142,7 @@ class AirwallexStarter constructor(
      *
      * [handleSelectPaymentMethodResult] to handle the PaymentMethod
      */
-    fun presentSelectPaymentMethodFlow(paymentIntent: PaymentIntent, token: String) {
+    fun presentSelectPaymentMethodFlow(paymentIntent: PaymentIntent) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided"
         })
@@ -156,7 +150,6 @@ class AirwallexStarter constructor(
             .startForResult(
                 PaymentMethodsActivityStarter.Args.Builder()
                     .setPaymentIntent(paymentIntent)
-                    .setToken(token)
                     .setIncludeCheckoutFlow(false)
                     .build()
             )
@@ -186,14 +179,12 @@ class AirwallexStarter constructor(
      */
     fun presentPaymentConfirmFlow(
         paymentIntent: PaymentIntent,
-        paymentMethod: PaymentMethod,
-        token: String
+        paymentMethod: PaymentMethod
     ) {
         PaymentCheckoutActivityStarter(activity)
             .startForResult(
                 PaymentCheckoutActivityStarter.Args.Builder()
                     .setPaymentIntent(paymentIntent)
-                    .setToken(token)
                     .setPaymentMethod(paymentMethod)
                     .build()
             )

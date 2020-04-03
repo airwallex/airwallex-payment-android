@@ -21,14 +21,12 @@ internal class AddPaymentMethodActivityStarter constructor(
     internal data class Args internal constructor(
         val shipping: Shipping?,
         val customerId: String,
-        val clientSecret: String,
-        val token: String
+        val clientSecret: String
     ) : ActivityStarter.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var customerId: String
             private lateinit var clientSecret: String
-            private lateinit var token: String
             private var shipping: Shipping? = null
 
             fun setShipping(shipping: Shipping?): Builder = apply {
@@ -43,16 +41,11 @@ internal class AddPaymentMethodActivityStarter constructor(
                 this.clientSecret = clientSecret
             }
 
-            fun setToken(token: String): Builder = apply {
-                this.token = token
-            }
-
             override fun build(): Args {
                 return Args(
                     shipping = shipping,
                     customerId = customerId,
-                    clientSecret = clientSecret,
-                    token = token
+                    clientSecret = clientSecret
                 )
             }
         }
