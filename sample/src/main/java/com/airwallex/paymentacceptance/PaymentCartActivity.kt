@@ -31,7 +31,7 @@ class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
 
-    private val airwallexStarter by lazy {
+    val airwallexStarter by lazy {
         AirwallexStarter(this@PaymentCartActivity)
     }
 
@@ -79,6 +79,8 @@ class PaymentCartActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         compositeSubscription.dispose()
+
+        airwallexStarter.onDestroy()
         super.onDestroy()
     }
 
@@ -177,24 +179,10 @@ class PaymentCartActivity : AppCompatActivity() {
      * PaymentIntent must come from merchant's server, only wechat pay is currently supported
      */
     private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
-        airwallexStarter.presentPaymentFlow(paymentIntent)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        cartFragment.onActivityResult(requestCode, resultCode, data)
-
-        airwallexStarter.handlePaymentResult(requestCode, resultCode, data,
-            object :
-                AirwallexStarter.PaymentIntentResult {
-                override fun onCancelled() {
-                    Log.d(TAG, "User cancel the payment")
-                    showPaymentCancelled()
-                }
-
-                override fun onSuccess(
-                    paymentIntent: PaymentIntent
-                ) {
+        airwallexStarter.presentPaymentFlow(
+            paymentIntent,
+            object : AirwallexStarter.PaymentIntentListener {
+                override fun onSuccess(paymentIntent: PaymentIntent) {
                     when (paymentIntent.paymentMethodType) {
                         PaymentMethodType.WECHAT -> {
                             val weChat = paymentIntent.weChat
@@ -276,7 +264,17 @@ class PaymentCartActivity : AppCompatActivity() {
                 override fun onFailed(error: AirwallexError) {
                     showPaymentError(error.message)
                 }
+
+                override fun onCancelled() {
+                    Log.d(TAG, "User cancel the payment")
+                    showPaymentCancelled()
+                }
             })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        airwallexStarter.handlePaymentResult(requestCode, resultCode, data)
     }
 
     /**

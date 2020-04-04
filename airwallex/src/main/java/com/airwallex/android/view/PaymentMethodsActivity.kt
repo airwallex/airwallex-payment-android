@@ -32,7 +32,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         args.paymentIntent
     }
 
-    // Only wechat will confirm in this page
     override val cvc: String?
         get() = null
 
@@ -208,7 +207,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             Activity.RESULT_OK, Intent().putExtras(
                 PaymentMethodsActivityStarter.Result(
                     paymentMethod = paymentMethod,
-                    cvc = cvc
+                    cvc = cvc,
+                    includeCheckoutFlow = args.includeCheckoutFlow
                 ).toBundle()
             )
         )
@@ -224,7 +224,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             Activity.RESULT_OK, Intent().putExtras(
                 PaymentMethodsActivityStarter.Result(
                     paymentIntent = paymentIntent,
-                    error = error
+                    error = error,
+                    includeCheckoutFlow = args.includeCheckoutFlow
                 ).toBundle()
             )
         )
