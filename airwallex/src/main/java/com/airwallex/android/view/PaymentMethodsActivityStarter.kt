@@ -54,7 +54,8 @@ internal class PaymentMethodsActivityStarter constructor(
         val paymentMethodType: PaymentMethodType? = null,
         val error: AirwallexError? = null,
         val paymentMethod: PaymentMethod? = null,
-        val cvc: String? = null
+        val cvc: String? = null,
+        val includeCheckoutFlow: Boolean = false
     ) : ActivityStarter.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()

@@ -234,7 +234,46 @@ data class PaymentIntent internal constructor(
         FAILED,
 
         @SerializedName("SUCCEEDED")
-        SUCCEEDED
+        SUCCEEDED,
+
+        @SerializedName("PENDING_AUTHORIZATION")
+        PENDING_AUTHORIZATION,
+
+        @SerializedName("PENDING_AUTHENTICATION")
+        PENDING_AUTHENTICATION,
+
+        @SerializedName("AUTHENTICATION_FAILED")
+        AUTHENTICATION_FAILED,
+
+        @SerializedName("AUTHORIZED")
+        AUTHORIZED,
+
+        @SerializedName("AUTHORIZATION_FAILED")
+        AUTHORIZATION_FAILED,
+
+        @SerializedName("PENDING_CAPTURE")
+        PENDING_CAPTURE,
+
+        @SerializedName("VOIDED")
+        VOIDED,
+
+        @SerializedName("CAPTURED")
+        CAPTURED,
+
+        @SerializedName("CAPTURE_FAILED")
+        CAPTURE_FAILED,
+
+        @SerializedName("PENDING_PAYMENT_CODE_GENERATION")
+        PENDING_PAYMENT_CODE_GENERATION,
+
+        @SerializedName("PAYMENT_CODE_GENERATION_FAILED")
+        PAYMENT_CODE_GENERATION_FAILED,
+
+        @SerializedName("PAYMENT_CODE_GENERATED")
+        PAYMENT_CODE_GENERATED,
+
+        @SerializedName("PAYMENT_FAILED")
+        PAYMENT_FAILED
     }
 
     @Parcelize
