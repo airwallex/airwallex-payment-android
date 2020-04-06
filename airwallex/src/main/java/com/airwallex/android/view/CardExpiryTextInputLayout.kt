@@ -3,7 +3,6 @@ package com.airwallex.android.view
 import android.content.Context
 import android.util.AttributeSet
 import com.airwallex.android.R
-import com.google.android.material.textfield.TextInputEditText
 
 /**
  * A [AirwallexTextInputLayout] to format the credit card expiry date, display errors and support callback interface
