@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
+import com.airwallex.android.R.styleable
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
@@ -67,29 +68,29 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
 
         context.theme.obtainStyledAttributes(
             attrs,
-            R.styleable.AirwallexTextInputLayout, 0, 0
+            styleable.AirwallexTextInputLayout, 0, 0
         ).apply {
             try {
-                if (hasValue(R.styleable.AirwallexTextInputLayout_hint)) {
-                    tlInput.hint = getString(R.styleable.AirwallexTextInputLayout_hint)
+                if (hasValue(styleable.AirwallexTextInputLayout_hint)) {
+                    tlInput.hint = getString(styleable.AirwallexTextInputLayout_hint)
                 }
 
-                if (hasValue(R.styleable.AirwallexTextInputLayout_text)) {
-                    teInput.setText(getString(R.styleable.AirwallexTextInputLayout_text))
+                if (hasValue(styleable.AirwallexTextInputLayout_text)) {
+                    teInput.setText(getString(styleable.AirwallexTextInputLayout_text))
                 }
 
-                if (hasValue(R.styleable.AirwallexTextInputLayout_android_imeOptions)) {
+                if (hasValue(styleable.AirwallexTextInputLayout_android_imeOptions)) {
                     teInput.imeOptions =
                         getInt(
-                            R.styleable.AirwallexTextInputLayout_android_imeOptions,
+                            styleable.AirwallexTextInputLayout_android_imeOptions,
                             EditorInfo.IME_NULL
                         )
                 }
 
-                if (hasValue(R.styleable.AirwallexTextInputLayout_android_inputType)) {
+                if (hasValue(styleable.AirwallexTextInputLayout_android_inputType)) {
                     teInput.inputType =
                         getInt(
-                            R.styleable.AirwallexTextInputLayout_android_inputType,
+                            styleable.AirwallexTextInputLayout_android_inputType,
                             EditorInfo.TYPE_NULL
                         )
                 }

@@ -21,7 +21,7 @@ internal interface PaymentManager {
     )
 
     /**
-     * Create the Airwallex PaymentMethod
+     * Create a Airwallex [PaymentMethod]
      */
     fun createPaymentMethod(
         options: ApiRepository.Options,
@@ -29,7 +29,7 @@ internal interface PaymentManager {
     )
 
     /**
-     * Retrieve all of the customer's PaymentMethods
+     * Retrieve all of the customer's [PaymentMethod]
      */
     fun retrievePaymentMethods(
         options: ApiRepository.Options,

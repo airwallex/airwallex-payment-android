@@ -1,6 +1,7 @@
 package com.airwallex.android
 
 import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.model.PaymentMethod
 
 data class ConfirmPaymentIntentParams internal constructor(
     val type: ConfirmPaymentIntentType,
@@ -10,7 +11,13 @@ data class ConfirmPaymentIntentParams internal constructor(
      * optional, the ID of a Customer.
      */
     val customerId: String?,
+    /**
+     * ID of the [PaymentMethod]
+     */
     val paymentMethodId: String?,
+    /**
+     * cvc of the [PaymentMethod]
+     */
     val cvc: String?
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
 

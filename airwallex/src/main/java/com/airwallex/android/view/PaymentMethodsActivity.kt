@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_payment_methods.*
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * Allow the customer to select from their attached payment methods, or add a new one via [AddPaymentMethodActivity].
+ * Allow the customer to select one of the payment methods, or add a new one via [AddPaymentMethodActivity].
  *
  */
 internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
@@ -102,7 +102,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 clientSecret = requireNotNull(paymentIntent.clientSecret),
                 pageNum = pageNum.get()
             )
-                .setPageSize(PAGE_SIZE)
                 .build(),
             listener = object : Airwallex.PaymentListener<PaymentMethodResponse> {
                 override fun onSuccess(response: PaymentMethodResponse) {
@@ -230,9 +229,5 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             )
         )
         finish()
-    }
-
-    companion object {
-        private const val PAGE_SIZE = 20
     }
 }

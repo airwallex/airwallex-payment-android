@@ -8,6 +8,9 @@ import com.airwallex.android.R
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.widget_card.view.*
 
+/**
+ * A widget used to collect the card info
+ */
 internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     internal var cardChangeCallback: () -> Unit = {}

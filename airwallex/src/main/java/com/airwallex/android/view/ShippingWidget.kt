@@ -9,13 +9,23 @@ import com.airwallex.android.model.Address
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.widget_shipping.view.*
 
-internal class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+/**
+ * A widget used to collect the shipping [Address] of shipping info.
+ */
+internal class ShippingWidget(context: Context, attrs: AttributeSet) :
+    LinearLayout(context, attrs) {
 
+    /**
+     * The listener of when the shipping address changed
+     */
     internal var shippingChangeCallback: () -> Unit = {}
 
     private var country: CountryAutoCompleteView.Country? = null
 
-    internal val address: Address
+    /**
+     * Return [Address] based on user input.
+     */
+    internal val address: Address?
         get() {
             return Address.Builder()
                 .setCountryCode(country?.code)
@@ -26,6 +36,9 @@ internal class ShippingWidget(context: Context, attrs: AttributeSet) : LinearLay
                 .build()
         }
 
+    /**
+     * Validation rules for shipping address
+     */
     internal val isValidShipping: Boolean
         get() {
             return country != null &&

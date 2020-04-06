@@ -3,14 +3,11 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import com.airwallex.android.model.AirwallexError
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.Shipping
+import com.airwallex.android.model.*
 import com.airwallex.android.view.*
 
 /**
- *  Create a AirwallexStarter attached to the given host Activity.
+ *  Entry-point to the Airwallex Payment Flow. Create a AirwallexStarter attached to the given host Activity.
  *
  *  @param activity This Activity will receive results in `Activity#onActivityResult(int, int, Intent)`
  *  that should be passed back to this session.
@@ -27,15 +24,24 @@ class AirwallexStarter constructor(
         fun onCancelled()
     }
 
+    /**
+     * Represents a listener for PaymentShipping actions
+     */
     interface PaymentShippingListener : PaymentListener {
         fun onSuccess(shipping: Shipping)
     }
 
+    /**
+     * Represents a listener for PaymentIntent actions
+     */
     interface PaymentIntentListener : PaymentListener {
         fun onSuccess(paymentIntent: PaymentIntent)
         fun onFailed(error: AirwallexError)
     }
 
+    /**
+     * Represents a listener for PaymentMethod actions
+     */
     interface PaymentMethodListener : PaymentListener {
         fun onSuccess(paymentMethod: PaymentMethod, cvc: String?)
     }
@@ -69,6 +75,7 @@ class AirwallexStarter constructor(
      * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
      *
      * @param paymentIntent a [PaymentIntent] used to present the Add Payment Method flow
+     * @param addPaymentMethodFlowListener The callback of present the add payment method flow
      */
     fun presentAddPaymentMethodFlow(
         paymentIntent: PaymentIntent,
@@ -89,10 +96,10 @@ class AirwallexStarter constructor(
     }
 
     /**
-     * Launch the [PaymentMethodsActivity] to allow the user to select a payment method,
-     * or to add a new one.
+     * Launch the [PaymentMethodsActivity] to allow the user to select a payment method or add a new one
      *
      * @param paymentIntent a [PaymentIntent] used to present the Select Payment Method flow
+     * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
      */
     fun presentSelectPaymentMethodFlow(
         paymentIntent: PaymentIntent,
@@ -116,13 +123,30 @@ class AirwallexStarter constructor(
      *
      * @param paymentIntent a [PaymentIntent] used to present the Checkout flow
      * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
+     * @param paymentDetailListener The callback of present the select payment detail flow
      */
     fun presentPaymentDetailFlow(
         paymentIntent: PaymentIntent,
-        paymentMethod: PaymentMethod,
+        paymentMethodType: PaymentMethodType,
+        paymentMethodId: String?,
         paymentDetailListener: PaymentIntentListener
     ) {
         this.paymentDetailListener = paymentDetailListener
+        val paymentMethod = when (paymentMethodType) {
+            PaymentMethodType.WECHAT -> {
+                PaymentMethod.Builder()
+                    .setType(PaymentMethodType.WECHAT)
+                    .build()
+            }
+            PaymentMethodType.CARD -> {
+                PaymentMethod.Builder()
+                    .setType(PaymentMethodType.CARD)
+                    .setId(requireNotNull(paymentMethodId, {
+                        "Card payment need provide the ID."
+                    }))
+                    .build()
+            }
+        }
         PaymentCheckoutActivityStarter(activity)
             .startForResult(
                 PaymentCheckoutActivityStarter.Args.Builder()
@@ -136,7 +160,7 @@ class AirwallexStarter constructor(
      * Launch the [PaymentMethodsActivity] to allow the user to complete the entire payment flow
      *
      * @param paymentIntent a [PaymentIntent] used to present the payment flow
-     * @param paymentFlowListener The callback of present the payment flow
+     * @param paymentFlowListener The callback of present entire payment flow
      */
     fun presentPaymentFlow(
         paymentIntent: PaymentIntent,
@@ -155,6 +179,9 @@ class AirwallexStarter constructor(
             )
     }
 
+    /**
+     * Should be called via `Activity#onActivityResult(int, int, Intent)}}` to handle the result of all flows
+     */
     fun handlePaymentResult(
         requestCode: Int,
         resultCode: Int,
@@ -234,6 +261,9 @@ class AirwallexStarter constructor(
         }
     }
 
+    /**
+     * Should be called during the host `Activity`'s onDestroy to detach listeners.
+     */
     fun onDestroy() {
         shippingFlowListener = null
         paymentFlowListener = null

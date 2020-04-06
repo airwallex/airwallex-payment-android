@@ -4,14 +4,20 @@ import com.airwallex.android.view.CardBrand.Companion.fromCardNumber
 
 internal object CardUtils {
 
+    /**
+     * The valid card length
+     */
     private const val VALID_CARD_LENGTH = 16
 
+    /**
+     * Check if card number is valid
+     */
     internal fun isValidCardNumber(cardNumber: String?): Boolean {
         val normalizedNumber = removeSpacesAndHyphens(cardNumber)
         return isValidLuhnNumber(normalizedNumber) && isValidCardLength(normalizedNumber)
     }
 
-    internal fun isValidLuhnNumber(number: String?): Boolean {
+    private fun isValidLuhnNumber(number: String?): Boolean {
         if (number == null) {
             return false
         }
@@ -41,13 +47,16 @@ internal object CardUtils {
         return sum % 10 == 0
     }
 
-    internal fun isValidCardLength(cardNumber: String?): Boolean {
+    private fun isValidCardLength(cardNumber: String?): Boolean {
         return cardNumber != null && isValidCardLength(
             cardNumber,
             getPossibleCardBrand(cardNumber, false)
         )
     }
 
+    /**
+     * Check if card length is valid
+     */
     private fun isValidCardLength(
         cardNumber: String?,
         cardBrand: CardBrand?
@@ -58,6 +67,13 @@ internal object CardUtils {
         return cardNumber.length == VALID_CARD_LENGTH
     }
 
+    /**
+     * Get all possible card brands of the card number
+     *
+     *
+     * @param cardNumber the credit card number
+     * @return [CardBrand] of the card number
+     */
     internal fun getPossibleCardBrand(cardNumber: String?, shouldNormalize: Boolean): CardBrand {
         if (cardNumber.isNullOrBlank()) {
             return CardBrand.Unknown
@@ -73,6 +89,9 @@ internal object CardUtils {
         return fromCardNumber(normalizeCardNumber)
     }
 
+    /**
+     * Remove all spaces and hyphens of the card number
+     */
     internal fun removeSpacesAndHyphens(cardNumberWithSpaces: String?): String? {
         return cardNumberWithSpaces
             .takeUnless { it.isNullOrBlank() }

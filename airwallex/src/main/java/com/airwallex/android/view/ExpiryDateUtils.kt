@@ -31,7 +31,7 @@ internal object ExpiryDateUtils {
         return isExpiryDateValid(expiryMonth, expiryYear, Calendar.getInstance())
     }
 
-    internal fun isExpiryDateValid(expiryMonth: Int, expiryYear: Int, calendar: Calendar): Boolean {
+    private fun isExpiryDateValid(expiryMonth: Int, expiryYear: Int, calendar: Calendar): Boolean {
         if (expiryMonth < 1 || expiryMonth > 12) {
             return false
         }

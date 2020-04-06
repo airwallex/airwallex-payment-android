@@ -29,8 +29,8 @@ internal class AirwallexApiRepository : ApiRepository {
     internal data class RetrievePaymentMethodOptions internal constructor(
         override val clientSecret: String,
         internal val customerId: String,
-        internal val pageNum: Int = 0,
-        internal val pageSize: Int = 20
+        internal val pageNum: Int,
+        internal val pageSize: Int
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     /**

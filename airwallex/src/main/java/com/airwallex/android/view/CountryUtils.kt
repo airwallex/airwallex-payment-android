@@ -4,6 +4,9 @@ import java.util.*
 
 internal object CountryUtils {
 
+    /**
+     * All countries that currently supported
+     */
     private val legalCountries by lazy {
         arrayOf(
             "AC", "AD", "AE", "AG", "AI", "AL", "AM", "AN", "AO", "AQ", "AR", "AS", "AT", "AU", "AW",

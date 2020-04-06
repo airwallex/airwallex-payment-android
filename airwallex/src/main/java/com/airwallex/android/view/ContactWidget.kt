@@ -8,6 +8,9 @@ import com.airwallex.android.R
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.widget_contact.view.*
 
+/**
+ * A widget used to collect the contact info of shipping info.
+ */
 internal class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     internal data class Contact(
@@ -16,14 +19,23 @@ internal class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayo
         val phone: String
     )
 
+    /**
+     * The listener of when the shipping contact changed
+     */
     internal var contactChangeCallback: () -> Unit = {}
 
+    /**
+     * Validation rules for contact info
+     */
     internal val isValidContact: Boolean
         get() {
             return atlLastName.value.isNotEmpty() &&
                     atlFirstName.value.isNotEmpty()
         }
 
+    /**
+     * Return [Contact] based on user input.
+     */
     internal val contact: Contact
         get() {
             return Contact(

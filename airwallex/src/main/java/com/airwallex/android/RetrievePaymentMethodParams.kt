@@ -5,8 +5,14 @@ import com.airwallex.android.model.ObjectBuilder
 data class RetrievePaymentMethodParams internal constructor(
     override val customerId: String,
     override val clientSecret: String,
-    internal val pageNum: Int = 0,
-    internal val pageSize: Int = 20
+    /**
+     * Page number starting from 0
+     */
+    internal val pageNum: Int,
+    /**
+     * Number of payment methods to be listed per page
+     */
+    internal val pageSize: Int
 ) : AbstractPaymentMethodParams(customerId = customerId, clientSecret = clientSecret) {
 
     class Builder(
