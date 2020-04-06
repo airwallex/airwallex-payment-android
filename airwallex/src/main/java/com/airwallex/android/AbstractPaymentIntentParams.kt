@@ -3,7 +3,6 @@ package com.airwallex.android
 import com.airwallex.android.model.PaymentIntent
 
 abstract class AbstractPaymentIntentParams(
-
     /**
      * ID of [PaymentIntent]
      */

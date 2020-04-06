@@ -10,6 +10,9 @@ internal class KeyboardController(
     private val inputMethodManager: InputMethodManager =
         activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
+    /**
+     * Hide the keyboard
+     */
     internal fun hide() {
         if (inputMethodManager.isAcceptingText) {
             inputMethodManager.hideSoftInputFromWindow(

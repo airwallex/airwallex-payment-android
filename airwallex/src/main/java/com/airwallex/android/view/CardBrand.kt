@@ -3,6 +3,9 @@ package com.airwallex.android.view
 import androidx.annotation.DrawableRes
 import com.airwallex.android.R
 
+/**
+ * All card brands supported by Airwallex. Only support VISA & MASTERCARD
+ */
 internal enum class CardBrand(
     val type: String,
     @DrawableRes val icon: Int,

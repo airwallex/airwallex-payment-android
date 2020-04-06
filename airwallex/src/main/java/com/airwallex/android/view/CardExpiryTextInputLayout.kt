@@ -3,18 +3,28 @@ package com.airwallex.android.view
 import android.content.Context
 import android.util.AttributeSet
 import com.airwallex.android.R
+import com.google.android.material.textfield.TextInputEditText
 
+/**
+ * A [AirwallexTextInputLayout] to format the credit card expiry date, display errors and support callback interface
+ */
 internal class CardExpiryTextInputLayout constructor(
     context: Context,
     attrs: AttributeSet
 ) : AirwallexTextInputLayout(context, attrs, R.layout.card_expiry_input_layout) {
 
+    /**
+     * Callback of complete input expiry date
+     */
     internal var completionCallback: () -> Unit = {}
         set(value) {
             (teInput as CardExpiryEditText).completionCallback = value
             field = value
         }
 
+    /**
+     * Check if expiry date is valid
+     */
     internal val isValid: Boolean
         get() = (teInput as CardExpiryEditText).isDateValid
 

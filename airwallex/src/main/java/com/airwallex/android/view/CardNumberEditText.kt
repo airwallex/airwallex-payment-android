@@ -9,6 +9,9 @@ import android.util.AttributeSet
 import com.airwallex.android.R
 import com.google.android.material.textfield.TextInputEditText
 
+/**
+ * A [TextInputEditText] to format the credit card number
+ */
 internal class CardNumberEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

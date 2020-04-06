@@ -11,6 +11,9 @@ import com.airwallex.android.model.Billing
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.widget_billing.view.*
 
+/**
+ * A widget used to collect the [Billing] info
+ */
 internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     internal var billingChangeCallback: () -> Unit = {}
@@ -27,11 +30,17 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
             }
         }
 
+    /**
+     * Use the same [Address] as [Shipping]
+     */
     private val sameAsShipping: Boolean
         get() {
             return swSameAsShipping.isChecked
         }
 
+    /**
+     * Return [Billing] based on user input.
+     */
     internal val billing: Billing?
         get() {
             val shipping = this.shipping
@@ -74,6 +83,9 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
             }
         }
 
+    /**
+     * Check if billing is valid
+     */
     internal val isValid: Boolean
         get() {
             return sameAsShipping ||

@@ -9,6 +9,9 @@ import android.view.View
 import com.airwallex.android.R
 import com.google.android.material.textfield.TextInputEditText
 
+/**
+ * A [TextInputEditText] to format the credit card cvc
+ */
 internal class CardCvcEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -19,6 +22,9 @@ internal class CardCvcEditText @JvmOverloads constructor(
         const val VALID_CVC_LENGTH = 3
     }
 
+    /**
+     * return the cvc value if the cvc is valid
+     */
     internal val cvcValue: String?
         get() {
             return rawCvcValue.takeIf { isValid }
@@ -29,6 +35,9 @@ internal class CardCvcEditText @JvmOverloads constructor(
             return text.toString().trim()
         }
 
+    /**
+     * Check if cvc is valid
+     */
     internal val isValid: Boolean
         get() {
             return rawCvcValue.length == VALID_CVC_LENGTH
