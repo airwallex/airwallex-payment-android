@@ -29,8 +29,22 @@ internal class AirwallexApiRepository : ApiRepository {
     internal data class RetrievePaymentMethodOptions internal constructor(
         override val clientSecret: String,
         internal val customerId: String,
+        /**
+         * Page number starting from 0
+         */
         internal val pageNum: Int,
-        internal val pageSize: Int
+        /**
+         * Number of payment methods to be listed per page
+         */
+        internal val pageSize: Int,
+        /**
+         * The start time of created_at in ISO8601 format
+         */
+        internal val fromCreatedAt: String? = null,
+        /**
+         * The end time of created_at in ISO8601 format
+         */
+        internal val toCreatedAt: String? = null
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     /**
@@ -85,6 +99,7 @@ internal class AirwallexApiRepository : ApiRepository {
         return AirwallexPlugins.httpClient.execute(request)
     }
 
+    @Suppress("DEPRECATION")
     override fun createPaymentMethod(options: ApiRepository.Options): AirwallexHttpResponse? {
         val jsonParser = JsonParser()
         val paramsJson =

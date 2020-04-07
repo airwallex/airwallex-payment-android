@@ -122,7 +122,8 @@ class AirwallexStarter constructor(
      * Launch the [PaymentCheckoutActivity] to allow the user to confirm [PaymentIntent] using the specified [PaymentMethod]
      *
      * @param paymentIntent a [PaymentIntent] used to present the Checkout flow
-     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
+     * @param paymentMethodType a [PaymentMethodType] used to present the Checkout flow
+     * @param paymentMethodId ID of [PaymentMethod]
      * @param paymentDetailListener The callback of present the select payment detail flow
      */
     fun presentPaymentDetailFlow(

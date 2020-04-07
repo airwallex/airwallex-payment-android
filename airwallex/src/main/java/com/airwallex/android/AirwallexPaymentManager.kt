@@ -19,6 +19,9 @@ internal class AirwallexPaymentManager(
 
     /**
      * Confirm the [PaymentIntent] using [ApiRepository.Options]
+     *
+     * @param options contains the confirm [PaymentIntent] params
+     * @param listener a [Airwallex.PaymentListener] to receive the response or error
      */
     override fun confirmPaymentIntent(
         options: ApiRepository.Options,
@@ -29,6 +32,9 @@ internal class AirwallexPaymentManager(
 
     /**
      * Retrieve the [PaymentIntent] using [ApiRepository.Options]
+     *
+     * @param options contains the retrieve [PaymentIntent] params
+     * @param listener a [Airwallex.PaymentListener] to receive the response or error
      */
     override fun retrievePaymentIntent(
         options: ApiRepository.Options,
@@ -37,6 +43,12 @@ internal class AirwallexPaymentManager(
         executeApiOperation(ApiOperationType.RETRIEVE_PAYMENT_INTENT, options, listener)
     }
 
+    /**
+     * Create a Airwallex [PaymentMethod] using [ApiRepository.Options]
+     *
+     * @param options contains the create [PaymentMethod] params
+     * @param listener a [Airwallex.PaymentListener] to receive the response or error
+     */
     override fun createPaymentMethod(
         options: ApiRepository.Options,
         listener: Airwallex.PaymentListener<PaymentMethod>
@@ -44,6 +56,12 @@ internal class AirwallexPaymentManager(
         executeApiOperation(ApiOperationType.CREATE_PAYMENT_METHOD, options, listener)
     }
 
+    /**
+     * Retrieve all of the customer's [PaymentMethod] using [ApiRepository.Options]
+     *
+     * @param options contains the retrieve [PaymentMethod] params
+     * @param listener a [Airwallex.PaymentListener] to receive the response or error
+     */
     override fun retrievePaymentMethods(
         options: ApiRepository.Options,
         listener: Airwallex.PaymentListener<PaymentMethodResponse>
@@ -135,7 +153,7 @@ internal class AirwallexPaymentManager(
         }
     }
 
-    enum class ApiOperationType {
+    internal enum class ApiOperationType {
         CONFIRM_PAYMENT_INTENT,
         RETRIEVE_PAYMENT_INTENT,
         CREATE_PAYMENT_METHOD,

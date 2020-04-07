@@ -18,11 +18,17 @@ internal object AirwallexPlugins {
         this.configuration = configuration
     }
 
+    /**
+     * Enable logging in the Airwallex
+     */
     internal val enableLogging: Boolean
         get() {
             return configuration.enableLogging
         }
 
+    /**
+     * Base URL in the Airwallex
+     */
     internal val baseUrl: String
         get() {
             return configuration.baseUrl
