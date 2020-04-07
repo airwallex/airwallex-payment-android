@@ -1,4 +1,4 @@
-# Airwallex Android SDK (Wechat Only)
+# Airwallex Android SDK
 This section mainly introduces the main process of integrating Airwallex Android SDK. This guide assumes that you are an Android developer and familiar with Android Studio and Gradle.
 
 Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to include the Airwallex Android SDK in your Android project.
@@ -8,6 +8,7 @@ Get started with our integration guide and example project.
 ## Contents
 * [Requirements](#Requirements)
 * [Integration](#Integration)
+* [Native UI](#NativeUI)
 * [Features](#Features)
 * [Examples](#Examples)
 * [Contributing](#Contributing)
@@ -65,11 +66,17 @@ After completing all the steps on the server, the client will get a `PaymentInte
             clientSecret = paymentIntent.clientSecret // the clientSecret of `PaymentIntent`, required.
         )   
             .setCustomerId(paymentIntent.customerId) // the customerId of `PaymentIntent`, optional.
+            .setPaymentMethod(
+                PaymentMethodType.CARD, // You should set `PaymentMethodReference` if the `paymentMethodType` is `CARD`
+                PaymentMethodReference(
+                    paymentMethod.id,
+                    requireNotNull(cvc)
+                )
+            )
             .build(),
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
-                val weChat = response.weChat
-                // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay).
+                
             }
                 
             override fun onFailed(exception: AirwallexException) {
@@ -78,21 +85,29 @@ After completing all the steps on the server, the client will get a `PaymentInte
         }
      )
 ```
-3. After successfully confirming the `PaymentIntent`, Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay) to complete the final payment.
-Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/blob/master) for more details.
-```kotlin
-    val weChatReq = PayReq()
-    weChatReq.appId = weChat.appId
-    weChatReq.partnerId = weChat.partnerId
-    weChatReq.prepayId = weChat.prepayId
-    weChatReq.packageValue = weChat.`package`
-    weChatReq.nonceStr = weChat.nonceStr
-    weChatReq.timeStamp = weChat.timestamp
-    weChatReq.sign = weChat.sign
-    
-    val weChatApi = WXAPIFactory.createWXAPI(applicationContext, appId)
-    weChatApi.sendReq(weChatReq)
-```
+3. After successfully confirming the `PaymentIntent`
+ - Wechat Pay 
+ Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay) to complete the final payment.
+ Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/blob/master) for more details.
+ ```kotlin
+     val weChat = response.weChat
+     // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay).
+ 
+     val weChatReq = PayReq()
+     weChatReq.appId = weChat.appId
+     weChatReq.partnerId = weChat.partnerId
+     weChatReq.prepayId = weChat.prepayId
+     weChatReq.packageValue = weChat.`package`
+     weChatReq.nonceStr = weChat.nonceStr
+     weChatReq.timeStamp = weChat.timestamp
+     weChatReq.sign = weChat.sign
+     
+     val weChatApi = WXAPIFactory.createWXAPI(applicationContext, appId)
+     weChatApi.sendReq(weChatReq)
+ ```
+ 
+ - Credit Card Pay. You can prompt the user the result of confirm PaymentIntent
+
 
 ### Step 4: Retrieve Payment Intent to confirm the charge has succeeded
 Since WeChat Pay is a synchronous payment method and the customer has already authorized the payment using the WeChat application. 
@@ -116,13 +131,122 @@ After successful payment, the Airwallex server will notify the Merchant, then yo
         })
 ```
 
+## NativeUI
+We provide native screens to collect payment and shipping details.
+You can use these individually, or take all of the prebuilt UI in one flow by following the Integration guide.
+```kotlin
+    // Create `AirwallexStarter` object
+    val airwallexStarter = AirwallexStarter(activity)
+
+    // Override `onActivityResult`, then call `handlePaymentResult`
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        airwallexStarter.handlePaymentResult(requestCode, resultCode, data)
+    }
+
+    // Call `airwallexStarter.onDestroy()` on `onDestroy`
+    override fun onDestroy() {
+        airwallexStarter.onDestroy()
+        super.onDestroy()
+    }
+```
+
+- Show Shipping UI
+<img src="assets/payment_edit_shipping.jpg" width="200">
+
+```kotlin
+    airwallexStarter.presentShippingFlow(shipping,
+        object : AirwallexStarter.PaymentShippingListener {
+            override fun onSuccess(shipping: Shipping) {
+                Log.d(TAG, "Save the shipping success")
+            }
+
+            override fun onCancelled() {
+                Log.d(TAG, "User cancel edit shipping...")
+            }
+        })
+```
+
+- Show Payment Method List UI
+<img src="assets/payment_select_payment_method.jpg" width="200">
+
+```kotlin
+    airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent,
+        object : AirwallexStarter.PaymentMethodListener {
+            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+                Log.d(TAG, "Select PaymentMethod success")
+            }
+
+            override fun onCancelled() {
+                Log.d(TAG, "User cancel select PaymentMethod")
+            }
+        })
+```
+
+- Show New Card UI
+<img src="assets/payment_new_card.jpg" width="200">
+
+```kotlin
+    airwallexStarter.presentAddPaymentMethodFlow(paymentIntent,
+        object : AirwallexStarter.PaymentMethodListener {
+            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+                Log.d(TAG, "Create PaymentMethod success")
+            }
+
+            override fun onCancelled() {
+                Log.d(TAG, "User cancel create PaymentMethod")
+            }
+        })
+```
+
+- Show Payment Detail UI
+<img src="assets/payment_detail.jpg" width="200">
+
+```kotlin
+    airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethodType, paymentMethodId,
+        object : AirwallexStarter.PaymentIntentListener {
+           override fun onSuccess(paymentIntent: PaymentIntent) {
+               Log.d(TAG, "Confirm payment intent success")
+            }
+
+           override fun onFailed(error: AirwallexError) {
+               Log.d(TAG, "Confirm payment intent failed")
+           }
+                           
+           override fun onCancelled() {
+               Log.d(TAG, "User cancel confirm payment intent")
+           }
+        })
+```
+
+- Show Payment Flow
+```kotlin
+    airwallexStarter.presentPaymentFlow(paymentIntent,
+        object : AirwallexStarter.PaymentIntentListener {
+            override fun onSuccess(paymentIntent: PaymentIntent) {
+                Log.d(TAG, "Confirm payment intent success")
+            }
+
+            override fun onFailed(error: AirwallexError) {
+                Log.d(TAG, "Confirm payment intent failed")
+            }
+                
+            override fun onCancelled() {
+                Log.d(TAG, "User cancel confirm payment intent")
+            }
+        })
+```
+
 ## Features
 
-### WeChat Pay 
-We provide a seamless integration with WeChat Pay.
+### WeChat Pay & Credit Card Pay
+We provide a seamless integration with WeChat Pay & Credit Card Pay.
 
 ### Airwallex API
 We provide low-level APIs that correspond to objects and methods in the Airwallex API. You can build your own entirely custom UI on top of this layer.
+
+### Payment Native UI
+We provide native screens to collect payment and shipping details.
 
 ## Examples
 To run the example project, you should follow these steps.

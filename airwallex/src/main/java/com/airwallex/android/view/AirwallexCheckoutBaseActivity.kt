@@ -35,6 +35,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                 )
                     // the customerId of `PaymentIntent`, optional.
                     .setCustomerId(paymentIntent.customerId)
+                    .setPaymentMethod(PaymentMethodType.WECHAT)
                     .build()
             }
             PaymentMethodType.CARD -> {
@@ -46,8 +47,8 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                 )
                     // the customerId of `PaymentIntent`, optional.
                     .setCustomerId(paymentIntent.customerId)
-                    .setPaymentMethodType(PaymentMethodType.CARD)
-                    .setPaymentMethodReference(
+                    .setPaymentMethod(
+                        PaymentMethodType.CARD,
                         PaymentMethodReference(
                             paymentMethod.id,
                             requireNotNull(cvc)
