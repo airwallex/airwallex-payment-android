@@ -66,8 +66,10 @@ After completing all the steps on the server, the client will get a `PaymentInte
             clientSecret = paymentIntent.clientSecret // the clientSecret of `PaymentIntent`, required.
         )   
             .setCustomerId(paymentIntent.customerId) // the customerId of `PaymentIntent`, optional.
+             // If the `paymentMethodType` is `WECHAT`, it's not necessary call `setPaymentMethod` method (default is `WeChat` pay)
+             // If the `paymentMethodType` is `CARD`, you should set `PaymentMethodReference`
             .setPaymentMethod(
-                PaymentMethodType.CARD, // You should set `PaymentMethodReference` if the `paymentMethodType` is `CARD`
+                PaymentMethodType.CARD,
                 PaymentMethodReference(
                     paymentMethod.id,
                     requireNotNull(cvc)
@@ -76,7 +78,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
             .build(),
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
-                
+                // Confirm Payment Intent success
             }
                 
             override fun onFailed(exception: AirwallexException) {
@@ -152,7 +154,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
 ```
 
 - Show Shipping UI
-<img src="assets/payment_edit_shipping.jpg" width="200">
+<img src="assets/payment_edit_shipping.jpg" width="300">
 
 ```kotlin
     airwallexStarter.presentShippingFlow(shipping,
@@ -162,13 +164,13 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
             }
 
             override fun onCancelled() {
-                Log.d(TAG, "User cancel edit shipping...")
+                Log.d(TAG, "User cancel edit shipping")
             }
         })
 ```
 
 - Show Payment Method List UI
-<img src="assets/payment_select_payment_method.jpg" width="200">
+<img src="assets/payment_select_payment_method.jpg" width="300">
 
 ```kotlin
     airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent,
@@ -184,7 +186,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
 ```
 
 - Show New Card UI
-<img src="assets/payment_new_card.jpg" width="200">
+<img src="assets/payment_new_card.jpg" width="300">
 
 ```kotlin
     airwallexStarter.presentAddPaymentMethodFlow(paymentIntent,
@@ -200,7 +202,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
 ```
 
 - Show Payment Detail UI
-<img src="assets/payment_detail.jpg" width="200">
+<img src="assets/payment_detail.jpg" width="300">
 
 ```kotlin
     airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethodType, paymentMethodId,
