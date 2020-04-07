@@ -1,11 +1,16 @@
 package com.airwallex.android
 
-import com.airwallex.android.model.*
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodResponse
 
 internal interface PaymentManager {
 
     /**
      * Confirm the [PaymentIntent] using [ApiRepository.Options]
+     *
+     * @param options contains the confirm [PaymentIntent] params
+     * @param listener a [Airwallex.PaymentListener] to receive the response or error
      */
     fun confirmPaymentIntent(
         options: ApiRepository.Options,
@@ -14,6 +19,9 @@ internal interface PaymentManager {
 
     /**
      * Retrieve the [PaymentIntent] using [ApiRepository.Options]
+     *
+     * @param options contains the retrieve [PaymentIntent] params
+     * @param listener a [Airwallex.PaymentListener] to receive the response or error
      */
     fun retrievePaymentIntent(
         options: ApiRepository.Options,
@@ -21,7 +29,10 @@ internal interface PaymentManager {
     )
 
     /**
-     * Create a Airwallex [PaymentMethod]
+     * Create a Airwallex [PaymentMethod] using [ApiRepository.Options]
+     *
+     * @param options contains the create [PaymentMethod] params
+     * @param listener a [Airwallex.PaymentListener] to receive the response or error
      */
     fun createPaymentMethod(
         options: ApiRepository.Options,
@@ -29,7 +40,10 @@ internal interface PaymentManager {
     )
 
     /**
-     * Retrieve all of the customer's [PaymentMethod]
+     * Retrieve all of the customer's [PaymentMethod] using [ApiRepository.Options]
+     *
+     * @param options contains the retrieve [PaymentMethod] params
+     * @param listener a [Airwallex.PaymentListener] to receive the response or error
      */
     fun retrievePaymentMethods(
         options: ApiRepository.Options,

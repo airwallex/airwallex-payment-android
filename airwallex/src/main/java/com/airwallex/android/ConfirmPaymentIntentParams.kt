@@ -16,7 +16,7 @@ data class ConfirmPaymentIntentParams internal constructor(
     /**
      * [PaymentMethodReference] used to confirm [PaymentIntent].
      * When [paymentMethodType] is [PaymentMethodType.CARD], it's should be not null
-     * When [paymentMethodType] is [PaymentMethodType.WECHAT], it's null
+     * When [paymentMethodType] is [PaymentMethodType.WECHAT], it's should be null
      */
     val paymentMethodReference: PaymentMethodReference? = null,
 

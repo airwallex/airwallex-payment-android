@@ -21,16 +21,22 @@ internal class PaymentMethodItemView constructor(
     attrs: AttributeSet
 ) : RelativeLayout(context, attrs) {
 
-    private lateinit var paymentMethod: PaymentMethod
+    private lateinit var paymentMethodType: PaymentMethodType
 
+    /**
+     * CVC of credit card
+     */
     internal var cvc: String? = null
 
     internal val isValid: Boolean
         get() {
-            return paymentMethod.type == PaymentMethodType.CARD && (cvc?.length == CardCvcEditText.VALID_CVC_LENGTH || etCardCvc.text?.trim().toString().length == CardCvcEditText.VALID_CVC_LENGTH) ||
-                    paymentMethod.type == PaymentMethodType.WECHAT
+            return paymentMethodType == PaymentMethodType.CARD && cvc?.length == CardCvcEditText.VALID_CVC_LENGTH ||
+                    paymentMethodType == PaymentMethodType.WECHAT
         }
 
+    /**
+     * CVC changed callback
+     */
     internal var cvcChangedCallback: () -> Unit = {}
 
     private val keyboardController: KeyboardController by lazy {
@@ -46,10 +52,10 @@ internal class PaymentMethodItemView constructor(
 
         etCardCvc.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
+                cvc = etCardCvc.text?.trim().toString()
                 if (isValid) {
                     keyboardController.hide()
                 }
-                cvc = etCardCvc.text?.trim().toString()
                 cvcChangedCallback()
             }
 
@@ -63,7 +69,7 @@ internal class PaymentMethodItemView constructor(
 
     @SuppressLint("DefaultLocale")
     internal fun renewalPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
-        this.paymentMethod = paymentMethod
+        this.paymentMethodType = paymentMethod.type
         this.cvc = cvc
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
             tvPaymentMethod.text = paymentMethod.type.value

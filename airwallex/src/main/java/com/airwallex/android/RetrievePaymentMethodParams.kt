@@ -12,7 +12,16 @@ data class RetrievePaymentMethodParams internal constructor(
     /**
      * Number of payment methods to be listed per page
      */
-    internal val pageSize: Int
+    internal val pageSize: Int,
+    /**
+     * The start time of created_at in ISO8601 format
+     */
+    internal val fromCreatedAt: String? = null,
+    /**
+     * The end time of created_at in ISO8601 format
+     */
+    internal val toCreatedAt: String? = null
+
 ) : AbstractPaymentMethodParams(customerId = customerId, clientSecret = clientSecret) {
 
     class Builder(
@@ -23,8 +32,20 @@ data class RetrievePaymentMethodParams internal constructor(
 
         private var pageSize: Int = 20
 
+        private var fromCreatedAt: String? = null
+
+        private var toCreatedAt: String? = null
+
         fun setPageSize(pageSize: Int): Builder = apply {
             this.pageSize = pageSize
+        }
+
+        fun setFromCreatedAt(fromCreatedAt: String?): Builder = apply {
+            this.fromCreatedAt = fromCreatedAt
+        }
+
+        fun setToCreatedAt(toCreatedAt: String?): Builder = apply {
+            this.toCreatedAt = toCreatedAt
         }
 
         override fun build(): RetrievePaymentMethodParams {
@@ -32,7 +53,9 @@ data class RetrievePaymentMethodParams internal constructor(
                 customerId = customerId,
                 clientSecret = clientSecret,
                 pageNum = pageNum,
-                pageSize = pageSize
+                pageSize = pageSize,
+                fromCreatedAt = fromCreatedAt,
+                toCreatedAt = toCreatedAt
             )
         }
     }

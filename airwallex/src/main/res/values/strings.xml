@@ -46,5 +46,4 @@
     <string name="pay_now">Pay now</string>
     <string name="total">Total</string>
     <string name="payment">Payment</string>
-    <string name="threeds_validation_failed">3ds validation failed</string>
 </resources>
