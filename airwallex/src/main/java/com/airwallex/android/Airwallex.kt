@@ -44,8 +44,8 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
-        val options = when (params.type) {
-            ConfirmPaymentIntentParams.ConfirmPaymentIntentType.WECHAT -> {
+        val options = when (params.paymentMethodType) {
+            PaymentMethodType.WECHAT -> {
                 AirwallexApiRepository.PaymentIntentOptions(
                     clientSecret = params.clientSecret,
                     paymentIntentId = params.paymentIntentId,
@@ -62,19 +62,14 @@ class Airwallex internal constructor(
                         .build()
                 )
             }
-            ConfirmPaymentIntentParams.ConfirmPaymentIntentType.CARD -> {
+            PaymentMethodType.CARD -> {
                 AirwallexApiRepository.PaymentIntentOptions(
                     clientSecret = params.clientSecret,
                     paymentIntentId = params.paymentIntentId,
                     paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
                         requestId = UUID.randomUUID().toString()
                     )
-                        .setPaymentMethodReference(
-                            PaymentMethodReference(
-                                requireNotNull(params.paymentMethodId),
-                                requireNotNull(params.cvc)
-                            )
-                        )
+                        .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
                         .setCustomerId(params.customerId)
                         .build()
                 )
