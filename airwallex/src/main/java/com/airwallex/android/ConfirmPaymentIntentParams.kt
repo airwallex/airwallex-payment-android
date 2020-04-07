@@ -1,6 +1,7 @@
 package com.airwallex.android
 
 import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethodReference
 import com.airwallex.android.model.PaymentMethodType
 
@@ -13,12 +14,14 @@ data class ConfirmPaymentIntentParams internal constructor(
     val customerId: String?,
 
     /**
-     * The object of [PaymentMethodReference], should be supported when [paymentMethodType] is Card
+     * [PaymentMethodReference] used to confirm [PaymentIntent].
+     * When [paymentMethodType] is [PaymentMethodType.CARD], it's should be not null
+     * When [paymentMethodType] is [PaymentMethodType.WECHAT], it's null
      */
     val paymentMethodReference: PaymentMethodReference? = null,
 
     /**
-     * Payment method type, default is WeChat
+     * Payment method type, default is [PaymentMethodType.WECHAT]
      */
     val paymentMethodType: PaymentMethodType = PaymentMethodType.WECHAT
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
@@ -36,12 +39,14 @@ data class ConfirmPaymentIntentParams internal constructor(
             this.customerId = customerId
         }
 
-        fun setPaymentMethodType(paymentMethodType: PaymentMethodType): Builder = apply {
+        fun setPaymentMethod(
+            paymentMethodType: PaymentMethodType,
+            paymentMethodReference: PaymentMethodReference? = null
+        ): Builder = apply {
             this.paymentMethodType = paymentMethodType
-        }
-
-        fun setPaymentMethodReference(paymentMethodReference: PaymentMethodReference?): Builder = apply {
-            this.paymentMethodReference = paymentMethodReference
+            if (paymentMethodType == PaymentMethodType.CARD) {
+                this.paymentMethodReference = requireNotNull(paymentMethodReference)
+            }
         }
 
         override fun build(): ConfirmPaymentIntentParams {
