@@ -1,7 +1,7 @@
 package com.airwallex.android
 
 import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodType
 
 data class ConfirmPaymentIntentParams internal constructor(
     override val paymentIntentId: String,
@@ -11,9 +11,9 @@ data class ConfirmPaymentIntentParams internal constructor(
      */
     val customerId: String?,
     /**
-     * ID of the [PaymentMethod]
+     * Payment method type, default is WeChat
      */
-    val paymentMethodId: String?
+    val paymentMethodType: PaymentMethodType = PaymentMethodType.WECHAT
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
 
     class Builder(
@@ -23,22 +23,15 @@ data class ConfirmPaymentIntentParams internal constructor(
 
         private var customerId: String? = null
 
-        private var paymentMethodId: String? = null
-
         fun setCustomerId(customerId: String?): Builder = apply {
             this.customerId = customerId
-        }
-
-        fun setPaymentMethodId(paymentMethodId: String?): Builder = apply {
-            this.paymentMethodId = paymentMethodId
         }
 
         override fun build(): ConfirmPaymentIntentParams {
             return ConfirmPaymentIntentParams(
                 paymentIntentId = paymentIntentId,
                 clientSecret = clientSecret,
-                customerId = customerId,
-                paymentMethodId = paymentMethodId
+                customerId = customerId
             )
         }
     }
