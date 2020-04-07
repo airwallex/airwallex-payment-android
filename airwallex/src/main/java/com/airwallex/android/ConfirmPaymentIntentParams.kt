@@ -1,61 +1,57 @@
 package com.airwallex.android
 
 import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodReference
+import com.airwallex.android.model.PaymentMethodType
 
 data class ConfirmPaymentIntentParams internal constructor(
-    val type: ConfirmPaymentIntentType,
     override val paymentIntentId: String,
     override val clientSecret: String,
     /**
      * optional, the ID of a Customer.
      */
     val customerId: String?,
+
     /**
-     * ID of the [PaymentMethod]
+     * The object of [PaymentMethodReference], should be supported when [paymentMethodType] is Card
      */
-    val paymentMethodId: String?,
+    val paymentMethodReference: PaymentMethodReference? = null,
+
     /**
-     * cvc of the [PaymentMethod]
+     * Payment method type, default is WeChat
      */
-    val cvc: String?
+    val paymentMethodType: PaymentMethodType = PaymentMethodType.WECHAT
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
 
     class Builder(
-        private val type: ConfirmPaymentIntentType = ConfirmPaymentIntentType.WECHAT,
         private val paymentIntentId: String,
         private val clientSecret: String
     ) : ObjectBuilder<ConfirmPaymentIntentParams> {
 
+        private var paymentMethodType: PaymentMethodType = PaymentMethodType.WECHAT
         private var customerId: String? = null
-        private var paymentMethodId: String? = null
-        private var cvc: String? = null
+        private var paymentMethodReference: PaymentMethodReference? = null
 
         fun setCustomerId(customerId: String?): Builder = apply {
             this.customerId = customerId
         }
 
-        fun setPaymentMethodId(paymentMethodId: String?): Builder = apply {
-            this.paymentMethodId = paymentMethodId
+        fun setPaymentMethodType(paymentMethodType: PaymentMethodType): Builder = apply {
+            this.paymentMethodType = paymentMethodType
         }
 
-        fun setCvc(cvc: String?): Builder = apply {
-            this.cvc = cvc
+        fun setPaymentMethodReference(paymentMethodReference: PaymentMethodReference?): Builder = apply {
+            this.paymentMethodReference = paymentMethodReference
         }
 
         override fun build(): ConfirmPaymentIntentParams {
             return ConfirmPaymentIntentParams(
-                type = type,
                 paymentIntentId = paymentIntentId,
                 clientSecret = clientSecret,
                 customerId = customerId,
-                paymentMethodId = paymentMethodId,
-                cvc = cvc
+                paymentMethodReference = paymentMethodReference,
+                paymentMethodType = paymentMethodType
             )
         }
-    }
-
-    enum class ConfirmPaymentIntentType {
-        WECHAT, CARD
     }
 }
