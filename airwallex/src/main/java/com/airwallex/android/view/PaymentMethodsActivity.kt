@@ -73,6 +73,13 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         rvPaymentMethods.apply {
             layoutManager = viewManager
             adapter = paymentMethodsAdapter
+
+            addItemDecoration(
+                PaymentMethodsDividerItemDecoration(
+                    this@PaymentMethodsActivity,
+                    R.drawable.airwallex_line_divider
+                )
+            )
         }
 
         paymentMethodsAdapter.onLoadMoreCallback = {
