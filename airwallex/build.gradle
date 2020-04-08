@@ -42,6 +42,8 @@ dependencies {
     api "com.squareup.okhttp3:okhttp:$okhttpVersion"
     api "com.google.code.gson:gson:${gsonVersion}"
 
+    compileOnly project(':airwallex-threeds')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"

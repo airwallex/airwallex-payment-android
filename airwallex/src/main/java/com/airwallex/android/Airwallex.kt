@@ -1,7 +1,9 @@
 package com.airwallex.android
 
+import android.app.Activity
 import androidx.annotation.UiThread
 import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.*
 import java.util.*
 
@@ -36,11 +38,13 @@ class Airwallex internal constructor(
     /**
      * Confirm a [PaymentIntent] by ID
      *
+     * @param activity the `Activity` that is start confirm the payment intent
      * @param params [ConfirmPaymentIntentParams] used to confirm [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
     fun confirmPaymentIntent(
+        activity: Activity,
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
@@ -63,19 +67,139 @@ class Airwallex internal constructor(
                 )
             }
             PaymentMethodType.CARD -> {
-                AirwallexApiRepository.PaymentIntentOptions(
-                    clientSecret = params.clientSecret,
-                    paymentIntentId = params.paymentIntentId,
-                    paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
-                        requestId = UUID.randomUUID().toString()
-                    )
-                        .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
-                        .setCustomerId(params.customerId)
+                buildPaymentIntentOptions(
+                    params = params,
+                    threeDs = PaymentMethodOptions.CardOptions.ThreeDs.Builder()
+                        .setReturnUrl(THREE_DS_RETURN_URL)
                         .build()
                 )
             }
         }
-        paymentManager.confirmPaymentIntent(options, listener)
+
+        val paymentListener = when (params.paymentMethodType) {
+            PaymentMethodType.CARD -> {
+                object : PaymentListener<PaymentIntent> {
+                    override fun onFailed(exception: AirwallexException) {
+                        listener.onFailed(exception)
+                    }
+
+                    override fun onSuccess(response: PaymentIntent) {
+                        val jwt = response.nextAction?.data?.get("jwt") as? String
+
+                        if (jwt != null) {
+                            // 3DS Flow
+                            performThreeDsFlow(
+                                activity = activity,
+                                jwt = jwt,
+                                params = params,
+                                listener = listener
+                            )
+                        } else {
+                            listener.onSuccess(response)
+                        }
+                    }
+                }
+            }
+            PaymentMethodType.WECHAT -> {
+                listener
+            }
+        }
+
+        paymentManager.confirmPaymentIntent(options, paymentListener)
+    }
+
+    /**
+     * Perform 3ds flow
+     */
+    private fun performThreeDsFlow(
+        activity: Activity,
+        jwt: String,
+        params: ConfirmPaymentIntentParams,
+        listener: PaymentListener<PaymentIntent>
+    ) {
+        ThreeDSecure.performVerification(activity, jwt) { referenceId, validateResponse ->
+            if (validateResponse != null) {
+                listener.onFailed(ThreeDSException(AirwallexError(message = validateResponse.errorDescription)))
+                return@performVerification
+            }
+
+            // Fetch req & transactionId
+            paymentManager.confirmPaymentIntent(
+                buildPaymentIntentOptions(
+                    params = params,
+                    threeDs = PaymentMethodOptions.CardOptions.ThreeDs.Builder()
+                        .setDeviceDataCollectionRes(referenceId)
+                        .setReturnUrl(THREE_DS_RETURN_URL)
+                        .build()
+                ),
+                object : PaymentListener<PaymentIntent> {
+                    override fun onFailed(exception: AirwallexException) {
+                        listener.onFailed(exception)
+                    }
+
+                    override fun onSuccess(response: PaymentIntent) {
+                        val transactionId = response.nextAction?.data?.get("xid") as? String
+                        val req = response.nextAction?.data?.get("req") as? String
+
+                        // Perform 3ds auth page
+                        ThreeDSecure.performCardinalAuthentication(
+                            activity,
+                            ThreeDSecure.ThreeDSecureLookup(transactionId, req)
+                        ) { validateResponse, exception ->
+                            if (exception != null) {
+                                listener.onFailed(ThreeDSException(AirwallexError(message = exception.message)))
+                                return@performCardinalAuthentication
+                            }
+
+                            // Confirm transactionId
+                            paymentManager.confirmPaymentIntent(
+                                buildPaymentIntentOptions(
+                                    params = params,
+                                    threeDs = PaymentMethodOptions.CardOptions.ThreeDs.Builder()
+                                        .setDsTransactionId(validateResponse.payment.processorTransactionId)
+                                        .setReturnUrl(THREE_DS_RETURN_URL)
+                                        .build()
+                                ),
+                                object : PaymentListener<PaymentIntent> {
+                                    override fun onFailed(exception: AirwallexException) {
+                                        listener.onFailed(exception)
+                                    }
+
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        listener.onSuccess(response)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    private fun buildPaymentIntentOptions(
+        params: ConfirmPaymentIntentParams,
+        threeDs: PaymentMethodOptions.CardOptions.ThreeDs
+    ): AirwallexApiRepository.PaymentIntentOptions {
+        return AirwallexApiRepository.PaymentIntentOptions(
+            clientSecret = params.clientSecret,
+            paymentIntentId = params.paymentIntentId,
+            paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethodOptions(
+                    PaymentMethodOptions.Builder()
+                        .setCardOptions(
+                            PaymentMethodOptions.CardOptions.Builder()
+                                .setAutoCapture(true)
+                                .setThreeDs(threeDs).build()
+                        )
+                        .build()
+                )
+                .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
+                .setCustomerId(params.customerId)
+                .build()
+        )
     }
 
     /**
@@ -150,6 +274,8 @@ class Airwallex internal constructor(
     companion object {
         // The default url, that you can change in the constructor for test on different environments
         internal const val BASE_URL = "https://pci-api.airwallex.com"
+
+        private const val THREE_DS_RETURN_URL = "http://requestbin.net/r/1il2qkm1"
 
         /**
          * Initialize some global configurations, better to be called on Application
