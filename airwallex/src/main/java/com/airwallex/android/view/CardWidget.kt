@@ -32,6 +32,9 @@ internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(
             }
         }
 
+    /**
+     * Check the card info to see whether or not it is a valid card
+     */
     internal val isValid: Boolean
         get() {
             val cardNumberIsValid = CardUtils.isValidCardNumber(atlCardNumber.cardNumber)

@@ -23,8 +23,8 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         Airwallex()
     }
 
-    private val args: PaymentCheckoutActivityStarter.Args by lazy {
-        PaymentCheckoutActivityStarter.Args.getExtra(intent)
+    private val args: PaymentCheckoutActivityLaunch.Args by lazy {
+        PaymentCheckoutActivityLaunch.Args.getExtra(intent)
     }
 
     private val paymentMethod: PaymentMethod by lazy {
@@ -90,7 +90,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
-                PaymentCheckoutActivityStarter.Result(
+                PaymentCheckoutActivityLaunch.Result(
                     paymentIntent = paymentIntent,
                     error = error
                 ).toBundle()

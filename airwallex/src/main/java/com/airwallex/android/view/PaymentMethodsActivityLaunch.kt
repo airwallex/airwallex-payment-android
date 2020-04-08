@@ -4,12 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.model.*
-import com.airwallex.android.view.PaymentMethodsActivityStarter.Args
+import com.airwallex.android.view.PaymentMethodsActivityLaunch.Args
 import kotlinx.android.parcel.Parcelize
 
-internal class PaymentMethodsActivityStarter constructor(
+internal class PaymentMethodsActivityLaunch constructor(
     activity: Activity
-) : ActivityStarter<PaymentMethodsActivity, Args>(
+) : AirwallexActivityLaunch<PaymentMethodsActivity, Args>(
     activity,
     PaymentMethodsActivity::class.java,
     REQUEST_CODE
@@ -19,7 +19,7 @@ internal class PaymentMethodsActivityStarter constructor(
     internal data class Args internal constructor(
         val paymentIntent: PaymentIntent,
         val includeCheckoutFlow: Boolean
-    ) : ActivityStarter.Args {
+    ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var paymentIntent: PaymentIntent
@@ -43,7 +43,7 @@ internal class PaymentMethodsActivityStarter constructor(
 
         internal companion object {
             internal fun getExtra(intent: Intent): Args {
-                return requireNotNull(intent.getParcelableExtra(ActivityStarter.Args.AIRWALLEX_EXTRA))
+                return requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA))
             }
         }
     }
@@ -56,16 +56,16 @@ internal class PaymentMethodsActivityStarter constructor(
         val paymentMethod: PaymentMethod? = null,
         val cvc: String? = null,
         val includeCheckoutFlow: Boolean = false
-    ) : ActivityStarter.Result {
+    ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
             val bundle = Bundle()
-            bundle.putParcelable(ActivityStarter.Result.AIRWALLEX_EXTRA, this)
+            bundle.putParcelable(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA, this)
             return bundle
         }
 
         companion object {
             fun fromIntent(intent: Intent?): Result? {
-                return intent?.getParcelableExtra(ActivityStarter.Result.AIRWALLEX_EXTRA)
+                return intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
             }
         }
     }

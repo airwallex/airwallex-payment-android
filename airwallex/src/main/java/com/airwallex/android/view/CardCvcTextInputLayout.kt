@@ -19,7 +19,7 @@ internal class CardCvcTextInputLayout constructor(
         get() = (teInput as CardCvcEditText).isValid
 
     /**
-     * Return the cvc value
+     * Return the cvc value based on user input
      */
     internal val cvcValue: String?
         get() = (teInput as CardCvcEditText).cvcValue

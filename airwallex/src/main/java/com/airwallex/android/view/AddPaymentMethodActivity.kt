@@ -19,8 +19,8 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         KeyboardController(this)
     }
 
-    private val args: AddPaymentMethodActivityStarter.Args by lazy {
-        AddPaymentMethodActivityStarter.Args.getExtra(intent)
+    private val args: AddPaymentMethodActivityLaunch.Args by lazy {
+        AddPaymentMethodActivityLaunch.Args.getExtra(intent)
     }
 
     private val airwallex: Airwallex by lazy {
@@ -66,7 +66,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
-                AddPaymentMethodActivityStarter.Result(
+                AddPaymentMethodActivityLaunch.Result(
                     paymentMethod = paymentMethod,
                     cvc = cvc
                 ).toBundle()

@@ -35,6 +35,9 @@ internal class CountryAutoCompleteView constructor(
 
     private val countryAdapter: CountryAdapter
 
+    /**
+     * Country selected changed callback
+     */
     internal var countryChangeCallback: (Country) -> Unit = {}
 
     internal var country: String? = null

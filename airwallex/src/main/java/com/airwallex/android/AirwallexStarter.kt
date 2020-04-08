@@ -63,9 +63,9 @@ class AirwallexStarter constructor(
         shippingFlowListener: PaymentShippingListener
     ) {
         this.shippingFlowListener = shippingFlowListener
-        PaymentShippingActivityStarter(activity)
+        PaymentShippingActivityLaunch(activity)
             .startForResult(
-                PaymentShippingActivityStarter.Args.Builder()
+                PaymentShippingActivityLaunch.Args.Builder()
                     .setShipping(shipping)
                     .build()
             )
@@ -85,9 +85,9 @@ class AirwallexStarter constructor(
             "Customer id must be provided on add payment method flow"
         })
         this.addPaymentMethodFlowListener = addPaymentMethodFlowListener
-        AddPaymentMethodActivityStarter(activity)
+        AddPaymentMethodActivityLaunch(activity)
             .startForResult(
-                AddPaymentMethodActivityStarter.Args.Builder()
+                AddPaymentMethodActivityLaunch.Args.Builder()
                     .setShipping(paymentIntent.order.shipping)
                     .setCustomerId(requireNotNull(paymentIntent.customerId))
                     .setClientSecret(requireNotNull(paymentIntent.clientSecret))
@@ -109,9 +109,9 @@ class AirwallexStarter constructor(
             "Customer id must be provided on select payment method flow"
         })
         this.selectPaymentMethodFlowListener = selectPaymentMethodFlowListener
-        PaymentMethodsActivityStarter(activity)
+        PaymentMethodsActivityLaunch(activity)
             .startForResult(
-                PaymentMethodsActivityStarter.Args.Builder()
+                PaymentMethodsActivityLaunch.Args.Builder()
                     .setPaymentIntent(paymentIntent)
                     .setIncludeCheckoutFlow(false)
                     .build()
@@ -148,9 +148,9 @@ class AirwallexStarter constructor(
                     .build()
             }
         }
-        PaymentCheckoutActivityStarter(activity)
+        PaymentCheckoutActivityLaunch(activity)
             .startForResult(
-                PaymentCheckoutActivityStarter.Args.Builder()
+                PaymentCheckoutActivityLaunch.Args.Builder()
                     .setPaymentIntent(paymentIntent)
                     .setPaymentMethod(paymentMethod)
                     .build()
@@ -171,9 +171,9 @@ class AirwallexStarter constructor(
             "Customer id must be provided on payment flow"
         })
         this.paymentFlowListener = paymentFlowListener
-        PaymentMethodsActivityStarter(activity)
+        PaymentMethodsActivityLaunch(activity)
             .startForResult(
-                PaymentMethodsActivityStarter.Args.Builder()
+                PaymentMethodsActivityLaunch.Args.Builder()
                     .setPaymentIntent(paymentIntent)
                     .setIncludeCheckoutFlow(true)
                     .build()
@@ -195,21 +195,21 @@ class AirwallexStarter constructor(
         when (resultCode) {
             Activity.RESULT_OK -> {
                 return when (requestCode) {
-                    AddPaymentMethodActivityStarter.REQUEST_CODE -> {
+                    AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
                         val result =
-                            AddPaymentMethodActivityStarter.Result.fromIntent(data) ?: return true
+                            AddPaymentMethodActivityLaunch.Result.fromIntent(data) ?: return true
                         addPaymentMethodFlowListener?.onSuccess(result.paymentMethod, result.cvc)
                         true
                     }
-                    PaymentShippingActivityStarter.REQUEST_CODE -> {
+                    PaymentShippingActivityLaunch.REQUEST_CODE -> {
                         val result =
-                            PaymentShippingActivityStarter.Result.fromIntent(data) ?: return true
+                            PaymentShippingActivityLaunch.Result.fromIntent(data) ?: return true
                         shippingFlowListener?.onSuccess(result.shipping)
                         true
                     }
-                    PaymentMethodsActivityStarter.REQUEST_CODE -> {
+                    PaymentMethodsActivityLaunch.REQUEST_CODE -> {
                         val result =
-                            PaymentMethodsActivityStarter.Result.fromIntent(data) ?: return true
+                            PaymentMethodsActivityLaunch.Result.fromIntent(data) ?: return true
                         if (result.includeCheckoutFlow) {
                             if (result.error != null) {
                                 paymentFlowListener?.onFailed(result.error)
@@ -224,9 +224,9 @@ class AirwallexStarter constructor(
                         }
                         true
                     }
-                    PaymentCheckoutActivityStarter.REQUEST_CODE -> {
+                    PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
                         val result =
-                            PaymentCheckoutActivityStarter.Result.fromIntent(data) ?: return true
+                            PaymentCheckoutActivityLaunch.Result.fromIntent(data) ?: return true
                         if (result.error != null) {
                             paymentDetailListener?.onFailed(result.error)
                         } else {
@@ -239,19 +239,19 @@ class AirwallexStarter constructor(
             }
             Activity.RESULT_CANCELED -> {
                 return when (requestCode) {
-                    AddPaymentMethodActivityStarter.REQUEST_CODE -> {
+                    AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
                         addPaymentMethodFlowListener?.onCancelled()
                         true
                     }
-                    PaymentShippingActivityStarter.REQUEST_CODE -> {
+                    PaymentShippingActivityLaunch.REQUEST_CODE -> {
                         shippingFlowListener?.onCancelled()
                         true
                     }
-                    PaymentMethodsActivityStarter.REQUEST_CODE -> {
+                    PaymentMethodsActivityLaunch.REQUEST_CODE -> {
                         paymentFlowListener?.onCancelled()
                         true
                     }
-                    PaymentCheckoutActivityStarter.REQUEST_CODE -> {
+                    PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
                         paymentDetailListener?.onCancelled()
                         true
                     }
@@ -275,10 +275,10 @@ class AirwallexStarter constructor(
     internal companion object {
 
         private val VALID_REQUEST_CODES = setOf(
-            PaymentMethodsActivityStarter.REQUEST_CODE,
-            PaymentShippingActivityStarter.REQUEST_CODE,
-            AddPaymentMethodActivityStarter.REQUEST_CODE,
-            PaymentCheckoutActivityStarter.REQUEST_CODE
+            PaymentMethodsActivityLaunch.REQUEST_CODE,
+            PaymentShippingActivityLaunch.REQUEST_CODE,
+            AddPaymentMethodActivityLaunch.REQUEST_CODE,
+            PaymentCheckoutActivityLaunch.REQUEST_CODE
         )
     }
 }

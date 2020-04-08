@@ -18,6 +18,9 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
 
     internal var billingChangeCallback: () -> Unit = {}
 
+    /**
+     * Update UI via [Shipping]
+     */
     internal var shipping: Shipping? = null
         set(value) {
             field = value
@@ -31,7 +34,7 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
         }
 
     /**
-     * Use the same [Address] as [Shipping]
+     * Whether to use the same [Address] as in [Shipping]
      */
     private val sameAsShipping: Boolean
         get() {
@@ -39,7 +42,7 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
         }
 
     /**
-     * Return [Billing] based on user input.
+     * Return [Billing] based on user input if valid, otherwise null.
      */
     internal val billing: Billing?
         get() {
