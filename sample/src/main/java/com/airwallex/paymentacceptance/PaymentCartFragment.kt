@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_cart.*
 class PaymentCartFragment : Fragment() {
 
     var shipping: Shipping = Shipping.Builder()
-        .setFirstName("John")
+        .setFirstName("Verify")
         .setLastName("Doe")
         .setPhone("13800000000")
         .setAddress(

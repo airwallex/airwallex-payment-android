@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+
+rootProject.allprojects {
+    repositories {
+        maven {
+            url "https://cardinalcommerce.bintray.com/android"
+            credentials {
+                username 'braintree-team-sdk@cardinalcommerce'
+                password '220cc9476025679c4e5c843666c27d97cfb0f951'
+            }
+        }
+    }
+}
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.compileSdkVersion
+        consumerProguardFiles 'proguard-rules.pro'
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+}
+
+dependencies {
+    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.2-1'
+}
+
+apply from: rootProject.file('publish.gradle')

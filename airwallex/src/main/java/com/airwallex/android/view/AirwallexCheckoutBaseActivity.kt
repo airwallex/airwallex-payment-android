@@ -57,6 +57,6 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     .build()
             }
         }
-        airwallex.confirmPaymentIntent(params, callback)
+        airwallex.confirmPaymentIntent(this, params, callback)
     }
 }
