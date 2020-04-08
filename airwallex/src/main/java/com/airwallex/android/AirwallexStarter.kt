@@ -122,37 +122,23 @@ class AirwallexStarter constructor(
      * Launch the [PaymentCheckoutActivity] to allow the user to confirm [PaymentIntent] using the specified [PaymentMethod]
      *
      * @param paymentIntent a [PaymentIntent] used to present the Checkout flow
-     * @param paymentMethodType a [PaymentMethodType] used to present the Checkout flow
-     * @param paymentMethodId ID of [PaymentMethod]
+     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
+     * @param cvc CVC of [PaymentMethod], optional
      * @param paymentDetailListener The callback of present the select payment detail flow
      */
     fun presentPaymentDetailFlow(
         paymentIntent: PaymentIntent,
-        paymentMethodType: PaymentMethodType,
-        paymentMethodId: String?,
+        paymentMethod: PaymentMethod,
+        cvc: String? = null,
         paymentDetailListener: PaymentIntentListener
     ) {
         this.paymentDetailListener = paymentDetailListener
-        val paymentMethod = when (paymentMethodType) {
-            PaymentMethodType.WECHAT -> {
-                PaymentMethod.Builder()
-                    .setType(PaymentMethodType.WECHAT)
-                    .build()
-            }
-            PaymentMethodType.CARD -> {
-                PaymentMethod.Builder()
-                    .setType(PaymentMethodType.CARD)
-                    .setId(requireNotNull(paymentMethodId, {
-                        "Card payment need provide the ID."
-                    }))
-                    .build()
-            }
-        }
         PaymentCheckoutActivityLaunch(activity)
             .startForResult(
                 PaymentCheckoutActivityLaunch.Args.Builder()
                     .setPaymentIntent(paymentIntent)
                     .setPaymentMethod(paymentMethod)
+                    .setCvc(cvc)
                     .build()
             )
     }
