@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
@@ -43,6 +42,22 @@ internal class PaymentMethodItemView constructor(
         KeyboardController(context as Activity)
     }
 
+    private val textWatcher = object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+            cvc = etCardCvc.text?.trim().toString()
+            if (isValid) {
+                keyboardController.hide()
+            }
+            cvcChangedCallback()
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        }
+    }
+
     init {
         View.inflate(getContext(), R.layout.payment_method_item, this)
 
@@ -50,42 +65,23 @@ internal class PaymentMethodItemView constructor(
             etCardCvc.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE)
         }
 
-        etCardCvc.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                cvc = etCardCvc.text?.trim().toString()
-                if (isValid) {
-                    keyboardController.hide()
-                }
-                cvcChangedCallback()
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-        })
+        etCardCvc.addTextChangedListener(textWatcher)
     }
 
     @SuppressLint("DefaultLocale")
     internal fun renewalPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
         this.paymentMethodType = paymentMethod.type
-        this.cvc = cvc
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
             tvPaymentMethod.text = paymentMethod.type.value
-            llCardCvc.visibility = View.GONE
         } else {
             tvPaymentMethod.text = String.format(
                 "%s •••• %s",
                 paymentMethod.card?.brand?.capitalize(),
                 paymentMethod.card?.last4
             )
-            if (!TextUtils.isEmpty(cvc)) {
-                llCardCvc.visibility = View.GONE
-            } else {
-                llCardCvc.visibility = View.VISIBLE
-            }
         }
+
+        etCardCvc.setText(cvc)
 
         tvPaymentMethod.setTextColor(
             ContextCompat.getColor(
