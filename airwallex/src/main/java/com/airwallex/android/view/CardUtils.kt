@@ -18,7 +18,7 @@ internal object CardUtils {
     }
 
     /**
-     * Check if number is valid luhn number
+     * Check if number is a valid luhn number
      */
     internal fun isValidLuhnNumber(number: String?): Boolean {
         if (number == null) {

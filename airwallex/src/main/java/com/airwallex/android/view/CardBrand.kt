@@ -31,6 +31,12 @@ internal enum class CardBrand(
     );
 
     companion object {
+
+        /**
+         * Get the [CardBrand] that matches the number's prefix
+         *
+         * @param number the credit card number
+         */
         internal fun fromCardNumber(number: String?): CardBrand {
             return values().firstOrNull { brand ->
                 brand.prefixes.takeIf { it.isNotEmpty() }?.any {

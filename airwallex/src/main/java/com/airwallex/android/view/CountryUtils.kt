@@ -36,10 +36,16 @@ internal object CountryUtils {
         }
         .sortedBy { it.name.toLowerCase(Locale.ROOT) }
 
+    /**
+     * Return the [CountryAutoCompleteView.Country] via [countryName]
+     */
     fun getCountryByName(countryName: String): CountryAutoCompleteView.Country? {
         return COUNTRIES.firstOrNull { it.name == countryName }
     }
 
+    /**
+     * Return the [CountryAutoCompleteView.Country] via [countryCode]
+     */
     fun getCountryByCode(countryCode: String): CountryAutoCompleteView.Country? {
         return COUNTRIES.firstOrNull { it.code == countryCode }
     }

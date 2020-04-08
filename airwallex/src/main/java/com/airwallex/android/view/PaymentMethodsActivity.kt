@@ -24,8 +24,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private lateinit var paymentMethodsAdapter: PaymentMethodsAdapter
 
-    private val args: PaymentMethodsActivityStarter.Args by lazy {
-        PaymentMethodsActivityStarter.Args.getExtra(intent)
+    private val args: PaymentMethodsActivityLaunch.Args by lazy {
+        PaymentMethodsActivityLaunch.Args.getExtra(intent)
     }
 
     override val paymentIntent: PaymentIntent by lazy {
@@ -132,9 +132,9 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun startAddPaymentMethod() {
-        AddPaymentMethodActivityStarter(this@PaymentMethodsActivity)
+        AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity)
             .startForResult(
-                AddPaymentMethodActivityStarter.Args
+                AddPaymentMethodActivityLaunch.Args
                     .Builder()
                     .setShipping(paymentIntent.order.shipping)
                     .setCustomerId(requireNotNull(paymentIntent.customerId))
@@ -163,9 +163,9 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 )
             } else {
                 // Start [PaymentCheckoutActivity] to start confirm PaymentIntent
-                PaymentCheckoutActivityStarter(this@PaymentMethodsActivity)
+                PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
                     .startForResult(
-                        PaymentCheckoutActivityStarter.Args.Builder()
+                        PaymentCheckoutActivityLaunch.Args.Builder()
                             .setPaymentIntent(paymentIntent)
                             .setPaymentMethod(paymentMethod)
                             .setCvc(cvc)
@@ -186,8 +186,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             return
         }
         when (requestCode) {
-            AddPaymentMethodActivityStarter.REQUEST_CODE -> {
-                val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
+            AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
+                val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
                 result?.let {
                     paymentMethodsAdapter.addNewPaymentMethod(it.paymentMethod)
                     paymentNoCards.visibility =
@@ -196,8 +196,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     startPaymentCheckout(it.paymentMethod, it.cvc)
                 }
             }
-            PaymentCheckoutActivityStarter.REQUEST_CODE -> {
-                val result = PaymentCheckoutActivityStarter.Result.fromIntent(data)
+            PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
+                val result = PaymentCheckoutActivityLaunch.Result.fromIntent(data)
                 result?.let {
                     finishWithPaymentIntent(it.paymentIntent, it.error)
                 }
@@ -211,7 +211,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     ) {
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
-                PaymentMethodsActivityStarter.Result(
+                PaymentMethodsActivityLaunch.Result(
                     paymentMethod = paymentMethod,
                     cvc = cvc,
                     includeCheckoutFlow = args.includeCheckoutFlow
@@ -228,7 +228,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
-                PaymentMethodsActivityStarter.Result(
+                PaymentMethodsActivityLaunch.Result(
                     paymentIntent = paymentIntent,
                     error = error,
                     includeCheckoutFlow = args.includeCheckoutFlow

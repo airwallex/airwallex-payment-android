@@ -13,8 +13,8 @@ import kotlinx.android.synthetic.main.activity_add_shipping.*
  */
 internal class PaymentShippingActivity : AirwallexActivity() {
 
-    private val args: PaymentShippingActivityStarter.Args by lazy {
-        PaymentShippingActivityStarter.Args.getExtra(intent)
+    private val args: PaymentShippingActivityLaunch.Args by lazy {
+        PaymentShippingActivityLaunch.Args.getExtra(intent)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -58,7 +58,7 @@ internal class PaymentShippingActivity : AirwallexActivity() {
             .build()
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
-                PaymentShippingActivityStarter.Result(
+                PaymentShippingActivityLaunch.Result(
                     shipping = shipping
                 ).toBundle()
             )

@@ -23,7 +23,7 @@ internal class CardCvcEditText @JvmOverloads constructor(
     }
 
     /**
-     * return the cvc value if the cvc is valid
+     * Return the cvc value if valid, otherwise null.
      */
     internal val cvcValue: String?
         get() {

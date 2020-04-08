@@ -23,6 +23,9 @@ internal class CardNumberEditText @JvmOverloads constructor(
 
         private val SPACE_CARD_SET = setOf(4, 9, 14)
 
+        /**
+         * Use spaces to format credit card number
+         */
         internal fun createFormattedNumber(cardParts: Array<String?>): String {
             return cardParts
                 .takeWhile { it != null }
@@ -30,23 +33,34 @@ internal class CardNumberEditText @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Card Brand changed callback
+     */
     internal var brandChangeCallback: (CardBrand) -> Unit = {}
 
+    /**
+     * Error callback when the card is invalid
+     */
     internal var errorCallback: (showError: Boolean) -> Unit = {}
 
+    /**
+     * Return the card number if valid, otherwise null.
+     */
     internal val cardNumber: String?
         get() = if (isCardNumberValid) {
-            CardUtils.removeSpacesAndHyphens(fieldText)
+            CardUtils.removeSpacesAndHyphens(text?.toString().orEmpty())
         } else {
             null
         }
 
-    private val fieldText: String
-        get() {
-            return text?.toString().orEmpty()
-        }
-
+    /**
+     * Completion callback when a valid card has been entered
+     */
     internal var completionCallback: () -> Unit = {}
+
+    /**
+     * Check if the card number is legal
+     */
     internal var isCardNumberValid: Boolean = false
 
     private var ignoreTextChanges = false
@@ -147,6 +161,7 @@ internal class CardNumberEditText @JvmOverloads constructor(
                 cursorPosition = null
                 ignoreTextChanges = false
 
+                val fieldText = text?.toString().orEmpty()
                 if (fieldText.length == MAX_CARD_LENGTH) {
                     val before = isCardNumberValid
                     isCardNumberValid = CardUtils.isValidCardNumber(fieldText)
