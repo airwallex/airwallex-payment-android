@@ -205,7 +205,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
 <img src="assets/payment_detail.jpg" width="300">
 
 ```kotlin
-    airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethodType, paymentMethodId,
+    airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod,
         object : AirwallexStarter.PaymentIntentListener {
            override fun onSuccess(paymentIntent: PaymentIntent) {
                Log.d(TAG, "Confirm payment intent success")
