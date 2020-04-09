@@ -63,7 +63,7 @@ internal object ThreeDSecure {
              * @param validateResponse
              * @param serverJWT will be an empty
              */
-            override fun onValidated(validateResponse: ValidateResponse, serverJWT: String) {
+            override fun onValidated(validateResponse: ValidateResponse, serverJWT: String?) {
                 onSetupCompleted.invoke(null, validateResponse)
             }
         })
