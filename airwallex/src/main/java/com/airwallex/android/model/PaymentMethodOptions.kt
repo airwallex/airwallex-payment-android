@@ -99,13 +99,7 @@ data class PaymentMethodOptions internal constructor(
              * 3DS transactionId
              */
             @SerializedName("ds_transaction_id")
-            private var dsTransactionId: String?,
-
-            /**
-             * Enable three domain secure
-             */
-            @SerializedName("option")
-            private var option: Boolean
+            private var dsTransactionId: String?
 
         ) : AirwallexModel, Parcelable {
 
@@ -119,8 +113,6 @@ data class PaymentMethodOptions internal constructor(
                 private var deviceDataCollectionRes: String? = null
 
                 private var dsTransactionId: String? = null
-
-                private var option: Boolean = false
 
                 fun setPaRes(paRes: String?): Builder = apply {
                     this.paRes = paRes
@@ -142,18 +134,13 @@ data class PaymentMethodOptions internal constructor(
                     this.dsTransactionId = dsTransactionId
                 }
 
-                fun setOption(option: Boolean): Builder = apply {
-                    this.option = option
-                }
-
                 override fun build(): ThreeDs {
                     return ThreeDs(
                         paRes = paRes,
                         returnUrl = returnUrl,
                         attemptId = attemptId,
                         deviceDataCollectionRes = deviceDataCollectionRes,
-                        dsTransactionId = dsTransactionId,
-                        option = option
+                        dsTransactionId = dsTransactionId
                     )
                 }
             }
