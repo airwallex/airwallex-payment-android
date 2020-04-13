@@ -9,7 +9,6 @@
     <string name="client_id_value">dPH0tQnxRaijLH7ILl0nDQ</string>
 
     <!-- Wechat app_id, app_signature -->
-    <string name="wechat_app_id_value">wxfad13fd6681a62b0</string>
     <string name="wechat_app_signature_value">eb1b3de47de134a321442cad974db87e</string>
 
     <string name="authorization">Authorization</string>

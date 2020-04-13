@@ -41,10 +41,11 @@
 
     </PreferenceCategory>
 
-
     <PreferenceCategory android:title="@string/wechat">
-        <EditTextPreference
-            android:defaultValue="@string/wechat_app_id_value"
+        <ListPreference
+            android:dialogTitle="@string/wechat_app_id"
+            android:entries="@array/array_wechat_app_name"
+            android:entryValues="@array/array_wechat_app_id"
             android:key="@string/wechat_app_id"
             android:title="@string/wechat_app_id" />
 
