@@ -95,7 +95,7 @@ object Settings {
     val wechatAppId: String
         get() {
             val defaultAppId =
-                SampleApplication.instance.getString(R.string.wechat_app_id_value)
+                SampleApplication.instance.resources.getStringArray(R.array.array_wechat_app_id)[0]
             return sharedPreferences.getString(
                 context.getString(R.string.wechat_app_id),
                 defaultAppId
