@@ -178,6 +178,12 @@ data class PaymentIntent internal constructor(
         val id: String,
 
         /**
+         * Payment amount. This is the order amount you would like to charge your customer
+         */
+        @SerializedName("amount")
+        val amount: BigDecimal,
+
+        /**
          * Currency of the captured and refunded amounts
          */
         @SerializedName("currency")
@@ -217,7 +223,68 @@ data class PaymentIntent internal constructor(
          * Last time at which this payment attempt was updated or operated on
          */
         @SerializedName("updated_at")
-        val updatedAt: Date
+        val updatedAt: Date,
+
+        @SerializedName("authentication_data")
+        val authData: PaymentAttemptAuthData
+    ) : AirwallexModel, Parcelable
+
+    @Parcelize
+    data class PaymentAttemptAuthData internal constructor(
+
+        @SerializedName("ds_data")
+        val dsData: PaymentAttemptAuthDSData?,
+
+        @SerializedName("fraud_data")
+        val fraudData: PaymentAttemptAuthFraudData?,
+
+        @SerializedName("avs_result")
+        val avsResult: String?,
+
+        @SerializedName("cvc_result")
+        val cvcResult: String?
+
+    ) : AirwallexModel, Parcelable
+
+    @Parcelize
+    data class PaymentAttemptAuthDSData internal constructor(
+
+        @SerializedName("version")
+        val version: String,
+
+        @SerializedName("liability_shift_indicator")
+        val liabilityShiftIndicator: String?,
+
+        @SerializedName("eci")
+        val eci: String?,
+
+        @SerializedName("cavv")
+        val cavv: String?,
+
+        @SerializedName("xid")
+        val xid: String?,
+
+        @SerializedName("enrolled")
+        val enrolled: String?,
+
+        @SerializedName("pa_res_status")
+        val paResStatus: String?,
+
+        @SerializedName("challenge_cancellation_reason")
+        val challengeCancellationReason: String?,
+
+        @SerializedName("frictionless")
+        val frictionless: String?
+    ) : AirwallexModel, Parcelable
+
+    @Parcelize
+    data class PaymentAttemptAuthFraudData internal constructor(
+
+        @SerializedName("action")
+        val action: String?,
+
+        @SerializedName("score")
+        val score: String?
 
     ) : AirwallexModel, Parcelable
 

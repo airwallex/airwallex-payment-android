@@ -2,9 +2,12 @@ package com.airwallex.android
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.AirwallexError
+import com.airwallex.android.model.ThreeDSecureLookup
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType
@@ -17,6 +20,8 @@ import com.cardinalcommerce.shared.userinterfaces.UiCustomization
 import org.json.JSONArray
 
 internal object ThreeDSecure {
+
+    const val THREE_DS_RETURN_URL = "http://requestbin.net/r/1il2qkm1"
 
     private fun configureCardinal(applicationContext: Context) {
         val cardinalConfigurationParameters = CardinalConfigurationParameters()
@@ -71,15 +76,31 @@ internal object ThreeDSecure {
 
     internal fun performCardinalAuthentication(
         activity: Activity,
-        threeDSecureLookup: ThreeDSecureLookup,
+        threeDSecureLookup: ThreeDSecureLookup
+    ) {
+        val extras = Bundle()
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup)
+
+        val intent = Intent(activity, ThreeDSecureActivity::class.java)
+        intent.putExtras(extras)
+
+        activity.startActivityForResult(intent, ThreeDSecureActivity.THREE_D_SECURE)
+    }
+
+    internal fun onActivityResult(
+        data: Intent,
         completion: (validateResponse: ValidateResponse, exception: AirwallexException?) -> Unit
     ) {
-        Cardinal.getInstance().cca_continue(
-            threeDSecureLookup.transactionId,
-            threeDSecureLookup.payload,
-            activity
-        ) { _, validateResponse, jwt ->
+        val resultUri = data.data
+        if (resultUri != null) {
+            // 1.0 Flow
+        } else {
+            // 2.0 Flow
+            val validateResponse =
+                data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
+            val jwt = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_D_JWT)
 
+            Logger.debug("3DS actionCode " + validateResponse.actionCode)
             when (validateResponse.actionCode!!) {
                 CardinalActionCode.FAILURE, CardinalActionCode.SUCCESS, CardinalActionCode.NOACTION -> {
                     completion.invoke(validateResponse, null)
@@ -99,9 +120,4 @@ internal object ThreeDSecure {
             }
         }
     }
-
-    data class ThreeDSecureLookup internal constructor(
-        val transactionId: String? = null,
-        val payload: String? = null
-    )
 }
