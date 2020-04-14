@@ -59,9 +59,9 @@ class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver {
 
     private fun loadUrl(webView: WebView, threeDSecureLookup: ThreeDSecureLookup) {
         val payload = threeDSecureLookup.payload
-        val termUrl = "$THREE_DS_RETURN_URL"
+        val termUrl = "$THREE_DS_RETURN_URL/$payload"
         val acsUrl = threeDSecureLookup.acsUrl
-        val postData = "&PaReq=" + URLEncoder.encode(payload, "UTF-8").toString()
+        val postData = "&PaReq=" + URLEncoder.encode(payload, "UTF-8").toString() + "&TermUrl=" + URLEncoder.encode(termUrl, "UTF-8")
 
         Log.e("aaa", "termUrl $termUrl")
         webView.postUrl(acsUrl, postData.toByteArray())
