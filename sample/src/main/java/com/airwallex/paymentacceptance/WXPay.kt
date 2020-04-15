@@ -17,13 +17,13 @@ class WXPay {
 
     private lateinit var weChatApi: IWXAPI
 
-    private var listener: WechatPaymentListener? = null
+    private var listener: WeChatPaymentListener? = null
 
     fun launchWeChat(
         context: Context,
         appId: String,
         data: WeChat,
-        listener: WechatPaymentListener
+        listener: WeChatPaymentListener
     ) {
         this.listener = listener
 
@@ -66,7 +66,7 @@ class WXPay {
         return weChatReq
     }
 
-    interface WechatPaymentListener {
+    interface WeChatPaymentListener {
         fun onSuccess()
 
         fun onFailure(errCode: String?, errMessage: String?)

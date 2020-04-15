@@ -55,7 +55,7 @@ class Airwallex internal constructor(
                         .setPaymentMethod(
                             PaymentMethod.Builder()
                                 .setType(PaymentMethodType.WECHAT)
-                                .setWechatPayFlow(WechatPayRequest(WechatPayRequestFlow.INAPP))
+                                .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
                                 .build()
                         )
                         .setCustomerId(params.customerId)

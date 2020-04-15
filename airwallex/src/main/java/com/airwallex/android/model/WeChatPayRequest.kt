@@ -4,13 +4,16 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * Request for WeChatPay
+ */
 @Parcelize
-data class WechatPayRequest constructor(
+data class WeChatPayRequest constructor(
 
     /**
-     * The specific WeChat Pay flow to use. One of WechatPayFlowType
+     * The specific WeChat Pay flow to use.
      */
     @SerializedName("flow")
-    val flow: WechatPayRequestFlow?
+    val flow: WeChatPayRequestFlow?
 
 ) : AirwallexModel, Parcelable
