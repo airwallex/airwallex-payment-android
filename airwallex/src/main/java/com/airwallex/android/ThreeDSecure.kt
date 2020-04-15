@@ -1,6 +1,5 @@
 package com.airwallex.android
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -75,21 +74,21 @@ internal object ThreeDSecure {
     }
 
     internal fun performCardinalAuthentication(
-        activity: Activity,
+        fragment: AirwallexFragment,
         threeDSecureLookup: ThreeDSecureLookup
     ) {
         val extras = Bundle()
         extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup)
 
-        val intent = Intent(activity, ThreeDSecureActivity::class.java)
+        val intent = Intent(fragment.context, ThreeDSecureActivity::class.java)
         intent.putExtras(extras)
 
-        activity.startActivityForResult(intent, ThreeDSecureActivity.THREE_D_SECURE)
+        fragment.startActivityForResult(intent, ThreeDSecureActivity.THREE_D_SECURE)
     }
 
     internal fun onActivityResult(
         data: Intent,
-        completion: (validateResponse: ValidateResponse, exception: AirwallexException?) -> Unit
+        completion: (validateResponse: ValidateResponse?, exception: AirwallexException?) -> Unit
     ) {
         val resultUri = data.data
         if (resultUri != null) {

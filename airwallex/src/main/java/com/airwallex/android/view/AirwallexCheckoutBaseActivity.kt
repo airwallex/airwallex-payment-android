@@ -1,6 +1,5 @@
 package com.airwallex.android.view
 
-import android.content.Intent
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ConfirmPaymentIntentParams
 import com.airwallex.android.model.PaymentIntent
@@ -59,13 +58,5 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
             }
         }
         airwallex.confirmPaymentIntent(this, params, callback)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        data?.let {
-            airwallex.handleConfirmPaymentIntentResult(requestCode, resultCode, data)
-        }
     }
 }
