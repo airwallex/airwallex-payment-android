@@ -158,7 +158,7 @@ internal class PaymentMethodsAdapter(
                 if (selectedPaymentMethod?.type != PaymentMethodType.WECHAT) {
                     selectedPaymentMethod = PaymentMethod.Builder()
                         .setType(PaymentMethodType.WECHAT)
-                        .setWechatPayFlow(WechatPayRequest(WechatPayRequestFlow.INAPP))
+                        .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
                         .build()
                     notifyDataSetChanged()
                 }
