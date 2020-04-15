@@ -39,7 +39,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         Airwallex()
     }
 
-    private val shouldShowWechatPay: Boolean by lazy {
+    private val shouldShowWeChatPay: Boolean by lazy {
         paymentIntent.availablePaymentMethodTypes.contains(
             PaymentMethodType.WECHAT.value
         )
@@ -56,7 +56,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         paymentMethodsAdapter = PaymentMethodsAdapter(
-            shouldShowWechatPay = shouldShowWechatPay,
+            shouldShowWeChatPay = shouldShowWeChatPay,
             shouldShowCard = shouldShowCard
         )
 
@@ -65,7 +65,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 startPaymentCheckout(paymentMethod)
             }
 
-            override fun onWechatClick(paymentMethod: PaymentMethod) {
+            override fun onWeChatClick(paymentMethod: PaymentMethod) {
                 startPaymentCheckout(paymentMethod)
             }
         }

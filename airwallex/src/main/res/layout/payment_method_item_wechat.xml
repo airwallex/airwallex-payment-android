@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/rlWechatPay"
+        android:id="@+id/rlWeChatPay"
         android:layout_width="match_parent"
         android:layout_height="58dp"
         android:background="?android:attr/selectableItemBackground"
@@ -15,7 +15,7 @@
         android:paddingRight="16dp">
 
         <ImageView
-            android:id="@+id/wechatPayIcon"
+            android:id="@+id/weChatPayIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/wechatPayIcon"
+            android:layout_toEndOf="@id/weChatPayIcon"
             android:fontFamily="@font/circularstd_medium"
             android:text="@string/wechat_pay"
             android:textColor="@color/airwallex_color_dark_deep"

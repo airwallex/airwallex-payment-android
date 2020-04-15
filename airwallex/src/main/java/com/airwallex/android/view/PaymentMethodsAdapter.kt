@@ -13,10 +13,10 @@ import kotlinx.android.synthetic.main.payment_method_item_wechat.view.*
 
 internal class PaymentMethodsAdapter(
     val shouldShowCard: Boolean = false,
-    val shouldShowWechatPay: Boolean = false
+    val shouldShowWeChatPay: Boolean = false
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val wechatCount = if (shouldShowWechatPay) 1 else 0
+    private val weChatCount = if (shouldShowWeChatPay) 1 else 0
     private var selectedPaymentMethod: PaymentMethod? = null
     private val paymentMethods = mutableListOf<PaymentMethod?>()
     internal var listener: Listener? = null
@@ -74,28 +74,28 @@ internal class PaymentMethodsAdapter(
     }
 
     override fun getItemCount(): Int {
-        return wechatCount + if (shouldShowCard) paymentMethods.size else 0
+        return weChatCount + if (shouldShowCard) paymentMethods.size else 0
     }
 
     override fun getItemViewType(position: Int): Int {
         return when {
-            isWechatPosition(position) -> ItemViewType.Wechat.ordinal
+            isWeChatPosition(position) -> ItemViewType.WeChat.ordinal
             isLoadingPosition(position) -> ItemViewType.Loading.ordinal
             else -> ItemViewType.Card.ordinal
         }
     }
 
-    private fun isWechatPosition(position: Int): Boolean {
+    private fun isWeChatPosition(position: Int): Boolean {
         return position == 0
     }
 
     private fun isLoadingPosition(position: Int): Boolean {
-        return paymentMethods[position - wechatCount] == null
+        return paymentMethods[position - weChatCount] == null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (ItemViewType.values()[viewType]) {
-            ItemViewType.Wechat -> WechatHolder(
+            ItemViewType.WeChat -> WeChatHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.payment_method_item_wechat, parent, false)
             )
@@ -112,7 +112,7 @@ internal class PaymentMethodsAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is WechatHolder -> holder.bindView()
+            is WeChatHolder -> holder.bindView()
             is CardHolder -> holder.bindView(position)
         }
     }
@@ -148,13 +148,13 @@ internal class PaymentMethodsAdapter(
         }
     }
 
-    inner class WechatHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class WeChatHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bindView() {
             itemView.ivChecked.visibility =
                 if (selectedPaymentMethod?.type == PaymentMethodType.WECHAT) View.VISIBLE else View.GONE
 
-            itemView.rlWechatPay.setOnClickListener {
+            itemView.rlWeChatPay.setOnClickListener {
                 if (selectedPaymentMethod?.type != PaymentMethodType.WECHAT) {
                     selectedPaymentMethod = PaymentMethod.Builder()
                         .setType(PaymentMethodType.WECHAT)
@@ -163,7 +163,7 @@ internal class PaymentMethodsAdapter(
                     notifyDataSetChanged()
                 }
                 selectedPaymentMethod?.let {
-                    listener?.onWechatClick(it)
+                    listener?.onWeChatClick(it)
                 }
             }
         }
@@ -173,12 +173,12 @@ internal class PaymentMethodsAdapter(
 
     internal interface Listener {
         fun onPaymentMethodClick(paymentMethod: PaymentMethod)
-        fun onWechatClick(paymentMethod: PaymentMethod)
+        fun onWeChatClick(paymentMethod: PaymentMethod)
     }
 
     internal enum class ItemViewType {
         Card,
-        Wechat,
+        WeChat,
         Loading
     }
 
