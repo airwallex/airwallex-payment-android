@@ -132,7 +132,7 @@ internal class PaymentMethodsAdapter(
             itemView.rlCard.setOnClickListener {
                 if (selectedPaymentMethod?.type != PaymentMethodType.CARD || method.id != selectedPaymentMethod?.id) {
                     selectedPaymentMethod = PaymentMethod.Builder()
-                        .setId(method.id)
+                        .setId(requireNotNull(method.id))
                         .setType(PaymentMethodType.CARD)
                         .setCard(card)
                         .build()
