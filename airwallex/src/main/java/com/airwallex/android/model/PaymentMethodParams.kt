@@ -5,23 +5,44 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 
+/**
+ * Params for create a payment method
+ */
 @Parcelize
 data class PaymentMethodParams internal constructor(
+    /**
+     * Unique request ID specified by the merchant
+     */
     @SerializedName("request_id")
     val requestId: String? = null,
 
+    /**
+     * The customer this payment method belongs to. If set, this payment method is automatically added to the customer as one of the available payment methods.
+     */
     @SerializedName("customer_id")
     val customerId: String? = null,
 
+    /**
+     * Type of the payment method. Must be [PaymentMethodType.CARD]
+     */
     @SerializedName("type")
-    val type: String? = null,
+    val type: PaymentMethodType? = null,
 
+    /**
+     * Card information. This must be provided if [type] is set to [PaymentMethodType.CARD]
+     */
     @SerializedName("card")
     val card: PaymentMethod.Card?,
 
+    /**
+     * Billing information.
+     */
     @SerializedName("billing")
     val billing: Billing?,
 
+    /**
+     * A set of key-value pairs that you can attach to this payment method
+     */
     @SerializedName("metadata")
     val metadata: @RawValue Map<String, Any>?
 
@@ -30,7 +51,7 @@ data class PaymentMethodParams internal constructor(
     class Builder : ObjectBuilder<PaymentMethodParams> {
         private var requestId: String? = null
         private var customerId: String? = null
-        private var type: String? = null
+        private var type: PaymentMethodType? = null
         private var card: PaymentMethod.Card? = null
         private var billing: Billing? = null
         private var metadata: @RawValue Map<String, Any>? = null
@@ -43,7 +64,7 @@ data class PaymentMethodParams internal constructor(
             this.customerId = customerId
         }
 
-        fun setType(type: String?): Builder = apply {
+        fun setType(type: PaymentMethodType?): Builder = apply {
             this.type = type
         }
 
