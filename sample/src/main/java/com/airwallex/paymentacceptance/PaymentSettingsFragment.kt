@@ -4,10 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.InputType
 import android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
-import androidx.preference.EditTextPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
+import androidx.preference.*
 
 class PaymentSettingsFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
@@ -23,6 +20,11 @@ class PaymentSettingsFragment : PreferenceFragmentCompat(),
             editText.inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
         }
 
+        val weChatPref: ListPreference? =
+            findPreference(getString(R.string.wechat_app_id)) as? ListPreference?
+        if (weChatPref != null && weChatPref.value == null) {
+            weChatPref.setValueIndex(0)
+        }
         onSharedPreferenceChanged(preferences, getString(R.string.auth_url))
         onSharedPreferenceChanged(preferences, getString(R.string.base_url))
         onSharedPreferenceChanged(preferences, getString(R.string.api_key))

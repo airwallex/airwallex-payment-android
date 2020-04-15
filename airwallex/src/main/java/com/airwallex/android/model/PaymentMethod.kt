@@ -45,10 +45,10 @@ data class PaymentMethod internal constructor(
     val card: Card?,
 
     /**
-     * The wechat request that contains Wechat pay flow
+     * The wechat request that contains WeChat pay flow
      */
     @SerializedName("wechatpay")
-    val wechatPayRequest: WechatPayRequest?,
+    val weChatPayRequest: WeChatPayRequest?,
 
     /**
      * Billing information for the payment method
@@ -88,7 +88,7 @@ data class PaymentMethod internal constructor(
         private var customerId: String? = null
         private var type: PaymentMethodType = PaymentMethodType.CARD
         private var card: Card? = null
-        private var wechatPayFlow: WechatPayRequest? = null
+        private var weChatPayFlow: WeChatPayRequest? = null
         private var billing: Billing? = null
         private var metadata: Map<String, Any>? = null
         private var createdAt: Date? = null
@@ -119,8 +119,8 @@ data class PaymentMethod internal constructor(
             this.card = card
         }
 
-        fun setWechatPayFlow(wechatPayFlow: WechatPayRequest?): Builder = apply {
-            this.wechatPayFlow = wechatPayFlow
+        fun setWeChatPayFlow(weChatPayFlow: WeChatPayRequest?): Builder = apply {
+            this.weChatPayFlow = weChatPayFlow
         }
 
         fun setType(type: PaymentMethodType): Builder = apply {
@@ -147,7 +147,7 @@ data class PaymentMethod internal constructor(
                 billing = billing,
                 card = card,
                 type = type,
-                wechatPayRequest = wechatPayFlow,
+                weChatPayRequest = weChatPayFlow,
                 metadata = metadata,
                 createdAt = createdAt,
                 updatedAt = updatedAt,

@@ -3,6 +3,9 @@ package com.airwallex.android.model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * WeChat Pay Payments
+ */
 @Parcelize
 data class WeChat internal constructor(
     val appId: String?,
