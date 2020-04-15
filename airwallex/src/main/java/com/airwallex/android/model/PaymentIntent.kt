@@ -226,7 +226,7 @@ data class PaymentIntent internal constructor(
         val updatedAt: Date,
 
         @SerializedName("authentication_data")
-        val authData: PaymentAttemptAuthData
+        val authenticationData: PaymentAttemptAuthData?
     ) : AirwallexModel, Parcelable
 
     @Parcelize

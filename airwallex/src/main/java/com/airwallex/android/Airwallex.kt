@@ -149,7 +149,7 @@ class Airwallex internal constructor(
                             val transactionId = response.nextAction.data?.get("xid") as? String
                             val req = response.nextAction.data?.get("req") as? String
                             val acs = response.nextAction.data?.get("acs") as? String
-                            val dsData = response.latestPaymentAttempt?.authData?.dsData
+                            val dsData = response.latestPaymentAttempt?.authenticationData?.dsData
 
                             val threeDSecureLookup =
                                 ThreeDSecureLookup(

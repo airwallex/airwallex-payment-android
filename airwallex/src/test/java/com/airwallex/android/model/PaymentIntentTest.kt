@@ -118,7 +118,7 @@ class PaymentIntentTest {
                 createdAt = Date(1585537440000),
                 updatedAt = Date(1585537440000),
                 amount = BigDecimal.valueOf(0),
-                authData = PaymentIntent.PaymentAttemptAuthData(null, null, null, null)
+                authenticationData = PaymentIntent.PaymentAttemptAuthData(null, null, null, null)
             )
         )
         assertEquals(paymentIntent, PaymentIntentFixtures.PAYMENT_INTENT)
