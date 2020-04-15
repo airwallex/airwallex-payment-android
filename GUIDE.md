@@ -1,4 +1,4 @@
-# Airwallex Android SDK (Wechat Only)
+# Airwallex Android SDK (WeChat Only)
 This section mainly introduces the main process of integrating Airwallex Android SDK. This guide assumes that you are an Android developer and familiar with Android Studio and Gradle.
 
 Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to include the Airwallex Android SDK in your Android project.

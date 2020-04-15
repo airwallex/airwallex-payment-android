@@ -20,10 +20,10 @@ class PaymentSettingsFragment : PreferenceFragmentCompat(),
             editText.inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
         }
 
-        val wechatPref: ListPreference? =
+        val weChatPref: ListPreference? =
             findPreference(getString(R.string.wechat_app_id)) as? ListPreference?
-        if (wechatPref != null && wechatPref.value == null) {
-            wechatPref.setValueIndex(0)
+        if (weChatPref != null && weChatPref.value == null) {
+            weChatPref.setValueIndex(0)
         }
         onSharedPreferenceChanged(preferences, getString(R.string.auth_url))
         onSharedPreferenceChanged(preferences, getString(R.string.base_url))
