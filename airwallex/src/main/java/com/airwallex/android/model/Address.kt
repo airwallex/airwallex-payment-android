@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName
 import java.util.*
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * Address information.
+ */
 @Parcelize
 data class Address internal constructor(
 
