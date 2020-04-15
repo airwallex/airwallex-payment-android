@@ -1,6 +1,5 @@
 package com.airwallex.android.view
 
-import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -17,7 +16,7 @@ class CardNumberEditTextTest {
     @BeforeTest
     fun setup() {
         cardNumberEditText = CardNumberEditText(
-            ApplicationProvider.getApplicationContext<Context>()
+            ApplicationProvider.getApplicationContext()
         )
         cardNumberEditText.setText("")
     }
