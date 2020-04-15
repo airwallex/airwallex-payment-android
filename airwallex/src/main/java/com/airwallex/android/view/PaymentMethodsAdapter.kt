@@ -132,7 +132,7 @@ internal class PaymentMethodsAdapter(
             itemView.rlCard.setOnClickListener {
                 if (selectedPaymentMethod?.type != PaymentMethodType.CARD || method.id != selectedPaymentMethod?.id) {
                     selectedPaymentMethod = PaymentMethod.Builder()
-                        .setId(method.id)
+                        .setId(requireNotNull(method.id))
                         .setType(PaymentMethodType.CARD)
                         .setCard(card)
                         .build()
@@ -158,7 +158,7 @@ internal class PaymentMethodsAdapter(
                 if (selectedPaymentMethod?.type != PaymentMethodType.WECHAT) {
                     selectedPaymentMethod = PaymentMethod.Builder()
                         .setType(PaymentMethodType.WECHAT)
-                        .setWechatPayFlow(WechatPayRequest(WechatPayRequestFlow.INAPP))
+                        .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
                         .build()
                     notifyDataSetChanged()
                 }
