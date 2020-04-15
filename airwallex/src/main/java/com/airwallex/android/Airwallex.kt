@@ -265,7 +265,7 @@ class Airwallex internal constructor(
                 paymentMethodParams = PaymentMethodParams.Builder()
                     .setCustomerId(params.customerId)
                     .setRequestId(UUID.randomUUID().toString())
-                    .setType(PaymentMethodType.CARD.value)
+                    .setType(PaymentMethodType.CARD)
                     .setCard(params.card)
                     .setBilling(params.billing)
                     .build()
