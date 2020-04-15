@@ -78,7 +78,7 @@ class Airwallex internal constructor(
             PaymentMethodType.CARD -> {
                 buildPaymentIntentOptions(
                     params = params,
-                    threeDs = PaymentMethodOptions.CardOptions.ThreeDs.Builder()
+                    threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                         .setReturnUrl(THREE_DS_RETURN_URL)
                         .build()
                 )
@@ -96,7 +96,7 @@ class Airwallex internal constructor(
                         val jwt = response.nextAction?.data?.get("jwt") as? String
 
                         if (jwt != null) {
-                            // 3DS Flow
+                            // 3D Secure Flow
                             prepareCardinalLookup(
                                 activity = activity,
                                 jwt = jwt
@@ -131,7 +131,7 @@ class Airwallex internal constructor(
                 paymentManager.confirmPaymentIntent(
                     buildPaymentIntentOptions(
                         params = requireNotNull(confirmPaymentIntentParams),
-                        threeDs = PaymentMethodOptions.CardOptions.ThreeDs.Builder()
+                        threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                             .setDeviceDataCollectionRes(referenceId)
                             .setReturnUrl(THREE_DS_RETURN_URL)
                             .build()
@@ -183,8 +183,8 @@ class Airwallex internal constructor(
                 paymentManager.confirmPaymentIntent(
                     buildPaymentIntentOptions(
                         params = requireNotNull(confirmPaymentIntentParams),
-                        threeDs = PaymentMethodOptions.CardOptions.ThreeDs.Builder()
-                            .setDsTransactionId(validateResponse.payment.processorTransactionId)
+                        threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                            .setTransactionId(validateResponse.payment.processorTransactionId)
                             .setReturnUrl(THREE_DS_RETURN_URL)
                             .build()
                     ),
@@ -204,7 +204,7 @@ class Airwallex internal constructor(
 
     private fun buildPaymentIntentOptions(
         params: ConfirmPaymentIntentParams,
-        threeDs: PaymentMethodOptions.CardOptions.ThreeDs
+        threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
     ): AirwallexApiRepository.PaymentIntentOptions {
         return AirwallexApiRepository.PaymentIntentOptions(
             clientSecret = params.clientSecret,
@@ -217,7 +217,7 @@ class Airwallex internal constructor(
                         .setCardOptions(
                             PaymentMethodOptions.CardOptions.Builder()
                                 .setAutoCapture(true)
-                                .setThreeDs(threeDs).build()
+                                .setThreeDSecure(threeDSecure).build()
                         )
                         .build()
                 )
