@@ -4,9 +4,12 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * RequestFlow for WeChatPay
+ */
 @Parcelize
-enum class WechatPayRequestFlow : Parcelable {
+enum class WeChatPayRequestFlow : Parcelable {
 
     @SerializedName("inapp")
-    INAPP
+    IN_APP
 }

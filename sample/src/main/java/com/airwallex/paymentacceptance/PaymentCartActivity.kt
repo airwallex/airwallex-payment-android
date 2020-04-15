@@ -231,7 +231,7 @@ class PaymentCartActivity : AppCompatActivity() {
                                     context = this@PaymentCartActivity,
                                     appId = Settings.wechatAppId,
                                     data = weChat,
-                                    listener = object : WXPay.WechatPaymentListener {
+                                    listener = object : WXPay.WeChatPaymentListener {
                                         override fun onSuccess() {
                                             Log.d(TAG, "REAL WeChat Pay successful.")
                                             showPaymentSuccess()
