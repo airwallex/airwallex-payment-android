@@ -88,7 +88,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
      )
 ```
 3. After successfully confirming the `PaymentIntent`
- - Wechat Pay 
+ - WeChat Pay
  Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay) to complete the final payment.
  Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/blob/master) for more details.
  ```kotlin
