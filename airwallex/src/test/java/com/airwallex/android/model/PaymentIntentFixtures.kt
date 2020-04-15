@@ -97,7 +97,9 @@ internal object PaymentIntentFixtures {
                 "captured_amount": 0,
                 "refunded_amount": 0,
                 "created_at": "2020-03-30T03:04:00+0000",
-                "updated_at": "2020-03-30T03:04:00+0000"
+                "updated_at": "2020-03-30T03:04:00+0000",
+                "amount": 0,
+                "authentication_data": {}
             }
         }
         """.trimIndent(),
