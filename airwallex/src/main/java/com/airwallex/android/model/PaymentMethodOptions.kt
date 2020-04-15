@@ -41,106 +41,80 @@ data class PaymentMethodOptions internal constructor(
         val autoCapture: Boolean,
 
         /**
-         * Three ds for card options
+         * 3D Secure for card options
          */
         @SerializedName("three_ds")
-        val threeDs: ThreeDs?
+        val threeDSecure: ThreeDSecure?
 
     ) : AirwallexModel, Parcelable {
 
         class Builder : ObjectBuilder<CardOptions> {
             private var autoCapture: Boolean = true
-            private var threeDs: ThreeDs? = null
+            private var threeDSecure: ThreeDSecure? = null
 
             fun setAutoCapture(autoCapture: Boolean): Builder = apply {
                 this.autoCapture = autoCapture
             }
 
-            fun setThreeDs(threeDs: ThreeDs): Builder = apply {
-                this.threeDs = threeDs
+            fun setThreeDSecure(threeDSecure: ThreeDSecure): Builder = apply {
+                this.threeDSecure = threeDSecure
             }
 
             override fun build(): CardOptions {
                 return CardOptions(
                     autoCapture = autoCapture,
-                    threeDs = threeDs
+                    threeDSecure = threeDSecure
                 )
             }
         }
 
         @Parcelize
-        data class ThreeDs internal constructor(
+        data class ThreeDSecure internal constructor(
 
             /**
-             * PA response
-             */
-            @SerializedName("pa_res")
-            val paRes: String?,
-
-            /**
-             * Return url
+             * Return url for 3D Secure
              */
             @SerializedName("return_url")
             val returnUrl: String?,
 
             /**
-             * Last attempt id
-             */
-            @SerializedName("attempt_id")
-            val attemptId: String?,
-
-            /**
-             * Device data collection response
+             * Device data collection response for 3D Secure
              */
             @SerializedName("device_data_collection_res")
             val deviceDataCollectionRes: String?,
 
             /**
-             * 3DS transactionId
+             * Transaction ID for 3D Secure
              */
             @SerializedName("ds_transaction_id")
-            private var dsTransactionId: String?
+            private var transactionId: String?
 
         ) : AirwallexModel, Parcelable {
 
-            class Builder : ObjectBuilder<ThreeDs> {
-                private var paRes: String? = null
-
+            class Builder : ObjectBuilder<ThreeDSecure> {
                 private var returnUrl: String? = null
-
-                private var attemptId: String? = null
 
                 private var deviceDataCollectionRes: String? = null
 
-                private var dsTransactionId: String? = null
-
-                fun setPaRes(paRes: String?): Builder = apply {
-                    this.paRes = paRes
-                }
+                private var transactionId: String? = null
 
                 fun setReturnUrl(returnUrl: String?): Builder = apply {
                     this.returnUrl = returnUrl
-                }
-
-                fun setAttemptId(attemptId: String?): Builder = apply {
-                    this.attemptId = attemptId
                 }
 
                 fun setDeviceDataCollectionRes(deviceDataCollectionRes: String?): Builder = apply {
                     this.deviceDataCollectionRes = deviceDataCollectionRes
                 }
 
-                fun setDsTransactionId(dsTransactionId: String?): Builder = apply {
-                    this.dsTransactionId = dsTransactionId
+                fun setTransactionId(transactionId: String?): Builder = apply {
+                    this.transactionId = transactionId
                 }
 
-                override fun build(): ThreeDs {
-                    return ThreeDs(
-                        paRes = paRes,
+                override fun build(): ThreeDSecure {
+                    return ThreeDSecure(
                         returnUrl = returnUrl,
-                        attemptId = attemptId,
                         deviceDataCollectionRes = deviceDataCollectionRes,
-                        dsTransactionId = dsTransactionId
+                        transactionId = transactionId
                     )
                 }
             }
