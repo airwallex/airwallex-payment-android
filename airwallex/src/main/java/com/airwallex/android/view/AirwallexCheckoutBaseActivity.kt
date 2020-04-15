@@ -51,7 +51,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     .setPaymentMethod(
                         PaymentMethodType.CARD,
                         PaymentMethodReference(
-                            paymentMethod.id,
+                            requireNotNull(paymentMethod.id),
                             requireNotNull(cvc)
                         )
                     )

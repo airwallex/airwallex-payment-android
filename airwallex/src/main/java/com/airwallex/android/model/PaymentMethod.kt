@@ -18,7 +18,7 @@ data class PaymentMethod internal constructor(
      * Unique identifier for the payment method
      */
     @SerializedName("id")
-    val id: String,
+    val id: String?,
 
     /**
      * Request id for the payment method
@@ -83,7 +83,7 @@ data class PaymentMethod internal constructor(
 ) : AirwallexModel, Parcelable {
 
     class Builder : ObjectBuilder<PaymentMethod> {
-        private var id: String = ""
+        private var id: String? = null
         private var requestId: String? = null
         private var customerId: String? = null
         private var type: PaymentMethodType = PaymentMethodType.CARD
