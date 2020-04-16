@@ -4,9 +4,12 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
+
+/**
+ * Device info. TODO `Need remove web fields` and add some fields for mobile
+ */
 @Parcelize
 data class Device internal constructor(
-
 
     @SerializedName("device_id")
     val deviceId: String? = null,
