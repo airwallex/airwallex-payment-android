@@ -45,7 +45,7 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentIntent>
     ) {
         val securityConnector: SecurityConnector = AirwallexSecurityConnector()
-        securityConnector.retrieveSecurityToken(AirwallexPlugins.applicationContext) { sessionId ->
+        securityConnector.retrieveSecurityToken(AirwallexPlugins.applicationContext, params.paymentIntentId, params.customerId) { sessionId ->
             val options = when (params.paymentMethodType) {
                 PaymentMethodType.WECHAT -> {
                     AirwallexApiRepository.PaymentIntentOptions(

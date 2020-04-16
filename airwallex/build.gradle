@@ -35,11 +35,12 @@ ext {
     gsonVersion = '2.8.6'
 }
 
-dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
+dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
+
+    implementation files('libs/TrustDefender-5.0-96.aar')
 
     api "com.squareup.okhttp3:okhttp:$okhttpVersion"
     api "com.google.code.gson:gson:${gsonVersion}"
