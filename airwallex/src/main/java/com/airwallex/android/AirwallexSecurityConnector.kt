@@ -6,33 +6,34 @@ import com.threatmetrix.TrustDefender.ProfilingOptions
 import com.threatmetrix.TrustDefender.TrustDefender
 
 /**
- * The implementation of [SecurityConnector] to retrieve the Device Fingerprinting
+ * The implementation of [SecurityConnector] to retrieve the Device Fingerprinting token
  */
 class AirwallexSecurityConnector : SecurityConnector {
 
-    interface TrustDefenderListener {
+    interface SecurityTokenListener {
         fun onResponse(sessionId: String?)
     }
 
     override fun retrieveSecurityToken(
         paymentIntentId: String,
         applicationContext: Context?,
-        trustDefenderListener: TrustDefenderListener?
+        securityTokenListener: SecurityTokenListener
     ) {
         Logger.debug(
             TAG,
             "Start init TrustDefender " + TrustDefender.version
         )
-
-        val config = Config().setOrgId(BuildConfig.DEVICE_FINGERPRINT_ORG_ID).setContext(applicationContext)
+        val config = Config().setOrgId(BuildConfig.DEVICE_FINGERPRINT_ORG_ID)
+            .setContext(applicationContext)
         TrustDefender.getInstance().init(config)
         Logger.debug(TAG, "Successfully init init-ed")
-        doProfile(paymentIntentId, trustDefenderListener)
+        doProfile(paymentIntentId, securityTokenListener)
     }
 
-    private fun doProfile(paymentIntentId: String, trustDefenderListener: TrustDefenderListener?) {
+    private fun doProfile(paymentIntentId: String, securityTokenListener: SecurityTokenListener) {
         val fraudSessionId = "$paymentIntentId${System.currentTimeMillis()}"
-        val options = ProfilingOptions().setSessionID("${BuildConfig.DEVICE_FINGERPRINT_MERCHANT_ID}$fraudSessionId")
+        val options =
+            ProfilingOptions().setSessionID("${BuildConfig.DEVICE_FINGERPRINT_MERCHANT_ID}$fraudSessionId")
         // Fire off the profiling request.
         TrustDefender.getInstance().doProfileRequest(options) { result ->
             val sessionID = result.sessionID
@@ -40,7 +41,7 @@ class AirwallexSecurityConnector : SecurityConnector {
                 TAG,
                 "Session id =  $sessionID"
             )
-            trustDefenderListener?.onResponse(sessionID)
+            securityTokenListener.onResponse(sessionID)
         }
     }
 

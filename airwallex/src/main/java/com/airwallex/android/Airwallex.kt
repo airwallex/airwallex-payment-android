@@ -49,10 +49,10 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentIntent>
     ) {
         securityConnector.retrieveSecurityToken(
-            params.paymentIntentId,
-            AirwallexPlugins.applicationContext,
-            object :
-                AirwallexSecurityConnector.TrustDefenderListener {
+            paymentIntentId = params.paymentIntentId,
+            applicationContext = AirwallexPlugins.applicationContext,
+            securityTokenListener = object :
+                AirwallexSecurityConnector.SecurityTokenListener {
                 override fun onResponse(sessionId: String?) {
                     val device = Device.Builder()
                         .setDeviceId(sessionId)
