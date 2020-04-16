@@ -12,6 +12,10 @@ class Airwallex internal constructor(
     private val paymentManager: PaymentManager
 ) {
 
+    private val securityConnector: SecurityConnector by lazy {
+        AirwallexSecurityConnector()
+    }
+
     /**
      * Generic interface for an Airwallex API operation callback that either returns a [Response], or an [Exception]
      */
@@ -44,7 +48,6 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
-        val securityConnector: SecurityConnector = AirwallexSecurityConnector()
         securityConnector.retrieveSecurityToken(
             params.paymentIntentId,
             AirwallexPlugins.applicationContext,
@@ -57,7 +60,6 @@ class Airwallex internal constructor(
                         .setHostName("www.airwallex.com")
                         .setHttpBrowserType("chrome")
                         .build()
-
                     val options = when (params.paymentMethodType) {
                         PaymentMethodType.WECHAT -> {
                             AirwallexApiRepository.PaymentIntentOptions(

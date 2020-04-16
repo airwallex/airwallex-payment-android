@@ -5,6 +5,9 @@ import com.threatmetrix.TrustDefender.Config
 import com.threatmetrix.TrustDefender.ProfilingOptions
 import com.threatmetrix.TrustDefender.TrustDefender
 
+/**
+ * The implementation of [SecurityConnector] to retrieve the Device Fingerprinting
+ */
 class AirwallexSecurityConnector : SecurityConnector {
 
     interface TrustDefenderListener {
@@ -20,8 +23,8 @@ class AirwallexSecurityConnector : SecurityConnector {
             TAG,
             "Start init TrustDefender " + TrustDefender.version
         )
-        val config = Config()
-            .setOrgId(ORG_ID).setContext(applicationContext)
+
+        val config = Config().setOrgId(BuildConfig.DEVICE_FINGERPRINT_ORG_ID).setContext(applicationContext)
         TrustDefender.getInstance().init(config)
         Logger.debug(TAG, "Successfully init init-ed")
         doProfile(paymentIntentId, trustDefenderListener)
@@ -29,12 +32,13 @@ class AirwallexSecurityConnector : SecurityConnector {
 
     private fun doProfile(paymentIntentId: String, trustDefenderListener: TrustDefenderListener?) {
         val fraudSessionId = "$paymentIntentId${System.currentTimeMillis()}"
-        val options = ProfilingOptions().setSessionID("$MERCHANT_ID$fraudSessionId")
+        val options = ProfilingOptions().setSessionID("${BuildConfig.DEVICE_FINGERPRINT_MERCHANT_ID}$fraudSessionId")
+        // Fire off the profiling request.
         TrustDefender.getInstance().doProfileRequest(options) { result ->
             val sessionID = result.sessionID
             Logger.debug(
                 TAG,
-                "sessionID $sessionID"
+                "Session id =  $sessionID"
             )
             trustDefenderListener?.onResponse(sessionID)
         }
@@ -42,7 +46,5 @@ class AirwallexSecurityConnector : SecurityConnector {
 
     companion object {
         private const val TAG = "TrustDefender"
-        private const val ORG_ID = "1snn5n9w"
-        private const val MERCHANT_ID = "airwallex_cybs"
     }
 }
