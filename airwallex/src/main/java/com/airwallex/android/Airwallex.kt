@@ -52,6 +52,13 @@ class Airwallex internal constructor(
             object :
                 AirwallexSecurityConnector.TrustDefenderListener {
                 override fun onResponse(sessionId: String?) {
+                    val device = Device.Builder()
+                        .setDeviceId(sessionId)
+                        .setCookiesAccepted("true")
+                        .setHostName("www.airwallex.com")
+                        .setHttpBrowserType("chrome")
+                        .build()
+
                     val options = when (params.paymentMethodType) {
                         PaymentMethodType.WECHAT -> {
                             AirwallexApiRepository.PaymentIntentOptions(
@@ -67,7 +74,7 @@ class Airwallex internal constructor(
                                             .build()
                                     )
                                     .setCustomerId(params.customerId)
-                                    .setDevice(Device.Builder().setDeviceId(sessionId).build())
+                                    .setDevice(device)
                                     .build()
                             )
                         }
@@ -80,7 +87,7 @@ class Airwallex internal constructor(
                                 )
                                     .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
                                     .setCustomerId(params.customerId)
-                                    .setDevice(Device.Builder().setDeviceId(sessionId).build())
+                                    .setDevice(device)
                                     .build()
                             )
                         }
