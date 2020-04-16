@@ -5,6 +5,8 @@ apply from: "./ktlint.gradle"
 apply from: "./dokka.gradle"
 
 def VERSION_CODE = 1
+def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
+def DEVICE_FINGERPRINT_MERCHANT_ID ='"airwallex_cybs"'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -35,6 +37,10 @@ ext {
     gsonVersion = '2.8.6'
 }
 
+android.buildTypes.each { type ->
+    type.buildConfigField 'String', 'DEVICE_FINGERPRINT_ORG_ID', DEVICE_FINGERPRINT_ORG_ID
+    type.buildConfigField 'String', 'DEVICE_FINGERPRINT_MERCHANT_ID', DEVICE_FINGERPRINT_MERCHANT_ID
+}
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
