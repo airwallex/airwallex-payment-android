@@ -44,38 +44,41 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
-        val options = when (params.paymentMethodType) {
-            PaymentMethodType.WECHAT -> {
-                AirwallexApiRepository.PaymentIntentOptions(
-                    clientSecret = params.clientSecret,
-                    paymentIntentId = params.paymentIntentId,
-                    paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
-                        requestId = UUID.randomUUID().toString()
-                    )
-                        .setPaymentMethod(
-                            PaymentMethod.Builder()
-                                .setType(PaymentMethodType.WECHAT)
-                                .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
-                                .build()
+        val securityConnector: SecurityConnector = AirwallexSecurityConnector()
+        securityConnector.retrieveSecurityToken(AirwallexPlugins.applicationContext) { sessionId ->
+            val options = when (params.paymentMethodType) {
+                PaymentMethodType.WECHAT -> {
+                    AirwallexApiRepository.PaymentIntentOptions(
+                        clientSecret = params.clientSecret,
+                        paymentIntentId = params.paymentIntentId,
+                        paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+                            requestId = UUID.randomUUID().toString()
                         )
-                        .setCustomerId(params.customerId)
-                        .build()
-                )
-            }
-            PaymentMethodType.CARD -> {
-                AirwallexApiRepository.PaymentIntentOptions(
-                    clientSecret = params.clientSecret,
-                    paymentIntentId = params.paymentIntentId,
-                    paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
-                        requestId = UUID.randomUUID().toString()
+                            .setPaymentMethod(
+                                PaymentMethod.Builder()
+                                    .setType(PaymentMethodType.WECHAT)
+                                    .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
+                                    .build()
+                            )
+                            .setCustomerId(params.customerId)
+                            .build()
                     )
-                        .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
-                        .setCustomerId(params.customerId)
-                        .build()
-                )
+                }
+                PaymentMethodType.CARD -> {
+                    AirwallexApiRepository.PaymentIntentOptions(
+                        clientSecret = params.clientSecret,
+                        paymentIntentId = params.paymentIntentId,
+                        paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+                            requestId = UUID.randomUUID().toString()
+                        )
+                            .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
+                            .setCustomerId(params.customerId)
+                            .build()
+                    )
+                }
             }
+            paymentManager.confirmPaymentIntent(options, listener)
         }
-        paymentManager.confirmPaymentIntent(options, listener)
     }
 
     /**
