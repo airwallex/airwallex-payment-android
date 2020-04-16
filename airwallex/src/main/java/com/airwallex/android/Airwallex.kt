@@ -45,40 +45,47 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentIntent>
     ) {
         val securityConnector: SecurityConnector = AirwallexSecurityConnector()
-        securityConnector.retrieveSecurityToken(AirwallexPlugins.applicationContext, params.paymentIntentId, params.customerId) { sessionId ->
-            val options = when (params.paymentMethodType) {
-                PaymentMethodType.WECHAT -> {
-                    AirwallexApiRepository.PaymentIntentOptions(
-                        clientSecret = params.clientSecret,
-                        paymentIntentId = params.paymentIntentId,
-                        paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
-                            requestId = UUID.randomUUID().toString()
-                        )
-                            .setPaymentMethod(
-                                PaymentMethod.Builder()
-                                    .setType(PaymentMethodType.WECHAT)
-                                    .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
+        securityConnector.retrieveSecurityToken(
+            AirwallexPlugins.applicationContext,
+            params.paymentIntentId,
+            params.customerId,
+            object :
+                AirwallexSecurityConnector.TrustDefenderListener {
+                override fun onResponse(sessionId: String?) {
+                    val options = when (params.paymentMethodType) {
+                        PaymentMethodType.WECHAT -> {
+                            AirwallexApiRepository.PaymentIntentOptions(
+                                clientSecret = params.clientSecret,
+                                paymentIntentId = params.paymentIntentId,
+                                paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+                                    requestId = UUID.randomUUID().toString()
+                                )
+                                    .setPaymentMethod(
+                                        PaymentMethod.Builder()
+                                            .setType(PaymentMethodType.WECHAT)
+                                            .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
+                                            .build()
+                                    )
+                                    .setCustomerId(params.customerId)
                                     .build()
                             )
-                            .setCustomerId(params.customerId)
-                            .build()
-                    )
+                        }
+                        PaymentMethodType.CARD -> {
+                            AirwallexApiRepository.PaymentIntentOptions(
+                                clientSecret = params.clientSecret,
+                                paymentIntentId = params.paymentIntentId,
+                                paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+                                    requestId = UUID.randomUUID().toString()
+                                )
+                                    .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
+                                    .setCustomerId(params.customerId)
+                                    .build()
+                            )
+                        }
+                    }
+                    paymentManager.confirmPaymentIntent(options, listener)
                 }
-                PaymentMethodType.CARD -> {
-                    AirwallexApiRepository.PaymentIntentOptions(
-                        clientSecret = params.clientSecret,
-                        paymentIntentId = params.paymentIntentId,
-                        paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
-                            requestId = UUID.randomUUID().toString()
-                        )
-                            .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
-                            .setCustomerId(params.customerId)
-                            .build()
-                    )
-                }
-            }
-            paymentManager.confirmPaymentIntent(options, listener)
-        }
+            })
     }
 
     /**
