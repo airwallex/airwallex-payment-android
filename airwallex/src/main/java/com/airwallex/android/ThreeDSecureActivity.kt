@@ -42,12 +42,11 @@ class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver {
         val threeDSecureLookup: ThreeDSecureLookup =
             extras.getParcelable(EXTRA_THREE_D_SECURE_LOOKUP)!!
 
-        if (threeDSecureLookup.dsData.version.startsWith("1.")) {
+        if (threeDSecureLookup.dsData.version?.startsWith("1.") == true) {
             initWebView()
             loadUrl(webView, threeDSecureLookup)
         } else {
             webView.visibility = View.GONE
-
             Cardinal.getInstance().cca_continue(
                 threeDSecureLookup.transactionId,
                 threeDSecureLookup.payload,

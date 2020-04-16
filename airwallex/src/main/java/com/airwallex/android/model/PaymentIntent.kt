@@ -250,7 +250,7 @@ data class PaymentIntent internal constructor(
     data class PaymentAttemptAuthDSData internal constructor(
 
         @SerializedName("version")
-        val version: String,
+        val version: String?,
 
         @SerializedName("liability_shift_indicator")
         val liabilityShiftIndicator: String?,
