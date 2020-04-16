@@ -5,9 +5,8 @@ import com.airwallex.android.AirwallexSecurityConnector.TrustDefenderListener
 
 interface SecurityConnector {
     fun retrieveSecurityToken(
+        paymentIntentId: String,
         applicationContext: Context?,
-        paymentIntentId: String?,
-        customerId: String?,
         trustDefenderListener: TrustDefenderListener?
     )
 }

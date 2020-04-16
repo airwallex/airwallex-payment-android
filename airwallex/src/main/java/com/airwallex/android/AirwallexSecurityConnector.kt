@@ -4,7 +4,6 @@ import android.content.Context
 import com.threatmetrix.TrustDefender.Config
 import com.threatmetrix.TrustDefender.ProfilingOptions
 import com.threatmetrix.TrustDefender.TrustDefender
-import java.util.*
 
 class AirwallexSecurityConnector : SecurityConnector {
 
@@ -13,9 +12,8 @@ class AirwallexSecurityConnector : SecurityConnector {
     }
 
     override fun retrieveSecurityToken(
+        paymentIntentId: String,
         applicationContext: Context?,
-        paymentIntentId: String?,
-        customerId: String?,
         trustDefenderListener: TrustDefenderListener?
     ) {
         Logger.debug(
@@ -26,28 +24,17 @@ class AirwallexSecurityConnector : SecurityConnector {
             .setOrgId(ORG_ID).setContext(applicationContext)
         TrustDefender.getInstance().init(config)
         Logger.debug(TAG, "Successfully init init-ed")
-        doProfile(paymentIntentId, customerId, trustDefenderListener)
+        doProfile(paymentIntentId, trustDefenderListener)
     }
 
-    private fun doProfile(
-        paymentIntentId: String?,
-        customerId: String?,
-        trustDefenderListener: TrustDefenderListener?
-    ) {
-        val customAttributes: MutableList<String> =
-            ArrayList()
-        if (paymentIntentId != null) {
-            customAttributes.add(paymentIntentId)
-        }
-        if (customerId != null) {
-            customAttributes.add(customerId)
-        }
-        val options = ProfilingOptions().setCustomAttributes(customAttributes)
+    private fun doProfile(paymentIntentId: String, trustDefenderListener: TrustDefenderListener?) {
+        val fraudSessionId = "$paymentIntentId${System.currentTimeMillis()}"
+        val options = ProfilingOptions().setSessionID("$MERCHANT_ID$fraudSessionId")
         TrustDefender.getInstance().doProfileRequest(options) { result ->
             val sessionID = result.sessionID
             Logger.debug(
                 TAG,
-                "sessionID$sessionID"
+                "sessionID $sessionID"
             )
             trustDefenderListener?.onResponse(sessionID)
         }
@@ -56,5 +43,6 @@ class AirwallexSecurityConnector : SecurityConnector {
     companion object {
         private const val TAG = "TrustDefender"
         private const val ORG_ID = "1snn5n9w"
+        private const val MERCHANT_ID = "airwallex_cybs"
     }
 }
