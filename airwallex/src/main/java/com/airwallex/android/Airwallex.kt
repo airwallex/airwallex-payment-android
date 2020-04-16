@@ -46,9 +46,8 @@ class Airwallex internal constructor(
     ) {
         val securityConnector: SecurityConnector = AirwallexSecurityConnector()
         securityConnector.retrieveSecurityToken(
-            AirwallexPlugins.applicationContext,
             params.paymentIntentId,
-            params.customerId,
+            AirwallexPlugins.applicationContext,
             object :
                 AirwallexSecurityConnector.TrustDefenderListener {
                 override fun onResponse(sessionId: String?) {
