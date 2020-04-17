@@ -17,4 +17,5 @@
     <color name="airwallex_color_price">#1E272E</color>
     <color name="airwallex_color_item_label">#54545E</color>
 
+    <color name="airwallex_color_loading_bg">#64000000</color>
 </resources>

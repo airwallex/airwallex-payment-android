@@ -2,9 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.airwallex.android">
 
-    <application
-
-        android:usesCleartextTraffic="true">
+    <application>
         <activity
             android:name="com.airwallex.android.view.PaymentMethodsActivity"
             android:theme="@style/AirwallexDefaultTheme" />
