@@ -1,6 +1,5 @@
 package com.airwallex.android
 
-import android.app.Activity
 import androidx.annotation.UiThread
 import androidx.fragment.app.FragmentActivity
 import com.airwallex.android.ThreeDSecure.THREE_DS_RETURN_URL
@@ -16,9 +15,9 @@ class Airwallex internal constructor(
     private val paymentManager: PaymentManager
 ) {
 
-    private var activity: Activity? = null
-    private var confirmPaymentIntentParams: ConfirmPaymentIntentParams? = null
-    private var listener: PaymentListener<PaymentIntent>? = null
+    private val securityConnector: SecurityConnector by lazy {
+        AirwallexSecurityConnector()
+    }
 
     /**
      * Generic interface for an Airwallex API operation callback that either returns a [Response], or an [Exception]
@@ -54,65 +53,75 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
-        this.activity = activity
-        this.confirmPaymentIntentParams = params
-        this.listener = listener
-        val options = when (params.paymentMethodType) {
-            PaymentMethodType.WECHAT -> {
-                AirwallexApiRepository.PaymentIntentOptions(
-                    clientSecret = params.clientSecret,
-                    paymentIntentId = params.paymentIntentId,
-                    paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
-                        requestId = UUID.randomUUID().toString()
-                    )
-                        .setPaymentMethod(
-                            PaymentMethod.Builder()
-                                .setType(PaymentMethodType.WECHAT)
-                                .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
-                                .build()
-                        )
-                        .setCustomerId(params.customerId)
-                        .build()
-                )
-            }
-            PaymentMethodType.CARD -> {
-                buildPaymentIntentOptions(
-                    params = params,
-                    threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
-                        .setReturnUrl(THREE_DS_RETURN_URL)
-                        .build()
-                )
-            }
-        }
-
-        val paymentListener = when (params.paymentMethodType) {
-            PaymentMethodType.CARD -> {
-                object : PaymentListener<PaymentIntent> {
-                    override fun onFailed(exception: AirwallexException) {
-                        listener.onFailed(exception)
-                    }
-
-                    override fun onSuccess(response: PaymentIntent) {
-                        val jwt = response.nextAction?.data?.get("jwt") as? String
-
-                        if (jwt != null) {
-                            // 3D Secure Flow
-                            prepareCardinalLookup(
-                                activity = activity,
-                                jwt = jwt
+        securityConnector.retrieveSecurityToken(
+            paymentIntentId = params.paymentIntentId,
+            applicationContext = AirwallexPlugins.applicationContext,
+            securityTokenListener = object :
+                AirwallexSecurityConnector.SecurityTokenListener {
+                override fun onResponse(sessionId: String) {
+                    val options = when (params.paymentMethodType) {
+                        PaymentMethodType.WECHAT -> {
+                            AirwallexApiRepository.PaymentIntentOptions(
+                                clientSecret = params.clientSecret,
+                                paymentIntentId = params.paymentIntentId,
+                                paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+                                    requestId = UUID.randomUUID().toString()
+                                )
+                                    .setPaymentMethod(
+                                        PaymentMethod.Builder()
+                                            .setType(PaymentMethodType.WECHAT)
+                                            .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
+                                            .build()
+                                    )
+                                    .setCustomerId(params.customerId)
+                                    .setDevice(buildDevice(sessionId))
+                                    .build()
                             )
-                        } else {
-                            listener.onSuccess(response)
+                        }
+                        PaymentMethodType.CARD -> {
+                            buildPaymentIntentOptions(
+                                params = params,
+                                threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                                    .setReturnUrl(THREE_DS_RETURN_URL)
+                                    .build(),
+                                sessionId = sessionId
+                            )
                         }
                     }
-                }
-            }
-            PaymentMethodType.WECHAT -> {
-                listener
-            }
-        }
 
-        paymentManager.confirmPaymentIntent(options, paymentListener)
+                    val paymentListener = when (params.paymentMethodType) {
+                        PaymentMethodType.CARD -> {
+                            object : PaymentListener<PaymentIntent> {
+                                override fun onFailed(exception: AirwallexException) {
+                                    listener.onFailed(exception)
+                                }
+
+                                override fun onSuccess(response: PaymentIntent) {
+                                    val jwt = response.nextAction?.data?.get("jwt") as? String
+
+                                    if (jwt != null) {
+                                        // 3D Secure Flow
+                                        prepareCardinalLookup(
+                                            activity = activity,
+                                            params = params,
+                                            jwt = jwt,
+                                            sessionId = sessionId,
+                                            listener = listener
+                                        )
+                                    } else {
+                                        listener.onSuccess(response)
+                                    }
+                                }
+                            }
+                        }
+                        PaymentMethodType.WECHAT -> {
+                            listener
+                        }
+                    }
+
+                    paymentManager.confirmPaymentIntent(options, paymentListener)
+                }
+            })
     }
 
     /**
@@ -120,30 +129,34 @@ class Airwallex internal constructor(
      */
     private fun prepareCardinalLookup(
         activity: FragmentActivity,
-        jwt: String
+        params: ConfirmPaymentIntentParams,
+        jwt: String,
+        sessionId: String,
+        listener: PaymentListener<PaymentIntent>
     ) {
         ThreeDSecure.performVerification(activity, jwt) { referenceId, validateResponse ->
             if (validateResponse != null) {
                 activity.runOnUiThread {
-                    listener?.onFailed(ThreeDSException(AirwallexError(message = validateResponse.errorDescription)))
+                    listener.onFailed(ThreeDSException(AirwallexError(message = validateResponse.errorDescription)))
                 }
             } else {
                 paymentManager.confirmPaymentIntent(
                     buildPaymentIntentOptions(
-                        params = requireNotNull(confirmPaymentIntentParams),
+                        params = params,
                         threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                             .setDeviceDataCollectionRes(referenceId)
                             .setReturnUrl(THREE_DS_RETURN_URL)
-                            .build()
+                            .build(),
+                        sessionId = sessionId
                     ),
                     object : PaymentListener<PaymentIntent> {
                         override fun onFailed(exception: AirwallexException) {
-                            listener?.onFailed(exception)
+                            listener.onFailed(exception)
                         }
 
                         override fun onSuccess(response: PaymentIntent) {
                             if (response.nextAction == null) {
-                                listener?.onFailed(ThreeDSException(AirwallexError(message = "Frictionless card")))
+                                listener.onFailed(ThreeDSException(AirwallexError(message = "Frictionless card")))
                                 return
                             }
                             val transactionId = response.nextAction.data?.get("xid") as? String
@@ -163,25 +176,26 @@ class Airwallex internal constructor(
                             fragment.onActivityResultCompletion = { validateResponse, exception ->
                                 if (exception != null) {
                                     activity.runOnUiThread {
-                                        listener?.onFailed(exception)
+                                        listener.onFailed(exception)
                                     }
                                 } else {
                                     // Confirm transactionId
                                     paymentManager.confirmPaymentIntent(
                                         buildPaymentIntentOptions(
-                                            params = requireNotNull(confirmPaymentIntentParams),
+                                            params = params,
                                             threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                                                 .setTransactionId(validateResponse?.payment?.processorTransactionId)
                                                 .setReturnUrl(THREE_DS_RETURN_URL)
-                                                .build()
+                                                .build(),
+                                            sessionId = sessionId
                                         ),
                                         object : PaymentListener<PaymentIntent> {
                                             override fun onFailed(exception: AirwallexException) {
-                                                listener?.onFailed(exception)
+                                                listener.onFailed(exception)
                                             }
 
                                             override fun onSuccess(response: PaymentIntent) {
-                                                listener?.onSuccess(response)
+                                                listener.onSuccess(response)
                                             }
                                         }
                                     )
@@ -201,7 +215,8 @@ class Airwallex internal constructor(
 
     private fun buildPaymentIntentOptions(
         params: ConfirmPaymentIntentParams,
-        threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
+        threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure,
+        sessionId: String
     ): AirwallexApiRepository.PaymentIntentOptions {
         return AirwallexApiRepository.PaymentIntentOptions(
             clientSecret = params.clientSecret,
@@ -220,8 +235,18 @@ class Airwallex internal constructor(
                 )
                 .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
                 .setCustomerId(params.customerId)
+                .setDevice(buildDevice(sessionId))
                 .build()
         )
+    }
+
+    private fun buildDevice(deviceId: String?): Device {
+        return Device.Builder()
+            .setDeviceId(deviceId)
+            .setCookiesAccepted("true")
+            .setHostName("www.airwallex.com")
+            .setHttpBrowserType("chrome")
+            .build()
     }
 
     /**

@@ -38,7 +38,10 @@ data class PaymentIntentConfirmRequest internal constructor(
      * Options for payment method
      */
     @SerializedName("payment_method_options")
-    val paymentMethodOptions: PaymentMethodOptions?
+    val paymentMethodOptions: PaymentMethodOptions?,
+
+    @SerializedName("device")
+    val device: Device? = null
 
 ) : AirwallexModel, Parcelable {
 
@@ -49,9 +52,14 @@ data class PaymentIntentConfirmRequest internal constructor(
         private var paymentMethod: PaymentMethod? = null
         private var paymentMethodReference: PaymentMethodReference? = null
         private var paymentMethodOptions: PaymentMethodOptions? = null
+        private var device: Device? = null
 
         fun setCustomerId(customerId: String?): Builder = apply {
             this.customerId = customerId
+        }
+
+        fun setDevice(device: Device?): Builder = apply {
+            this.device = device
         }
 
         fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
@@ -73,7 +81,8 @@ data class PaymentIntentConfirmRequest internal constructor(
                 requestId = requestId,
                 paymentMethod = paymentMethod,
                 paymentMethodReference = paymentMethodReference,
-                paymentMethodOptions = paymentMethodOptions
+                paymentMethodOptions = paymentMethodOptions,
+                device = device
             )
         }
     }
