@@ -1,8 +1,8 @@
 package com.airwallex.paymentacceptance
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,13 +54,14 @@ class PaymentCartFragment : Fragment() {
             .build()
     )
 
-    @SuppressLint("ViewConstructor")
-    class CartItem(
+    private class CartItem constructor(
         order: PhysicalProduct,
         context: Context?,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
         private val removeHandler: () -> Unit
     ) :
-        RelativeLayout(context) {
+        RelativeLayout(context, attrs, defStyleAttr) {
 
         init {
             View.inflate(
@@ -102,12 +103,13 @@ class PaymentCartFragment : Fragment() {
         llProducts.removeAllViews()
         products.map {
             CartItem(
-                it,
-                context
-            ) {
-                products.remove(it)
-                initializeProductsViews(products)
-            }
+                order = it,
+                context = context,
+                removeHandler = {
+                    products.remove(it)
+                    initializeProductsViews(products)
+                }
+            )
         }.forEach { llProducts.addView(it) }
 
         val subtotalPrice =
