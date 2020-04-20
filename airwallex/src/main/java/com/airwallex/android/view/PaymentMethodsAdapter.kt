@@ -1,6 +1,5 @@
 package com.airwallex.android.view
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import com.airwallex.android.R
 import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
 import kotlinx.android.synthetic.main.payment_method_item_wechat.view.*
+import java.util.*
 
 internal class PaymentMethodsAdapter(
     val shouldShowCard: Boolean = false,
@@ -119,12 +119,11 @@ internal class PaymentMethodsAdapter(
 
     inner class CardHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        @SuppressLint("DefaultLocale")
         fun bindView(position: Int) {
             val method = paymentMethods[position - 1] ?: return
             val card = method.card ?: return
             itemView.tvCardInfo.text =
-                String.format("%s •••• %s", card.brand?.capitalize(), card.last4)
+                String.format("%s •••• %s", card.brand?.toUpperCase(Locale.getDefault()), card.last4)
             when (card.brand) {
                 CardBrand.Visa.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
                 CardBrand.MasterCard.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
