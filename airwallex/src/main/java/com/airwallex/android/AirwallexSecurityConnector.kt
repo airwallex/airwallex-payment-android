@@ -1,6 +1,7 @@
 package com.airwallex.android
 
 import android.content.Context
+import com.airwallex.android.model.PaymentIntent
 import com.threatmetrix.TrustDefender.Config
 import com.threatmetrix.TrustDefender.ProfilingOptions
 import com.threatmetrix.TrustDefender.TrustDefender
@@ -10,10 +11,20 @@ import com.threatmetrix.TrustDefender.TrustDefender
  */
 class AirwallexSecurityConnector : SecurityConnector {
 
+    /**
+     * Retrieve SecurityToken listener
+     */
     interface SecurityTokenListener {
         fun onResponse(sessionId: String)
     }
 
+    /**
+     *  Retrieve the SecurityToken from Cardinals under the ID of [PaymentIntent]
+     *
+     *  @param paymentIntentId ID of [PaymentIntent]
+     *  @param applicationContext The Context of Application
+     *  @param securityTokenListener The listener of when retrieved the SecurityToken
+     */
     override fun retrieveSecurityToken(
         paymentIntentId: String,
         applicationContext: Context?,
@@ -30,6 +41,9 @@ class AirwallexSecurityConnector : SecurityConnector {
         doProfile(paymentIntentId, securityTokenListener)
     }
 
+    /**
+     * Init was successful or there is a valid instance to be used for further calls. Fire a profile request
+     */
     private fun doProfile(paymentIntentId: String, securityTokenListener: SecurityTokenListener) {
         val fraudSessionId = "$paymentIntentId${System.currentTimeMillis()}"
         val options =
