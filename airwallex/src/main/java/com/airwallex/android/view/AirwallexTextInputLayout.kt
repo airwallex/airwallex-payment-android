@@ -16,7 +16,7 @@ import com.airwallex.android.R.styleable
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-internal abstract class AirwallexTextInputLayout @JvmOverloads constructor(
+internal open class AirwallexTextInputLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet,
     resourceLayout: Int = R.layout.common_text_input_layout
