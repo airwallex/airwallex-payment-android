@@ -56,7 +56,6 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
         }
 
     init {
-        @Suppress("LeakingThis")
         View.inflate(getContext(), resourceLayout, this)
 
         tlInput = findViewById(R.id.tlInput)
