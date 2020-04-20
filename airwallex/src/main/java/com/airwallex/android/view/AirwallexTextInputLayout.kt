@@ -16,7 +16,7 @@ import com.airwallex.android.R.styleable
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-internal open class AirwallexTextInputLayout @JvmOverloads constructor(
+internal abstract class AirwallexTextInputLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet,
     resourceLayout: Int = R.layout.common_text_input_layout
@@ -56,7 +56,6 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
         }
 
     init {
-        @Suppress("LeakingThis")
         View.inflate(getContext(), resourceLayout, this)
 
         tlInput = findViewById(R.id.tlInput)

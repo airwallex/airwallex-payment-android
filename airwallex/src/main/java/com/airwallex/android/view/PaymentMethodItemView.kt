@@ -1,6 +1,5 @@
 package com.airwallex.android.view
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Build
@@ -14,6 +13,7 @@ import com.airwallex.android.R
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 import kotlinx.android.synthetic.main.payment_method_item.view.*
+import java.util.*
 
 internal class PaymentMethodItemView constructor(
     context: Context,
@@ -68,7 +68,6 @@ internal class PaymentMethodItemView constructor(
         etCardCvc.addTextChangedListener(textWatcher)
     }
 
-    @SuppressLint("DefaultLocale")
     internal fun renewalPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
         this.paymentMethodType = paymentMethod.type
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
@@ -76,7 +75,7 @@ internal class PaymentMethodItemView constructor(
         } else {
             tvPaymentMethod.text = String.format(
                 "%s •••• %s",
-                paymentMethod.card?.brand?.capitalize(),
+                paymentMethod.card?.brand?.toUpperCase(Locale.getDefault()),
                 paymentMethod.card?.last4
             )
         }
