@@ -179,6 +179,7 @@ internal class CountryAutoCompleteView constructor(
             return filterResults
         }
 
+        @Suppress("UNCHECKED_CAST")
         override fun publishResults(
             constraint: CharSequence?,
             filterResults: FilterResults?
