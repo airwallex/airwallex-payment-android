@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
@@ -23,14 +22,11 @@ class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_threeds)
-
         var extras = intent.extras
 
         if (extras == null) {
             extras = Bundle()
         }
-
         val threeDSecureLookup: ThreeDSecureLookup =
             extras.getParcelable(EXTRA_THREE_D_SECURE_LOOKUP)!!
 
@@ -38,7 +34,6 @@ class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver,
             initWebView()
             loadUrl(webView, threeDSecureLookup)
         } else {
-            webView.visibility = View.GONE
             Cardinal.getInstance().cca_continue(
                 threeDSecureLookup.transactionId,
                 threeDSecureLookup.payload,
@@ -49,7 +44,7 @@ class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver,
     }
 
     private fun initWebView() {
-        webView.visibility = View.VISIBLE
+        setContentView(R.layout.activity_threeds)
         webView.webViewClient = ThreeDSecureWebViewClient(this)
         webView.webChromeClient = WebChromeClient()
     }
