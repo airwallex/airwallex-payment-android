@@ -172,7 +172,7 @@ class Airwallex internal constructor(
                                     requireNotNull(dsData)
                                 )
 
-                            val fragment = AirwallexFragment.newInstance(activity)
+                            val fragment = ThreeDSecureFragment.newInstance(activity)
                             fragment.onActivityResultCompletion = { validateResponse, exception ->
                                 if (exception != null) {
                                     activity.runOnUiThread {

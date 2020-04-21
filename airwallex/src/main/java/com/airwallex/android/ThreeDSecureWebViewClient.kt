@@ -6,7 +6,7 @@ class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
     AirwallexWebViewClient(callbacks) {
 
     override fun hasCallbackUrl(view: WebView?, url: String?): Boolean {
-        Logger.debug(TAG, "hasCallbackUrl $url")
+        Logger.debug(TAG, "Callback Url: $url")
         if (url?.contains(ThreeDSecure.THREE_DS_RETURN_URL) == true) {
             val payload = url.replace(ThreeDSecure.THREE_DS_RETURN_URL, "")
             callbacks.onWebViewConfirmation(payload)

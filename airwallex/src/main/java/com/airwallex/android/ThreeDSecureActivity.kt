@@ -20,14 +20,6 @@ import java.net.URLEncoder
 class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver,
     ThreeDSecureWebViewClient.Callbacks {
 
-    companion object {
-        const val EXTRA_THREE_D_SECURE_LOOKUP = "EXTRA_THREE_D_SECURE_LOOKUP"
-        const val EXTRA_THREE_D_JWT = "EXTRA_THREE_D_JWT"
-        const val EXTRA_VALIDATION_RESPONSE = "EXTRA_VALIDATION_RESPONSE"
-        const val THREE_D_SECURE = 12345
-        const val TAG = "ThreeDSecureActivity"
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,25 +64,60 @@ class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver,
         webView.postUrl(acsUrl, postData.toByteArray())
     }
 
+    // 2.0
     override fun onValidated(p0: Context?, validateResponse: ValidateResponse?, jwt: String?) {
         val result = Intent()
         result.putExtra(EXTRA_THREE_D_JWT, jwt)
         result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse)
 
+        val bundle = Bundle()
+        bundle.putSerializable(
+            EXTRA_THREE_D_SECURE_TYPE,
+            ThreeDSecure.ThreeDSecureType.THREE_D_SECURE_2
+        )
+        result.putExtras(bundle)
+
         setResult(Activity.RESULT_OK, result)
         finish()
     }
 
+    // 1.0
     override fun onWebViewConfirmation(payload: String) {
-        if (payload.isNotEmpty()) {
-            Logger.debug(TAG, "payload $payload")
-            // add logic here for valid payload (cmpi_authenticate) and close webview using finish() or open another Activity
-        } else {
-            // handle invalid/empty payload
-        }
+        finishWithPayload(payload)
     }
 
+    // 1.0
     override fun onWebViewError(error: WebViewConnectionException) {
         // Handle WebView connection failed
+        finishWithPayload(null)
+    }
+
+    private fun finishWithPayload(payload: String?) {
+        val result = Intent()
+        result.putExtra(EXTRA_THREE_PAYLOAD, payload)
+
+        val bundle = Bundle()
+        bundle.putSerializable(
+            EXTRA_THREE_D_SECURE_TYPE,
+            ThreeDSecure.ThreeDSecureType.THREE_D_SECURE_1
+        )
+        result.putExtras(bundle)
+
+        setResult(Activity.RESULT_OK, result)
+        finish()
+    }
+
+    companion object {
+        const val THREE_D_SECURE = 12345
+
+        const val EXTRA_THREE_D_SECURE_TYPE = "EXTRA_THREE_D_SECURE_LOOKUP"
+
+        // 2.0
+        const val EXTRA_THREE_D_SECURE_LOOKUP = "EXTRA_THREE_D_SECURE_LOOKUP"
+        const val EXTRA_THREE_D_JWT = "EXTRA_THREE_D_JWT"
+        const val EXTRA_VALIDATION_RESPONSE = "EXTRA_VALIDATION_RESPONSE"
+
+        // 1.0
+        const val EXTRA_THREE_PAYLOAD = "EXTRA_THREE_PAYLOAD"
     }
 }

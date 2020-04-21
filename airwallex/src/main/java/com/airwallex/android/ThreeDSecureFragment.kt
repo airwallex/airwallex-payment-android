@@ -9,21 +9,20 @@ import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.AirwallexError
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 
-internal class AirwallexFragment : Fragment() {
+internal class ThreeDSecureFragment : Fragment() {
 
     internal var onActivityResultCompletion: ((validateResponse: ValidateResponse?, exception: AirwallexException?) -> Unit)? =
         null
 
     companion object {
-
         private const val AIRWALLEX_FRAGMENT_TAG = "AirwallexFragmentTag"
 
-        fun newInstance(activity: FragmentActivity): AirwallexFragment {
+        fun newInstance(activity: FragmentActivity): ThreeDSecureFragment {
             val manager = activity.supportFragmentManager
-            var fragment: AirwallexFragment? =
-                manager.findFragmentByTag(AIRWALLEX_FRAGMENT_TAG) as? AirwallexFragment
+            var fragment: ThreeDSecureFragment? =
+                manager.findFragmentByTag(AIRWALLEX_FRAGMENT_TAG) as? ThreeDSecureFragment
             if (fragment == null) {
-                fragment = AirwallexFragment()
+                fragment = ThreeDSecureFragment()
                 manager
                     .beginTransaction()
                     .add(fragment, AIRWALLEX_FRAGMENT_TAG)
