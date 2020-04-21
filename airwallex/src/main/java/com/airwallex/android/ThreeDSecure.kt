@@ -74,7 +74,7 @@ internal object ThreeDSecure {
     }
 
     internal fun performCardinalAuthentication(
-        fragment: AirwallexFragment,
+        fragment: ThreeDSecureFragment,
         threeDSecureLookup: ThreeDSecureLookup
     ) {
         val extras = Bundle()
@@ -90,33 +90,41 @@ internal object ThreeDSecure {
         data: Intent,
         completion: (validateResponse: ValidateResponse?, exception: AirwallexException?) -> Unit
     ) {
-        val resultUri = data.data
-        if (resultUri != null) {
-            // 1.0 Flow
-        } else {
-            // 2.0 Flow
-            val validateResponse =
-                data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
-            val jwt = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_D_JWT)
 
-            Logger.debug("3DS actionCode " + validateResponse.actionCode)
-            when (validateResponse.actionCode!!) {
-                CardinalActionCode.FAILURE, CardinalActionCode.SUCCESS, CardinalActionCode.NOACTION -> {
-                    completion.invoke(validateResponse, null)
-                }
-                CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> {
-                    completion.invoke(
-                        validateResponse,
-                        ThreeDSException(AirwallexError(message = validateResponse.errorDescription))
-                    )
-                }
-                CardinalActionCode.CANCEL -> {
-                    completion.invoke(
-                        validateResponse,
-                        ThreeDSException(AirwallexError(message = validateResponse.errorDescription))
-                    )
+        when (data.getSerializableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_TYPE) as? ThreeDSecureType) {
+            ThreeDSecureType.THREE_D_SECURE_1 -> {
+                // 1.0 Flow
+            }
+            ThreeDSecureType.THREE_D_SECURE_2 -> {
+                // 2.0 Flow
+                val validateResponse =
+                    data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
+                val jwt = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_D_JWT)
+
+                Logger.debug("3DS actionCode " + validateResponse.actionCode)
+                when (validateResponse.actionCode!!) {
+                    CardinalActionCode.FAILURE, CardinalActionCode.SUCCESS, CardinalActionCode.NOACTION -> {
+                        completion.invoke(validateResponse, null)
+                    }
+                    CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> {
+                        completion.invoke(
+                            validateResponse,
+                            ThreeDSException(AirwallexError(message = validateResponse.errorDescription))
+                        )
+                    }
+                    CardinalActionCode.CANCEL -> {
+                        completion.invoke(
+                            validateResponse,
+                            ThreeDSException(AirwallexError(message = validateResponse.errorDescription))
+                        )
+                    }
                 }
             }
         }
+    }
+
+    enum class ThreeDSecureType {
+        THREE_D_SECURE_1,
+        THREE_D_SECURE_2
     }
 }
