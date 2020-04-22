@@ -20,7 +20,7 @@ import org.json.JSONArray
 
 internal object ThreeDSecure {
 
-    const val THREE_DS_RETURN_URL = "http://requestbin.net/r/1il2qkm1"
+    const val THREE_DS_RETURN_URL = "http://com.airwallex.android"
 
     private fun configureCardinal(applicationContext: Context) {
         val cardinalConfigurationParameters = CardinalConfigurationParameters()
