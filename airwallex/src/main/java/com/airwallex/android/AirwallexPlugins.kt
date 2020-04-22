@@ -56,6 +56,7 @@ internal object AirwallexPlugins {
                 builder.addHeader(CONTENT_TYPE_HEADER_KEY, CONTENT_TYPE_HEADER_VALUE)
                 builder.addHeader(USER_AGENT_KEY, USER_AGENT_VALUE)
                 builder.addHeader(USER_AGENT_VERSION_KEY, USER_AGENT_VERSION_VALUE)
+                builder.addHeader(API_VERSION, ApiVersion.get().code)
                 return chain.proceed(builder.build())
             }
         })
@@ -82,4 +83,5 @@ internal object AirwallexPlugins {
     private const val USER_AGENT_VALUE = "Airwallex-Android-SDK"
     private const val USER_AGENT_VERSION_KEY = "Airwallex-User-Agent-Version"
     private const val USER_AGENT_VERSION_VALUE = BuildConfig.VERSION_NAME
+    private const val API_VERSION = "Airwallex-Api-Version"
 }
