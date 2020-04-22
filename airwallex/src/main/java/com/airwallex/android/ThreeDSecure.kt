@@ -22,8 +22,12 @@ internal object ThreeDSecure {
 
     const val THREE_DS_RETURN_URL = "http://com.airwallex.android"
 
+    /**
+     * Configure Cardinal Mobile SDK
+     */
     private fun configureCardinal(applicationContext: Context) {
         val cardinalConfigurationParameters = CardinalConfigurationParameters()
+        // TODO should change to PRO when release
         cardinalConfigurationParameters.environment = CardinalEnvironment.STAGING
         cardinalConfigurationParameters.requestTimeout = 8000
         cardinalConfigurationParameters.challengeTimeout = 5
@@ -50,6 +54,8 @@ internal object ThreeDSecure {
         onSetupCompleted: (consumerSessionId: String?, validateResponse: ValidateResponse?) -> Unit
     ) {
         configureCardinal(applicationContext)
+
+        // Setup the Initial Call to Cardinal
         Cardinal.getInstance().init(serverJwt, object : CardinalInitService {
 
             /**
@@ -73,6 +79,12 @@ internal object ThreeDSecure {
         })
     }
 
+    /**
+     * Perform the 3DS authentication.
+     *
+     * @param fragment [ThreeDSecureFragment] will be responsible for handling callbacks to it's listeners
+     * @param threeDSecureLookup Contains information about the 3DS verification request that will be invoked in this method.
+     */
     internal fun performCardinalAuthentication(
         fragment: ThreeDSecureFragment,
         threeDSecureLookup: ThreeDSecureLookup
