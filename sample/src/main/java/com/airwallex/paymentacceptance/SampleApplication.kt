@@ -18,7 +18,7 @@ class SampleApplication : Application() {
 
     fun configAirwallex() {
         Airwallex.initialize(
-            AirwallexConfiguration.Builder(this)
+            AirwallexConfiguration.Builder()
                 .enableLogging(true) // Enable log in sdk, best set to false in release version
                 .setBaseUrl(Settings.baseUrl) // You can change the baseUrl to test other environments
                 .build()
