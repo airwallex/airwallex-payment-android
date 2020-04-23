@@ -102,18 +102,18 @@ internal object ThreeDSecure {
         data: Intent,
         completion: (validateResponse: ValidateResponse?, exception: AirwallexException?) -> Unit
     ) {
-
         when (data.getSerializableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_TYPE) as? ThreeDSecureType) {
             ThreeDSecureType.THREE_D_SECURE_1 -> {
                 // 1.0 Flow
+                val payload = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_PAYLOAD)
+                Logger.debug("3DS 1 response payload: $payload")
             }
             ThreeDSecureType.THREE_D_SECURE_2 -> {
                 // 2.0 Flow
                 val validateResponse =
                     data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
-                val jwt = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_D_JWT)
 
-                Logger.debug("3DS actionCode " + validateResponse.actionCode)
+                Logger.debug("3DS 2 response code: ${validateResponse.actionCode}")
                 when (validateResponse.actionCode!!) {
                     CardinalActionCode.FAILURE, CardinalActionCode.SUCCESS, CardinalActionCode.NOACTION -> {
                         completion.invoke(validateResponse, null)
