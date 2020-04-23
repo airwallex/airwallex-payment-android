@@ -1,23 +1,19 @@
 package com.airwallex.android
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.webkit.WebChromeClient
-import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.ThreeDSecure.THREE_DS_RETURN_URL
 import com.airwallex.android.exception.WebViewConnectionException
 import com.airwallex.android.model.ThreeDSecureLookup
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver
 import kotlinx.android.synthetic.main.activity_threeds.*
 import java.net.URLEncoder
 
-class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver,
-    ThreeDSecureWebViewClient.Callbacks {
+class ThreeDSecureActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,36 +27,42 @@ class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver,
             extras.getParcelable(EXTRA_THREE_D_SECURE_LOOKUP)!!
 
         if (threeDSecureLookup.dsData.version?.startsWith("1.") == true) {
-            initWebView()
-            loadUrl(webView, threeDSecureLookup)
+            if (threeDSecureLookup.payload == null || threeDSecureLookup.acsUrl == null) {
+                finishThreeDSecure1(null)
+                return
+            }
+
+            setContentView(R.layout.activity_threeds)
+            webView.webViewClient =
+                ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
+                    override fun onWebViewConfirmation(payload: String) {
+                        finishThreeDSecure1(payload)
+                    }
+
+                    override fun onWebViewError(error: WebViewConnectionException) {
+                        // Handle WebView connection failed
+                        finishThreeDSecure1(null)
+                    }
+                })
+            webView.webChromeClient = WebChromeClient()
+
+            val payload = threeDSecureLookup.payload
+            val termUrl = "$THREE_DS_RETURN_URL/$payload"
+            val acsUrl = threeDSecureLookup.acsUrl
+            val postData = "&PaReq=" + URLEncoder.encode(payload, "UTF-8")
+                .toString() + "&TermUrl=" + URLEncoder.encode(termUrl, "UTF-8")
+
+            webView.postUrl(acsUrl, postData.toByteArray())
         } else {
             Cardinal.getInstance().cca_continue(
                 threeDSecureLookup.transactionId,
                 threeDSecureLookup.payload,
-                this,
                 this
-            )
+            ) { _, validateResponse, jwt -> finishThreeDSecure2(validateResponse, jwt) }
         }
     }
 
-    private fun initWebView() {
-        setContentView(R.layout.activity_threeds)
-        webView.webViewClient = ThreeDSecureWebViewClient(this)
-        webView.webChromeClient = WebChromeClient()
-    }
-
-    private fun loadUrl(webView: WebView, threeDSecureLookup: ThreeDSecureLookup) {
-        val payload = threeDSecureLookup.payload
-        val termUrl = "$THREE_DS_RETURN_URL/$payload"
-        val acsUrl = threeDSecureLookup.acsUrl
-        val postData = "&PaReq=" + URLEncoder.encode(payload, "UTF-8")
-            .toString() + "&TermUrl=" + URLEncoder.encode(termUrl, "UTF-8")
-
-        webView.postUrl(acsUrl, postData.toByteArray())
-    }
-
-    // 2.0
-    override fun onValidated(p0: Context?, validateResponse: ValidateResponse?, jwt: String?) {
+    private fun finishThreeDSecure2(validateResponse: ValidateResponse?, jwt: String?) {
         val result = Intent()
         result.putExtra(EXTRA_THREE_D_JWT, jwt)
         result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse)
@@ -76,18 +78,7 @@ class ThreeDSecureActivity : AppCompatActivity(), CardinalValidateReceiver,
         finish()
     }
 
-    // 1.0
-    override fun onWebViewConfirmation(payload: String) {
-        finishWithPayload(payload)
-    }
-
-    // 1.0
-    override fun onWebViewError(error: WebViewConnectionException) {
-        // Handle WebView connection failed
-        finishWithPayload(null)
-    }
-
-    private fun finishWithPayload(payload: String?) {
+    private fun finishThreeDSecure1(payload: String?) {
         val result = Intent()
         result.putExtra(EXTRA_THREE_PAYLOAD, payload)
 
