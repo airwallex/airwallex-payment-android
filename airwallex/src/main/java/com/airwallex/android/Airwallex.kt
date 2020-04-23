@@ -198,7 +198,8 @@ class Airwallex internal constructor(
 
                         override fun onSuccess(response: PaymentIntent) {
                             if (response.nextAction == null) {
-                                listener.onFailed(ThreeDSException(AirwallexError(message = "Frictionless card")))
+                                // No need to step-up authentication
+                                listener.onSuccess(response)
                                 return
                             }
                             val transactionId = response.nextAction.data?.get("xid") as? String
