@@ -1,4 +1,4 @@
-# Airwallex Android SDK (WeChat Only)
+# Airwallex Android SDK
 This section mainly introduces the main process of integrating Airwallex Android SDK. This guide assumes that you are an Android developer and familiar with Android Studio and Gradle.
 
 Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to include the Airwallex Android SDK in your Android project.
@@ -28,19 +28,19 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 ```
 
 ### Step 2: Configuration the SDK (optional)
-We provide some parameters that can be used to debug the SDK, better to be called in `Application`
+We provide some parameters that can be used to debug the SDK, need to be initialized before calling the airwallex api. It is recommended to be placed in the `Application`
 
 ```groovy
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
-            .enableLogging(true)    // Enable log in sdk, best set to false in release version
+            .enableLogging(true)    // Enable log in sdk, best set to `false` in release version
             .setBaseUrl(Settings.baseUrl)  // You can change the baseUrl to test other environments
             .build()
     )
 ```
 
 ### Step 3: Confirm Payment Intent
-Before confirming the `PaymentIntent`, you must create a `PaymentIntent` on the server and pass it to the client.
+Before confirming the `PaymentIntent`, you must create a `PaymentIntent` on the server side, then return `PaymentIntent` to the client.
 
 > Merchant's server
 >1. To begin you will need to obtain an access token to allow you to reach all other API endpoints. Using your unique Client ID and API key (these can be generated within [Account settings > API keys](https://www.airwallex.com/app/settings/api)) you can call the Authentication API endpoint. On success, an access token will be granted.
@@ -81,6 +81,9 @@ After completing all the steps on the server, the client will get a `PaymentInte
 3. After successfully confirming the `PaymentIntent`, Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay) to complete the final payment.
 Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/tree/master) for more details.
 ```kotlin
+    val weChat = response.weChat
+    // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay).
+
     val weChatReq = PayReq()
     weChatReq.appId = weChat.appId
     weChatReq.partnerId = weChat.partnerId
@@ -118,7 +121,7 @@ After successful payment, the Airwallex server will notify the Merchant, then yo
 
 ## Features
 
-### WeChat Pay 
+### WeChat Pay
 We provide a seamless integration with WeChat Pay.
 
 ### Airwallex API
@@ -129,13 +132,13 @@ To run the example project, you should follow these steps.
 
 * **Step 1:** Clone the repository to your local machine
 
-* **Step 2:** Open Android Studio and import the project by selecting the build.gradle file from the cloned repository
+* **Step 2:** Open Android Studio and import the project by selecting the `build.gradle` file from the cloned repository
 
 * **Step 3:** Goto [Account settings > API keys](https://www.airwallex.com/app/settings/api) to get `Client ID` and `API key`, then fill in the `strings.xml`
 
 * **Step 4:** Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then fill `App ID` and `App Signature` in the `strings.xml`
             
-* **Step 5:** Run the `sample` project
+* **Step 5:** Run the `sample` module
 
 ## Contributing
-If you’d like more help, check out our [example app](https://github.com/airwallex/airwallex-payment-android/blob/master) on Github that demonstrates the use of the entire payment process. Also, you can read the [Airwallex API](https://www.airwallex.com/docs/api#/Introduction) for more details.
+We welcome contributions of any kind including new features, bug fixes, and documentation improvements. The best way to contribute is by submitting a pull request – we'll do our best to respond to your patch as soon as possible. You can also submit an issue if you find bugs or have any questions.
