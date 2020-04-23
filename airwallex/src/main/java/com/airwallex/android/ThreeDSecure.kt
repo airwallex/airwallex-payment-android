@@ -48,7 +48,7 @@ internal object ThreeDSecure {
         Cardinal.getInstance().configure(applicationContext, cardinalConfigurationParameters)
     }
 
-    internal fun performVerification(
+    internal fun performCardinalInitialize(
         applicationContext: Context,
         serverJwt: String,
         onSetupCompleted: (consumerSessionId: String?, validateResponse: ValidateResponse?) -> Unit
