@@ -55,7 +55,7 @@ class Airwallex internal constructor(
     ) {
         securityConnector.retrieveSecurityToken(
             paymentIntentId = params.paymentIntentId,
-            applicationContext = AirwallexPlugins.applicationContext,
+            applicationContext = activity.applicationContext,
             securityTokenListener = object :
                 AirwallexSecurityConnector.SecurityTokenListener {
                 override fun onResponse(sessionId: String) {

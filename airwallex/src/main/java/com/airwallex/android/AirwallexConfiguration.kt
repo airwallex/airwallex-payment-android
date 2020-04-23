@@ -1,13 +1,10 @@
 package com.airwallex.android
 
-import android.content.Context
-
 data class AirwallexConfiguration internal constructor(
     val enableLogging: Boolean,
-    val baseUrl: String,
-    val applicationContext: Context
+    val baseUrl: String
 ) {
-    class Builder(private val applicationContext: Context) {
+    class Builder() {
 
         /**
          * You can set to true if you want to see more debug logs
@@ -30,8 +27,7 @@ data class AirwallexConfiguration internal constructor(
         fun build(): AirwallexConfiguration {
             return AirwallexConfiguration(
                 enableLogging = enableLogging,
-                baseUrl = baseUrl,
-                applicationContext = applicationContext
+                baseUrl = baseUrl
             )
         }
     }

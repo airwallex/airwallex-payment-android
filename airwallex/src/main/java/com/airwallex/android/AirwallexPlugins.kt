@@ -1,6 +1,5 @@
 package com.airwallex.android
 
-import android.content.Context
 import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -18,14 +17,6 @@ internal object AirwallexPlugins {
     internal fun initialize(configuration: AirwallexConfiguration) {
         this.configuration = configuration
     }
-
-    /**
-     * Application Context
-     */
-    internal val applicationContext: Context
-        get() {
-            return configuration.applicationContext
-        }
 
     /**
      * Enable logging in the Airwallex
