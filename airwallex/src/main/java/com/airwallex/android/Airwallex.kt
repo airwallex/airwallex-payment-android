@@ -117,6 +117,53 @@ class Airwallex internal constructor(
             })
     }
 
+    private fun buildWeChatPaymentIntentOptions(
+        params: ConfirmPaymentIntentParams
+    ): AirwallexApiRepository.PaymentIntentOptions {
+        return AirwallexApiRepository.PaymentIntentOptions(
+            clientSecret = params.clientSecret,
+            paymentIntentId = params.paymentIntentId,
+            paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethod(
+                    PaymentMethod.Builder()
+                        .setType(PaymentMethodType.WECHAT)
+                        .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
+                        .build()
+                )
+                .setCustomerId(params.customerId)
+                .setDevice(device)
+                .build()
+        )
+    }
+
+    private fun buildCardPaymentIntentOptions(
+        params: ConfirmPaymentIntentParams,
+        threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
+    ): AirwallexApiRepository.PaymentIntentOptions {
+        return AirwallexApiRepository.PaymentIntentOptions(
+            clientSecret = params.clientSecret,
+            paymentIntentId = params.paymentIntentId,
+            paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethodOptions(
+                    PaymentMethodOptions.Builder()
+                        .setCardOptions(
+                            PaymentMethodOptions.CardOptions.Builder()
+                                .setAutoCapture(true)
+                                .setThreeDSecure(threeDSecure).build()
+                        )
+                        .build()
+                )
+                .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
+                .setCustomerId(params.customerId)
+                .setDevice(device)
+                .build()
+        )
+    }
+
     /**
      * Prepare 3DS Flow
      */
@@ -126,7 +173,7 @@ class Airwallex internal constructor(
         jwt: String,
         listener: PaymentListener<PaymentIntent>
     ) {
-        ThreeDSecure.performVerification(
+        ThreeDSecure.performCardinalInitialize(
             activity.applicationContext,
             jwt
         ) { referenceId, validateResponse ->
@@ -191,51 +238,6 @@ class Airwallex internal constructor(
                 )
             }
         }
-    }
-
-    private fun buildWeChatPaymentIntentOptions(params: ConfirmPaymentIntentParams): AirwallexApiRepository.PaymentIntentOptions {
-        return AirwallexApiRepository.PaymentIntentOptions(
-            clientSecret = params.clientSecret,
-            paymentIntentId = params.paymentIntentId,
-            paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
-                requestId = UUID.randomUUID().toString()
-            )
-                .setPaymentMethod(
-                    PaymentMethod.Builder()
-                        .setType(PaymentMethodType.WECHAT)
-                        .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
-                        .build()
-                )
-                .setCustomerId(params.customerId)
-                .setDevice(device)
-                .build()
-        )
-    }
-
-    private fun buildCardPaymentIntentOptions(
-        params: ConfirmPaymentIntentParams,
-        threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
-    ): AirwallexApiRepository.PaymentIntentOptions {
-        return AirwallexApiRepository.PaymentIntentOptions(
-            clientSecret = params.clientSecret,
-            paymentIntentId = params.paymentIntentId,
-            paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
-                requestId = UUID.randomUUID().toString()
-            )
-                .setPaymentMethodOptions(
-                    PaymentMethodOptions.Builder()
-                        .setCardOptions(
-                            PaymentMethodOptions.CardOptions.Builder()
-                                .setAutoCapture(true)
-                                .setThreeDSecure(threeDSecure).build()
-                        )
-                        .build()
-                )
-                .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
-                .setCustomerId(params.customerId)
-                .setDevice(device)
-                .build()
-        )
     }
 
     /**
