@@ -43,9 +43,9 @@ We provide some parameters that can be used to debug the SDK, need to be initial
 Before confirming the `PaymentIntent`, you must create a `PaymentIntent` on the server side, then return `PaymentIntent` to the client.
 
 > Merchant's server
->1. To begin you will need to obtain an access token to allow you to reach all other API endpoints. Using your unique Client ID and API key (these can be generated within [Account settings > API keys](https://www.airwallex.com/app/settings/api)) you can call the Authentication API endpoint. On success, an access token will be granted.
+>1. To begin you will need to obtain an access token to allow you to reach all other API endpoints. Using your unique `Client ID` and `API key` (these can be generated within [Account settings > API keys](https://www.airwallex.com/app/settings/api)) you can call the Authentication API endpoint. On success, an access token will be granted.
 >
->2. Create customer(optional) allows you to save your customers' details, attach payment methods so you can quickly retrieve the supported payment methods as your customer checks out on your shopping site. [`/api/v1/pa/customers/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Customers/_api_v1_pa_customers_create/post)
+>2. (optional) Create customer allows you to save your customers' details, attach payment methods so you can quickly retrieve the supported payment methods as your customer checks out on your shopping site. [`/api/v1/pa/customers/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Customers/_api_v1_pa_customers_create/post)
 >
 >3. Finally, you need to create a `PaymentIntent` object on your own server via [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post) and pass it to your client
 
@@ -62,7 +62,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
     airwallex.confirmPaymentIntent(
         params = ConfirmPaymentIntentParams.Builder(
             paymentIntentId = paymentIntent.id, // the ID of the `PaymentIntent`, required.
-            clientSecret = paymentIntent.clientSecret // the clientSecret of `PaymentIntent`, required.
+            clientSecret = paymentIntent.clientSecret // the Client Secret of `PaymentIntent`, required.
         )   
             .setCustomerId(paymentIntent.customerId) // the customerId of `PaymentIntent`, optional.
             .build(),
@@ -103,8 +103,8 @@ After successful payment, the Airwallex server will notify the Merchant, then yo
 ```kotlin
     airwallex.retrievePaymentIntent(
         params = RetrievePaymentIntentParams(
-            paymentIntentId = paymentIntentId, // the ID of the `PaymentIntent`, required.
-            clientSecret = clientSecret // the clientSecret of `PaymentIntent`, required.
+            paymentIntentId = paymentIntent.id, // the ID of the `PaymentIntent`, required.
+            clientSecret = paymentIntent.clientSecret // the Client Secret of `PaymentIntent`, required.
         ),
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
@@ -130,13 +130,14 @@ We provide low-level APIs that correspond to objects and methods in the Airwalle
 ## Examples
 To run the example project, you should follow these steps.
 
-* **Step 1:** Clone the repository to your local machine
+* **Step 1:** Run the following script to clone the repository to your local machine
+`git clone git@github.com:airwallex/airwallex-payment-android.git`
 
 * **Step 2:** Open Android Studio and import the project by selecting the `build.gradle` file from the cloned repository
 
-* **Step 3:** Goto [Account settings > API keys](https://www.airwallex.com/app/settings/api) to get `Client ID` and `API key`, then fill in the `strings.xml`
+* **Step 3:** Goto [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and` API key` to [`strings.xml`](https://github.com/airwallex/airwallex-payment-android/blob/master/example/src/main/res/values/strings.xml)
 
-* **Step 4:** Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then fill `App ID` and `App Signature` in the `strings.xml`
+* **Step 4:** Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then copy `App ID` and `App Signature` to [`strings.xml`](https://github.com/airwallex/airwallex-payment-android/blob/master/example/src/main/res/values/strings.xml)
             
 * **Step 5:** Run the `sample` module
 
