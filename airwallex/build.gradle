@@ -1,36 +1,61 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+apply from: "./ktlint.gradle"
+apply from: "./dokka.gradle"
 
+def VERSION_CODE = 1
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.compileSdkVersion
+
+        versionCode VERSION_CODE.toInteger()
+        versionName "1.0.0"
+
+        consumerProguardFiles 'proguard-rules.pro'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles 'consumer-rules.pro'
+        testInstrumentationRunnerArguments clearPackageData: 'true'
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
+    testOptions.unitTests.includeAndroidResources = true
+}
 
+configurations {
+    javadocDeps
+}
+
+ext {
+    okhttpVersion = "4.2.0"
+    gsonVersion = '2.8.6'
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.0.2'
+
+    api "com.squareup.okhttp3:okhttp:$okhttpVersion"
+    api "com.google.code.gson:gson:${gsonVersion}"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
+
+    javadocDeps 'androidx.annotation:annotation:1.1.0'
+    javadocDeps 'androidx.appcompat:appcompat:1.1.0'
+
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:4.3.1'
+    testImplementation 'androidx.test:core:1.2.0'
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
+
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+
+apply from: rootProject.file('publish.gradle')

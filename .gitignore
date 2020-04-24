@@ -13,6 +13,7 @@
 # Generated files
 bin/
 gen/
+lint/
 
 # Local configuration file (sdk path, etc)
 local.properties

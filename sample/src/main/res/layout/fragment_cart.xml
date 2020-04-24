@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="32dp"
+    android:paddingBottom="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/tvOrderSum"
+                android:fontFamily="@font/circularstd_bold"
+                android:text="@string/my_cart"
+                android:textColor="@color/airwallex_color_dark_deep"
+                android:textSize="32sp" />
+
+            <TextView
+                android:id="@+id/tvOrderSum"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/ic_cart_count_bg"
+                android:fontFamily="@font/circularstd_bold"
+                android:gravity="center"
+                android:textColor="@color/airwallex_color_primary_default"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/llProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvSubtotalLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/circularstd_medium"
+                    android:text="@string/subtotal"
+                    android:textColor="@color/airwallex_color_item_label"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvOrderSubtotalPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/tvSubtotalLabel"
+                    android:fontFamily="@font/circularstd_medium"
+                    android:gravity="end"
+                    android:textColor="@color/airwallex_color_dark_deep"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true">
+
+                <TextView
+                    android:id="@+id/tvShippingLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/circularstd_medium"
+                    android:text="@string/shipping"
+                    android:textColor="@color/airwallex_color_item_label"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvShipping"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/tvShippingLabel"
+                    android:fontFamily="@font/circularstd_medium"
+                    android:gravity="end"
+                    android:textColor="@color/airwallex_color_dark_deep"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="58dp"
+            android:background="@android:color/white"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:id="@+id/tvTotalLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/circularstd_medium"
+                android:text="@string/total"
+                android:textColor="@color/airwallex_color_dark_deep"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvOrderTotalPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/tvTotalLabel"
+                android:fontFamily="@font/circularstd_medium"
+                android:gravity="end"
+                android:textColor="@color/airwallex_color_dark_deep"
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>
