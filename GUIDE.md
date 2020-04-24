@@ -8,7 +8,6 @@ Get started with our integration guide and example project.
 ## Contents
 * [Requirements](#Requirements)
 * [Integration](#Integration)
-* [Features](#Features)
 * [Examples](#Examples)
 * [Contributing](#Contributing)
 
@@ -69,7 +68,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
                 val weChat = response.weChat
-                // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay).
+                // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml).
             }
                 
             override fun onFailed(exception: AirwallexException) {
@@ -78,11 +77,10 @@ After completing all the steps on the server, the client will get a `PaymentInte
         }
      )
 ```
-3. After successfully confirming the `PaymentIntent`, Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay) to complete the final payment.
+3. After successfully confirming the `PaymentIntent`, Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml) to complete the final payment.
 Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/tree/master) for more details.
 ```kotlin
     val weChat = response.weChat
-    // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay).
 
     val weChatReq = PayReq()
     weChatReq.appId = weChat.appId
@@ -118,14 +116,6 @@ After successful payment, the Airwallex server will notify the Merchant, then yo
             }
         })
 ```
-
-## Features
-
-### WeChat Pay
-We provide a seamless integration with WeChat Pay.
-
-### Airwallex API
-We provide low-level APIs that correspond to objects and methods in the Airwallex API. You can build your own entirely custom UI on top of this layer.
 
 ## Examples
 To run the example project, you should follow these steps.
