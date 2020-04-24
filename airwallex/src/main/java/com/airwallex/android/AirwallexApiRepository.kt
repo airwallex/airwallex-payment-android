@@ -31,7 +31,7 @@ internal class AirwallexApiRepository : ApiRepository {
         val request = AirwallexHttpRequest.Builder(
             confirmPaymentIntentUrl(
                 AirwallexPlugins.baseUrl,
-                requireNotNull(options.paymentIntentId)
+                options.paymentIntentId
             ),
             AirwallexHttpRequest.Method.POST
         )

@@ -203,7 +203,7 @@ class PaymentCartActivity : AppCompatActivity() {
                     if (prepayId?.startsWith("http") == true) {
                         // **This is just for test on Staging env**
                         Log.d(TAG, "Confirm PaymentIntent success, MOCK WeChat Pay on staging env.")
-                        // mock wechat pay
+                        // Mock WeChat Pay
                         val client = OkHttpClient()
                         val builder = Request.Builder()
                         builder.url(prepayId)
@@ -229,7 +229,7 @@ class PaymentCartActivity : AppCompatActivity() {
                         })
                     } else {
                         Log.d(TAG, "Confirm PaymentIntent success, launch REAL WeChat Pay.")
-                        // launch wechat pay
+                        // Launch WeChat Pay
                         WXPay.instance.launchWeChat(
                             context = this@PaymentCartActivity,
                             appId = Settings.wechatAppId,

@@ -57,10 +57,10 @@ android {
 
 dependencies {
     implementation project(':airwallex')
-//    implementation 'com.airwallex:airwallex-core:0.0.6'
+//    implementation 'com.airwallex:airwallex-core:1.0.0'
 
     implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.preference:preference:1.1.0'
+    implementation 'androidx.preference:preference:1.1.1'
     // RX
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.17'
