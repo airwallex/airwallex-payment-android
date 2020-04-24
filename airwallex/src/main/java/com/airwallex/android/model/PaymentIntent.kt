@@ -104,7 +104,7 @@ data class PaymentIntent internal constructor(
      * Client secret for browser or app
      */
     @SerializedName("client_secret")
-    val clientSecret: String?,
+    val clientSecret: String,
 
     /**
      * Next action for the payment intent
