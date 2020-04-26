@@ -15,9 +15,4 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar" />
 
-    <include
-        android:id="@+id/loadingView"
-        layout="@layout/airwallex_loading"
-        android:visibility="gone" />
-
 </RelativeLayout>

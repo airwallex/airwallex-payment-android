@@ -2,6 +2,7 @@ package com.airwallex.paymentacceptance
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +10,6 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
 import com.airwallex.android.AirwallexStarter
@@ -30,6 +30,8 @@ import java.util.*
 class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
+
+    private var dialog: Dialog? = null
 
     val airwallexStarter by lazy {
         AirwallexStarter(this@PaymentCartActivity)
@@ -176,7 +178,7 @@ class PaymentCartActivity : AppCompatActivity() {
     }
 
     /**
-     * PaymentIntent must come from merchant's server, only wechat pay is currently supported
+     * PaymentIntent must come from merchant's server
      */
     private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
         airwallexStarter.presentPaymentFlow(
@@ -200,7 +202,7 @@ class PaymentCartActivity : AppCompatActivity() {
                                     TAG,
                                     "Confirm PaymentIntent success, MOCK WeChat Pay on staging env."
                                 )
-                                // mock wechat pay
+                                // MOCK WeChat Pay
                                 val client = OkHttpClient()
                                 val builder = Request.Builder()
                                 builder.url(prepayId)
@@ -226,7 +228,7 @@ class PaymentCartActivity : AppCompatActivity() {
                                 })
                             } else {
                                 Log.d(TAG, "Confirm PaymentIntent success, launch REAL WeChat Pay.")
-                                // launch wechat pay
+                                // Launch WeChat Pay
                                 WXPay.instance.launchWeChat(
                                     context = this@PaymentCartActivity,
                                     appId = Settings.wechatAppId,
@@ -306,10 +308,10 @@ class PaymentCartActivity : AppCompatActivity() {
     }
 
     private fun setLoadingProgress(loading: Boolean) {
-        loadingView.visibility = if (loading) {
-            View.VISIBLE
+        if (loading) {
+            startWait(this)
         } else {
-            View.GONE
+            endWait()
         }
     }
 
@@ -357,6 +359,30 @@ class PaymentCartActivity : AppCompatActivity() {
                 .create()
                 .show()
         }
+    }
+
+    private fun startWait(activity: Activity) {
+        if (dialog?.isShowing == true) {
+            return
+        }
+        if (!activity.isFinishing) {
+            try {
+                dialog = Dialog(activity).apply {
+                    setContentView(R.layout.airwallex_loading)
+                    setCancelable(false)
+                    show()
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "Failed to show loading dialog", e)
+            }
+        } else {
+            dialog = null
+        }
+    }
+
+    private fun endWait() {
+        dialog?.dismiss()
+        dialog = null
     }
 
     companion object {

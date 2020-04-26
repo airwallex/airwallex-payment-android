@@ -21,7 +21,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
 
     private companion object {
         private const val INVALID_INPUT = -1
-        private const val MAX_INPUT_LENGTH = 5
+        private const val VALID_INPUT_LENGTH = 7
     }
 
     internal var errorCallback: (showError: Boolean) -> Unit = {}
@@ -29,7 +29,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
     init {
         setHint(R.string.expires_hint)
         maxLines = 1
-        filters = arrayOf(InputFilter.LengthFilter(MAX_INPUT_LENGTH))
+        filters = arrayOf(InputFilter.LengthFilter(VALID_INPUT_LENGTH))
 
         inputType = InputType.TYPE_CLASS_DATETIME
 
@@ -44,12 +44,12 @@ internal class CardExpiryEditText @JvmOverloads constructor(
         get() {
             val rawInput = text?.toString().takeIf { isDateValid } ?: return null
             val rawNumericInput = rawInput.replace("/".toRegex(), "")
-            val dateFields = ExpiryDateUtils.separateDateParts(rawNumericInput)
+            val dateFields = ExpiryDateUtils.separateDateInput(rawNumericInput)
 
             return try {
                 Pair(
                     dateFields[0].toInt(),
-                    ExpiryDateUtils.convertTwoDigitYearToFour(dateFields[1].toInt())
+                    dateFields[1].toInt()
                 )
             } catch (numEx: NumberFormatException) {
                 null
@@ -72,7 +72,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                     return parts[0]
                 }
 
-            // two-digit year
+            // four-digit year
             val year: String
                 get() {
                     return parts[1]
@@ -101,10 +101,6 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                 ) {
                     val first = rawNumericInput[0]
                     if (!(first == '0' || first == '1')) {
-                        // If the first digit typed isn't 0 or 1, then it can't be a valid
-                        // two-digit month. Hence, we assume the user is inputting a one-digit
-                        // month. We bump it to the preferred input, so "4" becomes "04", which
-                        // later in this method goes to "04/".
                         rawNumericInput = "0$rawNumericInput"
                         latestInsertionSize++
                     }
@@ -112,15 +108,10 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                     latestChangeStart == 2 &&
                     latestInsertionSize == 0
                 ) {
-                    // This allows us to delete past the separator, so that if a user presses
-                    // delete when the current string is "12/", the resulting string is "1," since
-                    // we pretend that the "/" isn't really there. The case that we also want,
-                    // where "12/3" + DEL => "12" is handled elsewhere.
                     rawNumericInput = rawNumericInput.substring(0, 1)
                 }
 
-                // Date input is MM/YY, so the separated parts will be {MM, YY}
-                parts = ExpiryDateUtils.separateDateParts(rawNumericInput)
+                parts = ExpiryDateUtils.separateDateInput(rawNumericInput)
 
                 if (!ExpiryDateUtils.isValidMonth(month)) {
                     inErrorState = true
@@ -140,7 +131,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                 val formattedDate = formattedDateBuilder.toString()
                 this.newCursorPosition = updateSelectionIndex(
                     formattedDate.length,
-                    latestChangeStart, latestInsertionSize, MAX_INPUT_LENGTH
+                    latestChangeStart, latestInsertionSize
                 )
                 this.formattedDate = formattedDate
             }
@@ -149,7 +140,6 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                 if (ignoreChanges) {
                     return
                 }
-
                 ignoreChanges = true
                 if (formattedDate != null) {
                     setText(formattedDate)
@@ -157,26 +147,11 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                         setSelection(it)
                     }
                 }
-
                 ignoreChanges = false
-
-                // Note: we want to show an error state if the month is invalid or the
-                // final, complete date is in the past. We don't want to show an error state for
-                // incomplete entries.
-
-                // This covers the case where the user has entered a month of 15, for instance.
-                var shouldShowError = month.length == 2 &&
-                        !ExpiryDateUtils.isValidMonth(month)
-
-                // Note that we have to check the parts array because afterTextChanged has odd
-                // behavior when it comes to pasting, where a paste of "1212" triggers this
-                // function for the strings "12/12" (what it actually becomes) and "1212",
-                // so we might not be properly catching an error state.
-                if (month.length == 2 && year.length == 2) {
+                var shouldShowError = month.length == 2 && !ExpiryDateUtils.isValidMonth(month)
+                if (month.length == 2 && year.length == 4) {
                     val wasComplete = isDateValid
-                    updateInputValues(month, year)
-                    // Here, we have a complete date, so if we've made an invalid one, we want
-                    // to show an error.
+                    checkDateValid(month, year)
                     shouldShowError = !isDateValid
                     if (!wasComplete && isDateValid) {
                         completionCallback()
@@ -196,8 +171,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
     private fun updateSelectionIndex(
         newLength: Int,
         editActionStart: Int,
-        editActionAddition: Int,
-        maxInputLength: Int
+        editActionAddition: Int
     ): Int {
         val gapsJumped =
             if (editActionStart <= 2 && editActionStart + editActionAddition >= 2) {
@@ -205,20 +179,17 @@ internal class CardExpiryEditText @JvmOverloads constructor(
             } else {
                 0
             }
-
-        // editActionAddition can only be 0 if we are deleting,
-        // so we need to check whether or not to skip backwards one space
         val skipBack = editActionAddition == 0 && editActionStart == 3
 
         var newPosition: Int = editActionStart + editActionAddition + gapsJumped
         if (skipBack && newPosition > 0) {
             newPosition--
         }
-        val untruncatedPosition = if (newPosition <= newLength) newPosition else newLength
-        return min(maxInputLength, untruncatedPosition)
+        val unTruncatedPosition = if (newPosition <= newLength) newPosition else newLength
+        return min(VALID_INPUT_LENGTH, unTruncatedPosition)
     }
 
-    private fun updateInputValues(month: String, year: String) {
+    private fun checkDateValid(month: String, year: String) {
         val inputMonth: Int = if (month.length != 2) {
             INVALID_INPUT
         } else {
@@ -229,11 +200,11 @@ internal class CardExpiryEditText @JvmOverloads constructor(
             }
         }
 
-        val inputYear: Int = if (year.length != 2) {
+        val inputYear: Int = if (year.length != 4) {
             INVALID_INPUT
         } else {
             try {
-                ExpiryDateUtils.convertTwoDigitYearToFour(year.toInt())
+                year.toInt()
             } catch (numEx: NumberFormatException) {
                 INVALID_INPUT
             }
