@@ -23,7 +23,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         paymentMethod: PaymentMethod,
         callback: Airwallex.PaymentListener<PaymentIntent>
     ) {
-        setLoadingProgress(true)
+        setLoadingProgress(loading = true, cancelable = false)
 
         val params = when (paymentMethod.type) {
             PaymentMethodType.WECHAT -> {

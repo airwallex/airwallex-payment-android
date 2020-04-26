@@ -54,14 +54,15 @@ internal class AirwallexApiRepository : ApiRepository {
      * @return a [AirwallexHttpResponse] from Airwallex server
      */
     override fun confirmPaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val paramsJson =
-            JsonParser.parseString(AirwallexPlugins.gson.toJson(requireNotNull((options as PaymentIntentOptions).paymentIntentConfirmRequest)))
+        // Retrofit still uses the gson version of 2.8.5
+        @Suppress("DEPRECATION") val paramsJson =
+            JsonParser().parse(AirwallexPlugins.gson.toJson(requireNotNull((options as PaymentIntentOptions).paymentIntentConfirmRequest)))
                 .asJsonObject
 
         val request = AirwallexHttpRequest.Builder(
             confirmPaymentIntentUrl(
                 AirwallexPlugins.baseUrl,
-                requireNotNull(options.paymentIntentId)
+                options.paymentIntentId
             ),
             AirwallexHttpRequest.Method.POST
         )

@@ -3,16 +3,14 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
-import java.util.*
-import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
+import java.util.*
 
 /**
  * Activity to confirm payment intent
@@ -63,12 +61,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override val layoutResource: Int
         get() = R.layout.activity_payment_checkout
-
-    override fun onBackPressed() {
-        if (loadingView.visibility == View.GONE) {
-            super.onBackPressed()
-        }
-    }
 
     private fun startConfirmPaymentIntent() {
         confirmPaymentIntent(paymentMethod = paymentMethod,
