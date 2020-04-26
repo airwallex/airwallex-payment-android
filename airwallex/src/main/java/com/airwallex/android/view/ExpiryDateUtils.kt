@@ -1,6 +1,5 @@
 package com.airwallex.android.view
 
-import androidx.annotation.IntRange
 import androidx.annotation.Size
 import java.util.*
 
@@ -16,7 +15,7 @@ internal object ExpiryDateUtils {
         }
     }
 
-    internal fun separateDateParts(@Size(max = 4) expiryInput: String): Array<String> {
+    internal fun separateDateInput(@Size(max = 6) expiryInput: String): Array<String> {
         return if (expiryInput.length >= 2) {
             listOf(
                 expiryInput.substring(0, 2),
@@ -49,25 +48,5 @@ internal object ExpiryDateUtils {
                 expiryMonth >= readableMonth
             }
         }
-    }
-
-    @IntRange(from = 1000, to = 9999)
-    internal fun convertTwoDigitYearToFour(@IntRange(from = 0, to = 99) inputYear: Int): Int {
-        return convertTwoDigitYearToFour(inputYear, Calendar.getInstance())
-    }
-
-    @IntRange(from = 1000, to = 9999)
-    internal fun convertTwoDigitYearToFour(
-        @IntRange(from = 0, to = 99) inputYear: Int,
-        calendar: Calendar
-    ): Int {
-        val year = calendar.get(Calendar.YEAR)
-        var centuryBase = year / 100
-        if (year % 100 > 80 && inputYear < 20) {
-            centuryBase++
-        } else if (year % 100 < 20 && inputYear > 80) {
-            centuryBase--
-        }
-        return centuryBase * 100 + inputYear
     }
 }
