@@ -2,6 +2,7 @@ package com.airwallex.paymentacceptance
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +10,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
 import com.airwallex.android.AirwallexStarter
@@ -30,6 +31,8 @@ import java.util.*
 class PaymentCartActivity : AppCompatActivity() {
 
     private val compositeSubscription = CompositeDisposable()
+
+    private var dialog: Dialog? = null
 
     val airwallexStarter by lazy {
         AirwallexStarter(this@PaymentCartActivity)
@@ -306,10 +309,10 @@ class PaymentCartActivity : AppCompatActivity() {
     }
 
     private fun setLoadingProgress(loading: Boolean) {
-        loadingView.visibility = if (loading) {
-            View.VISIBLE
+        if (loading) {
+            startWait(this)
         } else {
-            View.GONE
+            endWait()
         }
     }
 
@@ -357,6 +360,29 @@ class PaymentCartActivity : AppCompatActivity() {
                 .create()
                 .show()
         }
+    }
+
+    private fun startWait(activity: Activity) {
+        if (dialog?.isShowing == true) {
+            return
+        }
+        if (!activity.isFinishing) {
+            try {
+                dialog = Dialog(activity)
+                dialog?.setContentView(ProgressBar(this))
+                dialog?.setCancelable(false)
+                dialog?.show()
+            } catch (e: Exception) {
+                Log.d(TAG, "Failed to show loading dialog", e)
+            }
+        } else {
+            dialog = null
+        }
+    }
+
+    private fun endWait() {
+        dialog?.dismiss()
+        dialog = null
     }
 
     companion object {
