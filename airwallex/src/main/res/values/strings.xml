@@ -6,7 +6,7 @@
     <string name="empty_card_number">Please enter your card number</string>
     <string name="invalid_card_number">Please enter a valid credit card number</string>
     <string name="empty_card_name">Please enter your card name</string>
-    <string name="expires_hint">Expires MM / YY</string>
+    <string name="expires_hint">Expires MM / YYYY</string>
     <string name="empty_expiry">Please enter your card expiry date</string>
     <string name="invalid_expiry_date">Please enter a valid expiry date</string>
     <string name="cvc_hint">CVC / CVV</string>
