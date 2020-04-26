@@ -94,10 +94,11 @@ internal abstract class AirwallexActivity : AppCompatActivity() {
         }
         if (!activity.isFinishing) {
             try {
-                loadingDialog = Dialog(activity)
-                loadingDialog?.setContentView(R.layout.airwallex_loading)
-                loadingDialog?.setCancelable(cancelable)
-                loadingDialog?.show()
+                loadingDialog = Dialog(activity).apply {
+                    setContentView(R.layout.airwallex_loading)
+                    setCancelable(cancelable)
+                    show()
+                }
             } catch (e: Exception) {
                 Logger.debug("Failed to show loading dialog", e)
             }

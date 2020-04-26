@@ -10,7 +10,6 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex
 import com.airwallex.android.AirwallexStarter
@@ -368,10 +367,11 @@ class PaymentCartActivity : AppCompatActivity() {
         }
         if (!activity.isFinishing) {
             try {
-                dialog = Dialog(activity)
-                dialog?.setContentView(ProgressBar(this))
-                dialog?.setCancelable(false)
-                dialog?.show()
+                dialog = Dialog(activity).apply {
+                    setContentView(R.layout.airwallex_loading)
+                    setCancelable(false)
+                    show()
+                }
             } catch (e: Exception) {
                 Log.d(TAG, "Failed to show loading dialog", e)
             }
