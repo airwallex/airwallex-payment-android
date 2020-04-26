@@ -1,9 +1,9 @@
 package com.airwallex.android.view
 
 import android.app.Activity
+import android.app.Dialog
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +12,13 @@ import com.airwallex.android.R
 import kotlinx.android.synthetic.main.activity_airwallex.*
 
 internal abstract class AirwallexActivity : AppCompatActivity() {
+
+    val loading: Boolean
+        get() {
+            return loadingDialog?.isShowing == true
+        }
+
+    private var loadingDialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,11 +80,34 @@ internal abstract class AirwallexActivity : AppCompatActivity() {
         }
     }
 
-    protected open fun setLoadingProgress(loading: Boolean) {
-        loadingView.visibility = if (loading) {
-            View.VISIBLE
+    protected open fun setLoadingProgress(loading: Boolean, cancelable: Boolean = true) {
+        if (loading) {
+            startWait(this, cancelable)
         } else {
-            View.GONE
+            endWait()
         }
+    }
+
+    private fun startWait(activity: Activity, cancelable: Boolean) {
+        if (loadingDialog?.isShowing == true) {
+            return
+        }
+        if (!activity.isFinishing) {
+            try {
+                loadingDialog = Dialog(activity)
+                loadingDialog?.setContentView(R.layout.airwallex_loading)
+                loadingDialog?.setCancelable(cancelable)
+                loadingDialog?.show()
+            } catch (e: Exception) {
+                Logger.debug("Failed to show loading dialog", e)
+            }
+        } else {
+            loadingDialog = null
+        }
+    }
+
+    private fun endWait() {
+        loadingDialog?.dismiss()
+        loadingDialog = null
     }
 }
