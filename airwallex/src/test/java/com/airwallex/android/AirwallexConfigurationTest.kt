@@ -16,7 +16,7 @@ class AirwallexConfigurationTest {
         val baseUrl = "https://staging-pci-api.airwallex.com"
 
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val configuration = AirwallexConfiguration.Builder(context)
+        val configuration = AirwallexConfiguration.Builder()
             .enableLogging(enableLogging)
             .setBaseUrl(baseUrl)
             .build()
