@@ -113,8 +113,17 @@ internal object ThreeDSecure {
                 val validateResponse =
                     data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
 
-                Logger.debug("3DS 2 response code: ${validateResponse.actionCode}")
-                when (validateResponse.actionCode!!) {
+                val actionCode = validateResponse.actionCode
+                Logger.debug("3DS 2 response code: $actionCode")
+
+                if (actionCode == null) {
+                    completion.invoke(
+                        validateResponse,
+                        ThreeDSException(AirwallexError(message = "No 3DS 2 response code from Cardinal"))
+                    )
+                    return
+                }
+                when (actionCode) {
                     CardinalActionCode.FAILURE, CardinalActionCode.SUCCESS, CardinalActionCode.NOACTION -> {
                         completion.invoke(validateResponse, null)
                     }

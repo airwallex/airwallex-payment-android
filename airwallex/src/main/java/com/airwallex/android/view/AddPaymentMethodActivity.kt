@@ -44,7 +44,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
             ),
             object : Airwallex.PaymentListener<PaymentMethod> {
                 override fun onSuccess(response: PaymentMethod) {
-                    finishWithPaymentMethod(response, card.cvc!!)
+                    finishWithPaymentMethod(response, requireNotNull(card.cvc))
                 }
 
                 override fun onFailed(exception: AirwallexException) {

@@ -25,9 +25,9 @@ class PaymentMethodsDividerItemDecoration(val context: Context, resId: Int) : It
             val params =
                 child.layoutParams as RecyclerView.LayoutParams
             val top: Int = child.bottom + params.bottomMargin
-            val bottom = top + divider!!.intrinsicHeight
-            divider!!.setBounds(left.toInt(), top, right.toInt(), bottom)
-            divider!!.draw(c)
+            val bottom = top + (divider?.intrinsicHeight ?: 0)
+            divider?.setBounds(left.toInt(), top, right.toInt(), bottom)
+            divider?.draw(c)
         }
     }
 }
