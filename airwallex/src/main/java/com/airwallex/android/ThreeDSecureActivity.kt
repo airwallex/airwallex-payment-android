@@ -18,13 +18,9 @@ class ThreeDSecureActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var extras = intent.extras
-
-        if (extras == null) {
-            extras = Bundle()
-        }
+        val extras = intent.extras
         val threeDSecureLookup: ThreeDSecureLookup =
-            extras.getParcelable(EXTRA_THREE_D_SECURE_LOOKUP)!!
+            requireNotNull(extras?.getParcelable(EXTRA_THREE_D_SECURE_LOOKUP))
 
         if (threeDSecureLookup.dsData.version?.startsWith("1.") == true) {
             if (threeDSecureLookup.payload == null || threeDSecureLookup.acsUrl == null) {

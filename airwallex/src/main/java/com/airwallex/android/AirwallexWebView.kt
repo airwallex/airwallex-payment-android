@@ -17,7 +17,6 @@ internal class AirwallexWebView @SuppressLint("SetJavaScriptEnabled") constructo
         settings.domStorageEnabled = true
         settings.setSupportMultipleWindows(true)
         settings.cacheMode = WebSettings.LOAD_NO_CACHE
-        settings.setSupportMultipleWindows(true)
-        settings.defaultTextEncodingName = "utf-8"
+        settings.defaultTextEncodingName = "UTF-8"
     }
 }
