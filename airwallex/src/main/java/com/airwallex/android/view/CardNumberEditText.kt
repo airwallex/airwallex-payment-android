@@ -21,6 +21,7 @@ internal class CardNumberEditText @JvmOverloads constructor(
     internal companion object {
         private const val MAX_CARD_LENGTH = 19
 
+        // Space index
         private val SPACE_CARD_SET = setOf(4, 9, 14)
 
         /**
@@ -63,6 +64,9 @@ internal class CardNumberEditText @JvmOverloads constructor(
      */
     internal var isCardNumberValid: Boolean = false
 
+    /**
+     * We should ignore TextChanged event when setText, avoid duplicate
+     */
     private var ignoreTextChanges = false
 
     init {

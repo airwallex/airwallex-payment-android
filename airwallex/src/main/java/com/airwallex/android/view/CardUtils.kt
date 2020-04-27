@@ -50,23 +50,19 @@ internal object CardUtils {
         return sum % 10 == 0
     }
 
-    internal fun isValidCardLength(cardNumber: String?): Boolean {
-        return cardNumber != null && isValidCardLength(
-            cardNumber,
-            getPossibleCardBrand(cardNumber, false)
-        )
-    }
-
     /**
      * Check if card length is valid
      */
-    private fun isValidCardLength(
-        cardNumber: String?,
-        cardBrand: CardBrand?
-    ): Boolean {
-        if (cardNumber == null || cardBrand == null) {
+    internal fun isValidCardLength(cardNumber: String?): Boolean {
+        if (cardNumber == null) {
             return false
         }
+
+        val possibleCardBrand = getPossibleCardBrand(cardNumber, false)
+        if (possibleCardBrand == CardBrand.Unknown) {
+            return false
+        }
+
         return cardNumber.length == VALID_CARD_LENGTH
     }
 
