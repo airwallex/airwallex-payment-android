@@ -41,13 +41,13 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private val shouldShowWeChatPay: Boolean by lazy {
         paymentIntent.availablePaymentMethodTypes.contains(
-            PaymentMethodType.WECHAT.value
+            PaymentMethodType.WECHAT
         )
     }
 
     private val shouldShowCard: Boolean by lazy {
         paymentIntent.availablePaymentMethodTypes.contains(
-            PaymentMethodType.CARD.value
+            PaymentMethodType.CARD
         )
     }
 

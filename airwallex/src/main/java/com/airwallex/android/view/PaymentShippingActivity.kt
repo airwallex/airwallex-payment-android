@@ -49,7 +49,7 @@ internal class PaymentShippingActivity : AirwallexActivity() {
         get() = R.layout.activity_add_shipping
 
     override fun onActionSave() {
-        val contact = contactWidget.contact
+        val contact = contactWidget.shippingContact
         val shipping = Shipping.Builder()
             .setLastName(contact.lastName)
             .setFirstName(contact.firstName)
