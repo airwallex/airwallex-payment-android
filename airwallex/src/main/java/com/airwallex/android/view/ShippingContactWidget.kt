@@ -13,12 +13,6 @@ import kotlinx.android.synthetic.main.widget_contact.view.*
  */
 internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    internal data class ShippingContact(
-        val lastName: String,
-        val firstName: String,
-        val phone: String
-    )
-
     /**
      * The listener of when the shipping contact changed
      */
@@ -34,15 +28,11 @@ internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : Li
         }
 
     /**
-     * Return [ShippingContact] based on user input.
+     * Return shipping contact info based on user input.
      */
-    internal val shippingContact: ShippingContact
+    internal val shippingContact: Triple<String, String, String>
         get() {
-            return ShippingContact(
-                lastName = atlLastName.value,
-                firstName = atlFirstName.value,
-                phone = atlPhoneNumber.value
-            )
+            return Triple(atlLastName.value, atlFirstName.value, atlPhoneNumber.value)
         }
 
     init {

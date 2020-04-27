@@ -145,8 +145,9 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private fun startPaymentCheckout(paymentMethod: PaymentMethod, cvc: String? = null) {
         if (args.includeCheckoutFlow) {
+            // Confirm `PaymentIntent` with our own UI
             if (paymentMethod.type == PaymentMethodType.WECHAT) {
-                // Confirm API is directly called by Wechat
+                // Confirm API is directly called by WeChat
                 confirmPaymentIntent(
                     paymentMethod = paymentMethod,
                     callback = object : Airwallex.PaymentListener<PaymentIntent> {
@@ -162,7 +163,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     }
                 )
             } else {
-                // Start [PaymentCheckoutActivity] to start confirm PaymentIntent
+                // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
                 PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
                     .startForResult(
                         PaymentCheckoutActivityLaunch.Args.Builder()
@@ -173,6 +174,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     )
             }
         } else {
+            // Return the `PaymentMethod` & 'cvc' to merchant
             finishWithPaymentMethod(
                 paymentMethod = paymentMethod,
                 cvc = cvc

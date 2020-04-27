@@ -51,9 +51,9 @@ internal class PaymentShippingActivity : AirwallexActivity() {
     override fun onActionSave() {
         val contact = contactWidget.shippingContact
         val shipping = Shipping.Builder()
-            .setLastName(contact.lastName)
-            .setFirstName(contact.firstName)
-            .setPhone(contact.phone)
+            .setLastName(contact.first)
+            .setFirstName(contact.second)
+            .setPhone(contact.third)
             .setAddress(shippingWidget.address)
             .build()
         setResult(
