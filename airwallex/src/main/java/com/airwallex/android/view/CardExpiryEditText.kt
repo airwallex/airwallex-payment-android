@@ -26,16 +26,6 @@ internal class CardExpiryEditText @JvmOverloads constructor(
 
     internal var errorCallback: (showError: Boolean) -> Unit = {}
 
-    init {
-        setHint(R.string.expires_hint)
-        maxLines = 1
-        filters = arrayOf(InputFilter.LengthFilter(VALID_INPUT_LENGTH))
-
-        inputType = InputType.TYPE_CLASS_DATETIME
-
-        listenForTextChanges()
-    }
-
     internal var completionCallback: () -> Unit = {}
 
     internal var isDateValid: Boolean = false
@@ -56,12 +46,22 @@ internal class CardExpiryEditText @JvmOverloads constructor(
             }
         }
 
+    init {
+        setHint(R.string.expires_hint)
+        maxLines = 1
+        filters = arrayOf(InputFilter.LengthFilter(VALID_INPUT_LENGTH))
+
+        inputType = InputType.TYPE_CLASS_DATETIME
+
+        listenForTextChanges()
+    }
+
     private fun listenForTextChanges() {
         addTextChangedListener(object : TextWatcher {
             private var ignoreChanges = false
             private var latestChangeStart: Int = 0
             private var latestInsertionSize: Int = 0
-            private var parts: Array<String> = arrayOf("", "")
+            private var dateParts: Array<String> = arrayOf("", "")
 
             private var newCursorPosition: Int? = null
             private var formattedDate: String? = null
@@ -69,13 +69,13 @@ internal class CardExpiryEditText @JvmOverloads constructor(
             // two-digit month
             val month: String
                 get() {
-                    return parts[0]
+                    return dateParts[0]
                 }
 
             // four-digit year
             val year: String
                 get() {
-                    return parts[1]
+                    return dateParts[1]
                 }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -92,37 +92,26 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                 }
 
                 var inErrorState = false
+                var rawDateInput = s?.toString().orEmpty().replace("/".toRegex(), "")
 
-                val inputText = s?.toString().orEmpty()
-                var rawNumericInput = inputText.replace("/".toRegex(), "")
-
-                if (rawNumericInput.length == 1 && latestChangeStart == 0 &&
-                    latestInsertionSize == 1
-                ) {
-                    val first = rawNumericInput[0]
+                if (rawDateInput.length == 1 && latestChangeStart == 0 && latestInsertionSize == 1) {
+                    val first = rawDateInput[0]
                     if (!(first == '0' || first == '1')) {
-                        rawNumericInput = "0$rawNumericInput"
+                        rawDateInput = "0$rawDateInput"
                         latestInsertionSize++
                     }
-                } else if (rawNumericInput.length == 2 &&
-                    latestChangeStart == 2 &&
-                    latestInsertionSize == 0
-                ) {
-                    rawNumericInput = rawNumericInput.substring(0, 1)
+                } else if (rawDateInput.length == 2 && latestChangeStart == 2 && latestInsertionSize == 0) {
+                    rawDateInput = rawDateInput.substring(0, 1)
                 }
 
-                parts = ExpiryDateUtils.separateDateInput(rawNumericInput)
+                dateParts = ExpiryDateUtils.separateDateInput(rawDateInput)
 
                 if (!ExpiryDateUtils.isValidMonth(month)) {
                     inErrorState = true
                 }
 
-                val formattedDateBuilder = StringBuilder()
-                    .append(month)
-
-                if (month.length == 2 && latestInsertionSize > 0 &&
-                    !inErrorState || rawNumericInput.length > 2
-                ) {
+                val formattedDateBuilder = StringBuilder().append(month)
+                if (month.length == 2 && latestInsertionSize > 0 && !inErrorState || rawDateInput.length > 2) {
                     formattedDateBuilder.append("/")
                 }
 
@@ -131,7 +120,8 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                 val formattedDate = formattedDateBuilder.toString()
                 this.newCursorPosition = updateSelectionIndex(
                     formattedDate.length,
-                    latestChangeStart, latestInsertionSize
+                    latestChangeStart,
+                    latestInsertionSize
                 )
                 this.formattedDate = formattedDate
             }
@@ -148,11 +138,11 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                     }
                 }
                 ignoreChanges = false
-                var shouldShowError = month.length == 2 && !ExpiryDateUtils.isValidMonth(month)
+                var showError = month.length == 2 && !ExpiryDateUtils.isValidMonth(month)
                 if (month.length == 2 && year.length == 4) {
                     val wasComplete = isDateValid
                     checkDateValid(month, year)
-                    shouldShowError = !isDateValid
+                    showError = !isDateValid
                     if (!wasComplete && isDateValid) {
                         completionCallback()
                     }
@@ -160,7 +150,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                     isDateValid = false
                 }
 
-                errorCallback.invoke(shouldShowError)
+                errorCallback.invoke(showError)
 
                 formattedDate = null
                 newCursorPosition = null

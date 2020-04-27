@@ -27,6 +27,9 @@ internal class CardExpiryTextInputLayout constructor(
     internal val isValid: Boolean
         get() = (teInput as CardExpiryEditText).isDateValid
 
+    /**
+     * Return the valid date fields, include month & year, object of [Pair]
+     */
     internal val validDateFields: Pair<Int, Int>?
         get() = (teInput as CardExpiryEditText).validDateFields
 
