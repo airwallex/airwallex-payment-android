@@ -11,9 +11,9 @@ import kotlinx.android.synthetic.main.widget_contact.view.*
 /**
  * A widget used to collect the contact info of shipping info.
  */
-internal class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
-    internal data class Contact(
+    internal data class ShippingContact(
         val lastName: String,
         val firstName: String,
         val phone: String
@@ -34,11 +34,11 @@ internal class ContactWidget(context: Context, attrs: AttributeSet) : LinearLayo
         }
 
     /**
-     * Return [Contact] based on user input.
+     * Return [ShippingContact] based on user input.
      */
-    internal val contact: Contact
+    internal val shippingContact: ShippingContact
         get() {
-            return Contact(
+            return ShippingContact(
                 lastName = atlLastName.value,
                 firstName = atlFirstName.value,
                 phone = atlPhoneNumber.value

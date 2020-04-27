@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.widget_shipping.view.*
 /**
  * A widget used to collect the shipping [Address] of shipping info.
  */
-internal class ShippingWidget(context: Context, attrs: AttributeSet) :
+internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
     LinearLayout(context, attrs) {
 
     /**

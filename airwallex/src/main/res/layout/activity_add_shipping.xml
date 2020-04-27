@@ -22,12 +22,12 @@
             android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="32sp" />
 
-        <com.airwallex.android.view.ContactWidget
+        <com.airwallex.android.view.ShippingContactWidget
             android:id="@+id/contactWidget"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <com.airwallex.android.view.ShippingWidget
+        <com.airwallex.android.view.ShippingAddressWidget
             android:id="@+id/shippingWidget"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
