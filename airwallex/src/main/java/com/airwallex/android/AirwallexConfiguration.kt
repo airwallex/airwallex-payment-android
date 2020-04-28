@@ -4,7 +4,7 @@ data class AirwallexConfiguration internal constructor(
     val enableLogging: Boolean,
     val baseUrl: String
 ) {
-    class Builder() {
+    class Builder {
 
         /**
          * You can set to true if you want to see more debug logs

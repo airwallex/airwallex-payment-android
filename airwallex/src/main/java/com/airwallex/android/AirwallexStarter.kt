@@ -3,7 +3,10 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import com.airwallex.android.model.*
+import com.airwallex.android.model.AirwallexError
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.*
 
 /**
@@ -169,7 +172,7 @@ class AirwallexStarter constructor(
     /**
      * Should be called via `Activity#onActivityResult(int, int, Intent)}}` to handle the result of all flows
      */
-    fun handlePaymentResult(
+    fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
         data: Intent?

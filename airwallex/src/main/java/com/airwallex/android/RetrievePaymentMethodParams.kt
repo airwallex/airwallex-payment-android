@@ -1,7 +1,11 @@
 package com.airwallex.android
 
 import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.model.PaymentMethod
 
+/**
+ * The params that used for retrieve [PaymentMethod]
+ */
 internal data class RetrievePaymentMethodParams internal constructor(
     override val customerId: String,
     override val clientSecret: String,
