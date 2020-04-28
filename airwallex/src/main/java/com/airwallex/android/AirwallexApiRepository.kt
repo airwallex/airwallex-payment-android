@@ -4,6 +4,7 @@ import com.airwallex.android.model.PaymentIntentConfirmRequest
 import com.airwallex.android.model.PaymentMethodParams
 import com.google.gson.JsonParser
 import kotlinx.android.parcel.Parcelize
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -40,11 +41,11 @@ internal class AirwallexApiRepository : ApiRepository {
         /**
          * The start time of created_at in ISO8601 format
          */
-        internal val fromCreatedAt: String? = null,
+        internal val fromCreatedAt: Date? = null,
         /**
          * The end time of created_at in ISO8601 format
          */
-        internal val toCreatedAt: String? = null
+        internal val toCreatedAt: Date? = null
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     /**
@@ -128,7 +129,9 @@ internal class AirwallexApiRepository : ApiRepository {
                 AirwallexPlugins.baseUrl,
                 retrievePaymentMethodOptions.customerId,
                 retrievePaymentMethodOptions.pageNum,
-                retrievePaymentMethodOptions.pageSize
+                retrievePaymentMethodOptions.pageSize,
+                retrievePaymentMethodOptions.fromCreatedAt,
+                retrievePaymentMethodOptions.toCreatedAt
             ),
             AirwallexHttpRequest.Method.GET
         )
@@ -190,12 +193,22 @@ internal class AirwallexApiRepository : ApiRepository {
             baseUrl: String,
             customerId: String,
             pageNum: Int,
-            pageSize: Int
+            pageSize: Int,
+            fromCreatedAt: Date?,
+            toCreatedAt: Date?
         ): String {
             val builder = StringBuilder("payment_methods?")
             builder.append("page_num=$pageNum")
             builder.append("&page_size=$pageSize")
             builder.append("&customer_id=$customerId")
+
+            val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            fromCreatedAt?.let {
+                builder.append("&from_created_at=${format.format(fromCreatedAt)}")
+            }
+            toCreatedAt?.let {
+                builder.append("&to_created_at=${format.format(toCreatedAt)}")
+            }
             return getApiUrl(
                 baseUrl,
                 builder.toString()
