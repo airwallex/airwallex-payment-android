@@ -107,14 +107,14 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             params = RetrievePaymentMethodParams.Builder(
                 customerId = requireNotNull(paymentIntent.customerId),
                 clientSecret = requireNotNull(paymentIntent.clientSecret),
+                type = PaymentMethodType.CARD,
                 pageNum = pageNum.get()
             )
                 .build(),
             listener = object : Airwallex.PaymentListener<PaymentMethodResponse> {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     paymentMethodsAdapter.endLoadingMore()
-                    val cards = response.items.filter { it.type == PaymentMethodType.CARD }
-                    paymentMethodsAdapter.setPaymentMethods(cards, response.hasMore)
+                    paymentMethodsAdapter.setPaymentMethods(response.items, response.hasMore)
                     paymentNoCards.visibility =
                         if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
                     pageNum.incrementAndGet()

@@ -306,7 +306,8 @@ class Airwallex internal constructor(
                 pageNum = params.pageNum,
                 pageSize = params.pageSize,
                 fromCreatedAt = params.fromCreatedAt,
-                toCreatedAt = params.toCreatedAt
+                toCreatedAt = params.toCreatedAt,
+                type = params.type
             ),
             listener
         )
