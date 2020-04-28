@@ -5,6 +5,9 @@ import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethodReference
 import com.airwallex.android.model.PaymentMethodType
 
+/**
+ * The params that used for confirm [PaymentIntent]
+ */
 data class ConfirmPaymentIntentParams internal constructor(
     override val paymentIntentId: String,
     override val clientSecret: String,

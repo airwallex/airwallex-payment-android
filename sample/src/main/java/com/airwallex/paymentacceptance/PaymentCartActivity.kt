@@ -276,7 +276,7 @@ class PaymentCartActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        airwallexStarter.handlePaymentResult(requestCode, resultCode, data)
+        airwallexStarter.onActivityResult(requestCode, resultCode, data)
     }
 
     /**
