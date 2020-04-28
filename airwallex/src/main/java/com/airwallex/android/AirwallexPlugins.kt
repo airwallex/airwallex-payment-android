@@ -47,7 +47,7 @@ internal object AirwallexPlugins {
                 builder.addHeader(CONTENT_TYPE_HEADER_KEY, CONTENT_TYPE_HEADER_VALUE)
                 builder.addHeader(USER_AGENT_KEY, USER_AGENT_VALUE)
                 builder.addHeader(USER_AGENT_VERSION_KEY, USER_AGENT_VERSION_VALUE)
-                builder.addHeader(API_VERSION, ApiVersion.get().code)
+                builder.addHeader(API_VERSION, BuildConfig.API_VERSION_CODE)
                 return chain.proceed(builder.build())
             }
         })
