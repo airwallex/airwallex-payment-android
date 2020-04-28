@@ -9,7 +9,7 @@ import kotlinx.android.parcel.RawValue
  * Params for create a payment method
  */
 @Parcelize
-data class PaymentMethodParams internal constructor(
+data class PaymentMethodCreateRequest internal constructor(
     /**
      * Unique request ID specified by the merchant
      */
@@ -48,7 +48,7 @@ data class PaymentMethodParams internal constructor(
 
 ) : AirwallexModel, Parcelable {
 
-    class Builder : ObjectBuilder<PaymentMethodParams> {
+    class Builder : ObjectBuilder<PaymentMethodCreateRequest> {
         private var requestId: String? = null
         private var customerId: String? = null
         private var type: PaymentMethodType? = null
@@ -80,8 +80,8 @@ data class PaymentMethodParams internal constructor(
             this.metadata = metadata
         }
 
-        override fun build(): PaymentMethodParams {
-            return PaymentMethodParams(
+        override fun build(): PaymentMethodCreateRequest {
+            return PaymentMethodCreateRequest(
                 requestId = requestId,
                 customerId = customerId,
                 type = type,

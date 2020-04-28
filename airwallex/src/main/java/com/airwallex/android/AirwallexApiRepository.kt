@@ -1,7 +1,7 @@
 package com.airwallex.android
 
 import com.airwallex.android.model.PaymentIntentConfirmRequest
-import com.airwallex.android.model.PaymentMethodParams
+import com.airwallex.android.model.PaymentMethodCreateRequest
 import com.airwallex.android.model.PaymentMethodType
 import com.google.gson.JsonParser
 import kotlinx.android.parcel.Parcelize
@@ -17,14 +17,14 @@ internal class AirwallexApiRepository : ApiRepository {
     internal class PaymentIntentOptions internal constructor(
         override val clientSecret: String,
         internal val paymentIntentId: String,
-        internal val paymentIntentConfirmRequest: PaymentIntentConfirmRequest? = null
+        internal val request: PaymentIntentConfirmRequest? = null
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     @Parcelize
     internal data class CreatePaymentMethodOptions internal constructor(
         override val clientSecret: String,
         internal val customerId: String,
-        internal val paymentMethodParams: PaymentMethodParams
+        internal val request: PaymentMethodCreateRequest
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     @Parcelize
@@ -62,7 +62,7 @@ internal class AirwallexApiRepository : ApiRepository {
     override fun confirmPaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
         // Retrofit still uses the gson version of 2.8.5
         @Suppress("DEPRECATION") val paramsJson =
-            JsonParser().parse(AirwallexPlugins.gson.toJson(requireNotNull((options as PaymentIntentOptions).paymentIntentConfirmRequest)))
+            JsonParser().parse(AirwallexPlugins.gson.toJson(requireNotNull((options as PaymentIntentOptions).request)))
                 .asJsonObject
 
         val request = AirwallexHttpRequest.Builder(
@@ -106,7 +106,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
     override fun createPaymentMethod(options: ApiRepository.Options): AirwallexHttpResponse? {
         val paramsJson =
-            JsonParser.parseString(AirwallexPlugins.gson.toJson(requireNotNull((options as CreatePaymentMethodOptions).paymentMethodParams)))
+            JsonParser.parseString(AirwallexPlugins.gson.toJson(requireNotNull((options as CreatePaymentMethodOptions).request)))
                 .asJsonObject
 
         val request = AirwallexHttpRequest.Builder(

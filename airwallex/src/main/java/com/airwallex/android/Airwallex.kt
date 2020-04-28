@@ -123,7 +123,7 @@ class Airwallex internal constructor(
         return AirwallexApiRepository.PaymentIntentOptions(
             clientSecret = params.clientSecret,
             paymentIntentId = params.paymentIntentId,
-            paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+            request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
                 .setPaymentMethod(
@@ -145,7 +145,7 @@ class Airwallex internal constructor(
         return AirwallexApiRepository.PaymentIntentOptions(
             clientSecret = params.clientSecret,
             paymentIntentId = params.paymentIntentId,
-            paymentIntentConfirmRequest = PaymentIntentConfirmRequest.Builder(
+            request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
                 .setPaymentMethodOptions(
@@ -276,7 +276,7 @@ class Airwallex internal constructor(
             AirwallexApiRepository.CreatePaymentMethodOptions(
                 clientSecret = params.clientSecret,
                 customerId = params.customerId,
-                paymentMethodParams = PaymentMethodParams.Builder()
+                request = PaymentMethodCreateRequest.Builder()
                     .setCustomerId(params.customerId)
                     .setRequestId(UUID.randomUUID().toString())
                     .setType(PaymentMethodType.CARD)
