@@ -8,7 +8,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.airwallex.android.exception.WebViewConnectionException
 
-abstract class AirwallexWebViewClient(private val callbacks: WebViewClientCallbacks) :
+internal abstract class AirwallexWebViewClient(private val callbacks: WebViewClientCallbacks) :
     WebViewClient() {
 
     abstract fun hasCallbackUrl(view: WebView?, url: String?): Boolean
