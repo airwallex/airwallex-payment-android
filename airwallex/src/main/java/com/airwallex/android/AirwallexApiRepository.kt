@@ -105,8 +105,8 @@ internal class AirwallexApiRepository : ApiRepository {
     }
 
     override fun createPaymentMethod(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val paramsJson =
-            JsonParser.parseString(AirwallexPlugins.gson.toJson(requireNotNull((options as CreatePaymentMethodOptions).request)))
+        @Suppress("DEPRECATION") val paramsJson =
+            JsonParser().parse(AirwallexPlugins.gson.toJson(requireNotNull((options as CreatePaymentMethodOptions).request)))
                 .asJsonObject
 
         val request = AirwallexHttpRequest.Builder(
