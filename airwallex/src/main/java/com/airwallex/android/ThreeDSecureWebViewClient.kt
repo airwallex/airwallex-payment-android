@@ -2,7 +2,7 @@ package com.airwallex.android
 
 import android.webkit.WebView
 
-class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
+internal class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
     AirwallexWebViewClient(callbacks) {
 
     override fun hasCallbackUrl(view: WebView?, url: String?): Boolean {

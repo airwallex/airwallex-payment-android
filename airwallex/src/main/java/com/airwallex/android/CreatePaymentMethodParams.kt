@@ -3,7 +3,7 @@ package com.airwallex.android
 import com.airwallex.android.model.Billing
 import com.airwallex.android.model.PaymentMethod
 
-data class CreatePaymentMethodParams internal constructor(
+internal data class CreatePaymentMethodParams internal constructor(
     override val clientSecret: String,
     override val customerId: String,
     /**

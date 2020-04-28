@@ -6,7 +6,7 @@ import com.airwallex.android.AirwallexSecurityConnector.SecurityTokenListener
 /**
  * Security Connector for Device Fingerprinting
  */
-interface SecurityConnector {
+internal interface SecurityConnector {
 
     fun retrieveSecurityToken(
         paymentIntentId: String,

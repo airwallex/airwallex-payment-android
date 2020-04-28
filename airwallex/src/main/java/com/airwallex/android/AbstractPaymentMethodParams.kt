@@ -2,7 +2,7 @@ package com.airwallex.android
 
 import com.airwallex.android.model.PaymentIntent
 
-abstract class AbstractPaymentMethodParams(
+internal abstract class AbstractPaymentMethodParams(
 
     /**
      * ID of Customer

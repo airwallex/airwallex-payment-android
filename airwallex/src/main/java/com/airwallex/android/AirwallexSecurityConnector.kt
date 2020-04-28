@@ -9,7 +9,7 @@ import com.threatmetrix.TrustDefender.TrustDefender
 /**
  * The implementation of [SecurityConnector] to retrieve the Device Fingerprinting token
  */
-class AirwallexSecurityConnector : SecurityConnector {
+internal class AirwallexSecurityConnector : SecurityConnector {
 
     /**
      * Retrieve SecurityToken listener

@@ -13,7 +13,7 @@ import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import kotlinx.android.synthetic.main.activity_threeds.*
 import java.net.URLEncoder
 
-class ThreeDSecureActivity : AppCompatActivity() {
+internal class ThreeDSecureActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
