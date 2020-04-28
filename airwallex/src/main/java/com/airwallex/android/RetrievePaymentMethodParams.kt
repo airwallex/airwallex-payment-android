@@ -2,6 +2,7 @@ package com.airwallex.android
 
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodType
 import java.util.*
 
 /**
@@ -25,13 +26,18 @@ internal data class RetrievePaymentMethodParams internal constructor(
     /**
      * The end time of created_at in ISO8601 format
      */
-    internal val toCreatedAt: Date? = null
+    internal val toCreatedAt: Date? = null,
+    /**
+     * Payment method type
+     */
+    internal val type: PaymentMethodType
 
 ) : AbstractPaymentMethodParams(customerId = customerId, clientSecret = clientSecret) {
 
     class Builder(
         private val customerId: String,
         private val clientSecret: String,
+        private val type: PaymentMethodType,
         private val pageNum: Int
     ) : ObjectBuilder<RetrievePaymentMethodParams> {
 
@@ -60,7 +66,8 @@ internal data class RetrievePaymentMethodParams internal constructor(
                 pageNum = pageNum,
                 pageSize = pageSize,
                 fromCreatedAt = fromCreatedAt,
-                toCreatedAt = toCreatedAt
+                toCreatedAt = toCreatedAt,
+                type = type
             )
         }
     }
