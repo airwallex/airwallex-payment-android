@@ -24,6 +24,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
+
+    buildTypes.release.minifyEnabled = true
 }
 
 dependencies {
