@@ -59,6 +59,7 @@ dependencies {
     implementation project(':airwallex')
     implementation project(':airwallex-threeds')
 //    implementation 'com.airwallex:airwallex-core:1.0.0'
+//    implementation 'com.airwallex:airwallex-threeds:1.0.0'
 
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.preference:preference:1.1.1'
