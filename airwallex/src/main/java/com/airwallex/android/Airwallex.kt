@@ -119,8 +119,8 @@ class Airwallex internal constructor(
 
     private fun buildWeChatPaymentIntentOptions(
         params: ConfirmPaymentIntentParams
-    ): AirwallexApiRepository.PaymentIntentOptions {
-        return AirwallexApiRepository.PaymentIntentOptions(
+    ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+        return AirwallexApiRepository.ConfirmPaymentIntentOptions(
             clientSecret = params.clientSecret,
             paymentIntentId = params.paymentIntentId,
             request = PaymentIntentConfirmRequest.Builder(
@@ -141,8 +141,8 @@ class Airwallex internal constructor(
     private fun buildCardPaymentIntentOptions(
         params: ConfirmPaymentIntentParams,
         threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
-    ): AirwallexApiRepository.PaymentIntentOptions {
-        return AirwallexApiRepository.PaymentIntentOptions(
+    ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+        return AirwallexApiRepository.ConfirmPaymentIntentOptions(
             clientSecret = params.clientSecret,
             paymentIntentId = params.paymentIntentId,
             request = PaymentIntentConfirmRequest.Builder(
@@ -253,7 +253,7 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentIntent>
     ) {
         paymentManager.retrievePaymentIntent(
-            AirwallexApiRepository.PaymentIntentOptions(
+            AirwallexApiRepository.RetrievePaymentIntentOptions(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId
             ),

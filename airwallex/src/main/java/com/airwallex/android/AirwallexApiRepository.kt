@@ -14,7 +14,13 @@ import java.util.*
 internal class AirwallexApiRepository : ApiRepository {
 
     @Parcelize
-    internal class PaymentIntentOptions internal constructor(
+    internal class RetrievePaymentIntentOptions internal constructor(
+        override val clientSecret: String,
+        internal val paymentIntentId: String
+    ) : ApiRepository.Options(clientSecret = clientSecret)
+
+    @Parcelize
+    internal class ConfirmPaymentIntentOptions internal constructor(
         override val clientSecret: String,
         internal val paymentIntentId: String,
         internal val request: PaymentIntentConfirmRequest? = null
@@ -62,7 +68,7 @@ internal class AirwallexApiRepository : ApiRepository {
     override fun confirmPaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
         // Retrofit still uses the gson version of 2.8.5
         @Suppress("DEPRECATION") val paramsJson =
-            JsonParser().parse(AirwallexPlugins.gson.toJson(requireNotNull((options as PaymentIntentOptions).request)))
+            JsonParser().parse(AirwallexPlugins.gson.toJson((options as ConfirmPaymentIntentOptions).request))
                 .asJsonObject
 
         val request = AirwallexHttpRequest.Builder(
@@ -94,7 +100,7 @@ internal class AirwallexApiRepository : ApiRepository {
         val request = AirwallexHttpRequest.Builder(
             retrievePaymentIntentUrl(
                 AirwallexPlugins.baseUrl,
-                (options as PaymentIntentOptions).paymentIntentId
+                (options as RetrievePaymentIntentOptions).paymentIntentId
             ),
             AirwallexHttpRequest.Method.GET
         )
@@ -105,6 +111,7 @@ internal class AirwallexApiRepository : ApiRepository {
     }
 
     override fun createPaymentMethod(options: ApiRepository.Options): AirwallexHttpResponse? {
+        // Retrofit still uses the gson version of 2.8.5
         @Suppress("DEPRECATION") val paramsJson =
             JsonParser().parse(AirwallexPlugins.gson.toJson(requireNotNull((options as CreatePaymentMethodOptions).request)))
                 .asJsonObject
@@ -128,16 +135,15 @@ internal class AirwallexApiRepository : ApiRepository {
     }
 
     override fun retrievePaymentMethods(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val retrievePaymentMethodOptions = options as RetrievePaymentMethodOptions
         val request = AirwallexHttpRequest.Builder(
             retrievePaymentMethodsUrl(
                 AirwallexPlugins.baseUrl,
-                retrievePaymentMethodOptions.customerId,
-                retrievePaymentMethodOptions.pageNum,
-                retrievePaymentMethodOptions.pageSize,
-                retrievePaymentMethodOptions.fromCreatedAt,
-                retrievePaymentMethodOptions.toCreatedAt,
-                retrievePaymentMethodOptions.type
+                (options as RetrievePaymentMethodOptions).customerId,
+                options.pageNum,
+                options.pageSize,
+                options.fromCreatedAt,
+                options.toCreatedAt,
+                options.type
             ),
             AirwallexHttpRequest.Method.GET
         )
