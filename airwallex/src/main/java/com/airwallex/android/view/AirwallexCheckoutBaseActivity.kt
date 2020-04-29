@@ -27,34 +27,22 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
 
         val params = when (paymentMethod.type) {
             PaymentMethodType.WECHAT -> {
-                ConfirmPaymentIntentParams.Builder(
-                    // the ID of the `PaymentIntent`, required.
+                ConfirmPaymentIntentParams.createWeChatParams(
                     paymentIntentId = paymentIntent.id,
-                    // the clientSecret of `PaymentIntent`, required.
-                    clientSecret = requireNotNull(paymentIntent.clientSecret)
+                    clientSecret = paymentIntent.clientSecret,
+                    customerId = paymentIntent.customerId
                 )
-                    // the customerId of `PaymentIntent`, optional.
-                    .setCustomerId(paymentIntent.customerId)
-                    .setPaymentMethod(PaymentMethodType.WECHAT)
-                    .build()
             }
             PaymentMethodType.CARD -> {
-                ConfirmPaymentIntentParams.Builder(
-                    // the ID of the `PaymentIntent`, required.
+                ConfirmPaymentIntentParams.createCardParams(
                     paymentIntentId = paymentIntent.id,
-                    // the clientSecret of `PaymentIntent`, required.
-                    clientSecret = requireNotNull(paymentIntent.clientSecret)
+                    clientSecret = paymentIntent.clientSecret,
+                    paymentMethodReference = PaymentMethodReference(
+                        requireNotNull(paymentMethod.id),
+                        requireNotNull(cvc)
+                    ),
+                    customerId = paymentIntent.customerId
                 )
-                    // the customerId of `PaymentIntent`, optional.
-                    .setCustomerId(paymentIntent.customerId)
-                    .setPaymentMethod(
-                        PaymentMethodType.CARD,
-                        PaymentMethodReference(
-                            requireNotNull(paymentMethod.id),
-                            requireNotNull(cvc)
-                        )
-                    )
-                    .build()
             }
         }
         airwallex.confirmPaymentIntent(this, params, callback)

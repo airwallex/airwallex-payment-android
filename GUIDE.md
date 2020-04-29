@@ -74,22 +74,29 @@ After completing all the steps on the server, the client will get a `PaymentInte
 
 2. Then you can call the `confirmPaymentIntent` method to start confirming the `PaymentIntent` by ID.
 ```kotlin
-    airwallex.confirmPaymentIntent(
-        params = ConfirmPaymentIntentParams.Builder(
-            paymentIntentId = paymentIntent.id, // the ID of the `PaymentIntent`, required.
-            clientSecret = paymentIntent.clientSecret // the clientSecret of `PaymentIntent`, required.
-        )   
-            .setCustomerId(paymentIntent.customerId) // the customerId of `PaymentIntent`, optional.
-             // If the `paymentMethodType` is `WECHAT`, it's not necessary call `setPaymentMethod` method (default is `WeChat` pay)
-             // If the `paymentMethodType` is `CARD`, you should set `PaymentMethodReference`
-            .setPaymentMethod(
-                PaymentMethodType.CARD,
-                PaymentMethodReference(
-                    paymentMethod.id,
-                    requireNotNull(cvc)
-                )
+    val confirmPaymentIntentParams = when (paymentMethod.type) {
+        PaymentMethodType.WECHAT -> {
+            ConfirmPaymentIntentParams.createWeChatParams(
+                paymentIntentId = paymentIntent.id,
+                clientSecret = paymentIntent.clientSecret,
+                customerId = paymentIntent.customerId
             )
-            .build(),
+        }
+        PaymentMethodType.CARD -> {
+            ConfirmPaymentIntentParams.createCardParams(
+                paymentIntentId = paymentIntent.id,
+                clientSecret = paymentIntent.clientSecret,
+                paymentMethodReference = PaymentMethodReference(
+                    requireNotNull(paymentMethod.id),
+                    requireNotNull(cvc)
+                ),
+                customerId = paymentIntent.customerId
+            )
+        }
+    }
+
+    airwallex.confirmPaymentIntent(
+        params = confirmPaymentIntentParams,
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
                 // Confirm Payment Intent success
