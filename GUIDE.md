@@ -3,13 +3,23 @@ This section mainly introduces the main process of integrating Airwallex Android
 
 Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to include the Airwallex Android SDK in your Android project.
 
+We also provides a powerful, customizable interface for collecting user payment details.
+
+<p align="center">
+<img src="assets/payment_edit_shipping.jpg" width="20%" alt="PaymentShippingActivity" hspace="10">
+<img src="assets/payment_select_payment_method.jpg" width="20%" alt="PaymentMethodsActivity" hspace="10">
+<img src="assets/payment_new_card.jpg" width="20%" alt="AddPaymentMethodActivity" hspace="10">
+<img src="assets/payment_detail.jpg" width="20%" alt="PaymentCheckoutActivity" hspace="10">
+</p>
+
 Get started with our integration guide and example project.
 
 ## Contents
 * [Requirements](#Requirements)
 * [Integration](#Integration)
-* [Native UI](#NativeUI)
-* [Features](#Features)
+    * [Setup](#setup)
+    * [Basic Integration](#basic-integration)
+    * [Customize Usage](#customize-usage)
 * [Examples](#Examples)
 * [Contributing](#Contributing)
 
@@ -19,28 +29,32 @@ The Airwallex Android SDK is compatible with apps supporting Android API level 1
 ## Integration 
 Getting started with the Android SDK, please follow below steps:
 
-### Step 1: Install the SDK
+### Setup
+- Install the SDK
 To install the SDK, in your app-level `build.gradle`, add the following:
 
 ```groovy
     dependencies {
-        implementation 'com.airwallex:airwallex-core:0.0.6'
+        implementation 'com.airwallex:airwallex-core:1.0.0'
+        implementation 'com.airwallex:airwallex-threeds:1.0.0'
     }
 ```
 
-### Step 2: Configuration the SDK (optional)
+- Configuration the SDK (optional)
 We provide some parameters that can be used to debug the SDK, better to be called in `Application`
 
 ```groovy
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
-            .enableLogging(true)    // Enable log in sdk, best set to false in release version
-            .setBaseUrl(Settings.baseUrl)  // You can change the baseUrl to test other environments
+            .enableLogging(true)            // Enable log in sdk, best set to false in release version
+            .setBaseUrl(Settings.baseUrl)   // You can change the baseUrl to test other environments
             .build()
     )
 ```
 
-### Step 3: Confirm Payment Intent
+### Basic Integration
+
+#### Confirm Payment Intent
 Before confirming the `PaymentIntent`, you must create a `PaymentIntent` on the server and pass it to the client.
 
 > Merchant's server
@@ -90,11 +104,11 @@ After completing all the steps on the server, the client will get a `PaymentInte
 
 3. After successfully confirming the `PaymentIntent`
 - WeChat Pay
-Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay) to complete the final payment.
-Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/blob/master) for more details.
+Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml) to complete the final payment.
+Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/tree/master) for more details.
 ```kotlin
     val weChat = response.weChat
-    // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/index.php/public/wechatpay).
+    // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml).
 
     val weChatReq = PayReq()
     weChatReq.appId = weChat.appId
@@ -111,14 +125,13 @@ Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-and
  
 - Credit Card Pay. You can prompt the user the result of confirm PaymentIntent
 
-### Step 4: Retrieve Payment Intent to confirm the charge has succeeded
-Since WeChat Pay is a synchronous payment method and the customer has already authorized the payment using the WeChat application. 
+#### Retrieve Payment Intent to confirm the charge has succeeded
 After successful payment, the Airwallex server will notify the Merchant, then you can make sure if the `PaymentIntent` is successful by calling the `retrievePaymentIntent` method and checking the `status` of the response.
 ```kotlin
     airwallex.retrievePaymentIntent(
         params = RetrievePaymentIntentParams(
-            paymentIntentId = paymentIntentId, // the ID of the `PaymentIntent`, required.
-            clientSecret = clientSecret // the clientSecret of `PaymentIntent`, required.
+            paymentIntentId = paymentIntentId,  // the ID of the `PaymentIntent`, required.
+            clientSecret = clientSecret         // the clientSecret of `PaymentIntent`, required.
         ),
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
@@ -133,7 +146,7 @@ After successful payment, the Airwallex server will notify the Merchant, then yo
         })
 ```
 
-## NativeUI
+### Customize Usage
 We provide native screens to collect payment and shipping details.
 You can use these individually, or take all of the prebuilt UI in one flow by following the Integration guide.
 ```kotlin
@@ -143,7 +156,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
     // Override `onActivityResult`, then call `handlePaymentResult`
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        airwallexStarter.handlePaymentResult(requestCode, resultCode, data)
+        airwallexStarter.onActivityResult(requestCode, resultCode, data)
     }
 
     // Call `airwallexStarter.onDestroy()` on `onDestroy`
@@ -153,9 +166,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
     }
 ```
 
-- Show Shipping UI
-<img src="assets/payment_edit_shipping.jpg" width="300">
-
+- Customize the usage of shipping info, shipping parameter is optional. After successfully saving, it will return a shipping object
 ```kotlin
     airwallexStarter.presentShippingFlow(shipping,
         object : AirwallexStarter.PaymentShippingListener {
@@ -169,9 +180,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         })
 ```
 
-- Show Payment Method List UI
-<img src="assets/payment_select_payment_method.jpg" width="300">
-
+- Customize the usage of select one of payment methods, you need to pass in a `paymentIntent` object. It will display all the saved payment methods of the current customer, you can choose any one to pay
 ```kotlin
     airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent,
         object : AirwallexStarter.PaymentMethodListener {
@@ -185,9 +194,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         })
 ```
 
-- Show New Card UI
-<img src="assets/payment_new_card.jpg" width="300">
-
+- Customize the usage of card creation you can enter a credit card number, expiration time and cvc to create a payment method. You need to pass in a `paymentIntent` object.
 ```kotlin
     airwallexStarter.presentAddPaymentMethodFlow(paymentIntent,
         object : AirwallexStarter.PaymentMethodListener {
@@ -201,9 +208,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         })
 ```
 
-- Show Payment Detail UI
-<img src="assets/payment_detail.jpg" width="300">
-
+- Customize the usage of payment detail. You need to pass in a `paymentIntent` object and a `paymentMethod` object. It will display the current payment amount has been paid, encapsulated the specific operation of payment, will return the PaymentIntent or AirwallexError through the callback method
 ```kotlin
     airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod,
         object : AirwallexStarter.PaymentIntentListener {
@@ -221,7 +226,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         })
 ```
 
-- Show Payment Flow
+- Show Payment Flow, need to pass in a `paymentIntent` object. You can complete the entire payment process by calling this method, will return the PaymentIntent or AirwallexError through the callback method
 ```kotlin
     airwallexStarter.presentPaymentFlow(paymentIntent,
         object : AirwallexStarter.PaymentIntentListener {
@@ -239,29 +244,19 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         })
 ```
 
-## Features
-
-### WeChat Pay & Credit Card Pay
-We provide a seamless integration with WeChat Pay & Credit Card Pay.
-
-### Airwallex API
-We provide low-level APIs that correspond to objects and methods in the Airwallex API. You can build your own entirely custom UI on top of this layer.
-
-### Payment Native UI
-We provide native screens to collect payment and shipping details.
-
 ## Examples
 To run the example project, you should follow these steps.
 
-* **Step 1:** Clone the repository to your local machine
+* **Step 1:** Run the following script to clone the repository to your local machine
+`git clone git@github.com:airwallex/airwallex-payment-android.git`
 
-* **Step 2:** Open Android Studio and import the project by selecting the build.gradle file from the cloned repository
+* **Step 2:** Open Android Studio and import the project by selecting the `build.gradle` file from the cloned repository
 
-* **Step 3:** Goto [Account settings > API keys](https://www.airwallex.com/app/settings/api) to get `Client ID` and `API key`, then fill in the `strings.xml`
+* **Step 3:** Goto [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and` API key` to [`strings.xml`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/res/values/strings.xml)
 
-* **Step 4:** Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then fill `App ID` and `App Signature` in the `strings.xml`
+* **Step 4:** Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then copy `App ID` and `App Signature` to [`strings.xml`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/res/values/strings.xml)
             
 * **Step 5:** Run the `sample` project
 
 ## Contributing
-If you’d like more help, check out our [example app](https://github.com/airwallex/airwallex-payment-android/blob/master) on Github that demonstrates the use of the entire payment process. Also, you can read the [Airwallex API](https://www.airwallex.com/docs/api#/Introduction) for more details.
+We welcome contributions of any kind including new features, bug fixes, and documentation improvements. The best way to contribute is by submitting a pull request – we'll do our best to respond to your patch as soon as possible. You can also submit an issue if you find bugs or have any questions.
