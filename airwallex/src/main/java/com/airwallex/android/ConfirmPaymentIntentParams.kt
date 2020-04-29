@@ -62,4 +62,53 @@ data class ConfirmPaymentIntentParams internal constructor(
             )
         }
     }
+
+    companion object {
+        /**
+         * Return the [ConfirmPaymentIntentParams] for WeChat Pay
+         *
+         * @param paymentIntentId the ID of the [PaymentIntent], required.
+         * @param clientSecret the clientSecret of [PaymentIntent], required.
+         * @param customerId the customerId of [PaymentIntent], optional.
+         */
+        fun createWeChatParams(
+            paymentIntentId: String,
+            clientSecret: String,
+            customerId: String? = null
+        ): ConfirmPaymentIntentParams {
+            return Builder(
+                paymentIntentId = paymentIntentId,
+                clientSecret = clientSecret
+            )
+                .setCustomerId(customerId)
+                .setPaymentMethod(PaymentMethodType.WECHAT)
+                .build()
+        }
+
+        /**
+         * Return the [ConfirmPaymentIntentParams] for Credit Card Pay
+         *
+         * @param paymentIntentId the ID of the [PaymentIntent], required.
+         * @param clientSecret the clientSecret of [PaymentIntent], required.
+         * @param paymentMethodReference the [PaymentMethodReference] that need for credit card payment, required
+         * @param customerId the customerId of [PaymentIntent], optional.
+         */
+        fun createCardParams(
+            paymentIntentId: String,
+            clientSecret: String,
+            paymentMethodReference: PaymentMethodReference,
+            customerId: String? = null
+        ): ConfirmPaymentIntentParams {
+            return Builder(
+                paymentIntentId = paymentIntentId,
+                clientSecret = clientSecret
+            )
+                .setCustomerId(customerId)
+                .setPaymentMethod(
+                    PaymentMethodType.CARD,
+                    paymentMethodReference
+                )
+                .build()
+        }
+    }
 }
