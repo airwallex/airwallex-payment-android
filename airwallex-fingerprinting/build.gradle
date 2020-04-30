@@ -8,6 +8,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
 
+        consumerProguardFiles 'proguard-rules.pro'
+
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
     }
