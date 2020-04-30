@@ -48,12 +48,11 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
 
-    implementation files('libs/TrustDefender-5.0-96.aar')
-
     api "com.squareup.okhttp3:okhttp:$okhttpVersion"
     api "com.google.code.gson:gson:${gsonVersion}"
 
     compileOnly project(':airwallex-threeds')
+    compileOnly project(':airwallex-fingerprinting')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
