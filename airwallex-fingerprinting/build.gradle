@@ -13,3 +13,5 @@ android {
 dependencies {
     api files('libs/TrustDefender-5.0-96.aar')
 }
+
+apply from: rootProject.file('publish.gradle')
