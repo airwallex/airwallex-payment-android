@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 apply from: "./ktlint.gradle"
 apply from: "./dokka.gradle"
 
-def VERSION_CODE = 1
 def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
 def DEVICE_FINGERPRINT_MERCHANT_ID ='"airwallex_cybs"'
 def API_VERSION_CODE = '"2020-04-22"'
@@ -17,8 +16,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
 
-        versionCode VERSION_CODE.toInteger()
-        versionName "1.0.0"
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
 
         consumerProguardFiles 'proguard-rules.pro'
 
