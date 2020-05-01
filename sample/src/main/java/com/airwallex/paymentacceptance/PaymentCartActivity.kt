@@ -180,15 +180,11 @@ class PaymentCartActivity : AppCompatActivity() {
      */
     private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
         airwallex.confirmPaymentIntent(
-            params = ConfirmPaymentIntentParams.Builder(
-                // the ID of the `PaymentIntent`, required.
+            params = ConfirmPaymentIntentParams.createWeChatParams(
                 paymentIntentId = paymentIntent.id,
-                // the clientSecret of `PaymentIntent`, required.
-                clientSecret = paymentIntent.clientSecret
-            )
-                // the customerId of `PaymentIntent`, optional.
-                .setCustomerId(paymentIntent.customerId)
-                .build(),
+                clientSecret = paymentIntent.clientSecret,
+                customerId = paymentIntent.customerId
+            ),
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     val weChat = response.weChat
