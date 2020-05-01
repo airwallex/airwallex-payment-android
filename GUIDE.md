@@ -59,12 +59,11 @@ After completing all the steps on the server, the client will get a `PaymentInte
 2. Then you can call the `confirmPaymentIntent` method to start confirming the `PaymentIntent` by ID.
 ```kotlin
     airwallex.confirmPaymentIntent(
-        params = ConfirmPaymentIntentParams.Builder(
-            paymentIntentId = paymentIntent.id, // the ID of the `PaymentIntent`, required.
-            clientSecret = paymentIntent.clientSecret // the Client Secret of `PaymentIntent`, required.
-        )   
-            .setCustomerId(paymentIntent.customerId) // the customerId of `PaymentIntent`, optional.
-            .build(),
+        params = ConfirmPaymentIntentParams.createWeChatParams(
+            paymentIntentId = paymentIntent.id,         // required
+            clientSecret = paymentIntent.clientSecret,  // required
+            customerId = paymentIntent.customerId       // optional
+        ),
         listener = object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
                 val weChat = response.weChat
