@@ -51,7 +51,8 @@ dependencies {
     api "com.google.code.gson:gson:${gsonVersion}"
 
     compileOnly project(':airwallex-threeds')
-    compileOnly project(':airwallex-fingerprinting')
+//    compileOnly project(':airwallex-fingerprinting')
+//    implementation(group: 'com.threatmetrix.TrustDefender', name: 'TrustDefender', version: '5.0-96', ext: 'aar')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
