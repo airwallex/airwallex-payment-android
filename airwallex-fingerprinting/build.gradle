@@ -1,22 +1,67 @@
-apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 
-android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+ext {
+    siteUrl = 'https://github.com/airwallex/airwallex-payment-android'
+    gitUrl = 'https://github.com/airwallex/airwallex-payment-android.git'
 
-    defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.compileSdkVersion
+    publishedGroupId = 'com.threatmetrix.TrustDefender'
+    artifactName = 'TrustDefender'
+    artifactVersion = '5.0-96'
 
-        consumerProguardFiles 'proguard-rules.pro'
+    libraryVersion = '1.0.0'
+    libraryDescription = 'Airwallex Device Fingerprinting Android SDK'
 
-        versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.versionName
+    bintrayRepo = 'airwallex-payment-android'
+    bintrayName = 'com.airwalllex.android.fingerprinting'
+    licenseCode = 'MIT'
+    tag = '1.0'
+}
+
+configurations.maybeCreate("default")
+def publishArtifact = artifacts.add("default", file('TrustDefender-5.0-96.aar'))
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    configurations = ['archives']
+
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = [licenseCode]
+        publish = true
+        publicDownloadNumbers = true
+        version {
+            name = libraryVersion
+            desc = libraryDescription
+            vcsTag = tag
+        }
+        publications = ['Publication']
     }
 }
 
-dependencies {
-    api files('libs/TrustDefender-5.0-96.aar')
-}
+publishing {
+    publications {
+        Publication(MavenPublication) {
+            artifacts {
+                groupId publishedGroupId
+                artifactId artifactName
+                version artifactVersion
+                artifact publishArtifact
 
-apply from: rootProject.file('publish.gradle')
+                pom.withXml {
+                    groupId publishedGroupId
+                    artifactId artifactName
+                    version artifactVersion
+                }
+            }
+        }
+    }
+}

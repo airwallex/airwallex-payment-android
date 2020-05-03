@@ -22,3 +22,5 @@
 
 # Rules for Airwallex
 -keep class com.airwallex.android.** { *; }
+-keep class com.threatmetrix.TrustDefender.** { *; }
+-dontwarn com.threatmetrix.TrustDefender.**
