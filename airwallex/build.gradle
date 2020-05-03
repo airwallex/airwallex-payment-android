@@ -52,7 +52,7 @@ dependencies {
 
     compileOnly project(':airwallex-threeds')
 //    compileOnly project(':airwallex-fingerprinting')
-//    implementation(group: 'com.threatmetrix.TrustDefender', name: 'TrustDefender', version: '5.0-96', ext: 'aar')
+    implementation 'com.threatmetrix.TrustDefender:TrustDefender:5.0-96'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
