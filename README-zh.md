@@ -18,7 +18,7 @@ dependencies {
 ```
 
 ## 快速上手
-请参考：[快速开始](GUIDE.md) 
+请参考：[快速开始](GUIDE-zh.md) 
 
 ## 反馈
 感谢使用Airwallex Android SDK，并欢迎您提供反馈。 以下是几种联系方式：
