@@ -15,21 +15,21 @@
 开始使用我们的集成指南和示例项目。
 
 ## Contents
-* [Requirements](#Requirements)
-* [Integration](#Integration)
-    * [Setup](#setup)
-    * [Basic Integration](#basic-integration)
-    * [Customize Usage](#customize-usage)
-* [Examples](#Examples)
-* [Contributing](#Contributing)
+* [支持版本](#支持版本)
+* [开始集成](#开始集成)
+    * [准备](#准备)
+    * [基本集成](#基本集成)
+    * [自定义UI](#自定义UI)
+* [运行Sample](#运行Sample)
+* [贡献](#贡献)
 
-## Requirements
+## 支持版本
 Airwallex Android SDK 支持Android 19及以上版本
 
-## Integration 
+## 开始集成
 请按照以下步骤开始集成：
 
-### Setup
+### 准备
 - 添加依赖
 在项目的根目录下，打开`build.gradle`，并添加以下内容：
 
@@ -52,7 +52,7 @@ Airwallex Android SDK 支持Android 19及以上版本
     )
 ```
 
-### Basic Integration
+### 基本集成
 
 #### Confirm Payment Intent
 在confirm `PaymentIntent`之前, 你必须在服务端创建一个`PaymentIntent`对象，并返回到客户端.
@@ -153,7 +153,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
         })
 ```
 
-### Customize Usage
+### 自定义UI
 我们提供了一些自定义UI，可以在你的Android App中快速集成支付功能。你可以单独使用某一个界面或某几个界面
 
 - 初始化`AirwallexStarter`
@@ -252,7 +252,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
         })
 ```
 
-## Examples
+## 运行Sample
 请按照以下步骤运行我们的`sample`
 
 * **Step 1:** 使用以下命令clone代码到本地
@@ -266,5 +266,5 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
             
 * **Step 5:** 运行`sample`工程
 
-## Contributing
+## 贡献
 我们欢迎任何形式的贡献，包括新功能，错误修复和文档改进。最简单的方式就是创建pull request - 我们会尽快回复。 如果你发现任何错误或有任何疑问，也可以提交Issues。
