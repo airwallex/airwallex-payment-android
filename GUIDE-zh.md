@@ -19,7 +19,7 @@
 * [开始集成](#开始集成)
     * [准备](#准备)
     * [基本集成](#基本集成)
-    * [自定义UI](#自定义UI)
+    * [UI集成](#UI集成)
 * [运行Sample](#运行Sample)
 * [贡献](#贡献)
 
@@ -46,8 +46,8 @@ Airwallex Android SDK 支持Android 19及以上版本
 ```groovy
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
-            .enableLogging(true)            // Enable log in sdk, best set to false in release version
-            .setBaseUrl(Settings.baseUrl)   // You can change the baseUrl to test other environments
+            .enableLogging(true)            // 在SDK中打开log，需要在发布release版本的时候设置成false
+            .setBaseUrl(Settings.baseUrl)   // 你可以修改baseUrl，方便在其他环境测试
             .build()
     )
 ```
@@ -153,7 +153,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
         })
 ```
 
-### 自定义UI
+### UI集成
 我们提供了一些自定义UI，可以在你的Android App中快速集成支付功能。你可以单独使用某一个界面或某几个界面
 
 - 初始化`AirwallexStarter`
