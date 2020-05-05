@@ -23,5 +23,5 @@ dependencies {
 ## 反馈
 感谢使用Airwallex Android SDK，并欢迎您提供反馈。 以下是几种联系方式：
 
-* 对于一般适用的问题和反馈，可以直接在`Issues`中提交问题。
+* 对于一般适用的问题和反馈，可以直接在[`Issues`](https://github.com/airwallex/airwallex-payment-android/issues)中提交问题。
 * [pa_mobile_sdk@airwallex.com](mailto:pa_mobile_sdk@airwallex.com) - 也可以发送问题到这个邮箱，我们会尽快提供帮助。
