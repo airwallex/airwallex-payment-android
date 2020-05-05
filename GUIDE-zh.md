@@ -14,7 +14,7 @@
 
 开始使用我们的集成指南和示例项目。
 
-## Contents
+## 目录
 * [支持版本](#支持版本)
 * [开始集成](#开始集成)
     * [准备](#准备)
@@ -54,7 +54,7 @@ Airwallex Android SDK 支持Android 19及以上版本
 
 ### 基本集成
 
-#### Confirm Payment Intent
+#### Confirm Payment Intent 完成支付
 在confirm `PaymentIntent`之前, 你必须在服务端创建一个`PaymentIntent`对象，并返回到客户端.
 
 > 商户服务端
@@ -132,7 +132,7 @@ Airwallex将返回微信支付所需的所有参数。你需要调用 [微信支
  
 - 信用卡支付. 你可以直接提供用户confirm `PaymentIntent` 的结果
 
-#### 获取 Payment Intent来确认支付是否成功
+#### Retrieve Payment Intent 来确认支付是否成功
 confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`retrievePaymentIntent`方法，并检查结果中的`status`字段来确认支付是否成功
 ```kotlin
     airwallex.retrievePaymentIntent(
