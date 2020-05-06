@@ -49,9 +49,9 @@ dependencies {
 
     api "com.squareup.okhttp3:okhttp:$okhttpVersion"
     api "com.google.code.gson:gson:${gsonVersion}"
+    api 'com.threatmetrix.TrustDefender:TrustDefender:5.0-96'
 
     compileOnly project(':airwallex-threeds')
-    implementation 'com.threatmetrix.TrustDefender:TrustDefender:5.0-96'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
