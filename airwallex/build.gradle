@@ -5,7 +5,7 @@ apply from: "./ktlint.gradle"
 apply from: "./dokka.gradle"
 
 def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
-def DEVICE_FINGERPRINT_MERCHANT_ID ='"airwallex_cybs"'
+def DEVICE_FINGERPRINT_MERCHANT_ID = '"airwallex_cybs"'
 def API_VERSION_CODE = '"2020-04-22"'
 
 android {
@@ -51,7 +51,6 @@ dependencies {
     api "com.google.code.gson:gson:${gsonVersion}"
 
     compileOnly project(':airwallex-threeds')
-//    compileOnly project(':airwallex-fingerprinting')
     implementation 'com.threatmetrix.TrustDefender:TrustDefender:5.0-96'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
@@ -71,4 +70,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
 
+ext {
+    libraryVersion = "${android.defaultConfig.versionName}"
+}
+
 apply from: rootProject.file('publish.gradle')
+apply from: rootProject.file('deploy.gradle')

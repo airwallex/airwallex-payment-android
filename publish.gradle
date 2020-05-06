@@ -3,8 +3,7 @@ ext {
     gitUrl = 'https://github.com/airwallex/airwallex-payment-android.git'       // git repo vcs url
 
     artifact = POM_ARTIFACT                                                     // this is the artifact we want to see in implementation line
-    publishedGroupId = 'com.airwallex'                                          // this is the ID we want to see in implementation line
-    libraryVersion = "${android.defaultConfig.versionName}"                     // library version
+    publishedGroupId = PUBLISHED_GROUP_ID                                       // this is the ID we want to see in implementation line
 
     bintrayRepo = 'airwallex-payment-android'                                   // Repo name in bintray dashboard
     bintrayName = POM_BINTRAY_NAME                                              // package name of the bintray repo
@@ -20,5 +19,3 @@ ext {
     developerName = 'Airwallex'                                                 // Developer's name
     developerEmail = 'pa_mobile_sdk@airwallex.com'                              // Developer's email
 }
-
-apply from: rootProject.file('deploy.gradle')
