@@ -1,28 +1,17 @@
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 
-ext {
-    siteUrl = 'https://github.com/airwallex/airwallex-payment-android'
-    gitUrl = 'https://github.com/airwallex/airwallex-payment-android.git'
-
-    publishedGroupId = 'com.threatmetrix.TrustDefender'
-    artifactName = 'TrustDefender'
-    artifactVersion = '5.0-96'
-
-    libraryVersion = '1.0.0'
-    libraryDescription = 'Airwallex Device Fingerprinting Android SDK'
-
-    bintrayRepo = 'airwallex-payment-android'
-    bintrayName = 'com.airwalllex.android.fingerprinting'
-    licenseCode = 'MIT'
-    tag = '1.0'
-}
+apply from: rootProject.file('publish.gradle')
 
 configurations.maybeCreate("default")
 def publishArtifact = artifacts.add("default", file('TrustDefender-5.0-96.aar'))
 
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+ext {
+    libraryVersion = '5.0-96'
+}
 
 bintray {
     user = properties.getProperty("bintray.user")
@@ -41,7 +30,6 @@ bintray {
         version {
             name = libraryVersion
             desc = libraryDescription
-            vcsTag = tag
         }
         publications = ['Publication']
     }
@@ -52,14 +40,14 @@ publishing {
         Publication(MavenPublication) {
             artifacts {
                 groupId publishedGroupId
-                artifactId artifactName
-                version artifactVersion
+                artifactId artifact
+                version libraryVersion
                 artifact publishArtifact
 
                 pom.withXml {
                     groupId publishedGroupId
-                    artifactId artifactName
-                    version artifactVersion
+                    artifactId artifact
+                    version libraryVersion
                 }
             }
         }
