@@ -6,7 +6,6 @@ import android.os.Bundle
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.ThreeDSecureLookup
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
@@ -18,7 +17,7 @@ import org.json.JSONArray
 
 internal object ThreeDSecure {
 
-    const val THREE_DS_RETURN_URL = "http://com.airwallex.android"
+    const val THREE_DS_RETURN_URL = "http://requestbin.net/r/uu7y0yuu"
 
     /**
      * Configure Cardinal Mobile SDK
@@ -104,8 +103,11 @@ internal object ThreeDSecure {
                 // 1.0 Flow
                 val payload = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_PAYLOAD)
                 Logger.debug("3DS 1 response payload: $payload")
-
-                // TODO
+                if (payload != null) {
+                    threeDSecureCallback.onSuccess(payload)
+                } else {
+                    threeDSecureCallback.onFailed(AirwallexError(message = "3DS failed"))
+                }
             }
             ThreeDSecureType.THREE_D_SECURE_2 -> {
                 // 2.0 Flow
@@ -121,7 +123,7 @@ internal object ThreeDSecure {
                 }
                 when (actionCode) {
                     CardinalActionCode.FAILURE, CardinalActionCode.SUCCESS, CardinalActionCode.NOACTION -> {
-                        threeDSecureCallback.onSuccess(validateResponse)
+                        threeDSecureCallback.onSuccess(validateResponse.payment.processorTransactionId)
                     }
                     CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> {
                         threeDSecureCallback.onFailed(AirwallexError(message = validateResponse.errorDescription))

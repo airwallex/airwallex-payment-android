@@ -98,7 +98,7 @@ class Airwallex internal constructor(
                                         prepareThreeDSecureFlow(
                                             activity = activity,
                                             params = params,
-                                            jwt = jwt,
+                                            jwt = JWTUtils.generateJWT(),
                                             listener = listener
                                         )
                                     } else {
@@ -209,18 +209,20 @@ class Airwallex internal constructor(
                             val dsData =
                                 requireNotNull(response.latestPaymentAttempt?.authenticationData?.dsData)
 
+                            Logger.debug("3DS Version: ${dsData.version}")
+
                             val threeDSecureLookup =
                                 ThreeDSecureLookup(transactionId, req, acs, dsData)
 
                             val fragment = ThreeDSecureFragment.newInstance(activity)
                             fragment.threeDSecureCallback = object : ThreeDSecureCallback {
-                                override fun onSuccess(validateResponse: ValidateResponse) {
+                                override fun onSuccess(processorTransactionId: String) {
                                     // Authorization transactionId
                                     paymentManager.confirmPaymentIntent(
                                         buildCardPaymentIntentOptions(
                                             params = params,
                                             threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
-                                                .setTransactionId(validateResponse.payment?.processorTransactionId)
+                                                .setTransactionId(processorTransactionId)
                                                 .setReturnUrl(THREE_DS_RETURN_URL)
                                                 .build()
                                         ),
