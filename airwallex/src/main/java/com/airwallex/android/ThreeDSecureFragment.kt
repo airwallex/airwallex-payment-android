@@ -4,15 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.AirwallexError
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 
 internal class ThreeDSecureFragment : Fragment() {
 
-    internal var onActivityResultCompletion: ((validateResponse: ValidateResponse?, exception: AirwallexException?) -> Unit)? =
-        null
+    internal lateinit var threeDSecureCallback: ThreeDSecureCallback
 
     companion object {
         private const val AIRWALLEX_FRAGMENT_TAG = "AirwallexFragmentTag"
@@ -40,14 +36,9 @@ internal class ThreeDSecureFragment : Fragment() {
             data != null
         ) {
             try {
-                ThreeDSecure.onActivityResult(data) { validateResponse, exception ->
-                    onActivityResultCompletion?.invoke(validateResponse, exception)
-                }
+                ThreeDSecure.onActivityResult(data, threeDSecureCallback)
             } catch (e: Exception) {
-                onActivityResultCompletion?.invoke(
-                    null,
-                    ThreeDSException(AirwallexError(message = e.localizedMessage))
-                )
+                threeDSecureCallback.onFailed(AirwallexError(message = e.localizedMessage))
             }
         }
     }

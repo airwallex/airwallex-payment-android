@@ -3,8 +3,6 @@ package com.airwallex.android
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.ThreeDSecureLookup
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
@@ -100,13 +98,15 @@ internal object ThreeDSecure {
 
     internal fun onActivityResult(
         data: Intent,
-        completion: (validateResponse: ValidateResponse?, exception: AirwallexException?) -> Unit
+        threeDSecureCallback: ThreeDSecureCallback
     ) {
         when (data.getSerializableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_TYPE) as? ThreeDSecureType) {
             ThreeDSecureType.THREE_D_SECURE_1 -> {
                 // 1.0 Flow
                 val payload = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_PAYLOAD)
                 Logger.debug("3DS 1 response payload: $payload")
+
+                // TODO
             }
             ThreeDSecureType.THREE_D_SECURE_2 -> {
                 // 2.0 Flow
@@ -117,27 +117,18 @@ internal object ThreeDSecure {
                 Logger.debug("3DS 2 response code: $actionCode")
 
                 if (actionCode == null) {
-                    completion.invoke(
-                        validateResponse,
-                        ThreeDSException(AirwallexError(message = "No 3DS 2 response code from Cardinal"))
-                    )
+                    threeDSecureCallback.onFailed(AirwallexError(message = "No 3DS response code from Cardinal"))
                     return
                 }
                 when (actionCode) {
                     CardinalActionCode.FAILURE, CardinalActionCode.SUCCESS, CardinalActionCode.NOACTION -> {
-                        completion.invoke(validateResponse, null)
+                        threeDSecureCallback.onSuccess(validateResponse)
                     }
                     CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> {
-                        completion.invoke(
-                            validateResponse,
-                            ThreeDSException(AirwallexError(message = validateResponse.errorDescription))
-                        )
+                        threeDSecureCallback.onFailed(AirwallexError(message = validateResponse.errorDescription))
                     }
                     CardinalActionCode.CANCEL -> {
-                        completion.invoke(
-                            validateResponse,
-                            ThreeDSException(AirwallexError(message = validateResponse.errorDescription))
-                        )
+                        threeDSecureCallback.onFailed(AirwallexError(message = "3DS canceled"))
                     }
                 }
             }

@@ -6,6 +6,7 @@ import com.airwallex.android.ThreeDSecure.THREE_DS_RETURN_URL
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.*
+import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import java.util.*
 
 /**
@@ -212,21 +213,23 @@ class Airwallex internal constructor(
                                 ThreeDSecureLookup(transactionId, req, acs, dsData)
 
                             val fragment = ThreeDSecureFragment.newInstance(activity)
-                            fragment.onActivityResultCompletion = { validateResponse, exception ->
-                                if (exception != null) {
-                                    listener.onFailed(exception)
-                                } else {
+                            fragment.threeDSecureCallback = object : ThreeDSecureCallback {
+                                override fun onSuccess(validateResponse: ValidateResponse) {
                                     // Authorization transactionId
                                     paymentManager.confirmPaymentIntent(
                                         buildCardPaymentIntentOptions(
                                             params = params,
                                             threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
-                                                .setTransactionId(validateResponse?.payment?.processorTransactionId)
+                                                .setTransactionId(validateResponse.payment?.processorTransactionId)
                                                 .setReturnUrl(THREE_DS_RETURN_URL)
                                                 .build()
                                         ),
                                         listener
                                     )
+                                }
+
+                                override fun onFailed(exception: AirwallexError) {
+                                    listener.onFailed(ThreeDSException(exception))
                                 }
                             }
 
