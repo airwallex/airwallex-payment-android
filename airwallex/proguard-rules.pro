@@ -25,6 +25,8 @@
 -keep class com.threatmetrix.TrustDefender.** { *; }
 
 # Rules for TrustDefender
+-keep class com.threatmetrix.TrustDefender.** { *; }
+# Required to suppress warning messages about ThreatMetrix SDK
 -dontwarn com.threatmetrix.TrustDefender.**
 
 # Rules for Cardinal
