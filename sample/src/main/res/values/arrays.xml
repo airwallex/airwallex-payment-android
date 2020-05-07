@@ -8,4 +8,8 @@
         <item>AU(wxfad13fd6681a62b0)</item>
         <item>HK(wx4c86d73fe4f82431)</item>
     </string-array>
+    <string-array name="array_three_d_secure_id">
+        <item>STAGING</item>
+        <item>PRODUCTION</item>
+    </string-array>
 </resources>

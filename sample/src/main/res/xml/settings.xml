@@ -55,4 +55,12 @@
             android:title="@string/wechat_app_signature" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/three_d_secure">
+        <ListPreference
+            android:dialogTitle="@string/three_d_secure_id"
+            android:entries="@array/array_three_d_secure_id"
+            android:entryValues="@array/array_three_d_secure_id"
+            android:key="@string/three_d_secure_id"
+            android:title="@string/three_d_secure_id" />
+    </PreferenceCategory>
 </PreferenceScreen>

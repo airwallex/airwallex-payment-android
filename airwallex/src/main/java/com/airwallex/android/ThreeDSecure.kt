@@ -25,8 +25,7 @@ internal object ThreeDSecure {
      */
     private fun configureCardinal(applicationContext: Context) {
         val cardinalConfigurationParameters = CardinalConfigurationParameters()
-        // TODO should change to PRO when release
-        cardinalConfigurationParameters.environment = CardinalEnvironment.STAGING
+        cardinalConfigurationParameters.environment = AirwallexPlugins.threeDSecureEnv
         cardinalConfigurationParameters.requestTimeout = 8000
         cardinalConfigurationParameters.challengeTimeout = 5
 
