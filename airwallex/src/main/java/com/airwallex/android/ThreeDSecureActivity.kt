@@ -74,7 +74,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun finishThreeDSecure1(payload: String?) {
+    private fun finishThreeDSecure1(payload: String? = null) {
         val result = Intent()
         result.putExtra(EXTRA_THREE_PAYLOAD, payload)
 
