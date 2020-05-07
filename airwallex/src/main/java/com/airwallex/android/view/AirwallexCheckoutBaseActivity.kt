@@ -29,14 +29,14 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
             PaymentMethodType.WECHAT -> {
                 ConfirmPaymentIntentParams.createWeChatParams(
                     paymentIntentId = paymentIntent.id,
-                    clientSecret = paymentIntent.clientSecret,
+                    clientSecret = requireNotNull(paymentIntent.clientSecret),
                     customerId = paymentIntent.customerId
                 )
             }
             PaymentMethodType.CARD -> {
                 ConfirmPaymentIntentParams.createCardParams(
                     paymentIntentId = paymentIntent.id,
-                    clientSecret = paymentIntent.clientSecret,
+                    clientSecret = requireNotNull(paymentIntent.clientSecret),
                     paymentMethodReference = PaymentMethodReference(
                         requireNotNull(paymentMethod.id),
                         requireNotNull(cvc)
