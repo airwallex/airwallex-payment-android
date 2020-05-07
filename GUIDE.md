@@ -39,6 +39,19 @@ To install the SDK, in your app-level `build.gradle`, add the following:
     }
 ```
 
+Additionally, add the following Maven repository and (non-sensitive) credentials to your app-level `build.gralde`:
+```groovy
+repositories {
+    maven {
+        url "https://cardinalcommerce.bintray.com/android"
+        credentials {
+            username 'qiao.zhao@cardinalcommerce'
+            password '99796fb351b999db8dced5b3f6ba6015efc862e7'
+        }
+    }
+}
+```
+
 - Configuration the SDK (optional)
 We provide some parameters that can be used to debug the SDK, better to be called in `Application`
 

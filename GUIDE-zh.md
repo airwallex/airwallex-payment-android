@@ -39,6 +39,19 @@ Airwallex Android SDK 支持Android 19及以上版本
     }
 ```
 
+此外，将以下Maven repository 和 credentials 添加到根目录下的`build.gralde`:
+```groovy
+repositories {
+    maven {
+        url "https://cardinalcommerce.bintray.com/android"
+        credentials {
+            username 'qiao.zhao@cardinalcommerce'
+            password '99796fb351b999db8dced5b3f6ba6015efc862e7'
+        }
+    }
+}
+```
+
 - 配置SDK (可选的)
 我们提供了一些参数，可用于调试SDK的，最好在`Application`中调用以下方法
 
