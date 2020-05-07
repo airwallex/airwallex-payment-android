@@ -13,7 +13,6 @@ Airwallx Android SDK 可以很方便得在你的Android用用中添加支付功�
 ```groovy
 dependencies {
     implementation 'com.airwallex:airwallex-core:1.0.0'
-    implementation 'com.airwallex:airwallex-threeds:1.0.0'
 }
 ```
 

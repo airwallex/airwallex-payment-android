@@ -15,7 +15,6 @@ Add the dependency in your `build.gradle`.
 ```groovy
 dependencies {
     implementation 'com.airwallex:airwallex-core:1.0.0'
-    implementation 'com.airwallex:airwallex-threeds:1.0.0'
 }
 ```
 
