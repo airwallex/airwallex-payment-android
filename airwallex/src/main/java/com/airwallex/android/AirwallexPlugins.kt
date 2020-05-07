@@ -1,5 +1,6 @@
 package com.airwallex.android
 
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -33,6 +34,15 @@ internal object AirwallexPlugins {
         get() {
             return configuration.baseUrl
         }
+
+    /**
+     * 3DS Environment
+     */
+    internal val threeDSecureEnv: CardinalEnvironment
+        get() {
+            return configuration.threeDSecureEnv
+        }
+
 
     /**
      * Provide [AirwallexHttpClient] to request the Airwallex API

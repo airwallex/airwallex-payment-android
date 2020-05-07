@@ -113,4 +113,15 @@ object Settings {
             )
                 ?: defaultAppSignature
         }
+
+    val threeDSecureEnv: String
+        get() {
+            val defaultThreeDSecureEnv =
+                SampleApplication.instance.resources.getStringArray(R.array.array_three_d_secure_id)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.three_d_secure_id),
+                defaultThreeDSecureEnv
+            )
+                ?: defaultThreeDSecureEnv
+        }
 }
