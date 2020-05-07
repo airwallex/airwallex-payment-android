@@ -28,7 +28,7 @@ bintray {
         publish = true
         publicDownloadNumbers = true
         version {
-            name = libraryVersion
+            name = libraryName
             desc = libraryDescription
         }
         publications = ['Publication']

@@ -23,4 +23,10 @@
 # Rules for Airwallex
 -keep class com.airwallex.android.** { *; }
 -keep class com.threatmetrix.TrustDefender.** { *; }
+
+# Rules for TrustDefender
 -dontwarn com.threatmetrix.TrustDefender.**
+
+# Rules for Cardinal
+-keep class org.bouncycastle.**
+-keep class com.nimbusds.**
