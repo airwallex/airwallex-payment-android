@@ -6,7 +6,6 @@ import com.airwallex.android.ThreeDSecure.THREE_DS_RETURN_URL
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.*
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import java.util.*
 
 /**
@@ -98,7 +97,7 @@ class Airwallex internal constructor(
                                         prepareThreeDSecureFlow(
                                             activity = activity,
                                             params = params,
-                                            jwt = JWTUtils.generateJWT(),
+                                            jwt = jwt,
                                             listener = listener
                                         )
                                     } else {
@@ -200,6 +199,7 @@ class Airwallex internal constructor(
                         override fun onSuccess(response: PaymentIntent) {
                             if (response.nextAction == null) {
                                 // No need to step-up authentication
+                                Logger.debug("Request 3DS Lookup response, nextAction is null")
                                 listener.onSuccess(response)
                                 return
                             }
