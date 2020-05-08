@@ -15,16 +15,16 @@ import java.net.URLEncoder
 
 internal class ThreeDSecureActivity : AppCompatActivity() {
 
+    private val threeDSecureLookup: ThreeDSecureLookup by lazy {
+        requireNotNull(intent.getParcelableExtra<ThreeDSecureLookup>(EXTRA_THREE_D_SECURE_LOOKUP))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val extras = intent.extras
-        val threeDSecureLookup: ThreeDSecureLookup =
-            requireNotNull(extras?.getParcelable(EXTRA_THREE_D_SECURE_LOOKUP))
-
         if (threeDSecureLookup.dsData.version?.startsWith("1.") == true) {
             if (threeDSecureLookup.payload == null || threeDSecureLookup.acsUrl == null) {
-                finishThreeDSecure1(null)
+                finishThreeDSecure1(null, false)
                 return
             }
 
@@ -32,12 +32,12 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             webView.webViewClient =
                 ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
                     override fun onWebViewConfirmation(payload: String) {
-                        finishThreeDSecure1(payload)
+                        finishThreeDSecure1(payload, false)
                     }
 
                     override fun onWebViewError(error: WebViewConnectionException) {
                         // Handle WebView connection failed
-                        finishThreeDSecure1(null)
+                        finishThreeDSecure1(null, false)
                     }
                 })
             webView.webChromeClient = WebChromeClient()
@@ -58,6 +58,13 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        if (threeDSecureLookup.dsData.version?.startsWith("1.") == true) {
+            finishThreeDSecure1(null, true)
+        }
+        super.onBackPressed()
+    }
+
     private fun finishThreeDSecure2(validateResponse: ValidateResponse?, jwt: String?) {
         val result = Intent()
         result.putExtra(EXTRA_THREE_D_JWT, jwt)
@@ -74,9 +81,10 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun finishThreeDSecure1(payload: String? = null) {
+    private fun finishThreeDSecure1(payload: String? = null, cancel: Boolean) {
         val result = Intent()
         result.putExtra(EXTRA_THREE_PAYLOAD, payload)
+        result.putExtra(EXTRA_THREE_CANCEL, cancel)
 
         val bundle = Bundle()
         bundle.putSerializable(
@@ -101,5 +109,6 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
 
         // 1.0
         const val EXTRA_THREE_PAYLOAD = "EXTRA_THREE_PAYLOAD"
+        const val EXTRA_THREE_CANCEL = "EXTRA_THREE_CANCEL"
     }
 }
