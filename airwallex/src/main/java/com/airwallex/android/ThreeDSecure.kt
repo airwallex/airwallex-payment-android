@@ -87,11 +87,8 @@ internal object ThreeDSecure {
         fragment: ThreeDSecureFragment,
         threeDSecureLookup: ThreeDSecureLookup
     ) {
-        val extras = Bundle()
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup)
-
         val intent = Intent(fragment.context, ThreeDSecureActivity::class.java)
-        intent.putExtras(extras)
+        intent.putExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup)
 
         fragment.startActivityForResult(intent, ThreeDSecureActivity.THREE_D_SECURE)
     }
@@ -104,11 +101,16 @@ internal object ThreeDSecure {
             ThreeDSecureType.THREE_D_SECURE_1 -> {
                 // 1.0 Flow
                 val payload = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_PAYLOAD)
+                val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
                 Logger.debug("3DS 1 response payload: $payload")
                 if (payload != null) {
                     threeDSecureCallback.onSuccess(payload)
                 } else {
-                    threeDSecureCallback.onFailed(AirwallexError(message = "3DS failed"))
+                    if (cancel) {
+                        threeDSecureCallback.onFailed(AirwallexError(message = "3DS canceled"))
+                    } else {
+                        threeDSecureCallback.onFailed(AirwallexError(message = "3DS failed"))
+                    }
                 }
             }
             ThreeDSecureType.THREE_D_SECURE_2 -> {
