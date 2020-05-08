@@ -60,6 +60,7 @@ internal object ThreeDSecure {
              * their order before CCA is ready.
              */
             override fun onSetupCompleted(consumerSessionId: String) {
+                Logger.debug("onSetupCompleted $consumerSessionId")
                 onSetupCompleted.invoke(consumerSessionId, null)
             }
 
@@ -70,6 +71,7 @@ internal object ThreeDSecure {
              * @param serverJWT will be an empty
              */
             override fun onValidated(validateResponse: ValidateResponse, serverJWT: String?) {
+                Logger.debug("onValidated $serverJWT")
                 onSetupCompleted.invoke(null, validateResponse)
             }
         })
