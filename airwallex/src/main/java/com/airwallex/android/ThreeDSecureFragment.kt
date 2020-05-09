@@ -8,7 +8,28 @@ import com.airwallex.android.model.AirwallexError
 
 internal class ThreeDSecureFragment : Fragment() {
 
-    internal lateinit var threeDSecureCallback: ThreeDSecureCallback
+    internal var threeDSecureCallback: ThreeDSecureCallback? = null
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK &&
+            requestCode == ThreeDSecureActivity.THREE_D_SECURE &&
+            data != null
+        ) {
+            threeDSecureCallback?.let {
+                try {
+                    ThreeDSecure.onActivityResult(data, it)
+                } catch (e: Exception) {
+                    it.onFailed(AirwallexError(message = e.localizedMessage))
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        threeDSecureCallback = null
+        super.onDestroy()
+    }
 
     companion object {
         private const val AIRWALLEX_FRAGMENT_TAG = "AirwallexFragmentTag"
@@ -26,20 +47,6 @@ internal class ThreeDSecureFragment : Fragment() {
                 manager.executePendingTransactions()
             }
             return fragment
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK &&
-            requestCode == ThreeDSecureActivity.THREE_D_SECURE &&
-            data != null
-        ) {
-            try {
-                ThreeDSecure.onActivityResult(data, threeDSecureCallback)
-            } catch (e: Exception) {
-                threeDSecureCallback.onFailed(AirwallexError(message = e.localizedMessage))
-            }
         }
     }
 }

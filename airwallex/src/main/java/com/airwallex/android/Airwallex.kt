@@ -89,19 +89,19 @@ class Airwallex internal constructor(
                                 }
 
                                 override fun onSuccess(response: PaymentIntent) {
-                                    val jwt = response.nextAction?.data?.get("jwt") as? String
+                                    val serverJwt = response.nextAction?.data?.get("jwt") as? String
 
-                                    if (jwt != null) {
-                                        Logger.debug("Prepare 3DS Flow, jwt: $jwt")
+                                    if (serverJwt != null) {
+                                        Logger.debug("Prepare 3DS Flow, serverJwt: $serverJwt")
                                         // 3D Secure Flow
                                         prepareThreeDSecureFlow(
                                             activity = activity,
                                             params = params,
-                                            jwt = jwt,
+                                            serverJwt = serverJwt,
                                             listener = listener
                                         )
                                     } else {
-                                        Logger.debug("Don't need the 3DS")
+                                        Logger.debug("Don't need the 3DS Flow")
                                         listener.onSuccess(response)
                                     }
                                 }
@@ -170,19 +170,20 @@ class Airwallex internal constructor(
     private fun prepareThreeDSecureFlow(
         activity: FragmentActivity,
         params: ConfirmPaymentIntentParams,
-        jwt: String,
+        serverJwt: String,
         listener: PaymentListener<PaymentIntent>
     ) {
+        // Step 1: Request `referenceId` by `serverJwt`
         ThreeDSecure.performCardinalInitialize(
             activity.applicationContext,
-            jwt
+            serverJwt
         ) { referenceId, validateResponse ->
             if (validateResponse != null) {
                 activity.runOnUiThread {
                     listener.onFailed(ThreeDSException(AirwallexError(message = validateResponse.errorDescription)))
                 }
             } else {
-                // Request 3DS lookup response
+                // Step2: Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`
                 paymentManager.confirmPaymentIntent(
                     buildCardPaymentIntentOptions(
                         params = params,
@@ -206,18 +207,18 @@ class Airwallex internal constructor(
                             val transactionId = response.nextAction.data?.get("xid") as? String
                             val req = response.nextAction.data?.get("req") as? String
                             val acs = response.nextAction.data?.get("acs") as? String
-                            val dsData =
-                                requireNotNull(response.latestPaymentAttempt?.authenticationData?.dsData)
+                            val dsData = requireNotNull(response.latestPaymentAttempt?.authenticationData?.dsData)
 
                             Logger.debug("3DS Version: ${dsData.version}")
 
-                            val threeDSecureLookup =
-                                ThreeDSecureLookup(transactionId, req, acs, dsData)
-
+                            // Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input
+                            val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, dsData)
                             val fragment = ThreeDSecureFragment.newInstance(activity)
+                            ThreeDSecure.performCardinalAuthentication(fragment, threeDSecureLookup)
+
                             fragment.threeDSecureCallback = object : ThreeDSecureCallback {
                                 override fun onSuccess(processorTransactionId: String) {
-                                    // Authorization transactionId
+                                    // Step 4: After user input, will receive `processorTransactionId`. Then call `confirmPaymentIntent` method
                                     paymentManager.confirmPaymentIntent(
                                         buildCardPaymentIntentOptions(
                                             params = params,
@@ -234,11 +235,6 @@ class Airwallex internal constructor(
                                     listener.onFailed(ThreeDSException(exception))
                                 }
                             }
-
-                            ThreeDSecure.performCardinalAuthentication(
-                                fragment,
-                                threeDSecureLookup
-                            )
                         }
                     }
                 )
