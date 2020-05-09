@@ -165,7 +165,12 @@ class Airwallex internal constructor(
     }
 
     /**
-     * Prepare 3DS Flow
+     * 3DS Flow.
+     *
+     * Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK
+     * Step 2: Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`
+     * Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input. After user input, will receive `processorTransactionId`.
+     * Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate
      */
     private fun prepareThreeDSecureFlow(
         activity: FragmentActivity,
@@ -173,7 +178,7 @@ class Airwallex internal constructor(
         serverJwt: String,
         listener: PaymentListener<PaymentIntent>
     ) {
-        // Step 1: Request `referenceId` by `serverJwt`
+        // Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK
         ThreeDSecure.performCardinalInitialize(
             activity.applicationContext,
             serverJwt
@@ -183,7 +188,7 @@ class Airwallex internal constructor(
                     listener.onFailed(ThreeDSException(AirwallexError(message = validateResponse.errorDescription)))
                 }
             } else {
-                // Step2: Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`
+                // Step 2: Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`
                 paymentManager.confirmPaymentIntent(
                     buildCardPaymentIntentOptions(
                         params = params,
@@ -211,14 +216,14 @@ class Airwallex internal constructor(
 
                             Logger.debug("3DS Version: ${dsData.version}")
 
-                            // Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input
+                            // Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input. After user input, will receive `processorTransactionId`.
                             val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, dsData)
                             val fragment = ThreeDSecureFragment.newInstance(activity)
                             ThreeDSecure.performCardinalAuthentication(fragment, threeDSecureLookup)
 
                             fragment.threeDSecureCallback = object : ThreeDSecureCallback {
                                 override fun onSuccess(processorTransactionId: String) {
-                                    // Step 4: After user input, will receive `processorTransactionId`. Then call `confirmPaymentIntent` method
+                                    // Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate
                                     paymentManager.confirmPaymentIntent(
                                         buildCardPaymentIntentOptions(
                                             params = params,
