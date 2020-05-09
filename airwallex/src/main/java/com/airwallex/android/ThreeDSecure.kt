@@ -2,7 +2,6 @@ package com.airwallex.android
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.ThreeDSecureLookup
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
