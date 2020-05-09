@@ -43,7 +43,6 @@ internal object AirwallexPlugins {
             return configuration.threeDSecureEnv
         }
 
-
     /**
      * Provide [AirwallexHttpClient] to request the Airwallex API
      */
