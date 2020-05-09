@@ -18,10 +18,6 @@ internal class CardCvcEditText @JvmOverloads constructor(
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
 ) : TextInputEditText(context, attrs, defStyleAttr) {
 
-    companion object {
-        const val VALID_CVC_LENGTH = 3
-    }
-
     /**
      * Return the cvc value if valid, otherwise null.
      */
@@ -53,5 +49,9 @@ internal class CardCvcEditText @JvmOverloads constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE)
         }
+    }
+
+    companion object {
+        const val VALID_CVC_LENGTH = 3
     }
 }
