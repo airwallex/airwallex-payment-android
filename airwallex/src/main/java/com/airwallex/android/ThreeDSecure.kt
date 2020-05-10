@@ -46,7 +46,7 @@ internal object ThreeDSecure {
     internal fun performCardinalInitialize(
         applicationContext: Context,
         serverJwt: String,
-        onSetupCompleted: (consumerSessionId: String?, validateResponse: ValidateResponse?) -> Unit
+        completion: (consumerSessionId: String?, validateResponse: ValidateResponse?) -> Unit
     ) {
         configureCardinal(applicationContext)
 
@@ -60,7 +60,7 @@ internal object ThreeDSecure {
              */
             override fun onSetupCompleted(consumerSessionId: String) {
                 Logger.debug("onSetupCompleted $consumerSessionId")
-                onSetupCompleted.invoke(consumerSessionId, null)
+                completion.invoke(consumerSessionId, null)
             }
 
             /**
@@ -71,7 +71,7 @@ internal object ThreeDSecure {
              */
             override fun onValidated(validateResponse: ValidateResponse, serverJWT: String?) {
                 Logger.debug("onValidated")
-                onSetupCompleted.invoke(null, validateResponse)
+                completion.invoke(null, validateResponse)
             }
         })
     }

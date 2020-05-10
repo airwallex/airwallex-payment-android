@@ -1,11 +1,12 @@
 package com.airwallex.android
 
 import android.app.Activity
+import android.app.Fragment
+import android.app.FragmentManager
 import android.content.Intent
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.airwallex.android.model.AirwallexError
 
+@Suppress("DEPRECATION")
 internal class ThreeDSecureFragment : Fragment() {
 
     internal var threeDSecureCallback: ThreeDSecureCallback? = null
@@ -34,8 +35,7 @@ internal class ThreeDSecureFragment : Fragment() {
     companion object {
         private const val AIRWALLEX_FRAGMENT_TAG = "AirwallexFragmentTag"
 
-        fun newInstance(activity: FragmentActivity): ThreeDSecureFragment {
-            val manager = activity.supportFragmentManager
+        fun newInstance(manager: FragmentManager): ThreeDSecureFragment {
             var fragment: ThreeDSecureFragment? =
                 manager.findFragmentByTag(AIRWALLEX_FRAGMENT_TAG) as? ThreeDSecureFragment
             if (fragment == null) {
