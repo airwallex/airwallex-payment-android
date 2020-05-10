@@ -1,7 +1,7 @@
 package com.airwallex.android
 
+import android.app.Activity
 import androidx.annotation.UiThread
-import androidx.fragment.app.FragmentActivity
 import com.airwallex.android.ThreeDSecure.THREE_DS_RETURN_URL
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.exception.ThreeDSException
@@ -50,7 +50,7 @@ class Airwallex internal constructor(
      */
     @UiThread
     fun confirmPaymentIntent(
-        activity: FragmentActivity,
+        activity: Activity,
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
@@ -173,12 +173,12 @@ class Airwallex internal constructor(
      * Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate
      */
     private fun prepareThreeDSecureFlow(
-        activity: FragmentActivity,
+        activity: Activity,
         params: ConfirmPaymentIntentParams,
         serverJwt: String,
         listener: PaymentListener<PaymentIntent>
     ) {
-        // Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK
+        Logger.debug("Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK")
         ThreeDSecure.performCardinalInitialize(
             activity.applicationContext,
             serverJwt
@@ -188,7 +188,7 @@ class Airwallex internal constructor(
                     listener.onFailed(ThreeDSException(AirwallexError(message = validateResponse.errorDescription)))
                 }
             } else {
-                // Step 2: Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`
+                Logger.debug("Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`")
                 paymentManager.confirmPaymentIntent(
                     buildCardPaymentIntentOptions(
                         params = params,
@@ -216,14 +216,14 @@ class Airwallex internal constructor(
 
                             Logger.debug("3DS Version: ${dsData.version}")
 
-                            // Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input. After user input, will receive `processorTransactionId`.
+                            Logger.debug("Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input. After user input, will receive `processorTransactionId`.")
                             val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, dsData)
-                            val fragment = ThreeDSecureFragment.newInstance(activity)
+                            val fragment = ThreeDSecureFragment.newInstance(activity.fragmentManager)
                             ThreeDSecure.performCardinalAuthentication(fragment, threeDSecureLookup)
 
                             fragment.threeDSecureCallback = object : ThreeDSecureCallback {
                                 override fun onSuccess(processorTransactionId: String) {
-                                    // Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate
+                                    Logger.debug("Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate")
                                     paymentManager.confirmPaymentIntent(
                                         buildCardPaymentIntentOptions(
                                             params = params,
