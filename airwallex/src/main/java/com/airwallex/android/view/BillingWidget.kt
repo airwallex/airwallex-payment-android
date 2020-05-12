@@ -51,7 +51,6 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
                 return Billing.Builder()
                     .setFirstName(shipping.firstName)
                     .setLastName(shipping.lastName)
-                    .setEmail("jim631@sina.com") // TODO ERROR Server without email field
                     .setPhone(shipping.phoneNumber)
                     .setAddress(
                         shipping.address?.apply {
@@ -99,8 +98,7 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
                 atlState.value.isNotEmpty() &&
                 atlCity.value.isNotEmpty() &&
                 atlStreetAddress.value.isNotEmpty() &&
-                atlEmail.value.isNotEmpty() &&
-                Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches()
+                (atlEmail.value.isEmpty() || atlEmail.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches())
         }
 
     init {
@@ -157,16 +155,10 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
 
         atlEmail.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                when {
-                    atlEmail.value.isEmpty() -> {
-                        atlEmail.error = resources.getString(R.string.empty_email)
-                    }
-                    !Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches() -> {
-                        atlEmail.error = resources.getString(R.string.invalid_email)
-                    }
-                    else -> {
-                        atlEmail.error = null
-                    }
+                if (atlEmail.value.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches()) {
+                    atlEmail.error = resources.getString(R.string.invalid_email)
+                } else {
+                    atlEmail.error = null
                 }
             } else {
                 atlEmail.error = null
