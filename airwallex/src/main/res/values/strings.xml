@@ -19,7 +19,7 @@
     <string name="shipping_zip_code_hint">Zip code (optional)</string>
     <string name="shipping_city_name_hint">City</string>
     <string name="shipping_state_name_hint">State</string>
-    <string name="contact_email_hint">Email</string>
+    <string name="contact_email_hint">Email (optional)</string>
     <string name="contact_phone_number_hint">Phone number (optional)</string>
     <string name="card_name_hint">Name on card</string>
 
