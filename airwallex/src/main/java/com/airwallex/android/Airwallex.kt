@@ -1,6 +1,7 @@
 package com.airwallex.android
 
 import android.app.Activity
+import android.os.Build
 import androidx.annotation.UiThread
 import com.airwallex.android.ThreeDSecure.THREE_DS_RETURN_URL
 import com.airwallex.android.exception.AirwallexException
@@ -62,9 +63,10 @@ class Airwallex internal constructor(
                 override fun onResponse(sessionId: String) {
                     device = Device.Builder()
                         .setDeviceId(sessionId)
-                        .setCookiesAccepted("true")
-                        .setHostName("www.airwallex.com")
-                        .setHttpBrowserType("chrome")
+                        .setDeviceModel(Build.MODEL)
+                        .setSdkVersion(AirwallexPlugins.getSdkVersion(activity))
+                        .setPlatformType(PLATFORM)
+                        .setDeviceOS("$PLATFORM ${Build.VERSION.RELEASE}")
                         .build()
 
                     val options = when (params.paymentMethodType) {
@@ -322,6 +324,8 @@ class Airwallex internal constructor(
     companion object {
         // The default url, that you can change in the constructor for test on different environments
         internal const val BASE_URL = "https://pci-api.airwallex.com"
+
+        private const val PLATFORM = "Android"
 
         /**
          * Initialize some global configurations, better to be called on Application

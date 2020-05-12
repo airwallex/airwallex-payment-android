@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.airwallex.android">
 
-    <application
-        android:networkSecurityConfig="@xml/network_security_config">
+    <application android:networkSecurityConfig="@xml/network_security_config">
         <activity
             android:name="com.airwallex.android.view.PaymentMethodsActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme" />
 
         <activity
             android:name="com.airwallex.android.view.PaymentCheckoutActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme" />
 
         <activity
             android:name="com.airwallex.android.view.AddPaymentMethodActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
         <activity
             android:name="com.airwallex.android.view.PaymentShippingActivity"
+            android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
-        <activity android:name=".ThreeDSecureActivity"
-            android:theme="@style/AirwallexDefaultTheme"/>
+        <activity
+            android:name=".ThreeDSecureActivity"
+            android:theme="@style/AirwallexDefaultTheme" />
     </application>
 
 </manifest>

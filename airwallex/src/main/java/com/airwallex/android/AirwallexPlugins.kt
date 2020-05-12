@@ -1,5 +1,6 @@
 package com.airwallex.android
 
+import android.content.Context
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.google.gson.Gson
 import okhttp3.Interceptor
@@ -14,6 +15,11 @@ import java.util.concurrent.TimeUnit
 internal object AirwallexPlugins {
 
     private lateinit var configuration: AirwallexConfiguration
+
+    fun getSdkVersion(context: Context): String{
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        return packageInfo.versionName.toString()
+    }
 
     internal fun initialize(configuration: AirwallexConfiguration) {
         this.configuration = configuration
