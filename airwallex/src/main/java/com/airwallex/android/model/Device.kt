@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 /**
- * Device info. TODO `Need remove web fields` and add some fields for mobile
+ * Device info.
  */
 @Parcelize
 data class Device internal constructor(
@@ -13,43 +13,52 @@ data class Device internal constructor(
     @SerializedName("device_id")
     val deviceId: String? = null,
 
-    @SerializedName("host_name")
-    val hostName: String? = null,
+    @SerializedName("device_model")
+    val deviceModel: String? = null,
 
-    @SerializedName("cookies_accepted")
-    val cookiesAccepted: String? = null,
+    @SerializedName("sdk_version")
+    val sdkVersion: String? = null,
 
-    @SerializedName("http_browser_type")
-    val httpBrowserType: String? = null
+    @SerializedName("platform_type")
+    val platformType: String? = null,
+
+    @SerializedName("device_os")
+    val deviceOS: String? = null
 ) : AirwallexModel, Parcelable {
     class Builder : ObjectBuilder<Device> {
-        private var cookiesAccepted: String? = null
         private var deviceId: String? = null
-        private var hostName: String? = null
-        private var httpBrowserType: String? = null
-
-        fun setCookiesAccepted(cookiesAccepted: String?): Builder = apply {
-            this.cookiesAccepted = cookiesAccepted
-        }
+        private var deviceModel: String? = null
+        private var sdkVersion: String? = null
+        private var platformType: String? = null
+        private var deviceOS: String? = null
 
         fun setDeviceId(deviceId: String?): Builder = apply {
             this.deviceId = deviceId
         }
 
-        fun setHostName(hostName: String?): Builder = apply {
-            this.hostName = hostName
+        fun setDeviceModel(deviceModel: String?): Builder = apply {
+            this.deviceModel = deviceModel
         }
 
-        fun setHttpBrowserType(httpBrowserType: String?): Builder = apply {
-            this.httpBrowserType = httpBrowserType
+        fun setSdkVersion(sdkVersion: String?): Builder = apply {
+            this.sdkVersion = sdkVersion
+        }
+
+        fun setPlatformType(platformType: String?): Builder = apply {
+            this.platformType = platformType
+        }
+
+        fun setDeviceOS(deviceOS: String?): Builder = apply {
+            this.deviceOS = deviceOS
         }
 
         override fun build(): Device {
             return Device(
-                cookiesAccepted = cookiesAccepted,
                 deviceId = deviceId,
-                hostName = hostName,
-                httpBrowserType = httpBrowserType
+                deviceModel = deviceModel,
+                sdkVersion = sdkVersion,
+                platformType = platformType,
+                deviceOS = deviceOS
             )
         }
     }
