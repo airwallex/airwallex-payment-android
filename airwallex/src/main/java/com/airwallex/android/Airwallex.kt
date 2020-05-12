@@ -66,7 +66,7 @@ class Airwallex internal constructor(
                         .setDeviceModel(Build.MODEL)
                         .setSdkVersion(AirwallexPlugins.getSdkVersion(activity))
                         .setPlatformType(PLATFORM)
-                        .setDeviceOS("$PLATFORM ${Build.VERSION.RELEASE}")
+                        .setDeviceOS(Build.VERSION.RELEASE)
                         .build()
 
                     val options = when (params.paymentMethodType) {
