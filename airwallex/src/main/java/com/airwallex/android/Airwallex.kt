@@ -205,9 +205,8 @@ class Airwallex internal constructor(
                         }
 
                         override fun onSuccess(response: PaymentIntent) {
-                            if (response.nextAction == null) {
-                                // No need to step-up authentication
-                                Logger.debug("Request 3DS Lookup response, nextAction is null")
+                            if (response.status == PaymentIntentStatus.REQUIRES_CAPTURE || response.nextAction == null) {
+                                Logger.debug("Request 3DS Lookup response, doesn't need challenge")
                                 listener.onSuccess(response)
                                 return
                             }
