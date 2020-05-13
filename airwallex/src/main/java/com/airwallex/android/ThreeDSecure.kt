@@ -86,7 +86,7 @@ internal object ThreeDSecure {
         fragment: ThreeDSecureFragment,
         threeDSecureLookup: ThreeDSecureLookup
     ) {
-        val intent = Intent(fragment.context, ThreeDSecureActivity::class.java)
+        val intent = Intent(fragment.activity, ThreeDSecureActivity::class.java)
         intent.putExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup)
 
         fragment.startActivityForResult(intent, ThreeDSecureActivity.THREE_D_SECURE)
