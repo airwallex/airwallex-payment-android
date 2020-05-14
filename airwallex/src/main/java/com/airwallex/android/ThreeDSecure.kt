@@ -83,6 +83,7 @@ internal object ThreeDSecure {
      * @param fragment [ThreeDSecureFragment] will be responsible for handling callbacks to it's listeners
      * @param threeDSecureLookup Contains information about the 3DS verification request that will be invoked in this method.
      */
+    @Suppress("DEPRECATION")
     internal fun performCardinalAuthentication(
         fragment: ThreeDSecureFragment,
         threeDSecureLookup: ThreeDSecureLookup
@@ -115,16 +116,14 @@ internal object ThreeDSecure {
             }
             ThreeDSecureType.THREE_D_SECURE_2 -> {
                 // 2.0 Flow
-                val validateResponse =
-                    data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
+                val validateResponse = data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
 
-                Logger.debug("3DS 2 response processorTransactionId: ${validateResponse.payment.processorTransactionId}")
-
-                if (validateResponse.errorDescription.toLowerCase(Locale.getDefault()) == "success") {
-                    callback.onSuccess(validateResponse.payment.processorTransactionId)
+                if (validateResponse.actionCode != null && validateResponse.actionCode == CardinalActionCode.CANCEL) {
+                    callback.onFailed(AirwallexError(message = "3DS canceled"))
                 } else {
-                    if (validateResponse.actionCode != null && validateResponse.actionCode == CardinalActionCode.CANCEL) {
-                        callback.onFailed(AirwallexError(message = "3DS canceled"))
+                    if (validateResponse.errorDescription.toLowerCase(Locale.getDefault()) == "success") {
+                        Logger.debug("3DS 2 response processorTransactionId: ${validateResponse.payment.processorTransactionId}")
+                        callback.onSuccess(validateResponse.payment.processorTransactionId)
                     } else {
                         callback.onFailed(AirwallexError(message = validateResponse.errorDescription))
                     }
