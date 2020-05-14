@@ -17,7 +17,10 @@ import java.util.*
 
 internal object ThreeDSecure {
 
-    const val THREE_DS_RETURN_URL = "http://requestbin.net/r/uu7y0yuu"
+    // http://requestbin.net/
+    // RequestBin gives you a URL that will collect requests made to it and let you inspect them in a human-friendly way.
+    // Use RequestBin to see what your HTTP client is sending or to inspect and debug webhook requests.
+    const val THREE_DS_RETURN_URL = "http://requestbin.net/r/1jscu3v1"
 
     /**
      * Configure Cardinal Mobile SDK

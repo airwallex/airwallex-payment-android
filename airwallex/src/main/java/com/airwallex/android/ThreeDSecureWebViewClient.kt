@@ -7,8 +7,8 @@ internal class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
 
     override fun hasCallbackUrl(view: WebView?, url: String?): Boolean {
         Logger.debug(TAG, "Loading Url: $url")
-        if (url?.contains(ThreeDSecure.THREE_DS_RETURN_URL) == true) {
-            val payload = url.replace(ThreeDSecure.THREE_DS_RETURN_URL, "")
+        if (url?.contains("example") == true) {
+            val payload = url.replace("example", "")
             callbacks.onWebViewConfirmation(payload)
             return true
         }
