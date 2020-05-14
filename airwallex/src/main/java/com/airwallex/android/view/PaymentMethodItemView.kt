@@ -75,7 +75,7 @@ internal class PaymentMethodItemView constructor(
         } else {
             tvPaymentMethod.text = String.format(
                 "%s •••• %s",
-                paymentMethod.card?.brand?.toUpperCase(Locale.getDefault()),
+                paymentMethod.card?.brand?.toUpperCase(Locale.ROOT),
                 paymentMethod.card?.last4
             )
         }

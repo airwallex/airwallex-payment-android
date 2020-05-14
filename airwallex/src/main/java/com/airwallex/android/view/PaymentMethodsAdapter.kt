@@ -123,7 +123,7 @@ internal class PaymentMethodsAdapter(
             val method = paymentMethods[position - 1] ?: return
             val card = method.card ?: return
             itemView.tvCardInfo.text =
-                String.format("%s •••• %s", card.brand?.toUpperCase(Locale.getDefault()), card.last4)
+                String.format("%s •••• %s", card.brand?.toUpperCase(Locale.ROOT), card.last4)
             when (card.brand) {
                 CardBrand.Visa.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
                 CardBrand.MasterCard.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
