@@ -124,7 +124,7 @@ internal object ThreeDSecure {
                 if (validateResponse.actionCode != null && validateResponse.actionCode == CardinalActionCode.CANCEL) {
                     callback.onFailed(AirwallexError(message = "3DS canceled"))
                 } else {
-                    if (validateResponse.errorDescription.toLowerCase(Locale.getDefault()) == "success") {
+                    if (validateResponse.errorDescription.toLowerCase(Locale.ROOT) == "success") {
                         Logger.debug("3DS 2 response processorTransactionId: ${validateResponse.payment.processorTransactionId}")
                         callback.onSuccess(validateResponse.payment.processorTransactionId)
                     } else {
