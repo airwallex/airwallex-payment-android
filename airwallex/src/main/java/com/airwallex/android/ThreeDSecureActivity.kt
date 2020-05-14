@@ -3,7 +3,9 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.webkit.WebChromeClient
+import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.exception.WebViewConnectionException
 import com.airwallex.android.model.ThreeDSecureLookup
@@ -36,6 +38,9 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             supportActionBar?.setDisplayShowTitleEnabled(false)
             toolbar.setNavigationOnClickListener { onBackPressed() }
 
+            pbLoading.max = 100
+            pbLoading.progress = 1
+
             webView.webViewClient =
                 ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
                     override fun onWebViewConfirmation(payload: String) {
@@ -46,8 +51,22 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
                         // Handle WebView connection failed
                         finishThreeDSecure1(null, false)
                     }
+
+                    override fun onPageFinished(url: String?) {
+                        pbLoading.visibility = View.GONE
+                    }
+
+                    override fun onPageStarted(url: String?) {
+                        pbLoading.visibility = View.VISIBLE
+                    }
                 })
-            webView.webChromeClient = WebChromeClient()
+
+            webView.webChromeClient = object : WebChromeClient() {
+                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                    super.onProgressChanged(view, newProgress)
+                    pbLoading.progress = newProgress
+                }
+            }
 
             val payload = threeDSecureLookup.payload
             val termUrl = "https://term-url/aaa"

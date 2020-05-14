@@ -1,6 +1,7 @@
 package com.airwallex.android
 
 import android.annotation.TargetApi
+import android.graphics.Bitmap
 import android.os.Build
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
@@ -54,8 +55,20 @@ internal abstract class AirwallexWebViewClient(private val callbacks: WebViewCli
         }
     }
 
+    override fun onPageFinished(view: WebView?, url: String?) {
+        super.onPageFinished(view, url)
+        callbacks.onPageFinished(url)
+    }
+
+    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        super.onPageStarted(view, url, favicon)
+        callbacks.onPageStarted(url)
+    }
+
     interface WebViewClientCallbacks {
         fun onWebViewError(error: WebViewConnectionException)
+        fun onPageFinished(url: String?)
+        fun onPageStarted(url: String?)
     }
 
     companion object {
