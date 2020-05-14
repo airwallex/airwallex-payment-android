@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.webkit.WebChromeClient
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.ThreeDSecure.THREE_DS_RETURN_URL
 import com.airwallex.android.exception.WebViewConnectionException
 import com.airwallex.android.model.ThreeDSecureLookup
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
@@ -43,7 +42,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             webView.webChromeClient = WebChromeClient()
 
             val payload = threeDSecureLookup.payload
-            val termUrl = "$THREE_DS_RETURN_URL/$payload"
+            val termUrl = "https://term-url/"
             val acsUrl = threeDSecureLookup.acsUrl
             val postData = "&PaReq=" + URLEncoder.encode(payload, "UTF-8")
                 .toString() + "&TermUrl=" + URLEncoder.encode(termUrl, "UTF-8")
