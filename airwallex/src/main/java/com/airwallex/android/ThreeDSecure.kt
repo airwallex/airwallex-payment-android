@@ -13,6 +13,7 @@ import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization
 import org.json.JSONArray
+import java.util.*
 
 internal object ThreeDSecure {
 
@@ -94,7 +95,7 @@ internal object ThreeDSecure {
 
     internal fun onActivityResult(
         data: Intent,
-        threeDSecureCallback: ThreeDSecureCallback
+        callback: ThreeDSecureCallback
     ) {
         when (data.getSerializableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_TYPE) as? ThreeDSecureType) {
             ThreeDSecureType.THREE_D_SECURE_1 -> {
@@ -103,12 +104,12 @@ internal object ThreeDSecure {
                 val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
                 Logger.debug("3DS 1 response payload: $payload")
                 if (payload != null) {
-                    threeDSecureCallback.onSuccess(payload)
+                    callback.onSuccess(payload)
                 } else {
                     if (cancel) {
-                        threeDSecureCallback.onFailed(AirwallexError(message = "3DS canceled"))
+                        callback.onFailed(AirwallexError(message = "3DS canceled"))
                     } else {
-                        threeDSecureCallback.onFailed(AirwallexError(message = "3DS failed"))
+                        callback.onFailed(AirwallexError(message = "3DS failed"))
                     }
                 }
             }
@@ -117,22 +118,15 @@ internal object ThreeDSecure {
                 val validateResponse =
                     data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
 
-                val actionCode = validateResponse.actionCode
-                Logger.debug("3DS 2 response code: $actionCode")
+                Logger.debug("3DS 2 response processorTransactionId: ${validateResponse.payment.processorTransactionId}")
 
-                if (actionCode == null) {
-                    threeDSecureCallback.onFailed(AirwallexError(message = "No 3DS response code from Cardinal"))
-                    return
-                }
-                when (actionCode) {
-                    CardinalActionCode.FAILURE, CardinalActionCode.SUCCESS, CardinalActionCode.NOACTION -> {
-                        threeDSecureCallback.onSuccess(validateResponse.payment.processorTransactionId)
-                    }
-                    CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> {
-                        threeDSecureCallback.onFailed(AirwallexError(message = validateResponse.errorDescription))
-                    }
-                    CardinalActionCode.CANCEL -> {
-                        threeDSecureCallback.onFailed(AirwallexError(message = "3DS canceled"))
+                if (validateResponse.errorDescription.toLowerCase(Locale.getDefault()) == "success") {
+                    callback.onSuccess(validateResponse.payment.processorTransactionId)
+                } else {
+                    if (validateResponse.actionCode != null && validateResponse.actionCode == CardinalActionCode.CANCEL) {
+                        callback.onFailed(AirwallexError(message = "3DS canceled"))
+                    } else {
+                        callback.onFailed(AirwallexError(message = validateResponse.errorDescription))
                     }
                 }
             }
