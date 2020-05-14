@@ -27,7 +27,7 @@
 
         <activity
             android:name=".ThreeDSecureActivity"
-            android:theme="@style/AirwallexDefaultTheme" />
+            android:theme="@style/AirwallexThreeDSecureTheme" />
     </application>
 
 </manifest>
