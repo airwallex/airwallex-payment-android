@@ -1,5 +1,6 @@
 package com.airwallex.android.view
 
+import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Patterns
@@ -17,6 +18,10 @@ import kotlinx.android.synthetic.main.widget_billing.view.*
 internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
     internal var billingChangeCallback: () -> Unit = {}
+
+    private val keyboardController: KeyboardController by lazy {
+        KeyboardController(context as Activity)
+    }
 
     /**
      * Update UI via [Shipping]
@@ -111,6 +116,7 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
 
         swSameAsShipping.setOnCheckedChangeListener { _, isChecked ->
             llBilling.visibility = if (isChecked) View.GONE else View.VISIBLE
+            keyboardController.hide()
             billingChangeCallback.invoke()
         }
 

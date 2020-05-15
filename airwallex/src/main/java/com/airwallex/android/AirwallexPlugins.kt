@@ -16,7 +16,7 @@ internal object AirwallexPlugins {
 
     private lateinit var configuration: AirwallexConfiguration
 
-    fun getSdkVersion(context: Context): String{
+    fun getSdkVersion(context: Context): String {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
         return packageInfo.versionName.toString()
     }
