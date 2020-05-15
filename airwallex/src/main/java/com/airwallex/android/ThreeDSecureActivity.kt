@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
@@ -90,6 +91,16 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             finishThreeDSecure1(null, true)
         }
         super.onBackPressed()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (webView != null) {
+            val root = window.decorView.findViewById<ViewGroup>(android.R.id.content)
+            root.removeView(webView)
+            webView.removeAllViews()
+            webView.destroy()
+        }
     }
 
     // 3DS 2.0
