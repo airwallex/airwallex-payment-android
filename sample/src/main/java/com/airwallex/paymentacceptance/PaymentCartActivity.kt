@@ -16,6 +16,7 @@ import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.RetrievePaymentIntentParams
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
+import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -26,6 +27,7 @@ import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class PaymentCartActivity : AppCompatActivity() {
 
@@ -55,9 +57,12 @@ class PaymentCartActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setTitle(R.string.app_name)
 
-        btnCheckout.setOnClickListener {
-            authAndCreatePaymentIntent()
-        }
+        compositeSubscription.add(
+            btnCheckout.clicks().throttleFirst(1, TimeUnit.SECONDS)
+                .subscribe {
+                    authAndCreatePaymentIntent()
+                }
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -81,7 +86,6 @@ class PaymentCartActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         compositeSubscription.dispose()
-
         airwallexStarter.onDestroy()
         super.onDestroy()
     }
