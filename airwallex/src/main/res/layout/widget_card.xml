@@ -31,14 +31,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:imeOptions="actionNext" />
 
         <com.airwallex.android.view.CardCvcTextInputLayout
             android:id="@+id/atlCardCvc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:layout_weight="2" />
+            android:layout_weight="2"
+            android:imeOptions="actionDone" />
 
     </LinearLayout>
 </LinearLayout>
