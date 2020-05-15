@@ -8,5 +8,5 @@ data class ThreeDSecureLookup internal constructor(
     val transactionId: String?,
     val payload: String?,
     val acsUrl: String?,
-    val dsData: PaymentIntent.PaymentAttemptAuthDSData
+    val version: String
 ) : Parcelable

@@ -23,7 +23,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (threeDSecureLookup.dsData.version?.startsWith("1.") == true) {
+        if (threeDSecureLookup.version.startsWith("1.")) {
             // 3DS 1.0
             if (threeDSecureLookup.payload == null || threeDSecureLookup.acsUrl == null) {
                 finishThreeDSecure1(null, false)
@@ -86,7 +86,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (threeDSecureLookup.dsData.version?.startsWith("1.") == true) {
+        if (threeDSecureLookup.version.startsWith("1.")) {
             finishThreeDSecure1(null, true)
         }
         super.onBackPressed()

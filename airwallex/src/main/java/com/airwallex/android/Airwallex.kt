@@ -213,12 +213,11 @@ class Airwallex internal constructor(
                             val transactionId = response.nextAction.data?.get("xid") as? String
                             val req = response.nextAction.data?.get("req") as? String
                             val acs = response.nextAction.data?.get("acs") as? String
-                            val dsData = requireNotNull(response.latestPaymentAttempt?.authenticationData?.dsData)
-
-                            Logger.debug("3DS Version: ${dsData.version}")
+                            val version = response.latestPaymentAttempt?.authenticationData?.dsData?.version
+                                ?: "2.0"
 
                             Logger.debug("Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input. After user input, will receive `processorTransactionId`.")
-                            val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, dsData)
+                            val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, version)
                             val fragment = ThreeDSecureFragment.newInstance(activity.fragmentManager)
                             ThreeDSecure.performCardinalAuthentication(fragment, threeDSecureLookup)
 
