@@ -45,10 +45,12 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             webView.webViewClient =
                 ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
                     override fun onWebViewConfirmation(payload: String) {
+                        Logger.debug("3DS 1 onWebViewConfirmation $payload")
                         finishThreeDSecure1(payload, false)
                     }
 
                     override fun onWebViewError(error: WebViewConnectionException) {
+                        Logger.debug("3DS 1 onWebViewError $error")
                         // Handle WebView connection failed
                         finishThreeDSecure1(null, false)
                     }
@@ -70,7 +72,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             }
 
             val payload = threeDSecureLookup.payload
-            val termUrl = "https://term-url/aaa"
+            val termUrl = "http://requestbin.net/r/qtvlt7qt"
             val acsUrl = threeDSecureLookup.acsUrl
             val postData = "&PaReq=" + URLEncoder.encode(payload, "UTF-8")
                 .toString() + "&TermUrl=" + URLEncoder.encode(termUrl, "UTF-8")
@@ -125,6 +127,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
         val result = Intent()
         result.putExtra(EXTRA_THREE_PAYLOAD, payload)
         result.putExtra(EXTRA_THREE_CANCEL, cancel)
+        result.putExtra(EXTRA_THREE_TRANSACTION_ID, threeDSecureLookup.transactionId)
 
         val bundle = Bundle()
         bundle.putSerializable(
@@ -149,6 +152,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
 
         // 1.0
         const val EXTRA_THREE_PAYLOAD = "EXTRA_THREE_PAYLOAD"
+        const val EXTRA_THREE_TRANSACTION_ID = "EXTRA_THREE_TRANSACTION_ID"
         const val EXTRA_THREE_CANCEL = "EXTRA_THREE_CANCEL"
     }
 }

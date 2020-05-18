@@ -222,13 +222,13 @@ class Airwallex internal constructor(
                             ThreeDSecure.performCardinalAuthentication(fragment, threeDSecureLookup)
 
                             fragment.threeDSecureCallback = object : ThreeDSecureCallback {
-                                override fun onSuccess(processorTransactionId: String) {
+                                override fun onSuccess(transactionId: String) {
                                     Logger.debug("Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate")
                                     paymentManager.confirmPaymentIntent(
                                         buildCardPaymentIntentOptions(
                                             params = params,
                                             threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
-                                                .setTransactionId(processorTransactionId)
+                                                .setTransactionId(transactionId)
                                                 .setReturnUrl(THREE_DS_RETURN_URL)
                                                 .build()
                                         ),
