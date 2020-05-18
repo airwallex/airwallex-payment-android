@@ -190,7 +190,7 @@ data class PaymentIntent internal constructor(
         val currency: String? = null,
 
         /**
-         * Payment method for the payment attempt
+         * Payment method used by the payment attempt
          */
         @SerializedName("payment_method")
         val paymentMethod: PaymentMethod,
@@ -225,6 +225,9 @@ data class PaymentIntent internal constructor(
         @SerializedName("updated_at")
         val updatedAt: Date,
 
+        /**
+         * Authentication data used by the payment attempt
+         */
         @SerializedName("authentication_data")
         val authenticationData: PaymentAttemptAuthData?
     ) : AirwallexModel, Parcelable
