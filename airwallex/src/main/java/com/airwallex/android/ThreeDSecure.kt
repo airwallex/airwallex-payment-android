@@ -106,9 +106,10 @@ internal object ThreeDSecure {
                 // 1.0 Flow
                 val payload = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_PAYLOAD)
                 val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
+                val transactionId = requireNotNull(data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_TRANSACTION_ID))
                 Logger.debug("3DS 1 response payload: $payload")
                 if (payload != null) {
-                    callback.onSuccess(payload)
+                    callback.onSuccess(transactionId)
                 } else {
                     if (cancel) {
                         callback.onFailed(AirwallexError(message = "3DS canceled"))
