@@ -10,7 +10,7 @@ internal interface SecurityConnector {
 
     fun retrieveSecurityToken(
         paymentIntentId: String,
-        applicationContext: Context?,
+        applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     )
 }
