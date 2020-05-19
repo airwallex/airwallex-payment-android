@@ -89,5 +89,5 @@ internal object AirwallexPlugins {
     private const val USER_AGENT_VALUE = "Airwallex-Android-SDK"
     private const val USER_AGENT_VERSION_KEY = "Airwallex-User-Agent-Version"
     private const val USER_AGENT_VERSION_VALUE = BuildConfig.VERSION_NAME
-    private const val API_VERSION = "Airwallex-Api-Version"
+    private const val API_VERSION = "x-api-version"
 }
