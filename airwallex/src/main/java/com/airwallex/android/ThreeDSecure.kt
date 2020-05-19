@@ -86,7 +86,6 @@ internal object ThreeDSecure {
      * @param fragment [ThreeDSecureFragment] will be responsible for handling callbacks to it's listeners
      * @param threeDSecureLookup Contains information about the 3DS verification request that will be invoked in this method.
      */
-    @Suppress("DEPRECATION")
     internal fun performCardinalAuthentication(
         fragment: ThreeDSecureFragment,
         threeDSecureLookup: ThreeDSecureLookup

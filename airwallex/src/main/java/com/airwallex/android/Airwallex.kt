@@ -1,8 +1,8 @@
 package com.airwallex.android
 
-import android.app.Activity
 import android.os.Build
 import androidx.annotation.UiThread
+import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.ThreeDSecure.THREE_DS_RETURN_URL
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.exception.ThreeDSException
@@ -51,7 +51,7 @@ class Airwallex internal constructor(
      */
     @UiThread
     fun confirmPaymentIntent(
-        activity: Activity,
+        activity: AppCompatActivity,
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
@@ -175,7 +175,7 @@ class Airwallex internal constructor(
      * Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate
      */
     private fun prepareThreeDSecureFlow(
-        activity: Activity,
+        activity: AppCompatActivity,
         params: ConfirmPaymentIntentParams,
         serverJwt: String,
         listener: PaymentListener<PaymentIntent>
@@ -218,7 +218,7 @@ class Airwallex internal constructor(
 
                             Logger.debug("Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input. After user input, will receive `processorTransactionId`.")
                             val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, version)
-                            val fragment = ThreeDSecureFragment.newInstance(activity.fragmentManager)
+                            val fragment = ThreeDSecureFragment.newInstance(activity.supportFragmentManager)
                             ThreeDSecure.performCardinalAuthentication(fragment, threeDSecureLookup)
 
                             fragment.threeDSecureCallback = object : ThreeDSecureCallback {
