@@ -58,13 +58,12 @@ class Airwallex internal constructor(
         securityConnector.retrieveSecurityToken(
             paymentIntentId = params.paymentIntentId,
             applicationContext = activity.applicationContext,
-            securityTokenListener = object :
-                AirwallexSecurityConnector.SecurityTokenListener {
+            securityTokenListener = object : AirwallexSecurityConnector.SecurityTokenListener {
                 override fun onResponse(sessionId: String) {
                     device = Device.Builder()
                         .setDeviceId(sessionId)
                         .setDeviceModel(Build.MODEL)
-                        .setSdkVersion(AirwallexPlugins.getSdkVersion(activity))
+                        .setSdkVersion(AirwallexPlugins.getSdkVersion(activity.applicationContext))
                         .setPlatformType(PLATFORM)
                         .setDeviceOS(Build.VERSION.RELEASE)
                         .build()

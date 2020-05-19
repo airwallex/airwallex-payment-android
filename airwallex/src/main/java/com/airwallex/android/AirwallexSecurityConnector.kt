@@ -27,7 +27,7 @@ internal class AirwallexSecurityConnector : SecurityConnector {
      */
     override fun retrieveSecurityToken(
         paymentIntentId: String,
-        applicationContext: Context?,
+        applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
         Logger.debug(
