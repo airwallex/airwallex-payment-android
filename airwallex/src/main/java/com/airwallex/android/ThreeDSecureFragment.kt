@@ -1,12 +1,11 @@
 package com.airwallex.android
 
 import android.app.Activity
-import android.app.Fragment
-import android.app.FragmentManager
 import android.content.Intent
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.airwallex.android.model.AirwallexError
 
-@Suppress("DEPRECATION")
 internal class ThreeDSecureFragment : Fragment() {
 
     internal var threeDSecureCallback: ThreeDSecureCallback? = null
