@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.ThreeDSecure.TERM_URL
 import com.airwallex.android.exception.WebViewConnectionException
 import com.airwallex.android.model.ThreeDSecureLookup
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
@@ -72,10 +73,9 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             }
 
             val payload = threeDSecureLookup.payload
-            val termUrl = "http://requestbin.net/r/qtvlt7qt"
             val acsUrl = threeDSecureLookup.acsUrl
             val postData = "&PaReq=" + URLEncoder.encode(payload, "UTF-8")
-                .toString() + "&TermUrl=" + URLEncoder.encode(termUrl, "UTF-8")
+                .toString() + "&TermUrl=" + URLEncoder.encode(TERM_URL, "UTF-8")
 
             webView.postUrl(acsUrl, postData.toByteArray())
         } else {
