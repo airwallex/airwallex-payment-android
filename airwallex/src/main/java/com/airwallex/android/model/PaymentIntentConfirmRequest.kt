@@ -79,6 +79,7 @@ data class PaymentIntentConfirmRequest internal constructor(
         override fun build(): PaymentIntentConfirmRequest {
             return PaymentIntentConfirmRequest(
                 requestId = requestId,
+                customerId = customerId,
                 paymentMethod = paymentMethod,
                 paymentMethodReference = paymentMethodReference,
                 paymentMethodOptions = paymentMethodOptions,
