@@ -252,24 +252,42 @@ data class PaymentIntent internal constructor(
     @Parcelize
     data class PaymentAttemptAuthDSData internal constructor(
 
+        /**
+         * 3DS Version
+         */
         @SerializedName("version")
         val version: String?,
 
         @SerializedName("liability_shift_indicator")
         val liabilityShiftIndicator: String?,
 
+        /**
+         * The Eci.
+         */
         @SerializedName("eci")
         val eci: String?,
 
+        /**
+         * The Cavv.
+         */
         @SerializedName("cavv")
         val cavv: String?,
 
+        /**
+         * The Xid.
+         */
         @SerializedName("xid")
         val xid: String?,
 
+        /**
+         * Status of Authentication eligibility.
+         */
         @SerializedName("enrolled")
         val enrolled: String?,
 
+        /**
+         * Transaction status result identifier.
+         */
         @SerializedName("pa_res_status")
         val paResStatus: String?,
 
