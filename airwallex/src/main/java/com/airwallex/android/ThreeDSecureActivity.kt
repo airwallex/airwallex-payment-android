@@ -43,27 +43,26 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             pbLoading.max = 100
             pbLoading.progress = 1
 
-            webView.webViewClient =
-                ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
-                    override fun onWebViewConfirmation(payload: String) {
-                        Logger.debug("3DS 1 onWebViewConfirmation $payload")
-                        finishThreeDSecure1(payload, false)
-                    }
+            webView.webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
+                override fun onWebViewConfirmation(payload: String) {
+                    Logger.debug("3DS 1 onWebViewConfirmation $payload")
+                    finishThreeDSecure1(payload, false)
+                }
 
-                    override fun onWebViewError(error: WebViewConnectionException) {
-                        Logger.debug("3DS 1 onWebViewError $error")
-                        // Handle WebView connection failed
-                        finishThreeDSecure1(null, false)
-                    }
+                override fun onWebViewError(error: WebViewConnectionException) {
+                    Logger.debug("3DS 1 onWebViewError $error")
+                    // Handle WebView connection failed
+                    finishThreeDSecure1(null, false)
+                }
 
-                    override fun onPageFinished(url: String?) {
-                        pbLoading.visibility = View.GONE
-                    }
+                override fun onPageFinished(url: String?) {
+                    pbLoading.visibility = View.GONE
+                }
 
-                    override fun onPageStarted(url: String?) {
-                        pbLoading.visibility = View.VISIBLE
-                    }
-                })
+                override fun onPageStarted(url: String?) {
+                    pbLoading.visibility = View.VISIBLE
+                }
+            })
 
             webView.webChromeClient = object : WebChromeClient() {
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
