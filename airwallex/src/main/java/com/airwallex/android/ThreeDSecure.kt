@@ -23,7 +23,7 @@ internal object ThreeDSecure {
     // Just for staging test, should be optional later.
     const val THREE_DS_RETURN_URL = "http://requestbin.net/r/1jscu3v1"
 
-    const val TERM_URL = "http://requestbin.net/r/qtvlt7qt"
+    const val TERM_URL = "http://34.92.57.93:8080/web/feedback"
 
     /**
      * Configure Cardinal Mobile SDK

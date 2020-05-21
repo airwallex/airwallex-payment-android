@@ -8,6 +8,9 @@ import com.airwallex.android.model.AirwallexError
 
 internal class ThreeDSecureFragment : Fragment() {
 
+    /**
+     * 3DS callback
+     */
     internal var threeDSecureCallback: ThreeDSecureCallback? = null
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
