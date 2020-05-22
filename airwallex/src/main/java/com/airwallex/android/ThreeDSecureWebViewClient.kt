@@ -1,6 +1,8 @@
 package com.airwallex.android
 
+import android.net.Uri
 import android.webkit.WebView
+import com.airwallex.android.exception.WebViewConnectionException
 
 internal class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
     AirwallexWebViewClient(callbacks) {
@@ -8,9 +10,13 @@ internal class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
     override fun hasCallbackUrl(view: WebView?, url: String?): Boolean {
         Logger.debug(TAG, "Redirect Url: $url")
         // Intercept paRes and return
-        if (url?.contains(ThreeDSecure.TERM_URL + "/") == true) {
-            val payload = url.replace(ThreeDSecure.TERM_URL + "/", "")
-            callbacks.onWebViewConfirmation(payload)
+        if (url?.contains(REDIRECT_PARES_URL_FIELD) == true) {
+            val payload = Uri.parse(url).getQueryParameter("PaRes")
+            if (payload != null) {
+                callbacks.onWebViewConfirmation(payload)
+            } else {
+                callbacks.onWebViewError(WebViewConnectionException("3DS failed. No PaRes were obtained"))
+            }
             return true
         }
         return false
@@ -22,5 +28,7 @@ internal class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
 
     companion object {
         const val TAG = "ThreeDSecureWebViewClient"
+
+        const val REDIRECT_PARES_URL_FIELD = "/feedback/success"
     }
 }
