@@ -107,8 +107,7 @@ internal object ThreeDSecure {
                 val payload = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_PAYLOAD)
                 Logger.debug("3DS 1 response payload: $payload")
                 if (payload != null) {
-                    val transactionId = requireNotNull(data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_TRANSACTION_ID))
-                    callback.onSuccess(transactionId)
+                    callback.onSuccess(payload)
                 } else {
                     val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
                     if (cancel) {
