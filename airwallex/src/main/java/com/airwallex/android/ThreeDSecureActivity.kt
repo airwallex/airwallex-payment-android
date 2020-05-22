@@ -33,7 +33,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
         if (threeDSecureLookup.version.startsWith("1.")) {
             // 3DS 1.0
             if (threeDSecureLookup.payload == null || threeDSecureLookup.acsUrl == null) {
-                finishThreeDSecure1(null, false)
+                finishThreeDSecure1(null, false, "3DS failed. Missing PaReq or acs url.")
                 return
             }
 
@@ -51,13 +51,13 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             webView.webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
                 override fun onWebViewConfirmation(payload: String) {
                     Logger.debug("3DS 1 onWebViewConfirmation $payload")
-                    finishThreeDSecure1(payload, false)
+                    finishThreeDSecure1(payload, false, null)
                 }
 
                 override fun onWebViewError(error: WebViewConnectionException) {
                     Logger.debug("3DS 1 onWebViewError $error")
                     // Handle WebView connection failed
-                    finishThreeDSecure1(null, false)
+                    finishThreeDSecure1(null, false, error.message)
                 }
 
                 override fun onPageFinished(url: String?) {
@@ -94,7 +94,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if (threeDSecureLookup.version.startsWith("1.")) {
-            finishThreeDSecure1(null, true)
+            finishThreeDSecure1(null, true, null)
         }
         super.onBackPressed()
     }
@@ -127,10 +127,11 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
     }
 
     // 3DS 1.0
-    private fun finishThreeDSecure1(payload: String? = null, cancel: Boolean) {
+    private fun finishThreeDSecure1(payload: String? = null, cancel: Boolean, error: String?) {
         val result = Intent()
         result.putExtra(EXTRA_THREE_PAYLOAD, payload)
         result.putExtra(EXTRA_THREE_CANCEL, cancel)
+        result.putExtra(EXTRA_THREE_FAILED_REASON, error)
         result.putExtra(EXTRA_THREE_TRANSACTION_ID, threeDSecureLookup.transactionId)
 
         val bundle = Bundle()
@@ -158,5 +159,6 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
         const val EXTRA_THREE_PAYLOAD = "EXTRA_THREE_PAYLOAD"
         const val EXTRA_THREE_TRANSACTION_ID = "EXTRA_THREE_TRANSACTION_ID"
         const val EXTRA_THREE_CANCEL = "EXTRA_THREE_CANCEL"
+        const val EXTRA_THREE_FAILED_REASON = "EXTRA_THREE_FAILED_REASON"
     }
 }
