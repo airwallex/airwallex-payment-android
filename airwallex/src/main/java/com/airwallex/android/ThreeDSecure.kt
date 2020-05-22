@@ -105,23 +105,23 @@ internal object ThreeDSecure {
             ThreeDSecureType.THREE_D_SECURE_1 -> {
                 // 1.0 Flow
                 val payload = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_PAYLOAD)
-                val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
-                val transactionId = requireNotNull(data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_TRANSACTION_ID))
                 Logger.debug("3DS 1 response payload: $payload")
                 if (payload != null) {
+                    val transactionId = requireNotNull(data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_TRANSACTION_ID))
                     callback.onSuccess(transactionId)
                 } else {
+                    val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
                     if (cancel) {
                         callback.onFailed(AirwallexError(message = "3DS canceled"))
                     } else {
-                        callback.onFailed(AirwallexError(message = "3DS failed"))
+                        val reason = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_FAILED_REASON)
+                        callback.onFailed(AirwallexError(message = reason ?: "3DS failed"))
                     }
                 }
             }
             ThreeDSecureType.THREE_D_SECURE_2 -> {
                 // 2.0 Flow
                 val validateResponse = data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
-
                 if (validateResponse.actionCode != null && validateResponse.actionCode == CardinalActionCode.CANCEL) {
                     callback.onFailed(AirwallexError(message = "3DS canceled"))
                 } else {
