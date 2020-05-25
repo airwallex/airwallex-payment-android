@@ -2,6 +2,7 @@ package com.airwallex.android
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.airwallex.android.model.AirwallexError
@@ -27,6 +28,11 @@ internal class ThreeDSecureFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
     }
 
     override fun onDestroy() {
