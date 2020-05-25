@@ -55,67 +55,74 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
-        securityConnector.retrieveSecurityToken(
-            paymentIntentId = params.paymentIntentId,
-            applicationContext = activity.applicationContext,
-            securityTokenListener = object : AirwallexSecurityConnector.SecurityTokenListener {
-                override fun onResponse(sessionId: String) {
-                    device = Device.Builder()
-                        .setDeviceId(sessionId)
-                        .setDeviceModel(Build.MODEL)
-                        .setSdkVersion(AirwallexPlugins.getSdkVersion(activity.applicationContext))
-                        .setPlatformType(PLATFORM)
-                        .setDeviceOS(Build.VERSION.RELEASE)
+        val securityTokenListener = object : AirwallexSecurityConnector.SecurityTokenListener {
+            override fun onResponse(sessionId: String) {
+                handleSessionId(activity, params, listener, sessionId)
+            }
+        }
+        securityConnector.retrieveSecurityToken(params.paymentIntentId, activity.applicationContext, securityTokenListener)
+    }
+
+    private fun handleSessionId(
+        activity: AppCompatActivity,
+        params: ConfirmPaymentIntentParams,
+        listener: PaymentListener<PaymentIntent>,
+        sessionId: String
+    ) {
+        device = Device.Builder()
+            .setDeviceId(sessionId)
+            .setDeviceModel(Build.MODEL)
+            .setSdkVersion(AirwallexPlugins.getSdkVersion(activity.applicationContext))
+            .setPlatformType(PLATFORM)
+            .setDeviceOS(Build.VERSION.RELEASE)
+            .build()
+
+        val options = when (params.paymentMethodType) {
+            PaymentMethodType.WECHAT -> {
+                buildWeChatPaymentIntentOptions(params)
+            }
+            PaymentMethodType.CARD -> {
+                buildCardPaymentIntentOptions(
+                    params = params,
+                    threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                        .setReturnUrl(THREE_DS_RETURN_URL)
                         .build()
+                )
+            }
+        }
 
-                    val options = when (params.paymentMethodType) {
-                        PaymentMethodType.WECHAT -> {
-                            buildWeChatPaymentIntentOptions(params)
-                        }
-                        PaymentMethodType.CARD -> {
-                            buildCardPaymentIntentOptions(
+        val paymentListener = when (params.paymentMethodType) {
+            PaymentMethodType.CARD -> {
+                object : PaymentListener<PaymentIntent> {
+                    override fun onFailed(exception: AirwallexException) {
+                        listener.onFailed(exception)
+                    }
+
+                    override fun onSuccess(response: PaymentIntent) {
+                        val serverJwt = response.nextAction?.data?.get("jwt") as? String
+
+                        if (serverJwt != null) {
+                            Logger.debug("Prepare 3DS Flow, serverJwt: $serverJwt")
+                            // 3D Secure Flow
+                            prepareThreeDSecureFlow(
+                                activity = activity,
                                 params = params,
-                                threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
-                                    .setReturnUrl(THREE_DS_RETURN_URL)
-                                    .build()
+                                serverJwt = serverJwt,
+                                listener = listener
                             )
+                        } else {
+                            Logger.debug("Don't need the 3DS Flow")
+                            listener.onSuccess(response)
                         }
                     }
-
-                    val paymentListener = when (params.paymentMethodType) {
-                        PaymentMethodType.CARD -> {
-                            object : PaymentListener<PaymentIntent> {
-                                override fun onFailed(exception: AirwallexException) {
-                                    listener.onFailed(exception)
-                                }
-
-                                override fun onSuccess(response: PaymentIntent) {
-                                    val serverJwt = response.nextAction?.data?.get("jwt") as? String
-
-                                    if (serverJwt != null) {
-                                        Logger.debug("Prepare 3DS Flow, serverJwt: $serverJwt")
-                                        // 3D Secure Flow
-                                        prepareThreeDSecureFlow(
-                                            activity = activity,
-                                            params = params,
-                                            serverJwt = serverJwt,
-                                            listener = listener
-                                        )
-                                    } else {
-                                        Logger.debug("Don't need the 3DS Flow")
-                                        listener.onSuccess(response)
-                                    }
-                                }
-                            }
-                        }
-                        PaymentMethodType.WECHAT -> {
-                            listener
-                        }
-                    }
-
-                    paymentManager.confirmPaymentIntent(options, paymentListener)
                 }
-            })
+            }
+            PaymentMethodType.WECHAT -> {
+                listener
+            }
+        }
+
+        paymentManager.confirmPaymentIntent(options, paymentListener)
     }
 
     private fun buildWeChatPaymentIntentOptions(
