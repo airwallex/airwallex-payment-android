@@ -20,11 +20,11 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
     // The URL that we should intercept paRes and return
     private val termUrl: String
         get() {
-            return "${AirwallexPlugins.baseUrl}/web/feedback"
+            return "http://34.92.57.93:8080/web/feedback"
         }
 
     private val threeDSecureLookup: ThreeDSecureLookup by lazy {
-        requireNotNull(intent.getParcelableExtra(EXTRA_THREE_D_SECURE_LOOKUP))
+        requireNotNull(intent.getParcelableExtra<ThreeDSecureLookup>(EXTRA_THREE_D_SECURE_LOOKUP))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
