@@ -101,6 +101,8 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        // Cleanup Cardinal
+        Cardinal.getInstance().cleanup()
         if (webView != null) {
             val root = window.decorView.findViewById<ViewGroup>(android.R.id.content)
             root.removeView(webView)
