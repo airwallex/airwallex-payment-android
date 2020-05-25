@@ -3,6 +3,7 @@ package com.airwallex.android
 import android.content.Context
 import com.airwallex.android.model.PaymentIntent
 import com.threatmetrix.TrustDefender.Config
+import com.threatmetrix.TrustDefender.Profile
 import com.threatmetrix.TrustDefender.ProfilingOptions
 import com.threatmetrix.TrustDefender.TrustDefender
 
@@ -10,6 +11,8 @@ import com.threatmetrix.TrustDefender.TrustDefender
  * The implementation of [SecurityConnector] to retrieve the Device Fingerprinting token
  */
 internal class AirwallexSecurityConnector : SecurityConnector {
+
+    private var profilingHandle: Profile.Handle? = null
 
     /**
      * Retrieve SecurityToken listener
@@ -49,7 +52,7 @@ internal class AirwallexSecurityConnector : SecurityConnector {
         var sessionID = "${BuildConfig.DEVICE_FINGERPRINT_MERCHANT_ID}$fraudSessionId"
         val options = ProfilingOptions().setSessionID(sessionID)
         // Fire off the profiling request.
-        TrustDefender.getInstance().doProfileRequest(options) { result ->
+        profilingHandle = TrustDefender.getInstance().doProfileRequest(options) { result ->
             Logger.debug(
                 TAG,
                 "Session id: ${result.sessionID}, Session status: ${result.status}"
@@ -57,6 +60,9 @@ internal class AirwallexSecurityConnector : SecurityConnector {
             if (result.sessionID != null) {
                 sessionID = result.sessionID
             }
+
+            profilingHandle?.cancel()
+            profilingHandle = null
             securityTokenListener.onResponse(sessionID)
         }
     }
