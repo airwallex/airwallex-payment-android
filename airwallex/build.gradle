@@ -45,7 +45,7 @@ configurations {
 }
 
 ext {
-    okhttpVersion = "4.2.0"
+    okhttpVersion = "4.7.2"
     gsonVersion = '2.8.5'
 }
 
