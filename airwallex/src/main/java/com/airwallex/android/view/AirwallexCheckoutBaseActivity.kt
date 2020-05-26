@@ -21,10 +21,9 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
 
     protected fun confirmPaymentIntent(
         paymentMethod: PaymentMethod,
-        callback: Airwallex.PaymentListener<PaymentIntent>
+        listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         setLoadingProgress(loading = true, cancelable = false)
-
         val params = when (paymentMethod.type) {
             PaymentMethodType.WECHAT -> {
                 ConfirmPaymentIntentParams.createWeChatParams(
@@ -45,6 +44,6 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                 )
             }
         }
-        airwallex.confirmPaymentIntent(this, params, callback)
+        airwallex.confirmPaymentIntent(this, params, listener)
     }
 }

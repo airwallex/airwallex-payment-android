@@ -43,6 +43,9 @@ internal class ThreeDSecureFragment : Fragment() {
     companion object {
         private const val AIRWALLEX_FRAGMENT_TAG = "AirwallexFragmentTag"
 
+        /**
+         * Create an empty fragment for listen the `onActivityResult` method.
+         */
         fun newInstance(manager: FragmentManager): ThreeDSecureFragment {
             var fragment: ThreeDSecureFragment? =
                 manager.findFragmentByTag(AIRWALLEX_FRAGMENT_TAG) as? ThreeDSecureFragment

@@ -151,7 +151,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 // Confirm API is directly called by WeChat
                 confirmPaymentIntent(
                     paymentMethod = paymentMethod,
-                    callback = object : Airwallex.PaymentListener<PaymentIntent> {
+                    listener = object : Airwallex.PaymentListener<PaymentIntent> {
                         override fun onSuccess(response: PaymentIntent) {
                             finishWithPaymentIntent(
                                 paymentIntent = response
