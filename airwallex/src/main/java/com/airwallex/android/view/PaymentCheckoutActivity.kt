@@ -64,7 +64,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     private fun startConfirmPaymentIntent() {
         confirmPaymentIntent(paymentMethod = paymentMethod,
-            callback = object : Airwallex.PaymentListener<PaymentIntent> {
+            listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     finishWithPaymentIntent(paymentIntent = response)
                 }
