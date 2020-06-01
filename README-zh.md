@@ -24,3 +24,6 @@ dependencies {
 
 * 对于一般适用的问题和反馈，可以直接在[`Issues`](https://github.com/airwallex/airwallex-payment-android/issues)中提交问题。
 * [pa_mobile_sdk@airwallex.com](mailto:pa_mobile_sdk@airwallex.com) - 也可以发送问题到这个邮箱，我们会尽快提供帮助。
+
+## 更新日志
+项目中所有版本的更新都可以在[日志更新文档](CHANGELOG.md)中查看.
