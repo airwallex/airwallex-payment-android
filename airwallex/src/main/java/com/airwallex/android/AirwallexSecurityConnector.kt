@@ -18,7 +18,7 @@ internal class AirwallexSecurityConnector : SecurityConnector {
      * Retrieve SecurityToken listener
      */
     interface SecurityTokenListener {
-        fun onResponse(sessionId: String)
+        fun onResponse(deviceId: String)
     }
 
     /**

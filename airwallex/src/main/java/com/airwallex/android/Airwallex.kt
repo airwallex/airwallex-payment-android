@@ -1,11 +1,9 @@
 package com.airwallex.android
 
-import android.os.Build
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.ThreeDSecure.THREE_DS_RETURN_URL
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.*
 import java.util.*
 
@@ -15,8 +13,6 @@ import java.util.*
 class Airwallex internal constructor(
     private val paymentManager: PaymentManager
 ) {
-    private lateinit var device: Device
-
     private val securityConnector: SecurityConnector by lazy {
         AirwallexSecurityConnector()
     }
@@ -56,35 +52,28 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentIntent>
     ) {
         val securityTokenListener = object : AirwallexSecurityConnector.SecurityTokenListener {
-            override fun onResponse(sessionId: String) {
-                handleSessionId(activity, params, listener, sessionId)
+            override fun onResponse(deviceId: String) {
+                confirmPaymentIntentWithDeviceId(activity, params, listener, deviceId)
             }
         }
         securityConnector.retrieveSecurityToken(params.paymentIntentId, activity.applicationContext, securityTokenListener)
     }
 
-    private fun handleSessionId(
+    private fun confirmPaymentIntentWithDeviceId(
         activity: AppCompatActivity,
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>,
-        sessionId: String
+        deviceId: String
     ) {
-        device = Device.Builder()
-            .setDeviceId(sessionId)
-            .setDeviceModel(Build.MODEL)
-            .setSdkVersion(AirwallexPlugins.getSdkVersion(activity.applicationContext))
-            .setPlatformType(PLATFORM)
-            .setDeviceOS(Build.VERSION.RELEASE)
-            .build()
-
+        val applicationContext = activity.applicationContext
         val options = when (params.paymentMethodType) {
             PaymentMethodType.WECHAT -> {
-                buildWeChatPaymentIntentOptions(params)
+                PaymentManager.buildWeChatPaymentIntentOptions(params, deviceId, applicationContext)
             }
             PaymentMethodType.CARD -> {
-                buildCardPaymentIntentOptions(
-                    params = params,
-                    threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                PaymentManager.buildCardPaymentIntentOptions(
+                    params, deviceId, applicationContext,
+                    PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                         .setReturnUrl(THREE_DS_RETURN_URL)
                         .build()
                 )
@@ -104,12 +93,7 @@ class Airwallex internal constructor(
                         if (serverJwt != null) {
                             Logger.debug("Prepare 3DS Flow, serverJwt: $serverJwt")
                             // 3D Secure Flow
-                            prepareThreeDSecureFlow(
-                                activity = activity,
-                                params = params,
-                                serverJwt = serverJwt,
-                                listener = listener
-                            )
+                            paymentManager.handleNextAction(activity, params, serverJwt, deviceId, listener)
                         } else {
                             Logger.debug("Don't need the 3DS Flow")
                             listener.onSuccess(response)
@@ -123,134 +107,6 @@ class Airwallex internal constructor(
         }
 
         paymentManager.confirmPaymentIntent(options, paymentListener)
-    }
-
-    private fun buildWeChatPaymentIntentOptions(
-        params: ConfirmPaymentIntentParams
-    ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
-        return AirwallexApiRepository.ConfirmPaymentIntentOptions(
-            clientSecret = params.clientSecret,
-            paymentIntentId = params.paymentIntentId,
-            request = PaymentIntentConfirmRequest.Builder(
-                requestId = UUID.randomUUID().toString()
-            )
-                .setPaymentMethod(
-                    PaymentMethod.Builder()
-                        .setType(PaymentMethodType.WECHAT)
-                        .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
-                        .build()
-                )
-                .setCustomerId(params.customerId)
-                .setDevice(device)
-                .build()
-        )
-    }
-
-    private fun buildCardPaymentIntentOptions(
-        params: ConfirmPaymentIntentParams,
-        threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
-    ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
-        return AirwallexApiRepository.ConfirmPaymentIntentOptions(
-            clientSecret = params.clientSecret,
-            paymentIntentId = params.paymentIntentId,
-            request = PaymentIntentConfirmRequest.Builder(
-                requestId = UUID.randomUUID().toString()
-            )
-                .setPaymentMethodOptions(
-                    PaymentMethodOptions.Builder()
-                        .setCardOptions(
-                            PaymentMethodOptions.CardOptions.Builder()
-                                .setAutoCapture(true)
-                                .setThreeDSecure(threeDSecure).build()
-                        )
-                        .build()
-                )
-                .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
-                .setCustomerId(params.customerId)
-                .setDevice(device)
-                .build()
-        )
-    }
-
-    /**
-     * 3DS Flow.
-     *
-     * Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK
-     * Step 2: Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`
-     * Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input. After user input, will receive `processorTransactionId`.
-     * Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate
-     */
-    private fun prepareThreeDSecureFlow(
-        activity: AppCompatActivity,
-        params: ConfirmPaymentIntentParams,
-        serverJwt: String,
-        listener: PaymentListener<PaymentIntent>
-    ) {
-        Logger.debug("Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK")
-        ThreeDSecure.performCardinalInitialize(
-            activity.applicationContext,
-            serverJwt
-        ) { referenceId, validateResponse ->
-            if (validateResponse != null) {
-                activity.runOnUiThread {
-                    listener.onFailed(ThreeDSException(AirwallexError(message = validateResponse.errorDescription)))
-                }
-            } else {
-                Logger.debug("Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`")
-                paymentManager.confirmPaymentIntent(
-                    buildCardPaymentIntentOptions(
-                        params = params,
-                        threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
-                            .setDeviceDataCollectionRes(referenceId)
-                            .setReturnUrl(THREE_DS_RETURN_URL)
-                            .build()
-                    ),
-                    object : PaymentListener<PaymentIntent> {
-                        override fun onFailed(exception: AirwallexException) {
-                            listener.onFailed(exception)
-                        }
-
-                        override fun onSuccess(response: PaymentIntent) {
-                            if (response.status == PaymentIntentStatus.REQUIRES_CAPTURE || response.nextAction == null) {
-                                Logger.debug("Request 3DS Lookup response, doesn't need challenge")
-                                listener.onSuccess(response)
-                                return
-                            }
-                            val transactionId = response.nextAction.data?.get("xid") as? String
-                            val req = response.nextAction.data?.get("req") as? String
-                            val acs = response.nextAction.data?.get("acs") as? String
-                            val version = response.latestPaymentAttempt?.authenticationData?.dsData?.version
-                                ?: "2.0"
-
-                            Logger.debug("Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input. After user input, will receive `processorTransactionId`.")
-                            val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, version)
-                            val fragment = ThreeDSecureFragment.newInstance(activity.supportFragmentManager)
-                            ThreeDSecure.performCardinalAuthentication(fragment, threeDSecureLookup)
-
-                            fragment.threeDSecureCallback = object : ThreeDSecureCallback {
-                                override fun onSuccess(transactionId: String) {
-                                    Logger.debug("Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate")
-                                    paymentManager.confirmPaymentIntent(
-                                        buildCardPaymentIntentOptions(
-                                            params = params,
-                                            threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
-                                                .setTransactionId(transactionId)
-                                                .setReturnUrl(THREE_DS_RETURN_URL)
-                                                .build()
-                                        ),
-                                        listener
-                                    )
-                                }
-
-                                override fun onFailed(exception: AirwallexError) {
-                                    listener.onFailed(ThreeDSException(exception))
-                                }
-                            }
-                        }
-                    }
-                )
-            }
-        }
     }
 
     /**
@@ -328,8 +184,6 @@ class Airwallex internal constructor(
     companion object {
         // The default url, that you can change in the constructor for test on different environments
         internal const val BASE_URL = "https://pci-api.airwallex.com"
-
-        private const val PLATFORM = "Android"
 
         /**
          * Initialize some global configurations, better to be called on Application
