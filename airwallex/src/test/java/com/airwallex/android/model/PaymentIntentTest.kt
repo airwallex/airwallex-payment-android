@@ -17,7 +17,7 @@ class PaymentIntentTest {
             id = "int_6hJ72Y7zich939UCz8j6BLkonH",
             requestId = "a750e597-c30e-4d2b-ad41-cac601a15b25",
             amount = BigDecimal.valueOf(100.01),
-            currency = "CNY",
+            currency = "AUD",
             merchantOrderId = "cc9bfc13-ba30-483b-a62c-ee9250c9bfev",
             order = PurchaseOrder(
                 type = "physical_goods"
