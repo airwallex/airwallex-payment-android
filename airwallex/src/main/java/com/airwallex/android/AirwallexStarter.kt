@@ -82,12 +82,14 @@ class AirwallexStarter constructor(
      */
     fun presentAddPaymentMethodFlow(
         paymentIntent: PaymentIntent,
+        clientSecretProvider: ClientSecretProvider,
         addPaymentMethodFlowListener: PaymentMethodListener
     ) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided on add payment method flow"
         })
         this.addPaymentMethodFlowListener = addPaymentMethodFlowListener
+        ClientSecretManager.create(clientSecretProvider)
         AddPaymentMethodActivityLaunch(activity)
             .startForResult(
                 AddPaymentMethodActivityLaunch.Args.Builder()
@@ -106,12 +108,14 @@ class AirwallexStarter constructor(
      */
     fun presentSelectPaymentMethodFlow(
         paymentIntent: PaymentIntent,
+        clientSecretProvider: ClientSecretProvider,
         selectPaymentMethodFlowListener: PaymentMethodListener
     ) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided on select payment method flow"
         })
         this.selectPaymentMethodFlowListener = selectPaymentMethodFlowListener
+        ClientSecretManager.create(clientSecretProvider)
         PaymentMethodsActivityLaunch(activity)
             .startForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
@@ -154,12 +158,14 @@ class AirwallexStarter constructor(
      */
     fun presentPaymentFlow(
         paymentIntent: PaymentIntent,
+        clientSecretProvider: ClientSecretProvider,
         paymentFlowListener: PaymentIntentListener
     ) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided on payment flow"
         })
         this.paymentFlowListener = paymentFlowListener
+        ClientSecretManager.create(clientSecretProvider)
         PaymentMethodsActivityLaunch(activity)
             .startForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()

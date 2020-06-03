@@ -35,6 +35,10 @@ class PaymentCartActivity : AppCompatActivity() {
 
     private var dialog: Dialog? = null
 
+    private val clientSecretProvider by lazy {
+        ExampleClientSecretProvider()
+    }
+
     val airwallexStarter by lazy {
         AirwallexStarter(this@PaymentCartActivity)
     }
@@ -187,6 +191,7 @@ class PaymentCartActivity : AppCompatActivity() {
     private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
         airwallexStarter.presentPaymentFlow(
             paymentIntent,
+            clientSecretProvider,
             object : AirwallexStarter.PaymentIntentListener {
                 override fun onSuccess(paymentIntent: PaymentIntent) {
                     when (paymentIntent.paymentMethodType) {

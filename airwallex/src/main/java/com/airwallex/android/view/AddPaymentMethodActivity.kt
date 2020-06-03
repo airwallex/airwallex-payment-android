@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.Airwallex
+import com.airwallex.android.ClientSecretManager
 import com.airwallex.android.CreatePaymentMethodParams
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.model.ClientSecret
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.activity_add_card.*
 
@@ -35,31 +37,40 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
     override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
         setLoadingProgress(true)
-        airwallex.createPaymentMethod(
-            CreatePaymentMethodParams(
-                clientSecret = args.clientSecret,
-                customerId = args.customerId,
-                card = card,
-                billing = requireNotNull(billingWidget.billing)
-            ),
-            object : Airwallex.PaymentListener<PaymentMethod> {
-                override fun onSuccess(response: PaymentMethod) {
-                    finishWithPaymentMethod(response, requireNotNull(card.cvc))
-                }
 
-                override fun onFailed(exception: AirwallexException) {
-                    alertError(exception)
-                }
-            })
+        ClientSecretManager.get()?.retrieveClientSecret(object : ClientSecretManager.ClientSecretRetrieveListener {
+            override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
+                airwallex.createPaymentMethod(
+                    CreatePaymentMethodParams(
+                        clientSecret = clientSecret.value,
+                        customerId = args.customerId,
+                        card = card,
+                        billing = requireNotNull(billingWidget.billing)
+                    ),
+                    object : Airwallex.PaymentListener<PaymentMethod> {
+                        override fun onSuccess(response: PaymentMethod) {
+                            finishWithPaymentMethod(response, requireNotNull(card.cvc))
+                        }
+
+                        override fun onFailed(exception: AirwallexException) {
+                            alertError(exception.error?.message ?: exception.toString())
+                        }
+                    })
+            }
+
+            override fun onClientSecretError(errorMessage: String) {
+                alertError(errorMessage)
+            }
+        })
     }
 
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_back
     }
 
-    private fun alertError(exception: AirwallexException) {
+    private fun alertError(error: String) {
         setLoadingProgress(false)
-        alert(message = exception.error?.message ?: exception.toString())
+        alert(message = error)
     }
 
     private fun finishWithPaymentMethod(paymentMethod: PaymentMethod, cvc: String) {
