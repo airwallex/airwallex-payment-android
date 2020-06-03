@@ -2,7 +2,7 @@ package com.airwallex.android
 
 import android.content.Context
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.airwallex.android.Airwallex.PaymentListener
 import com.airwallex.android.model.*
 import java.util.*
@@ -63,7 +63,7 @@ internal interface PaymentManager {
      * @param listener a [PaymentListener] to receive the response or error
      */
     fun handleNextAction(
-        activity: AppCompatActivity,
+        activity: FragmentActivity,
         params: ConfirmPaymentIntentParams,
         serverJwt: String,
         deviceId: String,
@@ -107,9 +107,9 @@ internal interface PaymentManager {
         }
 
         fun buildCardPaymentIntentOptions(
-            params: ConfirmPaymentIntentParams,
-            deviceId: String,
             applicationContext: Context,
+            deviceId: String,
+            params: ConfirmPaymentIntentParams,
             threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(

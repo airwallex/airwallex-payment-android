@@ -1,7 +1,8 @@
 package com.airwallex.android
 
 import androidx.annotation.UiThread
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.airwallex.android.ThreeDSecure.THREE_DS_RETURN_URL
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
@@ -41,13 +42,29 @@ class Airwallex internal constructor(
     /**
      * Confirm a [PaymentIntent] by ID
      *
+     * @param fragment the `Fragment` that is start confirm the payment intent
+     * @param params [ConfirmPaymentIntentParams] used to confirm [PaymentIntent]
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    @UiThread
+    fun confirmPaymentIntent(
+        fragment: Fragment,
+        params: ConfirmPaymentIntentParams,
+        listener: PaymentListener<PaymentIntent>
+    ) {
+        confirmPaymentIntent(fragment.requireActivity(), params, listener)
+    }
+
+    /**
+     * Confirm a [PaymentIntent] by ID
+     *
      * @param activity the `Activity` that is start confirm the payment intent
      * @param params [ConfirmPaymentIntentParams] used to confirm [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
     fun confirmPaymentIntent(
-        activity: AppCompatActivity,
+        activity: FragmentActivity,
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
@@ -60,7 +77,7 @@ class Airwallex internal constructor(
     }
 
     private fun confirmPaymentIntentWithDeviceId(
-        activity: AppCompatActivity,
+        activity: FragmentActivity,
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>,
         deviceId: String
@@ -72,7 +89,7 @@ class Airwallex internal constructor(
             }
             PaymentMethodType.CARD -> {
                 PaymentManager.buildCardPaymentIntentOptions(
-                    params, deviceId, applicationContext,
+                    applicationContext, deviceId, params,
                     PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                         .setReturnUrl(THREE_DS_RETURN_URL)
                         .build()

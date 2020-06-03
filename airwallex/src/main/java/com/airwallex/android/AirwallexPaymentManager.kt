@@ -1,6 +1,6 @@
 package com.airwallex.android
 
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.airwallex.android.Airwallex.PaymentListener
 import com.airwallex.android.PaymentManager.Companion.buildCardPaymentIntentOptions
 import com.airwallex.android.exception.APIException
@@ -84,7 +84,7 @@ internal class AirwallexPaymentManager(
      * @param deviceId device id
      * @param listener a [PaymentListener] to receive the response or error
      */
-    override fun handleNextAction(activity: AppCompatActivity, params: ConfirmPaymentIntentParams, serverJwt: String, deviceId: String, listener: PaymentListener<PaymentIntent>) {
+    override fun handleNextAction(activity: FragmentActivity, params: ConfirmPaymentIntentParams, serverJwt: String, deviceId: String, listener: PaymentListener<PaymentIntent>) {
         Logger.debug("Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK")
         val applicationContext = activity.applicationContext
         ThreeDSecure.performCardinalInitialize(
@@ -98,11 +98,8 @@ internal class AirwallexPaymentManager(
             } else {
                 Logger.debug("Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`")
                 confirmPaymentIntent(
-                    buildCardPaymentIntentOptions(
-                        params = params,
-                        deviceId = deviceId,
-                        applicationContext = applicationContext,
-                        threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                    buildCardPaymentIntentOptions(applicationContext, deviceId, params,
+                        PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                             .setDeviceDataCollectionRes(referenceId)
                             .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
                             .build()
@@ -133,11 +130,8 @@ internal class AirwallexPaymentManager(
                                 override fun onSuccess(transactionId: String) {
                                     Logger.debug("Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate")
                                     confirmPaymentIntent(
-                                        buildCardPaymentIntentOptions(
-                                            params = params,
-                                            deviceId = deviceId,
-                                            applicationContext = applicationContext,
-                                            threeDSecure = PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                                        buildCardPaymentIntentOptions(applicationContext, deviceId, params,
+                                            PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                                                 .setTransactionId(transactionId)
                                                 .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
                                                 .build()
