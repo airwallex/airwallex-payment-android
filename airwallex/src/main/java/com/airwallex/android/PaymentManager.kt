@@ -95,21 +95,23 @@ internal interface PaymentManager {
             deviceId: String,
             applicationContext: Context
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+            val request = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethod(
+                    PaymentMethod.Builder()
+                        .setType(PaymentMethodType.WECHAT)
+                        .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
+                        .build()
+                )
+                .setCustomerId(params.customerId)
+                .setDevice(buildDeviceInfo(deviceId, applicationContext))
+                .build()
+
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId,
-                request = PaymentIntentConfirmRequest.Builder(
-                    requestId = UUID.randomUUID().toString()
-                )
-                    .setPaymentMethod(
-                        PaymentMethod.Builder()
-                            .setType(PaymentMethodType.WECHAT)
-                            .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
-                            .build()
-                    )
-                    .setCustomerId(params.customerId)
-                    .setDevice(buildDeviceInfo(deviceId, applicationContext))
-                    .build()
+                request = request
             )
         }
 
@@ -117,27 +119,31 @@ internal interface PaymentManager {
             applicationContext: Context,
             deviceId: String,
             params: ConfirmPaymentIntentParams,
+            withPaymentMethod: Boolean,
             threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+            val request = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethodOptions(
+                    PaymentMethodOptions.Builder()
+                        .setCardOptions(
+                            PaymentMethodOptions.CardOptions.Builder()
+                                .setAutoCapture(true)
+                                .setThreeDSecure(threeDSecure).build()
+                        )
+                        .build()
+                )
+                .setCustomerId(params.customerId)
+                .setDevice(buildDeviceInfo(deviceId, applicationContext))
+
+            if (withPaymentMethod) {
+                request.setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
+            }
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId,
-                request = PaymentIntentConfirmRequest.Builder(
-                    requestId = UUID.randomUUID().toString()
-                )
-                    .setPaymentMethodOptions(
-                        PaymentMethodOptions.Builder()
-                            .setCardOptions(
-                                PaymentMethodOptions.CardOptions.Builder()
-                                    .setAutoCapture(true)
-                                    .setThreeDSecure(threeDSecure).build()
-                            )
-                            .build()
-                    )
-                    .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
-                    .setCustomerId(params.customerId)
-                    .setDevice(buildDeviceInfo(deviceId, applicationContext))
-                    .build()
+                request = request.build()
             )
         }
     }

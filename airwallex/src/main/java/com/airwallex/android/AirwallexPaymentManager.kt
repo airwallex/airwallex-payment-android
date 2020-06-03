@@ -83,8 +83,7 @@ internal class AirwallexPaymentManager(
                 buildWeChatPaymentIntentOptions(params, deviceId, applicationContext)
             }
             PaymentMethodType.CARD -> {
-                buildCardPaymentIntentOptions(
-                    applicationContext, deviceId, params,
+                buildCardPaymentIntentOptions(applicationContext, deviceId, params, true,
                     PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                         .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
                         .build()
@@ -149,7 +148,7 @@ internal class AirwallexPaymentManager(
             } else {
                 Logger.debug("Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`")
                 confirmPaymentIntent(
-                    buildCardPaymentIntentOptions(applicationContext, deviceId, params,
+                    buildCardPaymentIntentOptions(applicationContext, deviceId, params, false,
                         PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                             .setDeviceDataCollectionRes(referenceId)
                             .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
@@ -181,7 +180,7 @@ internal class AirwallexPaymentManager(
                                 override fun onSuccess(transactionId: String) {
                                     Logger.debug("Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate")
                                     confirmPaymentIntent(
-                                        buildCardPaymentIntentOptions(applicationContext, deviceId, params,
+                                        buildCardPaymentIntentOptions(applicationContext, deviceId, params, false,
                                             PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                                                 .setTransactionId(transactionId)
                                                 .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
