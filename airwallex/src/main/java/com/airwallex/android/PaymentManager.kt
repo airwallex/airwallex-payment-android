@@ -53,6 +53,13 @@ internal interface PaymentManager {
         listener: PaymentListener<PaymentMethodResponse>
     )
 
+    fun confirmPaymentIntentWithDeviceId(
+        activity: FragmentActivity,
+        deviceId: String,
+        params: ConfirmPaymentIntentParams,
+        listener: PaymentListener<PaymentIntent>
+    )
+
     /**
      * Handle next action for 3ds
      *

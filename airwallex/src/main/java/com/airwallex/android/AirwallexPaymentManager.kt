@@ -3,6 +3,7 @@ package com.airwallex.android
 import androidx.fragment.app.FragmentActivity
 import com.airwallex.android.Airwallex.PaymentListener
 import com.airwallex.android.PaymentManager.Companion.buildCardPaymentIntentOptions
+import com.airwallex.android.PaymentManager.Companion.buildWeChatPaymentIntentOptions
 import com.airwallex.android.exception.APIException
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.exception.ThreeDSException
@@ -68,6 +69,56 @@ internal class AirwallexPaymentManager(
         listener: PaymentListener<PaymentMethodResponse>
     ) {
         executeApiOperation(ApiOperationType.RETRIEVE_PAYMENT_METHOD, options, listener)
+    }
+
+    override fun confirmPaymentIntentWithDeviceId(
+        activity: FragmentActivity,
+        deviceId: String,
+        params: ConfirmPaymentIntentParams,
+        listener: PaymentListener<PaymentIntent>
+    ) {
+        val applicationContext = activity.applicationContext
+        val options = when (params.paymentMethodType) {
+            PaymentMethodType.WECHAT -> {
+                buildWeChatPaymentIntentOptions(params, deviceId, applicationContext)
+            }
+            PaymentMethodType.CARD -> {
+                buildCardPaymentIntentOptions(
+                    applicationContext, deviceId, params,
+                    PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                        .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
+                        .build()
+                )
+            }
+        }
+
+        val paymentListener = when (params.paymentMethodType) {
+            PaymentMethodType.CARD -> {
+                object : PaymentListener<PaymentIntent> {
+                    override fun onFailed(exception: AirwallexException) {
+                        listener.onFailed(exception)
+                    }
+
+                    override fun onSuccess(response: PaymentIntent) {
+                        val serverJwt = response.nextAction?.data?.get("jwt") as? String
+
+                        if (serverJwt != null) {
+                            Logger.debug("Prepare 3DS Flow, serverJwt: $serverJwt")
+                            // 3D Secure Flow
+                            handleNextAction(activity, params, serverJwt, deviceId, listener)
+                        } else {
+                            Logger.debug("Don't need the 3DS Flow")
+                            listener.onSuccess(response)
+                        }
+                    }
+                }
+            }
+            PaymentMethodType.WECHAT -> {
+                listener
+            }
+        }
+
+        confirmPaymentIntent(options, paymentListener)
     }
 
     /**
