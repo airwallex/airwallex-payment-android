@@ -85,7 +85,6 @@ internal class AirwallexApiRepository : ApiRepository {
             )
             .addClientSecretHeader(options.clientSecret)
             .build()
-        Logger.debug("Confirm PaymentIntent Request: $request")
         return AirwallexPlugins.httpClient.execute(request)
     }
 
@@ -105,7 +104,6 @@ internal class AirwallexApiRepository : ApiRepository {
         )
             .addClientSecretHeader(options.clientSecret)
             .build()
-        Logger.debug("Retrieve PaymentIntent Request: $request")
         return AirwallexPlugins.httpClient.execute(request)
     }
 
@@ -128,7 +126,6 @@ internal class AirwallexApiRepository : ApiRepository {
             )
             .addClientSecretHeader(options.clientSecret)
             .build()
-        Logger.debug("Create PaymentMethod Request: $request")
         return AirwallexPlugins.httpClient.execute(request)
     }
 
@@ -147,7 +144,6 @@ internal class AirwallexApiRepository : ApiRepository {
         )
             .addClientSecretHeader(options.clientSecret)
             .build()
-        Logger.debug("Retrieve PaymentMethod Request: $request")
         return AirwallexPlugins.httpClient.execute(request)
     }
 
