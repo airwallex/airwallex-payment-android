@@ -203,7 +203,10 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
 
 - Customize the usage of select one of payment methods, you need to pass in a `paymentIntent` object. It will display all the saved payment methods of the current customer, you can choose any one to pay
 ```kotlin
-    airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent,
+    private val clientSecretProvider by lazy {
+        ExampleClientSecretProvider()
+    }
+    airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider,
         object : AirwallexStarter.PaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 Log.d(TAG, "Select PaymentMethod success")
@@ -217,6 +220,9 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
 
 - Customize the usage of card creation you can enter a credit card number, expiration time and cvc to create a payment method. You need to pass in a `paymentIntent` object.
 ```kotlin
+    private val clientSecretProvider by lazy {
+        ExampleClientSecretProvider()
+    }
     airwallexStarter.presentAddPaymentMethodFlow(paymentIntent,
         object : AirwallexStarter.PaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
@@ -249,7 +255,10 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
 
 - Show Payment Flow, need to pass in a `paymentIntent` object. You can complete the entire payment process by calling this method, will return the PaymentIntent or AirwallexError through the callback method
 ```kotlin
-    airwallexStarter.presentPaymentFlow(paymentIntent,
+    private val clientSecretProvider by lazy {
+        ExampleClientSecretProvider()
+    }
+    airwallexStarter.presentPaymentFlow(paymentIntent, clientSecretProvider,
         object : AirwallexStarter.PaymentIntentListener {
             override fun onSuccess(paymentIntent: PaymentIntent) {
                 Log.d(TAG, "Confirm payment intent success")
