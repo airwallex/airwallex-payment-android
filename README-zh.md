@@ -4,25 +4,23 @@
 [![Bintray](https://api.bintray.com/packages/qiaozhao/airwallex-payment-android/com.airwalllex.android/images/download.svg)](https://bintray.com/qiaozhao/airwallex-payment-android/com.airwalllex.android)
 [![license](https://img.shields.io/badge/license-MIT%20License-00AAAA.svg)](https://github.com/airwallex/airwallex-payment-android/blob/develop/LICENSE)
 
-EN | [中文](./README-zh.md)
+[EN](./README.md) | 中文
 
-This library makes it quick and easy to build an excellent payment experience in your Android app.
+Airwallx Android SDK 可以很方便得在你的Android用用中添加支付功能，支持Android 19及以上版本。
 
-Airwallex's Android SDK is available for Android SDK >= 19.
-
-## Installation
-Add the dependency in your `build.gradle`.
+## 添加依赖
+在 `build.gradle`中添加以下依赖
 ```groovy
 dependencies {
     implementation 'com.airwallex:airwallex-core:1.0.0'
 }
 ```
 
-## Getting Start
-[Quick start and guides](GUIDE.md) for integrating Airwallex Android SDK in your Android app.
+## 快速上手
+请参考：[快速开始](GUIDE-zh.md)
 
-## Feedback
-We appreciate the time you take to try out our sample code and welcome your feedback. Here are a few ways to get in touch:
+## 反馈
+感谢使用Airwallex Android SDK，并欢迎您提供反馈。 以下是几种联系方式：
 
-* For generally applicable issues and feedback, create an issue in this repository.
-* [pa_mobile_sdk@airwallex.com](mailto:pa_mobile_sdk@airwallex.com) - For personal support at any phase of integration
+* 对于一般适用的问题和反馈，可以直接在[`Issues`](https://github.com/airwallex/airwallex-payment-android/issues)中提交问题。
+* [pa_mobile_sdk@airwallex.com](mailto:pa_mobile_sdk@airwallex.com) - 也可以发送问题到这个邮箱，我们会尽快提供帮助。
