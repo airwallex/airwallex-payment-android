@@ -202,7 +202,10 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 
 - Payment Methods 界面, 你需要传入一个`paymentIntent`对象. 这个界面将显示当前用户保存的所有付款方式，你可以选择任何一种进行付款
 ```kotlin
-    airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent,
+    private val clientSecretProvider by lazy {
+        ExampleClientSecretProvider()
+    }
+    airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider,
         object : AirwallexStarter.PaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 Log.d(TAG, "Select PaymentMethod success")
@@ -216,7 +219,10 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 
 - Enter credit card 界面，你需要输入信用卡卡号，过期时间，CVC 来创建 PaymentMethod. 你需要传入一个`paymentIntent`对象。
 ```kotlin
-    airwallexStarter.presentAddPaymentMethodFlow(paymentIntent,
+    private val clientSecretProvider by lazy {
+        ExampleClientSecretProvider()
+    }
+    airwallexStarter.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider,
         object : AirwallexStarter.PaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 Log.d(TAG, "Create PaymentMethod success")
@@ -248,7 +254,10 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 
 - 使用整个 Payment Flow, 需要传入一个`paymentIntent`对象. 你可以通过调用此方法来完成整个付款过程，支付完成之后，将通过回调方法返回`PaymentIntent`或`AirwallexError`
 ```kotlin
-    airwallexStarter.presentPaymentFlow(paymentIntent,
+    private val clientSecretProvider by lazy {
+        ExampleClientSecretProvider()
+    }
+    airwallexStarter.presentPaymentFlow(paymentIntent, clientSecretProvider,
         object : AirwallexStarter.PaymentIntentListener {
             override fun onSuccess(paymentIntent: PaymentIntent) {
                 Log.d(TAG, "Confirm payment intent success")
