@@ -2,6 +2,7 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Context
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.Patterns
 import android.view.View
@@ -70,21 +71,26 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
                     )
                     .build()
             } else if (isValid) {
-                return Billing.Builder()
+                val addressBuilder = Address.Builder()
+                    .setCountryCode(countryAutocomplete.country)
+                    .setState(atlState.value)
+                    .setCity(atlCity.value)
+                    .setStreet(atlStreetAddress.value)
+                if (!TextUtils.isEmpty(atlZipCode.value)) {
+                    addressBuilder.setPostcode(atlZipCode.value)
+                }
+                val address = addressBuilder.build()
+                val billingBuilder = Billing.Builder()
                     .setFirstName(atlFirstName.value)
                     .setLastName(atlLastName.value)
-                    .setEmail(atlEmail.value)
-                    .setPhone(atlPhoneNumber.value)
-                    .setAddress(
-                        Address.Builder()
-                            .setCountryCode(countryAutocomplete.country)
-                            .setState(atlState.value)
-                            .setCity(atlCity.value)
-                            .setStreet(atlStreetAddress.value)
-                            .setPostcode(atlZipCode.value)
-                            .build()
-                    )
-                    .build()
+                    .setAddress(address)
+                if (!TextUtils.isEmpty(atlEmail.value)) {
+                    billingBuilder.setEmail(atlEmail.value)
+                }
+                if (!TextUtils.isEmpty(atlPhoneNumber.value)) {
+                    billingBuilder.setPhone(atlPhoneNumber.value)
+                }
+                return billingBuilder.build()
             } else {
                 return null
             }
