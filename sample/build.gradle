@@ -3,6 +3,37 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: "./ktlint.gradle"
 
+def getAuthUrl() {
+    return readProperty('AIRWALLEX_AUTH_URL')
+}
+
+def getBaseUrl() {
+    return readProperty('AIRWALLEX_BASE_URL')
+}
+
+def getApiKey() {
+    return readProperty('AIRWALLEX_API_KEY')
+}
+
+def getClientId() {
+    return readProperty('AIRWALLEX_CLIENT_ID')
+}
+
+def getWeChatAppId() {
+    return readProperty('AIRWALLEX_WECHAT_APP_ID')
+}
+
+def getWeChatAppSignature() {
+    return readProperty('AIRWALLEX_WECHAT_APP_SIGNATURE')
+}
+
+private def readProperty(name) {
+    if (hasProperty(name)) {
+        return property(name).trim()
+    }
+    return ""
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -23,6 +54,15 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
+
+        manifestPlaceholders = [
+                AIRWALLEX_AUTH_URL            : getAuthUrl(),
+                AIRWALLEX_BASE_URL            : getBaseUrl(),
+                AIRWALLEX_API_KEY             : getApiKey(),
+                AIRWALLEX_CLIENT_ID           : getClientId(),
+                AIRWALLEX_WECHAT_APP_ID       : getWeChatAppId(),
+                AIRWALLEX_WECHAT_APP_SIGNATURE: getWeChatAppSignature()
+        ]
     }
 
     signingConfigs {

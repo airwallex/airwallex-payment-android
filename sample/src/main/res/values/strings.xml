@@ -1,16 +1,5 @@
 <resources>
 
-    <!-- Airwallex API URL -->
-    <string name="auth_url_value">https://api-staging.airwallex.com</string>
-    <string name="base_url_value">https://staging-pci-api.airwallex.com</string>
-
-    <!-- Airwallex api_key, client_id -->
-    <string name="api_key_value">e1f6121bd78a581870402e00dc5e171d34ead812c3c32f7e5612d531ef7790c7dde65cbc50b983c270ae106f792f1339</string>
-    <string name="client_id_value">SFvokZFrTvScwA72tkswFQ</string>
-
-    <!-- WeChat app_id, app_signature -->
-    <string name="wechat_app_signature_value">eb1b3de47de134a321442cad974db87e</string>
-
     <string name="authorization">Authorization</string>
     <string name="wechat">WeChat</string>
     <string name="auth_url">Auth Url</string>

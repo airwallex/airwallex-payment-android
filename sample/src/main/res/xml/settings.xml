@@ -5,22 +5,18 @@
     <PreferenceCategory android:title="@string/authorization">
 
         <EditTextPreference
-            android:defaultValue="@string/auth_url_value"
             android:key="@string/auth_url"
             android:title="@string/auth_url" />
 
         <EditTextPreference
-            android:defaultValue="@string/base_url_value"
             android:key="@string/base_url"
             android:title="@string/base_url" />
 
         <EditTextPreference
-            android:defaultValue="@string/api_key_value"
             android:key="@string/api_key"
             android:title="@string/api_key" />
 
         <EditTextPreference
-            android:defaultValue="@string/client_id_value"
             android:key="@string/client_id"
             android:title="@string/client_id" />
 
@@ -42,15 +38,11 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/wechat">
-        <ListPreference
-            android:dialogTitle="@string/wechat_app_id"
-            android:entries="@array/array_wechat_app_name"
-            android:entryValues="@array/array_wechat_app_id"
+        <EditTextPreference
             android:key="@string/wechat_app_id"
             android:title="@string/wechat_app_id" />
 
         <EditTextPreference
-            android:defaultValue="@string/wechat_app_signature_value"
             android:key="@string/wechat_app_signature"
             android:title="@string/wechat_app_signature" />
     </PreferenceCategory>
