@@ -30,7 +30,7 @@ internal class PaymentMethodItemView constructor(
     internal val isValid: Boolean
         get() {
             return paymentMethodType == PaymentMethodType.CARD && cvc?.length == CardCvcEditText.VALID_CVC_LENGTH ||
-                    paymentMethodType == PaymentMethodType.WECHAT
+                paymentMethodType == PaymentMethodType.WECHAT
         }
 
     /**
@@ -69,6 +69,9 @@ internal class PaymentMethodItemView constructor(
     }
 
     internal fun renewalPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
+        if (paymentMethod.type == null) {
+            return
+        }
         this.paymentMethodType = paymentMethod.type
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
             tvPaymentMethod.text = paymentMethod.type.value

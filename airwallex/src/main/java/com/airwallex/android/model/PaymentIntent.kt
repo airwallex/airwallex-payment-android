@@ -74,7 +74,7 @@ data class PaymentIntent internal constructor(
      * The status for the payment intent
      */
     @SerializedName("status")
-    val status: PaymentIntentStatus,
+    val status: PaymentIntentStatus?,
 
     /**
      * Amount that captured from this payment intent
