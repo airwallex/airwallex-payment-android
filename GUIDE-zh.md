@@ -86,39 +86,34 @@ repositories {
 
 2. 然后你可以调用 `confirmPaymentIntent` 方法
 ```kotlin
-    val confirmPaymentIntentParams = when (paymentMethod.type) {
-        PaymentMethodType.WECHAT -> {
-            ConfirmPaymentIntentParams.createWeChatParams(
-                paymentIntentId = paymentIntent.id,
-                clientSecret = paymentIntent.clientSecret,
-                customerId = paymentIntent.customerId
-            )
+    val listener = object : Airwallex.PaymentListener<PaymentIntent> {
+        override fun onSuccess(response: PaymentIntent) {
+            // Confirm Payment Intent success
         }
-        PaymentMethodType.CARD -> {
-            ConfirmPaymentIntentParams.createCardParams(
-                paymentIntentId = paymentIntent.id,
-                clientSecret = paymentIntent.clientSecret,
-                paymentMethodReference = PaymentMethodReference(
-                    requireNotNull(paymentMethod.id),
-                    requireNotNull(cvc)
-                ),
-                customerId = paymentIntent.customerId
-            )
+
+        override fun onFailed(exception: AirwallexException) {
+            // Confirm Payment Intent failed
         }
     }
-
-    airwallex.confirmPaymentIntent(
-        params = confirmPaymentIntentParams,
-        listener = object : Airwallex.PaymentListener<PaymentIntent> {
-            override fun onSuccess(response: PaymentIntent) {
-                // Confirm Payment Intent success
-            }
-                
-            override fun onFailed(exception: AirwallexException) {
-                // Confirm Payment Intent failed
-            }  
-        }
-     )
+    if (paymentMethod.type == PaymentMethodType.WECHAT) {
+        val params =  ConfirmPaymentIntentParams.createWeChatParams(
+            paymentIntentId = paymentIntent.id,
+            clientSecret = requireNotNull(paymentIntent.clientSecret),
+            customerId = paymentIntent.customerId
+        )
+        airwallex.confirmPaymentIntent(this, params, listener)
+    } else if (paymentMethod.type == PaymentMethodType.CARD) {
+        val params = ConfirmPaymentIntentParams.createCardParams(
+            paymentIntentId = paymentIntent.id,
+            clientSecret = requireNotNull(paymentIntent.clientSecret),
+            paymentMethodReference = PaymentMethodReference(
+                requireNotNull(paymentMethod.id),
+                requireNotNull(cvc)
+            ),
+            customerId = paymentIntent.customerId
+        )
+        airwallex.confirmPaymentIntent(this, params, listener)
+    }
 ```
 
 3. 成功confirm `PaymentIntent`之后

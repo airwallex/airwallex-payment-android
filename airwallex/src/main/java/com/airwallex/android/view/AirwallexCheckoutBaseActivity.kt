@@ -24,26 +24,24 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         setLoadingProgress(loading = true, cancelable = false)
-        val params = when (paymentMethod.type) {
-            PaymentMethodType.WECHAT -> {
-                ConfirmPaymentIntentParams.createWeChatParams(
-                    paymentIntentId = paymentIntent.id,
-                    clientSecret = requireNotNull(paymentIntent.clientSecret),
-                    customerId = paymentIntent.customerId
-                )
-            }
-            PaymentMethodType.CARD -> {
-                ConfirmPaymentIntentParams.createCardParams(
-                    paymentIntentId = paymentIntent.id,
-                    clientSecret = requireNotNull(paymentIntent.clientSecret),
-                    paymentMethodReference = PaymentMethodReference(
-                        requireNotNull(paymentMethod.id),
-                        requireNotNull(cvc)
-                    ),
-                    customerId = paymentIntent.customerId
-                )
-            }
+        if (paymentMethod.type == PaymentMethodType.WECHAT) {
+            val params = ConfirmPaymentIntentParams.createWeChatParams(
+                paymentIntentId = paymentIntent.id,
+                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                customerId = paymentIntent.customerId
+            )
+            airwallex.confirmPaymentIntent(this, params, listener)
+        } else if (paymentMethod.type == PaymentMethodType.CARD) {
+            val params = ConfirmPaymentIntentParams.createCardParams(
+                paymentIntentId = paymentIntent.id,
+                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                paymentMethodReference = PaymentMethodReference(
+                    requireNotNull(paymentMethod.id),
+                    requireNotNull(cvc)
+                ),
+                customerId = paymentIntent.customerId
+            )
+            airwallex.confirmPaymentIntent(this, params, listener)
         }
-        airwallex.confirmPaymentIntent(this, params, listener)
     }
 }
