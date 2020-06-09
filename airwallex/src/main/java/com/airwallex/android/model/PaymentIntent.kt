@@ -371,13 +371,40 @@ data class PaymentIntent internal constructor(
          * Type of next action, can be one of render_qr_code, call_sdk, redirect, display
          */
         @SerializedName("type")
-        val type: NextActionType,
+        val type: NextActionType?,
 
         /**
          * The additional data that can be used to complete this action
          */
         @SerializedName("data")
-        val data: @RawValue Map<String, Any>?
+        val data: @RawValue Map<String, Any>?,
+
+        /**
+         * The dcc data that can be used to complete this action
+         */
+        val dcc: DccData?
+    ) : AirwallexModel, Parcelable
+
+    /**
+     * The status of a [PaymentIntent]
+     */
+    @Parcelize
+    data class DccData internal constructor(
+        @SerializedName("currency")
+        val currency: String?,
+
+        @SerializedName("amount")
+        val amount: String?,
+
+        @SerializedName("rate")
+        val rate: String?,
+
+        @SerializedName("rateTimestamp")
+        val rateTimestamp: String?,
+
+        @SerializedName("rateExpiry")
+        val rateExpiry: String?
+
     ) : AirwallexModel, Parcelable
 
     /**
@@ -396,6 +423,9 @@ data class PaymentIntent internal constructor(
         REDIRECT,
 
         @SerializedName("display")
-        DISPLAY
+        DISPLAY,
+
+        @SerializedName("DccAction")
+        DCC_ACTION
     }
 }
