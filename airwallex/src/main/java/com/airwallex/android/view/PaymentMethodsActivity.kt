@@ -7,7 +7,7 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.Airwallex
-import com.airwallex.android.ClientSecretManager
+import com.airwallex.android.ClientSecretRepository
 import com.airwallex.android.R
 import com.airwallex.android.RetrievePaymentMethodParams
 import com.airwallex.android.exception.AirwallexException
@@ -71,6 +71,11 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             }
         }
 
+        addPaymentMethod.visibility = if (shouldShowCard) View.VISIBLE else View.GONE
+        addPaymentMethod.setOnClickListener {
+            startAddPaymentMethod()
+        }
+
         rvPaymentMethods.apply {
             layoutManager = viewManager
             adapter = paymentMethodsAdapter
@@ -84,16 +89,11 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         }
 
         paymentMethodsAdapter.onLoadMoreCallback = {
-            paymentMethodsAdapter.startLoadingMore(rvPaymentMethods)
             fetchPaymentMethods()
         }
-
         paymentMethodsAdapter.addOnScrollListener(rvPaymentMethods)
 
-        addPaymentMethod.visibility = if (shouldShowCard) View.VISIBLE else View.GONE
-        addPaymentMethod.setOnClickListener {
-            startAddPaymentMethod()
-        }
+        fetchPaymentMethods()
     }
 
     override val layoutResource: Int
@@ -104,7 +104,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             return
         }
 
-        ClientSecretManager.get()?.retrieveClientSecret(object : ClientSecretManager.ClientSecretRetrieveListener {
+        paymentMethodsAdapter.startLoadingMore(rvPaymentMethods)
+        ClientSecretRepository.getInstance().retrieveClientSecret(object : ClientSecretRepository.ClientSecretRetrieveListener {
             override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
                 airwallex.retrievePaymentMethods(
                     params = RetrievePaymentMethodParams.Builder(

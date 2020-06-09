@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.Airwallex
-import com.airwallex.android.ClientSecretManager
+import com.airwallex.android.ClientSecretRepository
 import com.airwallex.android.CreatePaymentMethodParams
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
@@ -38,7 +38,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         val card = cardWidget.paymentMethodCard ?: return
         setLoadingProgress(true)
 
-        ClientSecretManager.get()?.retrieveClientSecret(object : ClientSecretManager.ClientSecretRetrieveListener {
+        ClientSecretRepository.getInstance().retrieveClientSecret(object : ClientSecretRepository.ClientSecretRetrieveListener {
             override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
                 airwallex.createPaymentMethod(
                     CreatePaymentMethodParams(
