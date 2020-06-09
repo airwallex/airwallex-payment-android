@@ -89,7 +89,7 @@ class AirwallexStarter constructor(
             "Customer id must be provided on add payment method flow"
         })
         this.addPaymentMethodFlowListener = addPaymentMethodFlowListener
-        ClientSecretManager.create(clientSecretProvider)
+        ClientSecretRepository.init(clientSecretProvider)
         AddPaymentMethodActivityLaunch(activity)
             .startForResult(
                 AddPaymentMethodActivityLaunch.Args.Builder()
@@ -115,7 +115,7 @@ class AirwallexStarter constructor(
             "Customer id must be provided on select payment method flow"
         })
         this.selectPaymentMethodFlowListener = selectPaymentMethodFlowListener
-        ClientSecretManager.create(clientSecretProvider)
+        ClientSecretRepository.init(clientSecretProvider)
         PaymentMethodsActivityLaunch(activity)
             .startForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
@@ -165,7 +165,7 @@ class AirwallexStarter constructor(
             "Customer id must be provided on payment flow"
         })
         this.paymentFlowListener = paymentFlowListener
-        ClientSecretManager.create(clientSecretProvider)
+        ClientSecretRepository.init(clientSecretProvider)
         PaymentMethodsActivityLaunch(activity)
             .startForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()

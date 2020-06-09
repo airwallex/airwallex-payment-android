@@ -4,7 +4,7 @@ import com.airwallex.android.model.ClientSecret
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-internal class ClientSecretManager(
+internal class ClientSecretRepository(
     private val clientSecretProvider: ClientSecretProvider
 ) : ClientSecretUpdateListener {
     private var clientSecretRetrieveListener: ClientSecretRetrieveListener? = null
@@ -51,19 +51,21 @@ internal class ClientSecretManager(
 
     companion object {
         @Volatile
-        private var singleton: Singleton<ClientSecretManager>? = null
+        private var instance: ClientSecretRepository? = null
 
         private const val CLIENT_SECRET_REFRESH_BUFFER_IN_SECONDS = 60L
 
-        fun get(): ClientSecretManager? {
-            return singleton?.get()
+        fun getInstance(): ClientSecretRepository {
+            return checkNotNull(instance) {
+                "Attempted to get instance of ClientSecretManager without initialization."
+            }
         }
 
-        fun create(clientSecretProvider: ClientSecretProvider) {
-            if (singleton == null) {
-                singleton = object : Singleton<ClientSecretManager>() {
-                    override fun create(): ClientSecretManager {
-                        return ClientSecretManager(clientSecretProvider)
+        fun init(clientSecretProvider: ClientSecretProvider) {
+            if (instance == null) {
+                synchronized(this) {
+                    if (instance == null) {
+                        instance = ClientSecretRepository(clientSecretProvider)
                     }
                 }
             }

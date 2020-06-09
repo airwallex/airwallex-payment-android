@@ -37,7 +37,6 @@ internal class PaymentMethodsAdapter(
                 lastVisibleItem = viewManager.findLastVisibleItemPosition()
 
                 if (!isLoading && totalItemCount <= lastVisibleItem + VISIBLE_THRESHOLD && hasMore) {
-                    isLoading = true
                     onLoadMoreCallback.invoke()
                 }
             }
@@ -61,6 +60,7 @@ internal class PaymentMethodsAdapter(
     }
 
     internal fun startLoadingMore(recyclerView: RecyclerView) {
+        isLoading = true
         recyclerView.post {
             paymentMethods.add(null)
             notifyItemInserted(itemCount - 1)
@@ -86,11 +86,11 @@ internal class PaymentMethodsAdapter(
     }
 
     private fun isWeChatPosition(position: Int): Boolean {
-        return position == 0
+        return shouldShowWeChatPay && position == 0
     }
 
     private fun isLoadingPosition(position: Int): Boolean {
-        return paymentMethods[position - weChatCount] == null
+        return shouldShowCard && paymentMethods[position - weChatCount] == null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -120,7 +120,7 @@ internal class PaymentMethodsAdapter(
     inner class CardHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bindView(position: Int) {
-            val method = paymentMethods[position - 1] ?: return
+            val method = paymentMethods[position - weChatCount] ?: return
             val card = method.card ?: return
             itemView.tvCardInfo.text =
                 String.format("%s •••• %s", card.brand?.toUpperCase(Locale.ROOT), card.last4)
