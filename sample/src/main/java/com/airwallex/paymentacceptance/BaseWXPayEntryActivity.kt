@@ -14,7 +14,7 @@ abstract class BaseWXPayEntryActivity : AppCompatActivity(), IWXAPIEventHandler 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        weChatApi = WXAPIFactory.createWXAPI(this, Settings.wechatAppId, true)
+        weChatApi = WXAPIFactory.createWXAPI(this, Settings.weChatAppId, true)
         weChatApi.handleIntent(intent, this)
     }
 

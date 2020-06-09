@@ -281,10 +281,20 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 
 * **Step 2:** 打开Android Studio并选择`build.gradle`文件来导入项目
 
-* **Step 3:** 打开 [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), 并拷贝 `Client ID` 和` API key` 到 [`strings.xml`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/res/values/strings.xml)
+* **Step 3:** 打开 [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), 并拷贝 `Client ID` 和` API key` 到 [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
+```
+    private const val AUTH_URL = "put your auth url here"
+    private const val BASE_URL = "put your base url here"
+    private const val API_KEY = "put your api key here"
+    private const val CLIENT_ID = "put your client id here"
+```
 
-* **Step 4:** 在 [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay)注册app, 然后拷贝 `App ID` 和 `App Signature` 到 [`strings.xml`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/res/values/strings.xml)
-            
+* **Step 4:** 在 [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay)注册app, 然后拷贝 `App ID` 和 `App Signature` 到 [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
+```
+    private const val WECHAT_APP_ID = "put your WeChat app id here"
+    private const val WECHAT_APP_SIGNATURE = "put your WeChat app signature here"
+```
+
 * **Step 5:** 运行`sample`工程
 
 ## 贡献

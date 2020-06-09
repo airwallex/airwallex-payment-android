@@ -240,7 +240,7 @@ class PaymentCartActivity : AppCompatActivity() {
                                 // Launch WeChat Pay
                                 WXPay.instance.launchWeChat(
                                     context = this@PaymentCartActivity,
-                                    appId = Settings.wechatAppId,
+                                    appId = Settings.weChatAppId,
                                     data = weChat,
                                     listener = object : WXPay.WeChatPaymentListener {
                                         override fun onSuccess() {
