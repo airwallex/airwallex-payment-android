@@ -38,7 +38,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         val card = cardWidget.paymentMethodCard ?: return
         setLoadingProgress(true)
 
-        ClientSecretRepository.getInstance().retrieveClientSecret(object : ClientSecretRepository.ClientSecretRetrieveListener {
+        ClientSecretRepository.getInstance().retrieveClientSecret(args.customerId, object : ClientSecretRepository.ClientSecretRetrieveListener {
             override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
                 airwallex.createPaymentMethod(
                     CreatePaymentMethodParams(

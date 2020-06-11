@@ -105,7 +105,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         }
 
         paymentMethodsAdapter.startLoadingMore(rvPaymentMethods)
-        ClientSecretRepository.getInstance().retrieveClientSecret(object : ClientSecretRepository.ClientSecretRetrieveListener {
+        ClientSecretRepository.getInstance().retrieveClientSecret(requireNotNull(paymentIntent.customerId), object : ClientSecretRepository.ClientSecretRetrieveListener {
             override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
                 airwallex.retrievePaymentMethods(
                     params = RetrievePaymentMethodParams.Builder(

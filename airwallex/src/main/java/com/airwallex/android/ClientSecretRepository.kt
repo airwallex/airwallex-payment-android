@@ -10,13 +10,14 @@ internal class ClientSecretRepository(
     private var clientSecretRetrieveListener: ClientSecretRetrieveListener? = null
 
     private var clientSecret: ClientSecret? = null
+    private var customerId: String? = null
 
-    fun retrieveClientSecret(listener: ClientSecretRetrieveListener) {
+    fun retrieveClientSecret(customerId: String, listener: ClientSecretRetrieveListener) {
         val clientSecret = clientSecret
         clientSecretRetrieveListener = listener
-        if (clientSecret == null || shouldRefreshKey(clientSecret)) {
+        if (clientSecret == null || shouldRefreshKey(clientSecret) || this.customerId != customerId) {
             Logger.debug("Merchant need to create ClientSecret")
-            clientSecretProvider.createClientSecret(this)
+            clientSecretProvider.createClientSecret(customerId, this)
         } else {
             Logger.debug("ClientSecret not expiry, just use the last one")
             listener.onClientSecretRetrieve(clientSecret)
@@ -30,8 +31,9 @@ internal class ClientSecretRepository(
         return TimeUnit.MILLISECONDS.toSeconds(clientSecret.expiredTime.time) < nowPlusBuffer
     }
 
-    override fun onClientSecretUpdate(clientSecret: ClientSecret) {
+    override fun onClientSecretUpdate(customerId: String, clientSecret: ClientSecret) {
         this.clientSecret = clientSecret
+        this.customerId = customerId
         clientSecretRetrieveListener?.onClientSecretRetrieve(clientSecret)
     }
 

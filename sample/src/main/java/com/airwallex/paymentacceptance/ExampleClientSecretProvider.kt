@@ -16,14 +16,14 @@ class ExampleClientSecretProvider : ClientSecretProvider {
 
     private val compositeDisposable = CompositeDisposable()
 
-    override fun createClientSecret(updateListener: ClientSecretUpdateListener) {
+    override fun createClientSecret(customerId: String, updateListener: ClientSecretUpdateListener) {
         compositeDisposable.add(
-            api.createClientSecret(Settings.cachedCustomerId)
+            api.createClientSecret(customerId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ clientSecret ->
                     try {
-                        updateListener.onClientSecretUpdate(clientSecret)
+                        updateListener.onClientSecretUpdate(customerId, clientSecret)
                     } catch (e: IOException) {
                         updateListener.onClientSecretUpdateFailure(e.message ?: "")
                     }
