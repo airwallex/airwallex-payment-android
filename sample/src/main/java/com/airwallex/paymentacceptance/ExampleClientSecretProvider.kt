@@ -1,5 +1,6 @@
 package com.airwallex.paymentacceptance
 
+import android.text.TextUtils
 import com.airwallex.android.ClientSecretProvider
 import com.airwallex.android.ClientSecretUpdateListener
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -11,6 +12,9 @@ class ExampleClientSecretProvider : ClientSecretProvider {
 
     private val api: Api
         get() {
+            if (TextUtils.isEmpty(Settings.baseUrl)) {
+                throw IllegalArgumentException("Base url should not be null or empty")
+            }
             return ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
         }
 

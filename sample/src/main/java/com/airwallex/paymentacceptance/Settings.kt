@@ -7,14 +7,19 @@ import androidx.preference.PreferenceManager
 
 object Settings {
 
-    private const val AUTH_URL = "put your auth url here"
-    private const val BASE_URL = "put your base url here"
-    private const val API_KEY = "put your api key here"
-    private const val CLIENT_ID = "put your client id here"
-    private const val WECHAT_APP_ID = "put your WeChat app id here"
-    private const val WECHAT_APP_SIGNATURE = "put your WeChat app signature here"
+    // Auth URL
+    private const val AUTH_URL = ""
+    // Base URL
+    private const val BASE_URL = ""
+    // API Key
+    private const val API_KEY = ""
+    // Client Id
+    private const val CLIENT_ID = ""
+    // WeChat Pay App Id
+    private const val WECHAT_APP_ID = ""
+    // WeChat Pay App Signature
+    private const val WECHAT_APP_SIGNATURE = ""
 
-    private const val TOKEN_KEY = "tokenKey"
     private const val CUSTOMER_ID = "customerId"
     private val context: Context by lazy { SampleApplication.instance }
 
@@ -24,6 +29,11 @@ object Settings {
     private const val METADATA_KEY_CLIENT_ID_KEY = "com.airwallex.sample.metadata.client_id"
     private const val METADATA_KEY_WECHAT_APP_ID_KEY = "com.airwallex.sample.metadata.wechat_app_id"
     private const val METADATA_KEY_WECHAT_APP_SIGNATURE_KEY = "com.airwallex.sample.metadata.wechat_app_signature"
+
+    /**
+     * `IMPORTANT` Token cannot appear on the merchant side, this is just for Demo purposes only
+     */
+    var token: String? = null
 
     private val sharedPreferences: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(SampleApplication.instance)
@@ -40,21 +50,6 @@ object Settings {
         }
         get() {
             return sharedPreferences.getString(CUSTOMER_ID, "") ?: ""
-        }
-
-    /**
-     * `IMPORTANT` Token cannot appear on the merchant side, this is just for Demo purposes only
-     */
-    var token: String?
-        get() {
-            return sharedPreferences.getString(TOKEN_KEY, null)
-        }
-        set(newValue) {
-            if (newValue == null) {
-                sharedPreferences.edit().remove(TOKEN_KEY).apply()
-            } else {
-                sharedPreferences.edit().putString(TOKEN_KEY, newValue).apply()
-            }
         }
 
     val authUrl: String

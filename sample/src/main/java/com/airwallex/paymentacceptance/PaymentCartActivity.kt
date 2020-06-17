@@ -45,11 +45,17 @@ class PaymentCartActivity : AppCompatActivity() {
 
     private val api: Api
         get() {
+            if (TextUtils.isEmpty(Settings.baseUrl)) {
+                throw IllegalArgumentException("Base url should not be null or empty")
+            }
             return ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
         }
 
     private val authApi: AuthApi
         get() {
+            if (TextUtils.isEmpty(Settings.authUrl)) {
+                throw IllegalArgumentException("Auth url should not be null or empty")
+            }
             return ApiFactory(Settings.authUrl).buildRetrofit().create(AuthApi::class.java)
         }
 
