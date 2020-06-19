@@ -21,6 +21,7 @@ Get started with our integration guide and example project.
     * [Basic Integration](#basic-integration)
     * [Customize Usage](#customize-usage)
 * [Examples](#Examples)
+* [Test Card Numbers](#test-card-numbers)
 * [Contributing](#Contributing)
 
 ## Requirements
@@ -292,6 +293,11 @@ To run the example project, you should follow these steps.
 ```
 
 * **Step 5:** Run the `sample` project
+
+## Test Card Numbers
+- 4242 4242 4242 4242
+- 4000 0000 0000 0002 (3D 1.0)
+- 4000 0000 0000 1091 (3D 2.0)
 
 ## Contributing
 We welcome contributions of any kind including new features, bug fixes, and documentation improvements. The best way to contribute is by submitting a pull request – we'll do our best to respond to your patch as soon as possible. You can also submit an issue if you find bugs or have any questions.
