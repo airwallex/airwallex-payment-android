@@ -19,7 +19,7 @@ dependencies {
 ```
 
 ## Getting Start
-[Quick start and guides](GUIDE.md) for integrating Airwallex Android SDK in your Android app.
+[Quick start and guides](GUIDE.md) and [SDK reference](https://airwallex.github.io/airwallex-payment-android/) for integrating Airwallex Android SDK in your Android app.
 
 ## Feedback
 We appreciate the time you take to try out our sample code and welcome your feedback. Here are a few ways to get in touch:
