@@ -62,7 +62,7 @@ dependencies {
     api "com.squareup.okhttp3:okhttp:$okhttpVersion"
     api "com.google.code.gson:gson:${gsonVersion}"
     // cardinal
-    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.3-1'
+    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.3-2'
     // fingerprinting
     api 'com.threatmetrix.TrustDefender:TrustDefender:5.0-96'
 
