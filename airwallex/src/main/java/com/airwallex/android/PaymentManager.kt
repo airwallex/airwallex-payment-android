@@ -10,6 +10,17 @@ import java.util.*
 internal interface PaymentManager {
 
     /**
+     * Continue the [PaymentIntent] using [ApiRepository.Options], used for 3DS
+     *
+     * @param options contains the confirm [PaymentIntent] params
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    fun continuePaymentIntent(
+        options: ApiRepository.Options,
+        listener: PaymentListener<PaymentIntent>
+    )
+
+    /**
      * Confirm the [PaymentIntent] using [ApiRepository.Options]
      *
      * @param options contains the confirm [PaymentIntent] params
@@ -119,7 +130,6 @@ internal interface PaymentManager {
             applicationContext: Context,
             deviceId: String,
             params: ConfirmPaymentIntentParams,
-            withPaymentMethod: Boolean,
             threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
             val request = PaymentIntentConfirmRequest.Builder(
@@ -136,15 +146,30 @@ internal interface PaymentManager {
                 )
                 .setCustomerId(params.customerId)
                 .setDevice(buildDeviceInfo(deviceId, applicationContext))
-
-            if (withPaymentMethod) {
-                request.setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
-            }
+                .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId,
                 request = request.build()
             )
+        }
+
+        fun buildContinuePaymentIntentOptions(
+            params: ConfirmPaymentIntentParams,
+            type: PaymentIntentContinueType,
+            threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
+        ): AirwallexApiRepository.ContinuePaymentIntentOptions {
+            val request = PaymentIntentContinueRequest(
+                requestId = UUID.randomUUID().toString(),
+                type = type,
+                threeDSecure = threeDSecure
+            )
+            return AirwallexApiRepository.ContinuePaymentIntentOptions(
+                clientSecret = params.clientSecret,
+                paymentIntentId = params.paymentIntentId,
+                request = request
+            )
+
         }
     }
 }

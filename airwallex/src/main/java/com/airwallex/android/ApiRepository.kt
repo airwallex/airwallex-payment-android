@@ -16,6 +16,15 @@ internal interface ApiRepository {
     ) : Parcelable
 
     /**
+     * Continue the [PaymentIntent] using [ApiRepository.Options], used for 3DS
+     *
+     * @return a [AirwallexHttpResponse] from Airwallex server
+     */
+    fun continuePaymentIntent(
+        options: Options
+    ): AirwallexHttpResponse?
+
+    /**
      * Confirm the [PaymentIntent] using [ApiRepository.Options]
      *
      * @return a [AirwallexHttpResponse] from Airwallex server
