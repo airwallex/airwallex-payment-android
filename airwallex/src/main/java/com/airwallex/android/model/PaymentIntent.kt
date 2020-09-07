@@ -92,7 +92,7 @@ data class PaymentIntent internal constructor(
      * Available payment method types
      */
     @SerializedName("available_payment_method_types")
-    val availablePaymentMethodTypes: List<PaymentMethodType>,
+    val availablePaymentMethodTypes: List<PaymentMethodType>? = null,
 
     /**
      * Payment methods of the customer if customer ID is provided
