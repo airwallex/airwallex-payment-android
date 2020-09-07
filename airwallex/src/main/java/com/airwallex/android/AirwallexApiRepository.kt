@@ -1,6 +1,7 @@
 package com.airwallex.android
 
 import com.airwallex.android.model.PaymentIntentConfirmRequest
+import com.airwallex.android.model.PaymentIntentContinueRequest
 import com.airwallex.android.model.PaymentMethodCreateRequest
 import com.airwallex.android.model.PaymentMethodType
 import com.google.gson.JsonParser
@@ -24,6 +25,13 @@ internal class AirwallexApiRepository : ApiRepository {
         override val clientSecret: String,
         internal val paymentIntentId: String,
         internal val request: PaymentIntentConfirmRequest? = null
+    ) : ApiRepository.Options(clientSecret = clientSecret)
+
+    @Parcelize
+    internal class ContinuePaymentIntentOptions internal constructor(
+        override val clientSecret: String,
+        internal val paymentIntentId: String,
+        internal val request: PaymentIntentContinueRequest? = null
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     @Parcelize
@@ -58,6 +66,35 @@ internal class AirwallexApiRepository : ApiRepository {
          */
         internal val type: PaymentMethodType
     ) : ApiRepository.Options(clientSecret = clientSecret)
+
+    /**
+     * Continue a PaymentIntent using the provided [ApiRepository.Options]
+     *
+     * @param options contains the confirm params
+     * @return a [AirwallexHttpResponse] from Airwallex server
+     */
+    override fun continuePaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
+        val paramsJson =
+            JsonParser().parse(AirwallexPlugins.gson.toJson((options as ContinuePaymentIntentOptions).request))
+                .asJsonObject
+
+        val request = AirwallexHttpRequest.Builder(
+            continuePaymentIntentUrl(
+                AirwallexPlugins.baseUrl,
+                options.paymentIntentId
+            ),
+            AirwallexHttpRequest.Method.POST
+        )
+            .setBody(
+                AirwallexHttpRequest.AirwallexHttpRequestBody(
+                    CONTENT_TYPE,
+                    paramsJson.toString()
+                )
+            )
+            .addClientSecretHeader(options.clientSecret)
+            .build()
+        return AirwallexPlugins.httpClient.execute(request)
+    }
 
     /**
      * Confirm a PaymentIntent using the provided [ApiRepository.Options]
@@ -167,6 +204,17 @@ internal class AirwallexApiRepository : ApiRepository {
             return getApiUrl(
                 baseUrl,
                 "payment_intents/%s",
+                paymentIntentId
+            )
+        }
+
+        /**
+         *  `/api/v1/pa/payment_intents/{id}/confirm`
+         */
+        internal fun continuePaymentIntentUrl(baseUrl: String, paymentIntentId: String): String {
+            return getApiUrl(
+                baseUrl,
+                "payment_intents/%s/confirm_continue",
                 paymentIntentId
             )
         }

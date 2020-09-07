@@ -21,7 +21,7 @@ internal object ThreeDSecure {
     // RequestBin gives you a URL that will collect requests made to it and let you inspect them in a human-friendly way.
     // Use RequestBin to see what your HTTP client is sending or to inspect and debug webhook requests.
     // Just for staging test, should be optional later.
-    const val THREE_DS_RETURN_URL = ""
+    const val THREE_DS_RETURN_URL = "https://www.airwallex.com"
 
     /**
      * Configure Cardinal Mobile SDK

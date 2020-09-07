@@ -3,6 +3,7 @@ package com.airwallex.android
 import androidx.fragment.app.FragmentActivity
 import com.airwallex.android.Airwallex.PaymentListener
 import com.airwallex.android.PaymentManager.Companion.buildCardPaymentIntentOptions
+import com.airwallex.android.PaymentManager.Companion.buildContinuePaymentIntentOptions
 import com.airwallex.android.PaymentManager.Companion.buildWeChatPaymentIntentOptions
 import com.airwallex.android.exception.APIException
 import com.airwallex.android.exception.AirwallexException
@@ -18,6 +19,19 @@ internal class AirwallexPaymentManager(
     private val repository: ApiRepository,
     private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : PaymentManager {
+
+    /**
+     * Continue the [PaymentIntent] using [ApiRepository.Options], used for 3DS
+     *
+     * @param options contains the confirm [PaymentIntent] params
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    override fun continuePaymentIntent(
+        options: ApiRepository.Options,
+        listener: PaymentListener<PaymentIntent>
+    ) {
+        executeApiOperation(ApiOperationType.CONFIRM_CONTINUE_PAYMENT_INTENT, options, listener)
+    }
 
     /**
      * Confirm the [PaymentIntent] using [ApiRepository.Options]
@@ -83,7 +97,7 @@ internal class AirwallexPaymentManager(
                 buildWeChatPaymentIntentOptions(params, deviceId, applicationContext)
             }
             PaymentMethodType.CARD -> {
-                buildCardPaymentIntentOptions(applicationContext, deviceId, params, true,
+                buildCardPaymentIntentOptions(applicationContext, deviceId, params,
                     PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                         .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
                         .build()
@@ -147,11 +161,10 @@ internal class AirwallexPaymentManager(
                 }
             } else {
                 Logger.debug("Request 3DS lookup response by `confirmPaymentIntent` with `referenceId`")
-                confirmPaymentIntent(
-                    buildCardPaymentIntentOptions(applicationContext, deviceId, params, false,
+                continuePaymentIntent(
+                    buildContinuePaymentIntentOptions(params, PaymentIntentContinueType.ENROLLMENT,
                         PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                             .setDeviceDataCollectionRes(referenceId)
-                            .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
                             .build()
                     ),
                     object : PaymentListener<PaymentIntent> {
@@ -179,11 +192,10 @@ internal class AirwallexPaymentManager(
                             fragment.threeDSecureCallback = object : ThreeDSecureCallback {
                                 override fun onSuccess(transactionId: String) {
                                     Logger.debug("Step 4: Finally call `confirmPaymentIntent` method to send `processorTransactionId` to server to validate")
-                                    confirmPaymentIntent(
-                                        buildCardPaymentIntentOptions(applicationContext, deviceId, params, false,
+                                    continuePaymentIntent(
+                                        buildContinuePaymentIntentOptions(params, PaymentIntentContinueType.VALIDATE,
                                             PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
                                                 .setTransactionId(transactionId)
-                                                .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
                                                 .build()
                                         ),
                                         listener
@@ -253,6 +265,9 @@ internal class AirwallexPaymentManager(
 
         override suspend fun getResponse(): AirwallexHttpResponse? {
             return when (apiOperationType) {
+                ApiOperationType.CONFIRM_CONTINUE_PAYMENT_INTENT -> {
+                    repository.continuePaymentIntent(options)
+                }
                 ApiOperationType.CONFIRM_PAYMENT_INTENT -> {
                     repository.confirmPaymentIntent(options)
                 }
@@ -272,6 +287,7 @@ internal class AirwallexPaymentManager(
     @Suppress("UNCHECKED_CAST")
     private fun <T> classType(type: ApiOperationType): Class<T> {
         return when (type) {
+            ApiOperationType.CONFIRM_CONTINUE_PAYMENT_INTENT,
             ApiOperationType.CONFIRM_PAYMENT_INTENT,
             ApiOperationType.RETRIEVE_PAYMENT_INTENT -> {
                 PaymentIntent::class.java as Class<T>
@@ -286,6 +302,7 @@ internal class AirwallexPaymentManager(
     }
 
     internal enum class ApiOperationType {
+        CONFIRM_CONTINUE_PAYMENT_INTENT,
         CONFIRM_PAYMENT_INTENT,
         RETRIEVE_PAYMENT_INTENT,
         CREATE_PAYMENT_METHOD,
