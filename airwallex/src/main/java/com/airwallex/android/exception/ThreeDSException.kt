@@ -4,4 +4,4 @@ import com.airwallex.android.model.AirwallexError
 
 class ThreeDSException(
     error: AirwallexError
-) : AirwallexException(error, null, null, 0)
+) : AirwallexException(error, null, 0)

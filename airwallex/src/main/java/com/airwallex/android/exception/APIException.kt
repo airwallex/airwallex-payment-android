@@ -6,9 +6,9 @@ import com.airwallex.android.model.AirwallexError
  * An exception that represents an internal problem with Airwallex's servers.
  */
 class APIException(
-    message: String?,
+    error: AirwallexError,
     traceId: String? = null,
     statusCode: Int,
-    error: AirwallexError? = null,
+    message: String?,
     e: Throwable? = null
-) : AirwallexException(error, message, traceId, statusCode, e)
+) : AirwallexException(error, traceId, statusCode, message, e)

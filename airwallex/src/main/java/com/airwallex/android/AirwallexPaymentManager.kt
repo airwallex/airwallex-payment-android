@@ -235,14 +235,13 @@ internal class AirwallexPaymentManager(
                         val error = if (response.body != null) AirwallexPlugins.gson.fromJson(
                             response.body.string(),
                             AirwallexError::class.java
-                        ) else null
+                        ) else AirwallexError(message = "Unknown error")
                         listener.onFailed(
                             APIException(
-                                message = response.message,
+                                error = error,
                                 traceId = response.allHeaders["x-awx-traceid"],
                                 statusCode = response.statusCode,
-                                error = error,
-                                e = null
+                                message = response.message
                             )
                         )
                     }
