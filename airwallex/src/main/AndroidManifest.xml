@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.airwallex.android">
 
-    <application android:networkSecurityConfig="@xml/network_security_config"
+    <application
         tools:targetApi="n">
         <activity
             android:name="com.airwallex.android.view.PaymentMethodsActivity"

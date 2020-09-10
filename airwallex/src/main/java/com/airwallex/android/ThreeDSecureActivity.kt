@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.ThreeDSecureWebViewClient.Companion.TERM_URL
 import com.airwallex.android.exception.WebViewConnectionException
 import com.airwallex.android.model.ThreeDSecureLookup
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
@@ -16,12 +17,6 @@ import kotlinx.android.synthetic.main.activity_threeds.*
 import java.net.URLEncoder
 
 internal class ThreeDSecureActivity : AppCompatActivity() {
-
-    // The URL that we should intercept paRes and return
-    private val termUrl: String
-        get() {
-            return "http://34.92.57.93:8080/web/feedback"
-        }
 
     private val threeDSecureLookup: ThreeDSecureLookup by lazy {
         requireNotNull(intent.getParcelableExtra<ThreeDSecureLookup>(EXTRA_THREE_D_SECURE_LOOKUP))
@@ -79,7 +74,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             val payload = threeDSecureLookup.payload
             val acsUrl = threeDSecureLookup.acsUrl
             val postData = "&PaReq=" + URLEncoder.encode(payload, "UTF-8")
-                .toString() + "&TermUrl=" + URLEncoder.encode(termUrl, "UTF-8")
+                .toString() + "&TermUrl=" + URLEncoder.encode("$TERM_URL/", "UTF-8")
 
             webView.postUrl(acsUrl, postData.toByteArray())
         } else {
