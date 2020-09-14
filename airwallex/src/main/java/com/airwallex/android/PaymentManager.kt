@@ -77,21 +77,21 @@ internal interface PaymentManager {
      * @param activity the `Activity` that is to start 3ds screen
      * @param params [ConfirmPaymentIntentParams] used to confirm [PaymentIntent]
      * @param serverJwt for perform 3ds flow
-     * @param deviceId device id
+     * @param device device info
      * @param listener a [PaymentListener] to receive the response or error
      */
     fun handleNextAction(
         activity: FragmentActivity,
         params: ConfirmPaymentIntentParams,
         serverJwt: String,
-        deviceId: String,
+        device: Device,
         listener: PaymentListener<PaymentIntent>
     )
 
     companion object {
         private const val PLATFORM = "Android"
 
-        private fun buildDeviceInfo(deviceId: String, applicationContext: Context): Device {
+        fun buildDeviceInfo(deviceId: String, applicationContext: Context): Device {
             return Device.Builder()
                 .setDeviceId(deviceId)
                 .setDeviceModel(Build.MODEL)
@@ -103,8 +103,7 @@ internal interface PaymentManager {
 
         fun buildWeChatPaymentIntentOptions(
             params: ConfirmPaymentIntentParams,
-            deviceId: String,
-            applicationContext: Context
+            device: Device
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
@@ -116,7 +115,7 @@ internal interface PaymentManager {
                         .build()
                 )
                 .setCustomerId(params.customerId)
-                .setDevice(buildDeviceInfo(deviceId, applicationContext))
+                .setDevice(device)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -127,8 +126,7 @@ internal interface PaymentManager {
         }
 
         fun buildCardPaymentIntentOptions(
-            applicationContext: Context,
-            deviceId: String,
+            device: Device,
             params: ConfirmPaymentIntentParams,
             threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
@@ -145,7 +143,7 @@ internal interface PaymentManager {
                         .build()
                 )
                 .setCustomerId(params.customerId)
-                .setDevice(buildDeviceInfo(deviceId, applicationContext))
+                .setDevice(device)
                 .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
                 clientSecret = params.clientSecret,
@@ -155,6 +153,7 @@ internal interface PaymentManager {
         }
 
         fun buildContinuePaymentIntentOptions(
+            device: Device,
             params: ConfirmPaymentIntentParams,
             type: PaymentIntentContinueType,
             threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
@@ -162,7 +161,8 @@ internal interface PaymentManager {
             val request = PaymentIntentContinueRequest(
                 requestId = UUID.randomUUID().toString(),
                 type = type,
-                threeDSecure = threeDSecure
+                threeDSecure = threeDSecure,
+                device = device
             )
             return AirwallexApiRepository.ContinuePaymentIntentOptions(
                 clientSecret = params.clientSecret,

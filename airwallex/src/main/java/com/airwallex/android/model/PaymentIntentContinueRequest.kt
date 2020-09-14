@@ -26,5 +26,8 @@ data class PaymentIntentContinueRequest internal constructor(
      * 3D Secure
      */
     @SerializedName("three_ds")
-    val threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
+    val threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure,
+
+    @SerializedName("device")
+    val device: Device
 ) : AirwallexModel, Parcelable
