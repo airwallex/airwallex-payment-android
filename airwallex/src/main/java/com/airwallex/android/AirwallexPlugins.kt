@@ -42,6 +42,14 @@ internal object AirwallexPlugins {
         }
 
     /**
+     * TERM URL FOR 3DS 1.0
+     */
+    internal val termUrl: String
+        get() {
+            return configuration.termUrl
+        }
+
+    /**
      * 3DS Environment
      */
     internal val threeDSecureEnv: CardinalEnvironment

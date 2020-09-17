@@ -10,7 +10,7 @@ internal class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
     override fun hasCallbackUrl(view: WebView?, url: String?): Boolean {
         Logger.debug(TAG, "Redirect Url: $url")
         // Intercept paRes and return
-        if (url?.contains(TERM_URL) == true) {
+        if (url?.contains("paRes") == true) {
             val payload = Uri.parse(url).getQueryParameter("paRes")
             if (payload != null) {
                 callbacks.onWebViewConfirmation(payload)
@@ -28,8 +28,5 @@ internal class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
 
     companion object {
         const val TAG = "ThreeDSecureWebViewClient"
-
-        // The URL that we should intercept paRes and return
-        const val TERM_URL: String = "https://demo-pacybsmock.airwallex.com/web/feedback"
     }
 }
