@@ -35,7 +35,7 @@
                 android:background="@drawable/ic_cart_count_bg"
                 android:fontFamily="@font/circularstd_bold"
                 android:gravity="center"
-                android:textColor="@color/airwallex_color_primary_default"
+                android:textColor="@color/airwallex_color_primary"
                 android:textSize="14sp" />
 
         </RelativeLayout>

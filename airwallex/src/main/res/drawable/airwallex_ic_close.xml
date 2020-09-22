@@ -8,7 +8,7 @@
     <path
         android:pathData="M-4.864,-4.864l25.7279,0l0,25.7279l-25.7279,0z"
         android:strokeWidth="1"
-        android:fillColor="#612FFF"
+        android:fillColor="@color/airwallex_color_primary"
         android:fillType="evenOdd"
         android:strokeColor="#00000000"/>
   </group>
