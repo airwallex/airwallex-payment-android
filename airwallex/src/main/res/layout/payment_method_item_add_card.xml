@@ -18,5 +18,5 @@
         android:fontFamily="@font/circularstd_bold"
         android:gravity="center"
         android:text="@string/enter_new_card"
-        android:textColor="@color/airwallex_color_primary_default" />
+        android:textColor="@color/airwallex_color_primary" />
 </LinearLayout>
