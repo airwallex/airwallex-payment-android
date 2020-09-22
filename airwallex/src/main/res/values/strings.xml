@@ -45,4 +45,8 @@
     <string name="pay_now">Pay now</string>
     <string name="total">Total</string>
     <string name="payment">Payment</string>
+    <string name="select_your_currency">Select your currency</string>
+    <string name="select_your_currency_title">Select the currency you would like to pay with</string>
+    <string name="confirm_payment">Confirm payment</string>
+    <string name="rate">1 %1$s = %2$f %3$s</string>
 </resources>

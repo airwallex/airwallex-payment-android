@@ -31,7 +31,7 @@ internal class AirwallexApiRepository : ApiRepository {
     internal class ContinuePaymentIntentOptions internal constructor(
         override val clientSecret: String,
         internal val paymentIntentId: String,
-        internal val request: PaymentIntentContinueRequest? = null
+        internal val request: PaymentIntentContinueRequest
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     @Parcelize

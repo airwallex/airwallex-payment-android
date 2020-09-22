@@ -62,6 +62,22 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     override val layoutResource: Int
         get() = R.layout.activity_payment_checkout
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == SelectCurrencyActivityLaunch.REQUEST_CODE) {
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    val result = SelectCurrencyActivityLaunch.Result.fromIntent(data) ?: return
+                    finishWithPaymentIntent(result.paymentIntent, result.error)
+                }
+                Activity.RESULT_CANCELED -> {
+                    finishWithPaymentIntent(error = AirwallexError(message = "You didn't choose your currency"))
+                }
+            }
+        }
+    }
+
     private fun startConfirmPaymentIntent() {
         confirmPaymentIntent(paymentMethod = paymentMethod,
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
@@ -82,11 +98,11 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
-                PaymentCheckoutActivityLaunch.Result(
-                    paymentIntent = paymentIntent,
-                    error = error
-                ).toBundle()
-            )
+            PaymentCheckoutActivityLaunch.Result(
+                paymentIntent = paymentIntent,
+                error = error
+            ).toBundle()
+        )
         )
         finish()
     }

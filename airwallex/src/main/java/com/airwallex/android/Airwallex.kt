@@ -75,6 +75,30 @@ class Airwallex internal constructor(
             })
     }
 
+    @UiThread
+    internal fun continuePaymentIntent(
+        activity: FragmentActivity,
+        params: ContinuePaymentIntentParams,
+        listener: PaymentListener<PaymentIntent>
+    ) {
+        val request = PaymentIntentContinueRequest(
+            requestId = UUID.randomUUID().toString(),
+            type = params.type,
+            threeDSecure = params.threeDSecure,
+            device = params.device,
+            useDcc = params.useDcc
+        )
+        paymentManager.continueDccPaymentIntent(
+            activity,
+            AirwallexApiRepository.ContinuePaymentIntentOptions(
+                clientSecret = params.clientSecret,
+                paymentIntentId = params.paymentIntentId,
+                request = request
+            ),
+            listener
+        )
+    }
+
     /**
      * Retrieve a [PaymentIntent] by ID
      *
