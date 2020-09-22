@@ -11,5 +11,8 @@ enum class PaymentIntentContinueType : Parcelable {
     ENROLLMENT,
 
     @SerializedName("3dsValidate")
-    VALIDATE
+    VALIDATE,
+
+    @SerializedName("dcc")
+    DCC
 }

@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.airwallex.android">
 
-    <application
-        tools:targetApi="n">
+    <application tools:targetApi="n">
         <activity
             android:name="com.airwallex.android.view.PaymentMethodsActivity"
             android:launchMode="singleTop"
@@ -26,6 +25,11 @@
             android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+
+        <activity
+            android:name="com.airwallex.android.view.SelectCurrencyActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AirwallexDefaultTheme" />
 
         <activity
             android:name=".ThreeDSecureActivity"

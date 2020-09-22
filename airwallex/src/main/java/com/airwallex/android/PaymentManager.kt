@@ -71,18 +71,26 @@ internal interface PaymentManager {
         listener: PaymentListener<PaymentIntent>
     )
 
+    fun continueDccPaymentIntent(
+        activity: FragmentActivity,
+        options: ApiRepository.Options,
+        listener: PaymentListener<PaymentIntent>
+    )
+
     /**
      * Handle next action for 3ds
      *
      * @param activity the `Activity` that is to start 3ds screen
-     * @param params [ConfirmPaymentIntentParams] used to confirm [PaymentIntent]
+     * @param paymentIntentId the ID of the [PaymentIntent], required.
+     * @param clientSecret the clientSecret of [PaymentIntent], required.
      * @param serverJwt for perform 3ds flow
      * @param device device info
      * @param listener a [PaymentListener] to receive the response or error
      */
     fun handleNextAction(
         activity: FragmentActivity,
-        params: ConfirmPaymentIntentParams,
+        paymentIntentId: String,
+        clientSecret: String,
         serverJwt: String,
         device: Device,
         listener: PaymentListener<PaymentIntent>
@@ -150,26 +158,6 @@ internal interface PaymentManager {
                 paymentIntentId = params.paymentIntentId,
                 request = request.build()
             )
-        }
-
-        fun buildContinuePaymentIntentOptions(
-            device: Device,
-            params: ConfirmPaymentIntentParams,
-            type: PaymentIntentContinueType,
-            threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
-        ): AirwallexApiRepository.ContinuePaymentIntentOptions {
-            val request = PaymentIntentContinueRequest(
-                requestId = UUID.randomUUID().toString(),
-                type = type,
-                threeDSecure = threeDSecure,
-                device = device
-            )
-            return AirwallexApiRepository.ContinuePaymentIntentOptions(
-                clientSecret = params.clientSecret,
-                paymentIntentId = params.paymentIntentId,
-                request = request
-            )
-
         }
     }
 }

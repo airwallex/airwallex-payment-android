@@ -382,6 +382,7 @@ data class PaymentIntent internal constructor(
         /**
          * The dcc data that can be used to complete this action
          */
+        @SerializedName("dcc_data")
         val dcc: DccData?
     ) : AirwallexModel, Parcelable
 
@@ -394,15 +395,21 @@ data class PaymentIntent internal constructor(
         val currency: String?,
 
         @SerializedName("amount")
-        val amount: String?,
+        val amount: BigDecimal?,
 
-        @SerializedName("rate")
-        val rate: String?,
+        @SerializedName("currency_pair")
+        val currencyPair: String?,
 
-        @SerializedName("rateTimestamp")
+        @SerializedName("client_rate")
+        val clientRate: Double?,
+
+        @SerializedName("rate_source")
+        val rateSource: String?,
+
+        @SerializedName("rate_timestamp")
         val rateTimestamp: String?,
 
-        @SerializedName("rateExpiry")
+        @SerializedName("rate_expiry")
         val rateExpiry: String?
 
     ) : AirwallexModel, Parcelable
@@ -425,7 +432,7 @@ data class PaymentIntent internal constructor(
         @SerializedName("display")
         DISPLAY,
 
-        @SerializedName("DccAction")
-        DCC_ACTION
+        @SerializedName("dcc")
+        DCC
     }
 }
