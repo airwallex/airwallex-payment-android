@@ -11,5 +11,7 @@
         <item name="android:windowBackground">@color/airwallex_color_bg</item>
         <item name="android:navigationBarColor">@color/airwallex_color_bg</item>
         <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:statusBarColor">@color/airwallex_color_bg</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

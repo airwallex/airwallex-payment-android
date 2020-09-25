@@ -36,8 +36,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
 
     override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
-        setLoadingProgress(true)
-
+        setLoadingProgress(loading = true, cancelable = false)
         ClientSecretRepository.getInstance().retrieveClientSecret(args.customerId, object : ClientSecretRepository.ClientSecretRetrieveListener {
             override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
                 airwallex.createPaymentMethod(
@@ -53,7 +52,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
                         }
 
                         override fun onFailed(exception: AirwallexException) {
-                            alertError(exception.error?.message ?: exception.toString())
+                            alertError(exception.error.message ?: exception.toString())
                         }
                     })
             }

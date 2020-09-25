@@ -45,7 +45,7 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
         }
 
         confirm.setOnClickListener {
-            setLoadingProgress(true)
+            setLoadingProgress(loading = true, cancelable = false)
             val params = ContinuePaymentIntentParams(
                 paymentIntentId = args.paymentIntent.id,
                 clientSecret = args.clientSecret,
