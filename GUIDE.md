@@ -297,8 +297,9 @@ To run the example project, you should follow these steps.
 
 ## Test Card Numbers
 - 4242 4242 4242 4242
-- 4012 0003 0000 1003 (3D 1.0)
-- 4000 0000 0000 1091 (3D 2.0)
+- 2223 0000 1018 1375 Expire: 12/2022 CVC: 650 (3DS 1.0)
+- 4012 0003 0000 1003 Month: 12 (3DS 1.0)
+- 4012 0003 0000 1003 (3DS 2.0)
 
 ## Custom Theme
 You can overwrite these color values in your app. That can suit your app style

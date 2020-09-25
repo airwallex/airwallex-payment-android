@@ -30,4 +30,8 @@
         <item name="android:paddingTop">26dp</item>
         <item name="android:paddingBottom">8dp</item>
     </style>
+
+    <style name="AirwallexProgressBarStyle">
+        <item name="colorAccent">@color/airwallex_color_primary</item>
+    </style>
 </resources>
