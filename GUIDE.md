@@ -22,6 +22,7 @@ Get started with our integration guide and example project.
     * [Customize Usage](#customize-usage)
 * [Examples](#Examples)
 * [Test Card Numbers](#test-card-numbers)
+* [Custom Theme](#custom-theme)
 * [Contributing](#Contributing)
 
 ## Requirements
@@ -298,6 +299,14 @@ To run the example project, you should follow these steps.
 - 4242 4242 4242 4242
 - 4012 0003 0000 1003 (3D 1.0)
 - 4000 0000 0000 1091 (3D 2.0)
+
+## Custom Theme
+You can overwrite these color values in your app. That can suit your app style
+```
+    <color name="airwallex_color_accent">#131415</color>
+    <color name="airwallex_color_primary">#E66060</color>
+    <color name="airwallex_color_primary_dark">#F52626</color>
+```
 
 ## Contributing
 We welcome contributions of any kind including new features, bug fixes, and documentation improvements. The best way to contribute is by submitting a pull request – we'll do our best to respond to your patch as soon as possible. You can also submit an issue if you find bugs or have any questions.
