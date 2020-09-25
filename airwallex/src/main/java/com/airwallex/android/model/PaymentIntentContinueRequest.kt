@@ -29,7 +29,7 @@ data class PaymentIntentContinueRequest internal constructor(
     val threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure? = null,
 
     @SerializedName("device")
-    val device: Device,
+    val device: Device? = null,
 
     @SerializedName("use_dcc")
     val useDcc: Boolean? = null

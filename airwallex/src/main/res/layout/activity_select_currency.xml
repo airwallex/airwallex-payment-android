@@ -120,7 +120,7 @@
         tools:text="@string/rate" />
 
     <TextView
-        android:id="@+id/btnConfirm"
+        android:id="@+id/confirm"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginTop="40dp"

@@ -14,34 +14,24 @@ import kotlinx.android.synthetic.main.activity_select_currency.*
 import java.math.BigDecimal
 
 /**
- * Allow the customer to select one of the payment methods, or add a new one via [AddPaymentMethodActivity].
- *
+ * Allow the customer to select your currency.
  */
 internal class SelectCurrencyActivity : AirwallexActivity() {
 
-    private val airwallex: Airwallex by lazy {
-        Airwallex()
-    }
+    private val airwallex: Airwallex by lazy { Airwallex() }
+    private val args: SelectCurrencyActivityLaunch.Args by lazy { SelectCurrencyActivityLaunch.Args.getExtra(intent) }
 
-    private val args: SelectCurrencyActivityLaunch.Args by lazy {
-        SelectCurrencyActivityLaunch.Args.getExtra(intent)
+    private fun BigDecimal.roundDown(scale: Int): Double {
+        return this.setScale(scale, BigDecimal.ROUND_HALF_DOWN).toDouble()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         current_currency.text = args.paymentIntent.currency
-        current_price.text = String.format(
-            "%.2f",
-            args.paymentIntent.amount.setScale(2, BigDecimal.ROUND_DOWN).toDouble()
-        )
-
+        current_price.text = String.format("%.2f", args.paymentIntent.amount.roundDown(2))
         transfer_currency.text = args.dcc.currency
-        transfer_price.text = String.format(
-            "%.2f",
-            args.dcc.amount?.setScale(2, BigDecimal.ROUND_DOWN)?.toDouble()
-        )
-
+        transfer_price.text = String.format("%.2f", args.dcc.amount?.roundDown(2))
         rate.text = getString(R.string.rate, args.paymentIntent.currency, args.dcc.clientRate, args.dcc.currency)
 
         current_card.isSelected = true
@@ -54,14 +44,13 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
             transfer_card.isSelected = true
         }
 
-        btnConfirm.setOnClickListener {
+        confirm.setOnClickListener {
             setLoadingProgress(true)
             val params = ContinuePaymentIntentParams(
                 paymentIntentId = args.paymentIntent.id,
                 clientSecret = args.clientSecret,
                 type = PaymentIntentContinueType.DCC,
-                useDcc = transfer_card.isSelected,
-                device = args.device
+                useDcc = transfer_card.isSelected
             )
             airwallex.continuePaymentIntent(this, params, object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onFailed(exception: AirwallexException) {

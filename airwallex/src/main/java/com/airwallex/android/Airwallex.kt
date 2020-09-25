@@ -75,6 +75,13 @@ class Airwallex internal constructor(
             })
     }
 
+    /**
+     * Continue a [PaymentIntent] - select your current currency
+     *
+     * @param activity the `Activity` that is start confirm the payment intent
+     * @param params [ContinuePaymentIntentParams] used to continue [PaymentIntent]
+     * @param listener a [PaymentListener] to receive the response or error
+     */
     @UiThread
     internal fun continuePaymentIntent(
         activity: FragmentActivity,
