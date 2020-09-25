@@ -64,6 +64,9 @@ internal interface PaymentManager {
         listener: PaymentListener<PaymentMethodResponse>
     )
 
+    /**
+     * Confirm [PaymentIntent] with device id
+     */
     fun confirmPaymentIntentWithDeviceId(
         activity: FragmentActivity,
         deviceId: String,
@@ -71,6 +74,9 @@ internal interface PaymentManager {
         listener: PaymentListener<PaymentIntent>
     )
 
+    /**
+     * Continue [PaymentIntent] with your selected currency
+     */
     fun continueDccPaymentIntent(
         activity: FragmentActivity,
         options: ApiRepository.Options,
@@ -87,12 +93,12 @@ internal interface PaymentManager {
      * @param device device info
      * @param listener a [PaymentListener] to receive the response or error
      */
-    fun handleNextAction(
+    fun handle3DSFlow(
         activity: FragmentActivity,
         paymentIntentId: String,
         clientSecret: String,
         serverJwt: String,
-        device: Device,
+        device: Device?,
         listener: PaymentListener<PaymentIntent>
     )
 
