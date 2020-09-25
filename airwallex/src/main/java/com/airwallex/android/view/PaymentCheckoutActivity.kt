@@ -72,7 +72,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                     finishWithPaymentIntent(result.paymentIntent, result.error)
                 }
                 Activity.RESULT_CANCELED -> {
-                    finishWithPaymentIntent(error = AirwallexError(message = "You didn't choose your currency"))
+                    finishWithPaymentIntent(error = AirwallexError(message = "Please select your currency."))
                 }
             }
         }
