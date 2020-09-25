@@ -22,6 +22,7 @@
     * [UI集成](#UI集成)
 * [运行Sample](#运行Sample)
 * [测试卡号](#测试卡号)
+* [自定义颜色](#自定义颜色)
 * [贡献](#贡献)
 
 ## 支持版本
@@ -297,6 +298,14 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 - 4242 4242 4242 4242
 - 4012 0003 0000 1003 (3D 1.0)
 - 4000 0000 0000 1091 (3D 2.0)
+
+## 自定义颜色
+您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格
+```
+    <color name="airwallex_color_accent">#131415</color>
+    <color name="airwallex_color_primary">#E66060</color>
+    <color name="airwallex_color_primary_dark">#F52626</color>
+```
 
 ## 贡献
 我们欢迎任何形式的贡献，包括新功能，错误修复和文档改进。最简单的方式就是创建pull request - 我们会尽快回复。 如果你发现任何错误或有任何疑问，也可以提交Issues。
