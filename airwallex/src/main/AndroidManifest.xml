@@ -33,7 +33,7 @@
 
         <activity
             android:name=".ThreeDSecureActivity"
-            android:theme="@style/AirwallexThreeDSecureTheme" />
+            android:theme="@style/AirwallexDefaultTheme" />
     </application>
 
 </manifest>
