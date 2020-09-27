@@ -82,10 +82,6 @@ class PaymentCartActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.reset -> {
-                (cartFragment as PaymentCartFragment).reset()
-                true
-            }
             R.id.settings -> {
                 startActivity(Intent(this, PaymentSettingsActivity::class.java))
                 true
