@@ -5,7 +5,6 @@ import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 data class AirwallexConfiguration internal constructor(
     val enableLogging: Boolean,
     val baseUrl: String,
-    val termUrl: String,
     val threeDSecureEnv: CardinalEnvironment
 ) {
     class Builder {
@@ -21,11 +20,6 @@ data class AirwallexConfiguration internal constructor(
         private var baseUrl: String = Airwallex.BASE_URL
 
         /**
-         * Term url for 3DS 1.0
-         */
-        private var termUrl: String = Airwallex.TERM_URL
-
-        /**
          * You can set it to STAGING to test
          */
         private var threeDSecureEnv: CardinalEnvironment = CardinalEnvironment.PRODUCTION
@@ -38,10 +32,6 @@ data class AirwallexConfiguration internal constructor(
             this.baseUrl = baseUrl
         }
 
-        fun setTermUrl(termUrl: String): Builder = apply {
-            this.termUrl = termUrl
-        }
-
         fun setThreeDSecureEnv(threeDSecureEnv: CardinalEnvironment): Builder = apply {
             this.threeDSecureEnv = threeDSecureEnv
         }
@@ -50,7 +40,6 @@ data class AirwallexConfiguration internal constructor(
             return AirwallexConfiguration(
                 enableLogging = enableLogging,
                 baseUrl = baseUrl,
-                termUrl = termUrl,
                 threeDSecureEnv = threeDSecureEnv
             )
         }
