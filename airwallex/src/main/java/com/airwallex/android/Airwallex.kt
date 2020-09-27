@@ -182,9 +182,6 @@ class Airwallex internal constructor(
         // The default url, that you can change in the constructor for test on different environments
         internal const val BASE_URL = "https://pci-api.airwallex.com"
 
-        // The URL that we should intercept paRes and return (for 3DS 1.0)
-        internal const val TERM_URL: String = "https://demo-pacybsmock.airwallex.com/web/feedback/"
-
         /**
          * Initialize some global configurations, better to be called on Application
          */

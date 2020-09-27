@@ -73,7 +73,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             val payload = threeDSecureLookup.payload
             val acsUrl = threeDSecureLookup.acsUrl
             val postData = "&PaReq=" + URLEncoder.encode(payload, "UTF-8")
-                .toString() + "&TermUrl=" + URLEncoder.encode(AirwallexPlugins.termUrl, "UTF-8")
+                .toString() + "&TermUrl=" + URLEncoder.encode(BuildConfig.TERM_URL, "UTF-8")
 
             webView.postUrl(acsUrl, postData.toByteArray())
         } else {
