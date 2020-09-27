@@ -2,7 +2,7 @@
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="58dp"
+    android:layout_height="@dimen/payment_method_item_height"
     android:background="@android:color/white"
     android:fontFamily="@font/circularstd_medium"
     android:gravity="center_vertical"
