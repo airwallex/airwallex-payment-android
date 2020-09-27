@@ -114,10 +114,6 @@ class PaymentCartFragment : Fragment() {
         initializeProductsViews(products.toMutableList())
     }
 
-    fun reset() {
-        initializeProductsViews(products.toMutableList())
-    }
-
     private fun initializeProductsViews(products: MutableList<PhysicalProduct>) {
         llProducts.removeAllViews()
         products.map {
