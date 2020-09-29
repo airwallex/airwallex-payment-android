@@ -1,6 +1,8 @@
 package com.airwallex.android.view
 
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
+import com.airwallex.android.R
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.BeforeTest
@@ -11,10 +13,15 @@ import kotlin.test.assertEquals
 class CardExpiryEditTextTest {
     private lateinit var cardExpiryEditText: CardExpiryEditText
 
+    private val context = ContextThemeWrapper(
+        ApplicationProvider.getApplicationContext(),
+        R.style.AirwallexDefaultTheme
+    )
+
     @BeforeTest
     fun setup() {
         cardExpiryEditText =
-            CardExpiryEditText(ApplicationProvider.getApplicationContext())
+            CardExpiryEditText(context)
         cardExpiryEditText.setText("")
     }
 

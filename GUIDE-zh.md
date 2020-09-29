@@ -303,9 +303,9 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 ## 自定义颜色
 您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格
 ```
-    <color name="airwallex_color_accent">#131415</color>
-    <color name="airwallex_color_primary">#E66060</color>
-    <color name="airwallex_color_primary_dark">#F52626</color>
+    <color name="airwallex_color_accent">@color/color_accent</color>
+    <color name="airwallex_color_primary">@color/color_primary</color>
+    <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
 ```
 
 ## 贡献
