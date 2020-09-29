@@ -31,82 +31,17 @@
         android:layout_marginTop="24dp"
         android:orientation="horizontal">
 
-        <androidx.cardview.widget.CardView
+        <com.airwallex.android.view.CurrencyWidget
+            android:id="@+id/current_currency"
             android:layout_width="@dimen/width_0"
             android:layout_height="match_parent"
-            android:layout_marginEnd="15dp"
-            android:layout_weight="1"
-            app:cardCornerRadius="6dp"
-            app:cardElevation="0dp">
+            android:layout_weight="1" />
 
-            <LinearLayout
-                android:id="@+id/current_card"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="@drawable/airwallex_card_selector"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/current_currency"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/circularstd_regular"
-                    android:textColor="@color/airwallex_color_item_label"
-                    android:textSize="14sp"
-                    tools:text="USD" />
-
-                <TextView
-                    android:id="@+id/current_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/circularstd_bold"
-                    android:textColor="@color/airwallex_color_dark_deep"
-                    android:textSize="18sp"
-                    tools:text="$ 100.00" />
-            </LinearLayout>
-
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
+        <com.airwallex.android.view.CurrencyWidget
+            android:id="@+id/transfer_currency"
             android:layout_width="@dimen/width_0"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:cardCornerRadius="6dp"
-            app:cardElevation="0dp">
-
-            <LinearLayout
-                android:id="@+id/transfer_card"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/airwallex_card_selector"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/transfer_currency"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/circularstd_regular"
-                    android:textColor="@color/airwallex_color_item_label"
-                    android:textSize="14sp"
-                    tools:text="AUD" />
-
-                <TextView
-                    android:id="@+id/transfer_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/circularstd_bold"
-                    android:textColor="@color/airwallex_color_dark_deep"
-                    android:textSize="18sp"
-                    tools:text="$ 143.27" />
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
+            android:layout_weight="1" />
 
     </LinearLayout>
 
@@ -116,8 +51,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:drawablePadding="8dp"
-        tools:text="@string/rate"
-        app:drawableStartCompat="@drawable/airwallex_rate" />
+        app:drawableStartCompat="@drawable/airwallex_rate"
+        tools:text="@string/rate" />
 
     <TextView
         android:id="@+id/confirm"
