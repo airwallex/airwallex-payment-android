@@ -125,7 +125,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         }
 
                         override fun onFailed(exception: AirwallexException) {
-                            alert(message = exception.error?.message ?: exception.toString())
+                            alert(message = exception.error.message ?: exception.toString())
                             paymentMethodsAdapter.setPaymentMethods(arrayListOf(), false)
                             paymentMethodsAdapter.endLoadingMore()
                         }

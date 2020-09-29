@@ -304,9 +304,9 @@ To run the example project, you should follow these steps.
 ## Custom Theme
 You can overwrite these color values in your app. That can suit your app style
 ```
-    <color name="airwallex_color_accent">#131415</color>
-    <color name="airwallex_color_primary">#E66060</color>
-    <color name="airwallex_color_primary_dark">#F52626</color>
+    <color name="airwallex_color_accent">@color/color_accent</color>
+    <color name="airwallex_color_primary">@color/color_primary</color>
+    <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
 ```
 
 ## Contributing

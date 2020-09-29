@@ -1,6 +1,8 @@
 package com.airwallex.android.view
 
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
+import com.airwallex.android.R
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.Test
@@ -11,8 +13,13 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class CardCvcEditTextTest {
 
+    private val context = ContextThemeWrapper(
+        ApplicationProvider.getApplicationContext(),
+        R.style.AirwallexDefaultTheme
+    )
+
     private val cardCvcEditText: CardCvcEditText by lazy {
-        CardCvcEditText(ApplicationProvider.getApplicationContext())
+        CardCvcEditText(context)
     }
 
     @Test

@@ -1,6 +1,8 @@
 package com.airwallex.android.view
 
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
+import com.airwallex.android.R
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.BeforeTest
@@ -13,11 +15,14 @@ class CardNumberEditTextTest {
 
     private lateinit var cardNumberEditText: CardNumberEditText
 
+    private val context = ContextThemeWrapper(
+        ApplicationProvider.getApplicationContext(),
+        R.style.AirwallexDefaultTheme
+    )
+
     @BeforeTest
     fun setup() {
-        cardNumberEditText = CardNumberEditText(
-            ApplicationProvider.getApplicationContext()
-        )
+        cardNumberEditText = CardNumberEditText(context)
         cardNumberEditText.setText("")
     }
 
