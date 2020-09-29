@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlin.jvm.Throws
 
 /**
  * Provide some internal plugins
