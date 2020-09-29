@@ -4,13 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.Airwallex
+import com.airwallex.android.CurrencyUtils
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
-import java.util.*
 
 /**
  * Activity to confirm payment intent
@@ -43,11 +43,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        tvTotalPrice.text = String.format(
-            "%s%.2f",
-            Currency.getInstance(paymentIntent.currency).symbol,
-            paymentIntent.amount
-        )
+        tvTotalPrice.text = String.format("%s%.2f", CurrencyUtils.getCurrencySymbol(paymentIntent.currency), paymentIntent.amount)
         paymentMethodItemView.renewalPaymentMethod(paymentMethod, args.cvc)
         paymentMethodItemView.cvcChangedCallback = {
             updateButtonStatus()
