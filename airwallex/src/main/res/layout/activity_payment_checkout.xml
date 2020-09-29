@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="16dp">
@@ -43,7 +44,6 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:clickable="false"
-            android:drawableStart="@drawable/airwallex_ic_lock_selector"
             android:drawablePadding="10dp"
             android:duplicateParentState="true"
             android:focusable="false"
@@ -51,7 +51,8 @@
             android:orientation="horizontal"
             android:text="@string/pay_now"
             android:textColor="@color/airwallex_button_text"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            app:drawableStartCompat="@drawable/airwallex_ic_lock_selector" />
     </RelativeLayout>
 
     <com.airwallex.android.view.PaymentMethodItemView
