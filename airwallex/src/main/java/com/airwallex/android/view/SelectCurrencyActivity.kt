@@ -2,10 +2,13 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ContinuePaymentIntentParams
 import com.airwallex.android.R
+import com.airwallex.android.CurrencyUtils
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
@@ -25,13 +28,14 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
         return this.setScale(scale, BigDecimal.ROUND_HALF_DOWN).toDouble()
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         current_currency.text = args.paymentIntent.currency
-        current_price.text = String.format("%.2f", args.paymentIntent.amount.roundDown(2))
+        current_price.text = String.format("%s%.2f", CurrencyUtils.getCurrencySymbol(args.paymentIntent.currency), args.paymentIntent.amount.roundDown(2))
         transfer_currency.text = args.dcc.currency
-        transfer_price.text = String.format("%.2f", args.dcc.amount?.roundDown(2))
+        transfer_price.text = String.format("%s%.2f", CurrencyUtils.getCurrencySymbol(args.dcc.currency), args.dcc.amount?.roundDown(2))
         rate.text = getString(R.string.rate, args.paymentIntent.currency, args.dcc.clientRate, args.dcc.currency)
 
         current_card.isSelected = true
