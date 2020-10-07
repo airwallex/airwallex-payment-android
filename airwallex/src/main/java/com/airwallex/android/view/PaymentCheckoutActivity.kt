@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.Airwallex
-import com.airwallex.android.CurrencyUtils
+import com.airwallex.android.CurrencyUtils.formatPrice
 import com.airwallex.android.R
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
@@ -43,7 +43,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        tvTotalPrice.text = String.format("%s%.2f", CurrencyUtils.getCurrencySymbol(paymentIntent.currency), paymentIntent.amount)
+        tvTotalPrice.text = formatPrice(paymentIntent.currency, paymentIntent.amount)
         paymentMethodItemView.renewalPaymentMethod(paymentMethod, args.cvc)
         paymentMethodItemView.cvcChangedCallback = {
             updateButtonStatus()

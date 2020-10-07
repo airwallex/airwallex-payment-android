@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.res.ResourcesCompat
-import com.airwallex.android.CurrencyUtils
+import com.airwallex.android.CurrencyUtils.formatPrice
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.widget_currency.view.*
 import java.math.BigDecimal
@@ -20,7 +20,7 @@ internal class CurrencyWidget(context: Context, attrs: AttributeSet) :
 
     fun updateCurrency(currency: String, amount: BigDecimal) {
         tv_currency.text = currency
-        tv_price.text = String.format("%s%.2f", CurrencyUtils.getCurrencySymbol(currency), amount)
+        tv_price.text = formatPrice(currency, amount)
 
         try {
             val resourceId: Int = resources.getIdentifier(currency.toLowerCase(Locale.US), "drawable", context.packageName)
