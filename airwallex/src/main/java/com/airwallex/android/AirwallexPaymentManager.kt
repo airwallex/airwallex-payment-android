@@ -87,6 +87,13 @@ internal class AirwallexPaymentManager(
     }
 
     /**
+     * Retrieve paRes with id
+     */
+    override fun retrieveParesWithId(options: ApiRepository.Options, listener: PaymentListener<ThreeDSecurePares>) {
+        executeApiOperation(ApiOperationType.RETRIEVE_PA_RES_ID, options, listener)
+    }
+
+    /**
      * Confirm [PaymentIntent] with device id
      */
     override fun confirmPaymentIntentWithDeviceId(
@@ -227,16 +234,25 @@ internal class AirwallexPaymentManager(
                             ThreeDSecure.performCardinalAuthentication(fragment, threeDSecureLookup)
 
                             fragment.threeDSecureCallback = object : ThreeDSecureCallback {
-                                override fun onSuccess(transactionId: String) {
-                                    Logger.debug("Step 4: 3DS Validate with `processorTransactionId`")
-                                    continuePaymentIntent(
-                                        build3DSContinuePaymentIntentOptions(device, paymentIntentId, clientSecret, PaymentIntentContinueType.VALIDATE,
-                                            PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
-                                                .setTransactionId(transactionId)
-                                                .build()
-                                        ),
-                                        listener
-                                    )
+                                override fun onSuccess(paResId: String) {
+                                    Logger.debug("Start retrieve pares with paResId")
+                                    retrieveParesWithId(AirwallexApiRepository.RetrievePaResOptions(clientSecret, paResId), object : PaymentListener<ThreeDSecurePares> {
+                                        override fun onFailed(exception: AirwallexException) {
+                                            listener.onFailed(exception)
+                                        }
+
+                                        override fun onSuccess(response: ThreeDSecurePares) {
+                                            Logger.debug("Step 4: 3DS Validate with `processorTransactionId`")
+                                            continuePaymentIntent(
+                                                build3DSContinuePaymentIntentOptions(device, paymentIntentId, clientSecret, PaymentIntentContinueType.VALIDATE,
+                                                    PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                                                        .setTransactionId(response.pares)
+                                                        .build()
+                                                ),
+                                                listener
+                                            )
+                                        }
+                                    })
                                 }
 
                                 override fun onFailed(exception: AirwallexError) {
@@ -336,6 +352,9 @@ internal class AirwallexPaymentManager(
                 ApiOperationType.RETRIEVE_PAYMENT_METHOD -> {
                     repository.retrievePaymentMethods(options)
                 }
+                ApiOperationType.RETRIEVE_PA_RES_ID -> {
+                    repository.retrieveParesWithId(options)
+                }
             }
         }
     }
@@ -354,6 +373,9 @@ internal class AirwallexPaymentManager(
             ApiOperationType.RETRIEVE_PAYMENT_METHOD -> {
                 PaymentMethodResponse::class.java as Class<T>
             }
+            ApiOperationType.RETRIEVE_PA_RES_ID -> {
+                ThreeDSecurePares::class.java as Class<T>
+            }
         }
     }
 
@@ -362,6 +384,7 @@ internal class AirwallexPaymentManager(
         CONFIRM_PAYMENT_INTENT,
         RETRIEVE_PAYMENT_INTENT,
         CREATE_PAYMENT_METHOD,
-        RETRIEVE_PAYMENT_METHOD
+        RETRIEVE_PAYMENT_METHOD,
+        RETRIEVE_PA_RES_ID
     }
 }

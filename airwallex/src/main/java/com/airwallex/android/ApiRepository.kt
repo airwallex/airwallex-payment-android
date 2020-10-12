@@ -59,4 +59,11 @@ internal interface ApiRepository {
     fun retrievePaymentMethods(
         options: Options
     ): AirwallexHttpResponse?
+
+    /**
+     * Retrieve paRes with id
+     */
+    fun retrieveParesWithId(
+        options: Options
+    ): AirwallexHttpResponse?
 }

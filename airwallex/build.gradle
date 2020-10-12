@@ -18,7 +18,8 @@ rootProject.allprojects {
 
 def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
 def DEVICE_FINGERPRINT_MERCHANT_ID = '"airwallex_cybs"'
-def TERM_URL = '"https://demo-pacybsmock.airwallex.com/web/feedback/"'
+def TERM_URL = '"https://demo-pacybsmock.airwallex.com/pares/callback"'
+def PARES_CACHE_BASE_URL = '"https://demo-pacybsmock.airwallex.com/paresCache"'
 def API_VERSION = '"2020-04-30"'
 
 android {
@@ -54,6 +55,7 @@ android.buildTypes.each { type ->
     type.buildConfigField 'String', 'DEVICE_FINGERPRINT_ORG_ID', DEVICE_FINGERPRINT_ORG_ID
     type.buildConfigField 'String', 'DEVICE_FINGERPRINT_MERCHANT_ID', DEVICE_FINGERPRINT_MERCHANT_ID
     type.buildConfigField 'String', 'TERM_URL', TERM_URL
+    type.buildConfigField 'String', 'PARES_CACHE_BASE_URL', PARES_CACHE_BASE_URL
     type.buildConfigField 'String', 'API_VERSION', API_VERSION
 }
 
