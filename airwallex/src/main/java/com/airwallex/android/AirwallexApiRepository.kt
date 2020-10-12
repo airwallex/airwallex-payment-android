@@ -1,5 +1,6 @@
 package com.airwallex.android
 
+import android.net.Uri
 import com.airwallex.android.model.PaymentIntentConfirmRequest
 import com.airwallex.android.model.PaymentIntentContinueRequest
 import com.airwallex.android.model.PaymentMethodCreateRequest
@@ -65,6 +66,12 @@ internal class AirwallexApiRepository : ApiRepository {
          * Payment method type
          */
         internal val type: PaymentMethodType
+    ) : ApiRepository.Options(clientSecret = clientSecret)
+
+    @Parcelize
+    internal class RetrievePaResOptions internal constructor(
+        override val clientSecret: String,
+        internal val paResId: String
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     /**
@@ -180,6 +187,15 @@ internal class AirwallexApiRepository : ApiRepository {
             AirwallexHttpRequest.Method.GET
         )
             .addClientSecretHeader(options.clientSecret)
+            .build()
+        return AirwallexPlugins.httpClient.execute(request)
+    }
+
+    override fun retrieveParesWithId(options: ApiRepository.Options): AirwallexHttpResponse? {
+        val request = AirwallexHttpRequest.Builder(
+            Uri.parse(BuildConfig.PARES_CACHE_BASE_URL).buildUpon().appendQueryParameter("paResId", (options as RetrievePaResOptions).paResId).toString(),
+            AirwallexHttpRequest.Method.GET
+        )
             .build()
         return AirwallexPlugins.httpClient.execute(request)
     }

@@ -65,6 +65,14 @@ internal interface PaymentManager {
     )
 
     /**
+     * Retrieve paRes with id
+     */
+    fun retrieveParesWithId(
+        options: ApiRepository.Options,
+        listener: PaymentListener<ThreeDSecurePares>
+    )
+
+    /**
      * Confirm [PaymentIntent] with device id
      */
     fun confirmPaymentIntentWithDeviceId(

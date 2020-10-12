@@ -10,12 +10,12 @@ internal class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
     override fun hasCallbackUrl(view: WebView?, url: String?): Boolean {
         Logger.debug(TAG, "Redirect Url: $url")
         // Intercept paRes and return
-        if (url?.contains("paRes") == true) {
-            val payload = Uri.parse(url).getQueryParameter("paRes")
+        if (url?.contains(PA_RES) == true) {
+            val payload = Uri.parse(url).getQueryParameter(PA_RES)
             if (payload != null) {
                 callbacks.onWebViewConfirmation(payload)
             } else {
-                callbacks.onWebViewError(WebViewConnectionException("3DS failed. No PaRes were obtained"))
+                callbacks.onWebViewError(WebViewConnectionException("3DS failed. No PaRes were obtained."))
             }
             return true
         }
@@ -28,5 +28,6 @@ internal class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
 
     companion object {
         const val TAG = "ThreeDSecureWebViewClient"
+        const val PA_RES = "paRes"
     }
 }
