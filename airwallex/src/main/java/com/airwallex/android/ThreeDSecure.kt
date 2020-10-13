@@ -17,9 +17,7 @@ import java.util.*
 
 internal object ThreeDSecure {
 
-    // http://requestbin.net/
-    // RequestBin gives you a URL that will collect requests made to it and let you inspect them in a human-friendly way.
-    // Use RequestBin to see what your HTTP client is sending or to inspect and debug webhook requests.
+    // Use RequestBin(http://requestbin.net/) to see what your HTTP client is sending or to inspect and debug webhook requests.
     // Just for staging test, should be optional later.
     const val THREE_DS_RETURN_URL = "https://www.airwallex.com"
 
@@ -107,7 +105,7 @@ internal object ThreeDSecure {
                 val payload = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_PAYLOAD)
                 Logger.debug("3DS 1 response payload: $payload")
                 if (payload != null) {
-                    callback.onSuccess(payload)
+                    callback.onSuccess(payload, ThreeDSecureType.THREE_D_SECURE_1)
                 } else {
                     val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
                     if (cancel) {
@@ -126,7 +124,7 @@ internal object ThreeDSecure {
                 } else {
                     if (validateResponse.errorDescription.toLowerCase(Locale.ROOT) == "success") {
                         Logger.debug("3DS 2 response processorTransactionId: ${validateResponse.payment.processorTransactionId}")
-                        callback.onSuccess(validateResponse.payment.processorTransactionId)
+                        callback.onSuccess(validateResponse.payment.processorTransactionId, ThreeDSecureType.THREE_D_SECURE_2)
                     } else {
                         callback.onFailed(AirwallexError(message = validateResponse.errorDescription))
                     }

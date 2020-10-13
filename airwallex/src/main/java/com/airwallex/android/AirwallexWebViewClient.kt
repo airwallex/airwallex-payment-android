@@ -57,11 +57,13 @@ internal abstract class AirwallexWebViewClient(private val callbacks: WebViewCli
 
     override fun onPageFinished(view: WebView?, url: String?) {
         super.onPageFinished(view, url)
+        Logger.debug("onPageFinished $url")
         callbacks.onPageFinished(url)
     }
 
     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
         super.onPageStarted(view, url, favicon)
+        Logger.debug("onPageStarted $url")
         callbacks.onPageStarted(url)
     }
 

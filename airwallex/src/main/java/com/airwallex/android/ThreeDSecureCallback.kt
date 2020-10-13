@@ -9,7 +9,7 @@ internal interface ThreeDSecureCallback {
     /**
      * 3DS success with `transactionId`
      */
-    fun onSuccess(paResId: String)
+    fun onSuccess(paResId: String, threeDSecureType: ThreeDSecure.ThreeDSecureType)
 
     /**
      * 3DS failed with [AirwallexError]

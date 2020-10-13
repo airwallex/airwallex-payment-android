@@ -82,7 +82,7 @@ internal class AirwallexApiRepository : ApiRepository {
      */
     override fun continuePaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
         val paramsJson =
-            JsonParser().parse(AirwallexPlugins.gson.toJson((options as ContinuePaymentIntentOptions).request))
+            JsonParser.parseString(AirwallexPlugins.gson.toJson((options as ContinuePaymentIntentOptions).request))
                 .asJsonObject
 
         val request = AirwallexHttpRequest.Builder(
@@ -111,7 +111,7 @@ internal class AirwallexApiRepository : ApiRepository {
      */
     override fun confirmPaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
         val paramsJson =
-            JsonParser().parse(AirwallexPlugins.gson.toJson((options as ConfirmPaymentIntentOptions).request))
+            JsonParser.parseString(AirwallexPlugins.gson.toJson((options as ConfirmPaymentIntentOptions).request))
                 .asJsonObject
 
         val request = AirwallexHttpRequest.Builder(
@@ -153,7 +153,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
     override fun createPaymentMethod(options: ApiRepository.Options): AirwallexHttpResponse? {
         val paramsJson =
-            JsonParser().parse(AirwallexPlugins.gson.toJson(requireNotNull((options as CreatePaymentMethodOptions).request)))
+            JsonParser.parseString(AirwallexPlugins.gson.toJson(requireNotNull((options as CreatePaymentMethodOptions).request)))
                 .asJsonObject
 
         val request = AirwallexHttpRequest.Builder(
@@ -224,7 +224,7 @@ internal class AirwallexApiRepository : ApiRepository {
         }
 
         /**
-         * `/paresCache`
+         * `/paresCache?paResId=%s`
          */
         internal fun paResRetrieveUrl(paResId: String): String {
             return "${retrievePaResBaseUrl()}/${String.format("/paresCache?paResId=%s", paResId)}"
