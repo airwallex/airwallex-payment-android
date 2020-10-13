@@ -1,10 +1,10 @@
 package com.airwallex.android
 
-import android.net.Uri
 import com.airwallex.android.model.PaymentIntentConfirmRequest
 import com.airwallex.android.model.PaymentIntentContinueRequest
 import com.airwallex.android.model.PaymentMethodCreateRequest
 import com.airwallex.android.model.PaymentMethodType
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.google.gson.JsonParser
 import kotlinx.android.parcel.Parcelize
 import java.text.SimpleDateFormat
@@ -193,7 +193,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
     override fun retrieveParesWithId(options: ApiRepository.Options): AirwallexHttpResponse? {
         val request = AirwallexHttpRequest.Builder(
-            Uri.parse(BuildConfig.PARES_CACHE_BASE_URL).buildUpon().appendQueryParameter("paResId", (options as RetrievePaResOptions).paResId).toString(),
+            paResRetrieveUrl((options as RetrievePaResOptions).paResId),
             AirwallexHttpRequest.Method.GET
         )
             .build()
@@ -212,6 +212,30 @@ internal class AirwallexApiRepository : ApiRepository {
     companion object {
         private const val CLIENT_SECRET_HEADER = "client-secret"
         private const val CONTENT_TYPE = "application/json; charset=utf-8"
+
+        /**
+         * paRes base url
+         */
+        private fun retrievePaResBaseUrl(): String {
+            return when (AirwallexPlugins.threeDSecureEnv) {
+                CardinalEnvironment.STAGING -> BuildConfig.BASE_PARES_URL_STAGING
+                CardinalEnvironment.PRODUCTION -> BuildConfig.BASE_PARES_URL_PRODUCTION
+            }
+        }
+
+        /**
+         * `/paresCache`
+         */
+        internal fun paResRetrieveUrl(paResId: String): String {
+            return "${retrievePaResBaseUrl()}/${String.format("/paresCache?paResId=%s", paResId)}"
+        }
+
+        /**
+         * `/pares/callback`
+         */
+        internal fun paResTermUrl(): String {
+            return "${retrievePaResBaseUrl()}/pares/callback"
+        }
 
         /**
          *  `/api/v1/pa/payment_intents/{id}`
