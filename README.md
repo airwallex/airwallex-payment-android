@@ -26,3 +26,6 @@ We appreciate the time you take to try out our sample code and welcome your feed
 
 * For generally applicable issues and feedback, create an issue in this repository.
 * [pa_mobile_sdk@airwallex.com](mailto:pa_mobile_sdk@airwallex.com) - For personal support at any phase of integration
+
+## Changelog
+All notable changes to this project will be documented in [changelog document](CHANGELOG.md).

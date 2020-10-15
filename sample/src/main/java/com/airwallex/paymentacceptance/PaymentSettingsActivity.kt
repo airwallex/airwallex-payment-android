@@ -15,7 +15,7 @@ class PaymentSettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(true)
-        supportActionBar?.setTitle(R.string.options)
+        supportActionBar?.setTitle(R.string.settings)
         supportFragmentManager.beginTransaction()
             .replace(android.R.id.content, paymentSettingsFragment)
             .commit()

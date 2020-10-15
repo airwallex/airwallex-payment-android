@@ -1,31 +1,53 @@
 package com.airwallex.android
 
+import android.content.Context
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlin.jvm.Throws
 
 /**
  * Provide some internal plugins
  */
 internal object AirwallexPlugins {
 
-    private var configuration: AirwallexConfiguration = AirwallexConfiguration.Builder().build()
+    private lateinit var configuration: AirwallexConfiguration
+
+    fun getSdkVersion(context: Context): String {
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        return packageInfo.versionName.toString()
+    }
 
     internal fun initialize(configuration: AirwallexConfiguration) {
         this.configuration = configuration
     }
 
+    /**
+     * Enable logging in the Airwallex
+     */
     internal val enableLogging: Boolean
         get() {
             return configuration.enableLogging
         }
 
+    /**
+     * Base URL in the Airwallex
+     */
     internal val baseUrl: String
         get() {
             return configuration.baseUrl
+        }
+
+    /**
+     * 3DS Environment
+     */
+    internal val threeDSecureEnv: CardinalEnvironment
+        get() {
+            return configuration.threeDSecureEnv
         }
 
     /**
@@ -41,6 +63,7 @@ internal object AirwallexPlugins {
                 builder.addHeader(CONTENT_TYPE_HEADER_KEY, CONTENT_TYPE_HEADER_VALUE)
                 builder.addHeader(USER_AGENT_KEY, USER_AGENT_VALUE)
                 builder.addHeader(USER_AGENT_VERSION_KEY, USER_AGENT_VERSION_VALUE)
+                builder.addHeader(API_VERSION, BuildConfig.API_VERSION)
                 return chain.proceed(builder.build())
             }
         })
@@ -67,4 +90,5 @@ internal object AirwallexPlugins {
     private const val USER_AGENT_VALUE = "Airwallex-Android-SDK"
     private const val USER_AGENT_VERSION_KEY = "Airwallex-User-Agent-Version"
     private const val USER_AGENT_VERSION_VALUE = BuildConfig.VERSION_NAME
+    private const val API_VERSION = "x-api-version"
 }

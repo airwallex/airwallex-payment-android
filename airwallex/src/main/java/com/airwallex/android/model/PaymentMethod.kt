@@ -36,7 +36,7 @@ data class PaymentMethod internal constructor(
      * Type of the payment method. One of card, wechatpay
      */
     @SerializedName("type")
-    val type: PaymentMethodType,
+    val type: PaymentMethodType?,
 
     /**
      * Card information for the payment method

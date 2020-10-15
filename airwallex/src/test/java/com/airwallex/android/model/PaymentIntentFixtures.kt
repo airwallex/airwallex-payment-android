@@ -9,7 +9,7 @@ internal object PaymentIntentFixtures {
             "id": "int_6hJ72Y7zich939UCz8j6BLkonH",
             "request_id": "a750e597-c30e-4d2b-ad41-cac601a15b25",
             "amount": 100.01,
-            "currency": "USD",
+            "currency": "AUD",
             "merchant_order_id": "cc9bfc13-ba30-483b-a62c-ee9250c9bfev",
             "order": {
                 "type": "physical_goods"
@@ -97,7 +97,9 @@ internal object PaymentIntentFixtures {
                 "captured_amount": 0,
                 "refunded_amount": 0,
                 "created_at": "2020-03-30T03:04:00+0000",
-                "updated_at": "2020-03-30T03:04:00+0000"
+                "updated_at": "2020-03-30T03:04:00+0000",
+                "amount": 0,
+                "authentication_data": {}
             }
         }
         """.trimIndent(),

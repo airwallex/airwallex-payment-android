@@ -17,7 +17,7 @@ class PaymentIntentTest {
             id = "int_6hJ72Y7zich939UCz8j6BLkonH",
             requestId = "a750e597-c30e-4d2b-ad41-cac601a15b25",
             amount = BigDecimal.valueOf(100.01),
-            currency = "USD",
+            currency = "AUD",
             merchantOrderId = "cc9bfc13-ba30-483b-a62c-ee9250c9bfev",
             order = PurchaseOrder(
                 type = "physical_goods"
@@ -26,7 +26,7 @@ class PaymentIntentTest {
             descriptor = "Airwallex - T-shirt",
             status = PaymentIntentStatus.REQUIRES_PAYMENT_METHOD,
             capturedAmount = BigDecimal.valueOf(0),
-            availablePaymentMethodTypes = arrayListOf("card", "wechatpay"),
+            availablePaymentMethodTypes = arrayListOf(PaymentMethodType.CARD, PaymentMethodType.WECHAT),
             customerPaymentMethods = arrayListOf(
                 PaymentMethod.Builder()
                     .setId("")
@@ -116,7 +116,9 @@ class PaymentIntentTest {
                 capturedAmount = BigDecimal.valueOf(0),
                 refundedAmount = BigDecimal.valueOf(0),
                 createdAt = Date(1585537440000),
-                updatedAt = Date(1585537440000)
+                updatedAt = Date(1585537440000),
+                amount = BigDecimal.valueOf(0),
+                authenticationData = PaymentIntent.PaymentAttemptAuthData(null, null, null, null)
             )
         )
         assertEquals(paymentIntent, PaymentIntentFixtures.PAYMENT_INTENT)

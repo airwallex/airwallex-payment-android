@@ -3,6 +3,37 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: "./ktlint.gradle"
 
+def getAuthUrl() {
+    return readProperty('AIRWALLEX_AUTH_URL')
+}
+
+def getBaseUrl() {
+    return readProperty('AIRWALLEX_BASE_URL')
+}
+
+def getApiKey() {
+    return readProperty('AIRWALLEX_API_KEY')
+}
+
+def getClientId() {
+    return readProperty('AIRWALLEX_CLIENT_ID')
+}
+
+def getWeChatAppId() {
+    return readProperty('AIRWALLEX_WECHAT_APP_ID')
+}
+
+def getWeChatAppSignature() {
+    return readProperty('AIRWALLEX_WECHAT_APP_SIGNATURE')
+}
+
+private def readProperty(name) {
+    if (hasProperty(name)) {
+        return property(name).trim()
+    }
+    return ""
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -18,11 +49,20 @@ android {
         targetSdkVersion rootProject.ext.compileSdkVersion
         multiDexEnabled true
 
-        versionCode 1
-        versionName "1.0.0"
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
+
+        manifestPlaceholders = [
+                AIRWALLEX_AUTH_URL            : getAuthUrl(),
+                AIRWALLEX_BASE_URL            : getBaseUrl(),
+                AIRWALLEX_API_KEY             : getApiKey(),
+                AIRWALLEX_CLIENT_ID           : getClientId(),
+                AIRWALLEX_WECHAT_APP_ID       : getWeChatAppId(),
+                AIRWALLEX_WECHAT_APP_SIGNATURE: getWeChatAppSignature()
+        ]
     }
 
     signingConfigs {
@@ -57,23 +97,23 @@ android {
 
 dependencies {
     implementation project(':airwallex')
+
 //    implementation 'com.airwallex:airwallex-core:1.0.0'
 
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.preference:preference:1.1.1'
     // RX
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.17'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
+    implementation 'com.jakewharton.rxbinding3:rxbinding:3.1.0'
 
     // Retrofit
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.8.1'
-    implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.5.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.7.2'
 
     // WeChat Pay
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.5.8'
-
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"

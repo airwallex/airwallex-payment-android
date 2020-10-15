@@ -1,0 +1,55 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+apply from: rootProject.file('publish.gradle')
+
+configurations.maybeCreate("default")
+def publishArtifact = artifacts.add("default", file('TrustDefender-5.0-96.aar'))
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+ext {
+    libraryVersion = '5.0-96'
+}
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    configurations = ['archives']
+
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = [licenseCode]
+        publish = true
+        publicDownloadNumbers = true
+        version {
+            name = libraryName
+            desc = libraryDescription
+        }
+        publications = ['Publication']
+    }
+}
+
+publishing {
+    publications {
+        Publication(MavenPublication) {
+            artifacts {
+                groupId publishedGroupId
+                artifactId artifact
+                version libraryVersion
+                artifact publishArtifact
+
+                pom.withXml {
+                    groupId publishedGroupId
+                    artifactId artifact
+                    version libraryVersion
+                }
+            }
+        }
+    }
+}

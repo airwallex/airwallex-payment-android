@@ -1,5 +1,6 @@
 package com.airwallex.android.exception
 
+import com.airwallex.android.model.AirwallexError
 import java.io.IOException
 
 /**
@@ -7,8 +8,8 @@ import java.io.IOException
  */
 class APIConnectionException(
     message: String? = null,
-    e: Throwable? = null
-) : AirwallexException(null, message, null, STATUS_CODE, e) {
+    e: Throwable
+) : AirwallexException(AirwallexError(message = message), null, STATUS_CODE, message, e) {
     internal companion object {
         private const val STATUS_CODE = 0
 

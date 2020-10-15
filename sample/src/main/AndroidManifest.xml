@@ -12,6 +12,26 @@
         android:supportsRtl="true"
         android:name=".SampleApplication"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="com.airwallex.sample.metadata.auth_url"
+            android:value="${AIRWALLEX_AUTH_URL}" />
+        <meta-data
+            android:name="com.airwallex.sample.metadata.base_url"
+            android:value="${AIRWALLEX_BASE_URL}" />
+        <meta-data
+            android:name="com.airwallex.sample.metadata.api_key"
+            android:value="${AIRWALLEX_API_KEY}" />
+        <meta-data
+            android:name="com.airwallex.sample.metadata.client_id"
+            android:value="${AIRWALLEX_CLIENT_ID}" />
+        <meta-data
+            android:name="com.airwallex.sample.metadata.wechat_app_id"
+            android:value="${AIRWALLEX_WECHAT_APP_ID}" />
+        <meta-data
+            android:name="com.airwallex.sample.metadata.wechat_app_signature"
+            android:value="${AIRWALLEX_WECHAT_APP_SIGNATURE}" />
+
         <activity
             android:name="com.airwallex.paymentacceptance.SplashActivity"
             android:theme="@style/SplashTheme">
