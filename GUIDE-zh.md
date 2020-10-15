@@ -298,13 +298,19 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 - 4242 4242 4242 4242
 - 2223 0000 1018 1375 Expire: 12/2022 CVC: 650 (3DS 1.0)
 - 4012 0003 0000 1003 Month: 12 (3DS 1.0)
-- 4012 0003 0000 1003 (3DS 2.0)
+- 4012 0003 0000 1003 Month: 10 (3DS 2.0)
 
 ## 自定义颜色
-您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格
+您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格。https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
 ```
+    <!--   a secondary color for controls like checkboxes and text fields -->
     <color name="airwallex_color_accent">@color/color_accent</color>
+
+    <!--   color for the app bar and other primary UI elements -->
     <color name="airwallex_color_primary">@color/color_primary</color>
+
+    <!--   a darker variant of the primary color, used for
+           the status bar (on Android 5.0+) and contextual app bars -->
     <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
 ```
 
