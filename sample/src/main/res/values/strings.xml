@@ -1,20 +1,5 @@
 <resources>
 
-    <!-- Airwallex API URL -->
-    <string name="auth_url_value">https://api-demo.airwallex.com</string>
-    <string name="base_url_value">https://demo-pci-api.airwallex.com</string>
-
-    <!-- Airwallex api_key, client_id -->
-    <string name="api_key_value">0e4299983f38730faeaff3bf2dc3f8cfebb067107505ad696a3f29975ed89adedafaf373ff0474413369c6897afe2256</string>
-    <string name="client_id_value">tu59C0ecSHirZXBhIFupuA</string>
-
-    <!-- WeChat app_id, app_signature -->
-    <string name="wechat_app_signature_value">eb1b3de47de134a321442cad974db87e</string>
-
-    <!-- Default price & currency -->
-    <string name="price_value">0.1</string>
-    <string name="currency_value">HKD</string>
-
     <string name="authorization">Authorization</string>
     <string name="wechat">WeChat</string>
     <string name="auth_url">Auth Url</string>
@@ -25,7 +10,7 @@
     <string name="wechat_app_signature">App Signature</string>
 
     <string name="app_name">Airwallex Sample</string>
-    <string name="checkout">Checkout With WeChat</string>
+    <string name="checkout">Checkout</string>
     <string name="subtotal">Subtotal</string>
     <string name="remove">Remove</string>
     <string name="my_cart">My cart</string>
@@ -34,16 +19,24 @@
     <string name="payment_successful_message">Your payment has been charged</string>
     <string name="payment_failed">Payment failed</string>
     <string name="payment_failed_message">There was an error while processing your payment. Please try again.</string>
+    <string name="payment_cancelled">Payment cancelled</string>
+    <string name="payment_cancelled_message">User cancel the payment</string>
 
     <string name="free">Free</string>
     <string name="total">Total</string>
 
     <string name="shipping">Shipping</string>
-    <string name="options">Options</string>
+    <string name="price_value">0.1</string>
+    <string name="currency_value">HKD</string>
     <string name="currency">Currency</string>
     <string name="price">Price</string>
     <string name="price_currency"><![CDATA[Price & Currency]]></string>
     <string name="create_payment_intent_failed">Create PaymentIntent Failed.</string>
+
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
+
+    <string name="enter_shipping">Enter shipping information</string>
+    <string name="three_d_secure">3DS</string>
+    <string name="three_d_secure_id">Environment</string>
 </resources>

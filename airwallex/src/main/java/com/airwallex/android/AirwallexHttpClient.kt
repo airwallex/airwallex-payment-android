@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okio.BufferedSink
+import kotlin.jvm.Throws
 
 /**
  * Http client that wraps OkHttpClient

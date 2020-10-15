@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="airwallex_color_accent_default">#3711AE</color>
-    <color name="airwallex_color_primary_default">#612FFF</color>
-    <color name="airwallex_color_primary_dark_default">#3711AE</color>
+    <!-- You can overwrite these color values in your app. That can suit your app style -->
+    <color name="airwallex_color_accent">@color/color_accent</color>
+    <color name="airwallex_color_primary">@color/color_primary</color>
+    <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
 
-    <color name="airwallex_color_bg">#F7F7F9</color>
-    <color name="airwallex_color_dark_deep">#2A2A2A</color>
-    <color name="airwallex_color_border">#EBECF0</color>
+<!--    <color name="color_accent">#131415</color>-->
+<!--    <color name="color_primary">#E66060</color>-->
+<!--    <color name="color_primary_dark">#F52626</color>-->
 
-    <color name="airwallex_color_item_label">#54545E</color>
+    <color name="color_accent">#131415</color>
+    <color name="color_primary">#612FFF</color>
+    <color name="color_primary_dark">#3711AE</color>
 </resources>

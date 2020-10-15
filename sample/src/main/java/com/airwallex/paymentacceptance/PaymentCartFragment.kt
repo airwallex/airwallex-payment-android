@@ -3,11 +3,13 @@ package com.airwallex.paymentacceptance
 import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
+import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.PhysicalProduct
 import com.airwallex.android.model.Shipping
@@ -16,8 +18,8 @@ import kotlinx.android.synthetic.main.fragment_cart.*
 
 class PaymentCartFragment : Fragment() {
 
-    val shipping: Shipping = Shipping.Builder()
-        .setFirstName("John")
+    var shipping: Shipping = Shipping.Builder()
+        .setFirstName("Verify")
         .setLastName("Doe")
         .setPhone("13800000000")
         .setAddress(
@@ -92,10 +94,23 @@ class PaymentCartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeProductsViews(products.toMutableList())
-    }
 
-    fun reset() {
+        shippingItemView.renewalShipping(shipping)
+        shippingItemView.onClickAction = {
+            (context as? PaymentCartActivity)?.airwallexStarter?.presentShippingFlow(
+                shipping,
+                object : AirwallexStarter.PaymentShippingListener {
+                    override fun onSuccess(shipping: Shipping) {
+                        Log.d(TAG, "Save the shipping success")
+                        shippingItemView.renewalShipping(shipping)
+                        this@PaymentCartFragment.shipping = shipping
+                    }
+
+                    override fun onCancelled() {
+                        Log.d(TAG, "User cancel edit shipping...")
+                    }
+                })
+        }
         initializeProductsViews(products.toMutableList())
     }
 
@@ -121,5 +136,9 @@ class PaymentCartFragment : Fragment() {
         tvOrderTotalPrice.text = String.format("$%.2f", totalPrice)
         tvShipping.text = getString(R.string.free)
         tvOrderSum.text = products.sumBy { it.quantity ?: 0 }.toString()
+    }
+
+    companion object {
+        private const val TAG = "PaymentCartFragment"
     }
 }

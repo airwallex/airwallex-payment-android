@@ -74,7 +74,7 @@ data class PaymentIntent internal constructor(
      * The status for the payment intent
      */
     @SerializedName("status")
-    val status: PaymentIntentStatus,
+    val status: PaymentIntentStatus?,
 
     /**
      * Amount that captured from this payment intent
@@ -92,7 +92,7 @@ data class PaymentIntent internal constructor(
      * Available payment method types
      */
     @SerializedName("available_payment_method_types")
-    val availablePaymentMethodTypes: List<String>,
+    val availablePaymentMethodTypes: List<PaymentMethodType>? = null,
 
     /**
      * Payment methods of the customer if customer ID is provided
@@ -104,7 +104,7 @@ data class PaymentIntent internal constructor(
      * Client secret for browser or app
      */
     @SerializedName("client_secret")
-    val clientSecret: String,
+    val clientSecret: String?,
 
     /**
      * Next action for the payment intent
@@ -138,6 +138,14 @@ data class PaymentIntent internal constructor(
 
 ) : AirwallexModel, Parcelable {
 
+    val paymentMethodType: PaymentMethodType?
+        get() {
+            if (latestPaymentAttempt == null) {
+                return null
+            }
+            return latestPaymentAttempt.paymentMethod.type
+        }
+
     val weChat: WeChat?
         get() {
             if (latestPaymentAttempt == null ||
@@ -170,13 +178,19 @@ data class PaymentIntent internal constructor(
         val id: String,
 
         /**
+         * Payment amount. This is the order amount you would like to charge your customer
+         */
+        @SerializedName("amount")
+        val amount: BigDecimal,
+
+        /**
          * Currency of the captured and refunded amounts
          */
         @SerializedName("currency")
         val currency: String? = null,
 
         /**
-         * Payment method for the payment attempt
+         * Payment method used by the payment attempt
          */
         @SerializedName("payment_method")
         val paymentMethod: PaymentMethod,
@@ -185,7 +199,7 @@ data class PaymentIntent internal constructor(
          * Payment attempt status. One of PENDING, SUCCEEDED, CANCELLED, FAILED
          */
         @SerializedName("status")
-        val status: PaymentAttemptStatus,
+        val status: PaymentAttemptStatus?,
 
         /**
          * Captured amount
@@ -209,7 +223,89 @@ data class PaymentIntent internal constructor(
          * Last time at which this payment attempt was updated or operated on
          */
         @SerializedName("updated_at")
-        val updatedAt: Date
+        val updatedAt: Date,
+
+        /**
+         * Authentication data used by the payment attempt
+         */
+        @SerializedName("authentication_data")
+        val authenticationData: PaymentAttemptAuthData?
+    ) : AirwallexModel, Parcelable
+
+    @Parcelize
+    data class PaymentAttemptAuthData internal constructor(
+
+        @SerializedName("ds_data")
+        val dsData: PaymentAttemptAuthDSData?,
+
+        @SerializedName("fraud_data")
+        val fraudData: PaymentAttemptAuthFraudData?,
+
+        @SerializedName("avs_result")
+        val avsResult: String?,
+
+        @SerializedName("cvc_result")
+        val cvcResult: String?
+
+    ) : AirwallexModel, Parcelable
+
+    @Parcelize
+    data class PaymentAttemptAuthDSData internal constructor(
+
+        /**
+         * 3DS Version
+         */
+        @SerializedName("version")
+        val version: String?,
+
+        @SerializedName("liability_shift_indicator")
+        val liabilityShiftIndicator: String?,
+
+        /**
+         * The Eci.
+         */
+        @SerializedName("eci")
+        val eci: String?,
+
+        /**
+         * The Cavv.
+         */
+        @SerializedName("cavv")
+        val cavv: String?,
+
+        /**
+         * The Xid.
+         */
+        @SerializedName("xid")
+        val xid: String?,
+
+        /**
+         * Status of Authentication eligibility.
+         */
+        @SerializedName("enrolled")
+        val enrolled: String?,
+
+        /**
+         * Transaction status result identifier.
+         */
+        @SerializedName("pa_res_status")
+        val paResStatus: String?,
+
+        @SerializedName("challenge_cancellation_reason")
+        val challengeCancellationReason: String?,
+
+        @SerializedName("frictionless")
+        val frictionless: String?
+    ) : AirwallexModel, Parcelable
+
+    @Parcelize
+    data class PaymentAttemptAuthFraudData internal constructor(
+
+        @SerializedName("action")
+        val action: String?,
+
+        @SerializedName("score")
+        val score: String?
 
     ) : AirwallexModel, Parcelable
 
@@ -226,7 +322,46 @@ data class PaymentIntent internal constructor(
         FAILED,
 
         @SerializedName("SUCCEEDED")
-        SUCCEEDED
+        SUCCEEDED,
+
+        @SerializedName("PENDING_AUTHORIZATION")
+        PENDING_AUTHORIZATION,
+
+        @SerializedName("PENDING_AUTHENTICATION")
+        PENDING_AUTHENTICATION,
+
+        @SerializedName("AUTHENTICATION_FAILED")
+        AUTHENTICATION_FAILED,
+
+        @SerializedName("AUTHORIZED")
+        AUTHORIZED,
+
+        @SerializedName("AUTHORIZATION_FAILED")
+        AUTHORIZATION_FAILED,
+
+        @SerializedName("PENDING_CAPTURE")
+        PENDING_CAPTURE,
+
+        @SerializedName("VOIDED")
+        VOIDED,
+
+        @SerializedName("CAPTURED")
+        CAPTURED,
+
+        @SerializedName("CAPTURE_FAILED")
+        CAPTURE_FAILED,
+
+        @SerializedName("PENDING_PAYMENT_CODE_GENERATION")
+        PENDING_PAYMENT_CODE_GENERATION,
+
+        @SerializedName("PAYMENT_CODE_GENERATION_FAILED")
+        PAYMENT_CODE_GENERATION_FAILED,
+
+        @SerializedName("PAYMENT_CODE_GENERATED")
+        PAYMENT_CODE_GENERATED,
+
+        @SerializedName("PAYMENT_FAILED")
+        PAYMENT_FAILED
     }
 
     @Parcelize
@@ -236,13 +371,47 @@ data class PaymentIntent internal constructor(
          * Type of next action, can be one of render_qr_code, call_sdk, redirect, display
          */
         @SerializedName("type")
-        val type: NextActionType,
+        val type: NextActionType?,
 
         /**
          * The additional data that can be used to complete this action
          */
         @SerializedName("data")
-        val data: @RawValue Map<String, Any>?
+        val data: @RawValue Map<String, Any>?,
+
+        /**
+         * The dcc data that can be used to complete this action
+         */
+        @SerializedName("dcc_data")
+        val dcc: DccData?
+    ) : AirwallexModel, Parcelable
+
+    /**
+     * The status of a [PaymentIntent]
+     */
+    @Parcelize
+    data class DccData internal constructor(
+        @SerializedName("currency")
+        val currency: String?,
+
+        @SerializedName("amount")
+        val amount: BigDecimal?,
+
+        @SerializedName("currency_pair")
+        val currencyPair: String?,
+
+        @SerializedName("client_rate")
+        val clientRate: Double?,
+
+        @SerializedName("rate_source")
+        val rateSource: String?,
+
+        @SerializedName("rate_timestamp")
+        val rateTimestamp: String?,
+
+        @SerializedName("rate_expiry")
+        val rateExpiry: String?
+
     ) : AirwallexModel, Parcelable
 
     /**
@@ -261,6 +430,9 @@ data class PaymentIntent internal constructor(
         REDIRECT,
 
         @SerializedName("display")
-        DISPLAY
+        DISPLAY,
+
+        @SerializedName("dcc")
+        DCC
     }
 }

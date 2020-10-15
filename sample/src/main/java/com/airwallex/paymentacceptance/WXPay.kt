@@ -49,7 +49,7 @@ class WXPay {
     }
 
     private fun launchWeChat(data: WeChat) {
-        val success = weChatApi.registerApp(Settings.wechatAppSignature)
+        val success = weChatApi.registerApp(Settings.weChatAppSignature)
         assert(success)
         weChatApi.sendReq(createPayReq(data))
     }

@@ -20,11 +20,12 @@ class PaymentSettingsFragment : PreferenceFragmentCompat(),
             editText.inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
         }
 
-        val weChatPref: ListPreference? =
-            findPreference(getString(R.string.wechat_app_id)) as? ListPreference?
-        if (weChatPref != null && weChatPref.value == null) {
-            weChatPref.setValueIndex(0)
+        val threeDSecurePref: ListPreference? =
+            findPreference(getString(R.string.three_d_secure_id)) as? ListPreference?
+        if (threeDSecurePref != null && threeDSecurePref.value == null) {
+            threeDSecurePref.setValueIndex(0)
         }
+
         onSharedPreferenceChanged(preferences, getString(R.string.auth_url))
         onSharedPreferenceChanged(preferences, getString(R.string.base_url))
         onSharedPreferenceChanged(preferences, getString(R.string.api_key))
@@ -33,6 +34,7 @@ class PaymentSettingsFragment : PreferenceFragmentCompat(),
         onSharedPreferenceChanged(preferences, getString(R.string.currency))
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_id))
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_signature))
+        onSharedPreferenceChanged(preferences, getString(R.string.three_d_secure_id))
         registerOnSharedPreferenceChangeListener()
     }
 
@@ -53,9 +55,9 @@ class PaymentSettingsFragment : PreferenceFragmentCompat(),
             getString(R.string.client_id) -> preference?.summary = Settings.clientId
             getString(R.string.price) -> preference?.summary = Settings.price
             getString(R.string.currency) -> preference?.summary = Settings.currency
-            getString(R.string.wechat_app_id) -> preference?.summary = Settings.wechatAppId
-            getString(R.string.wechat_app_signature) -> preference?.summary =
-                Settings.wechatAppSignature
+            getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
+            getString(R.string.wechat_app_signature) -> preference?.summary = Settings.weChatAppSignature
+            getString(R.string.three_d_secure_id) -> preference?.summary = Settings.threeDSecureEnv
         }
     }
 
