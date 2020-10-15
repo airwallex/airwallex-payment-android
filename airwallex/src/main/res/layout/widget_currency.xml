@@ -28,9 +28,11 @@
 
             <ImageView
                 android:id="@+id/icon"
-                android:layout_width="34dp"
+                android:layout_width="wrap_content"
                 android:layout_height="24dp"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginEnd="8dp"
+                android:adjustViewBounds="true"
+                tools:src="@drawable/ic_flag_ae" />
 
             <TextView
                 android:id="@+id/tv_currency"
