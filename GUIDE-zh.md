@@ -3,8 +3,6 @@
 
 我们的Demo开源在[Github](https://github.com/airwallex/airwallex-payment-android)，可以帮助你更好地了解如何在你的Android项目中集成Airwallex Android SDK。
 
-<<<<<<< HEAD
-=======
 我们还提供了功能强大的可自定义界面。
 
 <p align="center">
@@ -14,7 +12,6 @@
 <img src="assets/payment_detail.jpg" width="20%" alt="PaymentCheckoutActivity" hspace="10">
 </p>
 
->>>>>>> origin/feature/card
 开始使用我们的集成指南和示例项目。
 
 ## 目录
@@ -22,14 +19,10 @@
 * [开始集成](#开始集成)
     * [准备](#准备)
     * [基本集成](#基本集成)
-<<<<<<< HEAD
-* [运行Sample](#运行Sample)
-=======
     * [UI集成](#UI集成)
 * [运行Sample](#运行Sample)
 * [测试卡号](#测试卡号)
 * [自定义颜色](#自定义颜色)
->>>>>>> origin/feature/card
 * [贡献](#贡献)
 
 ## 支持版本
@@ -48,8 +41,6 @@ Airwallex Android SDK 支持Android 19及以上版本
     }
 ```
 
-<<<<<<< HEAD
-=======
 此外，将以下Maven repository 和 credentials 添加到根目录下的`build.gralde`:
 ```groovy
 repositories {
@@ -63,7 +54,6 @@ repositories {
 }
 ```
 
->>>>>>> origin/feature/card
 - 配置SDK (可选的)
 我们提供了一些参数，可用于调试SDK的，最好在`Application`中调用以下方法
 
@@ -98,25 +88,6 @@ repositories {
 
 2. 然后你可以调用 `confirmPaymentIntent` 方法
 ```kotlin
-<<<<<<< HEAD
-    airwallex.confirmPaymentIntent(
-        params = ConfirmPaymentIntentParams.createWeChatParams(
-            paymentIntentId = paymentIntent.id,         // required
-            clientSecret = paymentIntent.clientSecret,  // required
-            customerId = paymentIntent.customerId       // optional
-        ),
-        listener = object : Airwallex.PaymentListener<PaymentIntent> {
-            override fun onSuccess(response: PaymentIntent) {
-                val weChat = response.weChat
-                // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml).
-            }
-
-            override fun onFailed(exception: AirwallexException) {
-                // Confirm Payment Intent failed
-            }
-        }
-     )
-=======
     val listener = object : Airwallex.PaymentListener<PaymentIntent> {
         override fun onSuccess(response: PaymentIntent) {
             // Confirm Payment Intent success
@@ -145,7 +116,6 @@ repositories {
         )
         airwallex.confirmPaymentIntent(this, params, listener)
     }
->>>>>>> origin/feature/card
 ```
 
 3. 成功confirm `PaymentIntent`之后
@@ -154,10 +124,7 @@ Airwallex将返回微信支付所需的所有参数。你需要调用 [微信支
 可以查看[Sample](https://github.com/airwallex/airwallex-payment-android/tree/master)获得更多信息。
 ```kotlin
     val weChat = response.weChat
-<<<<<<< HEAD
-=======
     // `weChat` 包含微信支付所需的所有参数，然后你需要调用[微信支付](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml).
->>>>>>> origin/feature/card
 
     val weChatReq = PayReq()
     weChatReq.appId = weChat.appId
@@ -167,19 +134,11 @@ Airwallex将返回微信支付所需的所有参数。你需要调用 [微信支
     weChatReq.nonceStr = weChat.nonceStr
     weChatReq.timeStamp = weChat.timestamp
     weChatReq.sign = weChat.sign
-<<<<<<< HEAD
-
-    val weChatApi = WXAPIFactory.createWXAPI(applicationContext, appId)
-    weChatApi.sendReq(weChatReq)
-```
-
-=======
      
     val weChatApi = WXAPIFactory.createWXAPI(applicationContext, appId)
     weChatApi.sendReq(weChatReq)
 ```
  
->>>>>>> origin/feature/card
 - 信用卡支付. 你可以直接提供用户confirm `PaymentIntent` 的结果
 
 #### Retrieve Payment Intent 来确认支付是否成功
@@ -196,11 +155,6 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
                    // Payment successful
                 }
             }
-<<<<<<< HEAD
-
-            override fun onFailed(exception: AirwallexException) {
-
-=======
     
             override fun onFailed(exception: AirwallexException) {
                 
@@ -312,7 +266,6 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
                 
             override fun onCancelled() {
                 Log.d(TAG, "User cancel confirm payment intent")
->>>>>>> origin/feature/card
             }
         })
 ```
@@ -325,14 +278,6 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 
 * **Step 2:** 打开Android Studio并选择`build.gradle`文件来导入项目
 
-<<<<<<< HEAD
-* **Step 3:** 打开 [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), 并拷贝 `Client ID` 和` API key` 到 [`strings.xml`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/res/values/strings.xml)
-
-* **Step 4:** 在 [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay)注册app, 然后拷贝 `App ID` 和 `App Signature` 到 [`strings.xml`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/res/values/strings.xml)
-
-* **Step 5:** 运行`sample`工程
-
-=======
 * **Step 3:** 打开 [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), 并拷贝 `Client ID` 和` API key` 到 [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
 ```
     private const val AUTH_URL = "put your auth url here"
@@ -369,6 +314,5 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
     <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
 ```
 
->>>>>>> origin/feature/card
 ## 贡献
 我们欢迎任何形式的贡献，包括新功能，错误修复和文档改进。最简单的方式就是创建pull request - 我们会尽快回复。 如果你发现任何错误或有任何疑问，也可以提交Issues。

@@ -17,21 +17,13 @@ dependencies {
 ```
 
 ## 快速上手
-<<<<<<< HEAD
-请参考：[快速开始](GUIDE-zh.md)和[SDK文档](https://airwallex.github.io/airwallex-payment-android/)
-=======
 请参考：[快速开始](GUIDE-zh.md) 和[SDK文档](https://airwallex.github.io/airwallex-payment-android/)
->>>>>>> origin/feature/card
 
 ## 反馈
 感谢使用Airwallex Android SDK，并欢迎您提供反馈。 以下是几种联系方式：
 
 * 对于一般适用的问题和反馈，可以直接在[`Issues`](https://github.com/airwallex/airwallex-payment-android/issues)中提交问题。
-<<<<<<< HEAD
-* [pa_mobile_sdk@airwallex.com](mailto:pa_mobile_sdk@airwallex.com) - 也可以发送问题到这个邮箱，我们会尽快提供帮助。
-=======
 * [pa_mobile_sdk@airwallex.com](mailto:pa_mobile_sdk@airwallex.com) - 也可以发送问题到这个邮箱，我们会尽快提供帮助。
 
 ## 更新日志
 项目中所有版本的更新都可以在[日志更新文档](CHANGELOG.md)中查看.
->>>>>>> origin/feature/card
