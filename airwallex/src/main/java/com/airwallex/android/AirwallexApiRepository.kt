@@ -4,7 +4,6 @@ import com.airwallex.android.model.PaymentIntentConfirmRequest
 import com.airwallex.android.model.PaymentIntentContinueRequest
 import com.airwallex.android.model.PaymentMethodCreateRequest
 import com.airwallex.android.model.PaymentMethodType
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.google.gson.JsonParser
 import kotlinx.android.parcel.Parcelize
 import java.text.SimpleDateFormat
@@ -217,10 +216,7 @@ internal class AirwallexApiRepository : ApiRepository {
          * paRes base url
          */
         private fun retrievePaResBaseUrl(): String {
-            return when (AirwallexPlugins.threeDSecureEnv) {
-                CardinalEnvironment.STAGING -> BuildConfig.BASE_PARES_URL_STAGING
-                CardinalEnvironment.PRODUCTION -> BuildConfig.BASE_PARES_URL_PRODUCTION
-            }
+            return BuildConfig.BASE_PARES_URL
         }
 
         /**
