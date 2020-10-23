@@ -14,7 +14,10 @@ object CurrencyUtils {
         val currencyFormat = NumberFormat.getCurrencyInstance()
         val decimalFormatSymbols = (currencyFormat as DecimalFormat)
             .decimalFormatSymbols
-        val symbol = getCurrencySymbol(currency)
+        var symbol = getCurrencySymbol(currency)
+        if (symbol == "HK$") {
+            symbol = "$"
+        }
         decimalFormatSymbols.currencySymbol = symbol
         currencyFormat.decimalFormatSymbols = decimalFormatSymbols
         return currencyFormat.format(amount)
