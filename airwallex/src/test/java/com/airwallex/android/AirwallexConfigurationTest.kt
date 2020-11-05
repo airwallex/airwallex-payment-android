@@ -11,14 +11,14 @@ class AirwallexConfigurationTest {
     @Test
     fun configurationTest() {
         val enableLogging = true
-        val baseUrl = "https://staging-pci-api.airwallex.com"
+        val demoBaseUrl = "https://demo-pci-api.airwallex.com"
 
         val configuration = AirwallexConfiguration.Builder()
             .enableLogging(enableLogging)
-            .setBaseUrl(baseUrl)
+            .setEnvironment(Environment.DEMO)
             .build()
 
         assertEquals(enableLogging, configuration.enableLogging)
-        assertEquals(baseUrl, configuration.baseUrl)
+        assertEquals(demoBaseUrl, configuration.environment.baseUrl())
     }
 }
