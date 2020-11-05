@@ -1,7 +1,6 @@
 package com.airwallex.android
 
 import android.content.Context
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

@@ -60,8 +60,8 @@ We provide some parameters that can be used to debug the SDK, better to be calle
 ```groovy
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
-            .enableLogging(true)            // Enable log in sdk, best set to false in release version
-            .setBaseUrl(Settings.baseUrl)   // You can change the baseUrl to test other environments
+            .enableLogging(true)                // Enable log in sdk, best set to false in release version
+            .setEnvironment(Environment.DEMO)   // You can change the environment of Airwallex
             .build()
     )
 ```

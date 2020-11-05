@@ -16,7 +16,6 @@ data class AirwallexConfiguration internal constructor(
          */
         private var environment: Environment = Environment.PRODUCTION
 
-
         fun enableLogging(enable: Boolean): Builder = apply {
             this.enableLogging = enable
         }

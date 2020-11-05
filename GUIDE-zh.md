@@ -60,8 +60,8 @@ repositories {
 ```groovy
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
-            .enableLogging(true)            // 在SDK中打开log，需要在发布release版本的时候设置成false
-            .setBaseUrl(Settings.baseUrl)   // 你可以修改baseUrl，方便在其他环境测试
+            .enableLogging(true)                // 在SDK中打开log，需要在发布release版本的时候设置成false
+            .setEnvironment(Environment.DEMO)   // 你可以修改environment来切换测试环境
             .build()
     )
 ```
