@@ -57,7 +57,6 @@ class PaymentSettingsFragment : PreferenceFragmentCompat(),
             getString(R.string.currency) -> preference?.summary = Settings.currency
             getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
             getString(R.string.wechat_app_signature) -> preference?.summary = Settings.weChatAppSignature
-            getString(R.string.three_d_secure_id) -> preference?.summary = Settings.threeDSecureEnv
         }
     }
 

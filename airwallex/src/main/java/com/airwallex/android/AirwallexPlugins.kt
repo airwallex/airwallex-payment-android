@@ -35,19 +35,11 @@ internal object AirwallexPlugins {
         }
 
     /**
-     * Base URL in the Airwallex
+     * Environment in the Airwallex
      */
-    internal val baseUrl: String
+    internal val environment: Environment
         get() {
-            return configuration.baseUrl
-        }
-
-    /**
-     * 3DS Environment
-     */
-    internal val threeDSecureEnv: CardinalEnvironment
-        get() {
-            return configuration.threeDSecureEnv
+            return configuration.environment
         }
 
     /**

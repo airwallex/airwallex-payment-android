@@ -86,7 +86,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
         val request = AirwallexHttpRequest.Builder(
             continuePaymentIntentUrl(
-                AirwallexPlugins.baseUrl,
+                AirwallexPlugins.environment.baseUrl(),
                 options.paymentIntentId
             ),
             AirwallexHttpRequest.Method.POST
@@ -115,7 +115,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
         val request = AirwallexHttpRequest.Builder(
             confirmPaymentIntentUrl(
-                AirwallexPlugins.baseUrl,
+                AirwallexPlugins.environment.baseUrl(),
                 options.paymentIntentId
             ),
             AirwallexHttpRequest.Method.POST
@@ -140,7 +140,7 @@ internal class AirwallexApiRepository : ApiRepository {
     override fun retrievePaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
         val request = AirwallexHttpRequest.Builder(
             retrievePaymentIntentUrl(
-                AirwallexPlugins.baseUrl,
+                AirwallexPlugins.environment.baseUrl(),
                 (options as RetrievePaymentIntentOptions).paymentIntentId
             ),
             AirwallexHttpRequest.Method.GET
@@ -157,7 +157,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
         val request = AirwallexHttpRequest.Builder(
             createPaymentMethodUrl(
-                AirwallexPlugins.baseUrl
+                AirwallexPlugins.environment.baseUrl()
             ),
             AirwallexHttpRequest.Method.POST
         )
@@ -175,7 +175,7 @@ internal class AirwallexApiRepository : ApiRepository {
     override fun retrievePaymentMethods(options: ApiRepository.Options): AirwallexHttpResponse? {
         val request = AirwallexHttpRequest.Builder(
             retrievePaymentMethodsUrl(
-                AirwallexPlugins.baseUrl,
+                AirwallexPlugins.environment.baseUrl(),
                 (options as RetrievePaymentMethodOptions).customerId,
                 options.pageNum,
                 options.pageSize,

@@ -179,9 +179,6 @@ class Airwallex internal constructor(
     }
 
     companion object {
-        // The default url, that you can change in the constructor for test on different environments
-        internal const val BASE_URL = "https://pci-api.airwallex.com"
-
         /**
          * Initialize some global configurations, better to be called on Application
          */
