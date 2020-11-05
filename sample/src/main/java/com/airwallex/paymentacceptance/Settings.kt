@@ -105,17 +105,6 @@ object Settings {
             ) ?: defaultCurrency
         }
 
-    val threeDSecureEnv: String
-        get() {
-            val defaultThreeDSecureEnv =
-                SampleApplication.instance.resources.getStringArray(R.array.array_three_d_secure_id)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.three_d_secure_id),
-                defaultThreeDSecureEnv
-            )
-                ?: defaultThreeDSecureEnv
-        }
-
     private fun getMetadata(key: String): String? {
         return context.packageManager
             .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)

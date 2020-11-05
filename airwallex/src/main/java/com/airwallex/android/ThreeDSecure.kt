@@ -5,6 +5,7 @@ import android.content.Intent
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.ThreeDSecureLookup
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
@@ -26,7 +27,7 @@ internal object ThreeDSecure {
      */
     private fun configureCardinal(applicationContext: Context) {
         val cardinalConfigurationParameters = CardinalConfigurationParameters()
-        cardinalConfigurationParameters.environment = AirwallexPlugins.threeDSecureEnv
+        cardinalConfigurationParameters.environment = if (AirwallexPlugins.environment == Environment.DEMO) CardinalEnvironment.STAGING else CardinalEnvironment.PRODUCTION
         cardinalConfigurationParameters.requestTimeout = 8000
         cardinalConfigurationParameters.challengeTimeout = 5
 
