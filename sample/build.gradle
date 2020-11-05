@@ -98,7 +98,7 @@ android {
 dependencies {
     implementation project(':airwallex')
 
-//    implementation 'com.airwallex:airwallex-core:1.0.0'
+//    implementation 'com.airwallex:airwallex-core:2.0.1'
 
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.preference:preference:1.1.1'
