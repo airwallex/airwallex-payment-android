@@ -1,6 +1,9 @@
 # Airwallex Android SDK Changelog
 All notable changes to the SDK will be documented in this file.
 
+## Version 2.0.1 (November 5, 2020)
+- Add support dcc
+
 ## Version 2.0.0 (June 1, 2020)
 - Add support for credit card payment
 - Add support for 3DS flow
