@@ -216,7 +216,7 @@ internal class AirwallexApiRepository : ApiRepository {
          * paRes base url
          */
         private fun retrievePaResBaseUrl(): String {
-            return BuildConfig.BASE_PARES_URL
+            return AirwallexPlugins.environment.cybsUrl()
         }
 
         /**
