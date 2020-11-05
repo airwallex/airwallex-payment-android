@@ -1,12 +1,12 @@
 <resources>
 
     <!-- Airwallex API URL -->
-    <string name="auth_url_value">https://api-staging.airwallex.com</string>
-    <string name="base_url_value">https://staging-pci-api.airwallex.com</string>
+    <string name="auth_url_value">https://api-demo.airwallex.com</string>
+    <string name="base_url_value">https://demo-pci-api.airwallex.com</string>
 
     <!-- Airwallex api_key, client_id -->
-    <string name="api_key_value">e70420bb90a34c6c2be422387f4209eaf3a7aa84bc8cc4fc2af23cfde121370407833f0649261723e2a91aec552f56ee</string>
-    <string name="client_id_value">dPH0tQnxRaijLH7ILl0nDQ</string>
+    <string name="api_key_value">4304cbcccb23095f749d724f769d4e1e3baa10e4412e0125df5a0bbc0c240bf2722a45154083fe3009a12cb780e0b0d3</string>
+    <string name="client_id_value">Af0z_LOISWC2JegXGC3SLw</string>
 
     <!-- WeChat app_id, app_signature -->
     <string name="wechat_app_signature_value">eb1b3de47de134a321442cad974db87e</string>
@@ -37,7 +37,7 @@
     <string name="shipping">Shipping</string>
     <string name="options">Options</string>
     <string name="price_value">0.1</string>
-    <string name="currency_value">USD</string>
+    <string name="currency_value">HKD</string>
     <string name="currency">Currency</string>
     <string name="price">Price</string>
     <string name="price_currency"><![CDATA[Price & Currency]]></string>

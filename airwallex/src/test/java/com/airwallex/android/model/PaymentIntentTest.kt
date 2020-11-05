@@ -112,7 +112,6 @@ class PaymentIntentTest {
                     .setCreatedAt(Date(1585537440000))
                     .setUpdatedAt(Date(1585537440000))
                     .build(),
-                status = PaymentIntent.PaymentAttemptStatus.SUCCEEDED,
                 capturedAmount = BigDecimal.valueOf(0),
                 refundedAmount = BigDecimal.valueOf(0),
                 createdAt = Date(1585537440000),

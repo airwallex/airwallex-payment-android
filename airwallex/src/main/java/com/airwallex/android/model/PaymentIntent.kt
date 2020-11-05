@@ -182,12 +182,6 @@ data class PaymentIntent internal constructor(
         val paymentMethod: PaymentMethod,
 
         /**
-         * Payment attempt status. One of PENDING, SUCCEEDED, CANCELLED, FAILED
-         */
-        @SerializedName("status")
-        val status: PaymentAttemptStatus,
-
-        /**
          * Captured amount
          */
         @SerializedName("captured_amount")
@@ -212,22 +206,6 @@ data class PaymentIntent internal constructor(
         val updatedAt: Date
 
     ) : AirwallexModel, Parcelable
-
-    @Parcelize
-    enum class PaymentAttemptStatus : Parcelable {
-
-        @SerializedName("PENDING")
-        PENDING,
-
-        @SerializedName("CANCELLED")
-        CANCELLED,
-
-        @SerializedName("FAILED")
-        FAILED,
-
-        @SerializedName("SUCCEEDED")
-        SUCCEEDED
-    }
 
     @Parcelize
     data class NextAction internal constructor(
