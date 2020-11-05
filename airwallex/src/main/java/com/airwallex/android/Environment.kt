@@ -9,4 +9,11 @@ enum class Environment {
             PRODUCTION -> "https://pci-api.airwallex.com"
         }
     }
+
+    fun cybsUrl(): String {
+        return when (this) {
+            DEMO -> "https://demo-pacybsmock.airwallex.com"
+            PRODUCTION -> "https://prod-pacybs.airwallex.com"
+        }
+    }
 }
