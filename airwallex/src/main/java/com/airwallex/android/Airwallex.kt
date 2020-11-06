@@ -1,6 +1,5 @@
 package com.airwallex.android
 
-import androidx.annotation.UiThread
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import java.util.*
@@ -39,7 +38,6 @@ class Airwallex internal constructor(
      * @param params [ConfirmPaymentIntentParams] used to confirm [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
-    @UiThread
     fun confirmPaymentIntent(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
@@ -70,7 +68,6 @@ class Airwallex internal constructor(
      * @param params [RetrievePaymentIntentParams] used to receive the [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
-    @UiThread
     fun retrievePaymentIntent(
         params: RetrievePaymentIntentParams,
         listener: PaymentListener<PaymentIntent>

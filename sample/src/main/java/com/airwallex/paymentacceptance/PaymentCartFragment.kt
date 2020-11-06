@@ -2,12 +2,12 @@ package com.airwallex.paymentacceptance
 
 import android.content.Context
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import androidx.fragment.app.Fragment
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.PhysicalProduct
 import com.airwallex.android.model.Shipping
