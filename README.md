@@ -12,7 +12,7 @@ Airwallex's Android SDK is available for Android SDK >= 19.
 Add the dependency in your `build.gradle`.
 ```groovy
 dependencies {
-    implementation 'com.airwallex:airwallex-core:1.0.1'
+    implementation 'com.airwallex:airwallex-core:1.0.1-support'
 }
 ```
 
