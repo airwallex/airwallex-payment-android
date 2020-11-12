@@ -150,7 +150,7 @@ internal interface PaymentManager {
         fun buildCardPaymentIntentOptions(
             device: Device,
             params: ConfirmPaymentIntentParams,
-            threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
+            threeDSecure: com.airwallex.android.model.ThreeDSecure
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()

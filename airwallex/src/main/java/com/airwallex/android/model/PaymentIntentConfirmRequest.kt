@@ -1,7 +1,6 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -13,37 +12,74 @@ data class PaymentIntentConfirmRequest internal constructor(
     /**
      * Unique request ID specified by the merchant
      */
-    @SerializedName("request_id")
-    val requestId: String,
+    val requestId: String? = null,
 
     /**
      * Customer who intends to pay for the payment intent
      */
-    @SerializedName("customer_id")
     val customerId: String? = null,
 
     /**
      * The payment method that you want to confirm
      */
-    @SerializedName("payment_method")
-    val paymentMethod: PaymentMethod?,
+    val paymentMethod: PaymentMethod? = null,
 
     /**
      * The payment method reference that you want to confirm
      */
-    @SerializedName("payment_method_reference")
-    val paymentMethodReference: PaymentMethodReference?,
+    val paymentMethodReference: PaymentMethodReference? = null,
 
     /**
      * Options for payment method
      */
-    @SerializedName("payment_method_options")
-    val paymentMethodOptions: PaymentMethodOptions?,
+    val paymentMethodOptions: PaymentMethodOptions? = null,
 
-    @SerializedName("device")
     val device: Device? = null
 
-) : AirwallexModel, Parcelable {
+) : AirwallexRequestModel, Parcelable {
+
+    private companion object {
+        private const val FIELD_REQUEST_ID = "request_id"
+        private const val FIELD_CUSTOMER_ID = "customer_id"
+        private const val FIELD_PAYMENT_METHOD = "payment_method"
+        private const val FIELD_PAYMENT_METHOD_REFERENCE = "payment_method_reference"
+        private const val FIELD_PAYMENT_METHOD_OPTIONS = "payment_method_options"
+        private const val FIELD_DEVICE = "device"
+    }
+
+    override fun toParamMap(): Map<String, Any> {
+        return mapOf<String, Any>()
+            .plus(
+                requestId?.let {
+                    mapOf(FIELD_REQUEST_ID to it)
+                }.orEmpty()
+            )
+            .plus(
+                customerId?.let {
+                    mapOf(FIELD_CUSTOMER_ID to it)
+                }.orEmpty()
+            )
+            .plus(
+                paymentMethod?.let {
+                    mapOf(FIELD_PAYMENT_METHOD to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                paymentMethodReference?.let {
+                    mapOf(FIELD_PAYMENT_METHOD_REFERENCE to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                paymentMethodOptions?.let {
+                    mapOf(FIELD_PAYMENT_METHOD_OPTIONS to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                device?.let {
+                    mapOf(FIELD_DEVICE to it.toParamMap())
+                }.orEmpty()
+            )
+    }
 
     class Builder(
         private val requestId: String

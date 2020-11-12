@@ -8,9 +8,11 @@ import com.airwallex.android.exception.APIException
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.*
+import com.airwallex.android.model.parser.*
 import com.airwallex.android.view.SelectCurrencyActivityLaunch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import org.json.JSONObject
 import java.util.*
 
 /**
@@ -110,7 +112,7 @@ internal class AirwallexPaymentManager(
             }
             PaymentMethodType.CARD -> {
                 buildCardPaymentIntentOptions(device, params,
-                    PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                    com.airwallex.android.model.ThreeDSecure.Builder()
                         .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
                         .build()
                 )
@@ -207,7 +209,7 @@ internal class AirwallexPaymentManager(
                 Logger.debug("Step2: 3DS Enrollment with `referenceId`")
                 continuePaymentIntent(
                     build3DSContinuePaymentIntentOptions(device, paymentIntentId, clientSecret, PaymentIntentContinueType.ENROLLMENT,
-                        PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                        com.airwallex.android.model.ThreeDSecure.Builder()
                             .setDeviceDataCollectionRes(referenceId)
                             .build()
                     ),
@@ -239,7 +241,7 @@ internal class AirwallexPaymentManager(
                                         Logger.debug("Step 4: 3DS Validate with `processorTransactionId`")
                                         continuePaymentIntent(
                                             build3DSContinuePaymentIntentOptions(device, paymentIntentId, clientSecret, PaymentIntentContinueType.VALIDATE,
-                                                PaymentMethodOptions.CardOptions.ThreeDSecure.Builder()
+                                                com.airwallex.android.model.ThreeDSecure.Builder()
                                                     .setTransactionId(transactionId)
                                                     .build()
                                             ),
@@ -279,7 +281,7 @@ internal class AirwallexPaymentManager(
         paymentIntentId: String,
         clientSecret: String,
         type: PaymentIntentContinueType,
-        threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure
+        threeDSecure: com.airwallex.android.model.ThreeDSecure
     ): AirwallexApiRepository.ContinuePaymentIntentOptions {
         val request = PaymentIntentContinueRequest(
             requestId = UUID.randomUUID().toString(),
@@ -307,16 +309,31 @@ internal class AirwallexPaymentManager(
             object : ApiExecutor.ApiResponseListener<AirwallexHttpResponse> {
                 override fun onSuccess(response: AirwallexHttpResponse) {
                     if (response.isSuccessful && response.body != null) {
-                        val result: T = AirwallexPlugins.gson.fromJson(
-                            response.body.string(),
-                            classType(apiOperationType)
-                        )
-                        listener.onSuccess(result)
+                        val result = when (apiOperationType) {
+                            ApiOperationType.CONFIRM_CONTINUE_PAYMENT_INTENT,
+                            ApiOperationType.CONFIRM_PAYMENT_INTENT,
+                            ApiOperationType.RETRIEVE_PAYMENT_INTENT -> {
+                                PaymentIntentParser().parse(JSONObject(response.body.string()))
+                            }
+                            ApiOperationType.CREATE_PAYMENT_METHOD -> {
+                                PaymentMethodParser().parse(JSONObject(response.body.string()))
+                            }
+                            ApiOperationType.RETRIEVE_PAYMENT_METHOD -> {
+                                PaymentMethodResponseParser().parse(JSONObject(response.body.string()))
+                            }
+                            ApiOperationType.RETRIEVE_PA_RES_ID -> {
+                                ThreeDSecureParesParser().parse(JSONObject(response.body.string()))
+                            }
+                        }
+                        @Suppress("UNCHECKED_CAST")
+                        listener.onSuccess(result as T)
                     } else {
-                        val error = if (response.body != null) AirwallexPlugins.gson.fromJson(
-                            response.body.string(),
-                            AirwallexError::class.java
-                        ) else AirwallexError(message = "Unknown error")
+                        val error = if (response.body != null) {
+                            AirwallexErrorParser().parse(JSONObject(response.body.string()))
+                                ?: AirwallexError(message = "Unknown error")
+                        } else {
+                            AirwallexError(message = "Unknown error")
+                        }
                         listener.onFailed(
                             APIException(
                                 error = error,
@@ -363,26 +380,6 @@ internal class AirwallexPaymentManager(
                 ApiOperationType.RETRIEVE_PA_RES_ID -> {
                     repository.retrieveParesWithId(options)
                 }
-            }
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> classType(type: ApiOperationType): Class<T> {
-        return when (type) {
-            ApiOperationType.CONFIRM_CONTINUE_PAYMENT_INTENT,
-            ApiOperationType.CONFIRM_PAYMENT_INTENT,
-            ApiOperationType.RETRIEVE_PAYMENT_INTENT -> {
-                PaymentIntent::class.java as Class<T>
-            }
-            ApiOperationType.CREATE_PAYMENT_METHOD -> {
-                PaymentMethod::class.java as Class<T>
-            }
-            ApiOperationType.RETRIEVE_PAYMENT_METHOD -> {
-                PaymentMethodResponse::class.java as Class<T>
-            }
-            ApiOperationType.RETRIEVE_PA_RES_ID -> {
-                ThreeDSecurePares::class.java as Class<T>
             }
         }
     }

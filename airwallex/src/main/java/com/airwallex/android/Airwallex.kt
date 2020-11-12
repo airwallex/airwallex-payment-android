@@ -18,11 +18,11 @@ class Airwallex internal constructor(
     }
 
     /**
-     * Generic interface for an Airwallex API operation callback that either returns a [Response], or an [Exception]
+     * Generic interface for an Airwallex API operation callback that either returns a [T], or an [Exception]
      */
-    interface PaymentListener<Response> {
+    interface PaymentListener<T> {
         fun onFailed(exception: AirwallexException)
-        fun onSuccess(response: Response)
+        fun onSuccess(response: T)
     }
 
     /**

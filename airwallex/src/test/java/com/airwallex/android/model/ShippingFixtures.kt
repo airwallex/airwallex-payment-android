@@ -1,9 +1,10 @@
 package com.airwallex.android.model
 
-import com.airwallex.android.AirwallexPlugins
+import com.airwallex.android.model.parser.ShippingParser
+import org.json.JSONObject
 
 internal object ShippingFixtures {
-    val SHIPPING: Shipping = AirwallexPlugins.gson.fromJson(
+    val SHIPPING = ShippingParser().parse(JSONObject(
         """
         {
             "first_name": "John",
@@ -17,7 +18,6 @@ internal object ShippingFixtures {
                 "postcode": "100000"
             }
         }
-        """.trimIndent(),
-        Shipping::class.java
-    )
+        """.trimIndent()
+    ))
 }

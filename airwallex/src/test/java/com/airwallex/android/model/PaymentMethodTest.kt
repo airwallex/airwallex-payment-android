@@ -12,8 +12,6 @@ class PaymentMethodTest {
     @Test
     fun builderConstructor() {
         val paymentMethod = PaymentMethod.Builder()
-            .setId("")
-            .setRequestId("")
             .setType(PaymentMethodType.CARD)
             .setCard(
                 PaymentMethod.Card.Builder()

@@ -4,8 +4,8 @@ import com.airwallex.android.model.PaymentIntentConfirmRequest
 import com.airwallex.android.model.PaymentIntentContinueRequest
 import com.airwallex.android.model.PaymentMethodCreateRequest
 import com.airwallex.android.model.PaymentMethodType
-import com.google.gson.JsonParser
 import kotlinx.android.parcel.Parcelize
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,7 +24,7 @@ internal class AirwallexApiRepository : ApiRepository {
     internal class ConfirmPaymentIntentOptions internal constructor(
         override val clientSecret: String,
         internal val paymentIntentId: String,
-        internal val request: PaymentIntentConfirmRequest? = null
+        internal val request: PaymentIntentConfirmRequest
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     @Parcelize
@@ -80,10 +80,7 @@ internal class AirwallexApiRepository : ApiRepository {
      * @return a [AirwallexHttpResponse] from Airwallex server
      */
     override fun continuePaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val paramsJson =
-            JsonParser.parseString(AirwallexPlugins.gson.toJson((options as ContinuePaymentIntentOptions).request))
-                .asJsonObject
-
+        val paramsJson = JSONObject((options as ContinuePaymentIntentOptions).request.toParamMap())
         val request = AirwallexHttpRequest.Builder(
             continuePaymentIntentUrl(
                 AirwallexPlugins.environment.baseUrl(),
@@ -109,10 +106,7 @@ internal class AirwallexApiRepository : ApiRepository {
      * @return a [AirwallexHttpResponse] from Airwallex server
      */
     override fun confirmPaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val paramsJson =
-            JsonParser.parseString(AirwallexPlugins.gson.toJson((options as ConfirmPaymentIntentOptions).request))
-                .asJsonObject
-
+        val paramsJson = JSONObject((options as ConfirmPaymentIntentOptions).request.toParamMap())
         val request = AirwallexHttpRequest.Builder(
             confirmPaymentIntentUrl(
                 AirwallexPlugins.environment.baseUrl(),
@@ -151,10 +145,7 @@ internal class AirwallexApiRepository : ApiRepository {
     }
 
     override fun createPaymentMethod(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val paramsJson =
-            JsonParser.parseString(AirwallexPlugins.gson.toJson(requireNotNull((options as CreatePaymentMethodOptions).request)))
-                .asJsonObject
-
+        val paramsJson = JSONObject((options as CreatePaymentMethodOptions).request.toParamMap())
         val request = AirwallexHttpRequest.Builder(
             createPaymentMethodUrl(
                 AirwallexPlugins.environment.baseUrl()

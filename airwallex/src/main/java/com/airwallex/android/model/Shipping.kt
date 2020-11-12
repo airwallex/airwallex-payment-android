@@ -1,7 +1,7 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
+import com.airwallex.android.model.parser.ShippingParser
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -13,30 +13,54 @@ data class Shipping internal constructor(
     /**
      * First name of the recipient
      */
-    @SerializedName("first_name")
     val firstName: String? = null,
 
     /**
      * Last name of the recipient
      */
-    @SerializedName("last_name")
     val lastName: String? = null,
 
     /**
      * Phone number of the recipient
      */
-    @SerializedName("phone_number")
     val phoneNumber: String? = null,
 
     /**
      * Shipping method for the product
      */
-    @SerializedName("shipping_method")
     val shippingMethod: String? = null,
 
-    @SerializedName("address")
     val address: Address? = null
-) : AirwallexModel, Parcelable {
+) : AirwallexModel, AirwallexRequestModel, Parcelable {
+
+    override fun toParamMap(): Map<String, Any> {
+        return mapOf<String, Any>()
+            .plus(
+                firstName?.let {
+                    mapOf(ShippingParser.FIELD_FIRST_NAME to it)
+                }.orEmpty()
+            )
+            .plus(
+                lastName?.let {
+                    mapOf(ShippingParser.FIELD_LAST_NAME to it)
+                }.orEmpty()
+            )
+            .plus(
+                phoneNumber?.let {
+                    mapOf(ShippingParser.FIELD_PHONE_NUMBER to it)
+                }.orEmpty()
+            )
+            .plus(
+                shippingMethod?.let {
+                    mapOf(ShippingParser.FIELD_SHIPPING_METHOD to it)
+                }.orEmpty()
+            )
+            .plus(
+                address?.let {
+                    mapOf(ShippingParser.FIELD_ADDRESS to it.toParamMap())
+                }.orEmpty()
+            )
+    }
 
     class Builder : ObjectBuilder<Shipping> {
         private var firstName: String? = null

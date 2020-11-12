@@ -1,7 +1,6 @@
 package com.airwallex.android
 
 import android.content.Context
-import com.google.gson.Gson
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -62,13 +61,6 @@ internal object AirwallexPlugins {
         clientBuilder.readTimeout(HTTP_READ_TIMEOUT_SECOND, TimeUnit.SECONDS)
         clientBuilder.followRedirects(false)
         AirwallexHttpClient.createClient(clientBuilder)
-    }
-
-    /**
-     * Provide [Gson] to parse the response of Airwallex API
-     */
-    internal val gson by lazy {
-        Gson()
     }
 
     private const val HTTP_CONNECTION_TIMEOUT_SECOND = 5L

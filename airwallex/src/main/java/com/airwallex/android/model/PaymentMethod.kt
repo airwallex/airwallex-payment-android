@@ -1,7 +1,7 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
+import com.airwallex.android.model.parser.PaymentMethodParser
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import java.util.*
@@ -17,70 +17,73 @@ data class PaymentMethod internal constructor(
     /**
      * Unique identifier for the payment method
      */
-    @SerializedName("id")
-    val id: String?,
+    val id: String? = null,
 
     /**
      * Request id for the payment method
      */
-    @SerializedName("request_id")
-    val requestId: String?,
+    val requestId: String? = null,
 
     /**
      * Customer id for the payment method
      */
-    @SerializedName("customer_id")
-    val customerId: String?,
+    val customerId: String? = null,
 
     /**
      * Type of the payment method. One of card, wechatpay
      */
-    @SerializedName("type")
-    val type: PaymentMethodType?,
+    val type: PaymentMethodType? = null,
 
     /**
      * Card information for the payment method
      */
-    @SerializedName("card")
-    val card: Card?,
+    val card: Card? = null,
 
     /**
      * The WeChat request that contains WeChat pay flow
      */
-    @SerializedName("wechatpay")
-    val weChatPayRequest: WeChatPayRequest?,
+    val weChatPayRequest: WeChatPayRequest? = null,
 
     /**
      * Billing information for the payment method
      */
-    @SerializedName("billing")
-    val billing: Billing?,
-
-    /**
-     * A set of key-value pairs that you can attach to the payment method
-     */
-    @SerializedName("metadata")
-    val metadata: @RawValue Map<String, Any>?,
-
-    /**
-     * Time at which the payment method was created
-     */
-    @SerializedName("created_at")
-    val createdAt: Date?,
+    val billing: Billing? = null,
 
     /**
      * Status of the payment method, can be one of CREATED, VERIFIED, EXPIRED, INVALID
      */
-    @SerializedName("status")
     val status: PaymentMethodStatus? = null,
+
+    /**
+     * A set of key-value pairs that you can attach to the payment method
+     */
+    val metadata: @RawValue Map<String, Any?>? = null,
+
+    /**
+     * Time at which the payment method was created
+     */
+    val createdAt: Date? = null,
 
     /**
      * Last time at which the payment method was updated
      */
-    @SerializedName("updated_at")
-    val updatedAt: Date?
+    val updatedAt: Date? = null
 
-) : AirwallexModel, Parcelable {
+) : AirwallexModel, AirwallexRequestModel, Parcelable {
+
+    override fun toParamMap(): Map<String, Any> {
+        return mapOf<String, Any>()
+            .plus(
+                type?.let {
+                    mapOf(PaymentMethodParser.FIELD_TYPE to it.value)
+                }.orEmpty()
+            )
+            .plus(
+                weChatPayRequest?.let {
+                    mapOf(PaymentMethodParser.FIELD_WECHAT_PAY_REQUEST to it.toParamMap())
+                }.orEmpty()
+            )
+    }
 
     class Builder : ObjectBuilder<PaymentMethod> {
         private var id: String? = null
@@ -90,7 +93,7 @@ data class PaymentMethod internal constructor(
         private var card: Card? = null
         private var weChatPayFlow: WeChatPayRequest? = null
         private var billing: Billing? = null
-        private var metadata: Map<String, Any>? = null
+        private var metadata: Map<String, Any?>? = null
         private var createdAt: Date? = null
         private var updatedAt: Date? = null
         private var status: PaymentMethodStatus? = null
@@ -107,7 +110,7 @@ data class PaymentMethod internal constructor(
             this.customerId = customerId
         }
 
-        fun setMetadata(metadata: Map<String, Any>?): Builder = apply {
+        fun setMetadata(metadata: Map<String, Any?>?): Builder = apply {
             this.metadata = metadata
         }
 
@@ -160,19 +163,21 @@ data class PaymentMethod internal constructor(
      * The status of a [PaymentMethod]
      */
     @Parcelize
-    enum class PaymentMethodStatus : Parcelable {
+    enum class PaymentMethodStatus(val value: String) : Parcelable {
 
-        @SerializedName("CREATED")
-        CREATED,
+        CREATED("CREATED"),
 
-        @SerializedName("VERIFIED")
-        VERIFIED,
+        VERIFIED("VERIFIED"),
 
-        @SerializedName("EXPIRED")
-        EXPIRED,
+        EXPIRED("EXPIRED"),
 
-        @SerializedName("INVALID")
-        INVALID
+        INVALID("INVALID");
+
+        internal companion object {
+            internal fun fromValue(value: String?): PaymentMethodStatus? {
+                return values().firstOrNull { it.value == value }
+            }
+        }
     }
 
     @Parcelize
@@ -181,94 +186,163 @@ data class PaymentMethod internal constructor(
         /**
          * CVC holder name
          */
-        @SerializedName("cvc")
-        val cvc: String?,
+        val cvc: String? = null,
 
         /**
          * Two digit number representing the card’s expiration month
          */
-        @SerializedName("expiry_month")
-        val expiryMonth: String?,
+        val expiryMonth: String? = null,
 
         /**
          * Four digit number representing the card’s expiration year
          */
-        @SerializedName("expiry_year")
-        val expiryYear: String?,
+        val expiryYear: String? = null,
 
         /**
          * Card holder name
          */
-        @SerializedName("name")
-        val name: String?,
+        val name: String? = null,
 
         /**
          * Number of the card
          */
-        @SerializedName("number")
-        val number: String?,
+        val number: String? = null,
 
         /**
          * Bank identify number of this card
          */
-        @SerializedName("bin")
-        val bin: String?,
+        val bin: String? = null,
 
         /**
          * Last four digits of the card number
          */
-        @SerializedName("last4")
-        val last4: String?,
+        val last4: String? = null,
 
         /**
          * Brand of the card
          */
-        @SerializedName("brand")
-        val brand: String?,
+        val brand: String? = null,
 
         /**
          * Country of the card
          */
-        @SerializedName("country")
-        val country: String?,
+        val country: String? = null,
 
         /**
          * Funding of the card
          */
-        @SerializedName("funding")
-        val funding: String?,
+        val funding: String? = null,
 
         /**
          * Fingerprint of the card
          */
-        @SerializedName("fingerprint")
-        val fingerprint: String?,
+        val fingerprint: String? = null,
 
         /**
          * Whether CVC pass the check
          */
-        @SerializedName("cvc_check")
-        val cvcCheck: String?,
+        val cvcCheck: String? = null,
 
         /**
          * Whether address pass the check
          */
-        @SerializedName("avs_check")
-        val avsCheck: String?,
+        val avsCheck: String? = null,
 
         /**
          * Country code of the card issuer
          */
-        @SerializedName("issuer_country_code")
-        val issuerCountryCode: String?,
+        val issuerCountryCode: String? = null,
 
         /**
          * Card type of the card
          */
-        @SerializedName("card_type")
-        val cardType: String?
+        val cardType: String? = null
 
-    ) : AirwallexModel, Parcelable {
+    ) : AirwallexModel, AirwallexRequestModel, Parcelable {
+
+        override fun toParamMap(): Map<String, Any> {
+            return mapOf<String, Any>()
+                .plus(
+                    cvc?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_CVC to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    expiryMonth?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_EXPIRY_MONTH to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    expiryYear?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_EXPIRY_YEAR to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    name?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_NAME to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    number?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_NUMBER to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    bin?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_BIN to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    last4?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_LAST4 to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    last4?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_LAST4 to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    brand?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_BRAND to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    country?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_COUNTRY to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    funding?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_FUNDING to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    fingerprint?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_FINGERPRINT to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    cvcCheck?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_CVC_CHECK to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    avsCheck?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_AVS_CHECK to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    issuerCountryCode?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_ISSUER_COUNTRY_CODE to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    cardType?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_CARD_TYPE to it)
+                    }.orEmpty()
+                )
+        }
 
         class Builder : ObjectBuilder<Card> {
             private var cvc: String? = null

@@ -3,9 +3,11 @@ package com.airwallex.paymentacceptance
 import android.text.TextUtils
 import com.airwallex.android.ClientSecretProvider
 import com.airwallex.android.ClientSecretUpdateListener
+import com.airwallex.android.model.parser.ClientSecretParser
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import org.json.JSONObject
 import java.io.IOException
 
 class ExampleClientSecretProvider : ClientSecretProvider {
@@ -25,8 +27,13 @@ class ExampleClientSecretProvider : ClientSecretProvider {
             api.createClientSecret(customerId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ clientSecret ->
+                .subscribe({ responseBody ->
                     try {
+                        val clientSecret = ClientSecretParser().parse(JSONObject(responseBody.string()))
+                        if (clientSecret == null) {
+                            updateListener.onClientSecretUpdateFailure("")
+                            return@subscribe
+                        }
                         updateListener.onClientSecretUpdate(customerId, clientSecret)
                     } catch (e: IOException) {
                         updateListener.onClientSecretUpdateFailure(e.message ?: "")

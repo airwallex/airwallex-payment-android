@@ -16,6 +16,7 @@ import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.RetrievePaymentIntentParams
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
+import com.airwallex.android.model.parser.PaymentIntentParser
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -164,7 +165,8 @@ class PaymentCartActivity : AppCompatActivity() {
                                 .setProducts(products)
                                 .setShipping(shipping)
                                 .setType("physical_goods")
-                                .build(),
+                                .build()
+                                .toParamMap(),
                             "customer_id" to customerId,
                             "descriptor" to "Airwallex - T-shirt",
                             "metadata" to mapOf("id" to 1)
@@ -190,7 +192,8 @@ class PaymentCartActivity : AppCompatActivity() {
     /**
      * PaymentIntent must come from merchant's server
      */
-    private fun handlePaymentIntentResponse(paymentIntent: PaymentIntent) {
+    private fun handlePaymentIntentResponse(responseBody: ResponseBody) {
+        val paymentIntent = PaymentIntentParser().parse(JSONObject(responseBody.string()))
         airwallexStarter.presentPaymentFlow(
             paymentIntent,
             clientSecretProvider,

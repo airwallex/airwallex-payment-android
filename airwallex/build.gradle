@@ -46,7 +46,6 @@ configurations {
 
 ext {
     okhttpVersion = "4.7.2"
-    gsonVersion = '2.8.6'
 }
 
 android.buildTypes.each { type ->
@@ -60,7 +59,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
 
     api "com.squareup.okhttp3:okhttp:$okhttpVersion"
-    api "com.google.code.gson:gson:${gsonVersion}"
     // cardinal
     api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.3-2'
     // fingerprinting
