@@ -1,5 +1,6 @@
 package com.airwallex.android.model.parser
 
+import com.airwallex.android.model.AirwallexJsonUtils
 import com.airwallex.android.model.PaymentMethodResponse
 import org.json.JSONArray
 import org.json.JSONObject
@@ -17,7 +18,7 @@ class PaymentMethodResponseParser : ModelJsonParser<PaymentMethodResponse> {
             }
 
         return PaymentMethodResponse(
-            hasMore = json.optBoolean(FIELD_HAS_MORE),
+            hasMore = AirwallexJsonUtils.optBoolean(json, FIELD_HAS_MORE),
             items = items
         )
     }

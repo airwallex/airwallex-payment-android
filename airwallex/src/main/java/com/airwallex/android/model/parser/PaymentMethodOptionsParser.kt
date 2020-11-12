@@ -1,5 +1,6 @@
 package com.airwallex.android.model.parser
 
+import com.airwallex.android.model.AirwallexJsonUtils
 import com.airwallex.android.model.PaymentMethodOptions
 import org.json.JSONObject
 
@@ -25,7 +26,7 @@ class PaymentMethodOptionsParser : ModelJsonParser<PaymentMethodOptions> {
                 ThreeDSecureParser().parse(it)
             }
             return PaymentMethodOptions.CardOptions(
-                autoCapture = json.optBoolean(FIELD_AUTO_CAPTURE),
+                autoCapture = AirwallexJsonUtils.optBoolean(json, FIELD_AUTO_CAPTURE),
                 threeDSecure = threeDSecure
             )
         }

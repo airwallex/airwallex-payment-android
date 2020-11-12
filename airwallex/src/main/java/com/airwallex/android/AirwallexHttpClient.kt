@@ -1,106 +1,48 @@
 package com.airwallex.android
 
+import com.airwallex.android.exception.APIConnectionException
+import com.airwallex.android.exception.InvalidRequestException
 import java.io.IOException
-import java.nio.charset.StandardCharsets
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okio.BufferedSink
+import java.net.URL
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.HttpsURLConnection
 import kotlin.jvm.Throws
 
-/**
- * Http client that wraps OkHttpClient
- */
-internal class AirwallexHttpClient(val builder: OkHttpClient.Builder) {
+internal class AirwallexHttpClient {
 
-    private val okHttpClient: OkHttpClient = builder.build()
+    @Throws(IOException::class, InvalidRequestException::class)
+    fun execute(request: AirwallexHttpRequest): AirwallexHttpResponse {
+        Logger.info(request.toString())
+        AirwallexHttpConnection((URL(request.url).openConnection() as HttpsURLConnection).apply {
+            connectTimeout = CONNECT_TIMEOUT
+            readTimeout = READ_TIMEOUT
+            useCaches = false
+            requestMethod = request.method.code
 
-    companion object {
-        fun createClient(builder: OkHttpClient.Builder): AirwallexHttpClient {
-            return AirwallexHttpClient(builder)
-        }
-    }
+            request.headers.forEach { (key, value) ->
+                setRequestProperty(key, value)
+            }
 
-    /**
-     * Execute the Airwallex API by okhttp
-     *
-     * @return a [AirwallexHttpResponse] from Airwallex server
-     */
-    @Throws(IOException::class)
-    fun execute(parseRequest: AirwallexHttpRequest): AirwallexHttpResponse {
-        val request = getRequest(parseRequest)
-        val call = okHttpClient.newCall(request)
-        val response = call.execute()
-        return getResponse(response)
-    }
-
-    private fun getResponse(response: Response): AirwallexHttpResponse {
-        val headers: MutableMap<String, String?> = mutableMapOf()
-        for (name in response.headers.names()) {
-            headers[name] = response.header(name)
-        }
-        return AirwallexHttpResponse.Builder()
-            .setStatusCode(response.code)
-            .setIsSuccessful(response.isSuccessful)
-            .setBody(response.body)
-            .setMessage(response.message)
-            .setHeaders(headers)
-            .build()
-    }
-
-    private fun getRequest(request: AirwallexHttpRequest): Request {
-        val builder = Request.Builder()
-        val method: AirwallexHttpRequest.Method? = request.method
-        // Set method
-        if (method == AirwallexHttpRequest.Method.GET) {
-            builder.get()
-        }
-
-        // Set url
-        builder.url(request.url)
-
-        // Set Header
-        val okHttpHeadersBuilder = Headers.Builder()
-        for ((key, value) in request.allHeaders) {
-            okHttpHeadersBuilder.add(key, value)
-        }
-
-        // OkHttp automatically add gzip header so we do not need to deal with it
-        builder.headers(okHttpHeadersBuilder.build())
-
-        // Set Body
-        val parseBody: AirwallexHttpRequest.AirwallexHttpRequestBody? = request.body
-        if (parseBody != null) {
-            val okHttpRequestBody = AirwallexOkHttpRequestBody(parseBody)
-            when (method) {
-                AirwallexHttpRequest.Method.GET -> {
-                    // No body for get request
-                }
-                AirwallexHttpRequest.Method.PUT -> builder.put(okHttpRequestBody)
-                AirwallexHttpRequest.Method.POST -> builder.post(okHttpRequestBody)
-                AirwallexHttpRequest.Method.DELETE -> builder.delete(okHttpRequestBody)
+            if (AirwallexHttpRequest.Method.POST == request.method) {
+                doOutput = true
+                setRequestProperty(HEADER_CONTENT_TYPE, request.contentType)
+                outputStream.use { output -> request.writeBody(output) }
+            }
+        }).use {
+            try {
+                val response = it.response
+                Logger.info(response.toString())
+                return response
+            } catch (e: IOException) {
+                throw APIConnectionException.create(e, request.url)
             }
         }
-
-        return builder.build()
     }
 
-    private class AirwallexOkHttpRequestBody internal constructor(val body: AirwallexHttpRequest.AirwallexHttpRequestBody) :
-        RequestBody() {
-        private val content: ByteArray = body.content.toByteArray(StandardCharsets.UTF_8)
-        private val offset = 0
-        private val byteCount = content.size
+    private companion object {
+        private val CONNECT_TIMEOUT = TimeUnit.SECONDS.toMillis(30).toInt()
+        private val READ_TIMEOUT = TimeUnit.SECONDS.toMillis(80).toInt()
 
-        override fun contentLength(): Long {
-            return byteCount.toLong()
-        }
-
-        override fun contentType(): MediaType? {
-            return body.contentType.toMediaTypeOrNull()
-        }
-
-        @Throws(IOException::class)
-        override fun writeTo(sink: BufferedSink) {
-            sink.write(content, offset, byteCount)
-        }
+        private const val HEADER_CONTENT_TYPE = "Content-Type"
     }
 }

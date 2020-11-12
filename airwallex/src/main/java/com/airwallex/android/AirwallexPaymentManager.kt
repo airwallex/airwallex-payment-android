@@ -8,19 +8,18 @@ import com.airwallex.android.exception.APIException
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.*
-import com.airwallex.android.model.parser.*
 import com.airwallex.android.view.SelectCurrencyActivityLaunch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import org.json.JSONObject
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 /**
  * The implementation of [PaymentManager] to request the payment.
  */
 internal class AirwallexPaymentManager(
-    private val repository: ApiRepository,
-    private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    private val repository: ApiRepository
 ) : PaymentManager {
 
     /**
@@ -33,7 +32,17 @@ internal class AirwallexPaymentManager(
         options: ApiRepository.Options,
         listener: PaymentListener<PaymentIntent>
     ) {
-        executeApiOperation(ApiOperationType.CONFIRM_CONTINUE_PAYMENT_INTENT, options, listener)
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.continuePaymentIntent(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
     }
 
     /**
@@ -46,7 +55,17 @@ internal class AirwallexPaymentManager(
         options: ApiRepository.Options,
         listener: PaymentListener<PaymentIntent>
     ) {
-        executeApiOperation(ApiOperationType.CONFIRM_PAYMENT_INTENT, options, listener)
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.confirmPaymentIntent(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
     }
 
     /**
@@ -59,7 +78,17 @@ internal class AirwallexPaymentManager(
         options: ApiRepository.Options,
         listener: PaymentListener<PaymentIntent>
     ) {
-        executeApiOperation(ApiOperationType.RETRIEVE_PAYMENT_INTENT, options, listener)
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.retrievePaymentIntent(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
     }
 
     /**
@@ -72,7 +101,17 @@ internal class AirwallexPaymentManager(
         options: ApiRepository.Options,
         listener: PaymentListener<PaymentMethod>
     ) {
-        executeApiOperation(ApiOperationType.CREATE_PAYMENT_METHOD, options, listener)
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.createPaymentMethod(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
     }
 
     /**
@@ -85,14 +124,42 @@ internal class AirwallexPaymentManager(
         options: ApiRepository.Options,
         listener: PaymentListener<PaymentMethodResponse>
     ) {
-        executeApiOperation(ApiOperationType.RETRIEVE_PAYMENT_METHOD, options, listener)
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.retrievePaymentMethods(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
     }
 
     /**
      * Retrieve paRes with id
      */
     override fun retrieveParesWithId(options: ApiRepository.Options, listener: PaymentListener<ThreeDSecurePares>) {
-        executeApiOperation(ApiOperationType.RETRIEVE_PA_RES_ID, options, listener)
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.retrieveParesWithId(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
+    }
+
+    private fun handleError(throwable: Throwable): AirwallexException {
+        return if (throwable is AirwallexException) {
+            throwable
+        } else {
+            APIException(AirwallexError(message = throwable.message))
+        }
     }
 
     /**
@@ -294,102 +361,5 @@ internal class AirwallexPaymentManager(
             paymentIntentId = paymentIntentId,
             request = request
         )
-    }
-
-    private fun <T> executeApiOperation(
-        apiOperationType: ApiOperationType,
-        options: ApiRepository.Options,
-        listener: PaymentListener<T>
-    ) {
-        AirwallexApiOperation(
-            options,
-            repository,
-            workScope,
-            apiOperationType,
-            object : ApiExecutor.ApiResponseListener<AirwallexHttpResponse> {
-                override fun onSuccess(response: AirwallexHttpResponse) {
-                    if (response.isSuccessful && response.body != null) {
-                        val result = when (apiOperationType) {
-                            ApiOperationType.CONFIRM_CONTINUE_PAYMENT_INTENT,
-                            ApiOperationType.CONFIRM_PAYMENT_INTENT,
-                            ApiOperationType.RETRIEVE_PAYMENT_INTENT -> {
-                                PaymentIntentParser().parse(JSONObject(response.body.string()))
-                            }
-                            ApiOperationType.CREATE_PAYMENT_METHOD -> {
-                                PaymentMethodParser().parse(JSONObject(response.body.string()))
-                            }
-                            ApiOperationType.RETRIEVE_PAYMENT_METHOD -> {
-                                PaymentMethodResponseParser().parse(JSONObject(response.body.string()))
-                            }
-                            ApiOperationType.RETRIEVE_PA_RES_ID -> {
-                                ThreeDSecureParesParser().parse(JSONObject(response.body.string()))
-                            }
-                        }
-                        @Suppress("UNCHECKED_CAST")
-                        listener.onSuccess(result as T)
-                    } else {
-                        val error = if (response.body != null) {
-                            AirwallexErrorParser().parse(JSONObject(response.body.string()))
-                                ?: AirwallexError(message = "Unknown error")
-                        } else {
-                            AirwallexError(message = "Unknown error")
-                        }
-                        listener.onFailed(
-                            APIException(
-                                error = error,
-                                traceId = response.allHeaders["x-awx-traceid"],
-                                statusCode = response.statusCode,
-                                message = response.message
-                            )
-                        )
-                    }
-                }
-
-                override fun onError(e: AirwallexException) {
-                    listener.onFailed(e)
-                }
-            }
-        ).execute()
-    }
-
-    private class AirwallexApiOperation(
-        private val options: ApiRepository.Options,
-        private val repository: ApiRepository,
-        workScope: CoroutineScope,
-        private val apiOperationType: ApiOperationType,
-        listener: ApiResponseListener<AirwallexHttpResponse>
-    ) : ApiExecutor<AirwallexHttpResponse>(workScope, listener) {
-
-        override suspend fun getResponse(): AirwallexHttpResponse? {
-            return when (apiOperationType) {
-                ApiOperationType.CONFIRM_CONTINUE_PAYMENT_INTENT -> {
-                    repository.continuePaymentIntent(options)
-                }
-                ApiOperationType.CONFIRM_PAYMENT_INTENT -> {
-                    repository.confirmPaymentIntent(options)
-                }
-                ApiOperationType.RETRIEVE_PAYMENT_INTENT -> {
-                    repository.retrievePaymentIntent(options)
-                }
-                ApiOperationType.CREATE_PAYMENT_METHOD -> {
-                    repository.createPaymentMethod(options)
-                }
-                ApiOperationType.RETRIEVE_PAYMENT_METHOD -> {
-                    repository.retrievePaymentMethods(options)
-                }
-                ApiOperationType.RETRIEVE_PA_RES_ID -> {
-                    repository.retrieveParesWithId(options)
-                }
-            }
-        }
-    }
-
-    internal enum class ApiOperationType {
-        CONFIRM_CONTINUE_PAYMENT_INTENT,
-        CONFIRM_PAYMENT_INTENT,
-        RETRIEVE_PAYMENT_INTENT,
-        CREATE_PAYMENT_METHOD,
-        RETRIEVE_PAYMENT_METHOD,
-        RETRIEVE_PA_RES_ID
     }
 }

@@ -1,57 +1,47 @@
 package com.airwallex.android
 
-import java.util.*
-import okhttp3.ResponseBody
+import com.airwallex.android.exception.APIException
+import com.airwallex.android.model.AirwallexError
+import org.json.JSONException
+import org.json.JSONObject
+import kotlin.jvm.Throws
 
-/**
- * The http response received from Airwallex server.
- */
-internal class AirwallexHttpResponse private constructor(
-    val isSuccessful: Boolean,
-    val statusCode: Int,
-    val body: ResponseBody?,
-    val message: String?,
-    val allHeaders: MutableMap<String, String?>
+internal data class AirwallexHttpResponse internal constructor(
+    internal val code: Int,
+    internal val body: String?,
+    internal val headers: Map<String, List<String>> = emptyMap()
 ) {
+    internal val isError: Boolean = code < 200 || code >= 300
 
-    /**
-     * Builder of [AirwallexHttpResponse]
-     */
-    class Builder {
-        private var isSuccessful = false
-        private var statusCode = 0
-        private var body: ResponseBody? = null
-        private var message: String? = null
-        private var headers: MutableMap<String, String?> = mutableMapOf()
+    internal val traceId: String? = TRACE_ID_HEADER.getHeaderValue()?.firstOrNull()
 
-        fun setIsSuccessful(isSuccessful: Boolean): Builder = apply {
-            this.isSuccessful = isSuccessful
+    internal val responseJson: JSONObject
+        @Throws(APIException::class)
+        get() {
+            return body?.let {
+                try {
+                    JSONObject(it)
+                } catch (e: JSONException) {
+                    throw APIException(
+                        message = "Exception while parsing response body. Status code: $code Trace-Id: $traceId",
+                        e = e,
+                        error = AirwallexError(message = e.localizedMessage)
+                    )
+                }
+            } ?: JSONObject()
         }
 
-        fun setStatusCode(statusCode: Int): Builder = apply {
-            this.statusCode = statusCode
-        }
+    private fun String.getHeaderValue(): List<String>? {
+        return headers.entries.firstOrNull {
+            it.key.equals(this, ignoreCase = true)
+        }?.value
+    }
 
-        fun setBody(body: ResponseBody?): Builder = apply {
-            this.body = body
-        }
+    override fun toString(): String {
+        return "Status Code: $code, Trace-Id: $traceId"
+    }
 
-        fun setMessage(message: String?): Builder = apply {
-            this.message = message
-        }
-
-        fun setHeaders(headers: MutableMap<String, String?>): Builder = apply {
-            this.headers = HashMap(headers)
-        }
-
-        fun build(): AirwallexHttpResponse {
-            return AirwallexHttpResponse(
-                isSuccessful = isSuccessful,
-                statusCode = statusCode,
-                body = body,
-                message = message,
-                allHeaders = headers
-            )
-        }
+    private companion object {
+        private const val TRACE_ID_HEADER = "x-awx-traceid"
     }
 }

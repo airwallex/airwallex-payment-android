@@ -6,7 +6,7 @@ import org.json.JSONObject
 
 class AirwallexErrorParser : ModelJsonParser<AirwallexError> {
 
-    override fun parse(json: JSONObject): AirwallexError? {
+    override fun parse(json: JSONObject): AirwallexError {
         return AirwallexError(
             code = AirwallexJsonUtils.optString(json, FIELD_CODE),
             source = AirwallexJsonUtils.optString(json, FIELD_SOURCE),

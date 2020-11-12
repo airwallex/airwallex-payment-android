@@ -2,10 +2,9 @@ package com.airwallex.android.exception
 
 import com.airwallex.android.model.AirwallexError
 
-/**
- * An exception that represents an internal problem with Airwallex's servers.
- */
-class APIException(
+class InvalidRequestException(
+    val errorCode: String? = null,
+    val param: String? = null,
     error: AirwallexError,
     traceId: String? = null,
     statusCode: Int = 0,

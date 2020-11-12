@@ -1,18 +1,21 @@
 package com.airwallex.android
 
-import com.airwallex.android.model.PaymentIntentConfirmRequest
-import com.airwallex.android.model.PaymentIntentContinueRequest
-import com.airwallex.android.model.PaymentMethodCreateRequest
-import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.exception.*
+import com.airwallex.android.model.*
+import com.airwallex.android.model.parser.*
 import kotlinx.android.parcel.Parcelize
-import org.json.JSONObject
+import java.io.IOException
+import java.net.HttpURLConnection
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.jvm.Throws
 
 /**
  * The implementation of [ApiRepository] to request the Airwallex API.
  */
 internal class AirwallexApiRepository : ApiRepository {
+
+    private val httpClient: AirwallexHttpClient = AirwallexHttpClient()
 
     @Parcelize
     internal class RetrievePaymentIntentOptions internal constructor(
@@ -77,132 +80,153 @@ internal class AirwallexApiRepository : ApiRepository {
      * Continue a PaymentIntent using the provided [ApiRepository.Options]
      *
      * @param options contains the confirm params
-     * @return a [AirwallexHttpResponse] from Airwallex server
+     * @return a [PaymentIntent] from Airwallex server
      */
-    override fun continuePaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val paramsJson = JSONObject((options as ContinuePaymentIntentOptions).request.toParamMap())
-        val request = AirwallexHttpRequest.Builder(
-            continuePaymentIntentUrl(
-                AirwallexPlugins.environment.baseUrl(),
-                options.paymentIntentId
-            ),
-            AirwallexHttpRequest.Method.POST
+    override fun continuePaymentIntent(options: ApiRepository.Options): PaymentIntent? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createPost(
+                url = continuePaymentIntentUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as ContinuePaymentIntentOptions).paymentIntentId
+                ),
+                options = options,
+                params = options.request.toParamMap()),
+            PaymentIntentParser()
         )
-            .setBody(
-                AirwallexHttpRequest.AirwallexHttpRequestBody(
-                    CONTENT_TYPE,
-                    paramsJson.toString()
-                )
-            )
-            .addClientSecretHeader(options.clientSecret)
-            .build()
-        return AirwallexPlugins.httpClient.execute(request)
     }
 
     /**
      * Confirm a PaymentIntent using the provided [ApiRepository.Options]
      *
      * @param options contains the confirm params
-     * @return a [AirwallexHttpResponse] from Airwallex server
+     * @return a [PaymentIntent] from Airwallex server
      */
-    override fun confirmPaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val paramsJson = JSONObject((options as ConfirmPaymentIntentOptions).request.toParamMap())
-        val request = AirwallexHttpRequest.Builder(
-            confirmPaymentIntentUrl(
-                AirwallexPlugins.environment.baseUrl(),
-                options.paymentIntentId
-            ),
-            AirwallexHttpRequest.Method.POST
+    override fun confirmPaymentIntent(options: ApiRepository.Options): PaymentIntent? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createPost(
+                url = confirmPaymentIntentUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as ConfirmPaymentIntentOptions).paymentIntentId
+                ),
+                options = options,
+                params = options.request.toParamMap()),
+            PaymentIntentParser()
         )
-            .setBody(
-                AirwallexHttpRequest.AirwallexHttpRequestBody(
-                    CONTENT_TYPE,
-                    paramsJson.toString()
-                )
-            )
-            .addClientSecretHeader(options.clientSecret)
-            .build()
-        return AirwallexPlugins.httpClient.execute(request)
     }
 
     /**
      * Retrieve a PaymentIntent using the provided [ApiRepository.Options]
      *
      * @param options contains the retrieve params
-     * @return a [AirwallexHttpResponse] from Airwallex server
+     * @return a [PaymentIntent] from Airwallex server
      */
-    override fun retrievePaymentIntent(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val request = AirwallexHttpRequest.Builder(
-            retrievePaymentIntentUrl(
-                AirwallexPlugins.environment.baseUrl(),
-                (options as RetrievePaymentIntentOptions).paymentIntentId
-            ),
-            AirwallexHttpRequest.Method.GET
+    override fun retrievePaymentIntent(options: ApiRepository.Options): PaymentIntent? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createGet(
+                url = retrievePaymentIntentUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as RetrievePaymentIntentOptions).paymentIntentId
+                ),
+                options = options,
+                params = null),
+            PaymentIntentParser()
         )
-            .addClientSecretHeader(options.clientSecret)
-            .build()
-        return AirwallexPlugins.httpClient.execute(request)
     }
 
-    override fun createPaymentMethod(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val paramsJson = JSONObject((options as CreatePaymentMethodOptions).request.toParamMap())
-        val request = AirwallexHttpRequest.Builder(
-            createPaymentMethodUrl(
-                AirwallexPlugins.environment.baseUrl()
-            ),
-            AirwallexHttpRequest.Method.POST
+    override fun createPaymentMethod(options: ApiRepository.Options): PaymentMethod? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createPost(
+                url = createPaymentMethodUrl(
+                    AirwallexPlugins.environment.baseUrl()
+                ),
+                options = options,
+                params = (options as CreatePaymentMethodOptions).request.toParamMap()),
+            PaymentMethodParser()
         )
-            .setBody(
-                AirwallexHttpRequest.AirwallexHttpRequestBody(
-                    CONTENT_TYPE,
-                    paramsJson.toString()
-                )
-            )
-            .addClientSecretHeader(options.clientSecret)
-            .build()
-        return AirwallexPlugins.httpClient.execute(request)
     }
 
-    override fun retrievePaymentMethods(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val request = AirwallexHttpRequest.Builder(
-            retrievePaymentMethodsUrl(
-                AirwallexPlugins.environment.baseUrl(),
-                (options as RetrievePaymentMethodOptions).customerId,
-                options.pageNum,
-                options.pageSize,
-                options.fromCreatedAt,
-                options.toCreatedAt,
-                options.type
-            ),
-            AirwallexHttpRequest.Method.GET
+    override fun retrievePaymentMethods(options: ApiRepository.Options): PaymentMethodResponse? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createGet(
+                url = retrievePaymentMethodsUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as RetrievePaymentMethodOptions).customerId,
+                    options.pageNum,
+                    options.pageSize,
+                    options.fromCreatedAt,
+                    options.toCreatedAt,
+                    options.type
+                ),
+                options = options,
+                params = null),
+            PaymentMethodResponseParser()
         )
-            .addClientSecretHeader(options.clientSecret)
-            .build()
-        return AirwallexPlugins.httpClient.execute(request)
     }
 
-    override fun retrieveParesWithId(options: ApiRepository.Options): AirwallexHttpResponse? {
-        val request = AirwallexHttpRequest.Builder(
-            paResRetrieveUrl((options as RetrievePaResOptions).paResId),
-            AirwallexHttpRequest.Method.GET
+    override fun retrieveParesWithId(options: ApiRepository.Options): ThreeDSecurePares? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createGet(
+                url = paResRetrieveUrl((options as RetrievePaResOptions).paResId),
+                options = options,
+                params = null),
+            ThreeDSecureParesParser()
         )
-            .build()
-        return AirwallexPlugins.httpClient.execute(request)
     }
 
-    /**
-     * Extension to add `clientSecret`
-     */
-    private fun AirwallexHttpRequest.Builder.addClientSecretHeader(
-        clientSecret: String
-    ): AirwallexHttpRequest.Builder {
-        return addHeader(CLIENT_SECRET_HEADER, clientSecret)
+    @Throws(
+        AuthenticationException::class,
+        InvalidRequestException::class,
+        PermissionException::class,
+        APIException::class,
+        APIConnectionException::class
+    )
+    private fun <ModelType : AirwallexModel> executeApiRequest(
+        request: AirwallexHttpRequest,
+        jsonParser: ModelJsonParser<ModelType>
+    ): ModelType? {
+        val response = runCatching {
+            httpClient.execute(request)
+        }.getOrElse {
+            throw when (it) {
+                is IOException -> APIConnectionException.create(it, request.url)
+                else -> it
+            }
+        }
+
+        if (response.isError) {
+            handleApiError(response)
+        }
+
+        return jsonParser.parse(response.responseJson)
+    }
+
+    @Throws(
+        AuthenticationException::class,
+        InvalidRequestException::class,
+        PermissionException::class,
+        APIException::class
+    )
+    private fun handleApiError(response: AirwallexHttpResponse) {
+        val traceId = response.traceId
+        val responseCode = response.code
+        val error = AirwallexErrorParser().parse(response.responseJson)
+        when (responseCode) {
+            HttpURLConnection.HTTP_BAD_REQUEST, HttpURLConnection.HTTP_NOT_FOUND -> {
+                throw InvalidRequestException(error = error, traceId = traceId)
+            }
+            HttpURLConnection.HTTP_UNAUTHORIZED -> {
+                throw AuthenticationException(error = error, traceId = traceId)
+            }
+            HttpURLConnection.HTTP_FORBIDDEN -> {
+                throw PermissionException(error = error, traceId = traceId)
+            }
+            else -> {
+                throw APIException(error = error, traceId, responseCode)
+            }
+        }
     }
 
     companion object {
-        private const val CLIENT_SECRET_HEADER = "client-secret"
-        private const val CONTENT_TYPE = "application/json; charset=utf-8"
-
         /**
          * paRes base url
          */
@@ -297,6 +321,7 @@ internal class AirwallexApiRepository : ApiRepository {
             )
         }
 
+        @Suppress("DEPRECATION")
         private fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
             return "$baseUrl/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
         }

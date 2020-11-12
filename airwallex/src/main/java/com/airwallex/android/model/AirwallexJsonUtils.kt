@@ -2,6 +2,7 @@ package com.airwallex.android.model
 
 import androidx.annotation.Size
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 
 internal object AirwallexJsonUtils {
@@ -24,18 +25,6 @@ internal object AirwallexJsonUtils {
             null
         } else {
             jsonObject.optDouble(fieldName)
-        }
-    }
-
-    @JvmSynthetic
-    internal fun optLong(
-        jsonObject: JSONObject,
-        @Size(min = 1) fieldName: String
-    ): Long? {
-        return if (!jsonObject.has(fieldName)) {
-            null
-        } else {
-            jsonObject.optLong(fieldName)
         }
     }
 
@@ -62,7 +51,6 @@ internal object AirwallexJsonUtils {
         if (jsonObject == null) {
             return null
         }
-
         val keys = jsonObject.names() ?: JSONArray()
         return (0 until keys.length())
             .map { idx -> keys.getString(idx) }
@@ -90,7 +78,6 @@ internal object AirwallexJsonUtils {
         if (jsonArray == null) {
             return null
         }
-
         return (0 until jsonArray.length())
             .map { idx -> jsonArray.get(idx) }
             .mapNotNull { ob ->
@@ -113,5 +100,55 @@ internal object AirwallexJsonUtils {
         return possibleNull?.let { s ->
             s.takeUnless { NULL == it || it.isEmpty() }
         }
+    }
+
+    internal fun mapToJsonObject(mapObject: Map<String, *>?): JSONObject? {
+        if (mapObject == null) {
+            return null
+        }
+        val jsonObject = JSONObject()
+        for (key in mapObject.keys) {
+            val value = mapObject[key] ?: continue
+
+            try {
+                if (value is Map<*, *>) {
+                    try {
+                        val mapValue = value as Map<String, Any>
+                        jsonObject.put(key, mapToJsonObject(mapValue))
+                    } catch (classCastException: ClassCastException) {
+                    }
+                } else if (value is List<*>) {
+                    jsonObject.put(key, listToJsonArray(value as List<Any>))
+                } else if (value is Number || value is Boolean) {
+                    jsonObject.put(key, value)
+                } else {
+                    jsonObject.put(key, value.toString())
+                }
+            } catch (jsonException: JSONException) {
+            }
+        }
+        return jsonObject
+    }
+
+    private fun listToJsonArray(values: List<*>?): JSONArray? {
+        if (values == null) {
+            return null
+        }
+
+        val jsonArray = JSONArray()
+        values.forEach { objVal ->
+            val jsonVal =
+                if (objVal is Map<*, *>) {
+                    mapToJsonObject(objVal as Map<String, Any>)
+                } else if (objVal is List<*>) {
+                    listToJsonArray(objVal)
+                } else if (objVal is Number || objVal is Boolean) {
+                    objVal
+                } else {
+                    objVal.toString()
+                }
+            jsonArray.put(jsonVal)
+        }
+        return jsonArray
     }
 }
