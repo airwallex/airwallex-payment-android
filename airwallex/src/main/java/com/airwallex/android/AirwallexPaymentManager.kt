@@ -1,6 +1,6 @@
 package com.airwallex.android
 
-import androidx.fragment.app.FragmentActivity
+import android.app.Activity
 import com.airwallex.android.Airwallex.PaymentListener
 import com.airwallex.android.PaymentManager.Companion.buildCardPaymentIntentOptions
 import com.airwallex.android.PaymentManager.Companion.buildWeChatPaymentIntentOptions
@@ -21,6 +21,8 @@ import java.util.*
 internal class AirwallexPaymentManager(
     private val repository: ApiRepository
 ) : PaymentManager {
+
+    override var threeDSecureCallback: ThreeDSecureCallback? = null
 
     /**
      * Continue the [PaymentIntent] using [ApiRepository.Options], used for 3DS
@@ -166,7 +168,7 @@ internal class AirwallexPaymentManager(
      * Confirm [PaymentIntent] with device id
      */
     override fun confirmPaymentIntentWithDeviceId(
-        activity: FragmentActivity,
+        activity: Activity,
         deviceId: String,
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
@@ -215,7 +217,7 @@ internal class AirwallexPaymentManager(
         confirmPaymentIntent(options, paymentListener)
     }
 
-    override fun continueDccPaymentIntent(activity: FragmentActivity, options: ApiRepository.Options, listener: PaymentListener<PaymentIntent>) {
+    override fun continueDccPaymentIntent(activity: Activity, options: ApiRepository.Options, listener: PaymentListener<PaymentIntent>) {
         val paymentListener = object : PaymentListener<PaymentIntent> {
             override fun onFailed(exception: AirwallexException) {
                 // Payment failed
@@ -233,7 +235,7 @@ internal class AirwallexPaymentManager(
     /**
      * Handle 3DS flow - Check jwt if existed
      */
-    private fun handleNextAction(activity: FragmentActivity, response: PaymentIntent, clientSecret: String, device: Device?, listener: PaymentListener<PaymentIntent>) {
+    private fun handleNextAction(activity: Activity, response: PaymentIntent, clientSecret: String, device: Device?, listener: PaymentListener<PaymentIntent>) {
         val serverJwt = response.nextAction?.data?.get("jwt") as? String
 
         if (serverJwt != null) {
@@ -261,7 +263,7 @@ internal class AirwallexPaymentManager(
      * @param device device info
      * @param listener a [PaymentListener] to receive the response or error
      */
-    override fun handle3DSFlow(activity: FragmentActivity, paymentIntentId: String, clientSecret: String, serverJwt: String, device: Device?, listener: PaymentListener<PaymentIntent>) {
+    override fun handle3DSFlow(activity: Activity, paymentIntentId: String, clientSecret: String, serverJwt: String, device: Device?, listener: PaymentListener<PaymentIntent>) {
         Logger.debug("Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK")
         val applicationContext = activity.applicationContext
         ThreeDSecure.performCardinalInitialize(
@@ -298,11 +300,7 @@ internal class AirwallexPaymentManager(
                                 ?: "2.0"
 
                             Logger.debug("Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input. After user input, will receive `processorTransactionId`.")
-                            val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, version)
-                            val fragment = ThreeDSecureFragment.newInstance(activity.supportFragmentManager)
-                            ThreeDSecure.performCardinalAuthentication(fragment, threeDSecureLookup)
-
-                            fragment.threeDSecureCallback = object : ThreeDSecureCallback {
+                            threeDSecureCallback = object : ThreeDSecureCallback {
                                 override fun onSuccess(paResId: String, threeDSecureType: ThreeDSecure.ThreeDSecureType) {
                                     fun continuePaymentIntent(transactionId: String) {
                                         Logger.debug("Step 4: 3DS Validate with `processorTransactionId`")
@@ -336,6 +334,9 @@ internal class AirwallexPaymentManager(
                                     listener.onFailed(ThreeDSException(exception))
                                 }
                             }
+
+                            val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, version)
+                            ThreeDSecure.performCardinalAuthentication(activity, threeDSecureLookup)
                         }
                     }
                 )
