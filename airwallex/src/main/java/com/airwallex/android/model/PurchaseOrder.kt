@@ -1,7 +1,7 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
+import com.airwallex.android.model.parser.PurchaseOrderParser
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -13,21 +13,41 @@ data class PurchaseOrder internal constructor(
     /**
      * Product list
      */
-    @SerializedName("products")
     val products: List<PhysicalProduct>? = null,
 
     /**
      * Shipping address
      */
-    @SerializedName("shipping")
     val shipping: Shipping? = null,
 
     /**
      * Industry category of the order
      */
-    @SerializedName("type")
     val type: String? = null
-) : AirwallexModel, Parcelable {
+) : AirwallexModel, AirwallexRequestModel, Parcelable {
+
+    override fun toParamMap(): Map<String, Any> {
+        return mapOf<String, Any>()
+            .plus(
+                products?.let {
+                    mapOf(PurchaseOrderParser.FIELD_PRODUCTS to
+                        it.map { product ->
+                            product.toParamMap()
+                        })
+                }.orEmpty()
+            )
+            .plus(
+                shipping?.let {
+                    mapOf(PurchaseOrderParser.FIELD_SHIPPING to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                type?.let {
+                    mapOf(PurchaseOrderParser.FIELD_TYPE to it)
+                }.orEmpty()
+            )
+    }
+
     class Builder : ObjectBuilder<PurchaseOrder> {
         private var products: List<PhysicalProduct>? = null
         private var shipping: Shipping? = null

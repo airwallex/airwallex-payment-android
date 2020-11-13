@@ -25,12 +25,10 @@ class PaymentIntentTest {
             customerId = "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
             descriptor = "Airwallex - T-shirt",
             status = PaymentIntentStatus.REQUIRES_PAYMENT_METHOD,
-            capturedAmount = BigDecimal.valueOf(0),
+            capturedAmount = BigDecimal.valueOf(0.1),
             availablePaymentMethodTypes = arrayListOf(PaymentMethodType.CARD, PaymentMethodType.WECHAT),
             customerPaymentMethods = arrayListOf(
                 PaymentMethod.Builder()
-                    .setId("")
-                    .setRequestId("")
                     .setType(PaymentMethodType.CARD)
                     .setCard(
                         PaymentMethod.Card.Builder()
@@ -112,11 +110,11 @@ class PaymentIntentTest {
                     .setCreatedAt(Date(1585537440000))
                     .setUpdatedAt(Date(1585537440000))
                     .build(),
-                capturedAmount = BigDecimal.valueOf(0),
-                refundedAmount = BigDecimal.valueOf(0),
+                capturedAmount = BigDecimal.valueOf(0.1),
+                refundedAmount = BigDecimal.valueOf(0.1),
                 createdAt = Date(1585537440000),
                 updatedAt = Date(1585537440000),
-                amount = BigDecimal.valueOf(0),
+                amount = BigDecimal.valueOf(0.1),
                 authenticationData = PaymentIntent.PaymentAttemptAuthData(null, null, null, null)
             )
         )

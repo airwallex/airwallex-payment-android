@@ -1,7 +1,6 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -10,9 +9,13 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 enum class PaymentMethodType(val value: String) : Parcelable {
 
-    @SerializedName("card")
     CARD("card"),
 
-    @SerializedName("wechatpay")
-    WECHAT("wechatpay")
+    WECHAT("wechatpay");
+
+    internal companion object {
+        internal fun fromValue(value: String?): PaymentMethodType? {
+            return values().firstOrNull { it.value == value }
+        }
+    }
 }

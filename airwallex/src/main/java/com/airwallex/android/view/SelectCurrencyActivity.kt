@@ -2,13 +2,12 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.RequiresApi
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ContinuePaymentIntentParams
 import com.airwallex.android.R
+import com.airwallex.android.ThreeDSecure
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
@@ -23,7 +22,6 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
     private val airwallex: Airwallex by lazy { Airwallex() }
     private val args: SelectCurrencyActivityLaunch.Args by lazy { SelectCurrencyActivityLaunch.Args.getExtra(intent) }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -95,5 +93,24 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
 
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_close
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE && data != null) {
+            airwallex.threeDSecureCallback?.let {
+                try {
+                    ThreeDSecure.onActivityResult(data, it)
+                } catch (e: Exception) {
+                    it.onFailed(AirwallexError(message = e.localizedMessage))
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        airwallex.threeDSecureCallback = null
+        super.onDestroy()
     }
 }

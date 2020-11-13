@@ -1,7 +1,6 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -13,24 +12,57 @@ data class PaymentIntentContinueRequest internal constructor(
     /**
      * Unique request ID specified by the merchant
      */
-    @SerializedName("request_id")
-    val requestId: String,
+    val requestId: String? = null,
 
     /**
      * 3D Secure Type
      */
-    @SerializedName("type")
-    val type: PaymentIntentContinueType,
+    val type: PaymentIntentContinueType? = null,
 
     /**
      * 3D Secure
      */
-    @SerializedName("three_ds")
-    val threeDSecure: PaymentMethodOptions.CardOptions.ThreeDSecure? = null,
+    val threeDSecure: ThreeDSecure? = null,
 
-    @SerializedName("device")
     val device: Device? = null,
 
-    @SerializedName("use_dcc")
     val useDcc: Boolean? = null
-) : AirwallexModel, Parcelable
+) : AirwallexRequestModel, Parcelable {
+
+    private companion object {
+        private const val FIELD_REQUEST_ID = "request_id"
+        private const val FIELD_TYPE = "type"
+        private const val FIELD_THREE_DS = "three_ds"
+        private const val FIELD_DEVICE = "device"
+        private const val FIELD_USE_DCC = "use_dcc"
+    }
+
+    override fun toParamMap(): Map<String, Any> {
+        return mapOf<String, Any>()
+            .plus(
+                requestId?.let {
+                    mapOf(FIELD_REQUEST_ID to it)
+                }.orEmpty()
+            )
+            .plus(
+                type?.let {
+                    mapOf(FIELD_TYPE to it.value)
+                }.orEmpty()
+            )
+            .plus(
+                threeDSecure?.let {
+                    mapOf(FIELD_THREE_DS to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                device?.let {
+                    mapOf(FIELD_DEVICE to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                useDcc?.let {
+                    mapOf(FIELD_USE_DCC to it)
+                }.orEmpty()
+            )
+    }
+}

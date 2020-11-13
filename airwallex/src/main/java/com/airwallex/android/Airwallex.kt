@@ -1,8 +1,8 @@
 package com.airwallex.android
 
+import android.app.Activity
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import java.util.*
@@ -13,16 +13,25 @@ import java.util.*
 class Airwallex internal constructor(
     private val paymentManager: PaymentManager
 ) {
+
+    internal var threeDSecureCallback: ThreeDSecureCallback?
+        get() {
+            return paymentManager.threeDSecureCallback
+        }
+        set(value) {
+            paymentManager.threeDSecureCallback = value
+        }
+
     private val securityConnector: SecurityConnector by lazy {
         AirwallexSecurityConnector()
     }
 
     /**
-     * Generic interface for an Airwallex API operation callback that either returns a [Response], or an [Exception]
+     * Generic interface for an Airwallex API operation callback that either returns a [T], or an [Exception]
      */
-    interface PaymentListener<Response> {
+    interface PaymentListener<T> {
         fun onFailed(exception: AirwallexException)
-        fun onSuccess(response: Response)
+        fun onSuccess(response: T)
     }
 
     /**
@@ -63,7 +72,7 @@ class Airwallex internal constructor(
      */
     @UiThread
     fun confirmPaymentIntent(
-        activity: FragmentActivity,
+        activity: Activity,
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
@@ -84,7 +93,7 @@ class Airwallex internal constructor(
      */
     @UiThread
     internal fun continuePaymentIntent(
-        activity: FragmentActivity,
+        activity: Activity,
         params: ContinuePaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {

@@ -1,7 +1,6 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -17,19 +16,16 @@ data class AirwallexError internal constructor(
     /**
      * Error code
      */
-    @SerializedName("code")
     val code: String? = null,
 
     /**
      * Name of the request parameter that caused the error
      */
-    @SerializedName("source")
     val source: String? = null,
 
     /**
      * Description of the error
      */
-    @SerializedName("message")
     val message: String? = null
 ) : AirwallexModel, Parcelable {
 

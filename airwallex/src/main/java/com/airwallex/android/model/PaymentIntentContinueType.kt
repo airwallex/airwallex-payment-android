@@ -1,18 +1,20 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-enum class PaymentIntentContinueType : Parcelable {
+enum class PaymentIntentContinueType(val value: String) : Parcelable {
 
-    @SerializedName("3dsCheckEnrollment")
-    ENROLLMENT,
+    ENROLLMENT("3dsCheckEnrollment"),
 
-    @SerializedName("3dsValidate")
-    VALIDATE,
+    VALIDATE("3dsValidate"),
 
-    @SerializedName("dcc")
-    DCC
+    DCC("dcc");
+
+    internal companion object {
+        internal fun fromValue(value: String?): PaymentIntentContinueType? {
+            return values().firstOrNull { it.value == value }
+        }
+    }
 }

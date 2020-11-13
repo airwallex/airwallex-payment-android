@@ -1,4 +1,4 @@
-package com.airwallex.android
+package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Intent
@@ -7,22 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
-import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.*
 import com.airwallex.android.exception.WebViewConnectionException
-import com.airwallex.android.model.ThreeDSecureLookup
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
+import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_threeds.*
 import java.net.URLEncoder
 
-internal class ThreeDSecureActivity : AppCompatActivity() {
+internal class ThreeDSecureActivity : AirwallexActivity() {
 
-    private val threeDSecureLookup: ThreeDSecureLookup by lazy {
-        requireNotNull(intent.getParcelableExtra<ThreeDSecureLookup>(EXTRA_THREE_D_SECURE_LOOKUP))
-    }
+    private val args: ThreeDSecureActivityLaunch.Args by lazy { ThreeDSecureActivityLaunch.Args.getExtra(intent) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val threeDSecureLookup = args.threeDSecureLookup
 
         if (threeDSecureLookup.version.startsWith("1.")) {
             // 3DS 1.0
@@ -31,12 +31,6 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
                 return
             }
 
-            setContentView(R.layout.activity_threeds)
-
-            setSupportActionBar(toolbar)
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.airwallex_ic_back)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowTitleEnabled(false)
             toolbar.setNavigationOnClickListener { onBackPressed() }
 
             pbLoading.max = 100
@@ -87,10 +81,9 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (threeDSecureLookup.version.startsWith("1.")) {
+        if (args.threeDSecureLookup.version.startsWith("1.")) {
             finishThreeDSecure1(null, true, null)
         }
-        super.onBackPressed()
     }
 
     override fun onDestroy() {
@@ -103,6 +96,17 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             webView.removeAllViews()
             webView.destroy()
         }
+    }
+
+    override val layoutResource: Int
+        get() = R.layout.activity_threeds
+
+    override fun onActionSave() {
+        // Ignore
+    }
+
+    override fun homeAsUpIndicatorResId(): Int {
+        return R.drawable.airwallex_ic_back
     }
 
     // 3DS 2.0
@@ -141,12 +145,9 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val THREE_D_SECURE = 12345
-
         const val EXTRA_THREE_D_SECURE_TYPE = "EXTRA_THREE_D_SECURE_LOOKUP"
 
         // 2.0
-        const val EXTRA_THREE_D_SECURE_LOOKUP = "EXTRA_THREE_D_SECURE_LOOKUP"
         const val EXTRA_THREE_D_JWT = "EXTRA_THREE_D_JWT"
         const val EXTRA_VALIDATION_RESPONSE = "EXTRA_VALIDATION_RESPONSE"
 
