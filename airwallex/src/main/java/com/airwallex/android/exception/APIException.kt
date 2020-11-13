@@ -8,7 +8,7 @@ import com.airwallex.android.model.AirwallexError
 class APIException(
     error: AirwallexError,
     traceId: String? = null,
-    statusCode: Int,
-    message: String?,
+    statusCode: Int = 0,
+    message: String? = null,
     e: Throwable? = null
 ) : AirwallexException(error, traceId, statusCode, message, e)

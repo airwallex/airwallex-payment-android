@@ -1,9 +1,10 @@
 package com.airwallex.android.model
 
-import com.airwallex.android.AirwallexPlugins
+import com.airwallex.android.model.parser.PhysicalProductParser
+import org.json.JSONObject
 
 internal object ProductFixtures {
-    val PRODUCT: PhysicalProduct = AirwallexPlugins.gson.fromJson(
+    val PRODUCT: PhysicalProduct = PhysicalProductParser().parse(JSONObject(
         """
         {
             "code": "123",
@@ -15,7 +16,6 @@ internal object ProductFixtures {
             "url": "www.aircross.com",
             "quantity": 1
         }
-        """.trimIndent(),
-        PhysicalProduct::class.java
-    )
+        """.trimIndent()
+    ))
 }

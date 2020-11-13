@@ -1,9 +1,10 @@
 package com.airwallex.android.model
 
-import com.airwallex.android.AirwallexPlugins
+import com.airwallex.android.model.parser.PaymentMethodParser
+import org.json.JSONObject
 
 internal object PaymentMethodFixtures {
-    val PAYMENT_METHOD: PaymentMethod = AirwallexPlugins.gson.fromJson(
+    val PAYMENT_METHOD: PaymentMethod = PaymentMethodParser().parse(JSONObject(
         """
         {
             "id": "",
@@ -29,7 +30,6 @@ internal object PaymentMethodFixtures {
                 }
             }
         }
-        """.trimIndent(),
-        PaymentMethod::class.java
-    )
+        """.trimIndent()
+    ))
 }

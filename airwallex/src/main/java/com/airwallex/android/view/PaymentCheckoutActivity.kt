@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.airwallex.android.Airwallex
 import com.airwallex.android.CurrencyUtils.formatPrice
 import com.airwallex.android.R
+import com.airwallex.android.ThreeDSecure
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
@@ -71,6 +72,14 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                     finishWithPaymentIntent(error = AirwallexError(message = "Please select your currency."))
                 }
             }
+        } else if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE && data != null) {
+            airwallex.threeDSecureCallback?.let {
+                try {
+                    ThreeDSecure.onActivityResult(data, it)
+                } catch (e: Exception) {
+                    it.onFailed(AirwallexError(message = e.localizedMessage))
+                }
+            }
         }
     }
 
@@ -105,5 +114,10 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     private fun updateButtonStatus() {
         rlPayNow.isEnabled = paymentMethodItemView.isValid
+    }
+
+    override fun onDestroy() {
+        airwallex.threeDSecureCallback = null
+        super.onDestroy()
     }
 }

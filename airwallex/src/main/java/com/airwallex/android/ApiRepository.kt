@@ -3,6 +3,8 @@ package com.airwallex.android
 import android.os.Parcelable
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodResponse
+import com.airwallex.android.model.ThreeDSecurePares
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -18,52 +20,52 @@ internal interface ApiRepository {
     /**
      * Continue the [PaymentIntent] using [ApiRepository.Options], used for 3DS
      *
-     * @return a [AirwallexHttpResponse] from Airwallex server
+     * @return a [PaymentIntent] from Airwallex server
      */
     fun continuePaymentIntent(
         options: Options
-    ): AirwallexHttpResponse?
+    ): PaymentIntent?
 
     /**
      * Confirm the [PaymentIntent] using [ApiRepository.Options]
      *
-     * @return a [AirwallexHttpResponse] from Airwallex server
+     * @return a [PaymentIntent] from Airwallex server
      */
     fun confirmPaymentIntent(
         options: Options
-    ): AirwallexHttpResponse?
+    ): PaymentIntent?
 
     /**
      * Retrieve the [PaymentIntent] using [ApiRepository.Options]
      *
-     * @return a [AirwallexHttpResponse] from Airwallex server
+     * @return a [PaymentIntent] from Airwallex server
      */
     fun retrievePaymentIntent(
         options: Options
-    ): AirwallexHttpResponse?
+    ): PaymentIntent?
 
     /**
      * Create a Airwallex [PaymentMethod] using [ApiRepository.Options]
      *
-     * @return a [AirwallexHttpResponse] from Airwallex server
+     * @return a [PaymentMethod] from Airwallex server
      */
     fun createPaymentMethod(
         options: Options
-    ): AirwallexHttpResponse?
+    ): PaymentMethod?
 
     /**
      * Retrieve all of the customer's [PaymentMethod] using [ApiRepository.Options]
      *
-     * @return a [AirwallexHttpResponse] from Airwallex server
+     * @return a [PaymentMethodResponse] from Airwallex server
      */
     fun retrievePaymentMethods(
         options: Options
-    ): AirwallexHttpResponse?
+    ): PaymentMethodResponse?
 
     /**
      * Retrieve paRes with id
      */
     fun retrieveParesWithId(
         options: Options
-    ): AirwallexHttpResponse?
+    ): ThreeDSecurePares?
 }

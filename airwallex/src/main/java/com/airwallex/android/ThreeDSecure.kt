@@ -1,9 +1,12 @@
 package com.airwallex.android
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.ThreeDSecureLookup
+import com.airwallex.android.view.ThreeDSecureActivity
+import com.airwallex.android.view.ThreeDSecureActivityLaunch
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType
@@ -83,17 +86,16 @@ internal object ThreeDSecure {
     /**
      * Perform the 3DS authentication.
      *
-     * @param fragment [ThreeDSecureFragment] will be responsible for handling callbacks to it's listeners
+     * @param activity [Activity] will be responsible for handling callbacks to it's listeners
      * @param threeDSecureLookup Contains information about the 3DS verification request that will be invoked in this method.
      */
     internal fun performCardinalAuthentication(
-        fragment: ThreeDSecureFragment,
+        activity: Activity,
         threeDSecureLookup: ThreeDSecureLookup
     ) {
-        val intent = Intent(fragment.activity, ThreeDSecureActivity::class.java)
-        intent.putExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup)
-
-        fragment.startActivityForResult(intent, ThreeDSecureActivity.THREE_D_SECURE)
+        ThreeDSecureActivityLaunch(activity).startForResult(
+            ThreeDSecureActivityLaunch.Args(threeDSecureLookup)
+        )
     }
 
     internal fun onActivityResult(

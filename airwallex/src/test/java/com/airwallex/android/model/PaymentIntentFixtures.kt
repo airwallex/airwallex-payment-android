@@ -1,9 +1,10 @@
 package com.airwallex.android.model
 
-import com.airwallex.android.AirwallexPlugins
+import com.airwallex.android.model.parser.PaymentIntentParser
+import org.json.JSONObject
 
 internal object PaymentIntentFixtures {
-    val PAYMENT_INTENT: PaymentIntent = AirwallexPlugins.gson.fromJson(
+    val PAYMENT_INTENT: PaymentIntent = PaymentIntentParser().parse(JSONObject(
         """
         {
             "id": "int_6hJ72Y7zich939UCz8j6BLkonH",
@@ -17,7 +18,7 @@ internal object PaymentIntentFixtures {
             "customer_id": "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
             "descriptor": "Airwallex - T-shirt",
             "status": "REQUIRES_PAYMENT_METHOD",
-            "captured_amount": 0,
+            "captured_amount": 0.1,
             "available_payment_method_types": [
                 "card",
                 "wechatpay"
@@ -94,15 +95,14 @@ internal object PaymentIntentFixtures {
                     "updated_at": "2020-03-30T03:04:00+0000"
                 },
                 "status": "SUCCEEDED",
-                "captured_amount": 0,
-                "refunded_amount": 0,
+                "captured_amount": 0.1,
+                "refunded_amount": 0.1,
                 "created_at": "2020-03-30T03:04:00+0000",
                 "updated_at": "2020-03-30T03:04:00+0000",
-                "amount": 0,
+                "amount": 0.1,
                 "authentication_data": {}
             }
         }
-        """.trimIndent(),
-        PaymentIntent::class.java
-    )
+        """.trimIndent()
+    ))
 }

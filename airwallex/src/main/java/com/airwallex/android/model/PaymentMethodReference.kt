@@ -1,7 +1,7 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
+import com.airwallex.android.model.parser.PaymentMethodReferenceParser
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -13,12 +13,18 @@ data class PaymentMethodReference internal constructor(
     /**
      * The id of the [PaymentMethod]
      */
-    @SerializedName("id")
     val id: String,
 
     /**
      * The cvc of the card
      */
-    @SerializedName("cvc")
     val cvc: String
-) : AirwallexModel, Parcelable
+) : AirwallexModel, AirwallexRequestModel, Parcelable {
+
+    override fun toParamMap(): Map<String, Any> {
+        return mapOf<String, Any>(
+            PaymentMethodReferenceParser.FIELD_ID to id,
+            PaymentMethodReferenceParser.FIELD_CVC to cvc
+        )
+    }
+}

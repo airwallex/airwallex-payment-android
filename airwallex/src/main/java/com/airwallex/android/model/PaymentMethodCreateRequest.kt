@@ -1,7 +1,6 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 
@@ -13,40 +12,71 @@ data class PaymentMethodCreateRequest internal constructor(
     /**
      * Unique request ID specified by the merchant
      */
-    @SerializedName("request_id")
     val requestId: String? = null,
 
     /**
      * The customer this payment method belongs to. If set, this payment method is automatically added to the customer as one of the available payment methods.
      */
-    @SerializedName("customer_id")
     val customerId: String? = null,
 
     /**
      * Type of the payment method. Must be [PaymentMethodType.CARD]
      */
-    @SerializedName("type")
     val type: PaymentMethodType? = null,
 
     /**
      * Card information. This must be provided if [type] is set to [PaymentMethodType.CARD]
      */
-    @SerializedName("card")
-    val card: PaymentMethod.Card?,
+    val card: PaymentMethod.Card? = null,
 
     /**
      * Billing information.
      */
-    @SerializedName("billing")
-    val billing: Billing?,
+    val billing: Billing? = null,
 
     /**
      * A set of key-value pairs that you can attach to this payment method
      */
-    @SerializedName("metadata")
-    val metadata: @RawValue Map<String, Any>?
+    val metadata: @RawValue Map<String, Any?>? = null
 
-) : AirwallexModel, Parcelable {
+) : AirwallexRequestModel, Parcelable {
+
+    private companion object {
+        private const val FIELD_REQUEST_ID = "request_id"
+        private const val FIELD_CUSTOMER_ID = "customer_id"
+        private const val FIELD_TYPE = "type"
+        private const val FIELD_CARD = "card"
+        private const val FIELD_BILLING = "billing"
+    }
+
+    override fun toParamMap(): Map<String, Any> {
+        return mapOf<String, Any>()
+            .plus(
+                requestId?.let {
+                    mapOf(FIELD_REQUEST_ID to it)
+                }.orEmpty()
+            )
+            .plus(
+                customerId?.let {
+                    mapOf(FIELD_CUSTOMER_ID to it)
+                }.orEmpty()
+            )
+            .plus(
+                type?.let {
+                    mapOf(FIELD_TYPE to it.value)
+                }.orEmpty()
+            )
+            .plus(
+                card?.let {
+                    mapOf(FIELD_CARD to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                billing?.let {
+                    mapOf(FIELD_BILLING to it.toParamMap())
+                }.orEmpty()
+            )
+    }
 
     class Builder : ObjectBuilder<PaymentMethodCreateRequest> {
         private var requestId: String? = null
@@ -54,7 +84,7 @@ data class PaymentMethodCreateRequest internal constructor(
         private var type: PaymentMethodType? = null
         private var card: PaymentMethod.Card? = null
         private var billing: Billing? = null
-        private var metadata: @RawValue Map<String, Any>? = null
+        private var metadata: @RawValue Map<String, Any?>? = null
 
         fun setRequestId(requestId: String?): Builder = apply {
             this.requestId = requestId
@@ -76,7 +106,7 @@ data class PaymentMethodCreateRequest internal constructor(
             this.billing = billing
         }
 
-        fun setMetadata(metadata: @RawValue Map<String, Any>?): Builder = apply {
+        fun setMetadata(metadata: @RawValue Map<String, Any?>?): Builder = apply {
             this.metadata = metadata
         }
 

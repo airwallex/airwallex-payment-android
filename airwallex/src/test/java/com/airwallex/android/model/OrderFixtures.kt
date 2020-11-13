@@ -1,9 +1,10 @@
 package com.airwallex.android.model
 
-import com.airwallex.android.AirwallexPlugins
+import com.airwallex.android.model.parser.PurchaseOrderParser
+import org.json.JSONObject
 
 internal object OrderFixtures {
-    val ORDER: PurchaseOrder = AirwallexPlugins.gson.fromJson(
+    val ORDER: PurchaseOrder = PurchaseOrderParser().parse(JSONObject(
         """
         {
             "products": [
@@ -42,7 +43,6 @@ internal object OrderFixtures {
             },
             "type": "physical_goods"
         }
-        """.trimIndent(),
-        PurchaseOrder::class.java
-    )
+        """.trimIndent()
+    ))
 }

@@ -1,7 +1,7 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
+import com.airwallex.android.model.parser.PhysicalProductParser
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -13,52 +13,88 @@ data class PhysicalProduct internal constructor(
     /**
      * Type of product, such as electronic, handling, physical, service, or shipping
      */
-    @SerializedName("type")
-    val type: String?,
+    val type: String? = null,
 
     /**
      * Merchant’s product identifier code
      */
-    @SerializedName("code")
-    val code: String?,
+    val code: String? = null,
 
     /**
      * Name of the product
      */
-    @SerializedName("name")
-    val name: String?,
+    val name: String? = null,
 
     /**
      * Product stock keeping unit
      */
-    @SerializedName("sku")
-    val sku: String?,
+    val sku: String? = null,
 
     /**
      * Product quantity
      */
-    @SerializedName("quantity")
-    val quantity: Int?,
+    val quantity: Int? = null,
 
     /**
      * Product unit price
      */
-    @SerializedName("unit_price")
-    val unitPrice: Double?,
+    val unitPrice: Double? = null,
 
     /**
      * Product description
      */
-    @SerializedName("desc")
-    val desc: String?,
+    val desc: String? = null,
 
     /**
      * Product url
      */
-    @SerializedName("url")
-    val url: String?
+    val url: String? = null
 
-) : AirwallexModel, Parcelable {
+) : AirwallexModel, AirwallexRequestModel, Parcelable {
+
+    override fun toParamMap(): Map<String, Any> {
+        return mapOf<String, Any>()
+            .plus(
+                type?.let {
+                    mapOf(PhysicalProductParser.FIELD_TYPE to it)
+                }.orEmpty()
+            )
+            .plus(
+                code?.let {
+                    mapOf(PhysicalProductParser.FIELD_CODE to it)
+                }.orEmpty()
+            )
+            .plus(
+                name?.let {
+                    mapOf(PhysicalProductParser.FIELD_NAME to it)
+                }.orEmpty()
+            )
+            .plus(
+                sku?.let {
+                    mapOf(PhysicalProductParser.FIELD_SKU to it)
+                }.orEmpty()
+            )
+            .plus(
+                quantity?.let {
+                    mapOf(PhysicalProductParser.FIELD_QUANTITY to it)
+                }.orEmpty()
+            )
+            .plus(
+                unitPrice?.let {
+                    mapOf(PhysicalProductParser.FIELD_UNIT_PRICE to it)
+                }.orEmpty()
+            )
+            .plus(
+                desc?.let {
+                    mapOf(PhysicalProductParser.FIELD_DESC to it)
+                }.orEmpty()
+            )
+            .plus(
+                url?.let {
+                    mapOf(PhysicalProductParser.FIELD_URL to it)
+                }.orEmpty()
+            )
+    }
 
     class Builder : ObjectBuilder<PhysicalProduct> {
         private var code: String? = null
