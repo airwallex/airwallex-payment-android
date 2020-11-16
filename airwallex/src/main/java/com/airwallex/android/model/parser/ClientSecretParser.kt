@@ -5,7 +5,7 @@ import org.json.JSONObject
 
 class ClientSecretParser : ModelJsonParser<ClientSecret> {
 
-    override fun parse(json: JSONObject): ClientSecret? {
+    override fun parse(json: JSONObject): ClientSecret {
         return ClientSecret(
             value = json.optString(FIELD_SECRET),
             expiredTime = requireNotNull(dateFormat.parse(json.optString(FIELD_EXPIRED_TIME)))

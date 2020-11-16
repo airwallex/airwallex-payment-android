@@ -1,6 +1,8 @@
 package com.airwallex.android
 
 import com.airwallex.android.model.ClientSecret
+import com.airwallex.android.model.parser.ClientSecretParser
+import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -31,10 +33,15 @@ internal class ClientSecretRepository(
         return TimeUnit.MILLISECONDS.toSeconds(clientSecret.expiredTime.time) < nowPlusBuffer
     }
 
-    override fun onClientSecretUpdate(customerId: String, clientSecret: ClientSecret) {
-        this.clientSecret = clientSecret
-        this.customerId = customerId
-        clientSecretRetrieveListener?.onClientSecretRetrieve(clientSecret)
+    override fun onClientSecretUpdate(customerId: String, responseJson: String) {
+        try {
+            val clientSecret = ClientSecretParser().parse(JSONObject(responseJson))
+            this.clientSecret = clientSecret
+            this.customerId = customerId
+            clientSecretRetrieveListener?.onClientSecretRetrieve(clientSecret)
+        } catch (e: Exception) {
+            clientSecretRetrieveListener?.onClientSecretError("Exception while parsing responseJson to ClientSecret. ")
+        }
     }
 
     override fun onClientSecretUpdateFailure(message: String) {

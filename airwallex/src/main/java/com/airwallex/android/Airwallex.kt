@@ -1,10 +1,13 @@
 package com.airwallex.android
 
 import android.app.Activity
+import android.content.Intent
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
+import com.airwallex.android.view.SelectCurrencyActivityLaunch
+import com.airwallex.android.view.ThreeDSecureActivityLaunch
 import java.util.*
 
 /**
@@ -13,15 +16,6 @@ import java.util.*
 class Airwallex internal constructor(
     private val paymentManager: PaymentManager
 ) {
-
-    internal var threeDSecureCallback: ThreeDSecureCallback?
-        get() {
-            return paymentManager.threeDSecureCallback
-        }
-        set(value) {
-            paymentManager.threeDSecureCallback = value
-        }
-
     private val securityConnector: SecurityConnector by lazy {
         AirwallexSecurityConnector()
     }
@@ -60,7 +54,14 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
-        confirmPaymentIntent(fragment.requireActivity(), params, listener)
+        // Retrieve Device Fingerprinting
+        securityConnector.retrieveSecurityToken(params.paymentIntentId, fragment.requireActivity().applicationContext,
+            object : AirwallexSecurityConnector.SecurityTokenListener {
+                override fun onResponse(deviceId: String) {
+                    // Confirm PaymentIntent with Device Fingerprinting
+                    paymentManager.confirmPaymentIntent(fragment.requireActivity(), deviceId, params, SelectCurrencyActivityLaunch(fragment.requireActivity()), ThreeDSecureActivityLaunch((fragment.requireActivity())), listener)
+                }
+            })
     }
 
     /**
@@ -76,10 +77,12 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
+        // Retrieve Device Fingerprinting
         securityConnector.retrieveSecurityToken(params.paymentIntentId, activity.applicationContext,
             object : AirwallexSecurityConnector.SecurityTokenListener {
                 override fun onResponse(deviceId: String) {
-                    paymentManager.confirmPaymentIntentWithDeviceId(activity, deviceId, params, listener)
+                    // Confirm PaymentIntent with Device Fingerprinting
+                    paymentManager.confirmPaymentIntent(activity, deviceId, params, SelectCurrencyActivityLaunch(activity), ThreeDSecureActivityLaunch(activity), listener)
                 }
             })
     }
@@ -94,6 +97,7 @@ class Airwallex internal constructor(
     @UiThread
     internal fun continuePaymentIntent(
         activity: Activity,
+        threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         params: ContinuePaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
@@ -106,6 +110,7 @@ class Airwallex internal constructor(
         )
         paymentManager.continueDccPaymentIntent(
             activity,
+            threeDSecureActivityLaunch,
             AirwallexApiRepository.ContinuePaymentIntentOptions(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId,
@@ -185,6 +190,14 @@ class Airwallex internal constructor(
             ),
             listener
         )
+    }
+
+    fun onPaymentIntentResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == SelectCurrencyActivityLaunch.REQUEST_CODE) {
+            SelectCurrencyManager.handleOnActivityResult(data, resultCode)
+        } else if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE) {
+            ThreeDSecureManager.handleOnActivityResult(data)
+        }
     }
 
     companion object {

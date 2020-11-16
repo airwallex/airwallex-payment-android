@@ -3,19 +3,26 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.Device
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.view.SelectCurrencyActivityLaunch.Args
 import kotlinx.android.parcel.Parcelize
 
-internal class SelectCurrencyActivityLaunch constructor(
-    activity: Activity
-) : AirwallexActivityLaunch<SelectCurrencyActivity, Args>(
-    activity,
-    SelectCurrencyActivity::class.java,
-    REQUEST_CODE
-) {
+internal class SelectCurrencyActivityLaunch : AirwallexActivityLaunch<SelectCurrencyActivity, Args> {
+
+    constructor(activity: Activity) : super(
+        activity,
+        SelectCurrencyActivity::class.java,
+        REQUEST_CODE
+    )
+
+    constructor(fragment: Fragment) : super(
+        fragment,
+        SelectCurrencyActivity::class.java,
+        REQUEST_CODE
+    )
 
     @Parcelize
     internal data class Args internal constructor(

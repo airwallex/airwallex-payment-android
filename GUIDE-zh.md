@@ -37,7 +37,7 @@ Airwallex Android SDK 支持Android 19及以上版本
 
 ```groovy
     dependencies {
-        implementation 'com.airwallex:airwallex-core:2.0.1'
+        implementation 'com.airwallex:airwallex-core:2.0.2'
     }
 ```
 
@@ -118,6 +118,14 @@ repositories {
     }
 ```
 
+```kotlin
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        
+        // 如果是卡支付，必须在onActivityResult中调用这个方法
+        airwallex.onPaymentIntentResult(requestCode, resultCode, data)
+    }
+```
 3. 成功confirm `PaymentIntent`之后
 - 微信支付
 Airwallex将返回微信支付所需的所有参数。你需要调用 [微信支付](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml)来完成最终的支付。

@@ -7,7 +7,7 @@ import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodReference
 import com.airwallex.android.model.PaymentMethodType
 
-internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
+abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
 
     abstract val airwallex: Airwallex
 

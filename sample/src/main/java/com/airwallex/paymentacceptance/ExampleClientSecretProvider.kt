@@ -3,12 +3,10 @@ package com.airwallex.paymentacceptance
 import android.text.TextUtils
 import com.airwallex.android.ClientSecretProvider
 import com.airwallex.android.ClientSecretUpdateListener
-import com.airwallex.android.model.parser.ClientSecretParser
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import org.json.JSONObject
-import java.io.IOException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ExampleClientSecretProvider : ClientSecretProvider {
 
@@ -20,27 +18,19 @@ class ExampleClientSecretProvider : ClientSecretProvider {
             return ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
         }
 
-    private val compositeDisposable = CompositeDisposable()
-
     override fun createClientSecret(customerId: String, updateListener: ClientSecretUpdateListener) {
-        compositeDisposable.add(
-            api.createClientSecret(customerId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ responseBody ->
-                    try {
-                        val clientSecret = ClientSecretParser().parse(JSONObject(responseBody.string()))
-                        if (clientSecret == null) {
-                            updateListener.onClientSecretUpdateFailure("")
-                            return@subscribe
-                        }
-                        updateListener.onClientSecretUpdate(customerId, clientSecret)
-                    } catch (e: IOException) {
-                        updateListener.onClientSecretUpdateFailure(e.message ?: "")
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = kotlin.runCatching { api.createClientSecret(customerId) }
+            withContext(Dispatchers.Main) {
+                response.fold(
+                    onSuccess = {
+                        updateListener.onClientSecretUpdate(customerId, it.string())
+                    },
+                    onFailure = {
+                        updateListener.onClientSecretUpdateFailure(it.message ?: "")
                     }
-                }, {
-                    updateListener.onClientSecretUpdateFailure(it.message ?: "")
-                })
-        )
+                )
+            }
+        }
     }
 }

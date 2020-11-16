@@ -5,6 +5,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
+@Suppress("UNCHECKED_CAST")
 internal object AirwallexJsonUtils {
     private const val NULL = "null"
 

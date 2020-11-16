@@ -37,7 +37,7 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 
 ```groovy
     dependencies {
-        implementation 'com.airwallex:airwallex-core:2.0.1'
+        implementation 'com.airwallex:airwallex-core:2.0.2'
     }
 ```
 
@@ -115,6 +115,15 @@ After completing all the steps on the server, the client will get a `PaymentInte
             customerId = paymentIntent.customerId
         )
         airwallex.confirmPaymentIntent(this, params, listener)
+    }
+```
+
+```kotlin
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        
+        // If it is a card payment, you must call this method on `onActivityResult`
+        airwallex.onPaymentIntentResult(requestCode, resultCode, data)
     }
 ```
 

@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_add_card.*
 /**
  * Activity to add new payment method
  */
-internal class AddPaymentMethodActivity : AirwallexActivity() {
+class AddPaymentMethodActivity : AirwallexActivity() {
 
     private val keyboardController: KeyboardController by lazy {
         KeyboardController(this)

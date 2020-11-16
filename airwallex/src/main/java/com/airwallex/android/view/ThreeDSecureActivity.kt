@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_threeds.*
 import java.net.URLEncoder
 
-internal class ThreeDSecureActivity : AirwallexActivity() {
+class ThreeDSecureActivity : AirwallexActivity() {
 
     private val args: ThreeDSecureActivityLaunch.Args by lazy { ThreeDSecureActivityLaunch.Args.getExtra(intent) }
 
@@ -118,7 +118,7 @@ internal class ThreeDSecureActivity : AirwallexActivity() {
         val bundle = Bundle()
         bundle.putSerializable(
             EXTRA_THREE_D_SECURE_TYPE,
-            ThreeDSecure.ThreeDSecureType.THREE_D_SECURE_2
+            ThreeDSecureManager.ThreeDSecureType.THREE_D_SECURE_2
         )
         result.putExtras(bundle)
 
@@ -136,7 +136,7 @@ internal class ThreeDSecureActivity : AirwallexActivity() {
         val bundle = Bundle()
         bundle.putSerializable(
             EXTRA_THREE_D_SECURE_TYPE,
-            ThreeDSecure.ThreeDSecureType.THREE_D_SECURE_1
+            ThreeDSecureManager.ThreeDSecureType.THREE_D_SECURE_1
         )
         result.putExtras(bundle)
 

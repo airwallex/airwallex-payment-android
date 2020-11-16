@@ -16,12 +16,32 @@ import com.airwallex.android.view.*
  *  that should be passed back to this session.
  */
 class AirwallexStarter constructor(
-    private val activity: Activity
+    private val activity: Activity,
+    private val addPaymentMethodActivityLaunch: AddPaymentMethodActivityLaunch,
+    private val paymentShippingActivityLaunch: PaymentShippingActivityLaunch,
+    private val paymentMethodsActivityLaunch: PaymentMethodsActivityLaunch,
+    private val paymentCheckoutActivityLaunch: PaymentCheckoutActivityLaunch
 ) {
 
     constructor(
         fragment: Fragment
-    ) : this(fragment.requireActivity())
+    ) : this(
+        fragment.requireActivity(),
+        AddPaymentMethodActivityLaunch(fragment),
+        PaymentShippingActivityLaunch(fragment),
+        PaymentMethodsActivityLaunch(fragment),
+        PaymentCheckoutActivityLaunch(fragment)
+    )
+
+    constructor(
+        activity: Activity
+    ) : this(
+        activity,
+        AddPaymentMethodActivityLaunch(activity),
+        PaymentShippingActivityLaunch(activity),
+        PaymentMethodsActivityLaunch(activity),
+        PaymentCheckoutActivityLaunch(activity)
+    )
 
     interface PaymentListener {
         fun onCancelled()
@@ -66,12 +86,11 @@ class AirwallexStarter constructor(
         shippingFlowListener: PaymentShippingListener
     ) {
         this.shippingFlowListener = shippingFlowListener
-        PaymentShippingActivityLaunch(activity)
-            .startForResult(
-                PaymentShippingActivityLaunch.Args.Builder()
-                    .setShipping(shipping)
-                    .build()
-            )
+        paymentShippingActivityLaunch.startForResult(
+            PaymentShippingActivityLaunch.Args.Builder()
+                .setShipping(shipping)
+                .build()
+        )
     }
 
     /**
@@ -90,14 +109,13 @@ class AirwallexStarter constructor(
         })
         this.addPaymentMethodFlowListener = addPaymentMethodFlowListener
         ClientSecretRepository.init(clientSecretProvider)
-        AddPaymentMethodActivityLaunch(activity)
-            .startForResult(
-                AddPaymentMethodActivityLaunch.Args.Builder()
-                    .setShipping(paymentIntent.order.shipping)
-                    .setCustomerId(requireNotNull(paymentIntent.customerId))
-                    .setClientSecret(requireNotNull(paymentIntent.clientSecret))
-                    .build()
-            )
+        addPaymentMethodActivityLaunch.startForResult(
+            AddPaymentMethodActivityLaunch.Args.Builder()
+                .setShipping(paymentIntent.order.shipping)
+                .setCustomerId(requireNotNull(paymentIntent.customerId))
+                .setClientSecret(requireNotNull(paymentIntent.clientSecret))
+                .build()
+        )
     }
 
     /**
@@ -116,13 +134,12 @@ class AirwallexStarter constructor(
         })
         this.selectPaymentMethodFlowListener = selectPaymentMethodFlowListener
         ClientSecretRepository.init(clientSecretProvider)
-        PaymentMethodsActivityLaunch(activity)
-            .startForResult(
-                PaymentMethodsActivityLaunch.Args.Builder()
-                    .setPaymentIntent(paymentIntent)
-                    .setIncludeCheckoutFlow(false)
-                    .build()
-            )
+        paymentMethodsActivityLaunch.startForResult(
+            PaymentMethodsActivityLaunch.Args.Builder()
+                .setPaymentIntent(paymentIntent)
+                .setIncludeCheckoutFlow(false)
+                .build()
+        )
     }
 
     /**
@@ -140,14 +157,13 @@ class AirwallexStarter constructor(
         paymentDetailListener: PaymentIntentListener
     ) {
         this.paymentDetailListener = paymentDetailListener
-        PaymentCheckoutActivityLaunch(activity)
-            .startForResult(
-                PaymentCheckoutActivityLaunch.Args.Builder()
-                    .setPaymentIntent(paymentIntent)
-                    .setPaymentMethod(paymentMethod)
-                    .setCvc(cvc)
-                    .build()
-            )
+        paymentCheckoutActivityLaunch.startForResult(
+            PaymentCheckoutActivityLaunch.Args.Builder()
+                .setPaymentIntent(paymentIntent)
+                .setPaymentMethod(paymentMethod)
+                .setCvc(cvc)
+                .build()
+        )
     }
 
     /**
@@ -166,13 +182,12 @@ class AirwallexStarter constructor(
         })
         this.paymentFlowListener = paymentFlowListener
         ClientSecretRepository.init(clientSecretProvider)
-        PaymentMethodsActivityLaunch(activity)
-            .startForResult(
-                PaymentMethodsActivityLaunch.Args.Builder()
-                    .setPaymentIntent(paymentIntent)
-                    .setIncludeCheckoutFlow(true)
-                    .build()
-            )
+        paymentMethodsActivityLaunch.startForResult(
+            PaymentMethodsActivityLaunch.Args.Builder()
+                .setPaymentIntent(paymentIntent)
+                .setIncludeCheckoutFlow(true)
+                .build()
+        )
     }
 
     /**
@@ -185,6 +200,12 @@ class AirwallexStarter constructor(
     ): Boolean {
         if (!VALID_REQUEST_CODES.contains(requestCode)) {
             return false
+        }
+
+        // 3DS Validate
+        if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE && data != null) {
+            ThreeDSecureManager.handleOnActivityResult(data)
+            return true
         }
 
         when (resultCode) {
@@ -273,7 +294,8 @@ class AirwallexStarter constructor(
             PaymentMethodsActivityLaunch.REQUEST_CODE,
             PaymentShippingActivityLaunch.REQUEST_CODE,
             AddPaymentMethodActivityLaunch.REQUEST_CODE,
-            PaymentCheckoutActivityLaunch.REQUEST_CODE
+            PaymentCheckoutActivityLaunch.REQUEST_CODE,
+            ThreeDSecureActivityLaunch.REQUEST_CODE
         )
     }
 }

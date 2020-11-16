@@ -3,20 +3,30 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.airwallex.android.model.*
+import androidx.fragment.app.Fragment
+import com.airwallex.android.model.AirwallexError
+import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.PaymentCheckoutActivityLaunch.Args
 import kotlinx.android.parcel.Parcelize
 
-internal class PaymentCheckoutActivityLaunch constructor(
-    activity: Activity
-) : AirwallexActivityLaunch<PaymentCheckoutActivity, Args>(
-    activity,
-    PaymentCheckoutActivity::class.java,
-    REQUEST_CODE
-) {
+class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCheckoutActivity, Args> {
+
+    constructor(activity: Activity) : super(
+        activity,
+        PaymentCheckoutActivity::class.java,
+        REQUEST_CODE
+    )
+
+    constructor(fragment: Fragment) : super(
+        fragment,
+        PaymentCheckoutActivity::class.java,
+        REQUEST_CODE
+    )
 
     @Parcelize
-    internal data class Args internal constructor(
+    data class Args internal constructor(
         val paymentIntent: PaymentIntent,
         val paymentMethod: PaymentMethod,
         val cvc: String?
