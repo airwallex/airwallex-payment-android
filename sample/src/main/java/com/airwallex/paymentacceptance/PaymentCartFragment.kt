@@ -150,6 +150,7 @@ class PaymentCartFragment : Fragment() {
         }
         initializeProductsViews(products.toMutableList())
         btnCheckout.setOnClickListener {
+            btnCheckout.isEnabled = false
             authAndCreatePaymentIntent()
         }
     }
@@ -345,12 +346,14 @@ class PaymentCartFragment : Fragment() {
     }
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        if (throwable is HttpException) {
-            showCreatePaymentIntentError(
-                throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
-            )
-        } else {
-            showCreatePaymentIntentError(throwable.localizedMessage)
+        activity?.runOnUiThread {
+            if (throwable is HttpException) {
+                showCreatePaymentIntentError(
+                    throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
+                )
+            } else {
+                showCreatePaymentIntentError(throwable.localizedMessage)
+            }
         }
     }
 
@@ -393,6 +396,7 @@ class PaymentCartFragment : Fragment() {
     }
 
     private fun showPaymentSuccess() {
+        btnCheckout.isEnabled = true
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.payment_successful),
@@ -401,6 +405,7 @@ class PaymentCartFragment : Fragment() {
     }
 
     private fun showCreatePaymentIntentError(error: String? = null) {
+        btnCheckout.isEnabled = true
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.create_payment_intent_failed),
@@ -409,6 +414,7 @@ class PaymentCartFragment : Fragment() {
     }
 
     private fun showPaymentError(error: String? = null) {
+        btnCheckout.isEnabled = true
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.payment_failed),
@@ -417,6 +423,7 @@ class PaymentCartFragment : Fragment() {
     }
 
     private fun showPaymentCancelled(error: String? = null) {
+        btnCheckout.isEnabled = true
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.payment_cancelled),
