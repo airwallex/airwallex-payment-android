@@ -9,6 +9,8 @@ import java.math.BigDecimal
 
 class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
 
+    private val paymentMethodParser: PaymentMethodParser = PaymentMethodParser()
+
     override fun parse(json: JSONObject): PaymentIntent {
         val availablePaymentMethodTypes = json.optJSONArray(FIELD_AVAILABLE_PAYMENT_METHOD_TYPES)?.let {
             (0 until it.length())
@@ -22,7 +24,7 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
             (0 until it.length())
                 .map { idx -> it.optJSONObject(idx) }
                 .mapNotNull { jsonObject ->
-                    PaymentMethodParser().parse(jsonObject)
+                    paymentMethodParser.parse(jsonObject)
                 }
         }
 

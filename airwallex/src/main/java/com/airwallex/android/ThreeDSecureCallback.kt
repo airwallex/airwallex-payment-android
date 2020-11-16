@@ -7,9 +7,14 @@ import com.airwallex.android.model.AirwallexError
  */
 internal interface ThreeDSecureCallback {
     /**
-     * 3DS success with `transactionId`
+     * 3DS1 success, need to fetch `transactionId` via `/paresCache?paResId=%s`
      */
-    fun onSuccess(paResId: String, threeDSecureType: ThreeDSecure.ThreeDSecureType)
+    fun onThreeDS1Success(payload: String)
+
+    /**
+     * 3DS2 success
+     */
+    fun onThreeDS2Success(transactionId: String)
 
     /**
      * 3DS failed with [AirwallexError]

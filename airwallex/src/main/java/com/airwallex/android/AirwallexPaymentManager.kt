@@ -9,6 +9,7 @@ import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.*
 import com.airwallex.android.view.SelectCurrencyActivityLaunch
+import com.airwallex.android.view.ThreeDSecureActivityLaunch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,8 +22,6 @@ import java.util.*
 internal class AirwallexPaymentManager(
     private val repository: ApiRepository
 ) : PaymentManager {
-
-    override var threeDSecureCallback: ThreeDSecureCallback? = null
 
     /**
      * Continue the [PaymentIntent] using [ApiRepository.Options], used for 3DS
@@ -167,10 +166,12 @@ internal class AirwallexPaymentManager(
     /**
      * Confirm [PaymentIntent] with device id
      */
-    override fun confirmPaymentIntentWithDeviceId(
+    override fun confirmPaymentIntent(
         activity: Activity,
         deviceId: String,
         params: ConfirmPaymentIntentParams,
+        selectCurrencyActivityLaunch: SelectCurrencyActivityLaunch,
+        threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         listener: PaymentListener<PaymentIntent>
     ) {
         val applicationContext = activity.applicationContext
@@ -181,8 +182,8 @@ internal class AirwallexPaymentManager(
             }
             PaymentMethodType.CARD -> {
                 buildCardPaymentIntentOptions(device, params,
-                    com.airwallex.android.model.ThreeDSecure.Builder()
-                        .setReturnUrl(ThreeDSecure.THREE_DS_RETURN_URL)
+                    ThreeDSecure.Builder()
+                        .setReturnUrl(ThreeDSecureManager.THREE_DS_RETURN_URL)
                         .build()
                 )
             }
@@ -198,13 +199,24 @@ internal class AirwallexPaymentManager(
 
                     override fun onSuccess(response: PaymentIntent) {
                         if (response.nextAction?.type == PaymentIntent.NextActionType.DCC && response.nextAction.dcc != null) {
+                            SelectCurrencyManager.selectCurrencyCallback = object : SelectCurrencyCallback {
+                                override fun onSuccess(paymentIntent: PaymentIntent) {
+                                    SelectCurrencyManager.selectCurrencyCallback = null
+                                    listener.onSuccess(paymentIntent)
+                                }
+
+                                override fun onFailed(exception: AirwallexError) {
+                                    SelectCurrencyManager.selectCurrencyCallback = null
+                                    listener.onFailed(APIException(error = exception))
+                                }
+                            }
                             // DCC flow, please select your currency
-                            SelectCurrencyActivityLaunch(activity).startForResult(
+                            selectCurrencyActivityLaunch.startForResult(
                                 SelectCurrencyActivityLaunch.Args(response.nextAction.dcc, response, params.clientSecret, device)
                             )
                         } else {
                             // Handle next action
-                            handleNextAction(activity, response, params.clientSecret, device, listener)
+                            handleNextAction(activity, threeDSecureActivityLaunch, response, params.clientSecret, device, listener)
                         }
                     }
                 }
@@ -217,7 +229,7 @@ internal class AirwallexPaymentManager(
         confirmPaymentIntent(options, paymentListener)
     }
 
-    override fun continueDccPaymentIntent(activity: Activity, options: ApiRepository.Options, listener: PaymentListener<PaymentIntent>) {
+    override fun continueDccPaymentIntent(activity: Activity, threeDSecureActivityLaunch: ThreeDSecureActivityLaunch, options: ApiRepository.Options, listener: PaymentListener<PaymentIntent>) {
         val paymentListener = object : PaymentListener<PaymentIntent> {
             override fun onFailed(exception: AirwallexException) {
                 // Payment failed
@@ -226,7 +238,7 @@ internal class AirwallexPaymentManager(
 
             override fun onSuccess(response: PaymentIntent) {
                 // Handle next action
-                handleNextAction(activity, response, options.clientSecret, (options as AirwallexApiRepository.ContinuePaymentIntentOptions).request.device, listener)
+                handleNextAction(activity, threeDSecureActivityLaunch, response, options.clientSecret, (options as AirwallexApiRepository.ContinuePaymentIntentOptions).request.device, listener)
             }
         }
         continuePaymentIntent(options, paymentListener)
@@ -235,13 +247,13 @@ internal class AirwallexPaymentManager(
     /**
      * Handle 3DS flow - Check jwt if existed
      */
-    private fun handleNextAction(activity: Activity, response: PaymentIntent, clientSecret: String, device: Device?, listener: PaymentListener<PaymentIntent>) {
+    private fun handleNextAction(activity: Activity, threeDSecureActivityLaunch: ThreeDSecureActivityLaunch, response: PaymentIntent, clientSecret: String, device: Device?, listener: PaymentListener<PaymentIntent>) {
         val serverJwt = response.nextAction?.data?.get("jwt") as? String
 
         if (serverJwt != null) {
             Logger.debug("Prepare 3DS Flow, serverJwt: $serverJwt")
             // 3D Secure Flow
-            handle3DSFlow(activity, response.id, clientSecret, serverJwt, device, listener)
+            handle3DSFlow(activity, threeDSecureActivityLaunch, response.id, clientSecret, serverJwt, device, listener)
         } else {
             Logger.debug("Don't need the 3DS Flow")
             listener.onSuccess(response)
@@ -257,16 +269,17 @@ internal class AirwallexPaymentManager(
      * Step 4: 3DS Validate with `processorTransactionId`
      *
      * @param activity the `Activity` that is to start 3ds screen
+     * @param threeDSecureActivityLaunch instance of [ThreeDSecureActivityLaunch]
      * @param paymentIntentId the ID of the [PaymentIntent], required.
      * @param clientSecret the clientSecret of [PaymentIntent], required.
      * @param serverJwt for perform 3ds flow
      * @param device device info
      * @param listener a [PaymentListener] to receive the response or error
      */
-    override fun handle3DSFlow(activity: Activity, paymentIntentId: String, clientSecret: String, serverJwt: String, device: Device?, listener: PaymentListener<PaymentIntent>) {
+    override fun handle3DSFlow(activity: Activity, threeDSecureActivityLaunch: ThreeDSecureActivityLaunch, paymentIntentId: String, clientSecret: String, serverJwt: String, device: Device?, listener: PaymentListener<PaymentIntent>) {
         Logger.debug("Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK")
         val applicationContext = activity.applicationContext
-        ThreeDSecure.performCardinalInitialize(
+        ThreeDSecureManager.performCardinalInitialize(
             applicationContext,
             serverJwt
         ) { referenceId, validateResponse ->
@@ -278,7 +291,7 @@ internal class AirwallexPaymentManager(
                 Logger.debug("Step2: 3DS Enrollment with `referenceId`")
                 continuePaymentIntent(
                     build3DSContinuePaymentIntentOptions(device, paymentIntentId, clientSecret, PaymentIntentContinueType.ENROLLMENT,
-                        com.airwallex.android.model.ThreeDSecure.Builder()
+                        ThreeDSecure.Builder()
                             .setDeviceDataCollectionRes(referenceId)
                             .build()
                     ),
@@ -289,7 +302,7 @@ internal class AirwallexPaymentManager(
 
                         override fun onSuccess(response: PaymentIntent) {
                             if (response.status == PaymentIntentStatus.REQUIRES_CAPTURE || response.nextAction == null) {
-                                Logger.debug("3DS Enrollment finished, doesn't need challenge")
+                                Logger.debug("3DS Enrollment finished, doesn't need challenge. Status: ${response.status}, NextAction: ${response.nextAction}")
                                 listener.onSuccess(response)
                                 return
                             }
@@ -300,43 +313,50 @@ internal class AirwallexPaymentManager(
                                 ?: "2.0"
 
                             Logger.debug("Step 3: Use `ThreeDSecureActivity` to show 3DS UI, then wait user input. After user input, will receive `processorTransactionId`.")
-                            threeDSecureCallback = object : ThreeDSecureCallback {
-                                override fun onSuccess(paResId: String, threeDSecureType: ThreeDSecure.ThreeDSecureType) {
-                                    fun continuePaymentIntent(transactionId: String) {
-                                        Logger.debug("Step 4: 3DS Validate with `processorTransactionId`")
-                                        continuePaymentIntent(
-                                            build3DSContinuePaymentIntentOptions(device, paymentIntentId, clientSecret, PaymentIntentContinueType.VALIDATE,
-                                                com.airwallex.android.model.ThreeDSecure.Builder()
-                                                    .setTransactionId(transactionId)
-                                                    .build()
-                                            ),
-                                            listener
-                                        )
-                                    }
+                            ThreeDSecureManager.threeDSecureCallback = object : ThreeDSecureCallback {
+                                private fun continuePaymentIntent(transactionId: String) {
+                                    Logger.debug("Step 4: 3DS Validate with `processorTransactionId`")
+                                    continuePaymentIntent(
+                                        build3DSContinuePaymentIntentOptions(device, paymentIntentId, clientSecret, PaymentIntentContinueType.VALIDATE,
+                                            ThreeDSecure.Builder()
+                                                .setTransactionId(transactionId)
+                                                .build()
+                                        ),
+                                        listener
+                                    )
+                                }
 
-                                    if (threeDSecureType == ThreeDSecure.ThreeDSecureType.THREE_D_SECURE_1) {
-                                        Logger.debug("Start retrieve pares with paResId")
-                                        retrieveParesWithId(AirwallexApiRepository.RetrievePaResOptions(clientSecret, paResId), object : PaymentListener<ThreeDSecurePares> {
-                                            override fun onFailed(exception: AirwallexException) {
-                                                listener.onFailed(exception)
-                                            }
+                                override fun onThreeDS1Success(payload: String) {
+                                    Logger.debug("3DS1 Success, Retrieve pares with paResId start...")
+                                    ThreeDSecureManager.threeDSecureCallback = null
+                                    retrieveParesWithId(AirwallexApiRepository.RetrievePaResOptions(clientSecret, payload), object : PaymentListener<ThreeDSecurePares> {
+                                        override fun onFailed(exception: AirwallexException) {
+                                            Logger.debug("Retrieve pares with paResId failed", exception)
+                                            listener.onFailed(exception)
+                                        }
 
-                                            override fun onSuccess(response: ThreeDSecurePares) {
-                                                continuePaymentIntent(response.pares)
-                                            }
-                                        })
-                                    } else {
-                                        continuePaymentIntent(paResId)
-                                    }
+                                        override fun onSuccess(response: ThreeDSecurePares) {
+                                            Logger.debug("Retrieve pares with paResId success. Rares ${response.pares}")
+                                            continuePaymentIntent(response.pares)
+                                        }
+                                    })
+                                }
+
+                                override fun onThreeDS2Success(transactionId: String) {
+                                    Logger.debug("3DS2 Success, Continue PaymentIntent start...")
+                                    ThreeDSecureManager.threeDSecureCallback = null
+                                    continuePaymentIntent(transactionId)
                                 }
 
                                 override fun onFailed(exception: AirwallexError) {
+                                    Logger.debug("3DS Failed, Reason ${exception.message}")
+                                    ThreeDSecureManager.threeDSecureCallback = null
                                     listener.onFailed(ThreeDSException(exception))
                                 }
                             }
 
                             val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, version)
-                            ThreeDSecure.performCardinalAuthentication(activity, threeDSecureLookup)
+                            threeDSecureActivityLaunch.startForResult(ThreeDSecureActivityLaunch.Args(threeDSecureLookup))
                         }
                     }
                 )
@@ -349,7 +369,7 @@ internal class AirwallexPaymentManager(
         paymentIntentId: String,
         clientSecret: String,
         type: PaymentIntentContinueType,
-        threeDSecure: com.airwallex.android.model.ThreeDSecure
+        threeDSecure: ThreeDSecure
     ): AirwallexApiRepository.ContinuePaymentIntentOptions {
         val request = PaymentIntentContinueRequest(
             requestId = UUID.randomUUID().toString(),

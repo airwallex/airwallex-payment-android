@@ -6,7 +6,6 @@ import android.os.Bundle
 import com.airwallex.android.Airwallex
 import com.airwallex.android.CurrencyUtils.formatPrice
 import com.airwallex.android.R
-import com.airwallex.android.ThreeDSecure
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
@@ -16,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_payment_checkout.*
 /**
  * Activity to confirm payment intent
  */
-internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
+class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override val airwallex: Airwallex by lazy {
         Airwallex()
@@ -62,25 +61,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == SelectCurrencyActivityLaunch.REQUEST_CODE) {
-            when (resultCode) {
-                Activity.RESULT_OK -> {
-                    val result = SelectCurrencyActivityLaunch.Result.fromIntent(data) ?: return
-                    finishWithPaymentIntent(result.paymentIntent, result.error)
-                }
-                Activity.RESULT_CANCELED -> {
-                    finishWithPaymentIntent(error = AirwallexError(message = "Please select your currency."))
-                }
-            }
-        } else if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE && data != null) {
-            airwallex.threeDSecureCallback?.let {
-                try {
-                    ThreeDSecure.onActivityResult(data, it)
-                } catch (e: Exception) {
-                    it.onFailed(AirwallexError(message = e.localizedMessage))
-                }
-            }
-        }
+        airwallex.onPaymentIntentResult(requestCode, resultCode, data)
     }
 
     private fun startConfirmPaymentIntent() {
@@ -114,10 +95,5 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     private fun updateButtonStatus() {
         rlPayNow.isEnabled = paymentMethodItemView.isValid
-    }
-
-    override fun onDestroy() {
-        airwallex.threeDSecureCallback = null
-        super.onDestroy()
     }
 }

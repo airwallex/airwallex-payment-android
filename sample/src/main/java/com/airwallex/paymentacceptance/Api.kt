@@ -1,6 +1,5 @@
 package com.airwallex.paymentacceptance
 
-import io.reactivex.Observable
 import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -10,11 +9,11 @@ import retrofit2.http.Path
 interface Api {
 
     @POST("/api/v1/pa/payment_intents/create")
-    fun createPaymentIntent(@Body params: MutableMap<String, Any>): Observable<ResponseBody>
+    suspend fun createPaymentIntent(@Body params: MutableMap<String, Any>): ResponseBody
 
     @POST("/api/v1/pa/customers/create")
-    fun createCustomer(@Body params: MutableMap<String, Any>): Observable<ResponseBody>
+    suspend fun createCustomer(@Body params: MutableMap<String, Any>): ResponseBody
 
     @GET("/api/v1/pa/customers/{id}/generate_client_secret")
-    fun createClientSecret(@Path("id") customId: String): Observable<ResponseBody>
+    suspend fun createClientSecret(@Path("id") customId: String): ResponseBody
 }

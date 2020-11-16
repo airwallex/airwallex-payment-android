@@ -7,7 +7,6 @@ import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ContinuePaymentIntentParams
 import com.airwallex.android.R
-import com.airwallex.android.ThreeDSecure
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
@@ -57,7 +56,7 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
                 type = PaymentIntentContinueType.DCC,
                 useDcc = transfer_currency.isSelected
             )
-            airwallex.continuePaymentIntent(this, params, object : Airwallex.PaymentListener<PaymentIntent> {
+            airwallex.continuePaymentIntent(this, ThreeDSecureActivityLaunch(this), params, object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onFailed(exception: AirwallexException) {
                     finishWithPaymentIntent(error = exception.error)
                 }
@@ -98,19 +97,6 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE && data != null) {
-            airwallex.threeDSecureCallback?.let {
-                try {
-                    ThreeDSecure.onActivityResult(data, it)
-                } catch (e: Exception) {
-                    it.onFailed(AirwallexError(message = e.localizedMessage))
-                }
-            }
-        }
-    }
-
-    override fun onDestroy() {
-        airwallex.threeDSecureCallback = null
-        super.onDestroy()
+        airwallex.onPaymentIntentResult(requestCode, resultCode, data)
     }
 }

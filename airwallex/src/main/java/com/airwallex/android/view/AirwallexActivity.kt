@@ -11,7 +11,7 @@ import com.airwallex.android.Logger
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.activity_airwallex.*
 
-internal abstract class AirwallexActivity : AppCompatActivity() {
+abstract class AirwallexActivity : AppCompatActivity() {
 
     val loading: Boolean
         get() {

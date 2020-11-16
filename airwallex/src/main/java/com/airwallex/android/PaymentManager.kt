@@ -5,11 +5,11 @@ import android.content.Context
 import android.os.Build
 import com.airwallex.android.Airwallex.PaymentListener
 import com.airwallex.android.model.*
+import com.airwallex.android.view.SelectCurrencyActivityLaunch
+import com.airwallex.android.view.ThreeDSecureActivityLaunch
 import java.util.*
 
 internal interface PaymentManager {
-
-    var threeDSecureCallback: ThreeDSecureCallback?
 
     /**
      * Continue the [PaymentIntent] using [ApiRepository.Options], used for 3DS
@@ -77,10 +77,12 @@ internal interface PaymentManager {
     /**
      * Confirm [PaymentIntent] with device id
      */
-    fun confirmPaymentIntentWithDeviceId(
+    fun confirmPaymentIntent(
         activity: Activity,
         deviceId: String,
         params: ConfirmPaymentIntentParams,
+        selectCurrencyActivityLaunch: SelectCurrencyActivityLaunch,
+        threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         listener: PaymentListener<PaymentIntent>
     )
 
@@ -89,6 +91,7 @@ internal interface PaymentManager {
      */
     fun continueDccPaymentIntent(
         activity: Activity,
+        threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         options: ApiRepository.Options,
         listener: PaymentListener<PaymentIntent>
     )
@@ -97,6 +100,7 @@ internal interface PaymentManager {
      * Handle next action for 3ds
      *
      * @param activity the `Activity` that is to start 3ds screen
+     * @param threeDSecureActivityLaunch instance of [ThreeDSecureActivityLaunch]
      * @param paymentIntentId the ID of the [PaymentIntent], required.
      * @param clientSecret the clientSecret of [PaymentIntent], required.
      * @param serverJwt for perform 3ds flow
@@ -105,6 +109,7 @@ internal interface PaymentManager {
      */
     fun handle3DSFlow(
         activity: Activity,
+        threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         paymentIntentId: String,
         clientSecret: String,
         serverJwt: String,
@@ -152,7 +157,7 @@ internal interface PaymentManager {
         fun buildCardPaymentIntentOptions(
             device: Device,
             params: ConfirmPaymentIntentParams,
-            threeDSecure: com.airwallex.android.model.ThreeDSecure
+            threeDSecure: ThreeDSecure
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()

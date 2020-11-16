@@ -2,20 +2,27 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Intent
+import androidx.fragment.app.Fragment
 import com.airwallex.android.model.ThreeDSecureLookup
 import com.airwallex.android.view.ThreeDSecureActivityLaunch.Args
 import kotlinx.android.parcel.Parcelize
 
-internal class ThreeDSecureActivityLaunch constructor(
-    activity: Activity
-) : AirwallexActivityLaunch<ThreeDSecureActivity, Args>(
-    activity,
-    ThreeDSecureActivity::class.java,
-    REQUEST_CODE
-) {
+class ThreeDSecureActivityLaunch : AirwallexActivityLaunch<ThreeDSecureActivity, Args> {
+
+    constructor(activity: Activity) : super(
+        activity,
+        ThreeDSecureActivity::class.java,
+        REQUEST_CODE
+    )
+
+    constructor(fragment: Fragment) : super(
+        fragment,
+        ThreeDSecureActivity::class.java,
+        REQUEST_CODE
+    )
 
     @Parcelize
-    internal data class Args internal constructor(
+    data class Args internal constructor(
         val threeDSecureLookup: ThreeDSecureLookup
     ) : AirwallexActivityLaunch.Args {
 

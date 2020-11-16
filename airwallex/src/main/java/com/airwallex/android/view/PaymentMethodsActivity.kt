@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * Allow the customer to select one of the payment methods, or add a new one via [AddPaymentMethodActivity].
  *
  */
-internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
+class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private var pageNum: AtomicInteger = AtomicInteger(0)
 
