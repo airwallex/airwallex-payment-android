@@ -2,6 +2,7 @@ package com.airwallex.android.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import java.io.Serializable
 
 /**
  * Airwallex uses conventional HTTP response codes to indicate the success or failure of an API
@@ -27,7 +28,7 @@ data class AirwallexError internal constructor(
      * Description of the error
      */
     val message: String? = null
-) : AirwallexModel, Parcelable {
+) : AirwallexModel, Parcelable, Serializable {
 
     override fun toString(): String {
         return "code $code, source $source, message $message"

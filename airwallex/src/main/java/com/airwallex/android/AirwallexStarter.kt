@@ -3,7 +3,10 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import com.airwallex.android.model.*
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.*
 
 /**
@@ -56,7 +59,7 @@ class AirwallexStarter constructor(
      */
     interface PaymentIntentListener : PaymentListener {
         fun onSuccess(paymentIntent: PaymentIntent)
-        fun onFailed(error: AirwallexError)
+        fun onFailed(error: Exception)
     }
 
     /**
@@ -155,7 +158,7 @@ class AirwallexStarter constructor(
         paymentDetailListener: PaymentIntentListener
     ) {
         if (paymentMethod.type != PaymentMethodType.CARD) {
-            paymentDetailListener.onFailed(AirwallexError(message = "Only card payment is supported"))
+            paymentDetailListener.onFailed(Exception("Only card payment is supported"))
             return
         }
         this.paymentDetailListener = paymentDetailListener
@@ -231,8 +234,9 @@ class AirwallexStarter constructor(
                         val result =
                             PaymentMethodsActivityLaunch.Result.fromIntent(data) ?: return true
                         if (result.includeCheckoutFlow) {
-                            if (result.error != null) {
-                                paymentFlowListener?.onFailed(result.error)
+                            val exception = result.exception
+                            if (exception != null) {
+                                paymentFlowListener?.onFailed(exception)
                             } else {
                                 paymentFlowListener?.onSuccess(requireNotNull(result.paymentIntent))
                             }
@@ -249,8 +253,9 @@ class AirwallexStarter constructor(
                     PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
                         val result =
                             PaymentCheckoutActivityLaunch.Result.fromIntent(data) ?: return true
-                        if (result.error != null) {
-                            paymentDetailListener?.onFailed(result.error)
+                        val exception = result.exception
+                        if (exception != null) {
+                            paymentDetailListener?.onFailed(exception)
                         } else {
                             paymentDetailListener?.onSuccess(requireNotNull(result.paymentIntent))
                         }

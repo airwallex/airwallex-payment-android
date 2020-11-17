@@ -1,7 +1,6 @@
 package com.airwallex.android
 
 import com.airwallex.android.exception.InvalidRequestException
-import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.AirwallexJsonUtils
 import java.io.OutputStream
 import java.io.UnsupportedEncodingException
@@ -46,7 +45,7 @@ internal open class AirwallexHttpRequest internal constructor(
             }
         } catch (e: UnsupportedEncodingException) {
             throw InvalidRequestException(
-                error = AirwallexError(message = "Unable to encode parameters to ${Charsets.UTF_8.name()}.")
+                message = "Unable to encode parameters to ${Charsets.UTF_8.name()}."
             )
         }
     }

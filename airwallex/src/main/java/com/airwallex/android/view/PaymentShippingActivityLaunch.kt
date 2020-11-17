@@ -54,9 +54,9 @@ class PaymentShippingActivityLaunch : AirwallexActivityLaunch<PaymentShippingAct
         val shipping: Shipping
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
-            val bundle = Bundle()
-            bundle.putParcelable(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA, this)
-            return bundle
+            return Bundle().also {
+                it.putParcelable(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA, this)
+            }
         }
 
         companion object {

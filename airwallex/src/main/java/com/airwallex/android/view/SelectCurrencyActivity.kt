@@ -7,8 +7,6 @@ import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ContinuePaymentIntentParams
 import com.airwallex.android.R
-import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentContinueType
 import kotlinx.android.synthetic.main.activity_select_currency.*
@@ -57,8 +55,8 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
                 useDcc = transfer_currency.isSelected
             )
             airwallex.continuePaymentIntent(applicationContext, ThreeDSecureActivityLaunch(this), params, object : Airwallex.PaymentListener<PaymentIntent> {
-                override fun onFailed(exception: AirwallexException) {
-                    finishWithPaymentIntent(error = exception.error)
+                override fun onFailed(exception: Exception) {
+                    finishWithPaymentIntent(exception = exception)
                 }
 
                 override fun onSuccess(response: PaymentIntent) {
@@ -70,14 +68,14 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
 
     private fun finishWithPaymentIntent(
         paymentIntent: PaymentIntent? = null,
-        error: AirwallexError? = null
+        exception: Exception? = null
     ) {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
             SelectCurrencyActivityLaunch.Result(
                 paymentIntent = paymentIntent,
-                error = error
+                exception = exception
             ).toBundle()
         ))
         finish()
