@@ -1,6 +1,5 @@
 package com.airwallex.android
 
-import android.app.Activity
 import android.content.Context
 import android.os.Build
 import com.airwallex.android.Airwallex.PaymentListener
@@ -78,7 +77,7 @@ internal interface PaymentManager {
      * Confirm [PaymentIntent] with device id
      */
     fun confirmPaymentIntent(
-        activity: Activity,
+        applicationContext: Context,
         deviceId: String,
         params: ConfirmPaymentIntentParams,
         selectCurrencyActivityLaunch: SelectCurrencyActivityLaunch,
@@ -90,7 +89,7 @@ internal interface PaymentManager {
      * Continue [PaymentIntent] with your selected currency
      */
     fun continueDccPaymentIntent(
-        activity: Activity,
+        applicationContext: Context,
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         options: ApiRepository.Options,
         listener: PaymentListener<PaymentIntent>
@@ -99,7 +98,7 @@ internal interface PaymentManager {
     /**
      * Handle next action for 3ds
      *
-     * @param activity the `Activity` that is to start 3ds screen
+     * @param applicationContext the Application Context that is to start 3ds screen
      * @param threeDSecureActivityLaunch instance of [ThreeDSecureActivityLaunch]
      * @param paymentIntentId the ID of the [PaymentIntent], required.
      * @param clientSecret the clientSecret of [PaymentIntent], required.
@@ -108,7 +107,7 @@ internal interface PaymentManager {
      * @param listener a [PaymentListener] to receive the response or error
      */
     fun handle3DSFlow(
-        activity: Activity,
+        applicationContext: Context,
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         paymentIntentId: String,
         clientSecret: String,

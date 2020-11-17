@@ -1,6 +1,7 @@
 package com.airwallex.android
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
@@ -59,7 +60,7 @@ class Airwallex internal constructor(
             object : AirwallexSecurityConnector.SecurityTokenListener {
                 override fun onResponse(deviceId: String) {
                     // Confirm PaymentIntent with Device Fingerprinting
-                    paymentManager.confirmPaymentIntent(fragment.requireActivity(), deviceId, params, SelectCurrencyActivityLaunch(fragment.requireActivity()), ThreeDSecureActivityLaunch((fragment.requireActivity())), listener)
+                    paymentManager.confirmPaymentIntent(fragment.requireActivity(), deviceId, params, SelectCurrencyActivityLaunch(fragment), ThreeDSecureActivityLaunch(fragment), listener)
                 }
             })
     }
@@ -90,13 +91,13 @@ class Airwallex internal constructor(
     /**
      * Continue a [PaymentIntent] - select your current currency
      *
-     * @param activity the `Activity` that is start confirm the payment intent
+     * @param applicationContext the Application Context that is start confirm the payment intent
      * @param params [ContinuePaymentIntentParams] used to continue [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
     internal fun continuePaymentIntent(
-        activity: Activity,
+        applicationContext: Context,
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         params: ContinuePaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
@@ -109,7 +110,7 @@ class Airwallex internal constructor(
             useDcc = params.useDcc
         )
         paymentManager.continueDccPaymentIntent(
-            activity,
+            applicationContext,
             threeDSecureActivityLaunch,
             AirwallexApiRepository.ContinuePaymentIntentOptions(
                 clientSecret = params.clientSecret,
@@ -192,7 +193,18 @@ class Airwallex internal constructor(
         )
     }
 
-    fun onPaymentIntentResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    /**
+     * Method to handle Activity results from Airwallex activities. Pass data here from your
+     * host's `#onActivityResult(int, int, Intent)` function.
+     *
+     * @param requestCode the request code used to open the resulting activity
+     * @param resultCode a result code representing the success of the intended action
+     * @param data an [Intent] with the resulting data from the Activity
+     *
+     * @return `true` if the activity result was handled by this function,
+     * otherwise `false`
+     */
+    fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == SelectCurrencyActivityLaunch.REQUEST_CODE) {
             SelectCurrencyManager.handleOnActivityResult(data, resultCode)
         } else if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE) {

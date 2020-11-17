@@ -123,7 +123,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
         super.onActivityResult(requestCode, resultCode, data)
         
         // If it is a card payment, you must call this method on `onActivityResult`
-        airwallex.onPaymentIntentResult(requestCode, resultCode, data)
+        airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
 

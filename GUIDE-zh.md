@@ -123,7 +123,7 @@ repositories {
         super.onActivityResult(requestCode, resultCode, data)
         
         // 如果是卡支付，必须在onActivityResult中调用这个方法
-        airwallex.onPaymentIntentResult(requestCode, resultCode, data)
+        airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
 3. 成功confirm `PaymentIntent`之后

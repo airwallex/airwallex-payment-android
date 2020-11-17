@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
  * Reference for payment method
  */
 @Parcelize
-data class PaymentMethodReference internal constructor(
+data class PaymentMethodReference constructor(
 
     /**
      * The id of the [PaymentMethod]
