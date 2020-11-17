@@ -56,7 +56,7 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
                 type = PaymentIntentContinueType.DCC,
                 useDcc = transfer_currency.isSelected
             )
-            airwallex.continuePaymentIntent(this, ThreeDSecureActivityLaunch(this), params, object : Airwallex.PaymentListener<PaymentIntent> {
+            airwallex.continuePaymentIntent(applicationContext, ThreeDSecureActivityLaunch(this), params, object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onFailed(exception: AirwallexException) {
                     finishWithPaymentIntent(error = exception.error)
                 }
@@ -97,6 +97,6 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        airwallex.onPaymentIntentResult(requestCode, resultCode, data)
+        airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 }

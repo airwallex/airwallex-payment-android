@@ -61,7 +61,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        airwallex.onPaymentIntentResult(requestCode, resultCode, data)
+        airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 
     private fun startConfirmPaymentIntent() {

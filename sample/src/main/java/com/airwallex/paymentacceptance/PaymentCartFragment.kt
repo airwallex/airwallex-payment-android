@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.Airwallex
 import com.airwallex.android.AirwallexStarter
+import com.airwallex.android.ConfirmPaymentIntentParams
 import com.airwallex.android.RetrievePaymentIntentParams
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
@@ -37,6 +38,10 @@ class PaymentCartFragment : Fragment() {
 
     private val airwallexStarter by lazy {
         AirwallexStarter(this)
+    }
+
+    private val airwallex by lazy {
+        Airwallex()
     }
 
     private val authApi: AuthApi
@@ -251,6 +256,18 @@ class PaymentCartFragment : Fragment() {
      */
     private fun handlePaymentIntentResponse(responseBody: ResponseBody) {
         val paymentIntent = PaymentIntentParser().parse(JSONObject(responseBody.string()))
+        handlePaymentIntentResponseWithEntireFlow(paymentIntent)
+
+        // Only use the Select Payment Methods Flow
+//        handlePaymentIntentResponseWithCustomFlow1(paymentIntent)
+        // Use the Select Payment Methods Flow & Checkout Detail Flow
+//        handlePaymentIntentResponseWithCustomFlow2(paymentIntent)
+    }
+
+    /**
+     * Use entire flow provided by Airwallex
+     */
+    private fun handlePaymentIntentResponseWithEntireFlow(paymentIntent: PaymentIntent) {
         airwallexStarter.presentPaymentFlow(
             paymentIntent,
             clientSecretProvider,
@@ -345,6 +362,93 @@ class PaymentCartFragment : Fragment() {
             })
     }
 
+    /**
+     * Only use the Select Payment Methods Flow
+     */
+    private fun handlePaymentIntentResponseWithCustomFlow1(paymentIntent: PaymentIntent) {
+        airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, object : AirwallexStarter.PaymentMethodListener {
+            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+                val listener = object : Airwallex.PaymentListener<PaymentIntent> {
+                    override fun onFailed(exception: AirwallexException) {
+                        showPaymentError(error = exception.error.message)
+                    }
+
+                    override fun onSuccess(response: PaymentIntent) {
+                        showPaymentSuccess()
+                    }
+                }
+
+                if (paymentMethod.type == PaymentMethodType.WECHAT) {
+                    val params = ConfirmPaymentIntentParams.createWeChatParams(
+                        paymentIntentId = paymentIntent.id,
+                        clientSecret = requireNotNull(paymentIntent.clientSecret),
+                        customerId = paymentIntent.customerId
+                    )
+                    airwallex.confirmPaymentIntent(this@PaymentCartFragment, params, listener)
+                } else if (paymentMethod.type == PaymentMethodType.CARD) {
+                    val params = ConfirmPaymentIntentParams.createCardParams(
+                        paymentIntentId = paymentIntent.id,
+                        clientSecret = requireNotNull(paymentIntent.clientSecret),
+                        paymentMethodReference = PaymentMethodReference(
+                            requireNotNull(paymentMethod.id),
+                            cvc ?: "123" // You should provide the cvc input screen
+                        ),
+                        customerId = paymentIntent.customerId
+                    )
+                    airwallex.confirmPaymentIntent(this@PaymentCartFragment, params, listener)
+                }
+            }
+
+            override fun onCancelled() {
+                showPaymentCancelled()
+            }
+        })
+    }
+
+    /**
+     * Use the Select Payment Methods Flow & Checkout Detail Flow
+     */
+    private fun handlePaymentIntentResponseWithCustomFlow2(paymentIntent: PaymentIntent) {
+        airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, object : AirwallexStarter.PaymentMethodListener {
+            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+                if (paymentMethod.type == PaymentMethodType.WECHAT) {
+                    val params = ConfirmPaymentIntentParams.createWeChatParams(
+                        paymentIntentId = paymentIntent.id,
+                        clientSecret = requireNotNull(paymentIntent.clientSecret),
+                        customerId = paymentIntent.customerId
+                    )
+                    airwallex.confirmPaymentIntent(this@PaymentCartFragment, params, object : Airwallex.PaymentListener<PaymentIntent> {
+                        override fun onFailed(exception: AirwallexException) {
+                            showPaymentError(error = exception.error.message)
+                        }
+
+                        override fun onSuccess(response: PaymentIntent) {
+                            showPaymentSuccess()
+                        }
+                    })
+                } else if (paymentMethod.type == PaymentMethodType.CARD) {
+                    airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod, cvc, object : AirwallexStarter.PaymentIntentListener {
+                        override fun onSuccess(paymentIntent: PaymentIntent) {
+                            showPaymentSuccess()
+                        }
+
+                        override fun onFailed(error: AirwallexError) {
+                            showPaymentError(error = error.message)
+                        }
+
+                        override fun onCancelled() {
+                            showPaymentCancelled()
+                        }
+                    })
+                }
+            }
+
+            override fun onCancelled() {
+                showPaymentCancelled()
+            }
+        })
+    }
+
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         activity?.runOnUiThread {
             if (throwable is HttpException) {
@@ -385,14 +489,11 @@ class PaymentCartFragment : Fragment() {
             })
     }
 
-    override fun onDestroy() {
-        airwallexStarter.onDestroy()
-        super.onDestroy()
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         airwallexStarter.onActivityResult(requestCode, resultCode, data)
+
+        airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 
     private fun showPaymentSuccess() {

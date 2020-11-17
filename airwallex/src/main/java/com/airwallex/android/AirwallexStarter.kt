@@ -63,6 +63,7 @@ class AirwallexStarter constructor(
      * Represents a listener for PaymentMethod actions
      */
     interface PaymentMethodListener : PaymentListener {
+        // CVC returns only when payment is first created, otherwise null
         fun onSuccess(paymentMethod: PaymentMethod, cvc: String?)
     }
 
@@ -216,12 +217,14 @@ class AirwallexStarter constructor(
                         val result =
                             AddPaymentMethodActivityLaunch.Result.fromIntent(data) ?: return true
                         addPaymentMethodFlowListener?.onSuccess(result.paymentMethod, result.cvc)
+                        addPaymentMethodFlowListener = null
                         true
                     }
                     PaymentShippingActivityLaunch.REQUEST_CODE -> {
                         val result =
                             PaymentShippingActivityLaunch.Result.fromIntent(data) ?: return true
                         shippingFlowListener?.onSuccess(result.shipping)
+                        shippingFlowListener = null
                         true
                     }
                     PaymentMethodsActivityLaunch.REQUEST_CODE -> {
@@ -233,11 +236,13 @@ class AirwallexStarter constructor(
                             } else {
                                 paymentFlowListener?.onSuccess(requireNotNull(result.paymentIntent))
                             }
+                            paymentFlowListener = null
                         } else {
                             selectPaymentMethodFlowListener?.onSuccess(
                                 requireNotNull(result.paymentMethod),
                                 result.cvc
                             )
+                            selectPaymentMethodFlowListener = null
                         }
                         true
                     }
@@ -249,6 +254,7 @@ class AirwallexStarter constructor(
                         } else {
                             paymentDetailListener?.onSuccess(requireNotNull(result.paymentIntent))
                         }
+                        paymentDetailListener = null
                         true
                     }
                     else -> false
@@ -258,18 +264,27 @@ class AirwallexStarter constructor(
                 return when (requestCode) {
                     AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
                         addPaymentMethodFlowListener?.onCancelled()
+                        addPaymentMethodFlowListener = null
                         true
                     }
                     PaymentShippingActivityLaunch.REQUEST_CODE -> {
                         shippingFlowListener?.onCancelled()
+                        shippingFlowListener = null
                         true
                     }
                     PaymentMethodsActivityLaunch.REQUEST_CODE -> {
-                        paymentFlowListener?.onCancelled()
+                        if (paymentFlowListener != null) {
+                            paymentFlowListener?.onCancelled()
+                            paymentFlowListener = null
+                        } else {
+                            selectPaymentMethodFlowListener?.onCancelled()
+                            selectPaymentMethodFlowListener = null
+                        }
                         true
                     }
                     PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
                         paymentDetailListener?.onCancelled()
+                        paymentDetailListener = null
                         true
                     }
                     else -> false
@@ -277,16 +292,6 @@ class AirwallexStarter constructor(
             }
             else -> return false
         }
-    }
-
-    /**
-     * Should be called during the host `Activity`'s onDestroy to detach listeners.
-     */
-    fun onDestroy() {
-        shippingFlowListener = null
-        paymentFlowListener = null
-        addPaymentMethodFlowListener = null
-        selectPaymentMethodFlowListener = null
     }
 
     internal companion object {
