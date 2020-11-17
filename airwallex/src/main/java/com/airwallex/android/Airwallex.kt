@@ -5,10 +5,10 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
-import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import com.airwallex.android.view.SelectCurrencyActivityLaunch
 import com.airwallex.android.view.ThreeDSecureActivityLaunch
+import java.lang.Exception
 import java.util.*
 
 /**
@@ -25,7 +25,7 @@ class Airwallex internal constructor(
      * Generic interface for an Airwallex API operation callback that either returns a [T], or an [Exception]
      */
     interface PaymentListener<T> {
-        fun onFailed(exception: AirwallexException)
+        fun onFailed(exception: Exception)
         fun onSuccess(response: T)
     }
 
@@ -206,7 +206,7 @@ class Airwallex internal constructor(
      */
     fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == SelectCurrencyActivityLaunch.REQUEST_CODE) {
-            SelectCurrencyManager.handleOnActivityResult(data, resultCode)
+            DccManager.handleOnActivityResult(data, resultCode)
         } else if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE) {
             ThreeDSecureManager.handleOnActivityResult(data)
         }

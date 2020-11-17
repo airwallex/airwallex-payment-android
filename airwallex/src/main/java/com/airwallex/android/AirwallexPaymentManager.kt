@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 import java.util.*
 
 /**
@@ -159,7 +160,7 @@ internal class AirwallexPaymentManager(
         return if (throwable is AirwallexException) {
             throwable
         } else {
-            APIException(AirwallexError(message = throwable.message))
+            APIException(message = throwable.message)
         }
     }
 
@@ -191,22 +192,22 @@ internal class AirwallexPaymentManager(
         val paymentListener = when (params.paymentMethodType) {
             PaymentMethodType.CARD -> {
                 object : PaymentListener<PaymentIntent> {
-                    override fun onFailed(exception: AirwallexException) {
+                    override fun onFailed(exception: Exception) {
                         // Payment failed
                         listener.onFailed(exception)
                     }
 
                     override fun onSuccess(response: PaymentIntent) {
                         if (response.nextAction?.type == PaymentIntent.NextActionType.DCC && response.nextAction.dcc != null) {
-                            SelectCurrencyManager.selectCurrencyCallback = object : SelectCurrencyCallback {
+                            DccManager.dccCallback = object : DccCallback {
                                 override fun onSuccess(paymentIntent: PaymentIntent) {
-                                    SelectCurrencyManager.selectCurrencyCallback = null
+                                    DccManager.dccCallback = null
                                     listener.onSuccess(paymentIntent)
                                 }
 
-                                override fun onFailed(exception: AirwallexError) {
-                                    SelectCurrencyManager.selectCurrencyCallback = null
-                                    listener.onFailed(APIException(error = exception))
+                                override fun onFailed(exception: Exception) {
+                                    DccManager.dccCallback = null
+                                    listener.onFailed(exception)
                                 }
                             }
                             // DCC flow, please select your currency
@@ -230,7 +231,7 @@ internal class AirwallexPaymentManager(
 
     override fun continueDccPaymentIntent(applicationContext: Context, threeDSecureActivityLaunch: ThreeDSecureActivityLaunch, options: ApiRepository.Options, listener: PaymentListener<PaymentIntent>) {
         val paymentListener = object : PaymentListener<PaymentIntent> {
-            override fun onFailed(exception: AirwallexException) {
+            override fun onFailed(exception: Exception) {
                 // Payment failed
                 listener.onFailed(exception)
             }
@@ -283,7 +284,7 @@ internal class AirwallexPaymentManager(
         ) { referenceId, validateResponse ->
             if (validateResponse != null) {
                 CoroutineScope(Dispatchers.Main).launch {
-                    listener.onFailed(ThreeDSException(AirwallexError(message = validateResponse.errorDescription)))
+                    listener.onFailed(ThreeDSException(message = validateResponse.errorDescription))
                 }
             } else {
                 Logger.debug("Step2: 3DS Enrollment with `referenceId`")
@@ -294,7 +295,7 @@ internal class AirwallexPaymentManager(
                             .build()
                     ),
                     object : PaymentListener<PaymentIntent> {
-                        override fun onFailed(exception: AirwallexException) {
+                        override fun onFailed(exception: Exception) {
                             listener.onFailed(exception)
                         }
 
@@ -328,7 +329,7 @@ internal class AirwallexPaymentManager(
                                     Logger.debug("3DS1 Success, Retrieve pares with paResId start...")
                                     ThreeDSecureManager.threeDSecureCallback = null
                                     retrieveParesWithId(AirwallexApiRepository.RetrievePaResOptions(clientSecret, payload), object : PaymentListener<ThreeDSecurePares> {
-                                        override fun onFailed(exception: AirwallexException) {
+                                        override fun onFailed(exception: Exception) {
                                             Logger.debug("Retrieve pares with paResId failed", exception)
                                             listener.onFailed(exception)
                                         }
@@ -346,10 +347,10 @@ internal class AirwallexPaymentManager(
                                     continuePaymentIntent(transactionId)
                                 }
 
-                                override fun onFailed(exception: AirwallexError) {
+                                override fun onFailed(exception: Exception) {
                                     Logger.debug("3DS Failed, Reason ${exception.message}")
                                     ThreeDSecureManager.threeDSecureCallback = null
-                                    listener.onFailed(ThreeDSException(exception))
+                                    listener.onFailed(exception)
                                 }
                             }
 

@@ -6,10 +6,10 @@ import com.airwallex.android.model.AirwallexError
  * Parent class for exceptions encountered when using the SDK.
  */
 abstract class AirwallexException @JvmOverloads constructor(
-    val error: AirwallexError,
+    val error: AirwallexError?,
     private val traceId: String?,
     private val statusCode: Int,
-    message: String? = null,
+    message: String? = error?.message,
     e: Throwable? = null
 ) : Exception(message, e) {
 

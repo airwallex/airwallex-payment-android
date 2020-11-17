@@ -7,7 +7,6 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.ClientSecretRepository
 import com.airwallex.android.CreatePaymentMethodParams
 import com.airwallex.android.R
-import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.ClientSecret
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.activity_add_card.*
@@ -51,8 +50,8 @@ class AddPaymentMethodActivity : AirwallexActivity() {
                             finishWithPaymentMethod(response, requireNotNull(card.cvc))
                         }
 
-                        override fun onFailed(exception: AirwallexException) {
-                            alertError(exception.error.message ?: exception.toString())
+                        override fun onFailed(exception: Exception) {
+                            alertError(exception.message ?: exception.toString())
                         }
                     })
             }

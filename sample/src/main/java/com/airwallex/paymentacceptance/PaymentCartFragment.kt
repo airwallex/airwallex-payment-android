@@ -16,7 +16,6 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.ConfirmPaymentIntentParams
 import com.airwallex.android.RetrievePaymentIntentParams
-import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.parser.PaymentIntentParser
@@ -351,7 +350,7 @@ class PaymentCartFragment : Fragment() {
                     }
                 }
 
-                override fun onFailed(error: AirwallexError) {
+                override fun onFailed(error: Exception) {
                     showPaymentError(error.message)
                 }
 
@@ -369,8 +368,8 @@ class PaymentCartFragment : Fragment() {
         airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, object : AirwallexStarter.PaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 val listener = object : Airwallex.PaymentListener<PaymentIntent> {
-                    override fun onFailed(exception: AirwallexException) {
-                        showPaymentError(error = exception.error.message)
+                    override fun onFailed(exception: Exception) {
+                        showPaymentError(error = exception.message)
                     }
 
                     override fun onSuccess(response: PaymentIntent) {
@@ -418,8 +417,8 @@ class PaymentCartFragment : Fragment() {
                         customerId = paymentIntent.customerId
                     )
                     airwallex.confirmPaymentIntent(this@PaymentCartFragment, params, object : Airwallex.PaymentListener<PaymentIntent> {
-                        override fun onFailed(exception: AirwallexException) {
-                            showPaymentError(error = exception.error.message)
+                        override fun onFailed(exception: Exception) {
+                            showPaymentError(error = exception.message)
                         }
 
                         override fun onSuccess(response: PaymentIntent) {
@@ -432,7 +431,7 @@ class PaymentCartFragment : Fragment() {
                             showPaymentSuccess()
                         }
 
-                        override fun onFailed(error: AirwallexError) {
+                        override fun onFailed(error: Exception) {
                             showPaymentError(error = error.message)
                         }
 
@@ -484,15 +483,18 @@ class PaymentCartFragment : Fragment() {
                     }
                 }
 
-                override fun onFailed(exception: AirwallexException) {
+                override fun onFailed(exception: Exception) {
                 }
             })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        // Handle the result of all flows
         airwallexStarter.onActivityResult(requestCode, resultCode, data)
 
+        // If you call confirmPaymentIntent to do card payment, you must call this method
         airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 

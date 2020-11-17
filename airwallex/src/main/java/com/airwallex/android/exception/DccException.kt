@@ -1,5 +1,5 @@
 package com.airwallex.android.exception
 
-class ThreeDSException(
+class DccException(
     message: String
 ) : AirwallexException(null, null, 0, message)

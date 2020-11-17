@@ -2,7 +2,7 @@ package com.airwallex.android
 
 import android.content.Context
 import android.content.Intent
-import com.airwallex.android.model.AirwallexError
+import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.view.ThreeDSecureActivity
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
@@ -87,7 +87,7 @@ internal object ThreeDSecureManager {
             try {
                 onActivityResult(data, it)
             } catch (e: Exception) {
-                it.onFailed(AirwallexError(message = e.localizedMessage))
+                it.onFailed(ThreeDSException(message = e.localizedMessage ?: "3DS failed."))
             }
         }
     }
@@ -97,7 +97,7 @@ internal object ThreeDSecureManager {
         callback: ThreeDSecureCallback
     ) {
         if (data == null) {
-            callback.onFailed(AirwallexError("3DS failed. Reason: Intent data is null"))
+            callback.onFailed(ThreeDSException(message = "3DS failed. Reason: Intent data is null"))
             return
         }
         when (data.getSerializableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_TYPE) as? ThreeDSecureType) {
@@ -111,11 +111,11 @@ internal object ThreeDSecureManager {
                     val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
                     if (cancel) {
                         Logger.debug("3DS 1.0 canceled")
-                        callback.onFailed(AirwallexError(message = "3DS 1.0 canceled"))
+                        callback.onFailed(ThreeDSException(message = "3DS 1.0 canceled"))
                     } else {
                         val reason = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_FAILED_REASON)
                         Logger.debug("3DS 1.0 failed. Reason: $reason")
-                        callback.onFailed(AirwallexError(message = reason ?: "3DS 1.0 verification failed"))
+                        callback.onFailed(ThreeDSException(message = reason ?: "3DS 1.0 verification failed"))
                     }
                 }
             }
@@ -124,14 +124,14 @@ internal object ThreeDSecureManager {
                 val validateResponse = data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
                 if (validateResponse.actionCode != null && validateResponse.actionCode == CardinalActionCode.CANCEL) {
                     Logger.debug("3DS 2.0 canceled")
-                    callback.onFailed(AirwallexError(message = "3DS 2.0 canceled"))
+                    callback.onFailed(ThreeDSException(message = "3DS 2.0 canceled"))
                 } else {
                     if (validateResponse.errorDescription.toLowerCase(Locale.ROOT) == "success") {
                         Logger.debug("3DS 2.0 success. Response payload: ${validateResponse.payment.processorTransactionId}")
                         callback.onThreeDS2Success(validateResponse.payment.processorTransactionId)
                     } else {
                         Logger.debug("3DS 2.0 failed. Reason: ${validateResponse.errorDescription}")
-                        callback.onFailed(AirwallexError(message = validateResponse.errorDescription))
+                        callback.onFailed(ThreeDSException(message = validateResponse.errorDescription))
                     }
                 }
             }

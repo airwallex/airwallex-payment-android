@@ -6,11 +6,10 @@ import android.os.Bundle
 import com.airwallex.android.Airwallex
 import com.airwallex.android.CurrencyUtils.formatPrice
 import com.airwallex.android.R
-import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.AirwallexError
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
+import java.lang.Exception
 
 /**
  * Activity to confirm payment intent
@@ -71,22 +70,22 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                     finishWithPaymentIntent(paymentIntent = response)
                 }
 
-                override fun onFailed(exception: AirwallexException) {
-                    finishWithPaymentIntent(error = exception.error)
+                override fun onFailed(exception: Exception) {
+                    finishWithPaymentIntent(exception = exception)
                 }
             })
     }
 
     private fun finishWithPaymentIntent(
         paymentIntent: PaymentIntent? = null,
-        error: AirwallexError? = null
+        exception: Exception? = null
     ) {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
             PaymentCheckoutActivityLaunch.Result(
                 paymentIntent = paymentIntent,
-                error = error
+                exception = exception
             ).toBundle()
         )
         )

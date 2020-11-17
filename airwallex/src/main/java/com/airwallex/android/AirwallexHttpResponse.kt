@@ -1,7 +1,6 @@
 package com.airwallex.android
 
 import com.airwallex.android.exception.APIException
-import com.airwallex.android.model.AirwallexError
 import org.json.JSONException
 import org.json.JSONObject
 import kotlin.jvm.Throws
@@ -24,8 +23,7 @@ internal data class AirwallexHttpResponse internal constructor(
                 } catch (e: JSONException) {
                     throw APIException(
                         message = "Exception while parsing response body. Status code: $code Trace-Id: $traceId",
-                        e = e,
-                        error = AirwallexError(message = e.localizedMessage)
+                        e = e
                     )
                 }
             } ?: JSONObject()

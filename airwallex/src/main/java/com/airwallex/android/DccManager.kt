@@ -2,19 +2,19 @@ package com.airwallex.android
 
 import android.app.Activity
 import android.content.Intent
-import com.airwallex.android.model.AirwallexError
+import com.airwallex.android.exception.DccException
 import com.airwallex.android.view.SelectCurrencyActivityLaunch
 
-object SelectCurrencyManager {
+object DccManager {
 
-    var selectCurrencyCallback: SelectCurrencyCallback? = null
+    var dccCallback: DccCallback? = null
 
     internal fun handleOnActivityResult(data: Intent?, resultCode: Int) {
-        selectCurrencyCallback?.let {
+        dccCallback?.let {
             try {
                 onActivityResult(data, resultCode, it)
             } catch (e: Exception) {
-                it.onFailed(AirwallexError(message = e.localizedMessage))
+                it.onFailed(DccException(message = e.localizedMessage ?: "Dcc failed."))
             }
         }
     }
@@ -22,10 +22,10 @@ object SelectCurrencyManager {
     private fun onActivityResult(
         data: Intent?,
         resultCode: Int,
-        callback: SelectCurrencyCallback
+        callback: DccCallback
     ) {
         if (data == null) {
-            callback.onFailed(AirwallexError(message = "Confirm PaymentIntent Failed. Reason: Intent data is null"))
+            callback.onFailed(DccException(message = "Dcc Failed. Reason: Intent data is null"))
             return
         }
         when (resultCode) {
@@ -35,12 +35,12 @@ object SelectCurrencyManager {
                 if (paymentIntent != null) {
                     callback.onSuccess(paymentIntent)
                 } else {
-                    callback.onFailed(result?.error
-                        ?: AirwallexError("Confirm PaymentIntent Failed."))
+                    callback.onFailed(result?.exception
+                        ?: DccException(message = "Dcc Failed."))
                 }
             }
             Activity.RESULT_CANCELED -> {
-                callback.onFailed(AirwallexError(message = "Please select your currency."))
+                callback.onFailed(DccException(message = "Please select your currency."))
             }
         }
     }

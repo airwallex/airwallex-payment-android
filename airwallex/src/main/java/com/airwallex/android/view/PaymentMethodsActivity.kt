@@ -10,7 +10,6 @@ import com.airwallex.android.Airwallex
 import com.airwallex.android.ClientSecretRepository
 import com.airwallex.android.R
 import com.airwallex.android.RetrievePaymentMethodParams
-import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -124,8 +123,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                             pageNum.incrementAndGet()
                         }
 
-                        override fun onFailed(exception: AirwallexException) {
-                            alert(message = exception.error.message ?: exception.toString())
+                        override fun onFailed(exception: Exception) {
+                            alert(message = exception.message ?: exception.toString())
                             paymentMethodsAdapter.setPaymentMethods(arrayListOf(), false)
                             paymentMethodsAdapter.endLoadingMore()
                         }
@@ -168,8 +167,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                             )
                         }
 
-                        override fun onFailed(exception: AirwallexException) {
-                            finishWithPaymentIntent(error = exception.error)
+                        override fun onFailed(exception: Exception) {
+                            finishWithPaymentIntent(exception = exception)
                         }
                     }
                 )
@@ -212,7 +211,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
                 val result = PaymentCheckoutActivityLaunch.Result.fromIntent(data)
                 result?.let {
-                    finishWithPaymentIntent(it.paymentIntent, it.error)
+                    finishWithPaymentIntent(it.paymentIntent, it.exception)
                 }
             }
         }
@@ -236,14 +235,14 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private fun finishWithPaymentIntent(
         paymentIntent: PaymentIntent? = null,
-        error: AirwallexError? = null
+        exception: Exception? = null
     ) {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
             PaymentMethodsActivityLaunch.Result(
                 paymentIntent = paymentIntent,
-                error = error,
+                exception = exception,
                 includeCheckoutFlow = args.includeCheckoutFlow
             ).toBundle()
         )

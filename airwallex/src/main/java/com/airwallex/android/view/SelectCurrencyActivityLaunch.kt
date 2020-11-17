@@ -3,11 +3,13 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcel
 import androidx.fragment.app.Fragment
-import com.airwallex.android.model.AirwallexError
+import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.Device
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.view.SelectCurrencyActivityLaunch.Args
+import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
 
 internal class SelectCurrencyActivityLaunch : AirwallexActivityLaunch<SelectCurrencyActivity, Args> {
@@ -42,15 +44,27 @@ internal class SelectCurrencyActivityLaunch : AirwallexActivityLaunch<SelectCurr
     @Parcelize
     internal data class Result internal constructor(
         val paymentIntent: PaymentIntent? = null,
-        val error: AirwallexError? = null
+        var exception: Exception? = null
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
-            val bundle = Bundle()
-            bundle.putParcelable(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA, this)
-            return bundle
+            return Bundle().also {
+                it.putParcelable(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA, this)
+            }
         }
 
-        companion object {
+        internal companion object : Parceler<Result> {
+            override fun create(parcel: Parcel): Result {
+                return Result(
+                    paymentIntent = parcel.readParcelable(PaymentIntent::class.java.classLoader),
+                    exception = parcel.readSerializable() as? AirwallexException?
+                )
+            }
+
+            override fun Result.write(parcel: Parcel, flags: Int) {
+                parcel.writeParcelable(paymentIntent, 0)
+                parcel.writeSerializable(exception)
+            }
+
             fun fromIntent(intent: Intent?): Result? {
                 return intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
             }

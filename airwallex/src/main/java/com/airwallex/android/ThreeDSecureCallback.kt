@@ -1,6 +1,7 @@
 package com.airwallex.android
 
 import com.airwallex.android.model.AirwallexError
+import java.lang.Exception
 
 /**
  * Callback for 3DS
@@ -19,5 +20,5 @@ internal interface ThreeDSecureCallback {
     /**
      * 3DS failed with [AirwallexError]
      */
-    fun onFailed(exception: AirwallexError)
+    fun onFailed(exception: Exception)
 }
