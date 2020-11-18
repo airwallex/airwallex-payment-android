@@ -1,9 +1,6 @@
 package com.airwallex.android
 
-import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethodReference
-import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.model.*
 
 /**
  * The params that used for confirm [PaymentIntent]
@@ -90,13 +87,15 @@ data class ConfirmPaymentIntentParams internal constructor(
          *
          * @param paymentIntentId the ID of the [PaymentIntent], required.
          * @param clientSecret the clientSecret of [PaymentIntent], required.
-         * @param paymentMethodReference the [PaymentMethodReference] that need for credit card payment, required
+         * @param paymentMethodId the ID of the [PaymentMethod], required.
+         * @param cvc the CVC of the Credit Card, required.
          * @param customerId the customerId of [PaymentIntent], optional.
          */
         fun createCardParams(
             paymentIntentId: String,
             clientSecret: String,
-            paymentMethodReference: PaymentMethodReference,
+            paymentMethodId: String,
+            cvc: String,
             customerId: String? = null
         ): ConfirmPaymentIntentParams {
             return Builder(
@@ -106,7 +105,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setCustomerId(customerId)
                 .setPaymentMethod(
                     PaymentMethodType.CARD,
-                    paymentMethodReference
+                    PaymentMethodReference(paymentMethodId, cvc)
                 )
                 .build()
         }

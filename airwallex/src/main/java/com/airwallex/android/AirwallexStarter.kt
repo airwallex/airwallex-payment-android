@@ -70,10 +70,17 @@ class AirwallexStarter constructor(
         fun onSuccess(paymentMethod: PaymentMethod, cvc: String?)
     }
 
+    /**
+     * Represents a listener for Add PaymentMethod
+     */
+    interface AddPaymentMethodListener : PaymentListener {
+        fun onSuccess(paymentMethod: PaymentMethod, cvc: String)
+    }
+
     private var shippingFlowListener: PaymentShippingListener? = null
     private var paymentFlowListener: PaymentIntentListener? = null
     private var paymentDetailListener: PaymentIntentListener? = null
-    private var addPaymentMethodFlowListener: PaymentMethodListener? = null
+    private var addPaymentMethodFlowListener: AddPaymentMethodListener? = null
     private var selectPaymentMethodFlowListener: PaymentMethodListener? = null
 
     /**
@@ -103,7 +110,7 @@ class AirwallexStarter constructor(
     fun presentAddPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
-        addPaymentMethodFlowListener: PaymentMethodListener
+        addPaymentMethodFlowListener: AddPaymentMethodListener
     ) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided on add payment method flow"
