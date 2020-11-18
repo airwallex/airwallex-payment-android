@@ -24,10 +24,6 @@ object DccManager {
         resultCode: Int,
         callback: DccCallback
     ) {
-        if (data == null) {
-            callback.onFailed(DccException(message = "Dcc Failed. Reason: Intent data is null"))
-            return
-        }
         when (resultCode) {
             Activity.RESULT_OK -> {
                 val result = SelectCurrencyActivityLaunch.Result.fromIntent(data)
@@ -36,11 +32,11 @@ object DccManager {
                     callback.onSuccess(paymentIntent)
                 } else {
                     callback.onFailed(result?.exception
-                        ?: DccException(message = "Dcc Failed."))
+                        ?: DccException(message = "Dcc failed."))
                 }
             }
             Activity.RESULT_CANCELED -> {
-                callback.onFailed(DccException(message = "Please select your currency."))
+                callback.onFailed(DccException(message = "Dcc failed. Reason: User cancel the Dcc"))
             }
         }
     }

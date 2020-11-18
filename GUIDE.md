@@ -204,7 +204,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         })
 ```
 
-- Customize the usage of select one of payment methods, you need to pass in a `PaymentIntent` object. It will display all the saved payment methods of the current customer, you can choose any one to pay
+- Customize the usage of select one of payment methods, you need to pass in a `PaymentIntent` and `ClientSecretProvider` object. It will display all the saved payment methods of the current customer, you can choose any one to pay
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
@@ -221,7 +221,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         })
 ```
 
-- Customize the usage of card creation you can enter a credit card number, expiration time and cvc to create a payment method. You need to pass in a `paymentIntent` object.
+- Customize the usage of card creation you can enter a credit card number, expiration time and cvc to create a payment method. You need to pass in a `paymentIntent` and `ClientSecretProvider` object.
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
