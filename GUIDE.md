@@ -93,28 +93,31 @@ After completing all the steps on the server, the client will get a `PaymentInte
             // Confirm Payment Intent success
         }
 
-        override fun onFailed(exception: AirwallexException) {
+        override fun onFailed(exception: Exception) {
             // Confirm Payment Intent failed
         }
     }
-    if (paymentMethod.type == PaymentMethodType.WECHAT) {
-        val params =  ConfirmPaymentIntentParams.createWeChatParams(
-            paymentIntentId = paymentIntent.id,
-            clientSecret = requireNotNull(paymentIntent.clientSecret),
-            customerId = paymentIntent.customerId
-        )
-        airwallex.confirmPaymentIntent(this, params, listener)
-    } else if (paymentMethod.type == PaymentMethodType.CARD) {
-        val params = ConfirmPaymentIntentParams.createCardParams(
-            paymentIntentId = paymentIntent.id,
-            clientSecret = requireNotNull(paymentIntent.clientSecret),
-            paymentMethodReference = PaymentMethodReference(
-                requireNotNull(paymentMethod.id),
-                requireNotNull(cvc)
-            ),
-            customerId = paymentIntent.customerId
-        )
-        airwallex.confirmPaymentIntent(this, params, listener)
+    when (paymentMethod.type) {
+        PaymentMethodType.WECHAT -> {
+            val params = ConfirmPaymentIntentParams.createWeChatParams(
+                paymentIntentId = paymentIntent.id,
+                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                customerId = paymentIntent.customerId
+            )
+            airwallex.confirmPaymentIntent(this, params, listener)
+        }
+        PaymentMethodType.CARD -> {
+            val params = ConfirmPaymentIntentParams.createCardParams(
+                paymentIntentId = paymentIntent.id,
+                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                paymentMethodReference = PaymentMethodReference(
+                    requireNotNull(paymentMethod.id),
+                    requireNotNull(cvc)
+                ),
+                customerId = paymentIntent.customerId
+            )
+            airwallex.confirmPaymentIntent(this, params, listener)
+        }
     }
 ```
 
@@ -165,7 +168,7 @@ After successful payment, the Airwallex server will notify the Merchant, then yo
                 }
             }
     
-            override fun onFailed(exception: AirwallexException) {
+            override fun onFailed(exception: Exception) {
                 
             }
         })
@@ -180,16 +183,10 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
     // Create `AirwallexStarter` object
     val airwallexStarter = AirwallexStarter(activity)
 
-    // Override `onActivityResult`, then call `handlePaymentResult`
+    // Override `onActivityResult`
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         airwallexStarter.onActivityResult(requestCode, resultCode, data)
-    }
-
-    // Call `airwallexStarter.onDestroy()` on `onDestroy`
-    override fun onDestroy() {
-        airwallexStarter.onDestroy()
-        super.onDestroy()
     }
 ```
 
@@ -207,7 +204,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         })
 ```
 
-- Customize the usage of select one of payment methods, you need to pass in a `paymentIntent` object. It will display all the saved payment methods of the current customer, you can choose any one to pay
+- Customize the usage of select one of payment methods, you need to pass in a `PaymentIntent` object. It will display all the saved payment methods of the current customer, you can choose any one to pay
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
@@ -230,8 +227,8 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         ExampleClientSecretProvider()
     }
     airwallexStarter.presentAddPaymentMethodFlow(paymentIntent,
-        object : AirwallexStarter.PaymentMethodListener {
-            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+        object : AirwallexStarter.AddPaymentMethodListener {
+            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String) {
                 Log.d(TAG, "Create PaymentMethod success")
             }
 
@@ -241,7 +238,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         })
 ```
 
-- Customize the usage of payment detail. You need to pass in a `paymentIntent` object and a `paymentMethod` object. It will display the current payment amount has been paid, encapsulated the specific operation of payment, will return the PaymentIntent or AirwallexError through the callback method
+- Customize the usage of payment detail. You need to pass in a `PaymentIntent` object and a `PaymentMethod` object. It will display the current payment amount has been paid, encapsulated the specific operation of payment, will return the `PaymentIntent` or `Exception` through the callback method
 ```kotlin
     airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod,
         object : AirwallexStarter.PaymentIntentListener {
@@ -249,7 +246,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
                Log.d(TAG, "Confirm payment intent success")
             }
 
-           override fun onFailed(error: AirwallexError) {
+           override fun onFailed(exception: Exception) {
                Log.d(TAG, "Confirm payment intent failed")
            }
                            
@@ -259,7 +256,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
         })
 ```
 
-- Show Payment Flow, need to pass in a `paymentIntent` object. You can complete the entire payment process by calling this method, will return the PaymentIntent or AirwallexError through the callback method
+- Show Payment Flow, need to pass in a `PaymentIntent` object. You can complete the entire payment process by calling this method, will return the `PaymentIntent` or `Exception` through the callback method
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
@@ -270,7 +267,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
                 Log.d(TAG, "Confirm payment intent success")
             }
 
-            override fun onFailed(error: AirwallexError) {
+            override fun onFailed(exception: Exception) {
                 Log.d(TAG, "Confirm payment intent failed")
             }
                 

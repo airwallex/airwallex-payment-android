@@ -204,12 +204,15 @@ class Airwallex internal constructor(
      * @return `true` if the activity result was handled by this function,
      * otherwise `false`
      */
-    fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?) {
+    fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (requestCode == SelectCurrencyActivityLaunch.REQUEST_CODE) {
             DccManager.handleOnActivityResult(data, resultCode)
+            return true
         } else if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE) {
             ThreeDSecureManager.handleOnActivityResult(data)
+            return true
         }
+        return false
     }
 
     companion object {

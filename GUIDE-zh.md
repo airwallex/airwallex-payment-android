@@ -93,28 +93,29 @@ repositories {
             // Confirm Payment Intent success
         }
 
-        override fun onFailed(exception: AirwallexException) {
+        override fun onFailed(exception: Exception) {
             // Confirm Payment Intent failed
         }
     }
-    if (paymentMethod.type == PaymentMethodType.WECHAT) {
-        val params =  ConfirmPaymentIntentParams.createWeChatParams(
-            paymentIntentId = paymentIntent.id,
-            clientSecret = requireNotNull(paymentIntent.clientSecret),
-            customerId = paymentIntent.customerId
-        )
-        airwallex.confirmPaymentIntent(this, params, listener)
-    } else if (paymentMethod.type == PaymentMethodType.CARD) {
-        val params = ConfirmPaymentIntentParams.createCardParams(
-            paymentIntentId = paymentIntent.id,
-            clientSecret = requireNotNull(paymentIntent.clientSecret),
-            paymentMethodReference = PaymentMethodReference(
-                requireNotNull(paymentMethod.id),
-                requireNotNull(cvc)
-            ),
-            customerId = paymentIntent.customerId
-        )
-        airwallex.confirmPaymentIntent(this, params, listener)
+    when (paymentMethod.type) {
+        PaymentMethodType.WECHAT -> {
+            val params = ConfirmPaymentIntentParams.createWeChatParams(
+                paymentIntentId = paymentIntent.id, // Required
+                clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
+                customerId = paymentIntent.customerId // Optional
+            )
+            airwallex.confirmPaymentIntent(this, params, listener)
+        }
+        PaymentMethodType.CARD -> {
+            val params = ConfirmPaymentIntentParams.createCardParams(
+                paymentIntentId = paymentIntent.id, // Required
+                clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
+                paymentMethodId = requireNotNull(paymentMethod.id), // Required
+                cvc = requireNotNull(cvc), // Required
+                customerId = paymentIntent.customerId // Optional
+            )
+            airwallex.confirmPaymentIntent(this, params, listener)
+        }
     }
 ```
 
@@ -164,7 +165,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
                 }
             }
     
-            override fun onFailed(exception: AirwallexException) {
+            override fun onFailed(exception: Exception) {
                 
             }
         })
@@ -173,25 +174,19 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 ### UI集成
 我们提供了一些自定义UI，可以在你的Android App中快速集成支付功能。你可以单独使用某一个界面或某几个界面
 
-- 初始化`AirwallexStarter`
+- 初始化`AirwallexStarter`，这是所有UI的接口
 ```kotlin
     // Create `AirwallexStarter` object
     val airwallexStarter = AirwallexStarter(activity)
 
-    // Override `onActivityResult`, then call `handlePaymentResult`
+    // 重写 `onActivityResult`，需要处理所有UI的result
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         airwallexStarter.onActivityResult(requestCode, resultCode, data)
     }
-
-    // Call `airwallexStarter.onDestroy()` on `onDestroy`
-    override fun onDestroy() {
-        airwallexStarter.onDestroy()
-        super.onDestroy()
-    }
 ```
 
-- Shipping Info 界面， shipping 字段是可选的。成功保存后，它将返回一个`shipping`对象
+- Shipping Info 界面，shipping 字段是可选的（可为null）。成功保存后，回调中将返回一个`Shipping`对象
 ```kotlin
     airwallexStarter.presentShippingFlow(shipping,
         object : AirwallexStarter.PaymentShippingListener {
@@ -205,13 +200,14 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
         })
 ```
 
-- Payment Methods 界面, 你需要传入一个`paymentIntent`对象. 这个界面将显示当前用户保存的所有付款方式，你可以选择任何一种进行付款
+- 选择支付方式界面, 你需要传入一个`paymentIntent`和`clientSecretProvider`对象. 这个界面将显示当前用户保存的所有付款方式，你可以选择任何一种进行付款。会在回调中返回你所选择的支付方式，包括信用卡支付和微信支付
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
     }
     airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider,
         object : AirwallexStarter.PaymentMethodListener {
+            // 如果是新创建PaymentMethod，则会返回cvc，否则都为null
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 Log.d(TAG, "Select PaymentMethod success")
             }
@@ -222,13 +218,13 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
         })
 ```
 
-- Enter credit card 界面，你需要输入信用卡卡号，过期时间，CVC 来创建 PaymentMethod. 你需要传入一个`paymentIntent`对象。
+- 添加新的信用卡界面，你需要输入信用卡卡号，过期时间，CVC 来创建 PaymentMethod. 你需要传入一个`PaymentIntent`和自定义的`ClientSecretProvider`对象。成功之后会在回调中返回你新创建的PaymentMethod
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
     }
     airwallexStarter.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider,
-        object : AirwallexStarter.PaymentMethodListener {
+        object : AirwallexStarter.AddPaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 Log.d(TAG, "Create PaymentMethod success")
             }
@@ -239,7 +235,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
         })
 ```
 
-- Payment Detail 界面，你需要传入一个`paymentIntent`对象和一个`paymentMethod`对象。界面会显示当前付款金额已经支付方式等数据，支付完成之后，将通过回调方法返回`PaymentIntent`或`AirwallexError`
+- 支付界面，你需要传入一个`PaymentIntent`对象和一个`PaymentMethod`对象。界面会显示当前付款金额已经支付方式等数据，支付完成之后，将通过回调方法返回`PaymentIntent`或`Exception`
 ```kotlin
     airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod,
         object : AirwallexStarter.PaymentIntentListener {
@@ -247,7 +243,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
                Log.d(TAG, "Confirm payment intent success")
             }
 
-           override fun onFailed(error: AirwallexError) {
+           override fun onFailed(exception: Exception) {
                Log.d(TAG, "Confirm payment intent failed")
            }
                            
@@ -257,7 +253,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
         })
 ```
 
-- 使用整个 Payment Flow, 需要传入一个`paymentIntent`对象. 你可以通过调用此方法来完成整个付款过程，支付完成之后，将通过回调方法返回`PaymentIntent`或`AirwallexError`
+- 使用整个 Payment Flow, 需要传入一个`PaymentIntent`对象. 你可以通过调用此方法来完成整个付款过程，支付完成之后，将通过回调方法返回`PaymentIntent`或`Exception`
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
@@ -268,7 +264,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
                 Log.d(TAG, "Confirm payment intent success")
             }
 
-            override fun onFailed(error: AirwallexError) {
+            override fun onFailed(exception: Exception) {
                 Log.d(TAG, "Confirm payment intent failed")
             }
                 
