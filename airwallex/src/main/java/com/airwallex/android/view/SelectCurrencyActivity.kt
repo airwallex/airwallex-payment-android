@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ContinuePaymentIntentParams
+import com.airwallex.android.Logger
 import com.airwallex.android.R
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentContinueType
@@ -38,10 +39,12 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
 
         current_currency.isSelected = true
         current_currency.setOnClickListener {
+            Logger.debug("Current currency selected")
             current_currency.isSelected = true
             transfer_currency.isSelected = false
         }
         transfer_currency.setOnClickListener {
+            Logger.debug("Transfer currency selected")
             current_currency.isSelected = false
             transfer_currency.isSelected = true
         }

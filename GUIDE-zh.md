@@ -60,7 +60,7 @@ repositories {
 ```groovy
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
-            .enableLogging(true)                // 在SDK中打开log，需要在发布release版本的时候设置成false
+            .enableLogging(true)                // 在SDK中打开log，可以查看更多相信信息，需要在发布release版本的时候设置成false
             .setEnvironment(Environment.DEMO)   // 你可以修改environment来切换测试环境
             .build()
     )
@@ -122,12 +122,12 @@ repositories {
 ```kotlin
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        
-        // 如果是卡支付，必须在onActivityResult中调用这个方法
+        // 如果是仅支持微信支付，不需要调用这个方法
+        // 如果是卡支付，必须在onActivityResult中调用这个方法(需要处理3ds以及dcc返回的结果)
         airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
-3. 成功confirm `PaymentIntent`之后
+3. 成功confirm `PaymentIntent`之后（信用卡支付不需要再做任何处理）
 - 微信支付
 Airwallex将返回微信支付所需的所有参数。你需要调用 [微信支付](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml)来完成最终的支付。
 可以查看[Sample](https://github.com/airwallex/airwallex-payment-android/tree/master)获得更多信息。
@@ -148,8 +148,6 @@ Airwallex将返回微信支付所需的所有参数。你需要调用 [微信支
     weChatApi.sendReq(weChatReq)
 ```
  
-- 信用卡支付. 你可以直接提供用户confirm `PaymentIntent` 的结果
-
 #### Retrieve Payment Intent 来确认支付是否成功
 confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`retrievePaymentIntent`方法，并检查结果中的`status`字段来确认支付是否成功
 ```kotlin
@@ -172,7 +170,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 ```
 
 ### UI集成
-我们提供了一些自定义UI，可以在你的Android App中快速集成支付功能。你可以单独使用某一个界面或某几个界面
+我们提供了一些自定义UI界面，可以在你的Android App中快速集成支付功能。你可以单独使用某一个界面或组合使用某几个界面
 
 - 初始化`AirwallexStarter`，这是所有UI的接口
 ```kotlin
@@ -200,14 +198,14 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
         })
 ```
 
-- 选择支付方式界面, 你需要传入一个`paymentIntent`和`clientSecretProvider`对象. 这个界面将显示当前用户保存的所有付款方式，你可以选择任何一种进行付款。会在回调中返回你所选择的支付方式，包括信用卡支付和微信支付
+- 选择支付方式界面, 你需要传入一个`PaymentIntent`和`ClientSecretProvider`对象. 这个界面将显示当前用户保存的所有付款方式，你可以选择任何一种进行付款。会在回调中返回你所选择的支付方式，包括信用卡支付和微信支付
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
     }
     airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider,
         object : AirwallexStarter.PaymentMethodListener {
-            // 如果是新创建PaymentMethod，则会返回cvc，否则都为null
+            // 如果是新创建Card PaymentMethod，则会返回cvc，否则都为null
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 Log.d(TAG, "Select PaymentMethod success")
             }
@@ -226,7 +224,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
     airwallexStarter.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider,
         object : AirwallexStarter.AddPaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
-                Log.d(TAG, "Create PaymentMethod success")
+                Log.d(TAG, "Create Card PaymentMethod success")
             }
 
             override fun onCancelled() {

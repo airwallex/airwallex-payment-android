@@ -111,7 +111,7 @@ internal object ThreeDSecureManager {
                     val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
                     if (cancel) {
                         Logger.debug("3DS 1.0 canceled")
-                        callback.onFailed(ThreeDSException(message = "3DS 1.0 canceled"))
+                        callback.onFailed(ThreeDSException(message = "3DS 1.0 failed. Reason: User cancel the 3DS 1.0"))
                     } else {
                         val reason = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_FAILED_REASON)
                         Logger.debug("3DS 1.0 failed. Reason: $reason")
@@ -124,7 +124,7 @@ internal object ThreeDSecureManager {
                 val validateResponse = data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
                 if (validateResponse.actionCode != null && validateResponse.actionCode == CardinalActionCode.CANCEL) {
                     Logger.debug("3DS 2.0 canceled")
-                    callback.onFailed(ThreeDSException(message = "3DS 2.0 canceled"))
+                    callback.onFailed(ThreeDSException(message = "3DS 2.0 failed. Reason: User cancel the 3DS 2.0"))
                 } else {
                     if (validateResponse.errorDescription.toLowerCase(Locale.ROOT) == "success") {
                         Logger.debug("3DS 2.0 success. Response payload: ${validateResponse.payment.processorTransactionId}")
