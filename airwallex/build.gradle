@@ -33,7 +33,7 @@ android {
 
         consumerProguardFiles 'proguard-rules.pro'
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
 
@@ -49,7 +49,7 @@ android.buildTypes.each { type ->
 
 dependencies {
     // material
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.android.support:design:28.0.0'
     // cardinal
     api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.3-2'
     // fingerprinting
@@ -59,13 +59,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
-
-    // test
-    testImplementation 'junit:junit:4.13.1'
-    testImplementation 'org.robolectric:robolectric:4.4'
-    testImplementation 'androidx.test:core:1.3.0'
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
 }
 
 ext {

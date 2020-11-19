@@ -1,13 +1,13 @@
 package com.airwallex.android.view
 
 import android.content.Context
+import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
 import java.util.*
 import kotlinx.android.synthetic.main.country_autocomplete_view.view.*
@@ -100,6 +100,13 @@ internal class CountryAutoCompleteView constructor(
                     null
                 }
             }
+        }
+        actCountry.setOnDismissListener {
+            dropDown.rotation = 0f
+        }
+        dropDown.setOnClickListener {
+            actCountry.showDropDown()
+            dropDown.rotation = 180f
         }
     }
 

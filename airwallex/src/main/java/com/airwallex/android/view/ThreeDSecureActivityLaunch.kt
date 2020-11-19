@@ -2,7 +2,7 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Intent
-import androidx.fragment.app.Fragment
+import android.support.v4.app.Fragment
 import com.airwallex.android.model.ThreeDSecureLookup
 import com.airwallex.android.view.ThreeDSecureActivityLaunch.Args
 import kotlinx.android.parcel.Parcelize

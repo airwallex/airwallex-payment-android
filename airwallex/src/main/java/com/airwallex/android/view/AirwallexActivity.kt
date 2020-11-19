@@ -3,10 +3,10 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
+import android.support.annotation.DrawableRes
+import android.support.v7.app.AlertDialog
 import android.view.MenuItem
-import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import android.support.v7.app.AppCompatActivity
 import com.airwallex.android.Logger
 import com.airwallex.android.R
 import kotlinx.android.synthetic.main.activity_airwallex.*

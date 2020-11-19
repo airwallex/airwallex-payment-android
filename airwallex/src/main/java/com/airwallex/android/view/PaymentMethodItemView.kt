@@ -3,12 +3,12 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Context
 import android.os.Build
+import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
-import androidx.core.content.ContextCompat
 import com.airwallex.android.R
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType

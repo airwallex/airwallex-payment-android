@@ -12,7 +12,7 @@ Airwallx Android SDK 可以很方便得在你的Android用用中添加支付功�
 在 `build.gradle`中添加以下依赖
 ```groovy
 dependencies {
-    implementation 'com.airwallex:airwallex-core:2.0.2'
+    implementation 'com.airwallex:airwallex-core:2.0.2-support'
 }
 ```
 

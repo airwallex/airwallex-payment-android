@@ -37,7 +37,7 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 
 ```groovy
     dependencies {
-        implementation 'com.airwallex:airwallex-core:2.0.2'
+        implementation 'com.airwallex:airwallex-core:2.0.2-support'
     }
 ```
 

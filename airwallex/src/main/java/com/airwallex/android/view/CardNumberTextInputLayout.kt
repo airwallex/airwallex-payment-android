@@ -36,14 +36,11 @@ internal class CardNumberTextInputLayout constructor(
 
     init {
         val input = teInput as CardNumberEditText
-        tlInput.errorIconDrawable = null
         input.errorCallback = { showError ->
-            if (showError) {
-                error = resources.getString(R.string.invalid_card_number)
-                tlInput.error = " "
+            error = if (showError) {
+                resources.getString(R.string.invalid_card_number)
             } else {
-                error = null
-                tlInput.error = null
+                null
             }
         }
 

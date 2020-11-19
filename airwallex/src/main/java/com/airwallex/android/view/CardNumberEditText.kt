@@ -1,13 +1,13 @@
 package com.airwallex.android.view
 
 import android.content.Context
+import android.support.design.widget.TextInputEditText
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import com.airwallex.android.R
-import com.google.android.material.textfield.TextInputEditText
 
 /**
  * A [TextInputEditText] to format the credit card number
@@ -15,7 +15,7 @@ import com.google.android.material.textfield.TextInputEditText
 internal class CardNumberEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
+    defStyleAttr: Int = R.attr.editTextStyle
 ) : TextInputEditText(context, attrs, defStyleAttr) {
 
     internal companion object {

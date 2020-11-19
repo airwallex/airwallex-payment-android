@@ -1,10 +1,10 @@
 package com.airwallex.android.view
 
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.R
 import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*

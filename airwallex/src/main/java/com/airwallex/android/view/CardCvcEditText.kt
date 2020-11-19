@@ -7,7 +7,7 @@ import android.text.InputType
 import android.util.AttributeSet
 import android.view.View
 import com.airwallex.android.R
-import com.google.android.material.textfield.TextInputEditText
+import android.support.design.widget.TextInputEditText
 
 /**
  * A [TextInputEditText] to format the credit card cvc
@@ -15,7 +15,7 @@ import com.google.android.material.textfield.TextInputEditText
 internal class CardCvcEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
+    defStyleAttr: Int = R.attr.editTextStyle
 ) : TextInputEditText(context, attrs, defStyleAttr) {
 
     /**

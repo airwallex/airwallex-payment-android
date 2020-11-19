@@ -52,7 +52,7 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
 
         manifestPlaceholders = [
@@ -98,10 +98,10 @@ android {
 dependencies {
     implementation project(':airwallex')
 
-//    implementation 'com.airwallex:airwallex-core:2.0.2'
+//    implementation 'com.airwallex:airwallex-core:2.0.2-support'
 
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:preference-v7:28.0.0'
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
@@ -113,5 +113,5 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
+//    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
 }

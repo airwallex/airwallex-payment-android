@@ -1,6 +1,9 @@
 # Airwallex Android SDK Changelog
 All notable changes to the SDK will be documented in this file.
 
+## Version 2.0.2-support (November 19, 2020)
+- Remove okhttp & gson
+
 ## Version 2.0.2 (November 19, 2020)
 - Remove okhttp & gson
 

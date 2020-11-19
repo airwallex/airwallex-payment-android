@@ -3,7 +3,7 @@ package com.airwallex.paymentacceptance
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import androidx.preference.PreferenceManager
+import android.support.v7.preference.PreferenceManager
 
 object Settings {
 

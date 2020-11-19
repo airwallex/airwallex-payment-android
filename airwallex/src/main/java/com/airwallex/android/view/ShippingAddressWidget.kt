@@ -116,5 +116,7 @@ internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
                 atlStreetAddress.error = null
             }
         }
+
+        atlZipCode.afterFocusChanged {}
     }
 }

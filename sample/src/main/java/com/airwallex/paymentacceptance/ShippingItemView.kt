@@ -1,10 +1,10 @@
 package com.airwallex.paymentacceptance
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
-import androidx.core.content.ContextCompat
 import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.shipping_item.view.*
 import java.util.*

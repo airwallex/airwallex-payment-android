@@ -2,7 +2,7 @@ package com.airwallex.android
 
 import android.app.Activity
 import android.content.Intent
-import androidx.fragment.app.Fragment
+import android.support.v4.app.Fragment
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
