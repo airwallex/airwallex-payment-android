@@ -83,7 +83,7 @@ repositories {
 1. 初始化一个 `Airwallex` 对象, 这个 Airwallex SDK 的入口.
 
 ```kotlin
-    val airwallex = Airwallex()
+    val airwallex = Airwallex(this)
 ```
 
 2. 然后你可以调用 `confirmPaymentIntent` 方法
@@ -172,22 +172,10 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 ### UI集成
 我们提供了一些自定义UI界面，可以在你的Android App中快速集成支付功能。你可以单独使用某一个界面或组合使用某几个界面
 
-- 初始化`AirwallexStarter`，这是所有UI的接口
-```kotlin
-    // Create `AirwallexStarter` object
-    val airwallexStarter = AirwallexStarter(activity)
-
-    // 重写 `onActivityResult`，需要处理所有UI的result
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        airwallexStarter.onActivityResult(requestCode, resultCode, data)
-    }
-```
-
 - Shipping Info 界面，shipping 字段是可选的（可为null）。成功保存后，回调中将返回一个`Shipping`对象
 ```kotlin
-    airwallexStarter.presentShippingFlow(shipping,
-        object : AirwallexStarter.PaymentShippingListener {
+    airwallex.presentShippingFlow(shipping,
+        object : Airwallex.PaymentShippingListener {
             override fun onSuccess(shipping: Shipping) {
                 Log.d(TAG, "Save the shipping success")
             }
@@ -203,8 +191,8 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
     }
-    airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider,
-        object : AirwallexStarter.PaymentMethodListener {
+    airwallex.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider,
+        object : Airwallex.PaymentMethodListener {
             // 如果是新创建Card PaymentMethod，则会返回cvc，否则都为null
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 Log.d(TAG, "Select PaymentMethod success")
@@ -221,8 +209,8 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
     }
-    airwallexStarter.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider,
-        object : AirwallexStarter.AddPaymentMethodListener {
+    airwallex.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider,
+        object : Airwallex.AddPaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 Log.d(TAG, "Create Card PaymentMethod success")
             }
@@ -235,8 +223,8 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
 
 - 支付界面，你需要传入一个`PaymentIntent`对象和一个`PaymentMethod`对象。界面会显示当前付款金额已经支付方式等数据，支付完成之后，将通过回调方法返回`PaymentIntent`或`Exception`
 ```kotlin
-    airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod,
-        object : AirwallexStarter.PaymentIntentListener {
+    airwallex.presentPaymentDetailFlow(paymentIntent, paymentMethod,
+        object : Airwallex.PaymentIntentListener {
            override fun onSuccess(paymentIntent: PaymentIntent) {
                Log.d(TAG, "Confirm payment intent success")
             }
@@ -256,8 +244,8 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
     }
-    airwallexStarter.presentPaymentFlow(paymentIntent, clientSecretProvider,
-        object : AirwallexStarter.PaymentIntentListener {
+    airwallex.presentPaymentFlow(paymentIntent, clientSecretProvider,
+        object : Airwallex.PaymentIntentListener {
             override fun onSuccess(paymentIntent: PaymentIntent) {
                 Log.d(TAG, "Confirm payment intent success")
             }

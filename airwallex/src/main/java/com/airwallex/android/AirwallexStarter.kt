@@ -15,7 +15,7 @@ import com.airwallex.android.view.*
  *  @param activity This Activity will receive results in `Activity#onActivityResult(int, int, Intent)`
  *  that should be passed back to this session.
  */
-class AirwallexStarter constructor(
+internal class AirwallexStarter constructor(
     private val activity: Activity,
     private val addPaymentMethodActivityLaunch: AddPaymentMethodActivityLaunch,
     private val paymentShippingActivityLaunch: PaymentShippingActivityLaunch,
@@ -43,45 +43,12 @@ class AirwallexStarter constructor(
         PaymentCheckoutActivityLaunch(activity)
     )
 
-    interface PaymentListener {
-        fun onCancelled()
-    }
 
-    /**
-     * Represents a listener for PaymentShipping actions
-     */
-    interface PaymentShippingListener : PaymentListener {
-        fun onSuccess(shipping: Shipping)
-    }
-
-    /**
-     * Represents a listener for PaymentIntent actions
-     */
-    interface PaymentIntentListener : PaymentListener {
-        fun onSuccess(paymentIntent: PaymentIntent)
-        fun onFailed(error: Exception)
-    }
-
-    /**
-     * Represents a listener for PaymentMethod actions
-     */
-    interface PaymentMethodListener : PaymentListener {
-        // CVC returns only when payment is first created, otherwise null
-        fun onSuccess(paymentMethod: PaymentMethod, cvc: String?)
-    }
-
-    /**
-     * Represents a listener for Add PaymentMethod
-     */
-    interface AddPaymentMethodListener : PaymentListener {
-        fun onSuccess(paymentMethod: PaymentMethod, cvc: String)
-    }
-
-    private var shippingFlowListener: PaymentShippingListener? = null
-    private var paymentFlowListener: PaymentIntentListener? = null
-    private var paymentDetailListener: PaymentIntentListener? = null
-    private var addPaymentMethodFlowListener: AddPaymentMethodListener? = null
-    private var selectPaymentMethodFlowListener: PaymentMethodListener? = null
+    private var shippingFlowListener: Airwallex.PaymentShippingListener? = null
+    private var paymentFlowListener: Airwallex.PaymentIntentListener? = null
+    private var paymentDetailListener: Airwallex.PaymentIntentListener? = null
+    private var addPaymentMethodFlowListener: Airwallex.AddPaymentMethodListener? = null
+    private var selectPaymentMethodFlowListener: Airwallex.PaymentMethodListener? = null
 
     /**
      * Launch the [PaymentShippingActivity] to allow the user to fill the shipping information
@@ -91,7 +58,7 @@ class AirwallexStarter constructor(
      */
     fun presentShippingFlow(
         shipping: Shipping? = null,
-        shippingFlowListener: PaymentShippingListener
+        shippingFlowListener: Airwallex.PaymentShippingListener
     ) {
         this.shippingFlowListener = shippingFlowListener
         paymentShippingActivityLaunch.startForResult(
@@ -110,7 +77,7 @@ class AirwallexStarter constructor(
     fun presentAddPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
-        addPaymentMethodFlowListener: AddPaymentMethodListener
+        addPaymentMethodFlowListener: Airwallex.AddPaymentMethodListener
     ) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided on add payment method flow"
@@ -135,7 +102,7 @@ class AirwallexStarter constructor(
     fun presentSelectPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
-        selectPaymentMethodFlowListener: PaymentMethodListener
+        selectPaymentMethodFlowListener: Airwallex.PaymentMethodListener
     ) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided on select payment method flow"
@@ -162,7 +129,7 @@ class AirwallexStarter constructor(
         paymentIntent: PaymentIntent,
         paymentMethod: PaymentMethod,
         cvc: String? = null,
-        paymentDetailListener: PaymentIntentListener
+        paymentDetailListener: Airwallex.PaymentIntentListener
     ) {
         if (paymentMethod.type != PaymentMethodType.CARD) {
             paymentDetailListener.onFailed(Exception("Only card payment is supported"))
@@ -187,7 +154,7 @@ class AirwallexStarter constructor(
     fun presentPaymentFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
-        paymentFlowListener: PaymentIntentListener
+        paymentFlowListener: Airwallex.PaymentIntentListener
     ) {
         requireNotNull(paymentIntent.customerId, {
             "Customer id must be provided on payment flow"
@@ -203,7 +170,15 @@ class AirwallexStarter constructor(
     }
 
     /**
-     * Should be called via `Activity#onActivityResult(int, int, Intent)}}` to handle the result of all flows
+     * Method to handle Activity results from Airwallex activities. Pass data here from your
+     * host's `#onActivityResult(int, int, Intent)` function.
+     *
+     * @param requestCode the request code used to open the resulting activity
+     * @param resultCode a result code representing the success of the intended action
+     * @param data an [Intent] with the resulting data from the Activity
+     *
+     * @return `true` if the activity result was handled by this function,
+     * otherwise `false`
      */
     fun onActivityResult(
         requestCode: Int,
@@ -212,12 +187,6 @@ class AirwallexStarter constructor(
     ): Boolean {
         if (!VALID_REQUEST_CODES.contains(requestCode)) {
             return false
-        }
-
-        // 3DS Validate
-        if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE && data != null) {
-            ThreeDSecureManager.handleOnActivityResult(data)
-            return true
         }
 
         when (resultCode) {
@@ -312,8 +281,7 @@ class AirwallexStarter constructor(
             PaymentMethodsActivityLaunch.REQUEST_CODE,
             PaymentShippingActivityLaunch.REQUEST_CODE,
             AddPaymentMethodActivityLaunch.REQUEST_CODE,
-            PaymentCheckoutActivityLaunch.REQUEST_CODE,
-            ThreeDSecureActivityLaunch.REQUEST_CODE
+            PaymentCheckoutActivityLaunch.REQUEST_CODE
         )
     }
 }

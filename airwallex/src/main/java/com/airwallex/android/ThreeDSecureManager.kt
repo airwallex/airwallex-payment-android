@@ -3,26 +3,21 @@ package com.airwallex.android
 import android.content.Context
 import android.content.Intent
 import com.airwallex.android.exception.ThreeDSException
-import com.airwallex.android.view.ThreeDSecureActivity
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType
-import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization
 import org.json.JSONArray
-import java.util.*
 
 internal object ThreeDSecureManager {
 
     // Use RequestBin(http://requestbin.net/) to see what your HTTP client is sending or to inspect and debug webhook requests.
     // Just for staging test, should be optional later.
     const val THREE_DS_RETURN_URL = "https://www.airwallex.com"
-
-    var threeDSecureCallback: ThreeDSecureCallback? = null
 
     /**
      * Configure Cardinal Mobile SDK
@@ -80,62 +75,6 @@ internal object ThreeDSecureManager {
                 completion.invoke(null, validateResponse)
             }
         })
-    }
-
-    internal fun handleOnActivityResult(data: Intent?) {
-        threeDSecureCallback?.let {
-            try {
-                onActivityResult(data, it)
-            } catch (e: Exception) {
-                it.onFailed(ThreeDSException(message = e.localizedMessage ?: "3DS failed."))
-            }
-        }
-    }
-
-    private fun onActivityResult(
-        data: Intent?,
-        callback: ThreeDSecureCallback
-    ) {
-        if (data == null) {
-            callback.onFailed(ThreeDSException(message = "3DS failed. Reason: Intent data is null"))
-            return
-        }
-        when (data.getSerializableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_TYPE) as? ThreeDSecureType) {
-            ThreeDSecureType.THREE_D_SECURE_1 -> {
-                // 1.0 Flow
-                val payload = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_PAYLOAD)
-                if (payload != null) {
-                    Logger.debug("3DS 1.0 success. Response payload: $payload")
-                    callback.onThreeDS1Success(payload)
-                } else {
-                    val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
-                    if (cancel) {
-                        Logger.debug("3DS 1.0 canceled")
-                        callback.onFailed(ThreeDSException(message = "3DS 1.0 failed. Reason: User cancel the 3DS 1.0"))
-                    } else {
-                        val reason = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_FAILED_REASON)
-                        Logger.debug("3DS 1.0 failed. Reason: $reason")
-                        callback.onFailed(ThreeDSException(message = reason ?: "3DS 1.0 verification failed"))
-                    }
-                }
-            }
-            ThreeDSecureType.THREE_D_SECURE_2 -> {
-                // 2.0 Flow
-                val validateResponse = data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
-                if (validateResponse.actionCode != null && validateResponse.actionCode == CardinalActionCode.CANCEL) {
-                    Logger.debug("3DS 2.0 canceled")
-                    callback.onFailed(ThreeDSException(message = "3DS 2.0 failed. Reason: User cancel the 3DS 2.0"))
-                } else {
-                    if (validateResponse.errorDescription.toLowerCase(Locale.ROOT) == "success") {
-                        Logger.debug("3DS 2.0 success. Response payload: ${validateResponse.payment.processorTransactionId}")
-                        callback.onThreeDS2Success(validateResponse.payment.processorTransactionId)
-                    } else {
-                        Logger.debug("3DS 2.0 failed. Reason: ${validateResponse.errorDescription}")
-                        callback.onFailed(ThreeDSException(message = validateResponse.errorDescription))
-                    }
-                }
-            }
-        }
     }
 
     enum class ThreeDSecureType {

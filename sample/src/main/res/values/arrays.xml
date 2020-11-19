@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="array_three_d_secure_id">
-        <item>STAGING</item>
-        <item>PRODUCTION</item>
-    </string-array>
-</resources>

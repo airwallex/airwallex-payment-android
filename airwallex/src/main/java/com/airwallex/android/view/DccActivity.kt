@@ -15,10 +15,10 @@ import kotlinx.android.synthetic.main.activity_select_currency.*
 /**
  * Allow the customer to select your currency.
  */
-internal class SelectCurrencyActivity : AirwallexActivity() {
+internal class DccActivity : AirwallexActivity() {
 
-    private val airwallex: Airwallex by lazy { Airwallex() }
-    private val args: SelectCurrencyActivityLaunch.Args by lazy { SelectCurrencyActivityLaunch.Args.getExtra(intent) }
+    private val airwallex: Airwallex by lazy { Airwallex(this) }
+    private val args: DccActivityLaunch.Args by lazy { DccActivityLaunch.Args.getExtra(intent) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +76,7 @@ internal class SelectCurrencyActivity : AirwallexActivity() {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK, Intent().putExtras(
-            SelectCurrencyActivityLaunch.Result(
+            DccActivityLaunch.Result(
                 paymentIntent = paymentIntent,
                 exception = exception
             ).toBundle()

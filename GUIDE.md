@@ -83,7 +83,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
 1. Initializes an `Airwallex` object, it's the Entry-point of the Airwallex SDK.
 
 ```kotlin
-    val airwallex = Airwallex()
+    val airwallex = Airwallex(this)
 ```
 
 2. Then you can call the `confirmPaymentIntent` method
@@ -178,22 +178,10 @@ After successful payment, the Airwallex server will notify the Merchant, then yo
 We provide native screens to facilitate the integration of payment functions.
 You can use these individually, or take all of the prebuilt UI in one flow by following the Integration guide.
 
-- Initialization the `AirwallexStarter`
-```kotlin
-    // Create `AirwallexStarter` object
-    val airwallexStarter = AirwallexStarter(activity)
-
-    // Override `onActivityResult`
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        airwallexStarter.onActivityResult(requestCode, resultCode, data)
-    }
-```
-
 - Customize the usage of shipping info, shipping parameter is optional. After successfully saving, it will return a shipping object
 ```kotlin
-    airwallexStarter.presentShippingFlow(shipping,
-        object : AirwallexStarter.PaymentShippingListener {
+    airwallex.presentShippingFlow(shipping,
+        object : Airwallex.PaymentShippingListener {
             override fun onSuccess(shipping: Shipping) {
                 Log.d(TAG, "Save the shipping success")
             }
@@ -209,8 +197,8 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
     }
-    airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider,
-        object : AirwallexStarter.PaymentMethodListener {
+    airwallex.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider,
+        object : Airwallex.PaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 Log.d(TAG, "Select PaymentMethod success")
             }
@@ -226,8 +214,8 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
     }
-    airwallexStarter.presentAddPaymentMethodFlow(paymentIntent,
-        object : AirwallexStarter.AddPaymentMethodListener {
+    airwallex.presentAddPaymentMethodFlow(paymentIntent,
+        object : Airwallex.AddPaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String) {
                 Log.d(TAG, "Create PaymentMethod success")
             }
@@ -240,8 +228,8 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
 
 - Customize the usage of payment detail. You need to pass in a `PaymentIntent` object and a `PaymentMethod` object. It will display the current payment amount has been paid, encapsulated the specific operation of payment, will return the `PaymentIntent` or `Exception` through the callback method
 ```kotlin
-    airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod,
-        object : AirwallexStarter.PaymentIntentListener {
+    airwallex.presentPaymentDetailFlow(paymentIntent, paymentMethod,
+        object : Airwallex.PaymentIntentListener {
            override fun onSuccess(paymentIntent: PaymentIntent) {
                Log.d(TAG, "Confirm payment intent success")
             }
@@ -261,8 +249,8 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
     }
-    airwallexStarter.presentPaymentFlow(paymentIntent, clientSecretProvider,
-        object : AirwallexStarter.PaymentIntentListener {
+    airwallex.presentPaymentFlow(paymentIntent, clientSecretProvider,
+        object : Airwallex.PaymentIntentListener {
             override fun onSuccess(paymentIntent: PaymentIntent) {
                 Log.d(TAG, "Confirm payment intent success")
             }

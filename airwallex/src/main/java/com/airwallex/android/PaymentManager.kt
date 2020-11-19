@@ -4,11 +4,14 @@ import android.content.Context
 import android.os.Build
 import com.airwallex.android.Airwallex.PaymentListener
 import com.airwallex.android.model.*
-import com.airwallex.android.view.SelectCurrencyActivityLaunch
+import com.airwallex.android.view.DccActivityLaunch
 import com.airwallex.android.view.ThreeDSecureActivityLaunch
 import java.util.*
 
 internal interface PaymentManager {
+
+    var dccCallback: DccCallback?
+    var threeDSecureCallback: ThreeDSecureCallback?
 
     /**
      * Continue the [PaymentIntent] using [ApiRepository.Options], used for 3DS
@@ -80,7 +83,7 @@ internal interface PaymentManager {
         applicationContext: Context,
         deviceId: String,
         params: ConfirmPaymentIntentParams,
-        selectCurrencyActivityLaunch: SelectCurrencyActivityLaunch,
+        selectCurrencyActivityLaunch: DccActivityLaunch,
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         listener: PaymentListener<PaymentIntent>
     )

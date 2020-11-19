@@ -8,21 +8,21 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.Device
 import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.view.SelectCurrencyActivityLaunch.Args
+import com.airwallex.android.view.DccActivityLaunch.Args
 import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
 
-internal class SelectCurrencyActivityLaunch : AirwallexActivityLaunch<SelectCurrencyActivity, Args> {
+internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
 
     constructor(activity: Activity) : super(
         activity,
-        SelectCurrencyActivity::class.java,
+        DccActivity::class.java,
         REQUEST_CODE
     )
 
     constructor(fragment: Fragment) : super(
         fragment,
-        SelectCurrencyActivity::class.java,
+        DccActivity::class.java,
         REQUEST_CODE
     )
 
