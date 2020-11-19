@@ -383,7 +383,7 @@ class PaymentCartFragment : Fragment() {
                             clientSecret = requireNotNull(paymentIntent.clientSecret),
                             customerId = paymentIntent.customerId
                         )
-                        airwallex.confirmPaymentIntent(this@PaymentCartFragment, params, listener)
+                        airwallex.confirmPaymentIntent(params, listener)
                     }
                     PaymentMethodType.CARD -> {
                         val params = ConfirmPaymentIntentParams.createCardParams(
@@ -393,7 +393,7 @@ class PaymentCartFragment : Fragment() {
                             cvc = cvc ?: "123", // You should provide the cvc input screen
                             customerId = paymentIntent.customerId
                         )
-                        airwallex.confirmPaymentIntent(this@PaymentCartFragment, params, listener)
+                        airwallex.confirmPaymentIntent(params, listener)
                     }
                 }
             }
@@ -416,7 +416,7 @@ class PaymentCartFragment : Fragment() {
                         clientSecret = requireNotNull(paymentIntent.clientSecret),
                         customerId = paymentIntent.customerId
                     )
-                    airwallex.confirmPaymentIntent(this@PaymentCartFragment, params, object : Airwallex.PaymentListener<PaymentIntent> {
+                    airwallex.confirmPaymentIntent(params, object : Airwallex.PaymentListener<PaymentIntent> {
                         override fun onFailed(exception: Exception) {
                             showPaymentError(error = exception.message)
                         }

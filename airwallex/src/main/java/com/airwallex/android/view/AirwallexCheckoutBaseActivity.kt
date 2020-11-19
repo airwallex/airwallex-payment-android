@@ -30,7 +30,7 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
                     customerId = paymentIntent.customerId
                 )
-                airwallex.confirmPaymentIntent(this, params, listener)
+                airwallex.confirmPaymentIntent(params, listener)
             }
             PaymentMethodType.CARD -> {
                 val params = ConfirmPaymentIntentParams.createCardParams(
@@ -40,7 +40,7 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     cvc = requireNotNull(cvc),
                     customerId = paymentIntent.customerId
                 )
-                airwallex.confirmPaymentIntent(this, params, listener)
+                airwallex.confirmPaymentIntent(params, listener)
             }
         }
     }

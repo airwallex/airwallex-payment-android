@@ -83,7 +83,7 @@ repositories {
 1. 初始化一个 `Airwallex` 对象, 这个 Airwallex SDK 的入口.
 
 ```kotlin
-    val airwallex = Airwallex(this)
+    val airwallex = Airwallex(this) // 参数是当前的fragment或者activity对象
 ```
 
 2. 然后你可以调用 `confirmPaymentIntent` 方法
@@ -104,7 +104,7 @@ repositories {
                 clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
                 customerId = paymentIntent.customerId // Optional
             )
-            airwallex.confirmPaymentIntent(this, params, listener)
+            airwallex.confirmPaymentIntent(params, listener)
         }
         PaymentMethodType.CARD -> {
             val params = ConfirmPaymentIntentParams.createCardParams(
@@ -114,7 +114,7 @@ repositories {
                 cvc = requireNotNull(cvc), // Required
                 customerId = paymentIntent.customerId // Optional
             )
-            airwallex.confirmPaymentIntent(this, params, listener)
+            airwallex.confirmPaymentIntent(params, listener)
         }
     }
 ```
@@ -122,8 +122,8 @@ repositories {
 ```kotlin
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        // 如果是仅支持微信支付，不需要调用这个方法
-        // 如果是卡支付，必须在onActivityResult中调用这个方法(需要处理3ds以及dcc返回的结果)
+     
+        // 你必须在你的fragment或activity中重写onActivityResult，并调用handlePaymentData方法
         airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
@@ -211,7 +211,7 @@ confirm完成之后, Airwallex 服务端会通知商户，然后你可以调用`
     }
     airwallex.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider,
         object : Airwallex.AddPaymentMethodListener {
-            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String) {
                 Log.d(TAG, "Create Card PaymentMethod success")
             }
 

@@ -43,7 +43,6 @@ internal class AirwallexStarter constructor(
         PaymentCheckoutActivityLaunch(activity)
     )
 
-
     private var shippingFlowListener: Airwallex.PaymentShippingListener? = null
     private var paymentFlowListener: Airwallex.PaymentIntentListener? = null
     private var paymentDetailListener: Airwallex.PaymentIntentListener? = null

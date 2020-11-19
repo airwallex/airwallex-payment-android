@@ -104,19 +104,17 @@ After completing all the steps on the server, the client will get a `PaymentInte
                 clientSecret = requireNotNull(paymentIntent.clientSecret),
                 customerId = paymentIntent.customerId
             )
-            airwallex.confirmPaymentIntent(this, params, listener)
+            airwallex.confirmPaymentIntent(params, listener)
         }
         PaymentMethodType.CARD -> {
             val params = ConfirmPaymentIntentParams.createCardParams(
-                paymentIntentId = paymentIntent.id,
-                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                paymentMethodReference = PaymentMethodReference(
-                    requireNotNull(paymentMethod.id),
-                    requireNotNull(cvc)
-                ),
-                customerId = paymentIntent.customerId
+                paymentIntentId = paymentIntent.id, // Required
+                clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
+                paymentMethodId = requireNotNull(paymentMethod.id), // Required
+                cvc = requireNotNull(cvc), // Required
+                customerId = paymentIntent.customerId // Optional
             )
-            airwallex.confirmPaymentIntent(this, params, listener)
+            airwallex.confirmPaymentIntent(params, listener)
         }
     }
 ```
@@ -125,7 +123,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         
-        // If it is a card payment, you must call this method on `onActivityResult`
+        // You must call this method on `onActivityResult`
         airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```

@@ -1,8 +1,6 @@
 package com.airwallex.android
 
 import android.content.Context
-import android.content.Intent
-import com.airwallex.android.exception.ThreeDSException
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType
