@@ -27,7 +27,7 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
         <activity
-            android:name="com.airwallex.android.view.SelectCurrencyActivity"
+            android:name="com.airwallex.android.view.DccActivity"
             android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme" />
 

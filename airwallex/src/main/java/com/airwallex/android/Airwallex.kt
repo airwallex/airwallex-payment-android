@@ -5,17 +5,21 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
+import com.airwallex.android.exception.DccException
+import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.*
-import com.airwallex.android.view.SelectCurrencyActivityLaunch
-import com.airwallex.android.view.ThreeDSecureActivityLaunch
-import java.lang.Exception
+import com.airwallex.android.view.*
+import com.airwallex.android.view.DccActivityLaunch
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
+import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import java.util.*
 
 /**
  * Entry-point to the Airwallex SDK.
  */
 class Airwallex internal constructor(
-    private val paymentManager: PaymentManager
+    private val paymentManager: PaymentManager,
+    private val airwallexStarter: AirwallexStarter
 ) {
     private val securityConnector: SecurityConnector by lazy {
         AirwallexSecurityConnector()
@@ -32,14 +36,22 @@ class Airwallex internal constructor(
     /**
      * Constructor of [Airwallex]
      */
-    constructor() : this(
-        AirwallexApiRepository()
+    constructor(fragment: Fragment) : this(
+        AirwallexApiRepository(),
+        AirwallexStarter(fragment)
+    )
+
+    constructor(activity: Activity) : this(
+        AirwallexApiRepository(),
+        AirwallexStarter(activity)
     )
 
     private constructor(
-        repository: ApiRepository
+        repository: ApiRepository,
+        airwallexStarter: AirwallexStarter
     ) : this(
-        AirwallexPaymentManager(repository)
+        AirwallexPaymentManager(repository),
+        airwallexStarter
     )
 
     /**
@@ -60,7 +72,7 @@ class Airwallex internal constructor(
             object : AirwallexSecurityConnector.SecurityTokenListener {
                 override fun onResponse(deviceId: String) {
                     // Confirm PaymentIntent with Device Fingerprinting
-                    paymentManager.confirmPaymentIntent(fragment.requireActivity(), deviceId, params, SelectCurrencyActivityLaunch(fragment), ThreeDSecureActivityLaunch(fragment), listener)
+                    paymentManager.confirmPaymentIntent(fragment.requireActivity(), deviceId, params, DccActivityLaunch(fragment), ThreeDSecureActivityLaunch(fragment), listener)
                 }
             })
     }
@@ -83,7 +95,7 @@ class Airwallex internal constructor(
             object : AirwallexSecurityConnector.SecurityTokenListener {
                 override fun onResponse(deviceId: String) {
                     // Confirm PaymentIntent with Device Fingerprinting
-                    paymentManager.confirmPaymentIntent(activity, deviceId, params, SelectCurrencyActivityLaunch(activity), ThreeDSecureActivityLaunch(activity), listener)
+                    paymentManager.confirmPaymentIntent(activity, deviceId, params, DccActivityLaunch(activity), ThreeDSecureActivityLaunch(activity), listener)
                 }
             })
     }
@@ -193,6 +205,111 @@ class Airwallex internal constructor(
         )
     }
 
+    // For the custom flow
+    interface PaymentFlowListener {
+        fun onCancelled()
+    }
+
+    /**
+     * Represents a listener for PaymentShipping actions
+     */
+    interface PaymentShippingListener : PaymentFlowListener {
+        fun onSuccess(shipping: Shipping)
+    }
+
+    /**
+     * Represents a listener for PaymentIntent actions
+     */
+    interface PaymentIntentListener : PaymentFlowListener {
+        fun onSuccess(paymentIntent: PaymentIntent)
+        fun onFailed(error: Exception)
+    }
+
+    /**
+     * Represents a listener for PaymentMethod actions
+     */
+    interface PaymentMethodListener : PaymentFlowListener {
+        // CVC returns only when payment is first created, otherwise null
+        fun onSuccess(paymentMethod: PaymentMethod, cvc: String?)
+    }
+
+    /**
+     * Represents a listener for Add PaymentMethod
+     */
+    interface AddPaymentMethodListener : PaymentFlowListener {
+        fun onSuccess(paymentMethod: PaymentMethod, cvc: String)
+    }
+
+    /**
+     * Launch the [PaymentShippingActivity] to allow the user to fill the shipping information
+     *
+     * @param shipping a [Shipping] used to present the shipping flow, it's optional
+     * @param shippingFlowListener The callback of present the shipping flow
+     */
+    fun presentShippingFlow(shipping: Shipping? = null,
+                            shippingFlowListener: PaymentShippingListener) {
+        airwallexStarter.presentShippingFlow(shipping, shippingFlowListener)
+    }
+
+    /**
+     * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
+     *
+     * @param paymentIntent a [PaymentIntent] used to present the Add Payment Method flow
+     * @param addPaymentMethodFlowListener The callback of present the add payment method flow
+     */
+    fun presentAddPaymentMethodFlow(
+        paymentIntent: PaymentIntent,
+        clientSecretProvider: ClientSecretProvider,
+        addPaymentMethodFlowListener: AddPaymentMethodListener
+    ) {
+        airwallexStarter.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider, addPaymentMethodFlowListener)
+    }
+
+    /**
+     * Launch the [PaymentMethodsActivity] to allow the user to select a payment method or add a new one
+     *
+     * @param paymentIntent a [PaymentIntent] used to present the Select Payment Method flow
+     * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
+     */
+    fun presentSelectPaymentMethodFlow(
+        paymentIntent: PaymentIntent,
+        clientSecretProvider: ClientSecretProvider,
+        selectPaymentMethodFlowListener: PaymentMethodListener
+    ) {
+        airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, selectPaymentMethodFlowListener)
+    }
+
+    /**
+     * Launch the [PaymentCheckoutActivity] to allow the user to confirm [PaymentIntent] using the specified [PaymentMethod]
+     *
+     * @param paymentIntent a [PaymentIntent] used to present the Checkout flow
+     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
+     * @param cvc CVC of [PaymentMethod], optional
+     * @param paymentDetailListener The callback of present the select payment detail flow
+     */
+    fun presentPaymentDetailFlow(
+        paymentIntent: PaymentIntent,
+        paymentMethod: PaymentMethod,
+        cvc: String? = null,
+        paymentDetailListener: PaymentIntentListener
+    ) {
+        airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod, cvc, paymentDetailListener)
+    }
+
+    /**
+     * Launch the [PaymentMethodsActivity] to allow the user to complete the entire payment flow
+     *
+     * @param paymentIntent a [PaymentIntent] used to present the payment flow
+     * @param paymentFlowListener The callback of present entire payment flow
+     */
+    fun presentPaymentFlow(
+        paymentIntent: PaymentIntent,
+        clientSecretProvider: ClientSecretProvider,
+        paymentFlowListener: PaymentIntentListener
+    ) {
+        airwallexStarter.presentPaymentFlow(paymentIntent, clientSecretProvider, paymentFlowListener)
+    }
+
     /**
      * Method to handle Activity results from Airwallex activities. Pass data here from your
      * host's `#onActivityResult(int, int, Intent)` function.
@@ -205,14 +322,91 @@ class Airwallex internal constructor(
      * otherwise `false`
      */
     fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        if (requestCode == SelectCurrencyActivityLaunch.REQUEST_CODE) {
-            DccManager.handleOnActivityResult(data, resultCode)
+        if (requestCode == DccActivityLaunch.REQUEST_CODE) {
+            paymentManager.dccCallback?.let {
+                try {
+                    handleDccData(data, resultCode, it)
+                } catch (e: Exception) {
+                    it.onFailed(DccException(message = e.localizedMessage ?: "Dcc failed."))
+                }
+            }
             return true
         } else if (requestCode == ThreeDSecureActivityLaunch.REQUEST_CODE) {
-            ThreeDSecureManager.handleOnActivityResult(data)
+            paymentManager.threeDSecureCallback?.let {
+                try {
+                    handleThreeDSecureData(data, it)
+                } catch (e: Exception) {
+                    it.onFailed(ThreeDSException(message = e.localizedMessage ?: "3DS failed."))
+                }
+            }
             return true
         }
-        return false
+
+        return airwallexStarter.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun handleDccData(
+        data: Intent?,
+        resultCode: Int,
+        callback: DccCallback
+    ) {
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                val result = DccActivityLaunch.Result.fromIntent(data)
+                val paymentIntent = result?.paymentIntent
+                if (paymentIntent != null) {
+                    callback.onSuccess(paymentIntent)
+                } else {
+                    callback.onFailed(result?.exception ?: DccException(message = "Dcc failed."))
+                }
+            }
+            Activity.RESULT_CANCELED -> {
+                callback.onFailed(DccException(message = "Dcc failed. Reason: User cancel the Dcc"))
+            }
+        }
+    }
+
+    private fun handleThreeDSecureData(
+        data: Intent?,
+        callback: ThreeDSecureCallback
+    ) {
+        when (data?.getSerializableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_TYPE) as? ThreeDSecureManager.ThreeDSecureType) {
+            ThreeDSecureManager.ThreeDSecureType.THREE_D_SECURE_1 -> {
+                // 1.0 Flow
+                val payload = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_PAYLOAD)
+                if (payload != null) {
+                    Logger.debug("3DS 1.0 success. Response payload: $payload")
+                    callback.onThreeDS1Success(payload)
+                } else {
+                    val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
+                    if (cancel) {
+                        Logger.debug("3DS 1.0 canceled")
+                        callback.onFailed(ThreeDSException(message = "3DS 1.0 failed. Reason: User cancel the 3DS 1.0"))
+                    } else {
+                        val reason = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_FAILED_REASON)
+                        Logger.debug("3DS 1.0 failed. Reason: $reason")
+                        callback.onFailed(ThreeDSException(message = reason
+                            ?: "3DS 1.0 verification failed"))
+                    }
+                }
+            }
+            ThreeDSecureManager.ThreeDSecureType.THREE_D_SECURE_2 -> {
+                // 2.0 Flow
+                val validateResponse = data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
+                if (validateResponse.actionCode != null && validateResponse.actionCode == CardinalActionCode.CANCEL) {
+                    Logger.debug("3DS 2.0 canceled")
+                    callback.onFailed(ThreeDSException(message = "3DS 2.0 failed. Reason: User cancel the 3DS 2.0"))
+                } else {
+                    if (validateResponse.errorDescription.toLowerCase(Locale.ROOT) == "success") {
+                        Logger.debug("3DS 2.0 success. Response payload: ${validateResponse.payment.processorTransactionId}")
+                        callback.onThreeDS2Success(validateResponse.payment.processorTransactionId)
+                    } else {
+                        Logger.debug("3DS 2.0 failed. Reason: ${validateResponse.errorDescription}")
+                        callback.onFailed(ThreeDSException(message = validateResponse.errorDescription))
+                    }
+                }
+            }
+        }
     }
 
     companion object {

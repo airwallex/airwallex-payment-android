@@ -17,7 +17,7 @@ import java.lang.Exception
 class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override val airwallex: Airwallex by lazy {
-        Airwallex()
+        Airwallex(this)
     }
 
     private val args: PaymentCheckoutActivityLaunch.Args by lazy {

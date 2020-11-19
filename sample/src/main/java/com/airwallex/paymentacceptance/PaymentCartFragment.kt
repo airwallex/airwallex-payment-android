@@ -13,7 +13,6 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.Airwallex
-import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.ConfirmPaymentIntentParams
 import com.airwallex.android.RetrievePaymentIntentParams
 import com.airwallex.android.model.*
@@ -35,12 +34,8 @@ class PaymentCartFragment : Fragment() {
         ExampleClientSecretProvider()
     }
 
-    private val airwallexStarter by lazy {
-        AirwallexStarter(this)
-    }
-
     private val airwallex by lazy {
-        Airwallex()
+        Airwallex(this)
     }
 
     private val authApi: AuthApi
@@ -138,9 +133,9 @@ class PaymentCartFragment : Fragment() {
 
         shippingItemView.renewalShipping(shipping)
         shippingItemView.onClickAction = {
-            airwallexStarter.presentShippingFlow(
+            airwallex.presentShippingFlow(
                 shipping,
-                object : AirwallexStarter.PaymentShippingListener {
+                object : Airwallex.PaymentShippingListener {
                     override fun onSuccess(shipping: Shipping) {
                         Log.d(TAG, "Save the shipping success")
                         shippingItemView.renewalShipping(shipping)
@@ -267,10 +262,10 @@ class PaymentCartFragment : Fragment() {
      * Use entire flow provided by Airwallex
      */
     private fun handlePaymentIntentResponseWithEntireFlow(paymentIntent: PaymentIntent) {
-        airwallexStarter.presentPaymentFlow(
+        airwallex.presentPaymentFlow(
             paymentIntent,
             clientSecretProvider,
-            object : AirwallexStarter.PaymentIntentListener {
+            object : Airwallex.PaymentIntentListener {
                 override fun onSuccess(paymentIntent: PaymentIntent) {
                     handlePaymentData(paymentIntent)
                 }
@@ -369,7 +364,7 @@ class PaymentCartFragment : Fragment() {
      * Only use the Select Payment Methods Flow
      */
     private fun handlePaymentIntentResponseWithCustomFlow1(paymentIntent: PaymentIntent) {
-        airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, object : AirwallexStarter.PaymentMethodListener {
+        airwallex.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, object : Airwallex.PaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 val listener = object : Airwallex.PaymentListener<PaymentIntent> {
                     override fun onFailed(exception: Exception) {
@@ -377,7 +372,7 @@ class PaymentCartFragment : Fragment() {
                     }
 
                     override fun onSuccess(response: PaymentIntent) {
-                        handlePaymentData(paymentIntent)
+                        handlePaymentData(response)
                     }
                 }
 
@@ -413,7 +408,7 @@ class PaymentCartFragment : Fragment() {
      * Use the Select Payment Methods Flow & Checkout Detail Flow
      */
     private fun handlePaymentIntentResponseWithCustomFlow2(paymentIntent: PaymentIntent) {
-        airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, object : AirwallexStarter.PaymentMethodListener {
+        airwallex.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, object : Airwallex.PaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                 if (paymentMethod.type == PaymentMethodType.WECHAT) {
                     val params = ConfirmPaymentIntentParams.createWeChatParams(
@@ -427,11 +422,11 @@ class PaymentCartFragment : Fragment() {
                         }
 
                         override fun onSuccess(response: PaymentIntent) {
-                            handlePaymentData(paymentIntent)
+                            handlePaymentData(response)
                         }
                     })
                 } else if (paymentMethod.type == PaymentMethodType.CARD) {
-                    airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod, cvc, object : AirwallexStarter.PaymentIntentListener {
+                    airwallex.presentPaymentDetailFlow(paymentIntent, paymentMethod, cvc, object : Airwallex.PaymentIntentListener {
                         override fun onSuccess(paymentIntent: PaymentIntent) {
                             handlePaymentData(paymentIntent)
                         }
@@ -496,10 +491,7 @@ class PaymentCartFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // Handle the result of all custom UI flows
-        airwallexStarter.onActivityResult(requestCode, resultCode, data)
-
-        // If you call confirmPaymentIntent to do card payment, you must call this method. We need to handle activity result
+        // We need to handle activity result
         airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 

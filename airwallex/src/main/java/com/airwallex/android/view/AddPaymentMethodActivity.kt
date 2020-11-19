@@ -25,7 +25,7 @@ class AddPaymentMethodActivity : AirwallexActivity() {
     }
 
     private val airwallex: Airwallex by lazy {
-        Airwallex()
+        Airwallex(this)
     }
 
     private val isValid: Boolean

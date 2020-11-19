@@ -1,5 +1,6 @@
 package com.airwallex.paymentacceptance
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.airwallex.android.model.WeChat
 import com.tencent.mm.opensdk.modelbase.BaseResp
@@ -48,6 +49,7 @@ class WXPay {
         weChatApi.registerApp(appId)
     }
 
+    @SuppressLint("Assert")
     private fun launchWeChat(data: WeChat) {
         val success = weChatApi.registerApp(Settings.weChatAppSignature)
         assert(success)

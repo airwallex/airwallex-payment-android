@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.*
+import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.view.PaymentMethodsActivityLaunch.Args
 import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
-import java.lang.Exception
 
 class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActivity, Args> {
 
@@ -82,7 +84,7 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
                     exception = parcel.readSerializable() as? AirwallexException?,
                     paymentMethod = parcel.readParcelable(PaymentMethod::class.java.classLoader),
                     cvc = parcel.readString(),
-                    includeCheckoutFlow = parcel.readBoolean()
+                    includeCheckoutFlow = parcel.readInt() == 1
                 )
             }
 
@@ -92,7 +94,7 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
                 parcel.writeSerializable(exception)
                 parcel.writeParcelable(paymentMethod, 0)
                 parcel.writeString(cvc)
-                parcel.writeBoolean(includeCheckoutFlow)
+                parcel.writeInt(if (includeCheckoutFlow) 1 else 0)
             }
 
             fun fromIntent(intent: Intent?): Result? {

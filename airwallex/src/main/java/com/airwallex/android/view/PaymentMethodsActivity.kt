@@ -36,7 +36,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         get() = null
 
     override val airwallex: Airwallex by lazy {
-        Airwallex()
+        Airwallex(this)
     }
 
     private val shouldShowWeChatPay: Boolean by lazy {
