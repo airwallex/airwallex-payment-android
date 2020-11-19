@@ -19,7 +19,10 @@ import java.util.*
  */
 class Airwallex internal constructor(
     private val paymentManager: PaymentManager,
-    private val airwallexStarter: AirwallexStarter
+    private val airwallexStarter: AirwallexStarter,
+    private val applicationContext: Context,
+    private val dccActivityLaunch: DccActivityLaunch,
+    private val threeDSecureActivityLaunch: ThreeDSecureActivityLaunch
 ) {
     private val securityConnector: SecurityConnector by lazy {
         AirwallexSecurityConnector()
@@ -37,65 +40,38 @@ class Airwallex internal constructor(
      * Constructor of [Airwallex]
      */
     constructor(fragment: Fragment) : this(
-        AirwallexApiRepository(),
-        AirwallexStarter(fragment)
+        AirwallexPaymentManager(AirwallexApiRepository()),
+        AirwallexStarter(fragment),
+        fragment.requireContext().applicationContext,
+        DccActivityLaunch(fragment),
+        ThreeDSecureActivityLaunch(fragment)
     )
 
     constructor(activity: Activity) : this(
-        AirwallexApiRepository(),
-        AirwallexStarter(activity)
-    )
-
-    private constructor(
-        repository: ApiRepository,
-        airwallexStarter: AirwallexStarter
-    ) : this(
-        AirwallexPaymentManager(repository),
-        airwallexStarter
+        AirwallexPaymentManager(AirwallexApiRepository()),
+        AirwallexStarter(activity),
+        activity.applicationContext,
+        DccActivityLaunch(activity),
+        ThreeDSecureActivityLaunch(activity)
     )
 
     /**
      * Confirm a [PaymentIntent] by ID
      *
-     * @param fragment the `Fragment` that is start confirm the payment intent
      * @param params [ConfirmPaymentIntentParams] used to confirm [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
     fun confirmPaymentIntent(
-        fragment: Fragment,
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
         // Retrieve Device Fingerprinting
-        securityConnector.retrieveSecurityToken(params.paymentIntentId, fragment.requireActivity().applicationContext,
+        securityConnector.retrieveSecurityToken(params.paymentIntentId, applicationContext,
             object : AirwallexSecurityConnector.SecurityTokenListener {
                 override fun onResponse(deviceId: String) {
                     // Confirm PaymentIntent with Device Fingerprinting
-                    paymentManager.confirmPaymentIntent(fragment.requireActivity(), deviceId, params, DccActivityLaunch(fragment), ThreeDSecureActivityLaunch(fragment), listener)
-                }
-            })
-    }
-
-    /**
-     * Confirm a [PaymentIntent] by ID
-     *
-     * @param activity the `Activity` that is start confirm the payment intent
-     * @param params [ConfirmPaymentIntentParams] used to confirm [PaymentIntent]
-     * @param listener a [PaymentListener] to receive the response or error
-     */
-    @UiThread
-    fun confirmPaymentIntent(
-        activity: Activity,
-        params: ConfirmPaymentIntentParams,
-        listener: PaymentListener<PaymentIntent>
-    ) {
-        // Retrieve Device Fingerprinting
-        securityConnector.retrieveSecurityToken(params.paymentIntentId, activity.applicationContext,
-            object : AirwallexSecurityConnector.SecurityTokenListener {
-                override fun onResponse(deviceId: String) {
-                    // Confirm PaymentIntent with Device Fingerprinting
-                    paymentManager.confirmPaymentIntent(activity, deviceId, params, DccActivityLaunch(activity), ThreeDSecureActivityLaunch(activity), listener)
+                    paymentManager.confirmPaymentIntent(applicationContext, deviceId, params, dccActivityLaunch, threeDSecureActivityLaunch, listener)
                 }
             })
     }
@@ -246,8 +222,10 @@ class Airwallex internal constructor(
      * @param shipping a [Shipping] used to present the shipping flow, it's optional
      * @param shippingFlowListener The callback of present the shipping flow
      */
-    fun presentShippingFlow(shipping: Shipping? = null,
-                            shippingFlowListener: PaymentShippingListener) {
+    fun presentShippingFlow(
+        shipping: Shipping? = null,
+        shippingFlowListener: PaymentShippingListener
+    ) {
         airwallexStarter.presentShippingFlow(shipping, shippingFlowListener)
     }
 
