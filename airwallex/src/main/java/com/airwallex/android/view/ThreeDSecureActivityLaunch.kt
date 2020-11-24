@@ -7,7 +7,7 @@ import com.airwallex.android.model.ThreeDSecureLookup
 import com.airwallex.android.view.ThreeDSecureActivityLaunch.Args
 import kotlinx.android.parcel.Parcelize
 
-class ThreeDSecureActivityLaunch : AirwallexActivityLaunch<ThreeDSecureActivity, Args> {
+internal class ThreeDSecureActivityLaunch : AirwallexActivityLaunch<ThreeDSecureActivity, Args> {
 
     constructor(activity: Activity) : super(
         activity,

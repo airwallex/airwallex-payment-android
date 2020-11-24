@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ClientSecretRepository
-import com.airwallex.android.CreatePaymentMethodParams
+import com.airwallex.android.model.CreatePaymentMethodParams
 import com.airwallex.android.R
 import com.airwallex.android.model.ClientSecret
 import com.airwallex.android.model.PaymentMethod
@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_add_card.*
 /**
  * Activity to add new payment method
  */
-class AddPaymentMethodActivity : AirwallexActivity() {
+internal class AddPaymentMethodActivity : AirwallexActivity() {
 
     private val keyboardController: KeyboardController by lazy {
         KeyboardController(this)

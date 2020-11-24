@@ -1,6 +1,4 @@
-package com.airwallex.android
-
-import com.airwallex.android.model.*
+package com.airwallex.android.model
 
 /**
  * The params that used for confirm [PaymentIntent]

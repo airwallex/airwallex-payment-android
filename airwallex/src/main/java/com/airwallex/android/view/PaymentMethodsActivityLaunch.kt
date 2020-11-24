@@ -14,7 +14,7 @@ import com.airwallex.android.view.PaymentMethodsActivityLaunch.Args
 import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
 
-class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActivity, Args> {
+internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActivity, Args> {
 
     constructor(activity: Activity) : super(
         activity,

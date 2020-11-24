@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.airwallex.android.Airwallex
-import com.airwallex.android.ContinuePaymentIntentParams
+import com.airwallex.android.model.ContinuePaymentIntentParams
 import com.airwallex.android.Logger
 import com.airwallex.android.R
 import com.airwallex.android.model.PaymentIntent

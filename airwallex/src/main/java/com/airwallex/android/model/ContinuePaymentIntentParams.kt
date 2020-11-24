@@ -1,14 +1,9 @@
-package com.airwallex.android
-
-import com.airwallex.android.model.Device
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentIntentContinueType
-import com.airwallex.android.model.ThreeDSecure
+package com.airwallex.android.model
 
 /**
  * The params that used for continue [PaymentIntent]
  */
-data class ContinuePaymentIntentParams internal constructor(
+internal data class ContinuePaymentIntentParams internal constructor(
     override val paymentIntentId: String,
     override val clientSecret: String,
 

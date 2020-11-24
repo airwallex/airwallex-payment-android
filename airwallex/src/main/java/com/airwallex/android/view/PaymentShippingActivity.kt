@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.activity_add_shipping.*
 /**
  * Activity to edit shipping address
  */
-class PaymentShippingActivity : AirwallexActivity() {
+internal class PaymentShippingActivity : AirwallexActivity() {
 
     private val args: PaymentShippingActivityLaunch.Args by lazy {
         PaymentShippingActivityLaunch.Args.getExtra(intent)

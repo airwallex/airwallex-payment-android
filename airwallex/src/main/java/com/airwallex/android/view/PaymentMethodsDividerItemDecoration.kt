@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.airwallex.android.R
 
-class PaymentMethodsDividerItemDecoration(val context: Context, resId: Int) : ItemDecoration() {
+internal class PaymentMethodsDividerItemDecoration(val context: Context, resId: Int) : ItemDecoration() {
     private var divider: Drawable? = ContextCompat.getDrawable(context, resId)
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
