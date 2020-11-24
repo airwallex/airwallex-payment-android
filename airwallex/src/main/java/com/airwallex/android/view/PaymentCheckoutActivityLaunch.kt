@@ -13,7 +13,7 @@ import com.airwallex.android.view.PaymentCheckoutActivityLaunch.Args
 import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
 
-class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCheckoutActivity, Args> {
+internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCheckoutActivity, Args> {
 
     constructor(activity: Activity) : super(
         activity,

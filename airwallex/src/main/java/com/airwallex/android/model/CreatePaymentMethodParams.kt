@@ -1,7 +1,4 @@
-package com.airwallex.android
-
-import com.airwallex.android.model.Billing
-import com.airwallex.android.model.PaymentMethod
+package com.airwallex.android.model
 
 /**
  * The params that used for create [PaymentMethod]

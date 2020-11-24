@@ -6,7 +6,7 @@ import java.lang.Exception
 /**
  * Callback for Dcc
  */
-interface DccCallback {
+internal interface DccCallback {
     fun onSuccess(paymentIntent: PaymentIntent)
 
     fun onFailed(exception: Exception)

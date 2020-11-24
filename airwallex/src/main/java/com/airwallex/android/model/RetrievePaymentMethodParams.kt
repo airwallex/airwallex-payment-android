@@ -1,8 +1,5 @@
-package com.airwallex.android
+package com.airwallex.android.model
 
-import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodType
 import java.util.*
 
 /**

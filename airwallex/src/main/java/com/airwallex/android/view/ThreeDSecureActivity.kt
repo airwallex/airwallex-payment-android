@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_airwallex.*
 import kotlinx.android.synthetic.main.activity_threeds.*
 import java.net.URLEncoder
 
-class ThreeDSecureActivity : AirwallexActivity() {
+internal class ThreeDSecureActivity : AirwallexActivity() {
 
     private val args: ThreeDSecureActivityLaunch.Args by lazy { ThreeDSecureActivityLaunch.Args.getExtra(intent) }
 

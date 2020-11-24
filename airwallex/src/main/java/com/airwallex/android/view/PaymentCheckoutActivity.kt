@@ -14,7 +14,7 @@ import java.lang.Exception
 /**
  * Activity to confirm payment intent
  */
-class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
+internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override val airwallex: Airwallex by lazy {
         Airwallex(this)

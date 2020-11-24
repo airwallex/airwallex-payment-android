@@ -10,7 +10,7 @@ import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch.Args
 import kotlinx.android.parcel.Parcelize
 
-class AddPaymentMethodActivityLaunch : AirwallexActivityLaunch<AddPaymentMethodActivity, Args> {
+internal class AddPaymentMethodActivityLaunch : AirwallexActivityLaunch<AddPaymentMethodActivity, Args> {
 
     constructor(activity: Activity) : super(
         activity,

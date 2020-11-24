@@ -1,6 +1,4 @@
-package com.airwallex.android
-
-import com.airwallex.android.model.PaymentIntent
+package com.airwallex.android.model
 
 internal abstract class AbstractPaymentMethodParams(
 

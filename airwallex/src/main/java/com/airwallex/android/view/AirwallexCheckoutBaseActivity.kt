@@ -1,12 +1,12 @@
 package com.airwallex.android.view
 
 import com.airwallex.android.Airwallex
-import com.airwallex.android.ConfirmPaymentIntentParams
+import com.airwallex.android.model.ConfirmPaymentIntentParams
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 
-abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
+internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
 
     abstract val airwallex: Airwallex
 

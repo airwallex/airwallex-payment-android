@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ClientSecretRepository
 import com.airwallex.android.R
-import com.airwallex.android.RetrievePaymentMethodParams
+import com.airwallex.android.model.RetrievePaymentMethodParams
 import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * Allow the customer to select one of the payment methods, or add a new one via [AddPaymentMethodActivity].
  *
  */
-class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
+internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private var pageNum: AtomicInteger = AtomicInteger(0)
 

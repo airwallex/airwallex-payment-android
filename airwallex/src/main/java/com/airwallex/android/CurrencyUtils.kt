@@ -5,7 +5,7 @@ import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
 
-object CurrencyUtils {
+internal object CurrencyUtils {
 
     fun formatPrice(
         currency: String,
