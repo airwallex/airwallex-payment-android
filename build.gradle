@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlinVersion = '1.4.10'
+    ext.kotlinVersion = '1.4.20'
     repositories {
         jcenter()
         google()
@@ -32,7 +32,7 @@ ext {
     compileSdkVersion = 29
     minSdkVersion = 19
 
-    ktlintVersion = '0.36.0'
+    ktlintVersion = '0.39.0'
     kotlinCoroutinesVersion = '1.4.1'
 
     versionCode = 1
