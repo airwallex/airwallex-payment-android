@@ -1,9 +1,7 @@
 package com.airwallex.android.model.parser
 
+import com.airwallex.android.model.*
 import com.airwallex.android.model.AirwallexJsonUtils
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentIntentStatus
-import com.airwallex.android.model.PaymentMethodType
 import org.json.JSONObject
 import java.math.BigDecimal
 
@@ -16,7 +14,7 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
             (0 until it.length())
                 .map { idx -> it.optString(idx) }
                 .mapNotNull { jsonObject ->
-                    PaymentMethodType.fromValue(jsonObject)
+                    AvaliablePaymentMethodType.fromValue(jsonObject)
                 }
         }
 
@@ -99,9 +97,11 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
                 },
                 currency = AirwallexJsonUtils.optString(json, FIELD_CURRENCY),
                 paymentMethod = requireNotNull(
-                    PaymentMethodParser().parse(requireNotNull(
-                        json.optJSONObject(FIELD_PAYMENT_METHOD)
-                    ))
+                    PaymentMethodParser().parse(
+                        requireNotNull(
+                            json.optJSONObject(FIELD_PAYMENT_METHOD)
+                        )
+                    )
                 ),
                 capturedAmount = AirwallexJsonUtils.optDouble(json, FIELD_CAPTURED_AMOUNT)?.let {
                     BigDecimal.valueOf(it)
@@ -211,7 +211,8 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
                 data = AirwallexJsonUtils.optMap(json, FIELD_DATA),
                 dcc = json.optJSONObject(FIELD_DCC_DATA)?.let {
                     DccDataParser().parse(it)
-                }
+                },
+                url = AirwallexJsonUtils.optString(json, FIELD_URL)
             )
         }
 
@@ -219,6 +220,7 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
             private const val FIELD_TYPE = "type"
             private const val FIELD_DATA = "data"
             private const val FIELD_DCC_DATA = "dcc_data"
+            private const val FIELD_URL = "url"
         }
     }
 

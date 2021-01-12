@@ -13,8 +13,7 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.Airwallex
-import com.airwallex.android.model.ConfirmPaymentIntentParams
-import com.airwallex.android.model.RetrievePaymentIntentParams
+import com.airwallex.android.exception.RedirectException
 import com.airwallex.android.model.*
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.parser.PaymentIntentParser
@@ -145,11 +144,11 @@ class PaymentCartFragment : Fragment() {
                     override fun onCancelled() {
                         Log.d(TAG, "User cancel edit shipping...")
                     }
-                })
+                }
+            )
         }
         initializeProductsViews(products.toMutableList())
         btnCheckout.setOnClickListener {
-            btnCheckout.isEnabled = false
             authAndCreatePaymentIntent()
         }
     }
@@ -235,11 +234,15 @@ class PaymentCartFragment : Fragment() {
                         .build()
                         .toParamMap(),
                     "customer_id" to customerId,
-                    "descriptor" to "Airwallex - T-shirt",
-                    "metadata" to mapOf("id" to 1)
+                    "descriptor" to "Airwallex - T-sh  irt",
+                    "metadata" to mapOf("id" to 1),
+                    // **IMPORTANT**
+                    // The HTTP request method that you should use. After the shopper completes the payment, they will be redirected back to your returnURL using the same method.
+                     "returnUrl" to Airwallex.REDIRECT_RESULT_SCHEME + context?.packageName,
                 )
             )
             withContext(Dispatchers.Main) {
+                (activity as? PaymentCartActivity)?.setLoadingProgress(false)
                 handlePaymentIntentResponse(paymentIntentResponse)
             }
         }
@@ -278,12 +281,14 @@ class PaymentCartFragment : Fragment() {
                     Log.d(TAG, "User cancel the payment")
                     showPaymentCancelled()
                 }
-            })
+            }
+        )
     }
 
     private fun handlePaymentData(paymentIntent: PaymentIntent) {
         when (paymentIntent.paymentMethodType) {
             PaymentMethodType.WECHAT -> {
+                (activity as? PaymentCartActivity)?.setLoadingProgress(true)
                 val weChat = paymentIntent.weChat
                 if (weChat == null) {
                     showPaymentError("Server error, WeChat data is null...")
@@ -351,10 +356,23 @@ class PaymentCartFragment : Fragment() {
                                 Log.d(TAG, "REAL WeChat Pay cancelled.")
                                 showPaymentError("REAL WeChat Pay cancelled.")
                             }
-                        })
+                        }
+                    )
                 }
             }
-            PaymentMethodType.CARD -> {
+            PaymentMethodType.ALIPAY_CN,
+            PaymentMethodType.ALIPAY_HK,
+            PaymentMethodType.DANA,
+            PaymentMethodType.GCASH,
+            PaymentMethodType.KAKAOPAY,
+            PaymentMethodType.TNG -> {
+                try {
+                    airwallex.handleAction(paymentIntent.nextAction)
+                } catch (e: RedirectException) {
+                    showPaymentError(e.localizedMessage)
+                }
+            }
+            PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
                 showPaymentSuccess()
             }
         }
@@ -364,59 +382,11 @@ class PaymentCartFragment : Fragment() {
      * Only use the Select Payment Methods Flow
      */
     private fun handlePaymentIntentResponseWithCustomFlow1(paymentIntent: PaymentIntent) {
-        airwallex.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, object : Airwallex.PaymentMethodListener {
-            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
-                val listener = object : Airwallex.PaymentListener<PaymentIntent> {
-                    override fun onFailed(exception: Exception) {
-                        showPaymentError(error = exception.message)
-                    }
-
-                    override fun onSuccess(response: PaymentIntent) {
-                        handlePaymentData(response)
-                    }
-                }
-
-                when (paymentMethod.type) {
-                    PaymentMethodType.WECHAT -> {
-                        val params = ConfirmPaymentIntentParams.createWeChatParams(
-                            paymentIntentId = paymentIntent.id,
-                            clientSecret = requireNotNull(paymentIntent.clientSecret),
-                            customerId = paymentIntent.customerId
-                        )
-                        airwallex.confirmPaymentIntent(params, listener)
-                    }
-                    PaymentMethodType.CARD -> {
-                        val params = ConfirmPaymentIntentParams.createCardParams(
-                            paymentIntentId = paymentIntent.id,
-                            clientSecret = requireNotNull(paymentIntent.clientSecret),
-                            paymentMethodId = requireNotNull(paymentMethod.id),
-                            cvc = cvc ?: "123", // You should provide the cvc input screen
-                            customerId = paymentIntent.customerId
-                        )
-                        airwallex.confirmPaymentIntent(params, listener)
-                    }
-                }
-            }
-
-            override fun onCancelled() {
-                showPaymentCancelled()
-            }
-        })
-    }
-
-    /**
-     * Use the Select Payment Methods Flow & Checkout Detail Flow
-     */
-    private fun handlePaymentIntentResponseWithCustomFlow2(paymentIntent: PaymentIntent) {
-        airwallex.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, object : Airwallex.PaymentMethodListener {
-            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
-                if (paymentMethod.type == PaymentMethodType.WECHAT) {
-                    val params = ConfirmPaymentIntentParams.createWeChatParams(
-                        paymentIntentId = paymentIntent.id,
-                        clientSecret = requireNotNull(paymentIntent.clientSecret),
-                        customerId = paymentIntent.customerId
-                    )
-                    airwallex.confirmPaymentIntent(params, object : Airwallex.PaymentListener<PaymentIntent> {
+        airwallex.presentSelectPaymentMethodFlow(
+            paymentIntent, clientSecretProvider,
+            object : Airwallex.PaymentMethodListener {
+                override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+                    val listener = object : Airwallex.PaymentListener<PaymentIntent> {
                         override fun onFailed(exception: Exception) {
                             showPaymentError(error = exception.message)
                         }
@@ -424,28 +394,246 @@ class PaymentCartFragment : Fragment() {
                         override fun onSuccess(response: PaymentIntent) {
                             handlePaymentData(response)
                         }
-                    })
-                } else if (paymentMethod.type == PaymentMethodType.CARD) {
-                    airwallex.presentPaymentDetailFlow(paymentIntent, paymentMethod, cvc, object : Airwallex.PaymentIntentListener {
-                        override fun onSuccess(paymentIntent: PaymentIntent) {
-                            handlePaymentData(paymentIntent)
-                        }
+                    }
 
-                        override fun onFailed(error: Exception) {
-                            showPaymentError(error = error.message)
+                    val params = when (requireNotNull(paymentMethod.type)) {
+                        PaymentMethodType.WECHAT -> {
+                            ConfirmPaymentIntentParams.createWeChatParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
                         }
+                        PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
+                            ConfirmPaymentIntentParams.createCardParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                paymentMethodId = requireNotNull(paymentMethod.id),
+                                cvc = cvc ?: "123", // You should provide the cvc input screen
+                                customerId = paymentIntent.customerId
+                            )
+                        }
+                        PaymentMethodType.ALIPAY_CN -> {
+                            ConfirmPaymentIntentParams.createAlipayParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                        }
+                        PaymentMethodType.ALIPAY_HK -> {
+                            ConfirmPaymentIntentParams.createAlipayHKParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                        }
+                        PaymentMethodType.KAKAOPAY -> {
+                            ConfirmPaymentIntentParams.createKakaoParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                        }
+                        PaymentMethodType.TNG -> {
+                            ConfirmPaymentIntentParams.createTngParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                        }
+                        PaymentMethodType.DANA -> {
+                            ConfirmPaymentIntentParams.createDanaParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                        }
+                        PaymentMethodType.GCASH -> {
+                            ConfirmPaymentIntentParams.createGCashParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                        }
+                    }
+                    airwallex.confirmPaymentIntent(params, listener)
+                }
 
-                        override fun onCancelled() {
-                            showPaymentCancelled()
-                        }
-                    })
+                override fun onCancelled() {
+                    showPaymentCancelled()
                 }
             }
+        )
+    }
 
-            override fun onCancelled() {
-                showPaymentCancelled()
+    /**
+     * Use the Select Payment Methods Flow & Checkout Detail Flow
+     */
+    private fun handlePaymentIntentResponseWithCustomFlow2(paymentIntent: PaymentIntent) {
+        airwallex.presentSelectPaymentMethodFlow(
+            paymentIntent, clientSecretProvider,
+            object : Airwallex.PaymentMethodListener {
+                override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+                    when (paymentMethod.type) {
+                        PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
+                            airwallex.presentPaymentDetailFlow(
+                                paymentIntent, paymentMethod, cvc,
+                                object : Airwallex.PaymentIntentListener {
+                                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                                        handlePaymentData(paymentIntent)
+                                    }
+
+                                    override fun onFailed(error: Exception) {
+                                        showPaymentError(error = error.message)
+                                    }
+
+                                    override fun onCancelled() {
+                                        showPaymentCancelled()
+                                    }
+                                }
+                            )
+                        }
+                        PaymentMethodType.WECHAT -> {
+                            val params = ConfirmPaymentIntentParams.createWeChatParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                            airwallex.confirmPaymentIntent(
+                                params,
+                                object : Airwallex.PaymentListener<PaymentIntent> {
+                                    override fun onFailed(exception: Exception) {
+                                        showPaymentError(error = exception.message)
+                                    }
+
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        handlePaymentData(response)
+                                    }
+                                }
+                            )
+                        }
+                        PaymentMethodType.ALIPAY_CN -> {
+                            val params = ConfirmPaymentIntentParams.createAlipayParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                            airwallex.confirmPaymentIntent(
+                                params,
+                                object : Airwallex.PaymentListener<PaymentIntent> {
+                                    override fun onFailed(exception: Exception) {
+                                        showPaymentError(error = exception.message)
+                                    }
+
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        handlePaymentData(response)
+                                    }
+                                }
+                            )
+                        }
+                        PaymentMethodType.ALIPAY_HK -> {
+                            val params = ConfirmPaymentIntentParams.createAlipayHKParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                            airwallex.confirmPaymentIntent(
+                                params,
+                                object : Airwallex.PaymentListener<PaymentIntent> {
+                                    override fun onFailed(exception: Exception) {
+                                        showPaymentError(error = exception.message)
+                                    }
+
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        handlePaymentData(response)
+                                    }
+                                }
+                            )
+                        }
+                        PaymentMethodType.KAKAOPAY -> {
+                            val params = ConfirmPaymentIntentParams.createKakaoParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                            airwallex.confirmPaymentIntent(
+                                params,
+                                object : Airwallex.PaymentListener<PaymentIntent> {
+                                    override fun onFailed(exception: Exception) {
+                                        showPaymentError(error = exception.message)
+                                    }
+
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        handlePaymentData(response)
+                                    }
+                                }
+                            )
+                        }
+                        PaymentMethodType.TNG -> {
+                            val params = ConfirmPaymentIntentParams.createTngParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                            airwallex.confirmPaymentIntent(
+                                params,
+                                object : Airwallex.PaymentListener<PaymentIntent> {
+                                    override fun onFailed(exception: Exception) {
+                                        showPaymentError(error = exception.message)
+                                    }
+
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        handlePaymentData(response)
+                                    }
+                                }
+                            )
+                        }
+                        PaymentMethodType.DANA -> {
+                            val params = ConfirmPaymentIntentParams.createDanaParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                            airwallex.confirmPaymentIntent(
+                                params,
+                                object : Airwallex.PaymentListener<PaymentIntent> {
+                                    override fun onFailed(exception: Exception) {
+                                        showPaymentError(error = exception.message)
+                                    }
+
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        handlePaymentData(response)
+                                    }
+                                }
+                            )
+                        }
+                        PaymentMethodType.GCASH -> {
+                            val params = ConfirmPaymentIntentParams.createGCashParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId
+                            )
+                            airwallex.confirmPaymentIntent(
+                                params,
+                                object : Airwallex.PaymentListener<PaymentIntent> {
+                                    override fun onFailed(exception: Exception) {
+                                        showPaymentError(error = exception.message)
+                                    }
+
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        handlePaymentData(response)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+
+                override fun onCancelled() {
+                    showPaymentCancelled()
+                }
             }
-        })
+        )
     }
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -480,12 +668,16 @@ class PaymentCartFragment : Fragment() {
                 override fun onSuccess(response: PaymentIntent) {
                     if (response.status == PaymentIntentStatus.SUCCEEDED) {
                         // payment successful
+                        showPaymentSuccess()
+                    } else {
+                        showPaymentError(response.status?.value)
                     }
                 }
 
                 override fun onFailed(exception: Exception) {
                 }
-            })
+            }
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -496,7 +688,6 @@ class PaymentCartFragment : Fragment() {
     }
 
     private fun showPaymentSuccess() {
-        btnCheckout.isEnabled = true
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.payment_successful),
@@ -505,7 +696,6 @@ class PaymentCartFragment : Fragment() {
     }
 
     private fun showCreatePaymentIntentError(error: String? = null) {
-        btnCheckout.isEnabled = true
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.create_payment_intent_failed),
@@ -514,7 +704,6 @@ class PaymentCartFragment : Fragment() {
     }
 
     private fun showPaymentError(error: String? = null) {
-        btnCheckout.isEnabled = true
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.payment_failed),
@@ -523,7 +712,6 @@ class PaymentCartFragment : Fragment() {
     }
 
     private fun showPaymentCancelled(error: String? = null) {
-        btnCheckout.isEnabled = true
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.payment_cancelled),

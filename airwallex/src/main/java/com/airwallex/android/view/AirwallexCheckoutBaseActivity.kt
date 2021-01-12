@@ -23,25 +23,66 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         setLoadingProgress(loading = true, cancelable = false)
-        when (paymentMethod.type) {
+        val params = when (requireNotNull(paymentMethod.type)) {
             PaymentMethodType.WECHAT -> {
-                val params = ConfirmPaymentIntentParams.createWeChatParams(
+                ConfirmPaymentIntentParams.createWeChatParams(
                     paymentIntentId = paymentIntent.id,
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
                     customerId = paymentIntent.customerId
                 )
-                airwallex.confirmPaymentIntent(params, listener)
             }
-            PaymentMethodType.CARD -> {
-                val params = ConfirmPaymentIntentParams.createCardParams(
+            PaymentMethodType.ALIPAY_CN -> {
+                ConfirmPaymentIntentParams.createAlipayParams(
+                    paymentIntentId = paymentIntent.id,
+                    clientSecret = requireNotNull(paymentIntent.clientSecret),
+                    customerId = paymentIntent.customerId
+                )
+            }
+            PaymentMethodType.ALIPAY_HK -> {
+                ConfirmPaymentIntentParams.createAlipayHKParams(
+                    paymentIntentId = paymentIntent.id,
+                    clientSecret = requireNotNull(paymentIntent.clientSecret),
+                    customerId = paymentIntent.customerId
+                )
+            }
+            PaymentMethodType.DANA -> {
+                ConfirmPaymentIntentParams.createDanaParams(
+                    paymentIntentId = paymentIntent.id,
+                    clientSecret = requireNotNull(paymentIntent.clientSecret),
+                    customerId = paymentIntent.customerId
+                )
+            }
+            PaymentMethodType.GCASH -> {
+                ConfirmPaymentIntentParams.createGCashParams(
+                    paymentIntentId = paymentIntent.id,
+                    clientSecret = requireNotNull(paymentIntent.clientSecret),
+                    customerId = paymentIntent.customerId
+                )
+            }
+            PaymentMethodType.KAKAOPAY -> {
+                ConfirmPaymentIntentParams.createKakaoParams(
+                    paymentIntentId = paymentIntent.id,
+                    clientSecret = requireNotNull(paymentIntent.clientSecret),
+                    customerId = paymentIntent.customerId
+                )
+            }
+            PaymentMethodType.TNG -> {
+                ConfirmPaymentIntentParams.createTngParams(
+                    paymentIntentId = paymentIntent.id,
+                    clientSecret = requireNotNull(paymentIntent.clientSecret),
+                    customerId = paymentIntent.customerId
+                )
+            }
+            PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
+                ConfirmPaymentIntentParams.createCardParams(
                     paymentIntentId = paymentIntent.id,
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
                     paymentMethodId = requireNotNull(paymentMethod.id),
                     cvc = requireNotNull(cvc),
                     customerId = paymentIntent.customerId
                 )
-                airwallex.confirmPaymentIntent(params, listener)
             }
         }
+        airwallex.confirmPaymentIntent(params, listener)
     }
 }

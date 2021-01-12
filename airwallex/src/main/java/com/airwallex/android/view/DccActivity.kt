@@ -57,15 +57,18 @@ internal class DccActivity : AirwallexActivity() {
                 type = PaymentIntentContinueType.DCC,
                 useDcc = transfer_currency.isSelected
             )
-            airwallex.continuePaymentIntent(applicationContext, ThreeDSecureActivityLaunch(this), params, object : Airwallex.PaymentListener<PaymentIntent> {
-                override fun onFailed(exception: Exception) {
-                    finishWithPaymentIntent(exception = exception)
-                }
+            airwallex.continuePaymentIntent(
+                applicationContext, ThreeDSecureActivityLaunch(this), params,
+                object : Airwallex.PaymentListener<PaymentIntent> {
+                    override fun onFailed(exception: Exception) {
+                        finishWithPaymentIntent(exception = exception)
+                    }
 
-                override fun onSuccess(response: PaymentIntent) {
-                    finishWithPaymentIntent(paymentIntent = response)
+                    override fun onSuccess(response: PaymentIntent) {
+                        finishWithPaymentIntent(paymentIntent = response)
+                    }
                 }
-            })
+            )
         }
     }
 
@@ -75,12 +78,14 @@ internal class DccActivity : AirwallexActivity() {
     ) {
         setLoadingProgress(false)
         setResult(
-            Activity.RESULT_OK, Intent().putExtras(
-            DccActivityLaunch.Result(
-                paymentIntent = paymentIntent,
-                exception = exception
-            ).toBundle()
-        ))
+            Activity.RESULT_OK,
+            Intent().putExtras(
+                DccActivityLaunch.Result(
+                    paymentIntent = paymentIntent,
+                    exception = exception
+                ).toBundle()
+            )
+        )
         finish()
     }
 

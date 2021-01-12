@@ -22,7 +22,7 @@ data class PaymentMethodCreateRequest internal constructor(
     /**
      * Type of the payment method. Must be [PaymentMethodType.CARD]
      */
-    val type: PaymentMethodType? = null,
+    val type: AvaliablePaymentMethodType? = null,
 
     /**
      * Card information. This must be provided if [type] is set to [PaymentMethodType.CARD]
@@ -81,7 +81,7 @@ data class PaymentMethodCreateRequest internal constructor(
     class Builder : ObjectBuilder<PaymentMethodCreateRequest> {
         private var requestId: String? = null
         private var customerId: String? = null
-        private var type: PaymentMethodType? = null
+        private var type: AvaliablePaymentMethodType? = null
         private var card: PaymentMethod.Card? = null
         private var billing: Billing? = null
         private var metadata: @RawValue Map<String, Any?>? = null
@@ -94,7 +94,7 @@ data class PaymentMethodCreateRequest internal constructor(
             this.customerId = customerId
         }
 
-        fun setType(type: PaymentMethodType?): Builder = apply {
+        fun setType(type: AvaliablePaymentMethodType?): Builder = apply {
             this.type = type
         }
 

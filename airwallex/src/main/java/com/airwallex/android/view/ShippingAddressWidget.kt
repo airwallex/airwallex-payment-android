@@ -42,9 +42,9 @@ internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
     internal val isValidShipping: Boolean
         get() {
             return country != null &&
-                    atlState.value.isNotEmpty() &&
-                    atlCity.value.isNotEmpty() &&
-                    atlStreetAddress.value.isNotEmpty()
+                atlState.value.isNotEmpty() &&
+                atlCity.value.isNotEmpty() &&
+                atlStreetAddress.value.isNotEmpty()
         }
 
     init {

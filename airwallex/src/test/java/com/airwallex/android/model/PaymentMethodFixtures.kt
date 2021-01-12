@@ -4,12 +4,13 @@ import com.airwallex.android.model.parser.PaymentMethodParser
 import org.json.JSONObject
 
 internal object PaymentMethodFixtures {
-    val PAYMENT_METHOD: PaymentMethod = PaymentMethodParser().parse(JSONObject(
-        """
+    val PAYMENT_METHOD: PaymentMethod = PaymentMethodParser().parse(
+        JSONObject(
+            """
         {
             "id": "",
             "request_id": "",
-            "type": "card",
+            "type": "visa",
 	        "card": {
 	            "number": "4012000300001003",
 	            "expiry_month": "12",
@@ -31,5 +32,6 @@ internal object PaymentMethodFixtures {
             }
         }
         """.trimIndent()
-    ))
+        )
+    )
 }

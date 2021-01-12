@@ -67,7 +67,7 @@ internal class AirwallexApiRepository : ApiRepository {
         /**
          * Payment method type
          */
-        internal val type: PaymentMethodType
+        internal val type: AvaliablePaymentMethodType
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     @Parcelize
@@ -90,7 +90,8 @@ internal class AirwallexApiRepository : ApiRepository {
                     (options as ContinuePaymentIntentOptions).paymentIntentId
                 ),
                 options = options,
-                params = options.request.toParamMap()),
+                params = options.request.toParamMap()
+            ),
             PaymentIntentParser()
         )
     }
@@ -109,7 +110,8 @@ internal class AirwallexApiRepository : ApiRepository {
                     (options as ConfirmPaymentIntentOptions).paymentIntentId
                 ),
                 options = options,
-                params = options.request.toParamMap()),
+                params = options.request.toParamMap()
+            ),
             PaymentIntentParser()
         )
     }
@@ -128,7 +130,8 @@ internal class AirwallexApiRepository : ApiRepository {
                     (options as RetrievePaymentIntentOptions).paymentIntentId
                 ),
                 options = options,
-                params = null),
+                params = null
+            ),
             PaymentIntentParser()
         )
     }
@@ -140,7 +143,8 @@ internal class AirwallexApiRepository : ApiRepository {
                     AirwallexPlugins.environment.baseUrl()
                 ),
                 options = options,
-                params = (options as CreatePaymentMethodOptions).request.toParamMap()),
+                params = (options as CreatePaymentMethodOptions).request.toParamMap()
+            ),
             PaymentMethodParser()
         )
     }
@@ -158,7 +162,8 @@ internal class AirwallexApiRepository : ApiRepository {
                     options.type
                 ),
                 options = options,
-                params = null),
+                params = null
+            ),
             PaymentMethodResponseParser()
         )
     }
@@ -168,7 +173,8 @@ internal class AirwallexApiRepository : ApiRepository {
             AirwallexHttpRequest.createGet(
                 url = paResRetrieveUrl((options as RetrievePaResOptions).paResId),
                 options = options,
-                params = null),
+                params = null
+            ),
             ThreeDSecureParesParser()
         )
     }
@@ -221,7 +227,7 @@ internal class AirwallexApiRepository : ApiRepository {
                 throw PermissionException(error = error, traceId = traceId)
             }
             else -> {
-                throw APIException(error = error, traceId, responseCode)
+                throw APIException(error = error, traceId = traceId, statusCode = responseCode)
             }
         }
     }
@@ -301,7 +307,7 @@ internal class AirwallexApiRepository : ApiRepository {
             pageSize: Int,
             fromCreatedAt: Date?,
             toCreatedAt: Date?,
-            type: PaymentMethodType
+            type: AvaliablePaymentMethodType
         ): String {
             val builder = StringBuilder("payment_methods?")
             builder.append("page_num=$pageNum")

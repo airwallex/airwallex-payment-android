@@ -4,8 +4,9 @@ import com.airwallex.android.model.parser.PurchaseOrderParser
 import org.json.JSONObject
 
 internal object OrderFixtures {
-    val ORDER: PurchaseOrder = PurchaseOrderParser().parse(JSONObject(
-        """
+    val ORDER: PurchaseOrder = PurchaseOrderParser().parse(
+        JSONObject(
+            """
         {
             "products": [
                 {
@@ -43,6 +44,7 @@ internal object OrderFixtures {
             },
             "type": "physical_goods"
         }
-        """.trimIndent()
-    ))
+            """.trimIndent()
+        )
+    )
 }

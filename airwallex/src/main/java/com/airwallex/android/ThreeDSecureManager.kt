@@ -50,29 +50,32 @@ internal object ThreeDSecureManager {
         configureCardinal(applicationContext)
 
         // Setup the Initial Call to Cardinal
-        Cardinal.getInstance().init(serverJwt, object : CardinalInitService {
+        Cardinal.getInstance().init(
+            serverJwt,
+            object : CardinalInitService {
 
-            /**
-             * You may have your Submit button disabled on page load. Once you are set up
-             * for CCA, you may then enable it. This will prevent users from submitting
-             * their order before CCA is ready.
-             */
-            override fun onSetupCompleted(consumerSessionId: String) {
-                Logger.debug("onSetupCompleted $consumerSessionId")
-                completion.invoke(consumerSessionId, null)
-            }
+                /**
+                 * You may have your Submit button disabled on page load. Once you are set up
+                 * for CCA, you may then enable it. This will prevent users from submitting
+                 * their order before CCA is ready.
+                 */
+                override fun onSetupCompleted(consumerSessionId: String) {
+                    Logger.debug("onSetupCompleted $consumerSessionId")
+                    completion.invoke(consumerSessionId, null)
+                }
 
-            /**
-             * If there was an error with setup, cardinal will call this function with
-             * validate response and empty serverJWT
-             * @param validateResponse
-             * @param serverJWT will be an empty
-             */
-            override fun onValidated(validateResponse: ValidateResponse, serverJWT: String?) {
-                Logger.debug("onValidated")
-                completion.invoke(null, validateResponse)
+                /**
+                 * If there was an error with setup, cardinal will call this function with
+                 * validate response and empty serverJWT
+                 * @param validateResponse
+                 * @param serverJWT will be an empty
+                 */
+                override fun onValidated(validateResponse: ValidateResponse, serverJWT: String?) {
+                    Logger.debug("onValidated")
+                    completion.invoke(null, validateResponse)
+                }
             }
-        })
+        )
     }
 
     enum class ThreeDSecureType {

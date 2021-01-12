@@ -4,8 +4,9 @@ import com.airwallex.android.model.parser.ShippingParser
 import org.json.JSONObject
 
 internal object ShippingFixtures {
-    val SHIPPING = ShippingParser().parse(JSONObject(
-        """
+    val SHIPPING = ShippingParser().parse(
+        JSONObject(
+            """
         {
             "first_name": "John",
             "last_name": "Doe",
@@ -18,6 +19,7 @@ internal object ShippingFixtures {
                 "postcode": "100000"
             }
         }
-        """.trimIndent()
-    ))
+            """.trimIndent()
+        )
+    )
 }

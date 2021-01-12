@@ -36,30 +36,34 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
     override fun onActionSave() {
         val card = cardWidget.paymentMethodCard ?: return
         setLoadingProgress(loading = true, cancelable = false)
-        ClientSecretRepository.getInstance().retrieveClientSecret(args.customerId, object : ClientSecretRepository.ClientSecretRetrieveListener {
-            override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                airwallex.createPaymentMethod(
-                    CreatePaymentMethodParams(
-                        clientSecret = clientSecret.value,
-                        customerId = args.customerId,
-                        card = card,
-                        billing = requireNotNull(billingWidget.billing)
-                    ),
-                    object : Airwallex.PaymentListener<PaymentMethod> {
-                        override fun onSuccess(response: PaymentMethod) {
-                            finishWithPaymentMethod(response, requireNotNull(card.cvc))
-                        }
+        ClientSecretRepository.getInstance().retrieveClientSecret(
+            args.customerId,
+            object : ClientSecretRepository.ClientSecretRetrieveListener {
+                override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
+                    airwallex.createPaymentMethod(
+                        CreatePaymentMethodParams(
+                            clientSecret = clientSecret.value,
+                            customerId = args.customerId,
+                            card = card,
+                            billing = requireNotNull(billingWidget.billing)
+                        ),
+                        object : Airwallex.PaymentListener<PaymentMethod> {
+                            override fun onSuccess(response: PaymentMethod) {
+                                finishWithPaymentMethod(response, requireNotNull(card.cvc))
+                            }
 
-                        override fun onFailed(exception: Exception) {
-                            alertError(exception.message ?: exception.toString())
+                            override fun onFailed(exception: Exception) {
+                                alertError(exception.message ?: exception.toString())
+                            }
                         }
-                    })
-            }
+                    )
+                }
 
-            override fun onClientSecretError(errorMessage: String) {
-                alertError(errorMessage)
+                override fun onClientSecretError(errorMessage: String) {
+                    alertError(errorMessage)
+                }
             }
-        })
+        )
     }
 
     override fun homeAsUpIndicatorResId(): Int {
@@ -74,7 +78,8 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
     private fun finishWithPaymentMethod(paymentMethod: PaymentMethod, cvc: String) {
         setLoadingProgress(false)
         setResult(
-            Activity.RESULT_OK, Intent().putExtras(
+            Activity.RESULT_OK,
+            Intent().putExtras(
                 AddPaymentMethodActivityLaunch.Result(
                     paymentMethod = paymentMethod,
                     cvc = cvc

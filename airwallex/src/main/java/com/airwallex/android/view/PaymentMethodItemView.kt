@@ -20,7 +20,7 @@ internal class PaymentMethodItemView constructor(
     attrs: AttributeSet
 ) : RelativeLayout(context, attrs) {
 
-    private lateinit var paymentMethodType: PaymentMethodType
+    private var paymentMethodType: PaymentMethodType? = null
 
     /**
      * CVC of credit card
@@ -29,8 +29,9 @@ internal class PaymentMethodItemView constructor(
 
     internal val isValid: Boolean
         get() {
-            return paymentMethodType == PaymentMethodType.CARD && cvc?.length == CardCvcEditText.VALID_CVC_LENGTH ||
-                paymentMethodType == PaymentMethodType.WECHAT
+            return cvc?.length == CardCvcEditText.VALID_CVC_LENGTH ||
+                paymentMethodType == PaymentMethodType.WECHAT ||
+                paymentMethodType == PaymentMethodType.ALIPAY_CN
         }
 
     /**

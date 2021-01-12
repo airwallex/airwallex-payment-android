@@ -24,7 +24,7 @@ internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : Li
     internal val isValidContact: Boolean
         get() {
             return atlLastName.value.isNotEmpty() &&
-                    atlFirstName.value.isNotEmpty()
+                atlFirstName.value.isNotEmpty()
         }
 
     /**

@@ -78,9 +78,12 @@ internal class AirwallexStarter constructor(
         clientSecretProvider: ClientSecretProvider,
         addPaymentMethodFlowListener: Airwallex.AddPaymentMethodListener
     ) {
-        requireNotNull(paymentIntent.customerId, {
-            "Customer id must be provided on add payment method flow"
-        })
+        requireNotNull(
+            paymentIntent.customerId,
+            {
+                "Customer id must be provided on add payment method flow"
+            }
+        )
         this.addPaymentMethodFlowListener = addPaymentMethodFlowListener
         ClientSecretRepository.init(clientSecretProvider)
         addPaymentMethodActivityLaunch.startForResult(
@@ -103,9 +106,12 @@ internal class AirwallexStarter constructor(
         clientSecretProvider: ClientSecretProvider,
         selectPaymentMethodFlowListener: Airwallex.PaymentMethodListener
     ) {
-        requireNotNull(paymentIntent.customerId, {
-            "Customer id must be provided on select payment method flow"
-        })
+        requireNotNull(
+            paymentIntent.customerId,
+            {
+                "Customer id must be provided on select payment method flow"
+            }
+        )
         this.selectPaymentMethodFlowListener = selectPaymentMethodFlowListener
         ClientSecretRepository.init(clientSecretProvider)
         paymentMethodsActivityLaunch.startForResult(
@@ -130,7 +136,7 @@ internal class AirwallexStarter constructor(
         cvc: String? = null,
         paymentDetailListener: Airwallex.PaymentIntentListener
     ) {
-        if (paymentMethod.type != PaymentMethodType.CARD) {
+        if (paymentMethod.type != PaymentMethodType.VISA && paymentMethod.type != PaymentMethodType.MASTERCARD) {
             paymentDetailListener.onFailed(Exception("Only card payment is supported"))
             return
         }
@@ -155,9 +161,12 @@ internal class AirwallexStarter constructor(
         clientSecretProvider: ClientSecretProvider,
         paymentFlowListener: Airwallex.PaymentIntentListener
     ) {
-        requireNotNull(paymentIntent.customerId, {
-            "Customer id must be provided on payment flow"
-        })
+        requireNotNull(
+            paymentIntent.customerId,
+            {
+                "Customer id must be provided on payment flow"
+            }
+        )
         this.paymentFlowListener = paymentFlowListener
         ClientSecretRepository.init(clientSecretProvider)
         paymentMethodsActivityLaunch.startForResult(
@@ -213,7 +222,8 @@ internal class AirwallexStarter constructor(
                             if (exception != null) {
                                 paymentFlowListener?.onFailed(exception)
                             } else {
-                                paymentFlowListener?.onSuccess(requireNotNull(result.paymentIntent))
+                                val paymentIntent = requireNotNull(result.paymentIntent)
+                                paymentFlowListener?.onSuccess(paymentIntent)
                             }
                             paymentFlowListener = null
                         } else {

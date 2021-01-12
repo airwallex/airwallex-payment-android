@@ -4,8 +4,9 @@ import com.airwallex.android.model.parser.BillingParser
 import org.json.JSONObject
 
 internal object BillingFixtures {
-    val BILLING: Billing = BillingParser().parse(JSONObject(
-        """
+    val BILLING: Billing = BillingParser().parse(
+        JSONObject(
+            """
         {
             "first_name": "John",
             "last_name": "Doe",
@@ -19,6 +20,7 @@ internal object BillingFixtures {
                 "postcode": "100000"
             }
         }
-        """.trimIndent()
-    ))
+            """.trimIndent()
+        )
+    )
 }
