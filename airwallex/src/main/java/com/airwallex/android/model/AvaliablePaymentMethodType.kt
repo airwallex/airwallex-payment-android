@@ -7,20 +7,19 @@ import kotlinx.android.parcel.Parcelize
  * The type of [PaymentMethod]
  */
 @Parcelize
-enum class PaymentMethodType(val value: String) : Parcelable {
+enum class AvaliablePaymentMethodType(val value: String) : Parcelable {
 
-    VISA("visa"),
-    MASTERCARD("mastercard"),
+    CARD("card"),
     ALIPAY_CN("alipaycn"),
     ALIPAY_HK("alipayhk"),
     WECHAT("wechatpay"),
     DANA("dana"),
     GCASH("gcash"),
-    KAKAOPAY("kakaopay"),
+    KAKAO("kakaopay"),
     TNG("tng");
 
     internal companion object {
-        internal fun fromValue(value: String?): PaymentMethodType? {
+        internal fun fromValue(value: String?): AvaliablePaymentMethodType? {
             return values().firstOrNull { it.value == value }
         }
     }

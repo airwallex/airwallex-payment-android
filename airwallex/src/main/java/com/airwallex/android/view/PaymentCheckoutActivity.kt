@@ -64,7 +64,8 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun startConfirmPaymentIntent() {
-        confirmPaymentIntent(paymentMethod = paymentMethod,
+        confirmPaymentIntent(
+            paymentMethod = paymentMethod,
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     finishWithPaymentIntent(paymentIntent = response)
@@ -73,7 +74,8 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                 override fun onFailed(exception: Exception) {
                     finishWithPaymentIntent(exception = exception)
                 }
-            })
+            }
+        )
     }
 
     private fun finishWithPaymentIntent(
@@ -82,12 +84,13 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     ) {
         setLoadingProgress(false)
         setResult(
-            Activity.RESULT_OK, Intent().putExtras(
-            PaymentCheckoutActivityLaunch.Result(
-                paymentIntent = paymentIntent,
-                exception = exception
-            ).toBundle()
-        )
+            Activity.RESULT_OK,
+            Intent().putExtras(
+                PaymentCheckoutActivityLaunch.Result(
+                    paymentIntent = paymentIntent,
+                    exception = exception
+                ).toBundle()
+            )
         )
         finish()
     }

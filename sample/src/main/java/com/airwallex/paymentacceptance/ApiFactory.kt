@@ -18,18 +18,21 @@ internal class ApiFactory internal constructor(private val baseUrl: String) {
         logging.level = HttpLoggingInterceptor.Level.BODY
 
         val clientBuilder = OkHttpClient.Builder()
-        clientBuilder.interceptors().add(0, object : Interceptor {
-            @Throws(IOException::class)
-            override fun intercept(chain: Interceptor.Chain): Response {
-                val builder = chain.request().newBuilder()
-                builder.addHeader("Accept", "application/json")
-                builder.addHeader("Content-Type", "application/json")
-                Settings.token?.let {
-                    builder.addHeader("Authorization", "Bearer $it")
+        clientBuilder.interceptors().add(
+            0,
+            object : Interceptor {
+                @Throws(IOException::class)
+                override fun intercept(chain: Interceptor.Chain): Response {
+                    val builder = chain.request().newBuilder()
+                    builder.addHeader("Accept", "application/json")
+                    builder.addHeader("Content-Type", "application/json")
+                    Settings.token?.let {
+                        builder.addHeader("Authorization", "Bearer $it")
+                    }
+                    return chain.proceed(builder.build())
                 }
-                return chain.proceed(builder.build())
             }
-        })
+        )
         clientBuilder.connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
         clientBuilder.readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
         clientBuilder.addInterceptor(logging)

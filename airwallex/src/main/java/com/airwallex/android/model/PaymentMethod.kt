@@ -40,9 +40,39 @@ data class PaymentMethod internal constructor(
     val card: Card? = null,
 
     /**
-     * The WeChat request that contains WeChat pay flow
+     * WeChat
      */
     val weChatPayRequest: WeChatPayRequest? = null,
+
+    /**
+     * alipaycn
+     */
+    val aliPayCNRequest: AliPayRequest? = null,
+
+    /**
+     *  alipayhk
+     */
+    val aliPayHKRequest: AliPayRequest? = null,
+
+    /**
+     *  kakaopay
+     */
+    val kakaoPayRequest: AliPayRequest? = null,
+
+    /**
+     *  tng
+     */
+    val tngRequest: AliPayRequest? = null,
+
+    /**
+     *  dana
+     */
+    val danaRequest: AliPayRequest? = null,
+
+    /**
+     *  gcash
+     */
+    val gCashRequest: AliPayRequest? = null,
 
     /**
      * Billing information for the payment method
@@ -83,15 +113,52 @@ data class PaymentMethod internal constructor(
                     mapOf(PaymentMethodParser.FIELD_WECHAT_PAY_REQUEST to it.toParamMap())
                 }.orEmpty()
             )
+            .plus(
+                aliPayCNRequest?.let {
+                    mapOf(PaymentMethodParser.FIELD_ALI_PAY_CN_REQUEST to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                aliPayHKRequest?.let {
+                    mapOf(PaymentMethodParser.FIELD_ALI_PAY_HK_REQUEST to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                kakaoPayRequest?.let {
+                    mapOf(PaymentMethodParser.FIELD_KAO_KAO_PAY_REQUEST to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                tngRequest?.let {
+                    mapOf(PaymentMethodParser.FIELD_TNG_REQUEST to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                danaRequest?.let {
+                    mapOf(PaymentMethodParser.FIELD_DANA_REQUEST to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                gCashRequest?.let {
+                    mapOf(PaymentMethodParser.FIELD_GCASH_REQUEST to it.toParamMap())
+                }.orEmpty()
+            )
     }
 
     class Builder : ObjectBuilder<PaymentMethod> {
         private var id: String? = null
         private var requestId: String? = null
         private var customerId: String? = null
-        private var type: PaymentMethodType = PaymentMethodType.CARD
+        private var type: PaymentMethodType? = null
         private var card: Card? = null
-        private var weChatPayFlow: WeChatPayRequest? = null
+        private var weChatPayRequest: WeChatPayRequest? = null
+        private var aliPayCNRequest: AliPayRequest? = null
+        private var aliPayHKRequest: AliPayRequest? = null
+        private var kakaoPayRequest: AliPayRequest? = null
+        private var tngRequest: AliPayRequest? = null
+        private var danaRequest: AliPayRequest? = null
+        private var gCashRequest: AliPayRequest? = null
+
         private var billing: Billing? = null
         private var metadata: Map<String, Any?>? = null
         private var createdAt: Date? = null
@@ -122,8 +189,32 @@ data class PaymentMethod internal constructor(
             this.card = card
         }
 
-        fun setWeChatPayFlow(weChatPayFlow: WeChatPayRequest?): Builder = apply {
-            this.weChatPayFlow = weChatPayFlow
+        fun setWeChatPayRequest(weChatPayRequest: WeChatPayRequest?): Builder = apply {
+            this.weChatPayRequest = weChatPayRequest
+        }
+
+        fun setAliPayCNRequest(aliPayCNRequest: AliPayRequest?): Builder = apply {
+            this.aliPayCNRequest = aliPayCNRequest
+        }
+
+        fun setAliPayHkRequest(aliPayHKRequest: AliPayRequest?): Builder = apply {
+            this.aliPayHKRequest = aliPayHKRequest
+        }
+
+        fun setKakaoPayRequest(kakaoPayRequest: AliPayRequest?): Builder = apply {
+            this.kakaoPayRequest = kakaoPayRequest
+        }
+
+        fun setTngRequest(tngRequest: AliPayRequest?): Builder = apply {
+            this.tngRequest = tngRequest
+        }
+
+        fun setDanaRequest(danaRequest: AliPayRequest?): Builder = apply {
+            this.danaRequest = danaRequest
+        }
+
+        fun setGCashRequest(gCashRequest: AliPayRequest?): Builder = apply {
+            this.gCashRequest = gCashRequest
         }
 
         fun setType(type: PaymentMethodType): Builder = apply {
@@ -150,7 +241,13 @@ data class PaymentMethod internal constructor(
                 billing = billing,
                 card = card,
                 type = type,
-                weChatPayRequest = weChatPayFlow,
+                weChatPayRequest = weChatPayRequest,
+                aliPayCNRequest = aliPayCNRequest,
+                aliPayHKRequest = aliPayHKRequest,
+                kakaoPayRequest = kakaoPayRequest,
+                tngRequest = tngRequest,
+                danaRequest = danaRequest,
+                gCashRequest = gCashRequest,
                 metadata = metadata,
                 createdAt = createdAt,
                 updatedAt = updatedAt,

@@ -78,6 +78,32 @@ Before confirming the `PaymentIntent`, you must create a `PaymentIntent` on the 
 >
 >3. Finally, you need to create a `PaymentIntent` object on your own server via [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post) and pass it to your client
 
+*Important* 
+If you need to support one of Alipaycn Alipayhk dana gcash kakaopay tng, you need to pass in `returnUrl` when creating `PaymentIntent`, so that you can jump back to the merchant app after successful payment
+```kotlin
+    api.createPaymentIntent(
+        mutableMapOf(
+            
+            // The HTTP request method that you should use. After the shopper completes the payment, they will be redirected back to your returnURL using the same method.
+            "returnUrl" to "airwallexcheckout://$packageName"
+        )
+    )
+```
+```xml
+    <activity android:name="...">
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+
+            <data
+                android:host="${applicationId}"
+                android:scheme="airwallexcheckout" />
+        </intent-filter>
+    </activity>
+```
+
 After completing all the steps on the server, the client will get a `PaymentIntent` object from your server, then you can start confirm the `PaymentIntent`
 
 1. Initializes an `Airwallex` object, it's the Entry-point of the Airwallex SDK.
@@ -97,26 +123,67 @@ After completing all the steps on the server, the client will get a `PaymentInte
             // Confirm Payment Intent failed
         }
     }
-    when (paymentMethod.type) {
+    val params = when (requireNotNull(paymentMethod.type)) {
         PaymentMethodType.WECHAT -> {
-            val params = ConfirmPaymentIntentParams.createWeChatParams(
-                paymentIntentId = paymentIntent.id,
-                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                customerId = paymentIntent.customerId
+            ConfirmPaymentIntentParams.createWeChatParams(
+                paymentIntentId = paymentIntent.id, // Required
+                clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
+                customerId = paymentIntent.customerId // Optional
             )
-            airwallex.confirmPaymentIntent(params, listener)
         }
-        PaymentMethodType.CARD -> {
-            val params = ConfirmPaymentIntentParams.createCardParams(
+        PaymentMethodType.ALIPAY_CN -> {
+            ConfirmPaymentIntentParams.createAlipayParams(
+                paymentIntentId = paymentIntent.id, // Required
+                clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
+                customerId = paymentIntent.customerId // Optional
+            )
+        }
+        PaymentMethodType.ALIPAY_HK -> {
+            ConfirmPaymentIntentParams.createAlipayHKParams(
+                paymentIntentId = paymentIntent.id, // Required
+                clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
+                customerId = paymentIntent.customerId // Optional
+            )
+        }
+        PaymentMethodType.DANA -> {
+            ConfirmPaymentIntentParams.createDanaParams(
+                paymentIntentId = paymentIntent.id, // Required
+                clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
+                customerId = paymentIntent.customerId // Optional
+            )
+        }
+        PaymentMethodType.GCASH -> {
+            ConfirmPaymentIntentParams.createGCashParams(
+                paymentIntentId = paymentIntent.id, // Required
+                clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
+                customerId = paymentIntent.customerId // Optional
+            )
+        }
+        PaymentMethodType.KAKAOPAY -> {
+            ConfirmPaymentIntentParams.createKakaoParams(
+                paymentIntentId = paymentIntent.id, // Required
+                clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
+                customerId = paymentIntent.customerId // Optional
+            )
+        }
+        PaymentMethodType.TNG -> {
+            ConfirmPaymentIntentParams.createTngParams(
+                paymentIntentId = paymentIntent.id, // Required
+                clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
+                customerId = paymentIntent.customerId // Optional
+            )
+        }
+        PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
+            ConfirmPaymentIntentParams.createCardParams(
                 paymentIntentId = paymentIntent.id, // Required
                 clientSecret = requireNotNull(paymentIntent.clientSecret), // Required
                 paymentMethodId = requireNotNull(paymentMethod.id), // Required
                 cvc = requireNotNull(cvc), // Required
                 customerId = paymentIntent.customerId // Optional
             )
-            airwallex.confirmPaymentIntent(params, listener)
         }
     }
+    airwallex.confirmPaymentIntent(params, listener)
 ```
 
 ```kotlin
@@ -148,7 +215,19 @@ Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-and
     val weChatApi = WXAPIFactory.createWXAPI(applicationContext, appId)
     weChatApi.sendReq(weChatReq)
 ```
- 
+
+- Alipaycn Alipayhk dana gcash kakaopay tng
+
+After the Confirm `PaymentIntent` is successful, you need to call `handleAction` to redirect to the payment screen. After the payment is completed, it will be redirected to the merchant app. Then you can check the order status through `retrievePaymentIntent
+
+```kotlin
+    try {
+        airwallex.handleAction(paymentIntent.nextAction)
+    } catch (e: RedirectException) {
+        showPaymentError(e.localizedMessage)
+    }
+```
+
 - Credit Card Pay. You can prompt the user the result of confirm PaymentIntent
 
 #### Retrieve Payment Intent to confirm the charge has succeeded

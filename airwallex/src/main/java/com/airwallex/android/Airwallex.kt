@@ -5,19 +5,20 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
-import com.airwallex.android.exception.DccException
-import com.airwallex.android.exception.ThreeDSException
+import com.airwallex.android.exception.*
 import com.airwallex.android.model.*
 import com.airwallex.android.view.*
 import com.airwallex.android.view.DccActivityLaunch
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import java.util.*
+import kotlin.jvm.Throws
 
 /**
  * Entry-point to the Airwallex SDK.
  */
 class Airwallex internal constructor(
+    private val activity: Activity,
     private val paymentManager: PaymentManager,
     private val airwallexStarter: AirwallexStarter,
     private val applicationContext: Context,
@@ -40,6 +41,7 @@ class Airwallex internal constructor(
      * Constructor of [Airwallex]
      */
     constructor(fragment: Fragment) : this(
+        fragment.requireActivity(),
         AirwallexPaymentManager(AirwallexApiRepository()),
         AirwallexStarter(fragment),
         fragment.requireContext().applicationContext,
@@ -48,6 +50,7 @@ class Airwallex internal constructor(
     )
 
     constructor(activity: Activity) : this(
+        activity,
         AirwallexPaymentManager(AirwallexApiRepository()),
         AirwallexStarter(activity),
         activity.applicationContext,
@@ -67,13 +70,15 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentIntent>
     ) {
         // Retrieve Device Fingerprinting
-        securityConnector.retrieveSecurityToken(params.paymentIntentId, applicationContext,
+        securityConnector.retrieveSecurityToken(
+            params.paymentIntentId, applicationContext,
             object : AirwallexSecurityConnector.SecurityTokenListener {
                 override fun onResponse(deviceId: String) {
                     // Confirm PaymentIntent with Device Fingerprinting
                     paymentManager.confirmPaymentIntent(applicationContext, deviceId, params, dccActivityLaunch, threeDSecureActivityLaunch, listener)
                 }
-            })
+            }
+        )
     }
 
     /**
@@ -147,7 +152,7 @@ class Airwallex internal constructor(
                 request = PaymentMethodCreateRequest.Builder()
                     .setCustomerId(params.customerId)
                     .setRequestId(UUID.randomUUID().toString())
-                    .setType(PaymentMethodType.CARD)
+                    .setType(AvaliablePaymentMethodType.CARD)
                     .setCard(params.card)
                     .setBilling(params.billing)
                     .build()
@@ -179,6 +184,11 @@ class Airwallex internal constructor(
             ),
             listener
         )
+    }
+
+    @Throws(RedirectException::class)
+    fun handleAction(nextAction: PaymentIntent.NextAction?) {
+        RedirectUtil.makeRedirect(activity = activity, redirectUrl = nextAction?.url)
     }
 
     // For the custom flow
@@ -319,7 +329,6 @@ class Airwallex internal constructor(
             }
             return true
         }
-
         return airwallexStarter.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -363,8 +372,12 @@ class Airwallex internal constructor(
                     } else {
                         val reason = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_FAILED_REASON)
                         Logger.debug("3DS 1.0 failed. Reason: $reason")
-                        callback.onFailed(ThreeDSException(message = reason
-                            ?: "3DS 1.0 verification failed"))
+                        callback.onFailed(
+                            ThreeDSException(
+                                message = reason
+                                    ?: "3DS 1.0 verification failed"
+                            )
+                        )
                     }
                 }
             }
@@ -394,5 +407,10 @@ class Airwallex internal constructor(
         fun initialize(configuration: AirwallexConfiguration) {
             AirwallexPlugins.initialize(configuration)
         }
+
+        /**
+         * This value should be used as `returnUrl` sent on the `/api/v1/pa/payment_intents/create` call.
+         */
+        val REDIRECT_RESULT_SCHEME: String = BuildConfig.CHECKOUT_REDIRECT_SCHEME.toString() + "://"
     }
 }

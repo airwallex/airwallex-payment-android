@@ -78,7 +78,7 @@ data class PaymentIntent internal constructor(
     /**
      * Available payment method types
      */
-    val availablePaymentMethodTypes: List<PaymentMethodType>? = null,
+    val availablePaymentMethodTypes: List<AvaliablePaymentMethodType>? = null,
 
     /**
      * Payment methods of the customer if customer ID is provided
@@ -274,7 +274,9 @@ data class PaymentIntent internal constructor(
         /**
          * The dcc data that can be used to complete this action
          */
-        val dcc: DccData?
+        val dcc: DccData?,
+
+        val url: String?
     ) : AirwallexModel, Parcelable
 
     /**

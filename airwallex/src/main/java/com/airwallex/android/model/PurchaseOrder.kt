@@ -30,10 +30,12 @@ data class PurchaseOrder internal constructor(
         return mapOf<String, Any>()
             .plus(
                 products?.let {
-                    mapOf(PurchaseOrderParser.FIELD_PRODUCTS to
-                        it.map { product ->
-                            product.toParamMap()
-                        })
+                    mapOf(
+                        PurchaseOrderParser.FIELD_PRODUCTS to
+                            it.map { product ->
+                                product.toParamMap()
+                            }
+                    )
                 }.orEmpty()
             )
             .plus(

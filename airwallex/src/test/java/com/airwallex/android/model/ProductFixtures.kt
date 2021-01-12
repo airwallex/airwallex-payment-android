@@ -4,8 +4,9 @@ import com.airwallex.android.model.parser.PhysicalProductParser
 import org.json.JSONObject
 
 internal object ProductFixtures {
-    val PRODUCT: PhysicalProduct = PhysicalProductParser().parse(JSONObject(
-        """
+    val PRODUCT: PhysicalProduct = PhysicalProductParser().parse(
+        JSONObject(
+            """
         {
             "code": "123",
             "name": "AirPods Pro",
@@ -16,6 +17,7 @@ internal object ProductFixtures {
             "url": "www.aircross.com",
             "quantity": 1
         }
-        """.trimIndent()
-    ))
+            """.trimIndent()
+        )
+    )
 }

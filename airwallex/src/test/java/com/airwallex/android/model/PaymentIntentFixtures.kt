@@ -4,8 +4,9 @@ import com.airwallex.android.model.parser.PaymentIntentParser
 import org.json.JSONObject
 
 internal object PaymentIntentFixtures {
-    val PAYMENT_INTENT: PaymentIntent = PaymentIntentParser().parse(JSONObject(
-        """
+    val PAYMENT_INTENT: PaymentIntent = PaymentIntentParser().parse(
+        JSONObject(
+            """
         {
             "id": "int_6hJ72Y7zich939UCz8j6BLkonH",
             "request_id": "a750e597-c30e-4d2b-ad41-cac601a15b25",
@@ -27,7 +28,7 @@ internal object PaymentIntentFixtures {
                 {
                     "id": "",
                     "request_id": "",
-                    "type": "card",
+                    "type": "visa",
                     "card": {
                         "expiry_month": "12",
                         "expiry_year": "2030",
@@ -62,7 +63,7 @@ internal object PaymentIntentFixtures {
                 "amount": 100.01,
                 "payment_method": {
                     "id": "mtd_4iyImkz7wglVXRad6hZWreqRJY0",
-                    "type": "card",
+                    "type": "mastercard",
                     "card": {
                         "expiry_month": "01",
                         "expiry_year": "2023",
@@ -103,6 +104,7 @@ internal object PaymentIntentFixtures {
                 "authentication_data": {}
             }
         }
-        """.trimIndent()
-    ))
+            """.trimIndent()
+        )
+    )
 }

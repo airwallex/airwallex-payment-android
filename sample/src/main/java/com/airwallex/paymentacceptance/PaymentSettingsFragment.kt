@@ -6,7 +6,8 @@ import android.text.InputType
 import android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
 import androidx.preference.*
 
-class PaymentSettingsFragment : PreferenceFragmentCompat(),
+class PaymentSettingsFragment :
+    PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

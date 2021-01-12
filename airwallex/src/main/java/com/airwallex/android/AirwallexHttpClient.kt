@@ -13,22 +13,24 @@ internal class AirwallexHttpClient {
     @Throws(IOException::class, InvalidRequestException::class)
     fun execute(request: AirwallexHttpRequest): AirwallexHttpResponse {
         Logger.info(request.toString())
-        AirwallexHttpConnection((URL(request.url).openConnection() as HttpsURLConnection).apply {
-            connectTimeout = CONNECT_TIMEOUT
-            readTimeout = READ_TIMEOUT
-            useCaches = false
-            requestMethod = request.method.code
+        AirwallexHttpConnection(
+            (URL(request.url).openConnection() as HttpsURLConnection).apply {
+                connectTimeout = CONNECT_TIMEOUT
+                readTimeout = READ_TIMEOUT
+                useCaches = false
+                requestMethod = request.method.code
 
-            request.headers.forEach { (key, value) ->
-                setRequestProperty(key, value)
-            }
+                request.headers.forEach { (key, value) ->
+                    setRequestProperty(key, value)
+                }
 
-            if (AirwallexHttpRequest.Method.POST == request.method) {
-                doOutput = true
-                setRequestProperty(HEADER_CONTENT_TYPE, request.contentType)
-                outputStream.use { output -> request.writeBody(output) }
+                if (AirwallexHttpRequest.Method.POST == request.method) {
+                    doOutput = true
+                    setRequestProperty(HEADER_CONTENT_TYPE, request.contentType)
+                    outputStream.use { output -> request.writeBody(output) }
+                }
             }
-        }).use {
+        ).use {
             try {
                 val response = it.response
                 Logger.info(response.toString())

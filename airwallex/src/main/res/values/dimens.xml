@@ -3,4 +3,5 @@
     <dimen name="divider_padding">16dp</dimen>
     <dimen name="payment_method_item_height">58dp</dimen>
     <dimen name="airwallex_button_height">44dp</dimen>
+    <dimen name="space_height">24dp</dimen>
 </resources>

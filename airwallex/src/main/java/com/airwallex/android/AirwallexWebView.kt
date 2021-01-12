@@ -14,10 +14,12 @@ internal class AirwallexWebView @SuppressLint("SetJavaScriptEnabled") constructo
     constructor(context: Context) : this(context, null)
 
     init {
-        setBackgroundColor(ContextCompat.getColor(
-            context,
-            R.color.airwallex_color_bg
-        ))
+        setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                R.color.airwallex_color_bg
+            )
+        )
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
         settings.setSupportMultipleWindows(true)

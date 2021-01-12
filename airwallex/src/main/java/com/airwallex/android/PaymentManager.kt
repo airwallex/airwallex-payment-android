@@ -132,30 +132,6 @@ internal interface PaymentManager {
                 .build()
         }
 
-        fun buildWeChatPaymentIntentOptions(
-            params: ConfirmPaymentIntentParams,
-            device: Device
-        ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
-            val request = PaymentIntentConfirmRequest.Builder(
-                requestId = UUID.randomUUID().toString()
-            )
-                .setPaymentMethod(
-                    PaymentMethod.Builder()
-                        .setType(PaymentMethodType.WECHAT)
-                        .setWeChatPayFlow(WeChatPayRequest(WeChatPayRequestFlow.IN_APP))
-                        .build()
-                )
-                .setCustomerId(params.customerId)
-                .setDevice(device)
-                .build()
-
-            return AirwallexApiRepository.ConfirmPaymentIntentOptions(
-                clientSecret = params.clientSecret,
-                paymentIntentId = params.paymentIntentId,
-                request = request
-            )
-        }
-
         fun buildCardPaymentIntentOptions(
             device: Device,
             params: ConfirmPaymentIntentParams,
@@ -180,6 +156,174 @@ internal interface PaymentManager {
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId,
                 request = request.build()
+            )
+        }
+
+        fun buildWeChatPaymentIntentOptions(
+            params: ConfirmPaymentIntentParams,
+            device: Device
+        ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+            val request = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethod(
+                    PaymentMethod.Builder()
+                        .setType(PaymentMethodType.WECHAT)
+                        .setWeChatPayRequest(WeChatPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                        .build()
+                )
+                .setCustomerId(params.customerId)
+                .setDevice(device)
+                .build()
+
+            return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+                clientSecret = params.clientSecret,
+                paymentIntentId = params.paymentIntentId,
+                request = request
+            )
+        }
+
+        fun buildAliPayCnPaymentIntentOptions(
+            params: ConfirmPaymentIntentParams,
+            device: Device
+        ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+            val request = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethod(
+                    PaymentMethod.Builder()
+                        .setType(PaymentMethodType.ALIPAY_CN)
+                        .setAliPayCNRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                        .build()
+                )
+                .setCustomerId(params.customerId)
+                .setDevice(device)
+                .build()
+
+            return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+                clientSecret = params.clientSecret,
+                paymentIntentId = params.paymentIntentId,
+                request = request
+            )
+        }
+
+        fun buildAliPayHkPaymentIntentOptions(
+            params: ConfirmPaymentIntentParams,
+            device: Device
+        ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+            val request = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethod(
+                    PaymentMethod.Builder()
+                        .setType(PaymentMethodType.ALIPAY_HK)
+                        .setAliPayHkRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                        .build()
+                )
+                .setCustomerId(params.customerId)
+                .setDevice(device)
+                .build()
+
+            return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+                clientSecret = params.clientSecret,
+                paymentIntentId = params.paymentIntentId,
+                request = request
+            )
+        }
+
+        fun buildKakaoPayPaymentIntentOptions(
+            params: ConfirmPaymentIntentParams,
+            device: Device
+        ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+            val request = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethod(
+                    PaymentMethod.Builder()
+                        .setType(PaymentMethodType.KAKAOPAY)
+                        .setKakaoPayRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                        .build()
+                )
+                .setCustomerId(params.customerId)
+                .setDevice(device)
+                .build()
+
+            return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+                clientSecret = params.clientSecret,
+                paymentIntentId = params.paymentIntentId,
+                request = request
+            )
+        }
+
+        fun buildTngPaymentIntentOptions(
+            params: ConfirmPaymentIntentParams,
+            device: Device
+        ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+            val request = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethod(
+                    PaymentMethod.Builder()
+                        .setType(PaymentMethodType.TNG)
+                        .setTngRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                        .build()
+                )
+                .setCustomerId(params.customerId)
+                .setDevice(device)
+                .build()
+
+            return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+                clientSecret = params.clientSecret,
+                paymentIntentId = params.paymentIntentId,
+                request = request
+            )
+        }
+
+        fun buildDanaPaymentIntentOptions(
+            params: ConfirmPaymentIntentParams,
+            device: Device
+        ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+            val request = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethod(
+                    PaymentMethod.Builder()
+                        .setType(PaymentMethodType.DANA)
+                        .setDanaRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                        .build()
+                )
+                .setCustomerId(params.customerId)
+                .setDevice(device)
+                .build()
+
+            return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+                clientSecret = params.clientSecret,
+                paymentIntentId = params.paymentIntentId,
+                request = request
+            )
+        }
+
+        fun buildGCashPaymentIntentOptions(
+            params: ConfirmPaymentIntentParams,
+            device: Device
+        ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+            val request = PaymentIntentConfirmRequest.Builder(
+                requestId = UUID.randomUUID().toString()
+            )
+                .setPaymentMethod(
+                    PaymentMethod.Builder()
+                        .setType(PaymentMethodType.GCASH)
+                        .setGCashRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                        .build()
+                )
+                .setCustomerId(params.customerId)
+                .setDevice(device)
+                .build()
+
+            return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+                clientSecret = params.clientSecret,
+                paymentIntentId = params.paymentIntentId,
+                request = request
             )
         }
     }

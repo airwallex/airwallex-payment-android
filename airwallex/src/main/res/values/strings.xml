@@ -37,7 +37,6 @@
     <string name="enter_new_card">Enter a new card</string>
     <string name="no_saved_cards">No saved cards</string>
     <string name="payment_methods">Payment methods</string>
-    <string name="wechat_pay">WeChat pay</string>
     <string name="shipping_address">Shipping address</string>
     <string name="shipping">Shipping</string>
     <string name="contact">Contact</string>
@@ -49,4 +48,13 @@
     <string name="select_your_currency_title">Select the currency you would like to pay with</string>
     <string name="confirm_payment">Confirm payment</string>
     <string name="rate">1 %1$s = %2$f %3$s</string>
+
+
+    <string name="wechat_pay">WeChat Pay</string>
+    <string name="alipay">Alipay</string>
+    <string name="alipay_hk">AlipayHK</string>
+    <string name="dana">DANA</string>
+    <string name="gcash">GCash</string>
+    <string name="kakao_pay">KakaoPay</string>
+    <string name="touchngo">Touch\'n Go</string>
 </resources>

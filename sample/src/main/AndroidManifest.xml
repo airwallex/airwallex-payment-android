@@ -6,11 +6,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".SampleApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:name=".SampleApplication"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
         <meta-data
@@ -43,7 +43,19 @@
 
         <activity
             android:name="com.airwallex.paymentacceptance.PaymentCartActivity"
-            android:theme="@style/ActivityAnimTheme" />
+            android:launchMode="singleTask"
+            android:theme="@style/ActivityAnimTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${applicationId}"
+                    android:scheme="airwallexcheckout" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name="com.airwallex.paymentacceptance.PaymentSettingsActivity"

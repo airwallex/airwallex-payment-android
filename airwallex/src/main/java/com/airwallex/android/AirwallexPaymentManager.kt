@@ -2,7 +2,13 @@ package com.airwallex.android
 
 import android.content.Context
 import com.airwallex.android.Airwallex.PaymentListener
+import com.airwallex.android.PaymentManager.Companion.buildAliPayCnPaymentIntentOptions
+import com.airwallex.android.PaymentManager.Companion.buildAliPayHkPaymentIntentOptions
 import com.airwallex.android.PaymentManager.Companion.buildCardPaymentIntentOptions
+import com.airwallex.android.PaymentManager.Companion.buildDanaPaymentIntentOptions
+import com.airwallex.android.PaymentManager.Companion.buildGCashPaymentIntentOptions
+import com.airwallex.android.PaymentManager.Companion.buildKakaoPayPaymentIntentOptions
+import com.airwallex.android.PaymentManager.Companion.buildTngPaymentIntentOptions
 import com.airwallex.android.PaymentManager.Companion.buildWeChatPaymentIntentOptions
 import com.airwallex.android.exception.APIException
 import com.airwallex.android.exception.AirwallexException
@@ -180,20 +186,39 @@ internal class AirwallexPaymentManager(
     ) {
         val device = PaymentManager.buildDeviceInfo(deviceId, applicationContext)
         val options = when (params.paymentMethodType) {
-            PaymentMethodType.WECHAT -> {
-                buildWeChatPaymentIntentOptions(params, device)
-            }
-            PaymentMethodType.CARD -> {
-                buildCardPaymentIntentOptions(device, params,
+            AvaliablePaymentMethodType.CARD -> {
+                buildCardPaymentIntentOptions(
+                    device, params,
                     ThreeDSecure.Builder()
                         .setReturnUrl(ThreeDSecureManager.THREE_DS_RETURN_URL)
                         .build()
                 )
             }
+            AvaliablePaymentMethodType.WECHAT -> {
+                buildWeChatPaymentIntentOptions(params, device)
+            }
+            AvaliablePaymentMethodType.ALIPAY_CN -> {
+                buildAliPayCnPaymentIntentOptions(params, device)
+            }
+            AvaliablePaymentMethodType.ALIPAY_HK -> {
+                buildAliPayHkPaymentIntentOptions(params, device)
+            }
+            AvaliablePaymentMethodType.KAKAO -> {
+                buildKakaoPayPaymentIntentOptions(params, device)
+            }
+            AvaliablePaymentMethodType.TNG -> {
+                buildTngPaymentIntentOptions(params, device)
+            }
+            AvaliablePaymentMethodType.DANA -> {
+                buildDanaPaymentIntentOptions(params, device)
+            }
+            AvaliablePaymentMethodType.GCASH -> {
+                buildGCashPaymentIntentOptions(params, device)
+            }
         }
 
         val paymentListener = when (params.paymentMethodType) {
-            PaymentMethodType.CARD -> {
+            AvaliablePaymentMethodType.CARD -> {
                 object : PaymentListener<PaymentIntent> {
                     override fun onFailed(exception: Exception) {
                         // Payment failed
@@ -224,7 +249,7 @@ internal class AirwallexPaymentManager(
                     }
                 }
             }
-            PaymentMethodType.WECHAT -> {
+            else -> {
                 listener
             }
         }
@@ -292,7 +317,8 @@ internal class AirwallexPaymentManager(
             } else {
                 Logger.debug("Step2: 3DS Enrollment with `referenceId`")
                 continuePaymentIntent(
-                    build3DSContinuePaymentIntentOptions(device, paymentIntentId, clientSecret, PaymentIntentContinueType.ENROLLMENT,
+                    build3DSContinuePaymentIntentOptions(
+                        device, paymentIntentId, clientSecret, PaymentIntentContinueType.ENROLLMENT,
                         ThreeDSecure.Builder()
                             .setDeviceDataCollectionRes(referenceId)
                             .build()
@@ -319,7 +345,8 @@ internal class AirwallexPaymentManager(
                                 private fun continuePaymentIntent(transactionId: String) {
                                     Logger.debug("Step 4: 3DS Validate with `processorTransactionId`")
                                     continuePaymentIntent(
-                                        build3DSContinuePaymentIntentOptions(device, paymentIntentId, clientSecret, PaymentIntentContinueType.VALIDATE,
+                                        build3DSContinuePaymentIntentOptions(
+                                            device, paymentIntentId, clientSecret, PaymentIntentContinueType.VALIDATE,
                                             ThreeDSecure.Builder()
                                                 .setTransactionId(transactionId)
                                                 .build()
@@ -331,17 +358,20 @@ internal class AirwallexPaymentManager(
                                 override fun onThreeDS1Success(payload: String) {
                                     Logger.debug("3DS1 Success, Retrieve pares with paResId start...")
                                     threeDSecureCallback = null
-                                    retrieveParesWithId(AirwallexApiRepository.RetrievePaResOptions(clientSecret, payload), object : PaymentListener<ThreeDSecurePares> {
-                                        override fun onFailed(exception: Exception) {
-                                            Logger.debug("Retrieve pares with paResId failed", exception)
-                                            listener.onFailed(exception)
-                                        }
+                                    retrieveParesWithId(
+                                        AirwallexApiRepository.RetrievePaResOptions(clientSecret, payload),
+                                        object : PaymentListener<ThreeDSecurePares> {
+                                            override fun onFailed(exception: Exception) {
+                                                Logger.debug("Retrieve pares with paResId failed", exception)
+                                                listener.onFailed(exception)
+                                            }
 
-                                        override fun onSuccess(response: ThreeDSecurePares) {
-                                            Logger.debug("Retrieve pares with paResId success. Rares ${response.pares}")
-                                            continuePaymentIntent(response.pares)
+                                            override fun onSuccess(response: ThreeDSecurePares) {
+                                                Logger.debug("Retrieve pares with paResId success. Rares ${response.pares}")
+                                                continuePaymentIntent(response.pares)
+                                            }
                                         }
-                                    })
+                                    )
                                 }
 
                                 override fun onThreeDS2Success(transactionId: String) {

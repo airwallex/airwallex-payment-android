@@ -4,7 +4,6 @@ import com.airwallex.android.model.AirwallexJsonUtils
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
 import org.json.JSONObject
-import java.util.*
 
 class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
 
@@ -20,6 +19,24 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
             },
             weChatPayRequest = json.optJSONObject(FIELD_WECHAT_PAY_REQUEST)?.let {
                 WeChatPayRequestParser().parse(it)
+            },
+            aliPayCNRequest = json.optJSONObject(FIELD_ALI_PAY_CN_REQUEST)?.let {
+                AliPayRequestParser().parse(it)
+            },
+            aliPayHKRequest = json.optJSONObject(FIELD_ALI_PAY_HK_REQUEST)?.let {
+                AliPayRequestParser().parse(it)
+            },
+            kakaoPayRequest = json.optJSONObject(FIELD_KAO_KAO_PAY_REQUEST)?.let {
+                AliPayRequestParser().parse(it)
+            },
+            tngRequest = json.optJSONObject(FIELD_TNG_REQUEST)?.let {
+                AliPayRequestParser().parse(it)
+            },
+            danaRequest = json.optJSONObject(FIELD_DANA_REQUEST)?.let {
+                AliPayRequestParser().parse(it)
+            },
+            gCashRequest = json.optJSONObject(FIELD_GCASH_REQUEST)?.let {
+                AliPayRequestParser().parse(it)
             },
             billing = json.optJSONObject(FIELD_BILLING)?.let {
                 BillingParser().parse(it)
@@ -44,6 +61,12 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
         const val FIELD_TYPE = "type"
         const val FIELD_CARD = "card"
         const val FIELD_WECHAT_PAY_REQUEST = "wechatpay"
+        const val FIELD_ALI_PAY_CN_REQUEST = "alipaycn"
+        const val FIELD_ALI_PAY_HK_REQUEST = "alipayhk"
+        const val FIELD_KAO_KAO_PAY_REQUEST = "kakaopay"
+        const val FIELD_TNG_REQUEST = "tng"
+        const val FIELD_DANA_REQUEST = "dana"
+        const val FIELD_GCASH_REQUEST = "gcash"
         const val FIELD_BILLING = "billing"
         const val FIELD_STATUS = "status"
         const val FIELD_METADATA = "metadata"

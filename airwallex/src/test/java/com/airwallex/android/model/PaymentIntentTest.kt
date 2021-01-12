@@ -26,10 +26,10 @@ class PaymentIntentTest {
             descriptor = "Airwallex - T-shirt",
             status = PaymentIntentStatus.REQUIRES_PAYMENT_METHOD,
             capturedAmount = BigDecimal.valueOf(0.1),
-            availablePaymentMethodTypes = arrayListOf(PaymentMethodType.CARD, PaymentMethodType.WECHAT),
+            availablePaymentMethodTypes = arrayListOf(AvaliablePaymentMethodType.CARD, AvaliablePaymentMethodType.WECHAT),
             customerPaymentMethods = arrayListOf(
                 PaymentMethod.Builder()
-                    .setType(PaymentMethodType.CARD)
+                    .setType(PaymentMethodType.VISA)
                     .setCard(
                         PaymentMethod.Card.Builder()
                             .setExpiryMonth("12")
@@ -73,7 +73,7 @@ class PaymentIntentTest {
                     .setId("mtd_4iyImkz7wglVXRad6hZWreqRJY0")
                     .setRequestId(null)
                     .setStatus(PaymentMethod.PaymentMethodStatus.VERIFIED)
-                    .setType(PaymentMethodType.CARD)
+                    .setType(PaymentMethodType.MASTERCARD)
                     .setCard(
                         PaymentMethod.Card.Builder()
                             .setExpiryMonth("01")

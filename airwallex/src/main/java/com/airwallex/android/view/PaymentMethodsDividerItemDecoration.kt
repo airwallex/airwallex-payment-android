@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.airwallex.android.R
 
-internal class PaymentMethodsDividerItemDecoration(val context: Context, resId: Int) : ItemDecoration() {
+internal class PaymentMethodsDividerItemDecoration(val context: Context, resId: Int, val availableThirdPaymentTypeSize: Int) : ItemDecoration() {
     private var divider: Drawable? = ContextCompat.getDrawable(context, resId)
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
@@ -17,8 +17,8 @@ internal class PaymentMethodsDividerItemDecoration(val context: Context, resId: 
         val right = parent.width - context.resources.getDimension(R.dimen.divider_padding)
         val childCount = parent.childCount
         for (i in 0 until childCount) {
-            if (i == 0) {
-                // No divider for WeChat cell
+            // No divider for space
+            if (availableThirdPaymentTypeSize > 0 && i == availableThirdPaymentTypeSize) {
                 continue
             }
             val child: View = parent.getChildAt(i)

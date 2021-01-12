@@ -57,7 +57,8 @@ internal class PaymentShippingActivity : AirwallexActivity() {
             .setAddress(shippingWidget.address)
             .build()
         setResult(
-            Activity.RESULT_OK, Intent().putExtras(
+            Activity.RESULT_OK,
+            Intent().putExtras(
                 PaymentShippingActivityLaunch.Result(
                     shipping = shipping
                 ).toBundle()
