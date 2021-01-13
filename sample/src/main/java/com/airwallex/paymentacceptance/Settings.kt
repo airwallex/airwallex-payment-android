@@ -52,6 +52,17 @@ object Settings {
             return sharedPreferences.getString(CUSTOMER_ID, "") ?: ""
         }
 
+    val sdkEnv: String
+        get() {
+            val defaultSdkEnv =
+                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.sdk_env_id),
+                defaultSdkEnv
+            )
+                ?: defaultSdkEnv
+        }
+
     val authUrl: String
         get() {
             return sharedPreferences.getString(context.getString(R.string.auth_url), getMetadata(METADATA_KEY_AUTH_URL_KEY))
