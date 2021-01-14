@@ -85,7 +85,7 @@ If you need to support one of Alipaycn Alipayhk dana gcash kakaopay tng, you nee
         mutableMapOf(
             
             // The HTTP request method that you should use. After the shopper completes the payment, they will be redirected back to your returnURL using the same method.
-            "returnUrl" to "airwallexcheckout://$packageName"
+            "return_url" to "airwallexcheckout://$packageName"
         )
     )
 ```
