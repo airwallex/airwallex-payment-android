@@ -55,6 +55,6 @@
     <string name="alipay_hk">AlipayHK</string>
     <string name="dana">DANA</string>
     <string name="gcash">GCash</string>
-    <string name="kakao_pay">KakaoPay</string>
-    <string name="touchngo">Touch\'n Go</string>
+    <string name="kakao_pay">Kakao Pay</string>
+    <string name="touchngo">Touch \'n Go</string>
 </resources>
