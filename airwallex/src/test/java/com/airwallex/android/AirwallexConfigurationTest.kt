@@ -11,7 +11,7 @@ class AirwallexConfigurationTest {
     @Test
     fun configurationTest() {
         val enableLogging = true
-        val demoBaseUrl = "https://demo-pci-api.airwallex.com"
+        val demoBaseUrl = "https://pci-api-demo.airwallex.com"
 
         val configuration = AirwallexConfiguration.Builder()
             .enableLogging(enableLogging)
