@@ -5,7 +5,7 @@ enum class Environment {
 
     fun baseUrl(): String {
         return when (this) {
-            DEMO -> "https://demo-pci-api.airwallex.com"
+            DEMO -> "https://pci-api-demo.airwallex.com"
             PRODUCTION -> "https://pci-api.airwallex.com"
         }
     }
