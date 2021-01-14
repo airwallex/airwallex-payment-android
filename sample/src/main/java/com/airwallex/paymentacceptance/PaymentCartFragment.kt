@@ -238,7 +238,7 @@ class PaymentCartFragment : Fragment() {
                     "metadata" to mapOf("id" to 1),
                     // **IMPORTANT**
                     // The HTTP request method that you should use. After the shopper completes the payment, they will be redirected back to your returnURL using the same method.
-                     "returnUrl" to Airwallex.REDIRECT_RESULT_SCHEME + context?.packageName,
+                    "return_url" to Airwallex.REDIRECT_RESULT_SCHEME + context?.packageName,
                 )
             )
             withContext(Dispatchers.Main) {
