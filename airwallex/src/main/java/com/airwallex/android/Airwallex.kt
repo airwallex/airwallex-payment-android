@@ -3,9 +3,13 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.text.TextUtils
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
-import com.airwallex.android.exception.*
+import com.airwallex.android.exception.DccException
+import com.airwallex.android.exception.RedirectException
+import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.*
 import com.airwallex.android.view.*
 import com.airwallex.android.view.DccActivityLaunch
@@ -188,7 +192,22 @@ class Airwallex internal constructor(
 
     @Throws(RedirectException::class)
     fun handleAction(nextAction: PaymentIntent.NextAction?) {
-        RedirectUtil.makeRedirect(activity = activity, redirectUrl = nextAction?.url)
+        val redirectUrl = nextAction?.url
+        if (TextUtils.isEmpty(redirectUrl)) {
+            throw RedirectException(message = "Redirect URL is empty.")
+        }
+        val uri = Uri.parse(redirectUrl)
+        val params = uri.queryParameterNames
+        val newUri = uri.buildUpon().clearQuery()
+
+        for (param in params) {
+            if (param == "callback" && uri.getQueryParameter(param) == "null") {
+                newUri.appendQueryParameter(param, REDIRECT_RESULT_SCHEME + activity.packageName)
+            } else {
+                newUri.appendQueryParameter(param, uri.getQueryParameter(param))
+            }
+        }
+        RedirectUtil.makeRedirect(activity = activity, redirectUrl = newUri.build().toString())
     }
 
     // For the custom flow

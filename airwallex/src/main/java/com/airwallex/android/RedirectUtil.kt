@@ -6,9 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.text.TextUtils
 import androidx.browser.customtabs.CustomTabsIntent
 import com.airwallex.android.exception.RedirectException
+import kotlin.jvm.Throws
 
 internal object RedirectUtil {
 
@@ -60,17 +60,13 @@ internal object RedirectUtil {
     }
 
     @Throws(RedirectException::class)
-    fun makeRedirect(activity: Activity, redirectUrl: String?) {
-        if (!TextUtils.isEmpty(redirectUrl)) {
-            val redirectUri = Uri.parse(redirectUrl)
-            val redirectIntent = createRedirectIntent(activity, redirectUri)
-            try {
-                activity.startActivity(redirectIntent)
-            } catch (e: ActivityNotFoundException) {
-                throw RedirectException(message = "Redirect to app failed. ${e.localizedMessage}")
-            }
-        } else {
-            throw RedirectException(message = "Redirect URL is empty.")
+    fun makeRedirect(activity: Activity, redirectUrl: String) {
+        val redirectUri = Uri.parse(redirectUrl)
+        val redirectIntent = createRedirectIntent(activity, redirectUri)
+        try {
+            activity.startActivity(redirectIntent)
+        } catch (e: ActivityNotFoundException) {
+            throw RedirectException(message = "Redirect to app failed. ${e.localizedMessage}")
         }
     }
 }
