@@ -63,7 +63,7 @@ internal object PaymentIntentFixtures {
                 "amount": 100.01,
                 "payment_method": {
                     "id": "mtd_4iyImkz7wglVXRad6hZWreqRJY0",
-                    "type": "mastercard",
+                    "type": "card",
                     "card": {
                         "expiry_month": "01",
                         "expiry_year": "2023",

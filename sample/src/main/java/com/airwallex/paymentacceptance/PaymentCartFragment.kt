@@ -369,7 +369,7 @@ class PaymentCartFragment : Fragment() {
                     showPaymentError(e.localizedMessage)
                 }
             }
-            PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
+            PaymentMethodType.CARD -> {
                 showPaymentSuccess()
             }
         }
@@ -401,7 +401,7 @@ class PaymentCartFragment : Fragment() {
                                 customerId = paymentIntent.customerId
                             )
                         }
-                        PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
+                        PaymentMethodType.CARD -> {
                             ConfirmPaymentIntentParams.createCardParams(
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
@@ -472,7 +472,7 @@ class PaymentCartFragment : Fragment() {
             object : Airwallex.PaymentMethodListener {
                 override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
                     when (paymentMethod.type) {
-                        PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
+                        PaymentMethodType.CARD -> {
                             airwallex.presentPaymentDetailFlow(
                                 paymentIntent, paymentMethod, cvc,
                                 object : Airwallex.PaymentIntentListener {

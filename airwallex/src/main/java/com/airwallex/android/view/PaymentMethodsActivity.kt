@@ -152,8 +152,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     private fun startPaymentCheckout(paymentMethod: PaymentMethod, cvc: String? = null) {
         if (args.includeCheckoutFlow) {
             when (paymentMethod.type) {
-                PaymentMethodType.VISA,
-                PaymentMethodType.MASTERCARD -> {
+                PaymentMethodType.CARD -> {
                     // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
                     PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
                         .startForResult(

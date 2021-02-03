@@ -136,7 +136,7 @@ internal class AirwallexStarter constructor(
         cvc: String? = null,
         paymentDetailListener: Airwallex.PaymentIntentListener
     ) {
-        if (paymentMethod.type != PaymentMethodType.VISA && paymentMethod.type != PaymentMethodType.MASTERCARD) {
+        if (paymentMethod.type != PaymentMethodType.CARD) {
             paymentDetailListener.onFailed(Exception("Only card payment is supported"))
             return
         }
