@@ -331,8 +331,6 @@ class PaymentCartFragment : Fragment() {
                     Log.d(TAG, "Confirm PaymentIntent success, launch REAL WeChat Pay.")
                     // Launch WeChat Pay
                     WXPay.instance.launchWeChat(
-                        context = requireContext(),
-                        appId = Settings.weChatAppId,
                         data = weChat,
                         listener = object : WXPay.WeChatPaymentListener {
                             override fun onSuccess() {

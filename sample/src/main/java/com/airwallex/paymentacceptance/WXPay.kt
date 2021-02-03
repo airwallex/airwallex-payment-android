@@ -1,7 +1,5 @@
 package com.airwallex.paymentacceptance
 
-import android.annotation.SuppressLint
-import android.content.Context
 import com.airwallex.android.model.WeChat
 import com.tencent.mm.opensdk.modelbase.BaseResp
 import com.tencent.mm.opensdk.modelpay.PayReq
@@ -16,22 +14,17 @@ class WXPay {
         }
     }
 
-    private lateinit var weChatApi: IWXAPI
+    private val weChatApi : IWXAPI by lazy {
+        WXAPIFactory.createWXAPI(SampleApplication.instance, Settings.weChatAppId, true)
+    }
 
     private var listener: WeChatPaymentListener? = null
 
     fun launchWeChat(
-        context: Context,
-        appId: String,
         data: WeChat,
         listener: WeChatPaymentListener
     ) {
         this.listener = listener
-
-        if (!::weChatApi.isInitialized) {
-            initWXApi(context, appId)
-        }
-
         launchWeChat(data)
     }
 
@@ -44,16 +37,13 @@ class WXPay {
         }
     }
 
-    private fun initWXApi(context: Context, appId: String) {
-        weChatApi = WXAPIFactory.createWXAPI(context.applicationContext, appId)
-        weChatApi.registerApp(appId)
-    }
-
-    @SuppressLint("Assert")
     private fun launchWeChat(data: WeChat) {
         val success = weChatApi.registerApp(Settings.weChatAppSignature)
-        assert(success)
-        weChatApi.sendReq(createPayReq(data))
+        if (success) {
+            weChatApi.sendReq(createPayReq(data))
+        } else {
+            listener?.onFailure("0", "Register app failed for WeChat app")
+        }
     }
 
     private fun createPayReq(weChat: WeChat): PayReq {
