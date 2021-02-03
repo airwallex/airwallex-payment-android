@@ -73,7 +73,7 @@ class PaymentIntentTest {
                     .setId("mtd_4iyImkz7wglVXRad6hZWreqRJY0")
                     .setRequestId(null)
                     .setStatus(PaymentMethod.PaymentMethodStatus.VERIFIED)
-                    .setType(PaymentMethodType.MASTERCARD)
+                    .setType(PaymentMethodType.CARD)
                     .setCard(
                         PaymentMethod.Card.Builder()
                             .setExpiryMonth("01")

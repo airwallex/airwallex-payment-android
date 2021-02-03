@@ -173,7 +173,7 @@ repositories {
                 customerId = paymentIntent.customerId // Optional
             )
         }
-        PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
+        PaymentMethodType.CARD -> {
             ConfirmPaymentIntentParams.createCardParams(
                 paymentIntentId = paymentIntent.id, // Required
                 clientSecret = requireNotNull(paymentIntent.clientSecret), // Required

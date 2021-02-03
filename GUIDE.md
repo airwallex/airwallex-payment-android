@@ -173,7 +173,7 @@ After completing all the steps on the server, the client will get a `PaymentInte
                 customerId = paymentIntent.customerId // Optional
             )
         }
-        PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
+        PaymentMethodType.CARD -> {
             ConfirmPaymentIntentParams.createCardParams(
                 paymentIntentId = paymentIntent.id, // Required
                 clientSecret = requireNotNull(paymentIntent.clientSecret), // Required

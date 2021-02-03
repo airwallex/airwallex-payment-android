@@ -9,8 +9,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 enum class PaymentMethodType(val value: String) : Parcelable {
 
-    VISA("visa"),
-    MASTERCARD("mastercard"),
+    CARD("card"),
     ALIPAY_CN("alipaycn"),
     ALIPAY_HK("alipayhk"),
     WECHAT("wechatpay"),

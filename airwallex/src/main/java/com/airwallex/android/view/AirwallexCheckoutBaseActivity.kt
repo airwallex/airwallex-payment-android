@@ -73,7 +73,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     customerId = paymentIntent.customerId
                 )
             }
-            PaymentMethodType.VISA, PaymentMethodType.MASTERCARD -> {
+            PaymentMethodType.CARD -> {
                 ConfirmPaymentIntentParams.createCardParams(
                     paymentIntentId = paymentIntent.id,
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
