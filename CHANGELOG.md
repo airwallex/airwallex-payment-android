@@ -1,6 +1,10 @@
 # Airwallex Android SDK Changelog
 All notable changes to the SDK will be documented in this file.
 
+## Version 2.0.3 (March 3, 2021)
+- Support alipay
+- Bug fix
+
 ## Version 2.0.2 (November 19, 2020)
 - Remove okhttp & gson
 
