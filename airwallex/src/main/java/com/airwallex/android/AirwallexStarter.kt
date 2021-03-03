@@ -88,7 +88,7 @@ internal class AirwallexStarter constructor(
         ClientSecretRepository.init(clientSecretProvider)
         addPaymentMethodActivityLaunch.startForResult(
             AddPaymentMethodActivityLaunch.Args.Builder()
-                .setShipping(paymentIntent.order.shipping)
+                .setShipping(paymentIntent.order?.shipping)
                 .setCustomerId(requireNotNull(paymentIntent.customerId))
                 .setClientSecret(requireNotNull(paymentIntent.clientSecret))
                 .build()

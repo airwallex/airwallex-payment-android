@@ -10,7 +10,7 @@ internal object PaymentMethodFixtures {
         {
             "id": "",
             "request_id": "",
-            "type": "visa",
+            "type": "card",
 	        "card": {
 	            "number": "4012000300001003",
 	            "expiry_month": "12",

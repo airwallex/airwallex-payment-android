@@ -32,9 +32,9 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
             amount = BigDecimal.valueOf(json.optDouble(FIELD_AMOUNT)),
             currency = json.optString(FIELD_CURRENCY),
             merchantOrderId = AirwallexJsonUtils.optString(json, FIELD_MERCHANT_ORDER_ID),
-            order = requireNotNull(
-                PurchaseOrderParser().parse(requireNotNull(json.optJSONObject(FIELD_ORDER)))
-            ),
+            order = json.optJSONObject(FIELD_ORDER)?.let {
+                PurchaseOrderParser().parse(it)
+            },
             customerId = AirwallexJsonUtils.optString(json, FIELD_CUSTOM_ID),
             descriptor = AirwallexJsonUtils.optString(json, FIELD_DESCRIPTOR),
             metadata = AirwallexJsonUtils.optMap(json, FIELD_METADATA),

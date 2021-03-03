@@ -43,7 +43,7 @@ data class PaymentIntent internal constructor(
     /**
      * The purchase order info
      */
-    val order: PurchaseOrder,
+    val order: PurchaseOrder? = null,
 
     /**
      * The customer who is paying for this payment intent

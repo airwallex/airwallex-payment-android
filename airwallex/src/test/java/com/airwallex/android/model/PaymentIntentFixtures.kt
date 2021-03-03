@@ -28,7 +28,7 @@ internal object PaymentIntentFixtures {
                 {
                     "id": "",
                     "request_id": "",
-                    "type": "visa",
+                    "type": "card",
                     "card": {
                         "expiry_month": "12",
                         "expiry_year": "2030",

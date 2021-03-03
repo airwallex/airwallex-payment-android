@@ -14,7 +14,7 @@ class WXPay {
         }
     }
 
-    private val weChatApi : IWXAPI by lazy {
+    private val weChatApi: IWXAPI by lazy {
         WXAPIFactory.createWXAPI(SampleApplication.instance, Settings.weChatAppId, true)
     }
 
