@@ -12,7 +12,7 @@ class PaymentMethodTest {
     @Test
     fun builderConstructor() {
         val paymentMethod = PaymentMethod.Builder()
-            .setType(PaymentMethodType.VISA)
+            .setType(PaymentMethodType.CARD)
             .setCard(
                 PaymentMethod.Card.Builder()
                     .setNumber("4012000300001003")

@@ -17,7 +17,7 @@ abstract class BaseWXPayEntryActivity : AppCompatActivity(), IWXAPIEventHandler 
         const val TAG = "BaseWXPayEntryActivity"
     }
 
-    private val weChatApi : IWXAPI by lazy {
+    private val weChatApi: IWXAPI by lazy {
         WXAPIFactory.createWXAPI(this, Settings.weChatAppId, true)
     }
 

@@ -29,7 +29,7 @@ class PaymentIntentTest {
             availablePaymentMethodTypes = arrayListOf(AvaliablePaymentMethodType.CARD, AvaliablePaymentMethodType.WECHAT),
             customerPaymentMethods = arrayListOf(
                 PaymentMethod.Builder()
-                    .setType(PaymentMethodType.VISA)
+                    .setType(PaymentMethodType.CARD)
                     .setCard(
                         PaymentMethod.Card.Builder()
                             .setExpiryMonth("12")
