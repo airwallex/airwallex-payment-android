@@ -37,7 +37,7 @@ data class PaymentMethodCreateRequest internal constructor(
     /**
      * A set of key-value pairs that you can attach to this payment method
      */
-    val metadata: @RawValue Map<String, Any?>? = null
+    val metadata: @RawValue Map<String, Any>? = null
 
 ) : AirwallexRequestModel, Parcelable {
 
@@ -47,6 +47,7 @@ data class PaymentMethodCreateRequest internal constructor(
         private const val FIELD_TYPE = "type"
         private const val FIELD_CARD = "card"
         private const val FIELD_BILLING = "billing"
+        private const val FIELD_METADATA = "metadata"
     }
 
     override fun toParamMap(): Map<String, Any> {
@@ -76,6 +77,11 @@ data class PaymentMethodCreateRequest internal constructor(
                     mapOf(FIELD_BILLING to it.toParamMap())
                 }.orEmpty()
             )
+            .plus(
+                metadata?.let {
+                    mapOf(FIELD_METADATA to it)
+                }.orEmpty()
+            )
     }
 
     class Builder : ObjectBuilder<PaymentMethodCreateRequest> {
@@ -84,7 +90,7 @@ data class PaymentMethodCreateRequest internal constructor(
         private var type: AvaliablePaymentMethodType? = null
         private var card: PaymentMethod.Card? = null
         private var billing: Billing? = null
-        private var metadata: @RawValue Map<String, Any?>? = null
+        private var metadata: @RawValue Map<String, Any>? = null
 
         fun setRequestId(requestId: String?): Builder = apply {
             this.requestId = requestId
@@ -106,7 +112,7 @@ data class PaymentMethodCreateRequest internal constructor(
             this.billing = billing
         }
 
-        fun setMetadata(metadata: @RawValue Map<String, Any?>?): Builder = apply {
+        fun setMetadata(metadata: @RawValue Map<String, Any>?): Builder = apply {
             this.metadata = metadata
         }
 

@@ -1,10 +1,7 @@
 package com.airwallex.android
 
 import android.os.Parcelable
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodResponse
-import com.airwallex.android.model.ThreeDSecurePares
+import com.airwallex.android.model.*
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -68,4 +65,25 @@ internal interface ApiRepository {
     fun retrieveParesWithId(
         options: Options
     ): ThreeDSecurePares?
+
+    /**
+     * Create a PaymentConsent
+     */
+    fun createPaymentConsent(
+        options: Options
+    ): PaymentConsent?
+
+    /**
+     * Verify a PaymentConsent
+     */
+    fun verifyPaymentConsent(
+        options: Options
+    ): PaymentConsent?
+
+    /**
+     * Retrieve a PaymentConsent
+     */
+    fun retrievePaymentConsent(
+        options: Options
+    ): PaymentConsent?
 }

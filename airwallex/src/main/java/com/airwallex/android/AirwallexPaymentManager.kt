@@ -272,6 +272,48 @@ internal class AirwallexPaymentManager(
         continuePaymentIntent(options, paymentListener)
     }
 
+    override fun createPaymentConsent(options: ApiRepository.Options, listener: PaymentListener<PaymentConsent>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.createPaymentConsent(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
+    }
+
+    override fun verifyPaymentConsent(options: ApiRepository.Options, listener: PaymentListener<PaymentConsent>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.verifyPaymentConsent(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
+    }
+
+    override fun retrievePaymentConsent(options: ApiRepository.Options, listener: PaymentListener<PaymentConsent>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.retrievePaymentConsent(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
+    }
+
     /**
      * Handle 3DS flow - Check jwt if existed
      */
