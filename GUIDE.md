@@ -1,9 +1,14 @@
 # Airwallex Android SDK
-This section mainly introduces the main process of integrating Airwallex Android SDK. This guide assumes that you are an Android developer and familiar with Android Studio and Gradle.
+Airwallex Android SDK is a flexible tool that enables you to integrate payment methods into your Android App. It also includes a prebuilt UI that provides you the flexibility to choose to use any part of it, while replacing the rest with your own UI. Also, Airwallex Native UI enables you to customize the color to fit with your App theme.
 
-Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to include the Airwallex Android SDK in your Android project.
+This section guides you through the process of integrating Airwallex Android SDK. We assume you are an Android developer and familiar with Android Studio and Gradle.
 
-Get started with our integration guide and example project.
+To accept online payments with Airwallex Android SDK, you need to
+1. [Install & Initialize the Android SDK](#airwallex-api-integration).
+2. [Build your payment flow](#native-ui-integration).
+3. [Select the Payment Methods you want to integrate](#set-up-payment-methods)
+
+Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to integrate Airwallex Android SDK in your Android App.
 
 ## Contents
 * [Overview](#Overview)
@@ -18,6 +23,7 @@ Get started with our integration guide and example project.
     * [Create PaymentMethod](#create-paymentmethod)
     * [Confirm PaymentIntent](#confirm-paymentintent)
     * [Entire Payment Flow](#entire-payment-flow)
+    * [Custom Theme](#custom-theme)
 * [Set up payment methods](#set-up-payment-methods)
     * [Cards](#cards)
     * [Alipay](#alipay)
@@ -30,20 +36,22 @@ Get started with our integration guide and example project.
     * [AlipayHK](#alipayhk)
 * [SDK Example](#sdk-example)
 * [Test Card Numbers](#test-card-numbers)
-* [Custom Theme](#custom-theme)
 * [Contributing](#Contributing)
 
 ## Overview
-We provide two types of integration: Airwallex API & Native UI
 
 ### Airwallex API
-We currently support all the following payment methods.
-- [`Cards`](#cards). If the merchant wants to integrate Airwallex API with card payments, then their website needs to be PCI-DSS compliant
-- [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay)
-We provide low-level APIs that correspond to objects and methods in the Airwallex API, you can build your own entirely custom UI on top of this layer.
 
-### Native UI
-We also provide native screens to facilitate the integration of payment functions. You can use these individually, or take all of the prebuilt UI in one flow by following the Integration guide.
+Airwallex Android SDK is a flexible tool that enables you to integrate payment methods into your Android App. It also includes a prebuilt UI that provides you the flexibility to choose to use any part of it, while replacing the rest with your own UI. Also, Airwallex Native UI enables you to customize the color to fit with your App theme. 
+
+Note: The Airwallex Android SDK is compatible with apps supporting Android API level 19 and above and SDK file size is 3188.04KB
+
+Payment methods supported: 
+- Cards: [`Visa, Mastercard`](#cards). If you want to integrate Airwallex API without our Native UI for card payments, then your website is required to be PCI-DSS compliant. 
+- E-Wallets: [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay)
+
+### Airwallex Native UI
+Airwallex Native UI is a prebuilt UI which enables you to customize the UI color and fit your App theme. You can use these components separately, or pack our prebuilt UI into one flow to present your payment.
 
 |#|Native UI|Picture|
 |---|---|----
@@ -66,6 +74,8 @@ To install the SDK, in your app-level `build.gradle`, add the following:
     }
 ```
 
+- Add the `cardinalcommerce` Maven repo
+
 Additionally, add the following Maven repository and (non-sensitive) credentials to your app-level `build.gralde`:
 ```groovy
 repositories {
@@ -80,7 +90,7 @@ repositories {
 ```
 
 ### Basic Integration
-- Configuration the SDK (optional)
+- Configuration the SDK
 
 We provide some parameters that can be used to debug the SDK, better to be called in `Application`
 
@@ -95,23 +105,26 @@ We provide some parameters that can be used to debug the SDK, better to be calle
 
 - Create Payment Intent (On Merchant's server)
 
-Before confirming the `PaymentIntent`, you must create a `PaymentIntent` on the server and pass it to the client.
+Before confirming the `PaymentIntent`, the merchant must create a `PaymentIntent` on the server and pass it to the client.
 
-> Merchant's server
+> Follow these steps to create a PaymentIntent in Merchat's server
 >1. To begin you will need to obtain an access token to allow you to reach all other API endpoints. Using your unique Client ID and API key (these can be generated within [Account settings > API keys](https://www.airwallex.com/app/settings/api)) you can call the Authentication API endpoint. On success, an access token will be granted.
 >
 >2. Create customer(optional) allows you to save your customers' details, attach payment methods so you can quickly retrieve the supported payment methods as your customer checks out on your shopping site. [`/api/v1/pa/customers/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Customers/_api_v1_pa_customers_create/post)
 >
 >3. Finally, you need to create a `PaymentIntent` object on your own server via [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post) and pass it to your client
 
-- All the payment methods we currently provide include [`Cards`](#cards), [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay). View all supported [`payment methods`](#set-up-payment-methods)
+- Start payment flow with a payment method
+
+All the payment methods we currently provide include [`Cards`](#cards), [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay). View all supported [`payment methods`](#set-up-payment-methods)
 
 ## Native UI integration
 We provide native screens to facilitate the integration of payment functions.
-You can use these individually, or take all of the prebuilt UI in one flow by following the Integration guide.
+The merchant can use these individually, or take all of the prebuilt UI in one flow by following the Integration guide.
 
 ### Edit Shipping Info
-Customize the usage of shipping info, shipping parameter is optional. After successfully saving, it will return a shipping object
+Customize the usage of shipping info. The merchant can call the `presentShippingFlow` method to use the shipping screen in the SDK. `shipping` parameter is optional. After successfully saving, it will return a shipping object
+
 ```kotlin
     airwallex.presentShippingFlow(shipping,
         object : Airwallex.PaymentShippingListener {
@@ -126,7 +139,7 @@ Customize the usage of shipping info, shipping parameter is optional. After succ
 ```
 
 ### Select PaymentMethod
-Customize the usage of select one of payment methods. You need to pass in a `PaymentIntent` and `ClientSecretProvider` object. It will display all the saved payment methods of the current customer, you can choose any one to pay
+Customize the usage of select one of payment methods. The merchant can call the `presentSelectPaymentMethodFlow` method to use the PaymentMethod screen in the SDK, and needs to pass in a PaymentIntent and ClientSecretProvider object. It will display all the saved payment methods of the current customer, the shopper can choose any one to pay.
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
@@ -144,7 +157,7 @@ Customize the usage of select one of payment methods. You need to pass in a `Pay
 ```
 
 ### Create PaymentMethod
-Customize the usage of card creation. You can enter a credit card number, expiration time and cvc to create a payment method. You need to pass in a `paymentIntent` and `ClientSecretProvider` object.
+Customize the usage of card creation. The shopper can enter a credit card number, expiration time and cvc to create a payment method. The merchant needs to pass in a `paymentIntent` and `ClientSecretProvider` object.
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
@@ -162,7 +175,7 @@ Customize the usage of card creation. You can enter a credit card number, expira
 ```
 
 ### Confirm PaymentIntent
-Customize the usage of payment detail. You need to pass in a `PaymentIntent` object and a `PaymentMethod` object. It will display the current payment amount has been paid, encapsulated the specific operation of payment, will return the `PaymentIntent` or `Exception` through the callback method
+Customize the usage of payment details. The merchant needs to pass in a `PaymentIntent` object and a `PaymentMethod` object. It will display the current payment amount has been paid, encapsulated the specific operation of payment, will return the `PaymentIntent` or `Exception` through the callback method
 ```kotlin
     airwallex.presentPaymentDetailFlow(paymentIntent, paymentMethod,
         object : Airwallex.PaymentIntentListener {
@@ -181,7 +194,8 @@ Customize the usage of payment detail. You need to pass in a `PaymentIntent` obj
 ```
 
 ### Entire Payment Flow
-Show entire Payment Flow. Need to pass in a `PaymentIntent` object. You can complete the entire payment process by calling this method, will return the `PaymentIntent` or `Exception` through the callback method
+Show the entire Payment Flow. Need to pass in a `PaymentIntent` object. The shopper can complete the entire payment process by calling this method, will return the `PaymentIntent` or `Exception`  through the callback method
+
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
@@ -201,8 +215,28 @@ Show entire Payment Flow. Need to pass in a `PaymentIntent` object. You can comp
             }
         })
 ```
+### Custom Theme
+The merchant can overwrite these color values in your app. https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
+```
+    <!--   a secondary color for controls like checkboxes and text fields -->
+    <color name="airwallex_color_accent">@color/color_accent</color>
+
+    <!--   color for the app bar and other primary UI elements -->
+    <color name="airwallex_color_primary">@color/color_primary</color>
+
+    <!--   a darker variant of the primary color, used for
+           the status bar (on Android 5.0+) and contextual app bars -->
+    <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
+```
 
 ## Set up payment methods
+
+PaymentMethod objects represent your customer's payment instruments. They can be used with PaymentIntents to complete payments.
+
+We support [`Cards`](#cards), [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay). The merchant can choose the payment method you need to support.
+
+And we will display the available payment methods based on the shopper's current currency. The additional implementation effort for offering a new payment method depends on your type of integration.
+
 
 ### Cards
 1. Initializes an `Airwallex` object, it's the Entry-point of the Airwallex SDK.
@@ -340,7 +374,7 @@ val listener = object : Airwallex.PaymentListener<PaymentIntent> {
     }
 ```
 
-4. After successfully `Alipay` payment, the Airwallex server will notify the Merchant, then you can make sure if the `PaymentIntent` is successful by calling the `retrievePaymentIntent` method and checking the `status` of the response.
+5. After successfully `Alipay` payment, the Airwallex server will notify the Merchant, then you can make sure if the `PaymentIntent` is successful by calling the `retrievePaymentIntent` method and checking the `status` of the response.
 ```kotlin
     airwallex.retrievePaymentIntent(
         params = RetrievePaymentIntentParams(
@@ -923,14 +957,16 @@ val listener = object : Airwallex.PaymentListener<PaymentIntent> {
         })
 ```
 ## SDK Example
+This sample app demonstrates integrating with the Airwallex Android SDK using its prebuilt UI components to manage the checkout flow, including specifying a shipping address and selecting a Payment Method.
+
 To run the example project, you should follow these steps.
 
-* **Step 1:** Run the following script to clone the repository to your local machine
+1. Run the following script to clone the repository to your local machine
 `git clone git@github.com:airwallex/airwallex-payment-android.git`
 
-* **Step 2:** Open Android Studio and import the project by selecting the `build.gradle` file from the cloned repository
+2. Open Android Studio and import the project by selecting the `build.gradle` file from the cloned repository
 
-* **Step 3:** Goto [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and` API key` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
+3. Goto [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and` API key` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
 ```
     private const val AUTH_URL = "put your auth url here"
     private const val BASE_URL = "put your base url here"
@@ -938,13 +974,13 @@ To run the example project, you should follow these steps.
     private const val CLIENT_ID = "put your client id here"
 ```
 
-* **Step 4:** Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then copy `App ID` and `App Signature` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
+4. Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then copy `App ID` and `App Signature` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
 ```
     private const val WECHAT_APP_ID = "put your WeChat app id here"
     private const val WECHAT_APP_SIGNATURE = "put your WeChat app signature here"
 ```
 
-* **Step 5:** Run the `sample` project
+5. Run the `sample` project
 
 ## Test Card Numbers
 - 4242 4242 4242 4242
@@ -952,19 +988,5 @@ To run the example project, you should follow these steps.
 - 4012 0003 0000 1003 Month: 12 (3DS 1.0)
 - 4012 0003 0000 1003 Month: 10 (3DS 2.0)
 
-## Custom Theme
-You can overwrite these color values in your app. https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
-```
-    <!--   a secondary color for controls like checkboxes and text fields -->
-    <color name="airwallex_color_accent">@color/color_accent</color>
-
-    <!--   color for the app bar and other primary UI elements -->
-    <color name="airwallex_color_primary">@color/color_primary</color>
-
-    <!--   a darker variant of the primary color, used for
-           the status bar (on Android 5.0+) and contextual app bars -->
-    <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
-```
-
 ## Contributing
-We welcome contributions of any kind including new features, bug fixes, and documentation improvements. The best way to contribute is by submitting a pull request – we'll do our best to respond to your patch as soon as possible. You can also submit an issue if you find bugs or have any questions.
+We welcome contributions of any kind including new features, bug fixes, and documentation 
