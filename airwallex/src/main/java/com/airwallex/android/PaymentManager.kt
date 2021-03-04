@@ -99,6 +99,39 @@ internal interface PaymentManager {
     )
 
     /**
+     * Create a Airwallex [PaymentConsent] using [ApiRepository.Options]
+     *
+     * @param options contains the create [PaymentConsent] params
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    fun createPaymentConsent(
+        options: ApiRepository.Options,
+        listener: PaymentListener<PaymentConsent>
+    )
+
+    /**
+     * Verify a Airwallex [PaymentConsent] using [ApiRepository.Options]
+     *
+     * @param options contains the create [PaymentConsent] params
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    fun verifyPaymentConsent(
+        options: ApiRepository.Options,
+        listener: PaymentListener<PaymentConsent>
+    )
+
+    /**
+     * Retrieve [PaymentConsent] using [ApiRepository.Options]
+     *
+     * @param options contains the retrieve [PaymentConsent] params
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    fun retrievePaymentConsent(
+        options: ApiRepository.Options,
+        listener: PaymentListener<PaymentConsent>
+    )
+
+    /**
      * Handle next action for 3ds
      *
      * @param applicationContext the Application Context that is to start 3ds screen
