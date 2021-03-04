@@ -983,10 +983,7 @@ To run the example project, you should follow these steps.
 5. Run the `sample` project
 
 ## Test Card Numbers
-- 4242 4242 4242 4242
-- 2223 0000 1018 1375 Expire: 12/2022 CVC: 650 (3DS 1.0)
-- 4012 0003 0000 1003 Month: 12 (3DS 1.0)
-- 4012 0003 0000 1003 Month: 10 (3DS 2.0)
+https://cardinaldocs.atlassian.net/wiki/spaces/CCen/pages/903577725/EMV+3DS+Test+Cases
 
 ## Contributing
 We welcome contributions of any kind including new features, bug fixes, and documentation 

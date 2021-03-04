@@ -334,6 +334,9 @@ internal class AirwallexPaymentManager(
                                 listener.onSuccess(response)
                                 return
                             }
+
+                            Logger.debug("Handle nextAction ${response.nextAction}")
+
                             val transactionId = response.nextAction.data?.get("xid") as? String
                             val req = response.nextAction.data?.get("req") as? String
                             val acs = response.nextAction.data?.get("acs") as? String
@@ -388,6 +391,7 @@ internal class AirwallexPaymentManager(
                             }
 
                             val threeDSecureLookup = ThreeDSecureLookup(transactionId, req, acs, version)
+                            Logger.debug("Handle threeDSecureLookup $threeDSecureLookup")
                             threeDSecureActivityLaunch.startForResult(ThreeDSecureActivityLaunch.Args(threeDSecureLookup))
                         }
                     }
