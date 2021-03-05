@@ -11,7 +11,6 @@
     </style>
 
     <style name="AirwallexTextInputLayout" parent="Base.Widget.MaterialComponents.TextInputLayout">
-        <item name="materialThemeOverlay">@style/AirwallexMaterialThemeOverlay</item>
         <item name="android:background">#00000000</item>
         <item name="boxBackgroundMode">filled</item>
         <item name="boxBackgroundColor">@null</item>
@@ -30,5 +29,15 @@
 
     <style name="AirwallexProgressBarStyle">
         <item name="colorAccent">@color/airwallex_color_primary</item>
+    </style>
+
+    <style name="AirwallexErrorTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/airwallex_color_edit_text_error</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="AirwallexHintTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/airwallex_color_edit_text_accent</item>
+        <item name="android:textSize">12sp</item>
     </style>
 </resources>

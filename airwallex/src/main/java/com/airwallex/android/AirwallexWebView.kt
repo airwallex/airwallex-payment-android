@@ -2,10 +2,10 @@ package com.airwallex.android
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.webkit.WebSettings
 import android.webkit.WebView
-import androidx.core.content.ContextCompat
 
 internal class AirwallexWebView @SuppressLint("SetJavaScriptEnabled") constructor(
     context: Context,

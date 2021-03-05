@@ -4,4 +4,5 @@
     <dimen name="payment_method_item_height">58dp</dimen>
     <dimen name="airwallex_button_height">44dp</dimen>
     <dimen name="space_height">24dp</dimen>
+    <dimen name="airwallex_te_input_bottom">5dp</dimen>
 </resources>

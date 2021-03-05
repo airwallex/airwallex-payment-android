@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:drawablePadding="8dp"
-        app:drawableStartCompat="@drawable/airwallex_rate"
+        android:drawableStart="@drawable/airwallex_rate"
         tools:text="@string/rate" />
 
     <TextView

@@ -3,9 +3,9 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ClientSecretRepository
 import com.airwallex.android.R

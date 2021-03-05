@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,31 +12,31 @@
         android:layout_width="match_parent"
         android:layout_height="53dp">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <android.support.design.widget.TextInputLayout
             android:id="@+id/tlCountry"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
+            style="@style/AirwallexTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/shipping_country_name_hint"
             android:labelFor="@id/actCountry"
             android:textColorHint="@color/airwallex_color_edit_text_accent"
             app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
-            app:errorTextColor="@color/airwallex_color_edit_text_error"
-            app:hintTextColor="@color/airwallex_color_edit_text_accent">
+            app:errorTextAppearance="@style/AirwallexErrorTextAppearance"
+            app:hintTextAppearance="@style/AirwallexHintTextAppearance">
 
             <AutoCompleteTextView
                 android:id="@+id/actCountry"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@android:color/transparent"
                 android:fontFamily="@font/circularstd_medium"
                 android:imeOptions="actionNext"
                 android:inputType="text"
+                android:paddingHorizontal="10dp"
                 android:textColor="@color/airwallex_color_edit_text_default"
                 android:textSize="16sp" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
         <View
             android:id="@+id/vBorder"
@@ -43,6 +44,15 @@
             android:layout_height="match_parent"
             android:background="@drawable/airwallex_input_layout_border" />
 
+        <ImageView
+            android:id="@+id/dropDown"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginEnd="10dp"
+            android:padding="18dp"
+            android:src="@drawable/ic_arrow_down"
+            tools:ignore="RtlHardcoded" />
     </FrameLayout>
 
     <TextView

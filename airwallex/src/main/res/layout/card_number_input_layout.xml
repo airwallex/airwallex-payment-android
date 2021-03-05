@@ -12,21 +12,21 @@
         android:layout_width="match_parent"
         android:layout_height="53dp">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <android.support.design.widget.TextInputLayout
             android:id="@+id/tlInput"
             style="@style/AirwallexTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textColorHint="@color/airwallex_color_edit_text_accent"
             app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
-            app:errorTextColor="@color/airwallex_color_edit_text_error"
-            app:hintTextColor="@color/airwallex_color_edit_text_accent">
+            app:errorTextAppearance="@style/AirwallexErrorTextAppearance"
+            app:hintTextAppearance="@style/AirwallexHintTextAppearance">
 
             <com.airwallex.android.view.CardNumberEditText
                 android:id="@+id/teInput"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
+                android:layout_height="match_parent"
                 android:background="@android:color/transparent"
                 android:digits="@string/valid_digits"
                 android:fontFamily="@font/circularstd_medium"
@@ -34,7 +34,7 @@
                 android:textColorHint="@color/airwallex_color_edit_text_accent"
                 android:singleLine="true"
                 android:textSize="16sp" />
-        </com.google.android.material.textfield.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
         <ImageView
             android:id="@+id/ivBrand"

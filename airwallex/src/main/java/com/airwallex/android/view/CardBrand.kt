@@ -1,6 +1,6 @@
 package com.airwallex.android.view
 
-import androidx.annotation.DrawableRes
+import android.support.annotation.DrawableRes
 import com.airwallex.android.R
 
 /**

@@ -212,5 +212,9 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
                 atlStreetAddress.error = null
             }
         }
+
+        atlZipCode.afterFocusChanged {}
+        atlEmail.afterFocusChanged {}
+        atlPhoneNumber.afterFocusChanged {}
     }
 }

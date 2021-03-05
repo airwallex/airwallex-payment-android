@@ -23,7 +23,7 @@
             android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="14sp" />
 
-        <androidx.appcompat.widget.SwitchCompat
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/swSameAsShipping"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

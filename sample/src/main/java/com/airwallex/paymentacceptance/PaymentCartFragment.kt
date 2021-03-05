@@ -3,6 +3,7 @@ package com.airwallex.paymentacceptance
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.Log
@@ -10,8 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.Airwallex
 import com.airwallex.android.exception.RedirectException
 import com.airwallex.android.model.*
@@ -183,7 +182,7 @@ class PaymentCartFragment : Fragment() {
     private fun authAndCreatePaymentIntent() {
         (activity as? PaymentCartActivity)?.setLoadingProgress(true)
         Settings.token = null
-        viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.IO) {
+        GlobalScope.safeLaunch(Dispatchers.IO) {
             val response = authApi.authentication(
                 apiKey = Settings.apiKey,
                 clientId = Settings.clientId

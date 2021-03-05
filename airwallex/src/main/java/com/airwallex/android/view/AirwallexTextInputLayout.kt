@@ -1,6 +1,9 @@
 package com.airwallex.android.view
 
 import android.content.Context
+import android.support.design.widget.TextInputEditText
+import android.support.design.widget.TextInputLayout
+import android.support.v4.content.res.ResourcesCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -8,13 +11,11 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
 import com.airwallex.android.R.styleable
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 
 internal open class AirwallexTextInputLayout @JvmOverloads constructor(
     context: Context,
@@ -32,14 +33,11 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
             when (value) {
                 null -> {
                     tvError.visibility = View.GONE
-                    tlInput.error = null
                 }
                 else -> {
                     tvError.visibility = View.VISIBLE
-                    tlInput.error = " "
                 }
             }
-
             tvError.text = value
             updateLayoutColor()
         }
@@ -53,6 +51,13 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
         }
         set(value) {
             teInput.setText(value)
+            val layoutParams = teInput.layoutParams as FrameLayout.LayoutParams
+            if (value.isBlank()) {
+                layoutParams.bottomMargin = resources.getDimension(R.dimen.airwallex_te_input_bottom).toInt()
+            } else {
+                layoutParams.bottomMargin = 0
+            }
+            teInput.layoutParams = layoutParams
         }
 
     init {
@@ -62,8 +67,6 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
         teInput = findViewById(R.id.teInput)
         vBorder = findViewById(R.id.vBorder)
         tvError = findViewById(R.id.tvError)
-
-        tlInput.errorIconDrawable = null
 
         context.theme.obtainStyledAttributes(
             attrs,
@@ -97,6 +100,10 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
                 recycle()
             }
         }
+
+        val layoutParams = teInput.layoutParams as FrameLayout.LayoutParams
+        layoutParams.bottomMargin = resources.getDimension(R.dimen.airwallex_te_input_bottom).toInt()
+        teInput.layoutParams = layoutParams
     }
 
     private fun updateLayoutColor() {
@@ -128,6 +135,18 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
     internal fun afterFocusChanged(afterFocusChanged: (Boolean) -> Unit) {
         teInput.setOnFocusChangeListener { _, hasFocus ->
             afterFocusChanged.invoke(hasFocus)
+
+            val layoutParams = teInput.layoutParams as FrameLayout.LayoutParams
+            if (hasFocus) {
+                layoutParams.bottomMargin = 0
+            } else {
+                if (teInput.text.isNullOrBlank()) {
+                    layoutParams.bottomMargin = resources.getDimension(R.dimen.airwallex_te_input_bottom).toInt()
+                } else {
+                    layoutParams.bottomMargin = 0
+                }
+            }
+            teInput.layoutParams = layoutParams
         }
     }
 

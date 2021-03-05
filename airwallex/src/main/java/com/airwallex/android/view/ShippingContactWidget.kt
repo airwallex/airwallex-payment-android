@@ -82,5 +82,6 @@ internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : Li
                 atlFirstName.error = null
             }
         }
+        atlPhoneNumber.afterFocusChanged {}
     }
 }
