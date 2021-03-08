@@ -152,13 +152,35 @@ class Airwallex internal constructor(
         paymentManager.createPaymentMethod(
             AirwallexApiRepository.CreatePaymentMethodOptions(
                 clientSecret = params.clientSecret,
-                customerId = params.customerId,
                 request = PaymentMethodCreateRequest.Builder()
                     .setCustomerId(params.customerId)
                     .setRequestId(UUID.randomUUID().toString())
                     .setType(AvaliablePaymentMethodType.CARD)
                     .setCard(params.card)
                     .setBilling(params.billing)
+                    .build()
+            ),
+            listener
+        )
+    }
+
+    /**
+     * Disable a payment method
+     *
+     * @param params [DisablePaymentMethodParams] used to disable the [PaymentMethod]
+     * @param listener the callback of create [PaymentMethod]
+     */
+    @UiThread
+    internal fun disablePaymentMethod(
+        params: DisablePaymentMethodParams,
+        listener: PaymentListener<PaymentMethod>
+    ) {
+        paymentManager.disablePaymentMethod(
+            AirwallexApiRepository.DisablePaymentMethodOptions(
+                clientSecret = params.clientSecret,
+                paymentMethodId = params.paymentMethodId,
+                request = PaymentMethodDisableRequest.Builder()
+                    .setRequestId(UUID.randomUUID().toString())
                     .build()
             ),
             listener
