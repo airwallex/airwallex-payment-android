@@ -121,11 +121,12 @@ internal interface PaymentManager {
 
     companion object {
         private const val PLATFORM = "Android"
+        private const val DEVICE_MODEL = "mobile"
 
         fun buildDeviceInfo(deviceId: String, applicationContext: Context): Device {
             return Device.Builder()
                 .setDeviceId(deviceId)
-                .setDeviceModel(Build.MODEL)
+                .setDeviceModel(DEVICE_MODEL)
                 .setSdkVersion(AirwallexPlugins.getSdkVersion(applicationContext))
                 .setPlatformType(PLATFORM)
                 .setDeviceOS(Build.VERSION.RELEASE)
