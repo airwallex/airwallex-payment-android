@@ -40,8 +40,14 @@ internal class AirwallexApiRepository : ApiRepository {
     @Parcelize
     internal data class CreatePaymentMethodOptions internal constructor(
         override val clientSecret: String,
-        internal val customerId: String,
         internal val request: PaymentMethodCreateRequest
+    ) : ApiRepository.Options(clientSecret = clientSecret)
+
+    @Parcelize
+    internal data class DisablePaymentMethodOptions internal constructor(
+        override val clientSecret: String,
+        internal val paymentMethodId: String,
+        internal val request: PaymentMethodDisableRequest
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     @Parcelize
@@ -144,6 +150,20 @@ internal class AirwallexApiRepository : ApiRepository {
                 ),
                 options = options,
                 params = (options as CreatePaymentMethodOptions).request.toParamMap()
+            ),
+            PaymentMethodParser()
+        )
+    }
+
+    override fun disablePaymentMethod(options: ApiRepository.Options): PaymentMethod? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createPost(
+                url = disablePaymentMethodUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as DisablePaymentMethodOptions).paymentMethodId
+                ),
+                options = options,
+                params = options.request.toParamMap()
             ),
             PaymentMethodParser()
         )
@@ -294,6 +314,17 @@ internal class AirwallexApiRepository : ApiRepository {
             return getApiUrl(
                 baseUrl,
                 "payment_methods/create"
+            )
+        }
+
+        /**
+         *  `/api/v1/pa/payment_methods/{id}/disable`
+         */
+        private fun disablePaymentMethodUrl(baseUrl: String, paymentMethodId: String): String {
+            return getApiUrl(
+                baseUrl,
+                "payment_methods/%s/disable",
+                paymentMethodId
             )
         }
 
