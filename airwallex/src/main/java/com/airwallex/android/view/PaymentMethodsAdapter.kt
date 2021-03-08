@@ -129,6 +129,36 @@ internal class PaymentMethodsAdapter(
         }
     }
 
+    @JvmSynthetic
+    internal fun deletePaymentMethod(paymentMethod: PaymentMethod) {
+        getPosition(paymentMethod)?.let {
+            paymentMethods.remove(paymentMethod)
+            notifyItemRemoved(it)
+        }
+    }
+
+    @JvmSynthetic
+    internal fun resetPaymentMethod(paymentMethod: PaymentMethod) {
+        getPosition(paymentMethod)?.let {
+            notifyItemChanged(it)
+        }
+    }
+
+    private fun getPosition(paymentMethod: PaymentMethod): Int? {
+        return paymentMethods.indexOfFirst { it?.id == paymentMethod.id }.takeIf { it >= 0 }?.let {
+            it + availableThirdPaymentTypes.size + spaceCount
+        }
+    }
+
+    @JvmSynthetic
+    internal fun getPaymentMethodAtPosition(position: Int): PaymentMethod {
+        return paymentMethods[getPaymentMethodIndex(position)]!!
+    }
+
+    private fun getPaymentMethodIndex(position: Int): Int {
+        return position - (availableThirdPaymentTypes.size + spaceCount)
+    }
+
     inner class CardHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bindView(position: Int) {

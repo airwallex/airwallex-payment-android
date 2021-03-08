@@ -16,7 +16,9 @@
     <color name="airwallex_color_border">#EBECF0</color>
     <color name="airwallex_color_price">#1E272E</color>
     <color name="airwallex_color_item_label">#54545E</color>
+    <color name="airwallex_swipe_bg_color">#D5473F</color>
 
     <!-- FIXME Override the color in cardinal -->
     <color name="blue">@color/airwallex_color_primary</color>
+
 </resources>

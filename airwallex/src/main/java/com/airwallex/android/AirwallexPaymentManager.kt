@@ -126,6 +126,26 @@ internal class AirwallexPaymentManager(
     }
 
     /**
+     * Disable a Airwallex [PaymentMethod] using [ApiRepository.Options]
+     *
+     * @param options contains the disable [PaymentMethod] params
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    override fun disablePaymentMethod(options: ApiRepository.Options, listener: PaymentListener<PaymentMethod>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.disablePaymentMethod(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
+    }
+
+    /**
      * Retrieve all of the customer's [PaymentMethod] using [ApiRepository.Options]
      *
      * @param options contains the retrieve [PaymentMethod] params

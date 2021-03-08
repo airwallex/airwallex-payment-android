@@ -4,12 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.Airwallex
 import com.airwallex.android.ClientSecretRepository
 import com.airwallex.android.R
-import com.airwallex.android.model.RetrievePaymentMethodParams
 import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -84,6 +84,62 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             fetchPaymentMethods()
         }
         paymentMethodsAdapter.addOnScrollListener(rvPaymentMethods)
+
+        val deletePaymentMethodDialogFactory = DeletePaymentMethodDialogFactory(
+            this,
+            paymentMethodsAdapter,
+        ) {
+            setLoadingProgress(true)
+            ClientSecretRepository.getInstance().retrieveClientSecret(
+                requireNotNull(paymentIntent.customerId),
+                object : ClientSecretRepository.ClientSecretRetrieveListener {
+                    override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
+                        airwallex.disablePaymentMethod(
+                            DisablePaymentMethodParams(
+                                clientSecret = clientSecret.value,
+                                customerId = requireNotNull(paymentIntent.customerId),
+                                paymentMethodId = requireNotNull(it.id),
+                            ),
+                            object : Airwallex.PaymentListener<PaymentMethod> {
+                                override fun onSuccess(response: PaymentMethod) {
+                                    setLoadingProgress(false)
+                                    paymentMethodsAdapter.deletePaymentMethod(it)
+                                }
+
+                                override fun onFailed(exception: Exception) {
+                                    setLoadingProgress(false)
+                                    alert(message = exception.message ?: exception.toString())
+                                }
+                            }
+                        )
+                    }
+
+                    override fun onClientSecretError(errorMessage: String) {
+                        setLoadingProgress(false)
+                        alert(message = errorMessage)
+                    }
+                }
+            )
+        }
+
+        object : PaymentMethodSwipeCallback(this@PaymentMethodsActivity, rvPaymentMethods) {
+            override fun instantiateUnderlayButton(viewHolder: RecyclerView.ViewHolder?, underlayButtons: ArrayList<UnderlayButton>) {
+                underlayButtons.add(
+                    UnderlayButton(
+                        text = resources.getString(R.string.delete_payment_method_positive),
+                        textSize = resources.getDimensionPixelSize(R.dimen.swipe_size),
+                        color = ContextCompat.getColor(baseContext, R.color.airwallex_swipe_bg_color),
+                        clickListener = object : UnderlayButtonClickListener {
+                            override fun onClick(position: Int) {
+                                deletePaymentMethodDialogFactory
+                                    .create(paymentMethodsAdapter.getPaymentMethodAtPosition(position))
+                                    .show()
+                            }
+                        }
+                    )
+                )
+            }
+        }
 
         fetchPaymentMethods()
     }
