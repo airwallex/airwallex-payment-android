@@ -968,7 +968,6 @@ To run the example project, you should follow these steps.
 
 3. Goto [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and` API key` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
 ```
-    private const val AUTH_URL = "put your auth url here"
     private const val BASE_URL = "put your base url here"
     private const val API_KEY = "put your api key here"
     private const val CLIENT_ID = "put your client id here"

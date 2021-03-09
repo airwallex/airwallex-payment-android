@@ -7,8 +7,6 @@ import androidx.preference.PreferenceManager
 
 object Settings {
 
-    // Auth URL
-    private const val AUTH_URL = ""
     // Base URL
     private const val BASE_URL = ""
     // API Key
@@ -23,7 +21,6 @@ object Settings {
     private const val CUSTOMER_ID = "customerId"
     private val context: Context by lazy { SampleApplication.instance }
 
-    private const val METADATA_KEY_AUTH_URL_KEY = "com.airwallex.sample.metadata.auth_url"
     private const val METADATA_KEY_BASE_URL_KEY = "com.airwallex.sample.metadata.base_url"
     private const val METADATA_KEY_API_KEY = "com.airwallex.sample.metadata.api_key"
     private const val METADATA_KEY_CLIENT_ID_KEY = "com.airwallex.sample.metadata.client_id"
@@ -61,12 +58,6 @@ object Settings {
                 defaultSdkEnv
             )
                 ?: defaultSdkEnv
-        }
-
-    val authUrl: String
-        get() {
-            return sharedPreferences.getString(context.getString(R.string.auth_url), getMetadata(METADATA_KEY_AUTH_URL_KEY))
-                ?: AUTH_URL
         }
 
     val baseUrl: String

@@ -27,7 +27,6 @@ class PaymentSettingsFragment :
             sdkEnvPref.setValueIndex(0)
         }
 
-        onSharedPreferenceChanged(preferences, getString(R.string.auth_url))
         onSharedPreferenceChanged(preferences, getString(R.string.base_url))
         onSharedPreferenceChanged(preferences, getString(R.string.api_key))
         onSharedPreferenceChanged(preferences, getString(R.string.client_id))
@@ -50,7 +49,6 @@ class PaymentSettingsFragment :
         }
         val preference = findPreference<Preference>(key)
         when (key) {
-            getString(R.string.auth_url) -> preference?.summary = Settings.authUrl
             getString(R.string.base_url) -> preference?.summary = Settings.baseUrl
             getString(R.string.api_key) -> preference?.summary = Settings.apiKey
             getString(R.string.client_id) -> preference?.summary = Settings.clientId

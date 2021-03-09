@@ -16,10 +16,6 @@
     <PreferenceCategory android:title="@string/authorization">
 
         <EditTextPreference
-            android:key="@string/auth_url"
-            android:title="@string/auth_url" />
-
-        <EditTextPreference
             android:key="@string/base_url"
             android:title="@string/base_url" />
 
