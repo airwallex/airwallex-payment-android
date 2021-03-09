@@ -12,8 +12,8 @@ enum class Environment {
 
     fun cybsUrl(): String {
         return when (this) {
-            DEMO -> "https://demo-pacybsmock.airwallex.com"
-            PRODUCTION -> "https://prod-pacybs.airwallex.com"
+            DEMO -> "https://pci-api-demo.airwallex.com/pa/webhook/cybs"
+            PRODUCTION -> "https://pci-api.airwallex.com/pa/webhook/cybs"
         }
     }
 }
