@@ -82,6 +82,25 @@ internal class AirwallexApiRepository : ApiRepository {
         internal val paResId: String
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
+    @Parcelize
+    internal class CreatePaymentConsentOptions internal constructor(
+        override val clientSecret: String,
+        internal val request: PaymentConsentCreateRequest
+    ) : ApiRepository.Options(clientSecret = clientSecret)
+
+    @Parcelize
+    internal class VerifyPaymentConsentOptions internal constructor(
+        override val clientSecret: String,
+        internal val paymentConsentId: String,
+        internal val request: PaymentConsentVerifyRequest
+    ) : ApiRepository.Options(clientSecret = clientSecret)
+
+    @Parcelize
+    internal class RetrievePaymentConsentOptions internal constructor(
+        override val clientSecret: String,
+        internal val paymentConsentId: String
+    ) : ApiRepository.Options(clientSecret = clientSecret)
+
     /**
      * Continue a PaymentIntent using the provided [ApiRepository.Options]
      *
@@ -196,6 +215,47 @@ internal class AirwallexApiRepository : ApiRepository {
                 params = null
             ),
             ThreeDSecureParesParser()
+        )
+    }
+
+    override fun createPaymentConsent(options: ApiRepository.Options): PaymentConsent? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createPost(
+                url = createPaymentConsentUrl(
+                    AirwallexPlugins.environment.baseUrl()
+                ),
+                options = options,
+                params = (options as CreatePaymentConsentOptions).request.toParamMap()
+            ),
+            PaymentConsentParser()
+        )
+    }
+
+    override fun verifyPaymentConsent(options: ApiRepository.Options): PaymentConsent? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createPost(
+                url = verifyPaymentConsentUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as VerifyPaymentConsentOptions).paymentConsentId,
+                ),
+                options = options,
+                params = options.request.toParamMap()
+            ),
+            PaymentConsentParser()
+        )
+    }
+
+    override fun retrievePaymentConsent(options: ApiRepository.Options): PaymentConsent? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createGet(
+                url = retrievePaymentConsentUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as RetrievePaymentConsentOptions).paymentConsentId
+                ),
+                options = options,
+                params = null
+            ),
+            PaymentConsentParser()
         )
     }
 
@@ -355,6 +415,38 @@ internal class AirwallexApiRepository : ApiRepository {
             return getApiUrl(
                 baseUrl,
                 builder.toString()
+            )
+        }
+
+        /**
+         *  `/api/v1/pa/payment_consents/create`
+         */
+        internal fun createPaymentConsentUrl(baseUrl: String): String {
+            return getApiUrl(
+                baseUrl,
+                "payment_consents/create"
+            )
+        }
+
+        /**
+         *  `/api/v1/pa/payment_consents/{id}/verify`
+         */
+        internal fun verifyPaymentConsentUrl(baseUrl: String, paymentConsentId: String): String {
+            return getApiUrl(
+                baseUrl,
+                "payment_consents/%s/verify",
+                paymentConsentId
+            )
+        }
+
+        /**
+         *  `/api/v1/pa/payment_consents/{id}`
+         */
+        internal fun retrievePaymentConsentUrl(baseUrl: String, paymentConsentId: String): String {
+            return getApiUrl(
+                baseUrl,
+                "payment_consents/%s",
+                paymentConsentId
             )
         }
 

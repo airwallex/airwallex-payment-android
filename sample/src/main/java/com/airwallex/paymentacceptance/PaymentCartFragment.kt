@@ -260,6 +260,51 @@ class PaymentCartFragment : Fragment() {
 //        handlePaymentIntentResponseWithCustomFlow2(paymentIntent)
     }
 
+    private fun testPaymentConsent(clientSecret: String, customerId: String) {
+        airwallex.createPaymentConsent(CreatePaymentConsentParams(
+            clientSecret = clientSecret,
+            customerId = customerId,
+            paymentMethodType = PaymentMethodType.ALIPAY_HK
+        ), object : Airwallex.PaymentListener<PaymentConsent> {
+
+            override fun onFailed(exception: Exception) {
+                Log.e(TAG, "Create PaymentConsent failed", exception)
+            }
+
+            override fun onSuccess(response: PaymentConsent) {
+                Log.e(TAG, "Create PaymentConsent succes ${response.id}")
+
+                airwallex.verifyPaymentConsent(VerifyPaymentConsentParams(
+                    clientSecret = clientSecret,
+                    paymentConsentId = response.id,
+                    paymentMethodType = PaymentMethodType.ALIPAY_HK,
+                    returnUrl = "www.baidu.com"
+                ), object : Airwallex.PaymentListener<PaymentConsent> {
+                    override fun onFailed(exception: Exception) {
+                        Log.e(TAG, "Verify PaymentConsent failed", exception)
+                    }
+
+                    override fun onSuccess(response: PaymentConsent) {
+                        Log.e(TAG, "Verify PaymentConsent success ${response.id}")
+
+                        airwallex.retrievePaymentConsent(RetrievePaymentConsentParams(
+                            clientSecret = clientSecret,
+                            paymentConsentId = response.id,
+                        ), object : Airwallex.PaymentListener<PaymentConsent> {
+                            override fun onFailed(exception: Exception) {
+                                Log.e(TAG, "Retrieve PaymentConsent failed", exception)
+                            }
+
+                            override fun onSuccess(response: PaymentConsent) {
+                                Log.e(TAG, "Retrieve PaymentConsent success ${response.id}")
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    }
+
     /**
      * Use entire flow provided by Airwallex
      */
