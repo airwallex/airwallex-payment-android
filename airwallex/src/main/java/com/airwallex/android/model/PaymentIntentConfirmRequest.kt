@@ -34,6 +34,11 @@ data class PaymentIntentConfirmRequest internal constructor(
      */
     val paymentMethodOptions: PaymentMethodOptions? = null,
 
+    /**
+     * Reference to an existing PaymentConsent
+     */
+    val paymentConsentReference: PaymentConsentReference? = null,
+
     val device: Device? = null
 
 ) : AirwallexRequestModel, Parcelable {
@@ -44,6 +49,7 @@ data class PaymentIntentConfirmRequest internal constructor(
         private const val FIELD_PAYMENT_METHOD = "payment_method"
         private const val FIELD_PAYMENT_METHOD_REFERENCE = "payment_method_reference"
         private const val FIELD_PAYMENT_METHOD_OPTIONS = "payment_method_options"
+        private const val FIELD_PAYMENT_CONSENT_REFERENCE = "payment_consent_reference"
         private const val FIELD_DEVICE = "device"
     }
 
@@ -75,6 +81,11 @@ data class PaymentIntentConfirmRequest internal constructor(
                 }.orEmpty()
             )
             .plus(
+                paymentConsentReference?.let {
+                    mapOf(FIELD_PAYMENT_CONSENT_REFERENCE to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
                 device?.let {
                     mapOf(FIELD_DEVICE to it.toParamMap())
                 }.orEmpty()
@@ -88,6 +99,7 @@ data class PaymentIntentConfirmRequest internal constructor(
         private var paymentMethod: PaymentMethod? = null
         private var paymentMethodReference: PaymentMethodReference? = null
         private var paymentMethodOptions: PaymentMethodOptions? = null
+        private var paymentConsentReference: PaymentConsentReference? = null
         private var device: Device? = null
 
         fun setCustomerId(customerId: String?): Builder = apply {
@@ -112,6 +124,11 @@ data class PaymentIntentConfirmRequest internal constructor(
                 this.paymentMethodOptions = paymentMethodOptions
             }
 
+        fun setPaymentConsentReference(paymentConsentReference: PaymentConsentReference?): Builder =
+            apply {
+                this.paymentConsentReference = paymentConsentReference
+            }
+
         override fun build(): PaymentIntentConfirmRequest {
             return PaymentIntentConfirmRequest(
                 requestId = requestId,
@@ -119,6 +136,7 @@ data class PaymentIntentConfirmRequest internal constructor(
                 paymentMethod = paymentMethod,
                 paymentMethodReference = paymentMethodReference,
                 paymentMethodOptions = paymentMethodOptions,
+                paymentConsentReference = paymentConsentReference,
                 device = device
             )
         }
