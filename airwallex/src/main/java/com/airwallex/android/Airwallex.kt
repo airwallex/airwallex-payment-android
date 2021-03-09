@@ -212,6 +212,89 @@ class Airwallex internal constructor(
         )
     }
 
+    /**
+     * Create a [PaymentConsent], Support alipayhk, kakaopay, gcash, dana, tng
+     *
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    @UiThread
+    fun createPaymentConsent(
+        params: CreatePaymentConsentParams,
+        listener: PaymentListener<PaymentConsent>
+    ) {
+        val availablePaymentMethodTypes = listOf(PaymentMethodType.ALIPAY_HK, PaymentMethodType.KAKAOPAY, PaymentMethodType.GCASH, PaymentMethodType.DANA, PaymentMethodType.TNG)
+        if (!availablePaymentMethodTypes.contains(params.paymentMethodType)) {
+            listener.onFailed(Exception("Not support payment method ${params.paymentMethodType}"))
+            return
+        }
+        paymentManager.createPaymentConsent(
+            AirwallexApiRepository.CreatePaymentConsentOptions(
+                clientSecret = params.clientSecret,
+                request = PaymentConsentCreateRequest.Builder()
+                    .setRequestId(UUID.randomUUID().toString())
+                    .setCustomerId(params.customerId)
+                    .setPaymentMethod(
+                        PaymentMethod(
+                            type = params.paymentMethodType
+                        )
+                    )
+                    .setNextTriggeredBy(PaymentConsent.NextTriggeredBy.MERCHANT)
+                    .build()
+            ),
+            listener
+        )
+    }
+
+    /**
+     * Verify a [PaymentConsent]
+     *
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    @UiThread
+    fun verifyPaymentConsent(
+        params: VerifyPaymentConsentParams,
+        listener: PaymentListener<PaymentConsent>
+    ) {
+        val verificationOptions = when (params.paymentMethodType) {
+            PaymentMethodType.ALIPAY_HK -> PaymentConsentVerifyRequest.VerificationOptions(alipayhk = PaymentConsentVerifyRequest.AliPayVerificationOptions(flow = ThirdPartPayRequestFlow.IN_APP, osType = "android"))
+            PaymentMethodType.DANA -> PaymentConsentVerifyRequest.VerificationOptions(dana = PaymentConsentVerifyRequest.AliPayVerificationOptions(flow = ThirdPartPayRequestFlow.IN_APP, osType = "android"))
+            PaymentMethodType.GCASH -> PaymentConsentVerifyRequest.VerificationOptions(gcash = PaymentConsentVerifyRequest.AliPayVerificationOptions(flow = ThirdPartPayRequestFlow.IN_APP, osType = "android"))
+            PaymentMethodType.KAKAOPAY -> PaymentConsentVerifyRequest.VerificationOptions(kakaopay = PaymentConsentVerifyRequest.AliPayVerificationOptions(flow = ThirdPartPayRequestFlow.IN_APP, osType = "android"))
+            PaymentMethodType.TNG -> PaymentConsentVerifyRequest.VerificationOptions(tng = PaymentConsentVerifyRequest.AliPayVerificationOptions(flow = ThirdPartPayRequestFlow.IN_APP, osType = "android"))
+            else -> null
+        }
+        paymentManager.verifyPaymentConsent(
+            AirwallexApiRepository.VerifyPaymentConsentOptions(
+                clientSecret = params.clientSecret,
+                paymentConsentId = params.paymentConsentId,
+                request = PaymentConsentVerifyRequest.Builder()
+                    .setRequestId(UUID.randomUUID().toString())
+                    .setVerificationOptions(verificationOptions)
+                    .build()
+            ),
+            listener
+        )
+    }
+
+    /**
+     * Retrieve a [PaymentConsent] by ID
+     *
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    @UiThread
+    fun retrievePaymentConsent(
+        params: RetrievePaymentConsentParams,
+        listener: PaymentListener<PaymentConsent>
+    ) {
+        paymentManager.retrievePaymentConsent(
+            AirwallexApiRepository.RetrievePaymentConsentOptions(
+                clientSecret = params.clientSecret,
+                paymentConsentId = params.paymentConsentId
+            ),
+            listener
+        )
+    }
+
     @Throws(RedirectException::class)
     fun handleAction(nextAction: PaymentIntent.NextAction?) {
         val redirectUrl = nextAction?.url
