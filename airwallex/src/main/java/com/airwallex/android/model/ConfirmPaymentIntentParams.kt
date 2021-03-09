@@ -21,7 +21,12 @@ data class ConfirmPaymentIntentParams internal constructor(
     /**
      * Payment method type, default is [AvaliablePaymentMethodType.WECHAT]
      */
-    val paymentMethodType: AvaliablePaymentMethodType = AvaliablePaymentMethodType.WECHAT
+    val paymentMethodType: AvaliablePaymentMethodType = AvaliablePaymentMethodType.WECHAT,
+
+    /**
+     * Unique identifier of this [PaymentConsent]
+     */
+    val paymentConsentId: String? = null
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
 
     class Builder(
@@ -32,9 +37,14 @@ data class ConfirmPaymentIntentParams internal constructor(
         private var paymentMethodType: AvaliablePaymentMethodType = AvaliablePaymentMethodType.WECHAT
         private var customerId: String? = null
         private var paymentMethodReference: PaymentMethodReference? = null
+        private var paymentConsentId: String? = null
 
         fun setCustomerId(customerId: String?): Builder = apply {
             this.customerId = customerId
+        }
+
+        fun setPaymentConsentId(paymentConsentId: String?): Builder = apply {
+            this.paymentConsentId = paymentConsentId
         }
 
         fun setPaymentMethod(
@@ -72,7 +82,8 @@ data class ConfirmPaymentIntentParams internal constructor(
             paymentMethodType: AvaliablePaymentMethodType,
             paymentIntentId: String,
             clientSecret: String,
-            customerId: String? = null
+            customerId: String? = null,
+            paymentConsentId: String? = null
         ): ConfirmPaymentIntentParams {
             return Builder(
                 paymentIntentId = paymentIntentId,
@@ -80,6 +91,7 @@ data class ConfirmPaymentIntentParams internal constructor(
             )
                 .setCustomerId(customerId)
                 .setPaymentMethod(paymentMethodType)
+                .setPaymentConsentId(paymentConsentId)
                 .build()
         }
 
@@ -93,9 +105,10 @@ data class ConfirmPaymentIntentParams internal constructor(
         fun createWeChatParams(
             paymentIntentId: String,
             clientSecret: String,
-            customerId: String? = null
+            customerId: String? = null,
+            paymentConsentId: String? = null
         ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.WECHAT, paymentIntentId, clientSecret, customerId)
+            return createThirdPartPayParams(AvaliablePaymentMethodType.WECHAT, paymentIntentId, clientSecret, customerId, paymentConsentId)
         }
 
         /**
@@ -123,9 +136,10 @@ data class ConfirmPaymentIntentParams internal constructor(
         fun createAlipayHKParams(
             paymentIntentId: String,
             clientSecret: String,
-            customerId: String? = null
+            customerId: String? = null,
+            paymentConsentId: String? = null
         ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.ALIPAY_HK, paymentIntentId, clientSecret, customerId)
+            return createThirdPartPayParams(AvaliablePaymentMethodType.ALIPAY_HK, paymentIntentId, clientSecret, customerId, paymentConsentId)
         }
 
         /**
@@ -138,9 +152,10 @@ data class ConfirmPaymentIntentParams internal constructor(
         fun createDanaParams(
             paymentIntentId: String,
             clientSecret: String,
-            customerId: String? = null
+            customerId: String? = null,
+            paymentConsentId: String? = null
         ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.DANA, paymentIntentId, clientSecret, customerId)
+            return createThirdPartPayParams(AvaliablePaymentMethodType.DANA, paymentIntentId, clientSecret, customerId, paymentConsentId)
         }
 
         /**
@@ -153,9 +168,10 @@ data class ConfirmPaymentIntentParams internal constructor(
         fun createGCashParams(
             paymentIntentId: String,
             clientSecret: String,
-            customerId: String? = null
+            customerId: String? = null,
+            paymentConsentId: String? = null
         ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.GCASH, paymentIntentId, clientSecret, customerId)
+            return createThirdPartPayParams(AvaliablePaymentMethodType.GCASH, paymentIntentId, clientSecret, customerId, paymentConsentId)
         }
 
         /**
@@ -168,9 +184,10 @@ data class ConfirmPaymentIntentParams internal constructor(
         fun createKakaoParams(
             paymentIntentId: String,
             clientSecret: String,
-            customerId: String? = null
+            customerId: String? = null,
+            paymentConsentId: String? = null
         ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.KAKAO, paymentIntentId, clientSecret, customerId)
+            return createThirdPartPayParams(AvaliablePaymentMethodType.KAKAO, paymentIntentId, clientSecret, customerId, paymentConsentId)
         }
 
         /**
@@ -183,9 +200,10 @@ data class ConfirmPaymentIntentParams internal constructor(
         fun createTngParams(
             paymentIntentId: String,
             clientSecret: String,
-            customerId: String? = null
+            customerId: String? = null,
+            paymentConsentId: String? = null
         ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.TNG, paymentIntentId, clientSecret, customerId)
+            return createThirdPartPayParams(AvaliablePaymentMethodType.TNG, paymentIntentId, clientSecret, customerId, paymentConsentId)
         }
 
         /**

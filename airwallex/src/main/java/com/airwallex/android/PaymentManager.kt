@@ -219,6 +219,7 @@ internal interface PaymentManager {
                 )
                 .setCustomerId(params.customerId)
                 .setDevice(device)
+                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -267,6 +268,7 @@ internal interface PaymentManager {
                 )
                 .setCustomerId(params.customerId)
                 .setDevice(device)
+                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -291,6 +293,7 @@ internal interface PaymentManager {
                 )
                 .setCustomerId(params.customerId)
                 .setDevice(device)
+                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -315,6 +318,7 @@ internal interface PaymentManager {
                 )
                 .setCustomerId(params.customerId)
                 .setDevice(device)
+                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -339,6 +343,7 @@ internal interface PaymentManager {
                 )
                 .setCustomerId(params.customerId)
                 .setDevice(device)
+                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -363,6 +368,7 @@ internal interface PaymentManager {
                 )
                 .setCustomerId(params.customerId)
                 .setDevice(device)
+                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
