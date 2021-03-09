@@ -14,9 +14,6 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
         <meta-data
-            android:name="com.airwallex.sample.metadata.auth_url"
-            android:value="${AIRWALLEX_AUTH_URL}" />
-        <meta-data
             android:name="com.airwallex.sample.metadata.base_url"
             android:value="${AIRWALLEX_BASE_URL}" />
         <meta-data

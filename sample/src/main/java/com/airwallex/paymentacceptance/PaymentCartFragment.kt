@@ -37,14 +37,6 @@ class PaymentCartFragment : Fragment() {
         Airwallex(this)
     }
 
-    private val authApi: AuthApi
-        get() {
-            if (TextUtils.isEmpty(Settings.authUrl)) {
-                throw IllegalArgumentException("Auth url should not be null or empty")
-            }
-            return ApiFactory(Settings.authUrl).buildRetrofit().create(AuthApi::class.java)
-        }
-
     private val api: Api
         get() {
             if (TextUtils.isEmpty(Settings.baseUrl)) {
@@ -184,7 +176,7 @@ class PaymentCartFragment : Fragment() {
         (activity as? PaymentCartActivity)?.setLoadingProgress(true)
         Settings.token = null
         viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.IO) {
-            val response = authApi.authentication(
+            val response = api.authentication(
                 apiKey = Settings.apiKey,
                 clientId = Settings.clientId
             )
@@ -258,51 +250,6 @@ class PaymentCartFragment : Fragment() {
 //        handlePaymentIntentResponseWithCustomFlow1(paymentIntent)
         // Use the Select Payment Methods Flow & Checkout Detail Flow
 //        handlePaymentIntentResponseWithCustomFlow2(paymentIntent)
-    }
-
-    private fun testPaymentConsent(clientSecret: String, customerId: String) {
-        airwallex.createPaymentConsent(CreatePaymentConsentParams(
-            clientSecret = clientSecret,
-            customerId = customerId,
-            paymentMethodType = PaymentMethodType.ALIPAY_HK
-        ), object : Airwallex.PaymentListener<PaymentConsent> {
-
-            override fun onFailed(exception: Exception) {
-                Log.e(TAG, "Create PaymentConsent failed", exception)
-            }
-
-            override fun onSuccess(response: PaymentConsent) {
-                Log.e(TAG, "Create PaymentConsent succes ${response.id}")
-
-                airwallex.verifyPaymentConsent(VerifyPaymentConsentParams(
-                    clientSecret = clientSecret,
-                    paymentConsentId = response.id,
-                    paymentMethodType = PaymentMethodType.ALIPAY_HK,
-                    returnUrl = "www.baidu.com"
-                ), object : Airwallex.PaymentListener<PaymentConsent> {
-                    override fun onFailed(exception: Exception) {
-                        Log.e(TAG, "Verify PaymentConsent failed", exception)
-                    }
-
-                    override fun onSuccess(response: PaymentConsent) {
-                        Log.e(TAG, "Verify PaymentConsent success ${response.id}")
-
-                        airwallex.retrievePaymentConsent(RetrievePaymentConsentParams(
-                            clientSecret = clientSecret,
-                            paymentConsentId = response.id,
-                        ), object : Airwallex.PaymentListener<PaymentConsent> {
-                            override fun onFailed(exception: Exception) {
-                                Log.e(TAG, "Retrieve PaymentConsent failed", exception)
-                            }
-
-                            override fun onSuccess(response: PaymentConsent) {
-                                Log.e(TAG, "Retrieve PaymentConsent success ${response.id}")
-                            }
-                        })
-                    }
-                })
-            }
-        })
     }
 
     /**

@@ -2,7 +2,6 @@
 
     <string name="authorization">Demo Authorization</string>
     <string name="wechat">WeChat</string>
-    <string name="auth_url">Auth Url</string>
     <string name="base_url">Base Url</string>
     <string name="api_key">Api Key</string>
     <string name="client_id">Client Id</string>
@@ -40,5 +39,5 @@
 
     <string name="sdk_env">SDK Environment</string>
     <string name="sdk_env_id">Environment</string>
-    <string name="sdk_env_note">SDK only supports DEMO and PRODUCTION environment. When you switch Auth URL and Base URL to PRODUCTION environment, you must change the SDK environment to PRODUCTION, then delete the app process, and restart the app to take effect.</string>
+    <string name="sdk_env_note">SDK only supports DEMO and PRODUCTION environment. When you switch Base URL to PRODUCTION environment, you must change the SDK environment to PRODUCTION, then delete the app process, and restart the app to take effect.</string>
 </resources>

@@ -3,10 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply from: "./ktlint.gradle"
 
-def getAuthUrl() {
-    return readProperty('AIRWALLEX_AUTH_URL')
-}
-
 def getBaseUrl() {
     return readProperty('AIRWALLEX_BASE_URL')
 }
@@ -56,7 +52,6 @@ android {
         testInstrumentationRunnerArguments clearPackageData: 'true'
 
         manifestPlaceholders = [
-                AIRWALLEX_AUTH_URL            : getAuthUrl(),
                 AIRWALLEX_BASE_URL            : getBaseUrl(),
                 AIRWALLEX_API_KEY             : getApiKey(),
                 AIRWALLEX_CLIENT_ID           : getClientId(),
