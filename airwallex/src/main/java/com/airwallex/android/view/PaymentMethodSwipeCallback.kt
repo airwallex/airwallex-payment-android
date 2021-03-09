@@ -17,7 +17,7 @@ import kotlin.collections.ArrayList
 @SuppressLint("ClickableViewAccessibility")
 abstract class PaymentMethodSwipeCallback(val context: Context, private val recyclerView: RecyclerView) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
     private var buttons: MutableList<UnderlayButton> = ArrayList()
-    private var swipedPos = -1
+    private var swipedPosition = -1
     private var swipeThreshold = 0.5f
     private val buttonWidth = context.resources.getDimension(R.dimen.swipe_button_width)
 
@@ -38,16 +38,17 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
 
     @SuppressLint("ClickableViewAccessibility")
     private val onTouchListener = OnTouchListener { _, e ->
-        if (swipedPos < 0) return@OnTouchListener false
+        if (swipedPosition < 0) return@OnTouchListener false
         val point = Point(e.rawX.toInt(), e.rawY.toInt())
-        val swipedViewHolder = recyclerView.findViewHolderForAdapterPosition(swipedPos)
-        val swipedItem = swipedViewHolder!!.itemView
+        val swipedViewHolder = recyclerView.findViewHolderForAdapterPosition(swipedPosition)
+            ?: return@OnTouchListener false
+        val swipedItem = swipedViewHolder.itemView
         val rect = Rect()
         swipedItem.getGlobalVisibleRect(rect)
         if (e.action == MotionEvent.ACTION_DOWN || e.action == MotionEvent.ACTION_UP || e.action == MotionEvent.ACTION_MOVE) {
             if (rect.top < point.y && rect.bottom > point.y) gestureDetector.onTouchEvent(e) else {
-                recoverQueue.add(swipedPos)
-                swipedPos = -1
+                recoverQueue.add(swipedPosition)
+                swipedPosition = -1
                 recoverSwipedItem()
             }
         }
@@ -67,9 +68,9 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         val pos = viewHolder.adapterPosition
-        if (swipedPos != pos) recoverQueue.add(swipedPos)
-        swipedPos = pos
-        if (buttonsBuffer.containsKey(swipedPos)) buttons = buttonsBuffer[swipedPos]!! else buttons.clear()
+        if (swipedPosition != pos) recoverQueue.add(swipedPosition)
+        swipedPosition = pos
+        if (buttonsBuffer.containsKey(swipedPosition)) buttons = buttonsBuffer[swipedPosition]!! else buttons.clear()
         buttonsBuffer.clear()
         swipeThreshold = 0.5f * buttons.size * buttonWidth
         recoverSwipedItem()
@@ -92,7 +93,7 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
         var translationX = dX
         val itemView = viewHolder.itemView
         if (pos < 0) {
-            swipedPos = pos
+            swipedPosition = pos
             return
         }
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
@@ -121,9 +122,9 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
         }
     }
 
-    private fun drawButtons(c: Canvas, itemView: View, buffer: List<UnderlayButton>?, pos: Int, dX: Float) {
+    private fun drawButtons(c: Canvas, itemView: View, buffer: List<UnderlayButton>, position: Int, dX: Float) {
         var right = itemView.right.toFloat()
-        val dButtonWidth = -1 * dX / buffer!!.size
+        val dButtonWidth = -1 * dX / buffer.size
         for (button in buffer) {
             val left = right - dButtonWidth
             button.onDraw(
@@ -134,7 +135,7 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
                     right,
                     itemView.bottom.toFloat()
                 ),
-                pos
+                position
             )
             right = left
         }
@@ -146,11 +147,11 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
     }
 
     class UnderlayButton(private val text: String, private val textSize: Int, private val color: Int, private val clickListener: UnderlayButtonClickListener) {
-        private var pos = 0
+        private var position = 0
         private var clickRegion: RectF? = null
         fun onClick(x: Float, y: Float): Boolean {
             if (clickRegion != null && clickRegion!!.contains(x, y)) {
-                clickListener.onClick(pos)
+                clickListener.onClick(position)
                 return true
             }
             return false
@@ -175,7 +176,7 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
             val y = cHeight / 2f + r.height() / 2f - r.bottom
             c.drawText(text, rect.left + x, rect.top + y, p)
             clickRegion = rect
-            this.pos = pos
+            this.position = pos
         }
     }
 
