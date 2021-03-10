@@ -13,5 +13,5 @@ internal data class CreatePaymentMethodParams internal constructor(
     /**
      * The billing info of the [PaymentMethod]
      */
-    val billing: Billing
+    val billing: Billing?
 ) : AbstractPaymentMethodParams(customerId = customerId, clientSecret = clientSecret)
