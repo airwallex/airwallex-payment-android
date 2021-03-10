@@ -45,7 +45,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
                             clientSecret = clientSecret.value,
                             customerId = args.customerId,
                             card = card,
-                            billing = requireNotNull(billingWidget.billing)
+                            billing = billingWidget.billing
                         ),
                         object : Airwallex.PaymentListener<PaymentMethod> {
                             override fun onSuccess(response: PaymentMethod) {
