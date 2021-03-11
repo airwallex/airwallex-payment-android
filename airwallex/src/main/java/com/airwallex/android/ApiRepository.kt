@@ -90,6 +90,13 @@ internal interface ApiRepository {
     ): PaymentConsent?
 
     /**
+     * Disable a PaymentConsent
+     */
+    fun disablePaymentConsent(
+        options: Options
+    ): PaymentConsent?
+
+    /**
      * Retrieve a PaymentConsent
      */
     fun retrievePaymentConsent(

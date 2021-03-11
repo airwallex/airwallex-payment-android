@@ -96,6 +96,13 @@ internal class AirwallexApiRepository : ApiRepository {
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     @Parcelize
+    internal class DisablePaymentConsentOptions internal constructor(
+        override val clientSecret: String,
+        internal val paymentConsentId: String,
+        internal val request: PaymentConsentDisableRequest
+    ) : ApiRepository.Options(clientSecret = clientSecret)
+
+    @Parcelize
     internal class RetrievePaymentConsentOptions internal constructor(
         override val clientSecret: String,
         internal val paymentConsentId: String
@@ -237,6 +244,20 @@ internal class AirwallexApiRepository : ApiRepository {
                 url = verifyPaymentConsentUrl(
                     AirwallexPlugins.environment.baseUrl(),
                     (options as VerifyPaymentConsentOptions).paymentConsentId,
+                ),
+                options = options,
+                params = options.request.toParamMap()
+            ),
+            PaymentConsentParser()
+        )
+    }
+
+    override fun disablePaymentConsent(options: ApiRepository.Options): PaymentConsent? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createGet(
+                url = disablePaymentConsentUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as DisablePaymentConsentOptions).paymentConsentId
                 ),
                 options = options,
                 params = options.request.toParamMap()
@@ -435,6 +456,17 @@ internal class AirwallexApiRepository : ApiRepository {
             return getApiUrl(
                 baseUrl,
                 "payment_consents/%s/verify",
+                paymentConsentId
+            )
+        }
+
+        /**
+         *  `/api/v1/pa/payment_consents/{id}/disable`
+         */
+        internal fun disablePaymentConsentUrl(baseUrl: String, paymentConsentId: String): String {
+            return getApiUrl(
+                baseUrl,
+                "payment_consents/%s/disable",
                 paymentConsentId
             )
         }

@@ -132,6 +132,17 @@ internal interface PaymentManager {
     )
 
     /**
+     * Disable [PaymentConsent] using [ApiRepository.Options]
+     *
+     * @param options contains the retrieve [PaymentConsent] params
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    fun disablePaymentConsent(
+        options: ApiRepository.Options,
+        listener: PaymentListener<PaymentConsent>
+    )
+
+    /**
      * Retrieve [PaymentConsent] using [ApiRepository.Options]
      *
      * @param options contains the retrieve [PaymentConsent] params

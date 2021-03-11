@@ -1,9 +1,6 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.airwallex.android.model.parser.DeviceParser
-import com.airwallex.android.model.parser.PaymentMethodOptionsParser
-import com.airwallex.android.model.parser.PaymentMethodReferenceParser
 import kotlinx.android.parcel.Parcelize
 
 /**
