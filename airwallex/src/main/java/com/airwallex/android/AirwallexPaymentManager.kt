@@ -320,6 +320,20 @@ internal class AirwallexPaymentManager(
         }
     }
 
+    override fun disablePaymentConsent(options: ApiRepository.Options, listener: PaymentListener<PaymentConsent>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.disablePaymentConsent(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
+    }
+
     override fun retrievePaymentConsent(options: ApiRepository.Options, listener: PaymentListener<PaymentConsent>) {
         CoroutineScope(Dispatchers.IO).launch {
             val result = runCatching {

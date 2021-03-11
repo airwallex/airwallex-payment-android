@@ -2,6 +2,7 @@ package com.airwallex.android.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import java.math.BigDecimal
 
 /**
  * Params for create a [PaymentConsent]
@@ -57,17 +58,12 @@ data class PaymentConsentVerifyRequest internal constructor(
         val alipayhk: AliPayVerificationOptions? = null,
 
         /**
-         * Bcash information for verifying PaymentConsent. flow can only be mweb
-         */
-        val bkash: AliPayVerificationOptions? = null,
-
-        /**
          * Card information for verifying PaymentConsent
          */
         val card: CardVerificationOptions? = null,
 
         /**
-         * Dana information for verifying PaymentConsent. flow can be one of webqr, mweb
+         * Dana information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
          */
         val dana: AliPayVerificationOptions? = null,
 
@@ -85,22 +81,15 @@ data class PaymentConsentVerifyRequest internal constructor(
          * Tng information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
          */
         val tng: AliPayVerificationOptions? = null,
-
-        /**
-         * Truemoney information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
-         */
-        val truemoney: AliPayVerificationOptions? = null,
     ) : AirwallexRequestModel, Parcelable {
 
         private companion object {
             private const val FIELD_ALIPAY_HK = "alipayhk"
-            private const val FIELD_BKASH = "bkash"
             private const val FIELD_CARD = "card"
             private const val FIELD_DANA = "dana"
             private const val FIELD_GCASH = "gcash"
             private const val FIELD_KAKAOPAY = "kakaopay"
             private const val FIELD_TNG = "tng"
-            private const val FIELD_TRUE_MONEY = "truemoney"
         }
 
         override fun toParamMap(): Map<String, Any> {
@@ -108,11 +97,6 @@ data class PaymentConsentVerifyRequest internal constructor(
                 .plus(
                     alipayhk?.let {
                         mapOf(FIELD_ALIPAY_HK to it.toParamMap())
-                    }.orEmpty()
-                )
-                .plus(
-                    bkash?.let {
-                        mapOf(FIELD_BKASH to it.toParamMap())
                     }.orEmpty()
                 )
                 .plus(
@@ -138,11 +122,6 @@ data class PaymentConsentVerifyRequest internal constructor(
                 .plus(
                     tng?.let {
                         mapOf(FIELD_TNG to it.toParamMap())
-                    }.orEmpty()
-                )
-                .plus(
-                    truemoney?.let {
-                        mapOf(FIELD_TRUE_MONEY to it.toParamMap())
                     }.orEmpty()
                 )
         }
@@ -187,7 +166,7 @@ data class PaymentConsentVerifyRequest internal constructor(
         /**
          * The alternative amount of verification if zero amount is not acceptable for the provider. The transaction of this amount should be reverted once the verification process finished. Must be greater than 0.
          */
-        val amount: String? = null,
+        val amount: BigDecimal? = null,
 
         /**
          * Currency of the initial PaymentIntent to verify the PaymentConsent. Three-letter ISO currency code. Must be a supported currency

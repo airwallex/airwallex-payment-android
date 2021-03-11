@@ -222,11 +222,39 @@ class Airwallex internal constructor(
         params: CreatePaymentConsentParams,
         listener: PaymentListener<PaymentConsent>
     ) {
-        val availablePaymentMethodTypes = listOf(PaymentMethodType.ALIPAY_HK, PaymentMethodType.KAKAOPAY, PaymentMethodType.GCASH, PaymentMethodType.DANA, PaymentMethodType.TNG)
+        val availablePaymentMethodTypes = listOf(
+            PaymentMethodType.CARD,
+            PaymentMethodType.GCASH,
+            PaymentMethodType.TNG,
+            PaymentMethodType.KAKAOPAY,
+            PaymentMethodType.DANA,
+            PaymentMethodType.ALIPAY_HK
+        )
         if (!availablePaymentMethodTypes.contains(params.paymentMethodType)) {
             listener.onFailed(Exception("Not support payment method ${params.paymentMethodType}"))
             return
         }
+
+        if (params.paymentMethodType != PaymentMethodType.CARD && params.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER) {
+            listener.onFailed(Exception("next_triggered_by must be merchant with ${params.paymentMethodType}"))
+            return
+        }
+
+        when (params.nextTriggeredBy) {
+            PaymentConsent.NextTriggeredBy.MERCHANT -> {
+                if (params.requiresCvc) {
+                    listener.onFailed(Exception("requires_cvc can only be set to true when next_triggered_by is customer"))
+                    return
+                }
+            }
+            PaymentConsent.NextTriggeredBy.CUSTOMER -> {
+                if (params.merchantTriggerReason == PaymentConsent.MerchantTriggerReason.SCHEDULED) {
+                    listener.onFailed(Exception("merchant_trigger_reason can only be set to scheduled when next_triggered_by is merchant"))
+                    return
+                }
+            }
+        }
+
         paymentManager.createPaymentConsent(
             AirwallexApiRepository.CreatePaymentConsentOptions(
                 clientSecret = params.clientSecret,
@@ -235,10 +263,13 @@ class Airwallex internal constructor(
                     .setCustomerId(params.customerId)
                     .setPaymentMethod(
                         PaymentMethod(
+                            id = params.paymentMethodId,
                             type = params.paymentMethodType
                         )
                     )
-                    .setNextTriggeredBy(PaymentConsent.NextTriggeredBy.MERCHANT)
+                    .setNextTriggeredBy(params.nextTriggeredBy)
+                    .setMerchantTriggerReason(params.merchantTriggerReason)
+                    .setRequiresCvc(params.requiresCvc)
                     .build()
             ),
             listener
@@ -255,12 +286,63 @@ class Airwallex internal constructor(
         params: VerifyPaymentConsentParams,
         listener: PaymentListener<PaymentConsent>
     ) {
+        val availablePaymentMethodTypes = listOf(
+            PaymentMethodType.CARD,
+            PaymentMethodType.GCASH,
+            PaymentMethodType.TNG,
+            PaymentMethodType.KAKAOPAY,
+            PaymentMethodType.DANA,
+            PaymentMethodType.ALIPAY_HK
+        )
+        if (!availablePaymentMethodTypes.contains(params.paymentMethodType)) {
+            listener.onFailed(Exception("Not support payment method ${params.paymentMethodType}"))
+            return
+        }
+
         val verificationOptions = when (params.paymentMethodType) {
-            PaymentMethodType.ALIPAY_HK -> PaymentConsentVerifyRequest.VerificationOptions(alipayhk = PaymentConsentVerifyRequest.AliPayVerificationOptions(flow = ThirdPartPayRequestFlow.IN_APP, osType = "android"))
-            PaymentMethodType.DANA -> PaymentConsentVerifyRequest.VerificationOptions(dana = PaymentConsentVerifyRequest.AliPayVerificationOptions(flow = ThirdPartPayRequestFlow.IN_APP, osType = "android"))
-            PaymentMethodType.GCASH -> PaymentConsentVerifyRequest.VerificationOptions(gcash = PaymentConsentVerifyRequest.AliPayVerificationOptions(flow = ThirdPartPayRequestFlow.IN_APP, osType = "android"))
-            PaymentMethodType.KAKAOPAY -> PaymentConsentVerifyRequest.VerificationOptions(kakaopay = PaymentConsentVerifyRequest.AliPayVerificationOptions(flow = ThirdPartPayRequestFlow.IN_APP, osType = "android"))
-            PaymentMethodType.TNG -> PaymentConsentVerifyRequest.VerificationOptions(tng = PaymentConsentVerifyRequest.AliPayVerificationOptions(flow = ThirdPartPayRequestFlow.IN_APP, osType = "android"))
+            PaymentMethodType.CARD ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    card = PaymentConsentVerifyRequest.CardVerificationOptions(
+                        amount = params.amount,
+                        currency = params.currency,
+                        cvc = params.cvc
+                    )
+                )
+            PaymentMethodType.ALIPAY_HK ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    alipayhk = PaymentConsentVerifyRequest.AliPayVerificationOptions(
+                        flow = ThirdPartPayRequestFlow.IN_APP,
+                        osType = "android"
+                    )
+                )
+            PaymentMethodType.DANA ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    dana = PaymentConsentVerifyRequest.AliPayVerificationOptions(
+                        flow = ThirdPartPayRequestFlow.IN_APP,
+                        osType = "android"
+                    )
+                )
+            PaymentMethodType.GCASH ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    gcash = PaymentConsentVerifyRequest.AliPayVerificationOptions(
+                        flow = ThirdPartPayRequestFlow.IN_APP,
+                        osType = "android"
+                    )
+                )
+            PaymentMethodType.KAKAOPAY ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    kakaopay = PaymentConsentVerifyRequest.AliPayVerificationOptions(
+                        flow = ThirdPartPayRequestFlow.IN_APP,
+                        osType = "android"
+                    )
+                )
+            PaymentMethodType.TNG ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    tng = PaymentConsentVerifyRequest.AliPayVerificationOptions(
+                        flow = ThirdPartPayRequestFlow.IN_APP,
+                        osType = "android"
+                    )
+                )
             else -> null
         }
         paymentManager.verifyPaymentConsent(
@@ -270,6 +352,28 @@ class Airwallex internal constructor(
                 request = PaymentConsentVerifyRequest.Builder()
                     .setRequestId(UUID.randomUUID().toString())
                     .setVerificationOptions(verificationOptions)
+                    .build()
+            ),
+            listener
+        )
+    }
+
+    /**
+     * Disable a [PaymentConsent] by ID
+     *
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    @UiThread
+    fun disablePaymentConsent(
+        params: DisablePaymentConsentParams,
+        listener: PaymentListener<PaymentConsent>
+    ) {
+        paymentManager.disablePaymentConsent(
+            AirwallexApiRepository.DisablePaymentConsentOptions(
+                clientSecret = params.clientSecret,
+                paymentConsentId = params.paymentConsentId,
+                request = PaymentConsentDisableRequest.Builder()
+                    .setRequestId(UUID.randomUUID().toString())
                     .build()
             ),
             listener
