@@ -17,6 +17,8 @@ internal object ThreeDSecureManager {
     // Just for staging test, should be optional later.
     const val THREE_DS_RETURN_URL = "https://www.airwallex.com"
 
+    private const val TAG = "ThreeDSecure"
+
     /**
      * Configure Cardinal Mobile SDK
      */
@@ -48,7 +50,7 @@ internal object ThreeDSecureManager {
         completion: (consumerSessionId: String?, validateResponse: ValidateResponse?) -> Unit
     ) {
         configureCardinal(applicationContext)
-
+        Logger.debug(TAG, "Start initialize ")
         // Setup the Initial Call to Cardinal
         Cardinal.getInstance().init(
             serverJwt,
@@ -60,7 +62,7 @@ internal object ThreeDSecureManager {
                  * their order before CCA is ready.
                  */
                 override fun onSetupCompleted(consumerSessionId: String) {
-                    Logger.debug("onSetupCompleted $consumerSessionId")
+                    Logger.debug(TAG, "onSetupCompleted $consumerSessionId")
                     completion.invoke(consumerSessionId, null)
                 }
 
@@ -71,7 +73,7 @@ internal object ThreeDSecureManager {
                  * @param serverJWT will be an empty
                  */
                 override fun onValidated(validateResponse: ValidateResponse, serverJWT: String?) {
-                    Logger.debug("onValidated")
+                    Logger.debug(TAG, "onValidated")
                     completion.invoke(null, validateResponse)
                 }
             }

@@ -49,7 +49,7 @@ internal class AirwallexSecurityConnector : SecurityConnector {
      */
     private fun doProfile(paymentIntentId: String, securityTokenListener: SecurityTokenListener) {
         val fraudSessionId = "$paymentIntentId${System.currentTimeMillis()}"
-        var sessionID = "${BuildConfig.DEVICE_FINGERPRINT_MERCHANT_ID}$fraudSessionId"
+        val sessionID = "${BuildConfig.DEVICE_FINGERPRINT_MERCHANT_ID}$fraudSessionId"
         val options = ProfilingOptions().setSessionID(sessionID)
         // Fire off the profiling request.
         profilingHandle = TrustDefender.getInstance().doProfileRequest(options) { result ->
@@ -57,14 +57,11 @@ internal class AirwallexSecurityConnector : SecurityConnector {
                 TAG,
                 "Session id: ${result.sessionID}, Session status: ${result.status}"
             )
-            if (result.sessionID != null) {
-                sessionID = result.sessionID
-            }
-
             profilingHandle?.cancel()
             profilingHandle = null
-            securityTokenListener.onResponse(sessionID)
         }
+        Logger.debug(TAG, "Response sessionID $sessionID")
+        securityTokenListener.onResponse(sessionID)
     }
 
     companion object {
