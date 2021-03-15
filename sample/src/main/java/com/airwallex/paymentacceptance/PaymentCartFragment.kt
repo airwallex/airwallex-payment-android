@@ -228,8 +228,7 @@ class PaymentCartFragment : Fragment() {
                     "customer_id" to customerId,
                     "descriptor" to "Airwallex - T-sh  irt",
                     "metadata" to mapOf("id" to 1),
-                    // The HTTP request method that you should use. After the shopper completes the payment, they will be redirected back to your returnURL using the same method.
-                    // "return_url" to Airwallex.REDIRECT_RESULT_SCHEME + context?.packageName,
+                    "return_url" to "airwallexcheckout://${context?.packageName}",
                 )
             )
             withContext(Dispatchers.Main) {

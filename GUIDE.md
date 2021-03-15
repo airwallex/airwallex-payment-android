@@ -16,8 +16,7 @@ Our demo application is available open source on [Github](https://github.com/air
     * [Airwallex Native UI](#airwallex-native-ui)
 * [Before you start](#before-you-start)
     * [Step1: Set up SDK](#step1-set-up-sdk)
-    * [Step 2: Configuration and preparation](#step-2-configuration-and-preparation)
-    * [Next Step](#next-step)
+    * [Step2: Configuration and preparation](#step-2-configuration-and-preparation)
 * [Native UI integration](#native-ui-integration)
     * [Edit Shipping Info](#edit-shipping-info)
     * [Select PaymentMethod](#select-paymentmethod)
@@ -25,10 +24,10 @@ Our demo application is available open source on [Github](https://github.com/air
     * [Confirm PaymentIntent](#confirm-paymentintent)
     * [Entire Payment Flow](#entire-payment-flow)
     * [Custom Theme](#custom-theme)
-* [Set up payment methods](#set-up-payment-methods)
+* [Integrate payment flow with payment methods](#integrate-payment-flow-with-payment-methods)
     * [Cards](#cards)
     * [Alipay, AlipayHK, DANA, GCash, Kakao Pay, Touch ‘n Go](#alipay-alipayhk-dana-gcash-kakao-pay-touch-n-go)
-    * [WeChat Pay](#wechat-pay)
+    * [WeChat](#wechat)
 * [SDK Example](#sdk-example)
 * [Test Card Numbers](#test-card-numbers)
 * [Contributing](#Contributing)
@@ -85,8 +84,11 @@ repositories {
 ```
 
 ### Step 2: Configuration and preparation
-After setting up the SDK, you are also required to config your SDK. Before using Airwallex SDK to confirm payment intents and complete the payments, you shall create payment intents in your own server, to make sure you obtained order information in your own system.
+After setting up the SDK, you are required to config your SDK with () parameters. Before using Airwallex SDK to confirm payment intents and complete the payments, you shall create payment intents in your own server, to make sure you maintain information in your own system.
 
+- Configuration the SDK
+
+We provide some parameters that can be used to debug the SDK, better to be called in Application
 ```groovy
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
@@ -96,30 +98,29 @@ After setting up the SDK, you are also required to config your SDK. Before using
     )
 ```
 
-- Create Payment Intent (On Merchant's server)
+- Create Payment Intent by calling Airwallex API (in your own server)
 
-Before confirming the `PaymentIntent`, the merchant must create a `PaymentIntent` on the server and pass it to the client.
+Before confirming the `PaymentIntent`, You must create a `PaymentIntent` in your server and pass it to the shopper.
 
-> Follow these steps to create a PaymentIntent in Merchat's server
->1. To begin you will need to obtain an access token to allow you to reach all other API endpoints. Using your unique Client ID and API key (these can be generated within [Account settings > API keys](https://www.airwallex.com/app/settings/api)) you can call the Authentication API endpoint. On success, an access token will be granted.
+> Follow these steps to create a PaymentIntent in your own server
+>1. Before you begin, you will need to obtain an access token to allow you to reach Airwallex API endpoints. Using your unique Client ID and API key (these can be generated within [Account settings > API keys](https://www.airwallex.com/app/settings/api)) you can call the Authentication API endpoint. On success, an access token will be granted.
 >
->2. Create customer(optional) allows you to save your customers' details, attach payment methods so you can quickly retrieve the supported payment methods as your customer checks out on your shopping site. [`/api/v1/pa/customers/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Customers/_api_v1_pa_customers_create/post)
+>2. Create customer(optional) allows you to save your customers’ details, attach payment methods so you can quickly retrieve the supported payment methods as your customer checks out on your shopping site. [`/api/v1/pa/customers/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Customers/_api_v1_pa_customers_create/post)
 >
->3. Finally, you need to create a `PaymentIntent` object on your own server via [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post) and pass it to your client
+>3. At last, you need to create a `PaymentIntent` object on your own server via [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post) and pass it to your shopper
 
-### Next Step
+- After creating the payment intent, you can use Airwallex SDK to confirm payment intent and enable the shopper to complete the payment with selected payment methods 
 
-- We provide [`native screens`](#native-ui-integration) to facilitate the integration of payment functions.
-- You can start payment flow with a [`payment method`](#set-up-payment-methods)
-- You can also try the [`example`](#sdk-example) that we have provided
+Next Step:
+- Integrate with Airwallex Native UI to present the payment flow to the shopper. If you don’t want to use the prebuilt UI, you can choose to use your own UI page instead. 
+- Integrate with different payment flows for different payment methods you want to support. 
 
 ## Native UI integration
 We provide native screens to facilitate the integration of payment functions.
-The merchant can use these individually, or take all of the prebuilt UI in one flow by following the Integration guide.
+You can use these individually, or take all of the prebuilt UI in one flow by following the Integration guide.
 
 ### Edit Shipping Info
-Customize the usage of shipping info. The merchant can call the `presentShippingFlow` method to use the shipping screen in the SDK. `shipping` parameter is optional. After successfully saving, it will return a shipping object
-
+Use `presentShippingFlow` to allow users to provide a shipping address as well as select a shipping method. `shipping` parameter is optional.
 ```kotlin
     airwallex.presentShippingFlow(shipping,
         object : Airwallex.PaymentShippingListener {
@@ -134,7 +135,7 @@ Customize the usage of shipping info. The merchant can call the `presentShipping
 ```
 
 ### Select PaymentMethod
-Customize the usage of select one of payment methods. The merchant can call the `presentSelectPaymentMethodFlow` method to use the PaymentMethod screen in the SDK, and needs to pass in a PaymentIntent and ClientSecretProvider object. It will display all the saved payment methods of the current customer, the shopper can choose any one to pay.
+Use `presentSelectPaymentMethodFlow` to display the customer’s payment methods and allow them to select one or add new ones. Needs to pass in a `PaymentIntent` and `ClientSecretProvider` object
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
@@ -152,12 +153,12 @@ Customize the usage of select one of payment methods. The merchant can call the 
 ```
 
 ### Create PaymentMethod
-Customize the usage of card creation. The shopper can enter a credit card number, expiration time and cvc to create a payment method. The merchant needs to pass in a `paymentIntent` and `ClientSecretProvider` object.
+Use `presentAddPaymentMethodFlow` to collect card details from your customer. Needs to pass in a `PaymentIntent` and `ClientSecretProvider` object
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
     }
-    airwallex.presentAddPaymentMethodFlow(paymentIntent,
+    airwallex.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider,
         object : Airwallex.AddPaymentMethodListener {
             override fun onSuccess(paymentMethod: PaymentMethod, cvc: String) {
                 Log.d(TAG, "Create PaymentMethod success")
@@ -170,7 +171,7 @@ Customize the usage of card creation. The shopper can enter a credit card number
 ```
 
 ### Confirm PaymentIntent
-Customize the usage of payment details. The merchant needs to pass in a `PaymentIntent` object and a `PaymentMethod` object. It will display the current payment amount has been paid, encapsulated the specific operation of payment, will return the `PaymentIntent` or `Exception` through the callback method
+Use `presentPaymentDetailFlow` to confirm a payment intent. Needs to pass in a `PaymentIntent` and `PaymentMethod` object
 ```kotlin
     airwallex.presentPaymentDetailFlow(paymentIntent, paymentMethod,
         object : Airwallex.PaymentIntentListener {
@@ -189,8 +190,7 @@ Customize the usage of payment details. The merchant needs to pass in a `Payment
 ```
 
 ### Entire Payment Flow
-Show the entire Payment Flow. Need to pass in a `PaymentIntent` object. The shopper can complete the entire payment process by calling this method, will return the `PaymentIntent` or `Exception`  through the callback method
-
+Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `PaymentIntent` and `ClientSecretProvider` object
 ```kotlin
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
@@ -224,7 +224,7 @@ The merchant can overwrite these color values in your app. https://developer.and
     <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
 ```
 
-## Set up payment methods
+## Integrate payment flow with payment methods
 
 PaymentMethod objects represent your customer's payment instruments. They can be used with PaymentIntents to complete payments.
 
@@ -233,13 +233,13 @@ We support [`Cards`](#cards), [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DA
 And we will display the available payment methods based on the shopper's current currency. The additional implementation effort for offering a new payment method depends on your type of integration.
 
 ### Cards
-1. Initializes an `Airwallex` object, it's the Entry-point of the Airwallex SDK.
+1. Initializes an `Airwallex` object, it's the entry-point of the Airwallex SDK.
 
 ```kotlin
     val airwallex = Airwallex(this)
 ```
 
-2. Then you can call the `confirmPaymentIntent` method
+2. To confirm the payment intent, you need to call the `confirmPaymentIntent` method. 
 ```kotlin
     val listener = object : Airwallex.PaymentListener<PaymentIntent> {
         override fun onSuccess(response: PaymentIntent) {
@@ -260,6 +260,7 @@ And we will display the available payment methods based on the shopper's current
     airwallex.confirmPaymentIntent(params, listener)
 ```
 
+And in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
 ```kotlin
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -268,8 +269,9 @@ And we will display the available payment methods based on the shopper's current
         airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
+3. After successfully confirming the payment intent, you can prompt the shopper with the result of confirm PaymentIntent
 
-3. After successfully `Cards` payment, the Airwallex server will notify the Merchant, then you can make sure if the `PaymentIntent` is successful by calling the `retrievePaymentIntent` method and checking the `status` of the response.
+4. To obtain the payment result, you need to call the `retrievePaymentIntent` method and check the payment status for result 
 ```kotlin
     airwallex.retrievePaymentIntent(
         params = RetrievePaymentIntentParams(
@@ -290,19 +292,18 @@ And we will display the available payment methods based on the shopper's current
 ```
 
 ### Alipay, AlipayHK, DANA, GCash, Kakao Pay, Touch ‘n Go
-1. Initializes an `Airwallex` object, it's the Entry-point of the Airwallex SDK.
+1. Initializes an `Airwallex` object, it's the entry-point of the Airwallex SDK.
 
 ```kotlin
     val airwallex = Airwallex(this)
 ```
 
-2. pass in `returnUrl` when creating `PaymentIntent`, so that you can jump back to the merchant app after successful payment
+2. Pass in `returnUrl` when creating `PaymentIntent`. After the shopper completes the payment, they will be redirected back to your `return_url`.
 ```kotlin
     api.createPaymentIntent(
         mutableMapOf(
             
-            // The HTTP request method that you should use. After the shopper completes the payment, they will be redirected back to your returnURL using the same method.
-            "return_url" to "airwallexcheckout://$packageName"
+            "return_url" to "checkoutRedirectScheme://your.package.name"
         )
     )
 ```
@@ -310,19 +311,15 @@ Add below info in the Activity that needs to be jumped back to.
 ```xml
     <activity android:name="...">
         <intent-filter>
-            <action android:name="android.intent.action.VIEW" />
-
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
 
             <data
                 android:host="${applicationId}"
-                android:scheme="airwallexcheckout" />
+                android:scheme="${checkoutRedirectScheme}" />
         </intent-filter>
     </activity>
 ```
 
-3. Then you can call the `confirmPaymentIntent` method
+3. To confirm the payment intent, you need to call the confirmPaymentIntent method. The latter part of PaymentMethodType.ALIPAYCN can be replaced by ALIPAY_HK, DANA, GCASH, KAKAOPAY, TNG. The middle part of creatAlipayParams could be replaced by AlipayHK, Dana, GCash, Kakao, Tng, if you want to integrate with other payment methods.
 ```kotlin
     val params = when (requireNotNull(paymentMethod.type)) {
         PaymentMethodType.ALIPAY_CN -> {
@@ -371,6 +368,7 @@ Add below info in the Activity that needs to be jumped back to.
     airwallex.confirmPaymentIntent(params, listener)
 ```
 
+And in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
 ```kotlin
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -380,7 +378,7 @@ Add below info in the Activity that needs to be jumped back to.
     }
 ```
 
-4. After successfully confirming the `PaymentIntent`, you need to call `handleAction` to redirect to the payment screen. After the payment is completed, it will be redirected to the merchant app.
+4. After successfully confirming the payment intent, you need to call `handleAction` to redirect the shopper to corresponding App . After the payment is completed, the shopper will be redirected to your app.
 ```kotlin
 val listener = object : Airwallex.PaymentListener<PaymentIntent> {
         override fun onSuccess(response: PaymentIntent) {
@@ -398,7 +396,7 @@ val listener = object : Airwallex.PaymentListener<PaymentIntent> {
     }
 ```
 
-5. After successfully payment, the Airwallex server will notify the Merchant, then you can make sure if the `PaymentIntent` is successful by calling the `retrievePaymentIntent` method and checking the `status` of the response.
+5. To obtain the payment result, you need to call the `retrievePaymentIntent` method and check the payment status for result
 ```kotlin
     airwallex.retrievePaymentIntent(
         params = RetrievePaymentIntentParams(
@@ -418,14 +416,16 @@ val listener = object : Airwallex.PaymentListener<PaymentIntent> {
         })
 ```
 
-### WeChat Pay
-1. Initializes an `Airwallex` object, it's the Entry-point of the Airwallex SDK.
+### WeChat
+Your app must be registered [WeChat Open Platform](https://open.weixin.qq.com/). And please contact us and provide appId, partnerId
+
+1. Initializes an `Airwallex` object, it's the entry-point of the Airwallex SDK.
 
 ```kotlin
     val airwallex = Airwallex(this)
 ```
 
-2. Then you can call the `confirmPaymentIntent` method
+2. To confirm the payment intent, you need to call the `confirmPaymentIntent` method.
 ```kotlin
     val listener = object : Airwallex.PaymentListener<PaymentIntent> {
         override fun onSuccess(response: PaymentIntent) {
@@ -444,6 +444,7 @@ val listener = object : Airwallex.PaymentListener<PaymentIntent> {
     airwallex.confirmPaymentIntent(params, listener)
 ```
 
+And in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
 ```kotlin
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -453,8 +454,9 @@ val listener = object : Airwallex.PaymentListener<PaymentIntent> {
     }
 ```
 
-3. After successfully confirming the `PaymentIntent`, Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml) to complete the final payment. Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/tree/master) for more details.
-   
+3. After successfully confirming the payment intent, Airwallex will return all the parameters that are needed for WeChat Pay. You need to call [WeChat Pay SDK](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml) to complete the final payment.
+Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/tree/master) for more details.
+
 ```kotlin
     val weChat = response.weChat
     // `weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml).
@@ -472,7 +474,7 @@ val listener = object : Airwallex.PaymentListener<PaymentIntent> {
     weChatApi.sendReq(weChatReq)
 ```
 
-4. After successfully `WeChat Pay` payment, the Airwallex server will notify the Merchant, then you can make sure if the `PaymentIntent` is successful by calling the `retrievePaymentIntent` method and checking the `status` of the response.
+4. To obtain the payment result, you need to call the `retrievePaymentIntent` method and check the payment status for result
 ```kotlin
     airwallex.retrievePaymentIntent(
         params = RetrievePaymentIntentParams(

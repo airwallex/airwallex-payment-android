@@ -3,7 +3,6 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.text.TextUtils
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
@@ -405,18 +404,7 @@ class Airwallex internal constructor(
         if (TextUtils.isEmpty(redirectUrl)) {
             throw RedirectException(message = "Redirect URL is empty.")
         }
-        val uri = Uri.parse(redirectUrl)
-        val params = uri.queryParameterNames
-        val newUri = uri.buildUpon().clearQuery()
-
-        for (param in params) {
-            if (param == "callback" && uri.getQueryParameter(param) == "null") {
-                newUri.appendQueryParameter(param, REDIRECT_RESULT_SCHEME + activity.packageName)
-            } else {
-                newUri.appendQueryParameter(param, uri.getQueryParameter(param))
-            }
-        }
-        RedirectUtil.makeRedirect(activity = activity, redirectUrl = newUri.build().toString())
+        RedirectUtil.makeRedirect(activity = activity, redirectUrl = redirectUrl!!)
     }
 
     // For the custom flow
@@ -471,6 +459,7 @@ class Airwallex internal constructor(
      * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
      *
      * @param paymentIntent a [PaymentIntent] used to present the Add Payment Method flow
+     * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
      * @param addPaymentMethodFlowListener The callback of present the add payment method flow
      */
     fun presentAddPaymentMethodFlow(
@@ -485,6 +474,7 @@ class Airwallex internal constructor(
      * Launch the [PaymentMethodsActivity] to allow the user to select a payment method or add a new one
      *
      * @param paymentIntent a [PaymentIntent] used to present the Select Payment Method flow
+     * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
      * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
      */
     fun presentSelectPaymentMethodFlow(
@@ -516,6 +506,7 @@ class Airwallex internal constructor(
      * Launch the [PaymentMethodsActivity] to allow the user to complete the entire payment flow
      *
      * @param paymentIntent a [PaymentIntent] used to present the payment flow
+     * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
      * @param paymentFlowListener The callback of present entire payment flow
      */
     fun presentPaymentFlow(
@@ -635,10 +626,5 @@ class Airwallex internal constructor(
         fun initialize(configuration: AirwallexConfiguration) {
             AirwallexPlugins.initialize(configuration)
         }
-
-        /**
-         * This value should be used as `returnUrl` sent on the `/api/v1/pa/payment_intents/create` call.
-         */
-        val REDIRECT_RESULT_SCHEME: String = BuildConfig.CHECKOUT_REDIRECT_SCHEME.toString() + "://"
     }
 }
