@@ -104,6 +104,11 @@ data class PaymentMethod internal constructor(
     override fun toParamMap(): Map<String, Any> {
         return mapOf<String, Any>()
             .plus(
+                id?.let {
+                    mapOf(PaymentMethodParser.FIELD_ID to it)
+                }.orEmpty()
+            )
+            .plus(
                 type?.let {
                     mapOf(PaymentMethodParser.FIELD_TYPE to it.value)
                 }.orEmpty()

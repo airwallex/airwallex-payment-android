@@ -193,6 +193,21 @@ internal interface PaymentManager {
             params: ConfirmPaymentIntentParams,
             threeDSecure: ThreeDSecure
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+
+            val paymentConsentReference: PaymentConsentReference?
+            val paymentMethodReference: PaymentMethodReference?
+
+            if (params.paymentConsentId != null) {
+                paymentConsentReference = PaymentConsentReference.Builder()
+                    .setId(params.paymentConsentId)
+                    .setCvc(params.paymentMethodReference?.cvc)
+                    .build()
+                paymentMethodReference = null
+            } else {
+                paymentConsentReference = null
+                paymentMethodReference = requireNotNull(params.paymentMethodReference)
+            }
+
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
@@ -207,11 +222,14 @@ internal interface PaymentManager {
                 )
                 .setCustomerId(params.customerId)
                 .setDevice(device)
-                .setPaymentMethodReference(requireNotNull(params.paymentMethodReference))
+                .setPaymentMethodReference(paymentMethodReference)
+                .setPaymentConsentReference(paymentConsentReference)
+                .build()
+
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId,
-                request = request.build()
+                request = request
             )
         }
 
@@ -219,18 +237,29 @@ internal interface PaymentManager {
             params: ConfirmPaymentIntentParams,
             device: Device
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+
+            val paymentConsentReference: PaymentConsentReference?
+            val paymentMethod: PaymentMethod?
+
+            if (params.paymentConsentId != null) {
+                paymentConsentReference = PaymentConsentReference.Builder()
+                    .setId(params.paymentConsentId)
+                    .build()
+                paymentMethod = null
+            } else {
+                paymentConsentReference = null
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.WECHAT)
+                    .setWeChatPayRequest(WeChatPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                    .build()
+            }
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
-                .setPaymentMethod(
-                    PaymentMethod.Builder()
-                        .setType(PaymentMethodType.WECHAT)
-                        .setWeChatPayRequest(WeChatPayRequest(ThirdPartPayRequestFlow.IN_APP))
-                        .build()
-                )
+                .setPaymentMethod(paymentMethod)
                 .setCustomerId(params.customerId)
                 .setDevice(device)
-                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
+                .setPaymentConsentReference(paymentConsentReference)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -244,17 +273,29 @@ internal interface PaymentManager {
             params: ConfirmPaymentIntentParams,
             device: Device
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+
+            val paymentConsentReference: PaymentConsentReference?
+            val paymentMethod: PaymentMethod?
+
+            if (params.paymentConsentId != null) {
+                paymentConsentReference = PaymentConsentReference.Builder()
+                    .setId(params.paymentConsentId)
+                    .build()
+                paymentMethod = null
+            } else {
+                paymentConsentReference = null
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.ALIPAY_CN)
+                    .setAliPayCNRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                    .build()
+            }
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
-                .setPaymentMethod(
-                    PaymentMethod.Builder()
-                        .setType(PaymentMethodType.ALIPAY_CN)
-                        .setAliPayCNRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
-                        .build()
-                )
+                .setPaymentMethod(paymentMethod)
                 .setCustomerId(params.customerId)
                 .setDevice(device)
+                .setPaymentConsentReference(paymentConsentReference)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -268,18 +309,29 @@ internal interface PaymentManager {
             params: ConfirmPaymentIntentParams,
             device: Device
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+
+            val paymentConsentReference: PaymentConsentReference?
+            val paymentMethod: PaymentMethod?
+
+            if (params.paymentConsentId != null) {
+                paymentConsentReference = PaymentConsentReference.Builder()
+                    .setId(params.paymentConsentId)
+                    .build()
+                paymentMethod = null
+            } else {
+                paymentConsentReference = null
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.ALIPAY_HK)
+                    .setAliPayHkRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                    .build()
+            }
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
-                .setPaymentMethod(
-                    PaymentMethod.Builder()
-                        .setType(PaymentMethodType.ALIPAY_HK)
-                        .setAliPayHkRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
-                        .build()
-                )
+                .setPaymentMethod(paymentMethod)
                 .setCustomerId(params.customerId)
                 .setDevice(device)
-                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
+                .setPaymentConsentReference(paymentConsentReference)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -293,18 +345,29 @@ internal interface PaymentManager {
             params: ConfirmPaymentIntentParams,
             device: Device
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+
+            val paymentConsentReference: PaymentConsentReference?
+            val paymentMethod: PaymentMethod?
+
+            if (params.paymentConsentId != null) {
+                paymentConsentReference = PaymentConsentReference.Builder()
+                    .setId(params.paymentConsentId)
+                    .build()
+                paymentMethod = null
+            } else {
+                paymentConsentReference = null
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.KAKAOPAY)
+                    .setKakaoPayRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                    .build()
+            }
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
-                .setPaymentMethod(
-                    PaymentMethod.Builder()
-                        .setType(PaymentMethodType.KAKAOPAY)
-                        .setKakaoPayRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
-                        .build()
-                )
+                .setPaymentMethod(paymentMethod)
                 .setCustomerId(params.customerId)
                 .setDevice(device)
-                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
+                .setPaymentConsentReference(paymentConsentReference)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -318,18 +381,29 @@ internal interface PaymentManager {
             params: ConfirmPaymentIntentParams,
             device: Device
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+
+            val paymentConsentReference: PaymentConsentReference?
+            val paymentMethod: PaymentMethod?
+
+            if (params.paymentConsentId != null) {
+                paymentConsentReference = PaymentConsentReference.Builder()
+                    .setId(params.paymentConsentId)
+                    .build()
+                paymentMethod = null
+            } else {
+                paymentConsentReference = null
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.TNG)
+                    .setTngRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                    .build()
+            }
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
-                .setPaymentMethod(
-                    PaymentMethod.Builder()
-                        .setType(PaymentMethodType.TNG)
-                        .setTngRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
-                        .build()
-                )
+                .setPaymentMethod(paymentMethod)
                 .setCustomerId(params.customerId)
                 .setDevice(device)
-                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
+                .setPaymentConsentReference(paymentConsentReference)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -343,18 +417,29 @@ internal interface PaymentManager {
             params: ConfirmPaymentIntentParams,
             device: Device
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+
+            val paymentConsentReference: PaymentConsentReference?
+            val paymentMethod: PaymentMethod?
+
+            if (params.paymentConsentId != null) {
+                paymentConsentReference = PaymentConsentReference.Builder()
+                    .setId(params.paymentConsentId)
+                    .build()
+                paymentMethod = null
+            } else {
+                paymentConsentReference = null
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.DANA)
+                    .setDanaRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                    .build()
+            }
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
-                .setPaymentMethod(
-                    PaymentMethod.Builder()
-                        .setType(PaymentMethodType.DANA)
-                        .setDanaRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
-                        .build()
-                )
+                .setPaymentMethod(paymentMethod)
                 .setCustomerId(params.customerId)
                 .setDevice(device)
-                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
+                .setPaymentConsentReference(paymentConsentReference)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -368,18 +453,29 @@ internal interface PaymentManager {
             params: ConfirmPaymentIntentParams,
             device: Device
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+
+            val paymentConsentReference: PaymentConsentReference?
+            val paymentMethod: PaymentMethod?
+
+            if (params.paymentConsentId != null) {
+                paymentConsentReference = PaymentConsentReference.Builder()
+                    .setId(params.paymentConsentId)
+                    .build()
+                paymentMethod = null
+            } else {
+                paymentConsentReference = null
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.GCASH)
+                    .setGCashRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
+                    .build()
+            }
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
-                .setPaymentMethod(
-                    PaymentMethod.Builder()
-                        .setType(PaymentMethodType.GCASH)
-                        .setGCashRequest(AliPayRequest(ThirdPartPayRequestFlow.IN_APP))
-                        .build()
-                )
+                .setPaymentMethod(paymentMethod)
                 .setCustomerId(params.customerId)
                 .setDevice(device)
-                .setPaymentConsentReference(if (params.paymentConsentId != null) PaymentConsentReference.Builder().setId(params.paymentConsentId).build() else null)
+                .setPaymentConsentReference(paymentConsentReference)
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(

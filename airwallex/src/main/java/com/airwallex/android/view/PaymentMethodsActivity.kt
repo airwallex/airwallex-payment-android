@@ -58,7 +58,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
         paymentMethodsAdapter.listener = object : PaymentMethodsAdapter.Listener {
             override fun onPaymentMethodClick(paymentMethod: PaymentMethod) {
-                startPaymentCheckout(paymentMethod)
+                processPaymentMethod(paymentMethod)
             }
         }
 
@@ -205,7 +205,27 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             )
     }
 
-    private fun startPaymentCheckout(paymentMethod: PaymentMethod, cvc: String? = null) {
+    private fun processPaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
+        setLoadingProgress(true)
+        if (args.recurring) {
+            createAndVerifyPaymentConsent(
+                paymentMethod = paymentMethod,
+                listener = object : Airwallex.PaymentListener<PaymentConsent> {
+                    override fun onFailed(exception: Exception) {
+                        finishWithPaymentMethod(exception = exception)
+                    }
+
+                    override fun onSuccess(response: PaymentConsent) {
+                        handleProcessPaymentMethod(paymentMethod, response, cvc)
+                    }
+                }
+            )
+        } else {
+            handleProcessPaymentMethod(paymentMethod, null, cvc)
+        }
+    }
+
+    private fun handleProcessPaymentMethod(paymentMethod: PaymentMethod, paymentConsent: PaymentConsent?, cvc: String? = null) {
         if (args.includeCheckoutFlow) {
             when (paymentMethod.type) {
                 PaymentMethodType.CARD -> {
@@ -215,6 +235,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                             PaymentCheckoutActivityLaunch.Args.Builder()
                                 .setPaymentIntent(paymentIntent)
                                 .setPaymentMethod(paymentMethod)
+                                .setPaymentConsent(paymentConsent)
                                 .setCvc(cvc)
                                 .build()
                         )
@@ -222,6 +243,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 else -> {
                     confirmPaymentIntent(
                         paymentMethod = paymentMethod,
+                        paymentConsent = paymentConsent,
                         listener = object : Airwallex.PaymentListener<PaymentIntent> {
                             override fun onSuccess(response: PaymentIntent) {
                                 finishWithPaymentIntent(paymentIntent = response)
@@ -235,9 +257,10 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 }
             }
         } else {
-            // Return the `PaymentMethod` & 'cvc' to merchant
+            // Return the `PaymentMethod` & 'PaymentConsent' & 'cvc' to merchant
             finishWithPaymentMethod(
                 paymentMethod = paymentMethod,
+                paymentConsent = paymentConsent,
                 cvc = cvc
             )
         }
@@ -256,7 +279,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     paymentNoCards.visibility =
                         if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
                     rvPaymentMethods.requestLayout()
-                    startPaymentCheckout(it.paymentMethod, it.cvc)
+                    processPaymentMethod(it.paymentMethod, it.cvc)
                 }
             }
             PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
@@ -269,16 +292,21 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun finishWithPaymentMethod(
-        paymentMethod: PaymentMethod,
-        cvc: String?
+        paymentMethod: PaymentMethod? = null,
+        paymentConsent: PaymentConsent? = null,
+        cvc: String? = null,
+        exception: Exception? = null
     ) {
+        setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK,
             Intent().putExtras(
                 PaymentMethodsActivityLaunch.Result(
                     paymentMethod = paymentMethod,
+                    paymentConsent = paymentConsent,
                     cvc = cvc,
-                    includeCheckoutFlow = args.includeCheckoutFlow
+                    includeCheckoutFlow = args.includeCheckoutFlow,
+                    exception = exception
                 ).toBundle()
             )
         )

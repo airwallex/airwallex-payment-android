@@ -11,6 +11,13 @@
             android:entryValues="@array/array_sdk_env"
             android:key="@string/sdk_env_id"
             android:title="@string/sdk_env_id" />
+
+        <ListPreference
+            android:dialogTitle="@string/sdk_support_recurring"
+            android:entries="@array/array_sdk_recurring"
+            android:entryValues="@array/array_sdk_recurring"
+            android:key="@string/sdk_support_recurring"
+            android:title="@string/sdk_support_recurring" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/authorization">

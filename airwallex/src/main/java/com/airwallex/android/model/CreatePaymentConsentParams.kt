@@ -33,4 +33,122 @@ data class CreatePaymentConsentParams constructor(
      * Default: false
      */
     val requiresCvc: Boolean = false
-)
+) {
+
+    class Builder(
+        private val clientSecret: String,
+        private val customerId: String,
+        private val paymentMethodType: PaymentMethodType,
+        private val nextTriggeredBy: PaymentConsent.NextTriggeredBy
+    ) : ObjectBuilder<CreatePaymentConsentParams> {
+
+        private var paymentMethodId: String? = null
+
+        private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+
+        private var requiresCvc: Boolean = false
+
+        fun setPaymentMethodId(paymentMethodId: String?): Builder = apply {
+            this.paymentMethodId = paymentMethodId
+        }
+
+        fun setMerchantTriggerReason(merchantTriggerReason: PaymentConsent.MerchantTriggerReason): Builder = apply {
+            this.merchantTriggerReason = merchantTriggerReason
+        }
+
+        fun setRequiresCvc(requiresCvc: Boolean): Builder = apply {
+            this.requiresCvc = requiresCvc
+        }
+
+        override fun build(): CreatePaymentConsentParams {
+            return CreatePaymentConsentParams(
+                clientSecret = clientSecret,
+                customerId = customerId,
+                paymentMethodId = paymentMethodId,
+                paymentMethodType = paymentMethodType,
+                nextTriggeredBy = nextTriggeredBy,
+                merchantTriggerReason = merchantTriggerReason,
+                requiresCvc = requiresCvc
+            )
+        }
+    }
+
+    companion object {
+
+        fun createCardParams(
+            clientSecret: String,
+            customerId: String,
+            paymentMethodId: String,
+            nextTriggeredBy: PaymentConsent.NextTriggeredBy,
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason,
+            requiresCvc: Boolean
+        ): CreatePaymentConsentParams {
+            return Builder(
+                clientSecret = clientSecret,
+                customerId = customerId,
+                paymentMethodType = PaymentMethodType.CARD,
+                nextTriggeredBy = nextTriggeredBy
+            )
+                .setMerchantTriggerReason(merchantTriggerReason = merchantTriggerReason)
+                .setPaymentMethodId(paymentMethodId)
+                .setRequiresCvc(requiresCvc)
+                .build()
+        }
+
+        fun createGCashParams(
+            clientSecret: String,
+            customerId: String,
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
+        ): CreatePaymentConsentParams {
+            return createThirdPartParams(PaymentMethodType.GCASH, clientSecret, customerId, merchantTriggerReason)
+        }
+
+        fun createTngParams(
+            clientSecret: String,
+            customerId: String,
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
+        ): CreatePaymentConsentParams {
+            return createThirdPartParams(PaymentMethodType.TNG, clientSecret, customerId, merchantTriggerReason)
+        }
+
+        fun createKakaoParams(
+            clientSecret: String,
+            customerId: String,
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
+        ): CreatePaymentConsentParams {
+            return createThirdPartParams(PaymentMethodType.KAKAOPAY, clientSecret, customerId, merchantTriggerReason)
+        }
+
+        fun createDanaParams(
+            clientSecret: String,
+            customerId: String,
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
+        ): CreatePaymentConsentParams {
+            return createThirdPartParams(PaymentMethodType.DANA, clientSecret, customerId, merchantTriggerReason)
+        }
+
+        fun createAlipayHKParams(
+            clientSecret: String,
+            customerId: String,
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
+        ): CreatePaymentConsentParams {
+            return createThirdPartParams(PaymentMethodType.ALIPAY_HK, clientSecret, customerId, merchantTriggerReason)
+        }
+
+        private fun createThirdPartParams(
+            paymentMethodType: PaymentMethodType,
+            clientSecret: String,
+            customerId: String,
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
+        ): CreatePaymentConsentParams {
+            return Builder(
+                clientSecret = clientSecret,
+                customerId = customerId,
+                paymentMethodType = paymentMethodType,
+                nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT
+            )
+                .setMerchantTriggerReason(merchantTriggerReason = merchantTriggerReason)
+                .build()
+        }
+    }
+}

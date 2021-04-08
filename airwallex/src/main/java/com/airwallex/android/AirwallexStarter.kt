@@ -3,10 +3,7 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.model.Shipping
+import com.airwallex.android.model.*
 import com.airwallex.android.view.*
 
 /**
@@ -76,6 +73,7 @@ internal class AirwallexStarter constructor(
     fun presentAddPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
+        recurring: Boolean,
         addPaymentMethodFlowListener: Airwallex.AddPaymentMethodListener
     ) {
         requireNotNull(
@@ -91,6 +89,7 @@ internal class AirwallexStarter constructor(
                 .setShipping(paymentIntent.order?.shipping)
                 .setCustomerId(requireNotNull(paymentIntent.customerId))
                 .setClientSecret(requireNotNull(paymentIntent.clientSecret))
+                .setRecurring(recurring)
                 .build()
         )
     }
@@ -104,6 +103,7 @@ internal class AirwallexStarter constructor(
     fun presentSelectPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
+        recurring: Boolean,
         selectPaymentMethodFlowListener: Airwallex.PaymentMethodListener
     ) {
         requireNotNull(
@@ -118,6 +118,7 @@ internal class AirwallexStarter constructor(
             PaymentMethodsActivityLaunch.Args.Builder()
                 .setPaymentIntent(paymentIntent)
                 .setIncludeCheckoutFlow(false)
+                .setRecurring(recurring)
                 .build()
         )
     }
@@ -127,12 +128,14 @@ internal class AirwallexStarter constructor(
      *
      * @param paymentIntent a [PaymentIntent] used to present the Checkout flow
      * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
+     * @param paymentConsent a [PaymentConsent] used to present the Checkout flow
      * @param cvc CVC of [PaymentMethod], optional
      * @param paymentDetailListener The callback of present the select payment detail flow
      */
     fun presentPaymentDetailFlow(
         paymentIntent: PaymentIntent,
         paymentMethod: PaymentMethod,
+        paymentConsent: PaymentConsent?,
         cvc: String? = null,
         paymentDetailListener: Airwallex.PaymentIntentListener
     ) {
@@ -145,6 +148,7 @@ internal class AirwallexStarter constructor(
             PaymentCheckoutActivityLaunch.Args.Builder()
                 .setPaymentIntent(paymentIntent)
                 .setPaymentMethod(paymentMethod)
+                .setPaymentConsent(paymentConsent)
                 .setCvc(cvc)
                 .build()
         )
@@ -154,11 +158,13 @@ internal class AirwallexStarter constructor(
      * Launch the [PaymentMethodsActivity] to allow the user to complete the entire payment flow
      *
      * @param paymentIntent a [PaymentIntent] used to present the payment flow
+     * @param recurring whether to support recurring, default false
      * @param paymentFlowListener The callback of present entire payment flow
      */
     fun presentPaymentFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
+        recurring: Boolean,
         paymentFlowListener: Airwallex.PaymentIntentListener
     ) {
         requireNotNull(
@@ -173,6 +179,7 @@ internal class AirwallexStarter constructor(
             PaymentMethodsActivityLaunch.Args.Builder()
                 .setPaymentIntent(paymentIntent)
                 .setIncludeCheckoutFlow(true)
+                .setRecurring(recurring)
                 .build()
         )
     }
@@ -227,10 +234,16 @@ internal class AirwallexStarter constructor(
                             }
                             paymentFlowListener = null
                         } else {
-                            selectPaymentMethodFlowListener?.onSuccess(
-                                requireNotNull(result.paymentMethod),
-                                result.cvc
-                            )
+                            val exception = result.exception
+                            if (exception != null) {
+                                selectPaymentMethodFlowListener?.onFailed(exception)
+                            } else {
+                                selectPaymentMethodFlowListener?.onSuccess(
+                                    requireNotNull(result.paymentMethod),
+                                    result.paymentConsent,
+                                    result.cvc
+                                )
+                            }
                             selectPaymentMethodFlowListener = null
                         }
                         true

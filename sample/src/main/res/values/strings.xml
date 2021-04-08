@@ -17,6 +17,7 @@
     <string name="payment_successful">Payment successful</string>
     <string name="payment_successful_message">Your payment has been charged</string>
     <string name="payment_failed">Payment failed</string>
+    <string name="select_payment_failed">Select PaymentMethod failed</string>
     <string name="payment_failed_message">There was an error while processing your payment. Please try again.</string>
     <string name="payment_cancelled">Payment cancelled</string>
     <string name="payment_cancelled_message">User cancel the payment</string>
@@ -40,4 +41,5 @@
     <string name="sdk_env">SDK Environment</string>
     <string name="sdk_env_id">Environment</string>
     <string name="sdk_env_note">SDK only supports DEMO and PRODUCTION environment. When you switch Base URL to PRODUCTION environment, you must change the SDK environment to PRODUCTION, then delete the app process, and restart the app to take effect.</string>
+    <string name="sdk_support_recurring">Recurring</string>
 </resources>

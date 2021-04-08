@@ -63,7 +63,8 @@ data class ConfirmPaymentIntentParams internal constructor(
                 clientSecret = clientSecret,
                 customerId = customerId,
                 paymentMethodReference = paymentMethodReference,
-                paymentMethodType = paymentMethodType
+                paymentMethodType = paymentMethodType,
+                paymentConsentId = paymentConsentId
             )
         }
     }
@@ -121,9 +122,10 @@ data class ConfirmPaymentIntentParams internal constructor(
         fun createAlipayParams(
             paymentIntentId: String,
             clientSecret: String,
-            customerId: String? = null
+            customerId: String? = null,
+            paymentConsentId: String? = null
         ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.ALIPAY_CN, paymentIntentId, clientSecret, customerId)
+            return createThirdPartPayParams(AvaliablePaymentMethodType.ALIPAY_CN, paymentIntentId, clientSecret, customerId, paymentConsentId)
         }
 
         /**
@@ -220,7 +222,8 @@ data class ConfirmPaymentIntentParams internal constructor(
             clientSecret: String,
             paymentMethodId: String,
             cvc: String,
-            customerId: String? = null
+            customerId: String? = null,
+            paymentConsentId: String? = null
         ): ConfirmPaymentIntentParams {
             return Builder(
                 paymentIntentId = paymentIntentId,
@@ -231,6 +234,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                     AvaliablePaymentMethodType.CARD,
                     PaymentMethodReference(paymentMethodId, cvc)
                 )
+                .setPaymentConsentId(paymentConsentId)
                 .build()
         }
     }
