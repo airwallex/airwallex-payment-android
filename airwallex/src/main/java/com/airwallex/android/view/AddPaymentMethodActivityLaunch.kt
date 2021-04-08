@@ -28,13 +28,15 @@ internal class AddPaymentMethodActivityLaunch : AirwallexActivityLaunch<AddPayme
     data class Args internal constructor(
         val shipping: Shipping?,
         val customerId: String,
-        val clientSecret: String
+        val clientSecret: String,
+        val recurring: Boolean
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var customerId: String
             private lateinit var clientSecret: String
             private var shipping: Shipping? = null
+            private var recurring: Boolean = false
 
             fun setShipping(shipping: Shipping?): Builder = apply {
                 this.shipping = shipping
@@ -48,11 +50,16 @@ internal class AddPaymentMethodActivityLaunch : AirwallexActivityLaunch<AddPayme
                 this.clientSecret = clientSecret
             }
 
+            fun setRecurring(recurring: Boolean): Builder = apply {
+                this.recurring = recurring
+            }
+
             override fun build(): Args {
                 return Args(
                     shipping = shipping,
                     customerId = customerId,
-                    clientSecret = clientSecret
+                    clientSecret = clientSecret,
+                    recurring = recurring
                 )
             }
         }

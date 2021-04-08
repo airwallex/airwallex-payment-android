@@ -6,10 +6,8 @@ import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
 import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.model.*
 import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.PaymentMethodType
 import com.airwallex.android.view.PaymentMethodsActivityLaunch.Args
 import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
@@ -31,12 +29,14 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
     @Parcelize
     data class Args internal constructor(
         val paymentIntent: PaymentIntent,
-        val includeCheckoutFlow: Boolean
+        val includeCheckoutFlow: Boolean,
+        val recurring: Boolean
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var paymentIntent: PaymentIntent
             private var includeCheckoutFlow: Boolean = true
+            private var recurring: Boolean = false
 
             fun setPaymentIntent(paymentIntent: PaymentIntent): Builder = apply {
                 this.paymentIntent = paymentIntent
@@ -46,10 +46,15 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
                 this.includeCheckoutFlow = includeCheckoutFlow
             }
 
+            fun setRecurring(recurring: Boolean): Builder = apply {
+                this.recurring = recurring
+            }
+
             override fun build(): Args {
                 return Args(
                     paymentIntent = paymentIntent,
-                    includeCheckoutFlow = includeCheckoutFlow
+                    includeCheckoutFlow = includeCheckoutFlow,
+                    recurring = recurring
                 )
             }
         }
@@ -67,6 +72,7 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
         val paymentMethodType: PaymentMethodType? = null,
         var exception: Exception? = null,
         val paymentMethod: PaymentMethod? = null,
+        val paymentConsent: PaymentConsent? = null,
         val cvc: String? = null,
         val includeCheckoutFlow: Boolean = false
     ) : AirwallexActivityLaunch.Result {
@@ -83,6 +89,7 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
                     paymentMethodType = parcel.readParcelable(PaymentMethodType::class.java.classLoader),
                     exception = parcel.readSerializable() as? AirwallexException?,
                     paymentMethod = parcel.readParcelable(PaymentMethod::class.java.classLoader),
+                    paymentConsent = parcel.readParcelable(PaymentConsent::class.java.classLoader),
                     cvc = parcel.readString(),
                     includeCheckoutFlow = parcel.readInt() == 1
                 )
@@ -93,6 +100,7 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
                 parcel.writeParcelable(paymentMethodType, 0)
                 parcel.writeSerializable(exception)
                 parcel.writeParcelable(paymentMethod, 0)
+                parcel.writeParcelable(paymentConsent, 0)
                 parcel.writeString(cvc)
                 parcel.writeInt(if (includeCheckoutFlow) 1 else 0)
             }

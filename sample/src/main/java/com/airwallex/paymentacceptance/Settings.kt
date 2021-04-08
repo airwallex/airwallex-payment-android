@@ -60,6 +60,22 @@ object Settings {
                 ?: defaultSdkEnv
         }
 
+    val supportRecurring: Boolean
+        get() {
+            return recurring == SampleApplication.instance.resources.getStringArray(R.array.array_sdk_recurring)[1]
+        }
+
+    val recurring: String
+        get() {
+            val defaultRecurring =
+                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_recurring)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.sdk_support_recurring),
+                defaultRecurring
+            )
+                ?: defaultRecurring
+        }
+
     val baseUrl: String
         get() {
             return sharedPreferences.getString(context.getString(R.string.base_url), getMetadata(METADATA_KEY_BASE_URL_KEY))

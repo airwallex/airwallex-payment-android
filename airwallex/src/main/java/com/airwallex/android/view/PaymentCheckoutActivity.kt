@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.airwallex.android.Airwallex
 import com.airwallex.android.CurrencyUtils.formatPrice
 import com.airwallex.android.R
+import com.airwallex.android.model.PaymentConsent
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
@@ -26,6 +27,10 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     private val paymentMethod: PaymentMethod by lazy {
         args.paymentMethod
+    }
+
+    private val paymentConsent: PaymentConsent? by lazy {
+        args.paymentConsent
     }
 
     override val paymentIntent: PaymentIntent by lazy {
@@ -66,6 +71,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     private fun startConfirmPaymentIntent() {
         confirmPaymentIntent(
             paymentMethod = paymentMethod,
+            paymentConsent = paymentConsent,
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     finishWithPaymentIntent(paymentIntent = response)

@@ -4,4 +4,9 @@
         <item>DEMO</item>
         <item>PRODUCTION</item>
     </string-array>
+
+    <string-array name="array_sdk_recurring">
+        <item>No</item>
+        <item>Yes</item>
+    </string-array>
 </resources>

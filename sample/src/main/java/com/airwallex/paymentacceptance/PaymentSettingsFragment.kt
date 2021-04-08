@@ -27,6 +27,12 @@ class PaymentSettingsFragment :
             sdkEnvPref.setValueIndex(0)
         }
 
+        val sdkRecurringPref: ListPreference? =
+            findPreference(getString(R.string.sdk_support_recurring)) as? ListPreference?
+        if (sdkRecurringPref != null && sdkRecurringPref.value == null) {
+            sdkRecurringPref.setValueIndex(0)
+        }
+
         onSharedPreferenceChanged(preferences, getString(R.string.base_url))
         onSharedPreferenceChanged(preferences, getString(R.string.api_key))
         onSharedPreferenceChanged(preferences, getString(R.string.client_id))
@@ -35,6 +41,7 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_id))
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_signature))
         onSharedPreferenceChanged(preferences, getString(R.string.sdk_env_id))
+        onSharedPreferenceChanged(preferences, getString(R.string.sdk_support_recurring))
         registerOnSharedPreferenceChangeListener()
     }
 
@@ -57,6 +64,7 @@ class PaymentSettingsFragment :
             getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
             getString(R.string.wechat_app_signature) -> preference?.summary = Settings.weChatAppSignature
             getString(R.string.sdk_env_id) -> preference?.summary = Settings.sdkEnv
+            getString(R.string.sdk_support_recurring) -> preference?.summary = Settings.recurring
         }
     }
 

@@ -7,6 +7,7 @@ import android.text.TextUtils
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import com.airwallex.android.exception.DccException
+import com.airwallex.android.exception.InvalidParamsException
 import com.airwallex.android.exception.RedirectException
 import com.airwallex.android.exception.ThreeDSException
 import com.airwallex.android.model.*
@@ -230,25 +231,25 @@ class Airwallex internal constructor(
             PaymentMethodType.ALIPAY_HK
         )
         if (!availablePaymentMethodTypes.contains(params.paymentMethodType)) {
-            listener.onFailed(Exception("Not support payment method ${params.paymentMethodType}"))
+            listener.onFailed(InvalidParamsException("Not support payment method ${params.paymentMethodType}"))
             return
         }
 
         if (params.paymentMethodType != PaymentMethodType.CARD && params.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER) {
-            listener.onFailed(Exception("next_triggered_by must be merchant with ${params.paymentMethodType}"))
+            listener.onFailed(InvalidParamsException("next_triggered_by must be merchant with ${params.paymentMethodType}"))
             return
         }
 
         when (params.nextTriggeredBy) {
             PaymentConsent.NextTriggeredBy.MERCHANT -> {
                 if (params.requiresCvc) {
-                    listener.onFailed(Exception("requires_cvc can only be set to true when next_triggered_by is customer"))
+                    listener.onFailed(InvalidParamsException("requires_cvc can only be set to true when next_triggered_by is customer"))
                     return
                 }
             }
             PaymentConsent.NextTriggeredBy.CUSTOMER -> {
                 if (params.merchantTriggerReason == PaymentConsent.MerchantTriggerReason.SCHEDULED) {
-                    listener.onFailed(Exception("merchant_trigger_reason can only be set to scheduled when next_triggered_by is merchant"))
+                    listener.onFailed(InvalidParamsException("merchant_trigger_reason can only be set to scheduled when next_triggered_by is merchant"))
                     return
                 }
             }
@@ -294,7 +295,7 @@ class Airwallex internal constructor(
             PaymentMethodType.ALIPAY_HK
         )
         if (!availablePaymentMethodTypes.contains(params.paymentMethodType)) {
-            listener.onFailed(Exception("Not support payment method ${params.paymentMethodType}"))
+            listener.onFailed(InvalidParamsException("Not support payment method ${params.paymentMethodType}"))
             return
         }
 
@@ -304,7 +305,7 @@ class Airwallex internal constructor(
                     card = PaymentConsentVerifyRequest.CardVerificationOptions(
                         amount = params.amount,
                         currency = params.currency,
-                        cvc = params.cvc
+                        cvc = params.cvc,
                     )
                 )
             PaymentMethodType.ALIPAY_HK ->
@@ -351,6 +352,7 @@ class Airwallex internal constructor(
                 request = PaymentConsentVerifyRequest.Builder()
                     .setRequestId(UUID.randomUUID().toString())
                     .setVerificationOptions(verificationOptions)
+                    .setReturnUrl(params.returnUrl)
                     .build()
             ),
             listener
@@ -432,7 +434,8 @@ class Airwallex internal constructor(
      */
     interface PaymentMethodListener : PaymentFlowListener {
         // CVC returns only when payment is first created, otherwise null
-        fun onSuccess(paymentMethod: PaymentMethod, cvc: String?)
+        fun onSuccess(paymentMethod: PaymentMethod, paymentConsent: PaymentConsent?, cvc: String?)
+        fun onFailed(error: Exception)
     }
 
     /**
@@ -460,14 +463,16 @@ class Airwallex internal constructor(
      *
      * @param paymentIntent a [PaymentIntent] used to present the Add Payment Method flow
      * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
+     * @param recurring whether to support recurring, default false
      * @param addPaymentMethodFlowListener The callback of present the add payment method flow
      */
     fun presentAddPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
+        recurring: Boolean = false,
         addPaymentMethodFlowListener: AddPaymentMethodListener
     ) {
-        airwallexStarter.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider, addPaymentMethodFlowListener)
+        airwallexStarter.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider, recurring, addPaymentMethodFlowListener)
     }
 
     /**
@@ -475,14 +480,16 @@ class Airwallex internal constructor(
      *
      * @param paymentIntent a [PaymentIntent] used to present the Select Payment Method flow
      * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
+     * @param recurring whether to support recurring, default false
      * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
      */
     fun presentSelectPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
+        recurring: Boolean = false,
         selectPaymentMethodFlowListener: PaymentMethodListener
     ) {
-        airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, selectPaymentMethodFlowListener)
+        airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, recurring, selectPaymentMethodFlowListener)
     }
 
     /**
@@ -490,16 +497,18 @@ class Airwallex internal constructor(
      *
      * @param paymentIntent a [PaymentIntent] used to present the Checkout flow
      * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
+     * @param paymentConsent a [PaymentConsent] used to present the Checkout flow
      * @param cvc CVC of [PaymentMethod], optional
      * @param paymentDetailListener The callback of present the select payment detail flow
      */
     fun presentPaymentDetailFlow(
         paymentIntent: PaymentIntent,
         paymentMethod: PaymentMethod,
+        paymentConsent: PaymentConsent?,
         cvc: String? = null,
         paymentDetailListener: PaymentIntentListener
     ) {
-        airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod, cvc, paymentDetailListener)
+        airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod, paymentConsent, cvc, paymentDetailListener)
     }
 
     /**
@@ -507,14 +516,16 @@ class Airwallex internal constructor(
      *
      * @param paymentIntent a [PaymentIntent] used to present the payment flow
      * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
+     * @param recurring whether to support recurring, default false
      * @param paymentFlowListener The callback of present entire payment flow
      */
     fun presentPaymentFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
+        recurring: Boolean = false,
         paymentFlowListener: PaymentIntentListener
     ) {
-        airwallexStarter.presentPaymentFlow(paymentIntent, clientSecretProvider, paymentFlowListener)
+        airwallexStarter.presentPaymentFlow(paymentIntent, clientSecretProvider, recurring, paymentFlowListener)
     }
 
     /**

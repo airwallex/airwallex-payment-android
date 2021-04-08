@@ -7,6 +7,7 @@ import android.os.Parcel
 import androidx.fragment.app.Fragment
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.model.PaymentConsent
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.PaymentCheckoutActivityLaunch.Args
@@ -31,6 +32,7 @@ internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCh
     data class Args internal constructor(
         val paymentIntent: PaymentIntent,
         val paymentMethod: PaymentMethod,
+        val paymentConsent: PaymentConsent?,
         val cvc: String?
     ) : AirwallexActivityLaunch.Args {
 
@@ -38,6 +40,7 @@ internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCh
 
             private lateinit var paymentIntent: PaymentIntent
             private lateinit var paymentMethod: PaymentMethod
+            private var paymentConsent: PaymentConsent? = null
             private var cvc: String? = null
 
             fun setCvc(cvc: String?): Builder = apply {
@@ -52,10 +55,15 @@ internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCh
                 this.paymentMethod = paymentMethod
             }
 
+            fun setPaymentConsent(paymentConsent: PaymentConsent?): Builder = apply {
+                this.paymentConsent = paymentConsent
+            }
+
             override fun build(): Args {
                 return Args(
                     paymentIntent = paymentIntent,
                     paymentMethod = paymentMethod,
+                    paymentConsent = paymentConsent,
                     cvc = cvc
                 )
             }

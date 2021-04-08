@@ -246,9 +246,9 @@ class PaymentCartFragment : Fragment() {
         handlePaymentIntentResponseWithEntireFlow(paymentIntent)
 
         // Only use the Select Payment Methods Flow
-//        handlePaymentIntentResponseWithCustomFlow1(paymentIntent)
+        handlePaymentIntentResponseWithCustomFlow1(paymentIntent)
         // Use the Select Payment Methods Flow & Checkout Detail Flow
-//        handlePaymentIntentResponseWithCustomFlow2(paymentIntent)
+        handlePaymentIntentResponseWithCustomFlow2(paymentIntent)
     }
 
     /**
@@ -258,6 +258,7 @@ class PaymentCartFragment : Fragment() {
         airwallex.presentPaymentFlow(
             paymentIntent,
             clientSecretProvider,
+            Settings.supportRecurring,
             object : Airwallex.PaymentIntentListener {
                 override fun onSuccess(paymentIntent: PaymentIntent) {
                     handlePaymentData(paymentIntent)
@@ -371,9 +372,10 @@ class PaymentCartFragment : Fragment() {
      */
     private fun handlePaymentIntentResponseWithCustomFlow1(paymentIntent: PaymentIntent) {
         airwallex.presentSelectPaymentMethodFlow(
-            paymentIntent, clientSecretProvider,
+            paymentIntent, clientSecretProvider, Settings.supportRecurring,
             object : Airwallex.PaymentMethodListener {
-                override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+                override fun onSuccess(paymentMethod: PaymentMethod, paymentConsent: PaymentConsent?, cvc: String?) {
+                    (activity as? PaymentCartActivity)?.setLoadingProgress(true)
                     val listener = object : Airwallex.PaymentListener<PaymentIntent> {
                         override fun onFailed(exception: Exception) {
                             showPaymentError(error = exception.message)
@@ -389,7 +391,56 @@ class PaymentCartFragment : Fragment() {
                             ConfirmPaymentIntentParams.createWeChatParams(
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
+                            )
+                        }
+                        PaymentMethodType.ALIPAY_CN -> {
+                            ConfirmPaymentIntentParams.createAlipayParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
+                            )
+                        }
+                        PaymentMethodType.ALIPAY_HK -> {
+                            ConfirmPaymentIntentParams.createAlipayHKParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
+                            )
+                        }
+                        PaymentMethodType.DANA -> {
+                            ConfirmPaymentIntentParams.createDanaParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
+                            )
+                        }
+                        PaymentMethodType.GCASH -> {
+                            ConfirmPaymentIntentParams.createGCashParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
+                            )
+                        }
+                        PaymentMethodType.KAKAOPAY -> {
+                            ConfirmPaymentIntentParams.createKakaoParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
+                            )
+                        }
+                        PaymentMethodType.TNG -> {
+                            ConfirmPaymentIntentParams.createTngParams(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
                             )
                         }
                         PaymentMethodType.CARD -> {
@@ -397,54 +448,17 @@ class PaymentCartFragment : Fragment() {
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
                                 paymentMethodId = requireNotNull(paymentMethod.id),
-                                cvc = cvc ?: "123", // You should provide the cvc input screen
-                                customerId = paymentIntent.customerId
-                            )
-                        }
-                        PaymentMethodType.ALIPAY_CN -> {
-                            ConfirmPaymentIntentParams.createAlipayParams(
-                                paymentIntentId = paymentIntent.id,
-                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
-                            )
-                        }
-                        PaymentMethodType.ALIPAY_HK -> {
-                            ConfirmPaymentIntentParams.createAlipayHKParams(
-                                paymentIntentId = paymentIntent.id,
-                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
-                            )
-                        }
-                        PaymentMethodType.KAKAOPAY -> {
-                            ConfirmPaymentIntentParams.createKakaoParams(
-                                paymentIntentId = paymentIntent.id,
-                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
-                            )
-                        }
-                        PaymentMethodType.TNG -> {
-                            ConfirmPaymentIntentParams.createTngParams(
-                                paymentIntentId = paymentIntent.id,
-                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
-                            )
-                        }
-                        PaymentMethodType.DANA -> {
-                            ConfirmPaymentIntentParams.createDanaParams(
-                                paymentIntentId = paymentIntent.id,
-                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
-                            )
-                        }
-                        PaymentMethodType.GCASH -> {
-                            ConfirmPaymentIntentParams.createGCashParams(
-                                paymentIntentId = paymentIntent.id,
-                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
+                                cvc = "123",
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
                             )
                         }
                     }
                     airwallex.confirmPaymentIntent(params, listener)
+                }
+
+                override fun onFailed(error: Exception) {
+                    showSelectPaymentError(error = error.message)
                 }
 
                 override fun onCancelled() {
@@ -459,13 +473,14 @@ class PaymentCartFragment : Fragment() {
      */
     private fun handlePaymentIntentResponseWithCustomFlow2(paymentIntent: PaymentIntent) {
         airwallex.presentSelectPaymentMethodFlow(
-            paymentIntent, clientSecretProvider,
+            paymentIntent, clientSecretProvider, Settings.supportRecurring,
             object : Airwallex.PaymentMethodListener {
-                override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+                override fun onSuccess(paymentMethod: PaymentMethod, paymentConsent: PaymentConsent?, cvc: String?) {
+                    (activity as? PaymentCartActivity)?.setLoadingProgress(true)
                     when (paymentMethod.type) {
                         PaymentMethodType.CARD -> {
                             airwallex.presentPaymentDetailFlow(
-                                paymentIntent, paymentMethod, cvc,
+                                paymentIntent, paymentMethod, paymentConsent, cvc,
                                 object : Airwallex.PaymentIntentListener {
                                     override fun onSuccess(paymentIntent: PaymentIntent) {
                                         handlePaymentData(paymentIntent)
@@ -485,7 +500,8 @@ class PaymentCartFragment : Fragment() {
                             val params = ConfirmPaymentIntentParams.createWeChatParams(
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
                             )
                             airwallex.confirmPaymentIntent(
                                 params,
@@ -504,7 +520,8 @@ class PaymentCartFragment : Fragment() {
                             val params = ConfirmPaymentIntentParams.createAlipayParams(
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
                             )
                             airwallex.confirmPaymentIntent(
                                 params,
@@ -523,7 +540,8 @@ class PaymentCartFragment : Fragment() {
                             val params = ConfirmPaymentIntentParams.createAlipayHKParams(
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
                             )
                             airwallex.confirmPaymentIntent(
                                 params,
@@ -542,7 +560,8 @@ class PaymentCartFragment : Fragment() {
                             val params = ConfirmPaymentIntentParams.createKakaoParams(
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
                             )
                             airwallex.confirmPaymentIntent(
                                 params,
@@ -561,7 +580,8 @@ class PaymentCartFragment : Fragment() {
                             val params = ConfirmPaymentIntentParams.createTngParams(
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
                             )
                             airwallex.confirmPaymentIntent(
                                 params,
@@ -580,7 +600,8 @@ class PaymentCartFragment : Fragment() {
                             val params = ConfirmPaymentIntentParams.createDanaParams(
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
                             )
                             airwallex.confirmPaymentIntent(
                                 params,
@@ -599,7 +620,8 @@ class PaymentCartFragment : Fragment() {
                             val params = ConfirmPaymentIntentParams.createGCashParams(
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                customerId = paymentIntent.customerId
+                                customerId = paymentIntent.customerId,
+                                paymentConsentId = paymentConsent?.id
                             )
                             airwallex.confirmPaymentIntent(
                                 params,
@@ -615,6 +637,10 @@ class PaymentCartFragment : Fragment() {
                             )
                         }
                     }
+                }
+
+                override fun onFailed(error: Exception) {
+                    showSelectPaymentError(error = error.message)
                 }
 
                 override fun onCancelled() {
@@ -695,6 +721,14 @@ class PaymentCartFragment : Fragment() {
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.payment_failed),
+            error ?: getString(R.string.payment_failed_message)
+        )
+    }
+
+    private fun showSelectPaymentError(error: String? = null) {
+        (activity as? PaymentCartActivity)?.setLoadingProgress(false)
+        (activity as? PaymentCartActivity)?.showAlert(
+            getString(R.string.select_payment_failed),
             error ?: getString(R.string.payment_failed_message)
         )
     }
