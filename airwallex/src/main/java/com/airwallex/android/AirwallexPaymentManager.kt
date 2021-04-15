@@ -95,8 +95,25 @@ internal class AirwallexPaymentManager(
             }
             withContext(Dispatchers.Main) {
                 result.fold(
-                    onSuccess = { listener.onSuccess(it) },
-                    onFailure = { listener.onFailed(handleError(it)) }
+                    onSuccess = {
+                        Tracker.track(
+                            TrackerRequest.Builder()
+                                .setIntentId((options as AirwallexApiRepository.RetrievePaymentIntentOptions).paymentIntentId)
+                                .setCode(TrackerRequest.TrackerCode.ON_INTENT_RETRIEVED)
+                                .build()
+                        )
+                        listener.onSuccess(it)
+                    },
+                    onFailure = {
+                        Tracker.track(
+                            TrackerRequest.Builder()
+                                .setIntentId((options as AirwallexApiRepository.RetrievePaymentIntentOptions).paymentIntentId)
+                                .setCode(TrackerRequest.TrackerCode.ON_INTENT_RETRIEVED_ERROR)
+                                .setError(it.localizedMessage)
+                                .build()
+                        )
+                        listener.onFailed(handleError(it))
+                    }
                 )
             }
         }
@@ -118,8 +135,25 @@ internal class AirwallexPaymentManager(
             }
             withContext(Dispatchers.Main) {
                 result.fold(
-                    onSuccess = { listener.onSuccess(it) },
-                    onFailure = { listener.onFailed(handleError(it)) }
+                    onSuccess = {
+                        Tracker.track(
+                            TrackerRequest.Builder()
+                                .setOrigin((options as AirwallexApiRepository.CreatePaymentMethodOptions).request.customerId)
+                                .setCode(TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED)
+                                .build()
+                        )
+                        listener.onSuccess(it)
+                    },
+                    onFailure = {
+                        Tracker.track(
+                            TrackerRequest.Builder()
+                                .setOrigin((options as AirwallexApiRepository.CreatePaymentMethodOptions).request.customerId)
+                                .setCode(TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED_ERROR)
+                                .setError(it.localizedMessage)
+                                .build()
+                        )
+                        listener.onFailed(handleError(it))
+                    }
                 )
             }
         }
@@ -357,7 +391,34 @@ internal class AirwallexPaymentManager(
         if (serverJwt != null) {
             Logger.debug("Prepare 3DS Flow, serverJwt: $serverJwt")
             // 3D Secure Flow
-            handle3DSFlow(applicationContext, threeDSecureActivityLaunch, response.id, clientSecret, serverJwt, device, listener)
+            Tracker.track(
+                TrackerRequest.Builder()
+                    .setCode(TrackerRequest.TrackerCode.ON_CHALLENGE)
+                    .setNextActionType(response.nextAction.type?.value)
+                    .setNextActionUrl(response.nextAction.url)
+                    .build()
+            )
+            handle3DSFlow(applicationContext, threeDSecureActivityLaunch, response.id, clientSecret, serverJwt, device, object : PaymentListener<PaymentIntent> {
+                override fun onFailed(exception: Exception) {
+                    Tracker.track(
+                        TrackerRequest.Builder()
+                            .setCode(TrackerRequest.TrackerCode.ON_CHALLENGE_ERROR)
+                            .setError(exception.localizedMessage)
+                            .build()
+                    )
+                    listener.onFailed(exception)
+                }
+
+                override fun onSuccess(response: PaymentIntent) {
+                    Tracker.track(
+                        TrackerRequest.Builder()
+                            .setCode(TrackerRequest.TrackerCode.ON_CHALLENGE_SUCCESS)
+                            .build()
+                    )
+                    listener.onSuccess(response)
+                }
+
+            })
         } else {
             Logger.debug("Don't need the 3DS Flow")
             listener.onSuccess(response)

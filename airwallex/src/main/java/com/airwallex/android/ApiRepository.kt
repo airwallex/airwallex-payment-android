@@ -102,4 +102,11 @@ internal interface ApiRepository {
     fun retrievePaymentConsent(
         options: Options
     ): PaymentConsent?
+
+    /**
+     * Tracker
+     */
+    fun tracker(
+        options: Options
+    )
 }

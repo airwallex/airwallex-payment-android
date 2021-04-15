@@ -89,7 +89,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             this,
             paymentMethodsAdapter,
         ) {
-            setLoadingProgress(true)
+            setLoadingProgress(loading = true, cancelable = false)
             ClientSecretRepository.getInstance().retrieveClientSecret(
                 requireNotNull(paymentIntent.customerId),
                 object : ClientSecretRepository.ClientSecretRetrieveListener {
@@ -206,8 +206,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun processPaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
-        setLoadingProgress(true)
         if (args.recurring) {
+            setLoadingProgress(loading = true, cancelable = false)
             createAndVerifyPaymentConsent(
                 paymentMethod = paymentMethod,
                 listener = object : Airwallex.PaymentListener<PaymentConsent> {
@@ -229,6 +229,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         if (args.includeCheckoutFlow) {
             when (paymentMethod.type) {
                 PaymentMethodType.CARD -> {
+                    setLoadingProgress(false)
                     // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
                     PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
                         .startForResult(

@@ -246,9 +246,9 @@ class PaymentCartFragment : Fragment() {
         handlePaymentIntentResponseWithEntireFlow(paymentIntent)
 
         // Only use the Select Payment Methods Flow
-        handlePaymentIntentResponseWithCustomFlow1(paymentIntent)
+//        handlePaymentIntentResponseWithCustomFlow1(paymentIntent)
         // Use the Select Payment Methods Flow & Checkout Detail Flow
-        handlePaymentIntentResponseWithCustomFlow2(paymentIntent)
+//        handlePaymentIntentResponseWithCustomFlow2(paymentIntent)
     }
 
     /**

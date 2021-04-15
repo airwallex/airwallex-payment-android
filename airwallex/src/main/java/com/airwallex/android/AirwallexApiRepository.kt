@@ -4,6 +4,9 @@ import com.airwallex.android.exception.*
 import com.airwallex.android.model.*
 import com.airwallex.android.model.parser.*
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.text.SimpleDateFormat
@@ -107,6 +110,11 @@ internal class AirwallexApiRepository : ApiRepository {
         override val clientSecret: String,
         internal val paymentConsentId: String
     ) : ApiRepository.Options(clientSecret = clientSecret)
+
+    @Parcelize
+    internal class TrackerOptions internal constructor(
+        internal val request: TrackerRequest
+    ) : ApiRepository.Options(clientSecret = "")
 
     /**
      * Continue a PaymentIntent using the provided [ApiRepository.Options]
@@ -274,10 +282,27 @@ internal class AirwallexApiRepository : ApiRepository {
                     (options as RetrievePaymentConsentOptions).paymentConsentId
                 ),
                 options = options,
-                params = null
+                params = null,
+                awxTracker = UUID.randomUUID().toString()
             ),
             PaymentConsentParser()
         )
+    }
+
+    override fun tracker(options: ApiRepository.Options) {
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                httpClient.execute(
+                    AirwallexHttpRequest.createGet(
+                        url = trackerUrl(),
+                        options = options,
+                        params = (options as TrackerOptions).request.toParamMap()
+                    )
+                )
+            }.getOrElse {
+                Logger.debug("Tracker failed.")
+            }
+        }
     }
 
     @Throws(
@@ -407,6 +432,13 @@ internal class AirwallexApiRepository : ApiRepository {
                 "payment_methods/%s/disable",
                 paymentMethodId
             )
+        }
+
+        /**
+         *  `/api/v1/checkout/collect`
+         */
+        internal fun trackerUrl(): String {
+            return "${AirwallexPlugins.environment.trackerUrl()}/collect"
         }
 
         /**

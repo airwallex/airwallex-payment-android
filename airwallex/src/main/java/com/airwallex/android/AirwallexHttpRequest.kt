@@ -10,7 +10,8 @@ internal open class AirwallexHttpRequest internal constructor(
     val method: Method,
     val url: String,
     val params: Map<String, *>? = null,
-    val options: ApiRepository.Options
+    val options: ApiRepository.Options,
+    private val awxTracker: String? = null
 ) {
     private val mimeType: MimeType = MimeType.Json
 
@@ -29,6 +30,18 @@ internal open class AirwallexHttpRequest internal constructor(
                 API_VERSION to BuildConfig.API_VERSION,
                 CLIENT_SECRET to options.clientSecret
             )
+                .plus(
+                    if (options.clientSecret.isEmpty()) {
+                        emptyMap()
+                    } else {
+                        mapOf(CLIENT_SECRET to options.clientSecret)
+                    }
+                )
+                .plus(
+                    awxTracker?.let {
+                        mapOf(AWX_TRACKER to it)
+                    }.orEmpty()
+                )
         }
 
     protected val body: String
@@ -75,9 +88,10 @@ internal open class AirwallexHttpRequest internal constructor(
         private const val USER_AGENT_VERSION_VALUE = BuildConfig.VERSION_NAME
         private const val API_VERSION = "x-api-version"
         private const val CLIENT_SECRET = "client-secret"
+        private const val AWX_TRACKER = "Awx-Tracker"
 
-        fun createGet(url: String, options: ApiRepository.Options, params: Map<String, *>? = null): AirwallexHttpRequest {
-            return AirwallexHttpRequest(Method.GET, url, params, options)
+        fun createGet(url: String, options: ApiRepository.Options, params: Map<String, *>? = null, awxTracker: String? = null): AirwallexHttpRequest {
+            return AirwallexHttpRequest(Method.GET, url, params, options, awxTracker)
         }
 
         fun createPost(url: String, options: ApiRepository.Options, params: Map<String, *>? = null): AirwallexHttpRequest {

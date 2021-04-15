@@ -16,4 +16,11 @@ enum class Environment {
             PRODUCTION -> "https://pci-api.airwallex.com/pa/webhook/cybs"
         }
     }
+
+    fun trackerUrl(): String {
+        return when (this) {
+            DEMO -> "https://pci-api-demo.airwallex.com/api/v1/checkout"
+            PRODUCTION -> "https://pci-api.airwallex.com/api/v1/checkout"
+        }
+    }
 }

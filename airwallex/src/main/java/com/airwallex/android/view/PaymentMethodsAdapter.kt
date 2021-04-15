@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.R
+import com.airwallex.android.Tracker
 import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.payment_method_item_card.view.*
 import kotlinx.android.synthetic.main.payment_method_third_item.view.*
@@ -178,6 +179,14 @@ internal class PaymentMethodsAdapter(
                         .setType(method.type!!)
                         .setCard(card)
                         .build()
+
+                    Tracker.track(
+                        TrackerRequest.Builder()
+                            .setBrand(card.brand)
+                            .setCardBin(card.bin)
+                            .setCode(TrackerRequest.TrackerCode.ON_SWITCH_METHOD)
+                            .build()
+                    )
 
                     notifyDataSetChanged()
                 }
