@@ -398,27 +398,29 @@ internal class AirwallexPaymentManager(
                     .setNextActionUrl(response.nextAction.url)
                     .build()
             )
-            handle3DSFlow(applicationContext, threeDSecureActivityLaunch, response.id, clientSecret, serverJwt, device, object : PaymentListener<PaymentIntent> {
-                override fun onFailed(exception: Exception) {
-                    Tracker.track(
-                        TrackerRequest.Builder()
-                            .setCode(TrackerRequest.TrackerCode.ON_CHALLENGE_ERROR)
-                            .setError(exception.localizedMessage)
-                            .build()
-                    )
-                    listener.onFailed(exception)
-                }
+            handle3DSFlow(
+                applicationContext, threeDSecureActivityLaunch, response.id, clientSecret, serverJwt, device,
+                object : PaymentListener<PaymentIntent> {
+                    override fun onFailed(exception: Exception) {
+                        Tracker.track(
+                            TrackerRequest.Builder()
+                                .setCode(TrackerRequest.TrackerCode.ON_CHALLENGE_ERROR)
+                                .setError(exception.localizedMessage)
+                                .build()
+                        )
+                        listener.onFailed(exception)
+                    }
 
-                override fun onSuccess(response: PaymentIntent) {
-                    Tracker.track(
-                        TrackerRequest.Builder()
-                            .setCode(TrackerRequest.TrackerCode.ON_CHALLENGE_SUCCESS)
-                            .build()
-                    )
-                    listener.onSuccess(response)
+                    override fun onSuccess(response: PaymentIntent) {
+                        Tracker.track(
+                            TrackerRequest.Builder()
+                                .setCode(TrackerRequest.TrackerCode.ON_CHALLENGE_SUCCESS)
+                                .build()
+                        )
+                        listener.onSuccess(response)
+                    }
                 }
-
-            })
+            )
         } else {
             Logger.debug("Don't need the 3DS Flow")
             listener.onSuccess(response)

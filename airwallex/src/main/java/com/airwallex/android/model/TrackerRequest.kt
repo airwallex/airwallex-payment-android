@@ -92,7 +92,7 @@ data class TrackerRequest internal constructor(
      */
     val header: @RawValue Map<String, Any?>? = null,
 
-    ) : AirwallexRequestModel, Parcelable {
+) : AirwallexRequestModel, Parcelable {
 
     private companion object {
         private const val FIELD_ORIGIN = "origin"

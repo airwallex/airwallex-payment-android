@@ -44,7 +44,18 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private val availableThirdPaymentTypes by lazy {
-        paymentIntent.availablePaymentMethodTypes?.filter { it != AvaliablePaymentMethodType.CARD && AvaliablePaymentMethodType.values().contains(it) }
+        if (args.recurring) {
+            val availableRecurringPaymentMethodTypes = listOf(
+                AvaliablePaymentMethodType.GCASH,
+                AvaliablePaymentMethodType.TNG,
+                AvaliablePaymentMethodType.KAKAO,
+                AvaliablePaymentMethodType.DANA,
+                AvaliablePaymentMethodType.ALIPAY_HK
+            )
+            paymentIntent.availablePaymentMethodTypes?.filter { it != AvaliablePaymentMethodType.CARD && availableRecurringPaymentMethodTypes.contains(it) }
+        } else {
+            paymentIntent.availablePaymentMethodTypes?.filter { it != AvaliablePaymentMethodType.CARD && AvaliablePaymentMethodType.values().contains(it) }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
