@@ -116,6 +116,31 @@ internal class AirwallexApiRepository : ApiRepository {
         internal val request: TrackerRequest
     ) : ApiRepository.Options(clientSecret = "")
 
+    @Parcelize
+    internal class RetrieveAvailablePaymentMethodsOptions internal constructor(
+        override val clientSecret: String,
+        /**
+         * Page number starting from 0
+         */
+        internal val pageNum: Int,
+        /**
+         * Number of payment methods to be listed per page
+         */
+        internal val pageSize: Int,
+        /**
+         * Indicate whether the payment method type is active
+         */
+        internal val active: Boolean?,
+        /**
+         * The supported transaction currency
+         */
+        internal val transactionCurrency: String?,
+        /**
+         * The supported transaction mode. One of oneoff, recurring.
+         */
+        internal val transactionMode: String?,
+    ) : ApiRepository.Options(clientSecret = clientSecret)
+
     /**
      * Continue a PaymentIntent using the provided [ApiRepository.Options]
      *
@@ -303,6 +328,24 @@ internal class AirwallexApiRepository : ApiRepository {
                 Logger.debug("Tracker failed.")
             }
         }
+    }
+
+    override fun retrieveAvailablePaymentMethods(options: ApiRepository.Options): AvailablePaymentMethodResponse? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createGet(
+                url = retrieveAvailablePaymentMethodsUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as RetrieveAvailablePaymentMethodsOptions).pageNum,
+                    options.pageSize,
+                    options.active,
+                    options.transactionCurrency,
+                    options.transactionMode,
+                ),
+                options = options,
+                params = null
+            ),
+            AvailablePaymentMethodResponseParser()
+        )
     }
 
     @Throws(
@@ -511,6 +554,39 @@ internal class AirwallexApiRepository : ApiRepository {
                 baseUrl,
                 "payment_consents/%s",
                 paymentConsentId
+            )
+        }
+
+        /**
+         *  `/api/v1/pa/config/payment_method_types`
+         */
+        internal fun retrieveAvailablePaymentMethodsUrl(
+            baseUrl: String,
+            pageNum: Int?,
+            pageSize: Int?,
+            active: Boolean?,
+            transactionCurrency: String?,
+            transactionMode: String?
+        ): String {
+            val builder = StringBuilder("config/payment_method_types?")
+            pageNum?.let {
+                builder.append("&page_num=$it")
+            }
+            pageSize?.let {
+                builder.append("&page_size=$it")
+            }
+            active?.let {
+                builder.append("&active=$it")
+            }
+            transactionCurrency?.let {
+                builder.append("&transaction_currency=$it")
+            }
+            transactionMode?.let {
+                builder.append("&transaction_mode=$it")
+            }
+            return getApiUrl(
+                baseUrl,
+                builder.toString()
             )
         }
 

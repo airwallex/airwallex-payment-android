@@ -13,11 +13,19 @@
             android:title="@string/sdk_env_id" />
 
         <ListPreference
-            android:dialogTitle="@string/sdk_support_recurring"
-            android:entries="@array/array_sdk_recurring"
-            android:entryValues="@array/array_sdk_recurring"
-            android:key="@string/sdk_support_recurring"
-            android:title="@string/sdk_support_recurring" />
+            android:dialogTitle="@string/checkout_mode"
+            android:entries="@array/array_checkout_mode"
+            android:entryValues="@array/array_checkout_mode"
+            android:key="@string/checkout_mode"
+            android:title="@string/checkout_mode" />
+
+        <ListPreference
+            android:dialogTitle="@string/next_trigger_by"
+            android:entries="@array/array_next_trigger_by"
+            android:entryValues="@array/array_next_trigger_by"
+            android:key="@string/next_trigger_by"
+            android:title="@string/next_trigger_by" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/authorization">

@@ -5,8 +5,13 @@
         <item>PRODUCTION</item>
     </string-array>
 
-    <string-array name="array_sdk_recurring">
-        <item>No</item>
-        <item>Yes</item>
+    <string-array name="array_checkout_mode">
+        <item>One-Off</item>
+        <item>Recurring</item>
+    </string-array>
+
+    <string-array name="array_next_trigger_by">
+        <item>Merchant</item>
+        <item>Customer</item>
     </string-array>
 </resources>

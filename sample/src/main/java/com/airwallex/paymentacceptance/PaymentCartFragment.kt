@@ -13,6 +13,9 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.Airwallex
+import com.airwallex.android.AirwallexCheckoutMode
+import com.airwallex.android.AirwallexNextTriggerBy
+import com.airwallex.android.exception.InvalidParamsException
 import com.airwallex.android.exception.RedirectException
 import com.airwallex.android.model.*
 import com.airwallex.android.model.Address
@@ -82,6 +85,16 @@ class PaymentCartFragment : Fragment() {
             .setQuantity(1)
             .build()
     )
+
+    private val checkoutMode: AirwallexCheckoutMode
+        get() {
+            return if (Settings.checkoutMode == SampleApplication.instance.resources.getStringArray(R.array.array_checkout_mode)[0]) AirwallexCheckoutMode.ONEOFF else AirwallexCheckoutMode.RECURRING
+        }
+
+    private val nextTriggerBy: AirwallexNextTriggerBy
+        get() {
+            return if (Settings.nextTriggerBy == SampleApplication.instance.resources.getStringArray(R.array.array_next_trigger_by)[0]) AirwallexNextTriggerBy.MERCHANT else AirwallexNextTriggerBy.CUSTOMER
+        }
 
     private class CartItem constructor(
         order: PhysicalProduct,
@@ -258,7 +271,8 @@ class PaymentCartFragment : Fragment() {
         airwallex.presentPaymentFlow(
             paymentIntent,
             clientSecretProvider,
-            Settings.supportRecurring,
+            checkoutMode,
+            nextTriggerBy,
             object : Airwallex.PaymentIntentListener {
                 override fun onSuccess(paymentIntent: PaymentIntent) {
                     handlePaymentData(paymentIntent)
@@ -372,7 +386,10 @@ class PaymentCartFragment : Fragment() {
      */
     private fun handlePaymentIntentResponseWithCustomFlow1(paymentIntent: PaymentIntent) {
         airwallex.presentSelectPaymentMethodFlow(
-            paymentIntent, clientSecretProvider, Settings.supportRecurring,
+            paymentIntent,
+            clientSecretProvider,
+            checkoutMode,
+            nextTriggerBy,
             object : Airwallex.PaymentMethodListener {
                 override fun onSuccess(paymentMethod: PaymentMethod, paymentConsent: PaymentConsent?, cvc: String?) {
                     (activity as? PaymentCartActivity)?.setLoadingProgress(true)
@@ -453,6 +470,10 @@ class PaymentCartFragment : Fragment() {
                                 paymentConsentId = paymentConsent?.id
                             )
                         }
+                        else -> {
+                            listener.onFailed(InvalidParamsException("Not support payment method type ${paymentMethod.type}"))
+                            return
+                        }
                     }
                     airwallex.confirmPaymentIntent(params, listener)
                 }
@@ -473,7 +494,10 @@ class PaymentCartFragment : Fragment() {
      */
     private fun handlePaymentIntentResponseWithCustomFlow2(paymentIntent: PaymentIntent) {
         airwallex.presentSelectPaymentMethodFlow(
-            paymentIntent, clientSecretProvider, Settings.supportRecurring,
+            paymentIntent,
+            clientSecretProvider,
+            checkoutMode,
+            nextTriggerBy,
             object : Airwallex.PaymentMethodListener {
                 override fun onSuccess(paymentMethod: PaymentMethod, paymentConsent: PaymentConsent?, cvc: String?) {
                     (activity as? PaymentCartActivity)?.setLoadingProgress(true)

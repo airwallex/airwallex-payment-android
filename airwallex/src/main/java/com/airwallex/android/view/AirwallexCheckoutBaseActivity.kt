@@ -168,9 +168,14 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         )
     }
 
-    internal fun createAndVerifyPaymentConsent(paymentMethod: PaymentMethod, listener: Airwallex.PaymentListener<PaymentConsent>) {
+    internal fun createAndVerifyPaymentConsent(
+        paymentMethod: PaymentMethod,
+        nextTriggeredBy: PaymentConsent.NextTriggeredBy,
+        listener: Airwallex.PaymentListener<PaymentConsent>
+    ) {
         createPaymentConsent(
             paymentMethod = paymentMethod,
+            nextTriggeredBy = nextTriggeredBy,
             listener = object : Airwallex.PaymentListener<PaymentConsent> {
                 override fun onFailed(exception: Exception) {
                     listener.onFailed(exception)
@@ -266,6 +271,10 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsent?.id
                 )
+            }
+            else -> {
+                listener.onFailed(InvalidParamsException("Not support payment method type ${paymentMethod.type}"))
+                return
             }
         }
         airwallex.confirmPaymentIntent(params, listener)

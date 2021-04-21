@@ -154,6 +154,17 @@ internal interface PaymentManager {
     )
 
     /**
+     * Retrieve available payment method types
+     *
+     * @param options contains the retrieve [PaymentMethod] params
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    fun retrieveAvailablePaymentMethods(
+        options: ApiRepository.Options,
+        listener: PaymentListener<AvailablePaymentMethodResponse>
+    )
+
+    /**
      * Handle next action for 3ds
      *
      * @param applicationContext the Application Context that is to start 3ds screen

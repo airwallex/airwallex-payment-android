@@ -27,10 +27,16 @@ class PaymentSettingsFragment :
             sdkEnvPref.setValueIndex(0)
         }
 
-        val sdkRecurringPref: ListPreference? =
-            findPreference(getString(R.string.sdk_support_recurring)) as? ListPreference?
-        if (sdkRecurringPref != null && sdkRecurringPref.value == null) {
-            sdkRecurringPref.setValueIndex(0)
+        val checkoutModePref: ListPreference? =
+            findPreference(getString(R.string.checkout_mode)) as? ListPreference?
+        if (checkoutModePref != null && checkoutModePref.value == null) {
+            checkoutModePref.setValueIndex(0)
+        }
+
+        val nextTriggerByPref: ListPreference? =
+            findPreference(getString(R.string.next_trigger_by)) as? ListPreference?
+        if (nextTriggerByPref != null && nextTriggerByPref.value == null) {
+            nextTriggerByPref.setValueIndex(0)
         }
 
         onSharedPreferenceChanged(preferences, getString(R.string.base_url))
@@ -41,7 +47,8 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_id))
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_signature))
         onSharedPreferenceChanged(preferences, getString(R.string.sdk_env_id))
-        onSharedPreferenceChanged(preferences, getString(R.string.sdk_support_recurring))
+        onSharedPreferenceChanged(preferences, getString(R.string.checkout_mode))
+        onSharedPreferenceChanged(preferences, getString(R.string.next_trigger_by))
         registerOnSharedPreferenceChangeListener()
     }
 
@@ -64,7 +71,8 @@ class PaymentSettingsFragment :
             getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
             getString(R.string.wechat_app_signature) -> preference?.summary = Settings.weChatAppSignature
             getString(R.string.sdk_env_id) -> preference?.summary = Settings.sdkEnv
-            getString(R.string.sdk_support_recurring) -> preference?.summary = Settings.recurring
+            getString(R.string.checkout_mode) -> preference?.summary = Settings.checkoutMode
+            getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy
         }
     }
 

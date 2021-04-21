@@ -213,6 +213,30 @@ class Airwallex internal constructor(
     }
 
     /**
+     * Retrieve available payment methods
+     *
+     * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve the [AvailablePaymentMethodResponse]
+     * @param listener the callback of get [AvailablePaymentMethodResponse]
+     */
+    @UiThread
+    internal fun retrieveAvailablePaymentMethods(
+        params: RetrieveAvailablePaymentMethodParams,
+        listener: PaymentListener<AvailablePaymentMethodResponse>
+    ) {
+        paymentManager.retrieveAvailablePaymentMethods(
+            AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions(
+                clientSecret = params.clientSecret,
+                pageNum = params.pageNum,
+                pageSize = params.pageSize,
+                active = params.active,
+                transactionCurrency = params.transactionCurrency,
+                transactionMode = params.transactionMode
+            ),
+            listener
+        )
+    }
+
+    /**
      * Create a [PaymentConsent], Support alipayhk, kakaopay, gcash, dana, tng
      *
      * @param listener a [PaymentListener] to receive the response or error
@@ -463,16 +487,18 @@ class Airwallex internal constructor(
      *
      * @param paymentIntent a [PaymentIntent] used to present the Add Payment Method flow
      * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
-     * @param recurring whether to support recurring, default false
+     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
+     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
      * @param addPaymentMethodFlowListener The callback of present the add payment method flow
      */
     fun presentAddPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
-        recurring: Boolean = false,
+        checkoutMode: AirwallexCheckoutMode,
+        nextTriggerBy: AirwallexNextTriggerBy,
         addPaymentMethodFlowListener: AddPaymentMethodListener
     ) {
-        airwallexStarter.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider, recurring, addPaymentMethodFlowListener)
+        airwallexStarter.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider, checkoutMode, nextTriggerBy, addPaymentMethodFlowListener)
     }
 
     /**
@@ -480,16 +506,18 @@ class Airwallex internal constructor(
      *
      * @param paymentIntent a [PaymentIntent] used to present the Select Payment Method flow
      * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
-     * @param recurring whether to support recurring, default false
+     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
+     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
      * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
      */
     fun presentSelectPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
-        recurring: Boolean = false,
+        checkoutMode: AirwallexCheckoutMode,
+        nextTriggerBy: AirwallexNextTriggerBy,
         selectPaymentMethodFlowListener: PaymentMethodListener
     ) {
-        airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, recurring, selectPaymentMethodFlowListener)
+        airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, checkoutMode, nextTriggerBy, selectPaymentMethodFlowListener)
     }
 
     /**
@@ -516,16 +544,18 @@ class Airwallex internal constructor(
      *
      * @param paymentIntent a [PaymentIntent] used to present the payment flow
      * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
-     * @param recurring whether to support recurring, default false
+     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
+     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
      * @param paymentFlowListener The callback of present entire payment flow
      */
     fun presentPaymentFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
-        recurring: Boolean = false,
+        checkoutMode: AirwallexCheckoutMode,
+        nextTriggerBy: AirwallexNextTriggerBy,
         paymentFlowListener: PaymentIntentListener
     ) {
-        airwallexStarter.presentPaymentFlow(paymentIntent, clientSecretProvider, recurring, paymentFlowListener)
+        airwallexStarter.presentPaymentFlow(paymentIntent, clientSecretProvider, checkoutMode, nextTriggerBy, paymentFlowListener)
     }
 
     /**

@@ -60,20 +60,26 @@ object Settings {
                 ?: defaultSdkEnv
         }
 
-    val supportRecurring: Boolean
+    val checkoutMode: String
         get() {
-            return recurring == SampleApplication.instance.resources.getStringArray(R.array.array_sdk_recurring)[1]
+            val defaultCheckoutMode =
+                SampleApplication.instance.resources.getStringArray(R.array.array_checkout_mode)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.checkout_mode),
+                defaultCheckoutMode
+            )
+                ?: defaultCheckoutMode
         }
 
-    val recurring: String
+    val nextTriggerBy: String
         get() {
-            val defaultRecurring =
-                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_recurring)[0]
+            val defaultNextTriggeredBy =
+                SampleApplication.instance.resources.getStringArray(R.array.array_next_trigger_by)[0]
             return sharedPreferences.getString(
-                context.getString(R.string.sdk_support_recurring),
-                defaultRecurring
+                context.getString(R.string.next_trigger_by),
+                defaultNextTriggeredBy
             )
-                ?: defaultRecurring
+                ?: defaultNextTriggeredBy
         }
 
     val baseUrl: String

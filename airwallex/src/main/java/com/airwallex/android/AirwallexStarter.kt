@@ -68,12 +68,15 @@ internal class AirwallexStarter constructor(
      * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
      *
      * @param paymentIntent a [PaymentIntent] used to present the Add Payment Method flow
+     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
+     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
      * @param addPaymentMethodFlowListener The callback of present the add payment method flow
      */
     fun presentAddPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
-        recurring: Boolean,
+        checkoutMode: AirwallexCheckoutMode,
+        nextTriggerBy: AirwallexNextTriggerBy,
         addPaymentMethodFlowListener: Airwallex.AddPaymentMethodListener
     ) {
         requireNotNull(
@@ -89,7 +92,8 @@ internal class AirwallexStarter constructor(
                 .setShipping(paymentIntent.order?.shipping)
                 .setCustomerId(requireNotNull(paymentIntent.customerId))
                 .setClientSecret(requireNotNull(paymentIntent.clientSecret))
-                .setRecurring(recurring)
+                .setCheckoutMode(checkoutMode)
+                .setNextTriggerBy(nextTriggerBy)
                 .build()
         )
     }
@@ -98,12 +102,15 @@ internal class AirwallexStarter constructor(
      * Launch the [PaymentMethodsActivity] to allow the user to select a payment method or add a new one
      *
      * @param paymentIntent a [PaymentIntent] used to present the Select Payment Method flow
+     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
+     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
      * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
      */
     fun presentSelectPaymentMethodFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
-        recurring: Boolean,
+        checkoutMode: AirwallexCheckoutMode,
+        nextTriggerBy: AirwallexNextTriggerBy,
         selectPaymentMethodFlowListener: Airwallex.PaymentMethodListener
     ) {
         requireNotNull(
@@ -118,7 +125,8 @@ internal class AirwallexStarter constructor(
             PaymentMethodsActivityLaunch.Args.Builder()
                 .setPaymentIntent(paymentIntent)
                 .setIncludeCheckoutFlow(false)
-                .setRecurring(recurring)
+                .setCheckoutMode(checkoutMode)
+                .setNextTriggerBy(nextTriggerBy)
                 .build()
         )
     }
@@ -158,13 +166,15 @@ internal class AirwallexStarter constructor(
      * Launch the [PaymentMethodsActivity] to allow the user to complete the entire payment flow
      *
      * @param paymentIntent a [PaymentIntent] used to present the payment flow
-     * @param recurring whether to support recurring, default false
+     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
+     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
      * @param paymentFlowListener The callback of present entire payment flow
      */
     fun presentPaymentFlow(
         paymentIntent: PaymentIntent,
         clientSecretProvider: ClientSecretProvider,
-        recurring: Boolean,
+        checkoutMode: AirwallexCheckoutMode,
+        nextTriggerBy: AirwallexNextTriggerBy,
         paymentFlowListener: Airwallex.PaymentIntentListener
     ) {
         requireNotNull(
@@ -179,7 +189,8 @@ internal class AirwallexStarter constructor(
             PaymentMethodsActivityLaunch.Args.Builder()
                 .setPaymentIntent(paymentIntent)
                 .setIncludeCheckoutFlow(true)
-                .setRecurring(recurring)
+                .setCheckoutMode(checkoutMode)
+                .setNextTriggerBy(nextTriggerBy)
                 .build()
         )
     }

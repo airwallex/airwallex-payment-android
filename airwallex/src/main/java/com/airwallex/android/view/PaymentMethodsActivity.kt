@@ -7,9 +7,8 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airwallex.android.Airwallex
+import com.airwallex.android.*
 import com.airwallex.android.ClientSecretRepository
-import com.airwallex.android.R
 import com.airwallex.android.model.*
 import kotlinx.android.synthetic.main.activity_payment_methods.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -39,31 +38,20 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         Airwallex(this)
     }
 
-    private val shouldShowCard: Boolean by lazy {
-        paymentIntent.availablePaymentMethodTypes?.contains(AvaliablePaymentMethodType.CARD) == true
-    }
-
-    private val availableThirdPaymentTypes by lazy {
-        if (args.recurring) {
-            val availableRecurringPaymentMethodTypes = listOf(
-                AvaliablePaymentMethodType.GCASH,
-                AvaliablePaymentMethodType.TNG,
-                AvaliablePaymentMethodType.KAKAO,
-                AvaliablePaymentMethodType.DANA,
-                AvaliablePaymentMethodType.ALIPAY_HK
-            )
-            paymentIntent.availablePaymentMethodTypes?.filter { it != AvaliablePaymentMethodType.CARD && availableRecurringPaymentMethodTypes.contains(it) }
-        } else {
-            paymentIntent.availablePaymentMethodTypes?.filter { it != AvaliablePaymentMethodType.CARD && AvaliablePaymentMethodType.values().contains(it) }
-        }
-    }
+    private var availableThirdPaymentTypes: List<AvaliablePaymentMethodType>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        fetchPaymentMethods()
+    }
+
+    private fun initView(availableThirdPaymentTypes: List<AvaliablePaymentMethodType>) {
+        this.availableThirdPaymentTypes = availableThirdPaymentTypes
+        val shouldShowCard = availableThirdPaymentTypes.contains(AvaliablePaymentMethodType.CARD)
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         paymentMethodsAdapter = PaymentMethodsAdapter(
-            availableThirdPaymentTypes = availableThirdPaymentTypes ?: emptyList(),
+            availableThirdPaymentTypes = availableThirdPaymentTypes.filter { it != AvaliablePaymentMethodType.CARD },
             shouldShowCard = shouldShowCard
         )
 
@@ -86,7 +74,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 PaymentMethodsDividerItemDecoration(
                     this@PaymentMethodsActivity,
                     R.drawable.airwallex_line_divider,
-                    availableThirdPaymentTypeSize = availableThirdPaymentTypes?.size ?: 0
+                    availableThirdPaymentTypeSize = availableThirdPaymentTypes.filter { it != AvaliablePaymentMethodType.CARD }.size
                 )
             )
         }
@@ -151,50 +139,110 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 )
             }
         }
-
-        fetchPaymentMethods()
     }
 
     override val layoutResource: Int
         get() = R.layout.activity_payment_methods
 
     private fun fetchPaymentMethods() {
-        if (!shouldShowCard) {
-            return
-        }
-
-        paymentMethodsAdapter.startLoadingMore(rvPaymentMethods)
+        setLoadingProgress(loading = true, cancelable = false)
         ClientSecretRepository.getInstance().retrieveClientSecret(
             requireNotNull(paymentIntent.customerId),
             object : ClientSecretRepository.ClientSecretRetrieveListener {
                 override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                    airwallex.retrievePaymentMethods(
-                        params = RetrievePaymentMethodParams.Builder(
-                            customerId = requireNotNull(paymentIntent.customerId),
-                            clientSecret = requireNotNull(clientSecret.value),
-                            type = AvaliablePaymentMethodType.CARD,
-                            pageNum = pageNum.get()
-                        )
-                            .build(),
-                        listener = object : Airwallex.PaymentListener<PaymentMethodResponse> {
-                            override fun onSuccess(response: PaymentMethodResponse) {
-                                paymentMethodsAdapter.endLoadingMore()
-                                paymentMethodsAdapter.setPaymentMethods(response.items, response.hasMore)
-                                paymentNoCards.visibility = if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
-                                pageNum.incrementAndGet()
-                            }
-
-                            override fun onFailed(exception: Exception) {
+                    if (availableThirdPaymentTypes == null) {
+                        retrieveAvailablePaymentMethods(
+                            mutableListOf(),
+                            AtomicInteger(0),
+                            clientSecret = clientSecret,
+                            onFailed = { exception ->
+                                setLoadingProgress(loading = false)
                                 alert(message = exception.message ?: exception.toString())
-                                paymentMethodsAdapter.setPaymentMethods(arrayListOf(), false)
-                                paymentMethodsAdapter.endLoadingMore()
+                            },
+                            onCompleted = {
+                                setLoadingProgress(loading = false)
+                                // Complete load available payment method type
+                                initView(it)
+                                retrievePaymentMethods(clientSecret)
                             }
-                        }
-                    )
+                        )
+                    } else {
+                        setLoadingProgress(loading = false)
+                        retrievePaymentMethods(clientSecret)
+                    }
                 }
 
                 override fun onClientSecretError(errorMessage: String) {
+                    setLoadingProgress(loading = false)
                     alert(message = errorMessage)
+                }
+            }
+        )
+    }
+
+    private fun retrieveAvailablePaymentMethods(
+        availablePaymentMethodList: MutableList<AvailablePaymentMethod>,
+        availablePaymentMethodPageNum: AtomicInteger,
+        clientSecret: ClientSecret,
+        onFailed: (exception: Exception) -> Unit,
+        onCompleted: (availableThirdPaymentTypes: List<AvaliablePaymentMethodType>) -> Unit
+    ) {
+        airwallex.retrieveAvailablePaymentMethods(
+            params = RetrieveAvailablePaymentMethodParams.Builder(
+                clientSecret = requireNotNull(clientSecret.value),
+                pageNum = availablePaymentMethodPageNum.get()
+            )
+                .setActive(true)
+                .setTransactionCurrency(paymentIntent.currency)
+                .build(),
+            listener = object : Airwallex.PaymentListener<AvailablePaymentMethodResponse> {
+                override fun onFailed(exception: Exception) {
+                    onFailed.invoke(exception)
+                }
+
+                override fun onSuccess(response: AvailablePaymentMethodResponse) {
+                    availablePaymentMethodPageNum.incrementAndGet()
+                    availablePaymentMethodList.addAll(response.items ?: emptyList())
+                    if (response.hasMore) {
+                        retrieveAvailablePaymentMethods(availablePaymentMethodList, availablePaymentMethodPageNum, clientSecret, onFailed, onCompleted)
+                    } else {
+                        val availableThirdPaymentTypes = if (args.checkoutMode == AirwallexCheckoutMode.RECURRING) {
+                            availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.RECURRING }.mapNotNull { AvaliablePaymentMethodType.fromValue(it.name) }.distinct()
+                        } else {
+                            availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.ONE_OFF }.mapNotNull { AvaliablePaymentMethodType.fromValue(it.name) }.distinct()
+                        }
+                        onCompleted.invoke(availableThirdPaymentTypes)
+                    }
+                }
+            }
+        )
+    }
+
+    private fun retrievePaymentMethods(clientSecret: ClientSecret) {
+        if (availableThirdPaymentTypes?.contains(AvaliablePaymentMethodType.CARD) == false) {
+            return
+        }
+        paymentMethodsAdapter.startLoadingMore()
+        airwallex.retrievePaymentMethods(
+            params = RetrievePaymentMethodParams.Builder(
+                customerId = requireNotNull(paymentIntent.customerId),
+                clientSecret = requireNotNull(clientSecret.value),
+                type = AvaliablePaymentMethodType.CARD,
+                pageNum = pageNum.get()
+            )
+                .build(),
+            listener = object : Airwallex.PaymentListener<PaymentMethodResponse> {
+                override fun onSuccess(response: PaymentMethodResponse) {
+                    paymentMethodsAdapter.endLoadingMore()
+                    paymentMethodsAdapter.setPaymentMethods(response.items, response.hasMore)
+                    paymentNoCards.visibility = if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
+                    pageNum.incrementAndGet()
+                }
+
+                override fun onFailed(exception: Exception) {
+                    alert(message = exception.message ?: exception.toString())
+                    paymentMethodsAdapter.endLoadingMore()
+                    paymentMethodsAdapter.setPaymentMethods(arrayListOf(), false)
                 }
             }
         )
@@ -217,10 +265,11 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun processPaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
-        if (args.recurring) {
+        if (args.checkoutMode == AirwallexCheckoutMode.RECURRING) {
             setLoadingProgress(loading = true, cancelable = false)
             createAndVerifyPaymentConsent(
                 paymentMethod = paymentMethod,
+                if (args.nextTriggerBy == AirwallexNextTriggerBy.MERCHANT) PaymentConsent.NextTriggeredBy.MERCHANT else PaymentConsent.NextTriggeredBy.CUSTOMER,
                 listener = object : Airwallex.PaymentListener<PaymentConsent> {
                     override fun onFailed(exception: Exception) {
                         finishWithPaymentMethod(exception = exception)

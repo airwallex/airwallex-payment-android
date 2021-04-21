@@ -16,7 +16,8 @@ enum class PaymentMethodType(val value: String) : Parcelable {
     DANA("dana"),
     GCASH("gcash"),
     KAKAOPAY("kakaopay"),
-    TNG("tng");
+    TNG("tng"),
+    OTHERS("others");
 
     internal companion object {
         internal fun fromValue(value: String?): PaymentMethodType? {

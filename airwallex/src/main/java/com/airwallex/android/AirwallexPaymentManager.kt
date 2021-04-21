@@ -383,6 +383,26 @@ internal class AirwallexPaymentManager(
     }
 
     /**
+     * Retrieve all of the customer's [AvailablePaymentMethodResponse] using [ApiRepository.Options]
+     *
+     * @param options contains the retrieve [AvailablePaymentMethodResponse] params
+     * @param listener a [PaymentListener] to receive the response or error
+     */
+    override fun retrieveAvailablePaymentMethods(options: ApiRepository.Options, listener: PaymentListener<AvailablePaymentMethodResponse>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = runCatching {
+                requireNotNull(repository.retrieveAvailablePaymentMethods(options))
+            }
+            withContext(Dispatchers.Main) {
+                result.fold(
+                    onSuccess = { listener.onSuccess(it) },
+                    onFailure = { listener.onFailed(handleError(it)) }
+                )
+            }
+        }
+    }
+
+    /**
      * Handle 3DS flow - Check jwt if existed
      */
     private fun handleNextAction(applicationContext: Context, threeDSecureActivityLaunch: ThreeDSecureActivityLaunch, response: PaymentIntent, clientSecret: String, device: Device?, listener: PaymentListener<PaymentIntent>) {

@@ -109,4 +109,11 @@ internal interface ApiRepository {
     fun tracker(
         options: Options
     )
+
+    /**
+     * Retrieve available payment method types
+     */
+    fun retrieveAvailablePaymentMethods(
+        options: Options
+    ): AvailablePaymentMethodResponse?
 }

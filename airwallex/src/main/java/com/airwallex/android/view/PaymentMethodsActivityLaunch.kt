@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
+import com.airwallex.android.AirwallexCheckoutMode
+import com.airwallex.android.AirwallexNextTriggerBy
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import com.airwallex.android.model.ObjectBuilder
@@ -30,13 +32,15 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
     data class Args internal constructor(
         val paymentIntent: PaymentIntent,
         val includeCheckoutFlow: Boolean,
-        val recurring: Boolean
+        val checkoutMode: AirwallexCheckoutMode,
+        val nextTriggerBy: AirwallexNextTriggerBy
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var paymentIntent: PaymentIntent
             private var includeCheckoutFlow: Boolean = true
-            private var recurring: Boolean = false
+            private var checkoutMode: AirwallexCheckoutMode = AirwallexCheckoutMode.ONEOFF
+            private var nextTriggerBy: AirwallexNextTriggerBy = AirwallexNextTriggerBy.MERCHANT
 
             fun setPaymentIntent(paymentIntent: PaymentIntent): Builder = apply {
                 this.paymentIntent = paymentIntent
@@ -46,15 +50,20 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
                 this.includeCheckoutFlow = includeCheckoutFlow
             }
 
-            fun setRecurring(recurring: Boolean): Builder = apply {
-                this.recurring = recurring
+            fun setCheckoutMode(checkoutMode: AirwallexCheckoutMode): Builder = apply {
+                this.checkoutMode = checkoutMode
+            }
+
+            fun setNextTriggerBy(nextTriggerBy: AirwallexNextTriggerBy): Builder = apply {
+                this.nextTriggerBy = nextTriggerBy
             }
 
             override fun build(): Args {
                 return Args(
                     paymentIntent = paymentIntent,
                     includeCheckoutFlow = includeCheckoutFlow,
-                    recurring = recurring
+                    checkoutMode = checkoutMode,
+                    nextTriggerBy = nextTriggerBy
                 )
             }
         }

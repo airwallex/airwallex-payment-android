@@ -51,21 +51,19 @@ internal class PaymentMethodsAdapter(
     internal fun setPaymentMethods(paymentMethods: List<PaymentMethod>, hasMore: Boolean) {
         this.hasMore = hasMore
         this.paymentMethods.addAll(paymentMethods)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(itemCount, paymentMethods.size)
     }
 
     internal fun addNewPaymentMethod(paymentMethod: PaymentMethod) {
         selectedPaymentMethod = paymentMethod
         this.paymentMethods.add(0, paymentMethod)
-        notifyDataSetChanged()
+        notifyItemInserted(availableThirdPaymentTypes.size + spaceCount)
     }
 
-    internal fun startLoadingMore(recyclerView: RecyclerView) {
+    internal fun startLoadingMore() {
         isLoading = true
-        recyclerView.post {
-            paymentMethods.add(null)
-            notifyItemInserted(itemCount - availableThirdPaymentTypes.size)
-        }
+        paymentMethods.add(null)
+        notifyItemInserted(itemCount)
     }
 
     internal fun endLoadingMore() {
