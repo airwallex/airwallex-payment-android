@@ -44,4 +44,6 @@
 
     <string name="checkout_mode">Checkout Mode</string>
     <string name="next_trigger_by">Next trigger by</string>
+    <string name="clear_customer">Clear Customer</string>
+    <string name="customer_cleared">Customer cleared successfully</string>
 </resources>

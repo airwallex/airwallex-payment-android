@@ -27,12 +27,13 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         PaymentMethodsActivityLaunch.Args.getExtra(intent)
     }
 
-    override val paymentIntent: PaymentIntent by lazy {
-        args.paymentIntent
+    private val session: AirwallexSession by lazy {
+        args.session
     }
 
-    override val cvc: String?
-        get() = null
+    private val customerId: String by lazy {
+        requireNotNull(session.customerId)
+    }
 
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
@@ -57,7 +58,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
         paymentMethodsAdapter.listener = object : PaymentMethodsAdapter.Listener {
             override fun onPaymentMethodClick(paymentMethod: PaymentMethod) {
-                processPaymentMethod(paymentMethod)
+                handleProcessPaymentMethod(paymentMethod)
             }
         }
 
@@ -90,13 +91,13 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         ) {
             setLoadingProgress(loading = true, cancelable = false)
             ClientSecretRepository.getInstance().retrieveClientSecret(
-                requireNotNull(paymentIntent.customerId),
+                customerId,
                 object : ClientSecretRepository.ClientSecretRetrieveListener {
                     override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
                         airwallex.disablePaymentMethod(
                             DisablePaymentMethodParams(
                                 clientSecret = clientSecret.value,
-                                customerId = requireNotNull(paymentIntent.customerId),
+                                customerId = customerId,
                                 paymentMethodId = requireNotNull(it.id),
                             ),
                             object : Airwallex.PaymentListener<PaymentMethod> {
@@ -147,7 +148,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     private fun fetchPaymentMethods() {
         setLoadingProgress(loading = true, cancelable = false)
         ClientSecretRepository.getInstance().retrieveClientSecret(
-            requireNotNull(paymentIntent.customerId),
+            customerId,
             object : ClientSecretRepository.ClientSecretRetrieveListener {
                 override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
                     if (availableThirdPaymentTypes == null) {
@@ -193,7 +194,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 pageNum = availablePaymentMethodPageNum.get()
             )
                 .setActive(true)
-                .setTransactionCurrency(paymentIntent.currency)
+                .setTransactionCurrency(session.currency)
                 .build(),
             listener = object : Airwallex.PaymentListener<AvailablePaymentMethodResponse> {
                 override fun onFailed(exception: Exception) {
@@ -206,12 +207,15 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     if (response.hasMore) {
                         retrieveAvailablePaymentMethods(availablePaymentMethodList, availablePaymentMethodPageNum, clientSecret, onFailed, onCompleted)
                     } else {
-                        val availableThirdPaymentTypes = if (args.checkoutMode == AirwallexCheckoutMode.RECURRING) {
-                            availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.RECURRING }.mapNotNull { AvaliablePaymentMethodType.fromValue(it.name) }.distinct()
-                        } else {
-                            availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.ONE_OFF }.mapNotNull { AvaliablePaymentMethodType.fromValue(it.name) }.distinct()
+                        when (args.session) {
+                            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> {
+                                onCompleted.invoke(availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.RECURRING }.mapNotNull { AvaliablePaymentMethodType.fromValue(it.name) }.distinct())
+                            }
+                            is AirwallexPaymentSession -> {
+                                onCompleted.invoke(availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.ONE_OFF }.mapNotNull { AvaliablePaymentMethodType.fromValue(it.name) }.distinct())
+                            }
+                            else -> Unit
                         }
-                        onCompleted.invoke(availableThirdPaymentTypes)
                     }
                 }
             }
@@ -225,7 +229,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         paymentMethodsAdapter.startLoadingMore()
         airwallex.retrievePaymentMethods(
             params = RetrievePaymentMethodParams.Builder(
-                customerId = requireNotNull(paymentIntent.customerId),
+                customerId = customerId,
                 clientSecret = requireNotNull(clientSecret.value),
                 type = AvaliablePaymentMethodType.CARD,
                 pageNum = pageNum.get()
@@ -253,59 +257,48 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun startAddPaymentMethod() {
-        AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity)
-            .startForResult(
-                AddPaymentMethodActivityLaunch.Args
-                    .Builder()
-                    .setShipping(paymentIntent.order?.shipping)
-                    .setCustomerId(requireNotNull(paymentIntent.customerId))
-                    .setClientSecret(requireNotNull(paymentIntent.clientSecret))
-                    .build()
-            )
-    }
-
-    private fun processPaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
-        if (args.checkoutMode == AirwallexCheckoutMode.RECURRING) {
-            setLoadingProgress(loading = true, cancelable = false)
-            createAndVerifyPaymentConsent(
-                paymentMethod = paymentMethod,
-                if (args.nextTriggerBy == AirwallexNextTriggerBy.MERCHANT) PaymentConsent.NextTriggeredBy.MERCHANT else PaymentConsent.NextTriggeredBy.CUSTOMER,
-                listener = object : Airwallex.PaymentListener<PaymentConsent> {
-                    override fun onFailed(exception: Exception) {
-                        finishWithPaymentMethod(exception = exception)
-                    }
-
-                    override fun onSuccess(response: PaymentConsent) {
-                        handleProcessPaymentMethod(paymentMethod, response, cvc)
-                    }
+        ClientSecretRepository.getInstance().retrieveClientSecret(
+            customerId,
+            object : ClientSecretRepository.ClientSecretRetrieveListener {
+                override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
+                    AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity)
+                        .startForResult(
+                            AddPaymentMethodActivityLaunch.Args.Builder()
+                                .setAirwallexSession(session)
+                                .build()
+                        )
                 }
-            )
-        } else {
-            handleProcessPaymentMethod(paymentMethod, null, cvc)
-        }
+
+                override fun onClientSecretError(errorMessage: String) {
+                    setLoadingProgress(loading = false)
+                    alert(message = errorMessage)
+                }
+            }
+        )
     }
 
-    private fun handleProcessPaymentMethod(paymentMethod: PaymentMethod, paymentConsent: PaymentConsent?, cvc: String? = null) {
+    private fun handleProcessPaymentMethod(paymentMethod: PaymentMethod, cvc: String? = null) {
         if (args.includeCheckoutFlow) {
             when (paymentMethod.type) {
                 PaymentMethodType.CARD -> {
                     setLoadingProgress(false)
+
                     // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
                     PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
                         .startForResult(
                             PaymentCheckoutActivityLaunch.Args.Builder()
-                                .setPaymentIntent(paymentIntent)
+                                .setAirwallexSession(session)
                                 .setPaymentMethod(paymentMethod)
-                                .setPaymentConsent(paymentConsent)
                                 .setCvc(cvc)
                                 .build()
                         )
                 }
                 else -> {
-                    confirmPaymentIntent(
+                    startCheckout(
+                        session = session,
                         paymentMethod = paymentMethod,
-                        paymentConsent = paymentConsent,
-                        listener = object : Airwallex.PaymentListener<PaymentIntent> {
+                        cvc = session.cvc,
+                        listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
                             override fun onSuccess(response: PaymentIntent) {
                                 finishWithPaymentIntent(paymentIntent = response)
                             }
@@ -313,15 +306,22 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                             override fun onFailed(exception: Exception) {
                                 finishWithPaymentIntent(exception = exception)
                             }
+
+                            override fun onNextActionWithWeChatPay(weChat: WeChat) {
+                                finishWithPaymentIntent(weChat = weChat)
+                            }
+
+                            override fun onNextActionWithAlipayUrl(url: String) {
+                                finishWithPaymentIntent(redirectUrl = url)
+                            }
                         }
                     )
                 }
             }
         } else {
-            // Return the `PaymentMethod` & 'PaymentConsent' & 'cvc' to merchant
+            // Return the `PaymentMethod` 'cvc' to merchant
             finishWithPaymentMethod(
                 paymentMethod = paymentMethod,
-                paymentConsent = paymentConsent,
                 cvc = cvc
             )
         }
@@ -340,13 +340,13 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     paymentNoCards.visibility =
                         if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
                     rvPaymentMethods.requestLayout()
-                    processPaymentMethod(it.paymentMethod, it.cvc)
+                    handleProcessPaymentMethod(it.paymentMethod, it.cvc)
                 }
             }
             PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
                 val result = PaymentCheckoutActivityLaunch.Result.fromIntent(data)
                 result?.let {
-                    finishWithPaymentIntent(it.paymentIntent, it.exception)
+                    finishWithPaymentIntent(paymentIntent = it.paymentIntent, exception = it.exception)
                 }
             }
         }
@@ -354,7 +354,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private fun finishWithPaymentMethod(
         paymentMethod: PaymentMethod? = null,
-        paymentConsent: PaymentConsent? = null,
         cvc: String? = null,
         exception: Exception? = null
     ) {
@@ -364,7 +363,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             Intent().putExtras(
                 PaymentMethodsActivityLaunch.Result(
                     paymentMethod = paymentMethod,
-                    paymentConsent = paymentConsent,
                     cvc = cvc,
                     includeCheckoutFlow = args.includeCheckoutFlow,
                     exception = exception
@@ -376,6 +374,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private fun finishWithPaymentIntent(
         paymentIntent: PaymentIntent? = null,
+        weChat: WeChat? = null,
+        redirectUrl: String? = null,
         exception: Exception? = null
     ) {
         setLoadingProgress(false)
@@ -385,6 +385,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 PaymentMethodsActivityLaunch.Result(
                     paymentIntent = paymentIntent,
                     exception = exception,
+                    weChat = weChat,
+                    redirectUrl = redirectUrl,
                     includeCheckoutFlow = args.includeCheckoutFlow
                 ).toBundle()
             )

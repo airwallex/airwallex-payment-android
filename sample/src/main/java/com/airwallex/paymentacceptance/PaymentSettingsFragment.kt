@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.InputType
 import android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+import android.widget.Toast
 import androidx.preference.*
 
 class PaymentSettingsFragment :
@@ -37,6 +38,17 @@ class PaymentSettingsFragment :
             findPreference(getString(R.string.next_trigger_by)) as? ListPreference?
         if (nextTriggerByPref != null && nextTriggerByPref.value == null) {
             nextTriggerByPref.setValueIndex(0)
+        }
+
+        val clearCustomerPref: Preference? =
+            findPreference(getString(R.string.clear_customer)) as? Preference?
+
+        clearCustomerPref?.summary = Settings.cachedCustomerId
+        clearCustomerPref?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            Settings.cachedCustomerId = ""
+            clearCustomerPref?.summary = ""
+            Toast.makeText(context, R.string.customer_cleared, Toast.LENGTH_SHORT).show()
+            true
         }
 
         onSharedPreferenceChanged(preferences, getString(R.string.base_url))

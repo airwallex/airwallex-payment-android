@@ -5,11 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
+import com.airwallex.android.AirwallexSession
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentConsent
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.WeChat
 import com.airwallex.android.view.PaymentCheckoutActivityLaunch.Args
 import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
@@ -30,40 +31,33 @@ internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCh
 
     @Parcelize
     data class Args internal constructor(
-        val paymentIntent: PaymentIntent,
+        val session: AirwallexSession,
         val paymentMethod: PaymentMethod,
-        val paymentConsent: PaymentConsent?,
         val cvc: String?
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
 
-            private lateinit var paymentIntent: PaymentIntent
+            private lateinit var session: AirwallexSession
             private lateinit var paymentMethod: PaymentMethod
-            private var paymentConsent: PaymentConsent? = null
             private var cvc: String? = null
 
             fun setCvc(cvc: String?): Builder = apply {
                 this.cvc = cvc
             }
 
-            fun setPaymentIntent(paymentIntent: PaymentIntent): Builder = apply {
-                this.paymentIntent = paymentIntent
+            fun setAirwallexSession(session: AirwallexSession): Builder = apply {
+                this.session = session
             }
 
             fun setPaymentMethod(paymentMethod: PaymentMethod): Builder = apply {
                 this.paymentMethod = paymentMethod
             }
 
-            fun setPaymentConsent(paymentConsent: PaymentConsent?): Builder = apply {
-                this.paymentConsent = paymentConsent
-            }
-
             override fun build(): Args {
                 return Args(
-                    paymentIntent = paymentIntent,
+                    session = session,
                     paymentMethod = paymentMethod,
-                    paymentConsent = paymentConsent,
                     cvc = cvc
                 )
             }
@@ -79,6 +73,8 @@ internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCh
     @Parcelize
     internal data class Result internal constructor(
         val paymentIntent: PaymentIntent? = null,
+        val weChat: WeChat? = null,
+        val redirectUrl: String? = null,
         var exception: Exception? = null
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
@@ -91,12 +87,16 @@ internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCh
             override fun create(parcel: Parcel): Result {
                 return Result(
                     paymentIntent = parcel.readParcelable(PaymentIntent::class.java.classLoader),
+                    weChat = parcel.readParcelable(WeChat::class.java.classLoader),
+                    redirectUrl = parcel.readString(),
                     exception = parcel.readSerializable() as? AirwallexException?
                 )
             }
 
             override fun Result.write(parcel: Parcel, flags: Int) {
                 parcel.writeParcelable(paymentIntent, 0)
+                parcel.writeParcelable(weChat, 0)
+                parcel.writeString(redirectUrl)
                 parcel.writeSerializable(exception)
             }
 

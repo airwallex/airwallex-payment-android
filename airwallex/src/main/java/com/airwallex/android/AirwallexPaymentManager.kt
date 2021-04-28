@@ -20,7 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Exception
+import java.math.BigDecimal
 import java.util.*
 
 /**
@@ -236,7 +236,7 @@ internal class AirwallexPaymentManager(
         params: ConfirmPaymentIntentParams,
         selectCurrencyActivityLaunch: DccActivityLaunch,
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
-        listener: PaymentListener<PaymentIntent>
+        listener: Airwallex.PaymentResultListener<PaymentIntent>
     ) {
         val device = PaymentManager.buildDeviceInfo(deviceId, applicationContext)
         val options = when (params.paymentMethodType) {
@@ -271,44 +271,102 @@ internal class AirwallexPaymentManager(
             }
         }
 
-        val paymentListener = when (params.paymentMethodType) {
-            AvaliablePaymentMethodType.CARD -> {
-                object : PaymentListener<PaymentIntent> {
-                    override fun onFailed(exception: Exception) {
-                        // Payment failed
-                        listener.onFailed(exception)
-                    }
+        confirmPaymentIntent(
+            options,
+            object : PaymentListener<PaymentIntent> {
+                override fun onFailed(exception: Exception) {
+                    listener.onFailed(exception)
+                }
 
-                    override fun onSuccess(response: PaymentIntent) {
-                        if (response.nextAction?.type == PaymentIntent.NextActionType.DCC && response.nextAction.dcc != null) {
-                            dccCallback = object : DccCallback {
-                                override fun onSuccess(paymentIntent: PaymentIntent) {
-                                    dccCallback = null
-                                    listener.onSuccess(paymentIntent)
-                                }
-
-                                override fun onFailed(exception: Exception) {
-                                    dccCallback = null
-                                    listener.onFailed(exception)
-                                }
-                            }
-                            // DCC flow, please select your currency
-                            selectCurrencyActivityLaunch.startForResult(
-                                DccActivityLaunch.Args(response.nextAction.dcc, response, params.clientSecret, device)
+                override fun onSuccess(response: PaymentIntent) {
+                    when (params.paymentMethodType) {
+                        AvaliablePaymentMethodType.CARD -> {
+                            handleDccFlow(
+                                applicationContext,
+                                response.nextAction,
+                                device,
+                                response.id,
+                                currency = response.currency,
+                                amount = response.amount,
+                                clientSecret = params.clientSecret,
+                                selectCurrencyActivityLaunch,
+                                threeDSecureActivityLaunch,
+                                listener
                             )
-                        } else {
-                            // Handle next action
-                            handleNextAction(applicationContext, threeDSecureActivityLaunch, response, params.clientSecret, device, listener)
+                        }
+                        AvaliablePaymentMethodType.WECHAT -> {
+                            val nextAction = response.nextAction
+                            if (nextAction == null ||
+                                nextAction.type != NextAction.NextActionType.CALL_SDK ||
+                                nextAction.data == null
+                            ) {
+                                listener.onFailed(Exception("Server error, WeChat data is null"))
+                                return
+                            }
+                            listener.onNextActionWithWeChatPay(
+                                WeChat(
+                                    appId = nextAction.data["appId"] as? String,
+                                    partnerId = nextAction.data["partnerId"] as? String,
+                                    prepayId = nextAction.data["prepayId"] as? String,
+                                    `package` = nextAction.data["package"] as? String,
+                                    nonceStr = nextAction.data["nonceStr"] as? String,
+                                    timestamp = nextAction.data["timeStamp"] as? String,
+                                    sign = nextAction.data["sign"] as? String
+                                )
+                            )
+                        }
+                        AvaliablePaymentMethodType.ALIPAY_CN,
+                        AvaliablePaymentMethodType.ALIPAY_HK,
+                        AvaliablePaymentMethodType.DANA,
+                        AvaliablePaymentMethodType.GCASH,
+                        AvaliablePaymentMethodType.KAKAO,
+                        AvaliablePaymentMethodType.TNG -> {
+                            val nextAction = response.nextAction
+                            val redirectUrl = nextAction?.url
+                            if (redirectUrl.isNullOrEmpty()) {
+                                listener.onFailed(Exception("Server error, redirect url is null"))
+                                return
+                            }
+                            listener.onNextActionWithAlipayUrl(redirectUrl)
                         }
                     }
                 }
             }
-            else -> {
-                listener
-            }
-        }
+        )
+    }
 
-        confirmPaymentIntent(options, paymentListener)
+    private fun handleDccFlow(
+        applicationContext: Context,
+        nextAction: NextAction?,
+        device: Device?,
+        paymentIntentId: String,
+        currency: String,
+        amount: BigDecimal,
+        clientSecret: String,
+        selectCurrencyActivityLaunch: DccActivityLaunch,
+        threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
+        listener: PaymentListener<PaymentIntent>
+    ) {
+        if (nextAction?.type == NextAction.NextActionType.DCC && nextAction.dcc != null) {
+            dccCallback = object : DccCallback {
+                override fun onSuccess(paymentIntent: PaymentIntent) {
+                    dccCallback = null
+                    listener.onSuccess(paymentIntent)
+                }
+
+                override fun onFailed(exception: Exception) {
+                    dccCallback = null
+                    listener.onFailed(exception)
+                }
+            }
+            // DCC flow, please select your currency
+            selectCurrencyActivityLaunch.startForResult(
+                DccActivityLaunch.Args(nextAction.dcc, paymentIntentId, currency, amount, clientSecret)
+            )
+        } else {
+            // Handle next action
+            handleNextAction(applicationContext, threeDSecureActivityLaunch, nextAction, paymentIntentId, clientSecret, device, listener)
+        }
     }
 
     override fun continueDccPaymentIntent(applicationContext: Context, threeDSecureActivityLaunch: ThreeDSecureActivityLaunch, options: ApiRepository.Options, listener: PaymentListener<PaymentIntent>) {
@@ -320,7 +378,7 @@ internal class AirwallexPaymentManager(
 
             override fun onSuccess(response: PaymentIntent) {
                 // Handle next action
-                handleNextAction(applicationContext, threeDSecureActivityLaunch, response, options.clientSecret, (options as AirwallexApiRepository.ContinuePaymentIntentOptions).request.device, listener)
+                handleNextAction(applicationContext, threeDSecureActivityLaunch, response.nextAction, response.id, options.clientSecret, (options as AirwallexApiRepository.ContinuePaymentIntentOptions).request.device, listener)
             }
         }
         continuePaymentIntent(options, paymentListener)
@@ -338,6 +396,143 @@ internal class AirwallexPaymentManager(
                 )
             }
         }
+    }
+
+    override fun verifyPaymentConsent(
+        applicationContext: Context,
+        params: VerifyPaymentConsentParams,
+        selectCurrencyActivityLaunch: DccActivityLaunch,
+        threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
+        listener: Airwallex.PaymentResultListener<PaymentIntent>
+    ) {
+        val verificationOptions = when (params.paymentMethodType) {
+            PaymentMethodType.CARD ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    card = PaymentConsentVerifyRequest.CardVerificationOptions(
+                        amount = params.amount,
+                        currency = params.currency,
+                        cvc = params.cvc,
+                    )
+                )
+            PaymentMethodType.ALIPAY_HK ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    alipayhk = PaymentConsentVerifyRequest.AliPayVerificationOptions(
+                        flow = ThirdPartPayRequestFlow.IN_APP,
+                        osType = "android"
+                    )
+                )
+            PaymentMethodType.DANA ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    dana = PaymentConsentVerifyRequest.AliPayVerificationOptions(
+                        flow = ThirdPartPayRequestFlow.IN_APP,
+                        osType = "android"
+                    )
+                )
+            PaymentMethodType.GCASH ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    gcash = PaymentConsentVerifyRequest.AliPayVerificationOptions(
+                        flow = ThirdPartPayRequestFlow.IN_APP,
+                        osType = "android"
+                    )
+                )
+            PaymentMethodType.KAKAOPAY ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    kakaopay = PaymentConsentVerifyRequest.AliPayVerificationOptions(
+                        flow = ThirdPartPayRequestFlow.IN_APP,
+                        osType = "android"
+                    )
+                )
+            PaymentMethodType.TNG ->
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    tng = PaymentConsentVerifyRequest.AliPayVerificationOptions(
+                        flow = ThirdPartPayRequestFlow.IN_APP,
+                        osType = "android"
+                    )
+                )
+            else -> null
+        }
+
+        verifyPaymentConsent(
+            AirwallexApiRepository.VerifyPaymentConsentOptions(
+                clientSecret = params.clientSecret,
+                paymentConsentId = params.paymentConsentId,
+                request = PaymentConsentVerifyRequest.Builder()
+                    .setRequestId(UUID.randomUUID().toString())
+                    .setVerificationOptions(verificationOptions)
+                    .setReturnUrl(params.returnUrl)
+                    .build()
+            ),
+            object : PaymentListener<PaymentConsent> {
+                override fun onFailed(exception: Exception) {
+                    listener.onFailed(exception)
+                }
+
+                override fun onSuccess(response: PaymentConsent) {
+                    when (params.paymentMethodType) {
+                        PaymentMethodType.CARD -> {
+                            handleDccFlow(
+                                applicationContext,
+                                response.nextAction,
+                                null,
+                                requireNotNull(response.initialPaymentIntentId),
+                                currency = requireNotNull(params.currency),
+                                amount = requireNotNull(params.amount),
+                                clientSecret = params.clientSecret,
+                                selectCurrencyActivityLaunch,
+                                threeDSecureActivityLaunch,
+                                object : PaymentListener<PaymentIntent> {
+                                    override fun onFailed(exception: Exception) {
+                                        listener.onFailed(exception)
+                                    }
+
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        listener.onSuccess(response)
+                                    }
+                                }
+                            )
+                        }
+                        PaymentMethodType.WECHAT -> {
+                            val nextAction = response.nextAction
+                            if (nextAction == null ||
+                                nextAction.type != NextAction.NextActionType.CALL_SDK ||
+                                nextAction.data == null
+                            ) {
+                                listener.onFailed(Exception("Server error, WeChat data is null"))
+                                return
+                            }
+                            listener.onNextActionWithWeChatPay(
+                                WeChat(
+                                    appId = nextAction.data["appId"] as? String,
+                                    partnerId = nextAction.data["partnerId"] as? String,
+                                    prepayId = nextAction.data["prepayId"] as? String,
+                                    `package` = nextAction.data["package"] as? String,
+                                    nonceStr = nextAction.data["nonceStr"] as? String,
+                                    timestamp = nextAction.data["timeStamp"] as? String,
+                                    sign = nextAction.data["sign"] as? String
+                                )
+                            )
+                        }
+                        PaymentMethodType.ALIPAY_CN,
+                        PaymentMethodType.ALIPAY_HK,
+                        PaymentMethodType.DANA,
+                        PaymentMethodType.GCASH,
+                        PaymentMethodType.KAKAOPAY,
+                        PaymentMethodType.TNG -> {
+                            val nextAction = response.nextAction
+                            val redirectUrl = nextAction?.url
+                            if (redirectUrl.isNullOrEmpty()) {
+                                listener.onFailed(Exception("Server error, redirect url is null"))
+                                return
+                            }
+                            listener.onNextActionWithAlipayUrl(redirectUrl)
+                        }
+                        else -> {
+                            listener.onFailed(Exception("Unsupported PaymentMethod ${params.paymentMethodType} "))
+                        }
+                    }
+                }
+            }
+        )
     }
 
     override fun verifyPaymentConsent(options: ApiRepository.Options, listener: PaymentListener<PaymentConsent>) {
@@ -405,8 +600,16 @@ internal class AirwallexPaymentManager(
     /**
      * Handle 3DS flow - Check jwt if existed
      */
-    private fun handleNextAction(applicationContext: Context, threeDSecureActivityLaunch: ThreeDSecureActivityLaunch, response: PaymentIntent, clientSecret: String, device: Device?, listener: PaymentListener<PaymentIntent>) {
-        val serverJwt = response.nextAction?.data?.get("jwt") as? String
+    private fun handleNextAction(
+        applicationContext: Context,
+        threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
+        nextAction: NextAction?,
+        paymentIntentId: String,
+        clientSecret: String,
+        device: Device?,
+        listener: PaymentListener<PaymentIntent>
+    ) {
+        val serverJwt = nextAction?.data?.get("jwt") as? String
 
         if (serverJwt != null) {
             Logger.debug("Prepare 3DS Flow, serverJwt: $serverJwt")
@@ -414,12 +617,12 @@ internal class AirwallexPaymentManager(
             Tracker.track(
                 TrackerRequest.Builder()
                     .setCode(TrackerRequest.TrackerCode.ON_CHALLENGE)
-                    .setNextActionType(response.nextAction.type?.value)
-                    .setNextActionUrl(response.nextAction.url)
+                    .setNextActionType(nextAction.type?.value)
+                    .setNextActionUrl(nextAction.url)
                     .build()
             )
             handle3DSFlow(
-                applicationContext, threeDSecureActivityLaunch, response.id, clientSecret, serverJwt, device,
+                applicationContext, threeDSecureActivityLaunch, paymentIntentId, clientSecret, serverJwt, device,
                 object : PaymentListener<PaymentIntent> {
                     override fun onFailed(exception: Exception) {
                         Tracker.track(
@@ -443,7 +646,13 @@ internal class AirwallexPaymentManager(
             )
         } else {
             Logger.debug("Don't need the 3DS Flow")
-            listener.onSuccess(response)
+            retrievePaymentIntent(
+                AirwallexApiRepository.RetrievePaymentIntentOptions(
+                    clientSecret = clientSecret,
+                    paymentIntentId = paymentIntentId
+                ),
+                listener
+            )
         }
     }
 

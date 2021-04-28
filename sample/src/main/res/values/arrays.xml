@@ -6,8 +6,9 @@
     </string-array>
 
     <string-array name="array_checkout_mode">
-        <item>One-Off</item>
+        <item>Payment</item>
         <item>Recurring</item>
+        <item>Recurring with intent</item>
     </string-array>
 
     <string-array name="array_next_trigger_by">

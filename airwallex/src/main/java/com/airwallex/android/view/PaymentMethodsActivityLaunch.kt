@@ -5,8 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
-import com.airwallex.android.AirwallexCheckoutMode
-import com.airwallex.android.AirwallexNextTriggerBy
+import com.airwallex.android.AirwallexSession
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import com.airwallex.android.model.ObjectBuilder
@@ -30,40 +29,26 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
 
     @Parcelize
     data class Args internal constructor(
-        val paymentIntent: PaymentIntent,
         val includeCheckoutFlow: Boolean,
-        val checkoutMode: AirwallexCheckoutMode,
-        val nextTriggerBy: AirwallexNextTriggerBy
+        val session: AirwallexSession
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
-            private lateinit var paymentIntent: PaymentIntent
+            private lateinit var session: AirwallexSession
             private var includeCheckoutFlow: Boolean = true
-            private var checkoutMode: AirwallexCheckoutMode = AirwallexCheckoutMode.ONEOFF
-            private var nextTriggerBy: AirwallexNextTriggerBy = AirwallexNextTriggerBy.MERCHANT
-
-            fun setPaymentIntent(paymentIntent: PaymentIntent): Builder = apply {
-                this.paymentIntent = paymentIntent
-            }
 
             fun setIncludeCheckoutFlow(includeCheckoutFlow: Boolean): Builder = apply {
                 this.includeCheckoutFlow = includeCheckoutFlow
             }
 
-            fun setCheckoutMode(checkoutMode: AirwallexCheckoutMode): Builder = apply {
-                this.checkoutMode = checkoutMode
-            }
-
-            fun setNextTriggerBy(nextTriggerBy: AirwallexNextTriggerBy): Builder = apply {
-                this.nextTriggerBy = nextTriggerBy
+            fun setAirwallexSession(session: AirwallexSession): Builder = apply {
+                this.session = session
             }
 
             override fun build(): Args {
                 return Args(
-                    paymentIntent = paymentIntent,
                     includeCheckoutFlow = includeCheckoutFlow,
-                    checkoutMode = checkoutMode,
-                    nextTriggerBy = nextTriggerBy
+                    session = session
                 )
             }
         }
@@ -81,8 +66,9 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
         val paymentMethodType: PaymentMethodType? = null,
         var exception: Exception? = null,
         val paymentMethod: PaymentMethod? = null,
-        val paymentConsent: PaymentConsent? = null,
         val cvc: String? = null,
+        val weChat: WeChat? = null,
+        val redirectUrl: String? = null,
         val includeCheckoutFlow: Boolean = false
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
@@ -98,8 +84,9 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
                     paymentMethodType = parcel.readParcelable(PaymentMethodType::class.java.classLoader),
                     exception = parcel.readSerializable() as? AirwallexException?,
                     paymentMethod = parcel.readParcelable(PaymentMethod::class.java.classLoader),
-                    paymentConsent = parcel.readParcelable(PaymentConsent::class.java.classLoader),
                     cvc = parcel.readString(),
+                    weChat = parcel.readParcelable(WeChat::class.java.classLoader),
+                    redirectUrl = parcel.readString(),
                     includeCheckoutFlow = parcel.readInt() == 1
                 )
             }
@@ -109,8 +96,9 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
                 parcel.writeParcelable(paymentMethodType, 0)
                 parcel.writeSerializable(exception)
                 parcel.writeParcelable(paymentMethod, 0)
-                parcel.writeParcelable(paymentConsent, 0)
                 parcel.writeString(cvc)
+                parcel.writeParcelable(weChat, 0)
+                parcel.writeString(redirectUrl)
                 parcel.writeInt(if (includeCheckoutFlow) 1 else 0)
             }
 

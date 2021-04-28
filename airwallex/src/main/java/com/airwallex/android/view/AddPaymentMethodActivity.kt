@@ -3,12 +3,12 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.airwallex.android.Airwallex
+import com.airwallex.android.*
 import com.airwallex.android.ClientSecretRepository
 import com.airwallex.android.model.CreatePaymentMethodParams
-import com.airwallex.android.R
 import com.airwallex.android.model.ClientSecret
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.Shipping
 import kotlinx.android.synthetic.main.activity_add_card.*
 
 /**
@@ -24,6 +24,29 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         AddPaymentMethodActivityLaunch.Args.getExtra(intent)
     }
 
+    private val session: AirwallexSession by lazy {
+        args.session
+    }
+
+    private val customerId: String by lazy {
+        requireNotNull(session.customerId)
+    }
+
+    private val shipping: Shipping? by lazy {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                (session as AirwallexPaymentSession).paymentIntent.order?.shipping
+            }
+            is AirwallexRecurringWithIntentSession -> {
+                (session as AirwallexRecurringWithIntentSession).paymentIntent.order?.shipping
+            }
+            is AirwallexRecurringSession -> {
+                (session as AirwallexRecurringSession).shipping
+            }
+            else -> null
+        }
+    }
+
     private val airwallex: Airwallex by lazy {
         Airwallex(this)
     }
@@ -37,13 +60,13 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         val card = cardWidget.paymentMethodCard ?: return
         setLoadingProgress(loading = true, cancelable = false)
         ClientSecretRepository.getInstance().retrieveClientSecret(
-            args.customerId,
+            customerId,
             object : ClientSecretRepository.ClientSecretRetrieveListener {
                 override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
                     airwallex.createPaymentMethod(
                         CreatePaymentMethodParams(
                             clientSecret = clientSecret.value,
-                            customerId = args.customerId,
+                            customerId = customerId,
                             card = card,
                             billing = billingWidget.billing
                         ),
@@ -102,7 +125,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         super.onCreate(savedInstanceState)
 
         cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
-        billingWidget.shipping = args.shipping
+        billingWidget.shipping = shipping
         billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
 
         tvSaveCard.isEnabled = isValid

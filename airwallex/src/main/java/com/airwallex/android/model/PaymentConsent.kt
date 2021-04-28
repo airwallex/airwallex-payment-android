@@ -129,28 +129,4 @@ data class PaymentConsent internal constructor(
             }
         }
     }
-
-    @Parcelize
-    data class NextAction internal constructor(
-
-        /**
-         * The additional data that can be used to complete this action
-         */
-        val data: @RawValue Map<String, @RawValue Any?>?,
-
-        /**
-         * The redirect method if the action type is redirect, can be one of GET, POST
-         */
-        val method: String?,
-
-        /**
-         * Type of the next action, can only be redirect
-         */
-        val type: String?,
-
-        /**
-         * The redirect url if the action type is redirect
-         */
-        val url: String?
-    ) : AirwallexModel, Parcelable
 }

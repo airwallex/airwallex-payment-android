@@ -3,7 +3,6 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.text.TextUtils
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import com.airwallex.android.exception.DccException
@@ -41,6 +40,11 @@ class Airwallex internal constructor(
         fun onSuccess(response: T)
     }
 
+    interface PaymentResultListener<T> : PaymentListener<T> {
+        fun onNextActionWithWeChatPay(weChat: WeChat)
+        fun onNextActionWithAlipayUrl(url: String)
+    }
+
     /**
      * Constructor of [Airwallex]
      */
@@ -71,7 +75,7 @@ class Airwallex internal constructor(
     @UiThread
     fun confirmPaymentIntent(
         params: ConfirmPaymentIntentParams,
-        listener: PaymentListener<PaymentIntent>
+        listener: PaymentResultListener<PaymentIntent>
     ) {
         // Retrieve Device Fingerprinting
         securityConnector.retrieveSecurityToken(
@@ -308,7 +312,7 @@ class Airwallex internal constructor(
     @UiThread
     fun verifyPaymentConsent(
         params: VerifyPaymentConsentParams,
-        listener: PaymentListener<PaymentConsent>
+        listener: PaymentResultListener<PaymentIntent>
     ) {
         val availablePaymentMethodTypes = listOf(
             PaymentMethodType.CARD,
@@ -323,64 +327,7 @@ class Airwallex internal constructor(
             return
         }
 
-        val verificationOptions = when (params.paymentMethodType) {
-            PaymentMethodType.CARD ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    card = PaymentConsentVerifyRequest.CardVerificationOptions(
-                        amount = params.amount,
-                        currency = params.currency,
-                        cvc = params.cvc,
-                    )
-                )
-            PaymentMethodType.ALIPAY_HK ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    alipayhk = PaymentConsentVerifyRequest.AliPayVerificationOptions(
-                        flow = ThirdPartPayRequestFlow.IN_APP,
-                        osType = "android"
-                    )
-                )
-            PaymentMethodType.DANA ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    dana = PaymentConsentVerifyRequest.AliPayVerificationOptions(
-                        flow = ThirdPartPayRequestFlow.IN_APP,
-                        osType = "android"
-                    )
-                )
-            PaymentMethodType.GCASH ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    gcash = PaymentConsentVerifyRequest.AliPayVerificationOptions(
-                        flow = ThirdPartPayRequestFlow.IN_APP,
-                        osType = "android"
-                    )
-                )
-            PaymentMethodType.KAKAOPAY ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    kakaopay = PaymentConsentVerifyRequest.AliPayVerificationOptions(
-                        flow = ThirdPartPayRequestFlow.IN_APP,
-                        osType = "android"
-                    )
-                )
-            PaymentMethodType.TNG ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    tng = PaymentConsentVerifyRequest.AliPayVerificationOptions(
-                        flow = ThirdPartPayRequestFlow.IN_APP,
-                        osType = "android"
-                    )
-                )
-            else -> null
-        }
-        paymentManager.verifyPaymentConsent(
-            AirwallexApiRepository.VerifyPaymentConsentOptions(
-                clientSecret = params.clientSecret,
-                paymentConsentId = params.paymentConsentId,
-                request = PaymentConsentVerifyRequest.Builder()
-                    .setRequestId(UUID.randomUUID().toString())
-                    .setVerificationOptions(verificationOptions)
-                    .setReturnUrl(params.returnUrl)
-                    .build()
-            ),
-            listener
-        )
+        paymentManager.verifyPaymentConsent(applicationContext, params, dccActivityLaunch, threeDSecureActivityLaunch, listener)
     }
 
     /**
@@ -425,12 +372,8 @@ class Airwallex internal constructor(
     }
 
     @Throws(RedirectException::class)
-    fun handleAction(nextAction: PaymentIntent.NextAction?) {
-        val redirectUrl = nextAction?.url
-        if (TextUtils.isEmpty(redirectUrl)) {
-            throw RedirectException(message = "Redirect URL is empty.")
-        }
-        RedirectUtil.makeRedirect(activity = activity, redirectUrl = redirectUrl!!)
+    fun handleAction(redirectUrl: String) {
+        RedirectUtil.makeRedirect(activity = activity, redirectUrl = redirectUrl)
     }
 
     // For the custom flow
@@ -451,6 +394,16 @@ class Airwallex internal constructor(
     interface PaymentIntentListener : PaymentFlowListener {
         fun onSuccess(paymentIntent: PaymentIntent)
         fun onFailed(error: Exception)
+        fun onNextActionWithWeChatPay(weChat: WeChat)
+        fun onNextActionWithAlipayUrl(url: String)
+    }
+
+    /**
+     * Represents a listener for PaymentIntent Card actions
+     */
+    interface PaymentIntentCardListener : PaymentFlowListener {
+        fun onSuccess(paymentIntent: PaymentIntent)
+        fun onFailed(error: Exception)
     }
 
     /**
@@ -458,7 +411,7 @@ class Airwallex internal constructor(
      */
     interface PaymentMethodListener : PaymentFlowListener {
         // CVC returns only when payment is first created, otherwise null
-        fun onSuccess(paymentMethod: PaymentMethod, paymentConsent: PaymentConsent?, cvc: String?)
+        fun onSuccess(paymentMethod: PaymentMethod, cvc: String?)
         fun onFailed(error: Exception)
     }
 
@@ -467,6 +420,7 @@ class Airwallex internal constructor(
      */
     interface AddPaymentMethodListener : PaymentFlowListener {
         fun onSuccess(paymentMethod: PaymentMethod, cvc: String)
+        fun onFailed(error: Exception)
     }
 
     /**
@@ -485,77 +439,59 @@ class Airwallex internal constructor(
     /**
      * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
      *
-     * @param paymentIntent a [PaymentIntent] used to present the Add Payment Method flow
-     * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
-     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
-     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
+     * @param session a [AirwallexSession] used to present the Add Payment Method flow
+     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
      * @param addPaymentMethodFlowListener The callback of present the add payment method flow
      */
     fun presentAddPaymentMethodFlow(
-        paymentIntent: PaymentIntent,
+        session: AirwallexSession,
         clientSecretProvider: ClientSecretProvider,
-        checkoutMode: AirwallexCheckoutMode,
-        nextTriggerBy: AirwallexNextTriggerBy,
         addPaymentMethodFlowListener: AddPaymentMethodListener
     ) {
-        airwallexStarter.presentAddPaymentMethodFlow(paymentIntent, clientSecretProvider, checkoutMode, nextTriggerBy, addPaymentMethodFlowListener)
+        airwallexStarter.presentAddPaymentMethodFlow(session, clientSecretProvider, addPaymentMethodFlowListener)
     }
 
     /**
      * Launch the [PaymentMethodsActivity] to allow the user to select a payment method or add a new one
      *
-     * @param paymentIntent a [PaymentIntent] used to present the Select Payment Method flow
-     * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
-     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
-     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
+     * @param session a [AirwallexSession] used to present the Select Payment Method flow
+     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
      * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
      */
     fun presentSelectPaymentMethodFlow(
-        paymentIntent: PaymentIntent,
+        session: AirwallexSession,
         clientSecretProvider: ClientSecretProvider,
-        checkoutMode: AirwallexCheckoutMode,
-        nextTriggerBy: AirwallexNextTriggerBy,
         selectPaymentMethodFlowListener: PaymentMethodListener
     ) {
-        airwallexStarter.presentSelectPaymentMethodFlow(paymentIntent, clientSecretProvider, checkoutMode, nextTriggerBy, selectPaymentMethodFlowListener)
+        airwallexStarter.presentSelectPaymentMethodFlow(session, clientSecretProvider, selectPaymentMethodFlowListener)
     }
 
     /**
      * Launch the [PaymentCheckoutActivity] to allow the user to confirm [PaymentIntent] using the specified [PaymentMethod]
      *
-     * @param paymentIntent a [PaymentIntent] used to present the Checkout flow
-     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
-     * @param paymentConsent a [PaymentConsent] used to present the Checkout flow
-     * @param cvc CVC of [PaymentMethod], optional
+     * @param session a [AirwallexSession] used to present the Checkout flow
      * @param paymentDetailListener The callback of present the select payment detail flow
      */
     fun presentPaymentDetailFlow(
-        paymentIntent: PaymentIntent,
-        paymentMethod: PaymentMethod,
-        paymentConsent: PaymentConsent?,
-        cvc: String? = null,
-        paymentDetailListener: PaymentIntentListener
+        session: AirwallexSession,
+        paymentDetailListener: PaymentIntentCardListener
     ) {
-        airwallexStarter.presentPaymentDetailFlow(paymentIntent, paymentMethod, paymentConsent, cvc, paymentDetailListener)
+        airwallexStarter.presentPaymentDetailFlow(session, paymentDetailListener)
     }
 
     /**
      * Launch the [PaymentMethodsActivity] to allow the user to complete the entire payment flow
      *
-     * @param paymentIntent a [PaymentIntent] used to present the payment flow
-     * @param clientSecretProvider a [ClientSecretProvider] used to present the Add Payment Method flow
-     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
-     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
+     * @param session a [AirwallexSession] used to present the payment flow
+     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
      * @param paymentFlowListener The callback of present entire payment flow
      */
     fun presentPaymentFlow(
-        paymentIntent: PaymentIntent,
+        session: AirwallexSession,
         clientSecretProvider: ClientSecretProvider,
-        checkoutMode: AirwallexCheckoutMode,
-        nextTriggerBy: AirwallexNextTriggerBy,
         paymentFlowListener: PaymentIntentListener
     ) {
-        airwallexStarter.presentPaymentFlow(paymentIntent, clientSecretProvider, checkoutMode, nextTriggerBy, paymentFlowListener)
+        airwallexStarter.presentPaymentFlow(session, clientSecretProvider, paymentFlowListener)
     }
 
     /**

@@ -6,11 +6,12 @@ import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
 import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.Device
+import com.airwallex.android.model.NextAction
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.view.DccActivityLaunch.Args
 import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
+import java.math.BigDecimal
 
 internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
 
@@ -28,10 +29,11 @@ internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
 
     @Parcelize
     internal data class Args internal constructor(
-        val dcc: PaymentIntent.DccData,
-        val paymentIntent: PaymentIntent,
+        val dcc: NextAction.DccData,
+        val paymentIntentId: String,
+        val currency: String,
+        val amount: BigDecimal,
         val clientSecret: String,
-        val device: Device
     ) : AirwallexActivityLaunch.Args {
 
         internal companion object {

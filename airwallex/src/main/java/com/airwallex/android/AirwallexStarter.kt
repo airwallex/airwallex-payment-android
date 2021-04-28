@@ -42,7 +42,7 @@ internal class AirwallexStarter constructor(
 
     private var shippingFlowListener: Airwallex.PaymentShippingListener? = null
     private var paymentFlowListener: Airwallex.PaymentIntentListener? = null
-    private var paymentDetailListener: Airwallex.PaymentIntentListener? = null
+    private var paymentDetailListener: Airwallex.PaymentIntentCardListener? = null
     private var addPaymentMethodFlowListener: Airwallex.AddPaymentMethodListener? = null
     private var selectPaymentMethodFlowListener: Airwallex.PaymentMethodListener? = null
 
@@ -67,33 +67,24 @@ internal class AirwallexStarter constructor(
     /**
      * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
      *
-     * @param paymentIntent a [PaymentIntent] used to present the Add Payment Method flow
-     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
-     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
+     * @param session a [AirwallexSession] used to present the Add Payment Method flow
+     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
      * @param addPaymentMethodFlowListener The callback of present the add payment method flow
      */
     fun presentAddPaymentMethodFlow(
-        paymentIntent: PaymentIntent,
+        session: AirwallexSession,
         clientSecretProvider: ClientSecretProvider,
-        checkoutMode: AirwallexCheckoutMode,
-        nextTriggerBy: AirwallexNextTriggerBy,
         addPaymentMethodFlowListener: Airwallex.AddPaymentMethodListener
     ) {
-        requireNotNull(
-            paymentIntent.customerId,
-            {
-                "Customer id must be provided on add payment method flow"
-            }
-        )
+        if (session.customerId == null) {
+            addPaymentMethodFlowListener.onFailed(Exception("Customer id must be provided on AddPaymentMethodFlow"))
+            return
+        }
         this.addPaymentMethodFlowListener = addPaymentMethodFlowListener
         ClientSecretRepository.init(clientSecretProvider)
         addPaymentMethodActivityLaunch.startForResult(
             AddPaymentMethodActivityLaunch.Args.Builder()
-                .setShipping(paymentIntent.order?.shipping)
-                .setCustomerId(requireNotNull(paymentIntent.customerId))
-                .setClientSecret(requireNotNull(paymentIntent.clientSecret))
-                .setCheckoutMode(checkoutMode)
-                .setNextTriggerBy(nextTriggerBy)
+                .setAirwallexSession(session)
                 .build()
         )
     }
@@ -101,32 +92,25 @@ internal class AirwallexStarter constructor(
     /**
      * Launch the [PaymentMethodsActivity] to allow the user to select a payment method or add a new one
      *
-     * @param paymentIntent a [PaymentIntent] used to present the Select Payment Method flow
-     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
-     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
+     * @param session a [AirwallexSession] used to present the Select Payment Method flow
+     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
      * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
      */
     fun presentSelectPaymentMethodFlow(
-        paymentIntent: PaymentIntent,
+        session: AirwallexSession,
         clientSecretProvider: ClientSecretProvider,
-        checkoutMode: AirwallexCheckoutMode,
-        nextTriggerBy: AirwallexNextTriggerBy,
         selectPaymentMethodFlowListener: Airwallex.PaymentMethodListener
     ) {
-        requireNotNull(
-            paymentIntent.customerId,
-            {
-                "Customer id must be provided on select payment method flow"
-            }
-        )
+        if (session.customerId == null) {
+            selectPaymentMethodFlowListener.onFailed(Exception("Customer id must be provided on SelectPaymentMethodFlow"))
+            return
+        }
         this.selectPaymentMethodFlowListener = selectPaymentMethodFlowListener
         ClientSecretRepository.init(clientSecretProvider)
         paymentMethodsActivityLaunch.startForResult(
             PaymentMethodsActivityLaunch.Args.Builder()
-                .setPaymentIntent(paymentIntent)
                 .setIncludeCheckoutFlow(false)
-                .setCheckoutMode(checkoutMode)
-                .setNextTriggerBy(nextTriggerBy)
+                .setAirwallexSession(session)
                 .build()
         )
     }
@@ -134,30 +118,26 @@ internal class AirwallexStarter constructor(
     /**
      * Launch the [PaymentCheckoutActivity] to allow the user to confirm [PaymentIntent] using the specified [PaymentMethod]
      *
-     * @param paymentIntent a [PaymentIntent] used to present the Checkout flow
-     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
-     * @param paymentConsent a [PaymentConsent] used to present the Checkout flow
-     * @param cvc CVC of [PaymentMethod], optional
+     * @param session a [AirwallexSession] used to present the Checkout flow
      * @param paymentDetailListener The callback of present the select payment detail flow
      */
     fun presentPaymentDetailFlow(
-        paymentIntent: PaymentIntent,
-        paymentMethod: PaymentMethod,
-        paymentConsent: PaymentConsent?,
-        cvc: String? = null,
-        paymentDetailListener: Airwallex.PaymentIntentListener
+        session: AirwallexSession,
+        paymentDetailListener: Airwallex.PaymentIntentCardListener
     ) {
+        val paymentMethod = session.paymentMethod
+        if (paymentMethod == null) {
+            paymentDetailListener.onFailed(Exception("PaymentMethod is required on PaymentDetailFlow"))
+            return
+        }
         if (paymentMethod.type != PaymentMethodType.CARD) {
-            paymentDetailListener.onFailed(Exception("Only card payment is supported"))
+            paymentDetailListener.onFailed(Exception("Only card payment is supported on PaymentDetailFlow"))
             return
         }
         this.paymentDetailListener = paymentDetailListener
         paymentCheckoutActivityLaunch.startForResult(
             PaymentCheckoutActivityLaunch.Args.Builder()
-                .setPaymentIntent(paymentIntent)
-                .setPaymentMethod(paymentMethod)
-                .setPaymentConsent(paymentConsent)
-                .setCvc(cvc)
+                .setAirwallexSession(session)
                 .build()
         )
     }
@@ -165,32 +145,25 @@ internal class AirwallexStarter constructor(
     /**
      * Launch the [PaymentMethodsActivity] to allow the user to complete the entire payment flow
      *
-     * @param paymentIntent a [PaymentIntent] used to present the payment flow
-     * @param checkoutMode Checkout Mode. Can be one of recurring, oneoff
-     * @param nextTriggerBy The party to trigger subsequent payments. Can be one of merchant, customer
+     * @param session a [AirwallexSession] used to present the payment flow
+     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
      * @param paymentFlowListener The callback of present entire payment flow
      */
     fun presentPaymentFlow(
-        paymentIntent: PaymentIntent,
+        session: AirwallexSession,
         clientSecretProvider: ClientSecretProvider,
-        checkoutMode: AirwallexCheckoutMode,
-        nextTriggerBy: AirwallexNextTriggerBy,
         paymentFlowListener: Airwallex.PaymentIntentListener
     ) {
-        requireNotNull(
-            paymentIntent.customerId,
-            {
-                "Customer id must be provided on payment flow"
-            }
-        )
+        if (session.customerId == null) {
+            paymentFlowListener.onFailed(Exception("Customer id must be provided on presentPaymentFlow"))
+            return
+        }
         this.paymentFlowListener = paymentFlowListener
         ClientSecretRepository.init(clientSecretProvider)
         paymentMethodsActivityLaunch.startForResult(
             PaymentMethodsActivityLaunch.Args.Builder()
-                .setPaymentIntent(paymentIntent)
                 .setIncludeCheckoutFlow(true)
-                .setCheckoutMode(checkoutMode)
-                .setNextTriggerBy(nextTriggerBy)
+                .setAirwallexSession(session)
                 .build()
         )
     }
@@ -240,8 +213,17 @@ internal class AirwallexStarter constructor(
                             if (exception != null) {
                                 paymentFlowListener?.onFailed(exception)
                             } else {
-                                val paymentIntent = requireNotNull(result.paymentIntent)
-                                paymentFlowListener?.onSuccess(paymentIntent)
+                                when {
+                                    result.weChat != null -> {
+                                        paymentFlowListener?.onNextActionWithWeChatPay(requireNotNull(result.weChat))
+                                    }
+                                    result.redirectUrl != null -> {
+                                        paymentFlowListener?.onNextActionWithAlipayUrl(requireNotNull(result.redirectUrl))
+                                    }
+                                    else -> {
+                                        paymentFlowListener?.onSuccess(requireNotNull(result.paymentIntent))
+                                    }
+                                }
                             }
                             paymentFlowListener = null
                         } else {
@@ -251,7 +233,6 @@ internal class AirwallexStarter constructor(
                             } else {
                                 selectPaymentMethodFlowListener?.onSuccess(
                                     requireNotNull(result.paymentMethod),
-                                    result.paymentConsent,
                                     result.cvc
                                 )
                             }

@@ -4,11 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.Airwallex
+import com.airwallex.android.AirwallexSession
 import com.airwallex.android.CurrencyUtils.formatPrice
 import com.airwallex.android.R
-import com.airwallex.android.model.PaymentConsent
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.WeChat
 import kotlinx.android.synthetic.main.activity_payment_checkout.*
 import java.lang.Exception
 
@@ -29,16 +30,9 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         args.paymentMethod
     }
 
-    private val paymentConsent: PaymentConsent? by lazy {
-        args.paymentConsent
+    private val session: AirwallexSession by lazy {
+        args.session
     }
-
-    override val paymentIntent: PaymentIntent by lazy {
-        args.paymentIntent
-    }
-
-    override val cvc: String?
-        get() = paymentMethodItemView.cvc
 
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_back
@@ -47,7 +41,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        tvTotalPrice.text = formatPrice(paymentIntent.currency, paymentIntent.amount)
+        tvTotalPrice.text = formatPrice(session.currency, session.amount)
         paymentMethodItemView.renewalPaymentMethod(paymentMethod, args.cvc)
         paymentMethodItemView.cvcChangedCallback = {
             updateButtonStatus()
@@ -69,10 +63,11 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun startConfirmPaymentIntent() {
-        confirmPaymentIntent(
+        startCheckout(
+            session = session,
             paymentMethod = paymentMethod,
-            paymentConsent = paymentConsent,
-            listener = object : Airwallex.PaymentListener<PaymentIntent> {
+            cvc = paymentMethodItemView.cvc,
+            listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
                     finishWithPaymentIntent(paymentIntent = response)
                 }
@@ -80,12 +75,22 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                 override fun onFailed(exception: Exception) {
                     finishWithPaymentIntent(exception = exception)
                 }
+
+                override fun onNextActionWithWeChatPay(weChat: WeChat) {
+                    finishWithPaymentIntent(weChat = weChat)
+                }
+
+                override fun onNextActionWithAlipayUrl(url: String) {
+                    finishWithPaymentIntent(redirectUrl = url)
+                }
             }
         )
     }
 
     private fun finishWithPaymentIntent(
         paymentIntent: PaymentIntent? = null,
+        weChat: WeChat? = null,
+        redirectUrl: String? = null,
         exception: Exception? = null
     ) {
         setLoadingProgress(false)
@@ -94,6 +99,8 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             Intent().putExtras(
                 PaymentCheckoutActivityLaunch.Result(
                     paymentIntent = paymentIntent,
+                    weChat = weChat,
+                    redirectUrl = redirectUrl,
                     exception = exception
                 ).toBundle()
             )

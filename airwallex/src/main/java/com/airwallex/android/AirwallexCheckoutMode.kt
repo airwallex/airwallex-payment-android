@@ -1,5 +1,7 @@
 package com.airwallex.android
 
 enum class AirwallexCheckoutMode {
-    RECURRING, ONEOFF;
+    PAYMENT,
+    RECURRING,
+    RECURRING_WITH_INTENT;
 }

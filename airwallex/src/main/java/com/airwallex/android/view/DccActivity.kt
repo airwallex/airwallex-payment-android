@@ -24,7 +24,7 @@ internal class DccActivity : AirwallexActivity() {
         super.onCreate(savedInstanceState)
 
         // Current currency
-        current_currency.updateCurrency(args.paymentIntent.currency, args.paymentIntent.amount)
+        current_currency.updateCurrency(args.currency, args.amount)
 
         // Transfer currency
         val dccCurrency = args.dcc.currency
@@ -35,7 +35,7 @@ internal class DccActivity : AirwallexActivity() {
             transfer_currency.visibility = View.GONE
         }
 
-        rate.text = getString(R.string.rate, args.paymentIntent.currency, args.dcc.clientRate, args.dcc.currency)
+        rate.text = getString(R.string.rate, args.currency, args.dcc.clientRate, args.dcc.currency)
 
         current_currency.isSelected = true
         current_currency.setOnClickListener {
@@ -52,7 +52,7 @@ internal class DccActivity : AirwallexActivity() {
         confirm.setOnClickListener {
             setLoadingProgress(loading = true, cancelable = false)
             val params = ContinuePaymentIntentParams(
-                paymentIntentId = args.paymentIntent.id,
+                paymentIntentId = args.paymentIntentId,
                 clientSecret = args.clientSecret,
                 type = PaymentIntentContinueType.DCC,
                 useDcc = transfer_currency.isSelected

@@ -96,7 +96,7 @@ internal interface PaymentManager {
         params: ConfirmPaymentIntentParams,
         selectCurrencyActivityLaunch: DccActivityLaunch,
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
-        listener: PaymentListener<PaymentIntent>
+        listener: Airwallex.PaymentResultListener<PaymentIntent>
     )
 
     /**
@@ -118,6 +118,17 @@ internal interface PaymentManager {
     fun createPaymentConsent(
         options: ApiRepository.Options,
         listener: PaymentListener<PaymentConsent>
+    )
+
+    /**
+     *  Verify a Airwallex [PaymentConsent]
+     */
+    fun verifyPaymentConsent(
+        applicationContext: Context,
+        params: VerifyPaymentConsentParams,
+        selectCurrencyActivityLaunch: DccActivityLaunch,
+        threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
+        listener: Airwallex.PaymentResultListener<PaymentIntent>
     )
 
     /**

@@ -1,16 +1,15 @@
-package com.airwallex.android.view
+package com.airwallex.paymentacceptance
 
+import androidx.fragment.app.Fragment
 import com.airwallex.android.*
 import com.airwallex.android.exception.InvalidParamsException
 import com.airwallex.android.model.*
 import java.math.BigDecimal
 
-internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
+open class BasePaymentCartFragment : Fragment() {
 
-    abstract val airwallex: Airwallex
-
-    override fun onActionSave() {
-        // Ignore
+    internal val airwallex by lazy {
+        Airwallex(this)
     }
 
     private fun createPaymentConsent(
@@ -128,13 +127,14 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     amount = amount,
                     currency = currency,
                     cvc = cvc,
-                    returnUrl = "airwallexcheckout://$packageName"
+                    returnUrl = "airwallexcheckout://${requireContext().packageName}"
                 )
             }
             else -> {
                 throw InvalidParamsException(message = "Not support payment method ${paymentConsent.paymentMethod?.type} when verifying payment consent")
             }
         }
+
         airwallex.verifyPaymentConsent(params, listener)
     }
 
@@ -222,8 +222,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         airwallex.confirmPaymentIntent(params, listener)
     }
 
-    internal fun startCheckout(session: AirwallexSession, paymentMethod: PaymentMethod, cvc: String?, listener: Airwallex.PaymentResultListener<PaymentIntent>) {
-        setLoadingProgress(loading = true, cancelable = false)
+    internal fun startCheckout(session: AirwallexSession, paymentMethod: PaymentMethod, cvc: String? = null, listener: Airwallex.PaymentResultListener<PaymentIntent>) {
         when (session) {
             is AirwallexPaymentSession -> {
                 val paymentIntent = session.paymentIntent

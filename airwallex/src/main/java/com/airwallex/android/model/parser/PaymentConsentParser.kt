@@ -55,24 +55,4 @@ class PaymentConsentParser : ModelJsonParser<PaymentConsent> {
         private const val FIELD_NEXT_ACTION = "next_action"
         private const val FIELD_CLIENT_SECRET = "client_secret"
     }
-
-    internal class NextActionParser : ModelJsonParser<PaymentConsent.NextAction> {
-
-        override fun parse(json: JSONObject): PaymentConsent.NextAction? {
-            return PaymentConsent.NextAction(
-                data = AirwallexJsonUtils.optMap(json, FIELD_DATA),
-                method = AirwallexJsonUtils.optString(json, FIELD_METHOD),
-                type = AirwallexJsonUtils.optString(json, FIELD_TYPE),
-                url = AirwallexJsonUtils.optString(json, FIELD_URL)
-            )
-        }
-
-        private companion object {
-
-            private const val FIELD_DATA = "data"
-            private const val FIELD_METHOD = "method"
-            private const val FIELD_TYPE = "type"
-            private const val FIELD_URL = "url"
-        }
-    }
 }

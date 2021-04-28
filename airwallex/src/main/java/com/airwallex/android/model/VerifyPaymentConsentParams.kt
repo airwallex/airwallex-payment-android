@@ -92,7 +92,7 @@ data class VerifyPaymentConsentParams constructor(
             amount: BigDecimal?,
             currency: String?,
             cvc: String?,
-            returnUrl: String?
+            returnUrl: String
         ): VerifyPaymentConsentParams {
             return Builder(
                 clientSecret = clientSecret,

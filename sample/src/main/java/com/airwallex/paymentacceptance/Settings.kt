@@ -9,12 +9,16 @@ object Settings {
 
     // Base URL
     private const val BASE_URL = ""
+
     // API Key
     private const val API_KEY = ""
+
     // Client Id
     private const val CLIENT_ID = ""
+
     // WeChat Pay App Id
     private const val WECHAT_APP_ID = ""
+
     // WeChat Pay App Signature
     private const val WECHAT_APP_SIGNATURE = ""
 
@@ -41,9 +45,11 @@ object Settings {
      */
     var cachedCustomerId: String
         set(value) {
-            sharedPreferences.edit()
-                .putString(CUSTOMER_ID, value)
-                .apply()
+            if (value.isEmpty()) {
+                sharedPreferences.edit().remove(CUSTOMER_ID).apply()
+            } else {
+                sharedPreferences.edit().putString(CUSTOMER_ID, value).apply()
+            }
         }
         get() {
             return sharedPreferences.getString(CUSTOMER_ID, "") ?: ""

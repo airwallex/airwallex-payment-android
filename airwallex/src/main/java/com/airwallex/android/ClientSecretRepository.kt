@@ -6,7 +6,7 @@ import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-internal class ClientSecretRepository(
+class ClientSecretRepository(
     private val clientSecretProvider: ClientSecretProvider
 ) : ClientSecretUpdateListener {
     private var clientSecretRetrieveListener: ClientSecretRetrieveListener? = null
@@ -48,7 +48,7 @@ internal class ClientSecretRepository(
         clientSecretRetrieveListener?.onClientSecretError(message)
     }
 
-    internal interface ClientSecretRetrieveListener {
+    interface ClientSecretRetrieveListener {
         fun onClientSecretRetrieve(
             clientSecret: ClientSecret
         )
