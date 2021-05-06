@@ -9,8 +9,8 @@ import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.NextAction
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.view.DccActivityLaunch.Args
-import kotlinx.android.parcel.Parceler
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parceler
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
 internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {

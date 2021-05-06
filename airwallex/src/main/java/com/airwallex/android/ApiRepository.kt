@@ -2,7 +2,7 @@ package com.airwallex.android
 
 import android.os.Parcelable
 import com.airwallex.android.model.*
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * An interface for making Airwallex API requests

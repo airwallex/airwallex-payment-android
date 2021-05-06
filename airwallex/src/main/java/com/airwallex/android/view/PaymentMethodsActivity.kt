@@ -4,13 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.*
 import com.airwallex.android.ClientSecretRepository
+import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.model.*
-import kotlinx.android.synthetic.main.activity_payment_methods.*
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -18,6 +19,12 @@ import java.util.concurrent.atomic.AtomicInteger
  *
  */
 internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
+
+    private val viewBinding: ActivityPaymentMethodsBinding by lazy {
+        viewStub.layoutResource = R.layout.activity_payment_methods
+        val root = viewStub.inflate() as ViewGroup
+        ActivityPaymentMethodsBinding.bind(root)
+    }
 
     private var pageNum: AtomicInteger = AtomicInteger(0)
 
@@ -62,12 +69,12 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             }
         }
 
-        addPaymentMethod.visibility = if (shouldShowCard) View.VISIBLE else View.GONE
-        addPaymentMethod.setOnClickListener {
+        viewBinding.addPaymentMethod.container.visibility = if (shouldShowCard) View.VISIBLE else View.GONE
+        viewBinding.addPaymentMethod.container.setOnClickListener {
             startAddPaymentMethod()
         }
 
-        rvPaymentMethods.apply {
+        viewBinding.rvPaymentMethods.apply {
             layoutManager = viewManager
             adapter = paymentMethodsAdapter
 
@@ -83,7 +90,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         paymentMethodsAdapter.onLoadMoreCallback = {
             fetchPaymentMethods()
         }
-        paymentMethodsAdapter.addOnScrollListener(rvPaymentMethods)
+        paymentMethodsAdapter.addOnScrollListener(viewBinding.rvPaymentMethods)
 
         val deletePaymentMethodDialogFactory = DeletePaymentMethodDialogFactory(
             this,
@@ -122,7 +129,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             )
         }
 
-        object : PaymentMethodSwipeCallback(this@PaymentMethodsActivity, rvPaymentMethods) {
+        object : PaymentMethodSwipeCallback(this@PaymentMethodsActivity, viewBinding.rvPaymentMethods) {
             override fun instantiateUnderlayButton(viewHolder: RecyclerView.ViewHolder?, underlayButtons: ArrayList<UnderlayButton>) {
                 underlayButtons.add(
                     UnderlayButton(
@@ -141,9 +148,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             }
         }
     }
-
-    override val layoutResource: Int
-        get() = R.layout.activity_payment_methods
 
     private fun fetchPaymentMethods() {
         setLoadingProgress(loading = true, cancelable = false)
@@ -239,7 +243,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 override fun onSuccess(response: PaymentMethodResponse) {
                     paymentMethodsAdapter.endLoadingMore()
                     paymentMethodsAdapter.setPaymentMethods(response.items, response.hasMore)
-                    paymentNoCards.visibility = if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
+                    viewBinding.paymentNoCards.tvNoCard.visibility = if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
                     pageNum.incrementAndGet()
                 }
 
@@ -337,9 +341,9 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
                 result?.let {
                     paymentMethodsAdapter.addNewPaymentMethod(it.paymentMethod)
-                    paymentNoCards.visibility =
+                    viewBinding.paymentNoCards.tvNoCard.visibility =
                         if (paymentMethodsAdapter.isEmpty()) View.VISIBLE else View.GONE
-                    rvPaymentMethods.requestLayout()
+                    viewBinding.rvPaymentMethods.requestLayout()
                     handleProcessPaymentMethod(it.paymentMethod, it.cvc)
                 }
             }

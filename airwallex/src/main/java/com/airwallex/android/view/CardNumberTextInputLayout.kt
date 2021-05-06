@@ -2,8 +2,8 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.ImageView
 import com.airwallex.android.R
-import kotlinx.android.synthetic.main.card_number_input_layout.view.*
 
 /**
  * A [AirwallexTextInputLayout] to format the credit card number, display errors and support callback interface
@@ -48,7 +48,7 @@ internal class CardNumberTextInputLayout constructor(
         }
 
         input.brandChangeCallback = { brand ->
-            ivBrand.setImageResource(brand.icon)
+            findViewById<ImageView>(R.id.ivBrand).setImageResource(brand.icon)
         }
     }
 }

@@ -12,8 +12,8 @@ import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.WeChat
 import com.airwallex.android.view.PaymentCheckoutActivityLaunch.Args
-import kotlinx.android.parcel.Parceler
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parceler
+import kotlinx.parcelize.Parcelize
 
 internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCheckoutActivity, Args> {
 

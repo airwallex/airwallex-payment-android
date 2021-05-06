@@ -9,28 +9,34 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
+import com.airwallex.android.databinding.CountryAutocompleteViewBinding
 import java.util.*
-import kotlinx.android.synthetic.main.country_autocomplete_view.view.*
 
 internal class CountryAutoCompleteView constructor(
     context: Context,
     attrs: AttributeSet
 ) : FrameLayout(context, attrs) {
 
+    private val viewBinding = CountryAutocompleteViewBinding.inflate(
+        LayoutInflater.from(context),
+        this,
+        true
+    )
+
     private var selectedCountry: Country? = null
 
     private var error: String?
         set(value) {
-            tvError.visibility = when (value) {
+            viewBinding.tvError.visibility = when (value) {
                 null -> View.GONE
                 else -> View.VISIBLE
             }
 
-            tvError.text = value
+            viewBinding.tvError.text = value
             updateLayoutColor()
         }
         get() {
-            return tvError.text.toString()
+            return viewBinding.tvError.text.toString()
         }
 
     private val countryAdapter: CountryAdapter
@@ -43,24 +49,24 @@ internal class CountryAutoCompleteView constructor(
     internal var country: String? = null
         set(value) {
             value?.let {
-                actCountry.setText(CountryUtils.getCountryByCode(it)?.name)
+                viewBinding.actCountry.setText(CountryUtils.getCountryByCode(it)?.name)
             }
             field = value
         }
         get() {
-            return CountryUtils.getCountryByName(actCountry.text.toString())?.code
+            return CountryUtils.getCountryByName(viewBinding.actCountry.text.toString())?.code
         }
 
     private fun updateLayoutColor() {
         if (error.isNullOrEmpty()) {
-            vBorder.background =
+            viewBinding.vBorder.background =
                 ResourcesCompat.getDrawable(
                     resources,
                     R.drawable.airwallex_input_layout_border,
                     null
                 )
         } else {
-            vBorder.background =
+            viewBinding.vBorder.background =
                 ResourcesCompat.getDrawable(
                     resources,
                     R.drawable.airwallex_input_layout_border_error,
@@ -70,21 +76,19 @@ internal class CountryAutoCompleteView constructor(
     }
 
     init {
-        View.inflate(getContext(), R.layout.country_autocomplete_view, this)
-
         countryAdapter = CountryAdapter(getContext(), CountryUtils.COUNTRIES)
-        actCountry.threshold = 0
-        actCountry.setAdapter(countryAdapter)
+        viewBinding.actCountry.threshold = 0
+        viewBinding.actCountry.setAdapter(countryAdapter)
 
-        actCountry.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+        viewBinding.actCountry.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             updatedSelectedCountryCode(countryAdapter.getItem(position))
         }
-        actCountry.onFocusChangeListener = OnFocusChangeListener { _, focused ->
+        viewBinding.actCountry.onFocusChangeListener = OnFocusChangeListener { _, focused ->
             if (focused) {
-                actCountry.showDropDown()
+                viewBinding.actCountry.showDropDown()
                 error = null
             } else {
-                val enteredCountry = actCountry.text.toString()
+                val enteredCountry = viewBinding.actCountry.text.toString()
                 val country = CountryUtils.getCountryByName(enteredCountry)
 
                 val displayCountry = country?.let {
@@ -92,7 +96,7 @@ internal class CountryAutoCompleteView constructor(
                     enteredCountry
                 } ?: selectedCountry?.name
 
-                actCountry.setText(displayCountry)
+                viewBinding.actCountry.setText(displayCountry)
 
                 error = if (displayCountry.isNullOrBlank()) {
                     resources.getString(R.string.empty_country)
@@ -107,7 +111,7 @@ internal class CountryAutoCompleteView constructor(
         countryCode?.let {
             selectedCountry = CountryUtils.getCountryByCode(it)
             selectedCountry?.let { country ->
-                actCountry.setText(country.name)
+                viewBinding.actCountry.setText(country.name)
                 countryChangeCallback.invoke(country)
             }
         }

@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.Shipping
 import com.airwallex.android.view.PaymentShippingActivityLaunch.Args
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 internal class PaymentShippingActivityLaunch : AirwallexActivityLaunch<PaymentShippingActivity, Args> {
 

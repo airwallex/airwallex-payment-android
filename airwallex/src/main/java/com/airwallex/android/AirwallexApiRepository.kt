@@ -3,7 +3,7 @@ package com.airwallex.android
 import com.airwallex.android.exception.*
 import com.airwallex.android.model.*
 import com.airwallex.android.model.parser.*
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

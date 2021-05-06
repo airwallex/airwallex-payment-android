@@ -2,11 +2,11 @@ package com.airwallex.paymentacceptance
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.model.Shipping
-import kotlinx.android.synthetic.main.shipping_item.view.*
+import com.airwallex.paymentacceptance.databinding.ShippingItemBinding
 import java.util.*
 
 class ShippingItemView constructor(
@@ -14,21 +14,25 @@ class ShippingItemView constructor(
     attrs: AttributeSet
 ) : RelativeLayout(context, attrs) {
 
+    private val viewBinding = ShippingItemBinding.inflate(
+        LayoutInflater.from(context),
+        this,
+        true
+    )
+
     var onClickAction: (() -> Unit)? = null
 
     init {
-        View.inflate(getContext(), R.layout.shipping_item, this)
-
-        rlBilling.setOnClickListener {
+        viewBinding.rlBilling.setOnClickListener {
             onClickAction?.invoke()
         }
     }
 
     fun renewalShipping(shipping: Shipping?) {
         if (shipping == null) {
-            tvShippingAddress.text =
+            viewBinding.tvShippingAddress.text =
                 context.getString(R.string.enter_shipping)
-            tvShippingAddress.setTextColor(
+            viewBinding.tvShippingAddress.setTextColor(
                 ContextCompat.getColor(
                     context,
                     R.color.airwallex_color_dark_light
@@ -42,7 +46,7 @@ class ShippingItemView constructor(
             loc.displayCountry
         }
 
-        tvShippingAddress.text = String.format(
+        viewBinding.tvShippingAddress.text = String.format(
             "%s %s\n%s\n%s, %s, %s",
             shipping.lastName,
             shipping.firstName,
@@ -52,7 +56,7 @@ class ShippingItemView constructor(
             countryName
         )
 
-        tvShippingAddress.setTextColor(
+        viewBinding.tvShippingAddress.setTextColor(
             ContextCompat.getColor(
                 context,
                 R.color.airwallex_color_dark_deep

@@ -2,18 +2,30 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.airwallex.android.R
+import com.airwallex.android.databinding.WidgetShippingBinding
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.Shipping
-import kotlinx.android.synthetic.main.widget_shipping.view.*
 
 /**
  * A widget used to collect the shipping [Address] of shipping info.
  */
 internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
     LinearLayout(context, attrs) {
+
+    private val viewBinding = WidgetShippingBinding.inflate(
+        LayoutInflater.from(context),
+        this,
+        true
+    )
+
+    private val countryAutocomplete = viewBinding.countryAutocomplete
+    private val stateTextInputLayout = viewBinding.atlState
+    private val cityTextInputLayout = viewBinding.atlCity
+    private val addressTextInputLayout = viewBinding.atlStreetAddress
+    private val zipcodeTextInputLayout = viewBinding.atlZipCode
 
     /**
      * The listener of when the shipping address changed
@@ -29,10 +41,10 @@ internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
         get() {
             return Address.Builder()
                 .setCountryCode(country?.code)
-                .setState(atlState.value)
-                .setCity(atlCity.value)
-                .setStreet(atlStreetAddress.value)
-                .setPostcode(atlZipCode.value)
+                .setState(stateTextInputLayout.value)
+                .setCity(cityTextInputLayout.value)
+                .setStreet(addressTextInputLayout.value)
+                .setPostcode(zipcodeTextInputLayout.value)
                 .build()
         }
 
@@ -42,21 +54,16 @@ internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
     internal val isValidShipping: Boolean
         get() {
             return country != null &&
-                atlState.value.isNotEmpty() &&
-                atlCity.value.isNotEmpty() &&
-                atlStreetAddress.value.isNotEmpty()
+                stateTextInputLayout.value.isNotEmpty() &&
+                cityTextInputLayout.value.isNotEmpty() &&
+                addressTextInputLayout.value.isNotEmpty()
         }
 
     init {
-        View.inflate(
-            getContext(),
-            R.layout.widget_shipping, this
-        )
-
         countryAutocomplete.countryChangeCallback = { country ->
             this.country = country
             shippingChangeCallback.invoke()
-            atlState.requestInputFocus()
+            stateTextInputLayout.requestInputFocus()
         }
 
         listenTextChanged()
@@ -65,55 +72,55 @@ internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
 
     internal fun initializeView(shipping: Shipping) {
         with(shipping) {
-            atlStreetAddress.value = address?.street ?: ""
-            atlZipCode.value = address?.postcode ?: ""
-            atlCity.value = address?.city ?: ""
-            atlState.value = address?.state ?: ""
+            addressTextInputLayout.value = address?.street ?: ""
+            zipcodeTextInputLayout.value = address?.postcode ?: ""
+            cityTextInputLayout.value = address?.city ?: ""
+            stateTextInputLayout.value = address?.state ?: ""
             countryAutocomplete.setInitCountry(address?.countryCode)
         }
     }
 
     private fun listenTextChanged() {
-        atlState.afterTextChanged { shippingChangeCallback.invoke() }
-        atlCity.afterTextChanged { shippingChangeCallback.invoke() }
-        atlStreetAddress.afterTextChanged { shippingChangeCallback.invoke() }
-        atlZipCode.afterTextChanged { shippingChangeCallback.invoke() }
+        stateTextInputLayout.afterTextChanged { shippingChangeCallback.invoke() }
+        cityTextInputLayout.afterTextChanged { shippingChangeCallback.invoke() }
+        addressTextInputLayout.afterTextChanged { shippingChangeCallback.invoke() }
+        zipcodeTextInputLayout.afterTextChanged { shippingChangeCallback.invoke() }
     }
 
     private fun listenFocusChanged() {
-        atlState.afterFocusChanged { hasFocus ->
+        stateTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlState.value.isEmpty()) {
-                    atlState.error = resources.getString(R.string.empty_state)
+                if (stateTextInputLayout.value.isEmpty()) {
+                    stateTextInputLayout.error = resources.getString(R.string.empty_state)
                 } else {
-                    atlState.error = null
+                    stateTextInputLayout.error = null
                 }
             } else {
-                atlState.error = null
+                stateTextInputLayout.error = null
             }
         }
 
-        atlCity.afterFocusChanged { hasFocus ->
+        cityTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlCity.value.isEmpty()) {
-                    atlCity.error = resources.getString(R.string.empty_city)
+                if (cityTextInputLayout.value.isEmpty()) {
+                    cityTextInputLayout.error = resources.getString(R.string.empty_city)
                 } else {
-                    atlCity.error = null
+                    cityTextInputLayout.error = null
                 }
             } else {
-                atlCity.error = null
+                cityTextInputLayout.error = null
             }
         }
 
-        atlStreetAddress.afterFocusChanged { hasFocus ->
+        addressTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlStreetAddress.value.isEmpty()) {
-                    atlStreetAddress.error = resources.getString(R.string.empty_street)
+                if (addressTextInputLayout.value.isEmpty()) {
+                    addressTextInputLayout.error = resources.getString(R.string.empty_street)
                 } else {
-                    atlStreetAddress.error = null
+                    addressTextInputLayout.error = null
                 }
             } else {
-                atlStreetAddress.error = null
+                addressTextInputLayout.error = null
             }
         }
     }

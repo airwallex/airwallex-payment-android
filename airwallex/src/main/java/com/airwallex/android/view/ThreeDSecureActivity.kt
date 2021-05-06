@@ -8,14 +8,19 @@ import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import com.airwallex.android.*
+import com.airwallex.android.databinding.ActivityThreedsBinding
 import com.airwallex.android.exception.WebViewConnectionException
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
-import kotlinx.android.synthetic.main.activity_airwallex.*
-import kotlinx.android.synthetic.main.activity_threeds.*
 import java.net.URLEncoder
 
 internal class ThreeDSecureActivity : AirwallexActivity() {
+
+    private val viewBinding: ActivityThreedsBinding by lazy {
+        viewStub.layoutResource = R.layout.activity_threeds
+        val root = viewStub.inflate() as ViewGroup
+        ActivityThreedsBinding.bind(root)
+    }
 
     private val args: ThreeDSecureActivityLaunch.Args by lazy { ThreeDSecureActivityLaunch.Args.getExtra(intent) }
 
@@ -33,10 +38,10 @@ internal class ThreeDSecureActivity : AirwallexActivity() {
 
             toolbar.setNavigationOnClickListener { onBackPressed() }
 
-            pbLoading.max = 100
-            pbLoading.progress = 1
+            viewBinding.pbLoading.max = 100
+            viewBinding.pbLoading.progress = 1
 
-            webView.webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
+            viewBinding.webView.webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
                 override fun onWebViewConfirmation(payload: String) {
                     Logger.debug("3DS 1 onWebViewConfirmation $payload")
                     finishThreeDSecure1(payload, false, null)
@@ -49,18 +54,18 @@ internal class ThreeDSecureActivity : AirwallexActivity() {
                 }
 
                 override fun onPageFinished(url: String?) {
-                    pbLoading.visibility = View.GONE
+                    viewBinding.pbLoading.visibility = View.GONE
                 }
 
                 override fun onPageStarted(url: String?) {
-                    pbLoading.visibility = View.VISIBLE
+                    viewBinding.pbLoading.visibility = View.VISIBLE
                 }
             })
 
-            webView.webChromeClient = object : WebChromeClient() {
+            viewBinding.webView.webChromeClient = object : WebChromeClient() {
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
                     super.onProgressChanged(view, newProgress)
-                    pbLoading.progress = newProgress
+                    viewBinding.pbLoading.progress = newProgress
                 }
             }
 
@@ -71,7 +76,7 @@ internal class ThreeDSecureActivity : AirwallexActivity() {
                 URLEncoder.encode(payload, "UTF-8"),
                 URLEncoder.encode(AirwallexApiRepository.paResTermUrl(), "UTF-8")
             )
-            webView.postUrl(acsUrl, postData.toByteArray())
+            viewBinding.webView.postUrl(acsUrl, postData.toByteArray())
         } else {
             // 3DS 2.0
             Cardinal.getInstance().cca_continue(
@@ -92,16 +97,11 @@ internal class ThreeDSecureActivity : AirwallexActivity() {
         super.onDestroy()
         // Cleanup Cardinal
         Cardinal.getInstance().cleanup()
-        if (webView != null) {
-            val root = window.decorView.findViewById<ViewGroup>(android.R.id.content)
-            root.removeView(webView)
-            webView.removeAllViews()
-            webView.destroy()
-        }
+        val root = window.decorView.findViewById<ViewGroup>(android.R.id.content)
+        root.removeView(viewBinding.webView)
+        viewBinding.webView.removeAllViews()
+        viewBinding.webView.destroy()
     }
-
-    override val layoutResource: Int
-        get() = R.layout.activity_threeds
 
     override fun onActionSave() {
         // Ignore

@@ -16,8 +16,8 @@ import com.airwallex.android.exception.RedirectException
 import com.airwallex.android.model.*
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.parser.PaymentIntentParser
-import kotlinx.android.synthetic.main.cart_item.view.*
-import kotlinx.android.synthetic.main.fragment_cart.*
+import com.airwallex.paymentacceptance.databinding.CartItemBinding
+import com.airwallex.paymentacceptance.databinding.FragmentCartBinding
 import kotlinx.coroutines.*
 import okhttp3.*
 import org.json.JSONObject
@@ -28,6 +28,10 @@ import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 class PaymentCartFragment : BasePaymentCartFragment() {
+
+    private val viewBinding: FragmentCartBinding by lazy {
+        FragmentCartBinding.inflate(layoutInflater)
+    }
 
     private val clientSecretProvider by lazy {
         ExampleClientSecretProvider()
@@ -130,17 +134,18 @@ class PaymentCartFragment : BasePaymentCartFragment() {
     ) :
         RelativeLayout(context, attrs, defStyleAttr) {
 
-        init {
-            View.inflate(
-                context,
-                R.layout.cart_item, this
-            )
+        private val viewBinding = CartItemBinding.inflate(
+            LayoutInflater.from(context),
+            this,
+            true
+        )
 
-            tvProductName.text = order.name
-            tvProductType.text = String.format("%s x %d", order.type, order.quantity)
-            tvProductPrice.text =
+        init {
+            viewBinding.tvProductName.text = order.name
+            viewBinding.tvProductType.text = String.format("%s x %d", order.type, order.quantity)
+            viewBinding.tvProductPrice.text =
                 String.format("$%.2f", order.unitPrice ?: 0 * (order.quantity ?: 0))
-            tvRemove.setOnClickListener {
+            viewBinding.tvRemove.setOnClickListener {
                 removeHandler.invoke()
             }
         }
@@ -151,23 +156,20 @@ class PaymentCartFragment : BasePaymentCartFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return View.inflate(
-            context,
-            R.layout.fragment_cart, null
-        )
+        return viewBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        shippingItemView.renewalShipping(shipping)
-        shippingItemView.onClickAction = {
+        viewBinding.shippingItemView.renewalShipping(shipping)
+        viewBinding.shippingItemView.onClickAction = {
             airwallex.presentShippingFlow(
                 shipping,
                 object : Airwallex.PaymentShippingListener {
                     override fun onSuccess(shipping: Shipping) {
                         Log.d(TAG, "Save the shipping success")
-                        shippingItemView.renewalShipping(shipping)
+                        viewBinding.shippingItemView.renewalShipping(shipping)
                         this@PaymentCartFragment.shipping = shipping
                     }
 
@@ -178,7 +180,7 @@ class PaymentCartFragment : BasePaymentCartFragment() {
             )
         }
         initializeProductsViews(products.toMutableList())
-        btnCheckout.setOnClickListener {
+        viewBinding.btnCheckout.setOnClickListener {
             if (checkoutMode == AirwallexCheckoutMode.RECURRING) {
                 startRecurringFlow()
             } else {
@@ -188,7 +190,7 @@ class PaymentCartFragment : BasePaymentCartFragment() {
     }
 
     private fun initializeProductsViews(products: MutableList<PhysicalProduct>) {
-        llProducts.removeAllViews()
+        viewBinding.llProducts.removeAllViews()
         products.map {
             CartItem(
                 order = it,
@@ -198,17 +200,17 @@ class PaymentCartFragment : BasePaymentCartFragment() {
                     initializeProductsViews(products)
                 }
             )
-        }.forEach { llProducts.addView(it) }
+        }.forEach { viewBinding.llProducts.addView(it) }
 
         val subtotalPrice =
             products.sumByDouble { it.unitPrice ?: 0 * (it.quantity ?: 0).toDouble() }
         val shipping = 0
         val totalPrice = subtotalPrice + shipping
 
-        tvOrderSubtotalPrice.text = String.format("$%.2f", subtotalPrice)
-        tvOrderTotalPrice.text = String.format("$%.2f", totalPrice)
-        tvShipping.text = getString(R.string.free)
-        tvOrderSum.text = products.sumBy { it.quantity ?: 0 }.toString()
+        viewBinding.tvOrderSubtotalPrice.text = String.format("$%.2f", subtotalPrice)
+        viewBinding.tvOrderTotalPrice.text = String.format("$%.2f", totalPrice)
+        viewBinding.tvShipping.text = getString(R.string.free)
+        viewBinding.tvOrderSum.text = products.sumBy { it.quantity ?: 0 }.toString()
     }
 
     private fun startRecurringFlow() {

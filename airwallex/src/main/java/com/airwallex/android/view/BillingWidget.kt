@@ -5,18 +5,38 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.Patterns
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import com.airwallex.android.R
+import com.airwallex.android.databinding.WidgetBillingBinding
 import com.airwallex.android.model.Address
 import com.airwallex.android.model.Billing
 import com.airwallex.android.model.Shipping
-import kotlinx.android.synthetic.main.widget_billing.view.*
 
 /**
  * A widget used to collect the [Billing] info
  */
 internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+
+    private val viewBinding = WidgetBillingBinding.inflate(
+        LayoutInflater.from(context),
+        this,
+        true
+    )
+
+    private val sameAsShippingViewGroup = viewBinding.rlSameAsShipping
+    private val sameAsShippingSwitch = viewBinding.swSameAsShipping
+    private val firstNameTextInputLayout = viewBinding.atlFirstName
+    private val lastNameTextInputLayout = viewBinding.atlLastName
+    private val countryAutocomplete = viewBinding.countryAutocomplete
+    private val stateTextInputLayout = viewBinding.atlState
+    private val cityTextInputLayout = viewBinding.atlCity
+    private val addressTextInputLayout = viewBinding.atlStreetAddress
+    private val zipcodeTextInputLayout = viewBinding.atlZipCode
+    private val emailTextInputLayout = viewBinding.atlEmail
+    private val numberTextInputLayout = viewBinding.atlPhoneNumber
+    private val billingViewGroup = viewBinding.llBilling
 
     internal var billingChangeCallback: () -> Unit = {}
 
@@ -31,11 +51,11 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
         set(value) {
             field = value
             if (value != null) {
-                rlSameAsShipping.visibility = View.VISIBLE
-                swSameAsShipping.isChecked = true
+                sameAsShippingViewGroup.visibility = View.VISIBLE
+                sameAsShippingSwitch.isChecked = true
             } else {
-                rlSameAsShipping.visibility = View.GONE
-                swSameAsShipping.isChecked = false
+                sameAsShippingViewGroup.visibility = View.GONE
+                sameAsShippingSwitch.isChecked = false
             }
         }
 
@@ -44,7 +64,7 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
      */
     private val sameAsShipping: Boolean
         get() {
-            return swSameAsShipping.isChecked
+            return sameAsShippingSwitch.isChecked
         }
 
     /**
@@ -73,22 +93,22 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
             } else if (isValid) {
                 val addressBuilder = Address.Builder()
                     .setCountryCode(countryAutocomplete.country)
-                    .setState(atlState.value)
-                    .setCity(atlCity.value)
-                    .setStreet(atlStreetAddress.value)
-                if (!TextUtils.isEmpty(atlZipCode.value)) {
-                    addressBuilder.setPostcode(atlZipCode.value)
+                    .setState(stateTextInputLayout.value)
+                    .setCity(cityTextInputLayout.value)
+                    .setStreet(addressTextInputLayout.value)
+                if (!TextUtils.isEmpty(zipcodeTextInputLayout.value)) {
+                    addressBuilder.setPostcode(zipcodeTextInputLayout.value)
                 }
                 val address = addressBuilder.build()
                 val billingBuilder = Billing.Builder()
-                    .setFirstName(atlFirstName.value)
-                    .setLastName(atlLastName.value)
+                    .setFirstName(firstNameTextInputLayout.value)
+                    .setLastName(lastNameTextInputLayout.value)
                     .setAddress(address)
-                if (!TextUtils.isEmpty(atlEmail.value)) {
-                    billingBuilder.setEmail(atlEmail.value)
+                if (!TextUtils.isEmpty(emailTextInputLayout.value)) {
+                    billingBuilder.setEmail(emailTextInputLayout.value)
                 }
-                if (!TextUtils.isEmpty(atlPhoneNumber.value)) {
-                    billingBuilder.setPhone(atlPhoneNumber.value)
+                if (!TextUtils.isEmpty(numberTextInputLayout.value)) {
+                    billingBuilder.setPhone(numberTextInputLayout.value)
                 }
                 return billingBuilder.build()
             } else {
@@ -103,25 +123,23 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
         get() {
             return sameAsShipping ||
                 !sameAsShipping &&
-                atlFirstName.value.isNotEmpty() &&
-                atlLastName.value.isNotEmpty() &&
+                firstNameTextInputLayout.value.isNotEmpty() &&
+                lastNameTextInputLayout.value.isNotEmpty() &&
                 countryAutocomplete.country != null &&
-                atlState.value.isNotEmpty() &&
-                atlCity.value.isNotEmpty() &&
-                atlStreetAddress.value.isNotEmpty() &&
-                (atlEmail.value.isEmpty() || atlEmail.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches())
+                stateTextInputLayout.value.isNotEmpty() &&
+                cityTextInputLayout.value.isNotEmpty() &&
+                addressTextInputLayout.value.isNotEmpty() &&
+                (emailTextInputLayout.value.isEmpty() || emailTextInputLayout.value.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(emailTextInputLayout.value).matches())
         }
 
     init {
-        View.inflate(getContext(), R.layout.widget_billing, this)
-
         countryAutocomplete.countryChangeCallback = {
             billingChangeCallback.invoke()
-            atlState.requestInputFocus()
+            stateTextInputLayout.requestInputFocus()
         }
 
-        swSameAsShipping.setOnCheckedChangeListener { _, isChecked ->
-            llBilling.visibility = if (isChecked) View.GONE else View.VISIBLE
+        sameAsShippingSwitch.setOnCheckedChangeListener { _, isChecked ->
+            billingViewGroup.visibility = if (isChecked) View.GONE else View.VISIBLE
             keyboardController.hide()
             billingChangeCallback.invoke()
         }
@@ -131,85 +149,85 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
     }
 
     private fun listenTextChanged() {
-        atlFirstName.afterTextChanged { billingChangeCallback.invoke() }
-        atlLastName.afterTextChanged { billingChangeCallback.invoke() }
-        atlEmail.afterTextChanged { billingChangeCallback.invoke() }
-        atlState.afterTextChanged { billingChangeCallback.invoke() }
-        atlCity.afterTextChanged { billingChangeCallback.invoke() }
-        atlStreetAddress.afterTextChanged { billingChangeCallback.invoke() }
-        atlZipCode.afterTextChanged { billingChangeCallback.invoke() }
+        firstNameTextInputLayout.afterTextChanged { billingChangeCallback.invoke() }
+        lastNameTextInputLayout.afterTextChanged { billingChangeCallback.invoke() }
+        emailTextInputLayout.afterTextChanged { billingChangeCallback.invoke() }
+        stateTextInputLayout.afterTextChanged { billingChangeCallback.invoke() }
+        cityTextInputLayout.afterTextChanged { billingChangeCallback.invoke() }
+        addressTextInputLayout.afterTextChanged { billingChangeCallback.invoke() }
+        zipcodeTextInputLayout.afterTextChanged { billingChangeCallback.invoke() }
     }
 
     private fun listenFocusChanged() {
-        atlFirstName.afterFocusChanged { hasFocus ->
+        firstNameTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlFirstName.value.isEmpty()) {
-                    atlFirstName.error = resources.getString(R.string.empty_first_name)
+                if (firstNameTextInputLayout.value.isEmpty()) {
+                    firstNameTextInputLayout.error = resources.getString(R.string.empty_first_name)
                 } else {
-                    atlFirstName.error = null
+                    firstNameTextInputLayout.error = null
                 }
             } else {
-                atlFirstName.error = null
+                firstNameTextInputLayout.error = null
             }
         }
 
-        atlLastName.afterFocusChanged { hasFocus ->
+        lastNameTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlLastName.value.isEmpty()) {
-                    atlLastName.error = resources.getString(R.string.empty_last_name)
+                if (lastNameTextInputLayout.value.isEmpty()) {
+                    lastNameTextInputLayout.error = resources.getString(R.string.empty_last_name)
                 } else {
-                    atlLastName.error = null
+                    lastNameTextInputLayout.error = null
                 }
             } else {
-                atlLastName.error = null
+                lastNameTextInputLayout.error = null
             }
         }
 
-        atlEmail.afterFocusChanged { hasFocus ->
+        emailTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlEmail.value.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(atlEmail.value).matches()) {
-                    atlEmail.error = resources.getString(R.string.invalid_email)
+                if (emailTextInputLayout.value.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(emailTextInputLayout.value).matches()) {
+                    emailTextInputLayout.error = resources.getString(R.string.invalid_email)
                 } else {
-                    atlEmail.error = null
+                    emailTextInputLayout.error = null
                 }
             } else {
-                atlEmail.error = null
+                emailTextInputLayout.error = null
             }
         }
 
-        atlState.afterFocusChanged { hasFocus ->
+        stateTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlState.value.isEmpty()) {
-                    atlState.error = resources.getString(R.string.empty_state)
+                if (stateTextInputLayout.value.isEmpty()) {
+                    stateTextInputLayout.error = resources.getString(R.string.empty_state)
                 } else {
-                    atlState.error = null
+                    stateTextInputLayout.error = null
                 }
             } else {
-                atlState.error = null
+                stateTextInputLayout.error = null
             }
         }
 
-        atlCity.afterFocusChanged { hasFocus ->
+        cityTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlCity.value.isEmpty()) {
-                    atlCity.error = resources.getString(R.string.empty_city)
+                if (cityTextInputLayout.value.isEmpty()) {
+                    cityTextInputLayout.error = resources.getString(R.string.empty_city)
                 } else {
-                    atlCity.error = null
+                    cityTextInputLayout.error = null
                 }
             } else {
-                atlCity.error = null
+                cityTextInputLayout.error = null
             }
         }
 
-        atlStreetAddress.afterFocusChanged { hasFocus ->
+        addressTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlStreetAddress.value.isEmpty()) {
-                    atlStreetAddress.error = resources.getString(R.string.empty_street)
+                if (addressTextInputLayout.value.isEmpty()) {
+                    addressTextInputLayout.error = resources.getString(R.string.empty_street)
                 } else {
-                    atlStreetAddress.error = null
+                    addressTextInputLayout.error = null
                 }
             } else {
-                atlStreetAddress.error = null
+                addressTextInputLayout.error = null
             }
         }
     }

@@ -2,29 +2,40 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.airwallex.android.R
+import com.airwallex.android.databinding.WidgetCardBinding
 import com.airwallex.android.model.PaymentMethod
-import kotlinx.android.synthetic.main.widget_card.view.*
 
 /**
  * A widget used to collect the card info
  */
 internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
 
+    private val viewBinding = WidgetCardBinding.inflate(
+        LayoutInflater.from(context),
+        this,
+        true
+    )
+
+    private val cardNameTextInputLayout = viewBinding.atlCardName
+    private val cardNumberTextInputLayout = viewBinding.atlCardNumber
+    private val cvcTextInputLayout = viewBinding.atlCardCvc
+    private val expiryTextInputLayout = viewBinding.atlCardExpiry
+
     internal var cardChangeCallback: () -> Unit = {}
 
     internal val paymentMethodCard: PaymentMethod.Card?
         get() {
             return if (isValid) {
-                atlCardExpiry.validDateFields?.let { (month, year) ->
+                expiryTextInputLayout.validDateFields?.let { (month, year) ->
                     PaymentMethod.Card.Builder()
-                        .setNumber(atlCardNumber.cardNumber)
-                        .setName(atlCardName.value)
+                        .setNumber(cardNumberTextInputLayout.cardNumber)
+                        .setName(cardNameTextInputLayout.value)
                         .setExpiryMonth(if (month < 10) "0$month" else month.toString())
                         .setExpiryYear(year.toString())
-                        .setCvc(atlCardCvc.cvcValue)
+                        .setCvc(cvcTextInputLayout.cvcValue)
                         .build()
                 }
             } else {
@@ -37,98 +48,96 @@ internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(
      */
     internal val isValid: Boolean
         get() {
-            val cardNumberIsValid = CardUtils.isValidCardNumber(atlCardNumber.cardNumber)
-            val cardNameIsValid = atlCardName.value.isNotEmpty()
-            val expiryIsValid = atlCardExpiry.validDateFields != null
-            val cvcIsValid = atlCardCvc.isValid
+            val cardNumberIsValid = CardUtils.isValidCardNumber(cardNumberTextInputLayout.cardNumber)
+            val cardNameIsValid = cardNameTextInputLayout.value.isNotEmpty()
+            val expiryIsValid = expiryTextInputLayout.validDateFields != null
+            val cvcIsValid = cvcTextInputLayout.isValid
             return cardNumberIsValid && cardNameIsValid && expiryIsValid && cvcIsValid
         }
 
     init {
-        View.inflate(getContext(), R.layout.widget_card, this)
-
         listenTextChanged()
         listenFocusChanged()
         listenCompletionCallback()
     }
 
     private fun listenTextChanged() {
-        atlCardNumber.afterTextChanged { cardChangeCallback.invoke() }
-        atlCardName.afterTextChanged { cardChangeCallback.invoke() }
-        atlCardExpiry.afterTextChanged { cardChangeCallback.invoke() }
-        atlCardCvc.afterTextChanged { cardChangeCallback.invoke() }
+        cardNumberTextInputLayout.afterTextChanged { cardChangeCallback.invoke() }
+        cardNameTextInputLayout.afterTextChanged { cardChangeCallback.invoke() }
+        expiryTextInputLayout.afterTextChanged { cardChangeCallback.invoke() }
+        cvcTextInputLayout.afterTextChanged { cardChangeCallback.invoke() }
     }
 
     private fun listenFocusChanged() {
-        atlCardNumber.afterFocusChanged { hasFocus ->
+        cardNumberTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 when {
-                    atlCardNumber.value.isEmpty() -> {
-                        atlCardNumber.error = resources.getString(R.string.empty_card_number)
+                    cardNumberTextInputLayout.value.isEmpty() -> {
+                        cardNumberTextInputLayout.error = resources.getString(R.string.empty_card_number)
                     }
-                    !atlCardNumber.isValid -> {
-                        atlCardNumber.error = resources.getString(R.string.invalid_card_number)
+                    !cardNumberTextInputLayout.isValid -> {
+                        cardNumberTextInputLayout.error = resources.getString(R.string.invalid_card_number)
                     }
                     else -> {
-                        atlCardNumber.error = null
+                        cardNumberTextInputLayout.error = null
                     }
                 }
             } else {
-                atlCardNumber.error = null
+                cardNumberTextInputLayout.error = null
             }
         }
-        atlCardName.afterFocusChanged { hasFocus ->
+        cardNameTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 when {
-                    atlCardName.value.isEmpty() -> {
-                        atlCardName.error = resources.getString(R.string.empty_card_name)
+                    cardNameTextInputLayout.value.isEmpty() -> {
+                        cardNameTextInputLayout.error = resources.getString(R.string.empty_card_name)
                     }
                     else -> {
-                        atlCardName.error = null
+                        cardNameTextInputLayout.error = null
                     }
                 }
             } else {
-                atlCardName.error = null
+                cardNameTextInputLayout.error = null
             }
         }
-        atlCardExpiry.afterFocusChanged { hasFocus ->
+        expiryTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 when {
-                    atlCardExpiry.value.isEmpty() -> {
-                        atlCardExpiry.error = resources.getString(R.string.empty_expiry)
+                    expiryTextInputLayout.value.isEmpty() -> {
+                        expiryTextInputLayout.error = resources.getString(R.string.empty_expiry)
                     }
-                    !atlCardExpiry.isValid -> {
-                        atlCardExpiry.error = resources.getString(R.string.invalid_expiry_date)
+                    !expiryTextInputLayout.isValid -> {
+                        expiryTextInputLayout.error = resources.getString(R.string.invalid_expiry_date)
                     }
                     else -> {
-                        atlCardExpiry.error = null
+                        expiryTextInputLayout.error = null
                     }
                 }
             } else {
-                atlCardExpiry.error = null
+                expiryTextInputLayout.error = null
             }
         }
-        atlCardCvc.afterFocusChanged { hasFocus ->
+        cvcTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 when {
-                    atlCardCvc.value.isEmpty() -> {
-                        atlCardCvc.error = resources.getString(R.string.empty_cvc)
+                    cvcTextInputLayout.value.isEmpty() -> {
+                        cvcTextInputLayout.error = resources.getString(R.string.empty_cvc)
                     }
-                    !atlCardCvc.isValid -> {
-                        atlCardCvc.error = resources.getString(R.string.invalid_cvc)
+                    !cvcTextInputLayout.isValid -> {
+                        cvcTextInputLayout.error = resources.getString(R.string.invalid_cvc)
                     }
                     else -> {
-                        atlCardCvc.error = null
+                        cvcTextInputLayout.error = null
                     }
                 }
             } else {
-                atlCardCvc.error = null
+                cvcTextInputLayout.error = null
             }
         }
     }
 
     private fun listenCompletionCallback() {
-        atlCardNumber.completionCallback = { atlCardName.requestInputFocus() }
-        atlCardExpiry.completionCallback = { atlCardCvc.requestInputFocus() }
+        cardNumberTextInputLayout.completionCallback = { cardNameTextInputLayout.requestInputFocus() }
+        expiryTextInputLayout.completionCallback = { cvcTextInputLayout.requestInputFocus() }
     }
 }

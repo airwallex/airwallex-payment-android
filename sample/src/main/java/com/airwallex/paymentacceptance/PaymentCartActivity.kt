@@ -10,14 +10,19 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.paymentacceptance.databinding.ActivityPaymentCartBinding
 
 class PaymentCartActivity : AppCompatActivity() {
+
+    private val viewBinding: ActivityPaymentCartBinding by lazy {
+        ActivityPaymentCartBinding.inflate(layoutInflater)
+    }
 
     private var dialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_payment_cart)
+        setContentView(viewBinding.root)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         supportActionBar?.setDisplayShowTitleEnabled(true)

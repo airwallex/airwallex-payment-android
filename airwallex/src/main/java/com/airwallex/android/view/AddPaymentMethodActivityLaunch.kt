@@ -8,7 +8,7 @@ import com.airwallex.android.AirwallexSession
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch.Args
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 internal class AddPaymentMethodActivityLaunch : AirwallexActivityLaunch<AddPaymentMethodActivity, Args> {
 

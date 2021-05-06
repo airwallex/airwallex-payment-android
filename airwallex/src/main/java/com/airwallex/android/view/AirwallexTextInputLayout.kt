@@ -22,7 +22,7 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
     resourceLayout: Int = R.layout.common_text_input_layout
 ) : LinearLayout(context, attrs) {
 
-    private var tlInput: TextInputLayout
+    var tlInput: TextInputLayout
     var teInput: TextInputEditText
     private var vBorder: View
     private var tvError: TextView

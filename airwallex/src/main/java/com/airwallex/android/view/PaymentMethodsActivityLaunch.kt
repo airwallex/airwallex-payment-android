@@ -10,8 +10,8 @@ import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.*
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.view.PaymentMethodsActivityLaunch.Args
-import kotlinx.android.parcel.Parceler
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parceler
+import kotlinx.parcelize.Parcelize
 
 internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActivity, Args> {
 

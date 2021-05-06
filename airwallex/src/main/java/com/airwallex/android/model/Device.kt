@@ -2,7 +2,7 @@ package com.airwallex.android.model
 
 import android.os.Parcelable
 import com.airwallex.android.model.parser.DeviceParser
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * Device info.

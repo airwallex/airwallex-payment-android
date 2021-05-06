@@ -1,5 +1,6 @@
 package com.airwallex.android.view
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,9 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.R
 import com.airwallex.android.Tracker
+import com.airwallex.android.databinding.PaymentMethodItemCardBinding
+import com.airwallex.android.databinding.PaymentMethodItemLoadingBinding
+import com.airwallex.android.databinding.PaymentMethodSpaceItemBinding
+import com.airwallex.android.databinding.PaymentMethodThirdItemBinding
 import com.airwallex.android.model.*
-import kotlinx.android.synthetic.main.payment_method_item_card.view.*
-import kotlinx.android.synthetic.main.payment_method_third_item.view.*
 import java.util.*
 
 internal class PaymentMethodsAdapter(
@@ -101,22 +104,10 @@ internal class PaymentMethodsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (ItemViewType.values()[viewType]) {
-            ItemViewType.ThirdPay -> ThirdPayHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.payment_method_third_item, parent, false)
-            )
-            ItemViewType.Space -> SpaceHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.payment_method_space_item, parent, false)
-            )
-            ItemViewType.Loading -> LoadingHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.payment_method_item_loading, parent, false)
-            )
-            ItemViewType.Card -> CardHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.payment_method_item_card, parent, false)
-            )
+            ItemViewType.ThirdPay -> ThirdPayHolder(parent.context, parent)
+            ItemViewType.Space -> SpaceHolder(parent.context, parent)
+            ItemViewType.Loading -> LoadingHolder(parent.context, parent)
+            ItemViewType.Card -> CardHolder(parent.context, parent)
         }
     }
 
@@ -158,19 +149,28 @@ internal class PaymentMethodsAdapter(
         return position - (availableThirdPaymentTypes.size + spaceCount)
     }
 
-    inner class CardHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class CardHolder(
+        private val viewBinding: PaymentMethodItemCardBinding
+    ) : RecyclerView.ViewHolder(viewBinding.root) {
+        constructor(context: Context, parent: ViewGroup) : this(
+            PaymentMethodItemCardBinding.inflate(
+                LayoutInflater.from(context),
+                parent,
+                false
+            )
+        )
 
         fun bindView(position: Int) {
             val method = paymentMethods[position - availableThirdPaymentTypes.size - spaceCount]
                 ?: return
             val card = method.card ?: return
-            itemView.tvCardInfo.text =
+            viewBinding.tvCardInfo.text =
                 String.format("%s •••• %s", card.brand?.toUpperCase(Locale.ROOT), card.last4)
             when (card.brand) {
-                CardBrand.Visa.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
-                CardBrand.MasterCard.type -> itemView.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
+                CardBrand.Visa.type -> viewBinding.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
+                CardBrand.MasterCard.type -> viewBinding.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
             }
-            itemView.rlCard.setOnClickListener {
+            viewBinding.rlCard.setOnClickListener {
                 if (selectedPaymentMethod?.type != method.type || method.id != selectedPaymentMethod?.id) {
                     selectedPaymentMethod = PaymentMethod.Builder()
                         .setId(requireNotNull(method.id))
@@ -190,19 +190,29 @@ internal class PaymentMethodsAdapter(
                 }
                 selectedPaymentMethod?.let { listener?.onPaymentMethodClick(it) }
             }
-            itemView.ivCardChecked.visibility =
+            viewBinding.ivCardChecked.visibility =
                 if (selectedPaymentMethod?.type == method.type && method.id == selectedPaymentMethod?.id) View.VISIBLE else View.GONE
         }
     }
 
-    inner class ThirdPayHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ThirdPayHolder(
+        private val viewBinding: PaymentMethodThirdItemBinding
+    ) : RecyclerView.ViewHolder(viewBinding.root) {
+
+        constructor(context: Context, parent: ViewGroup) : this(
+            PaymentMethodThirdItemBinding.inflate(
+                LayoutInflater.from(context),
+                parent,
+                false
+            )
+        )
 
         fun bindView(position: Int) {
             when (availableThirdPaymentTypes[position]) {
                 AvaliablePaymentMethodType.ALIPAY_CN -> {
-                    itemView.payment_method_icon.setImageResource(R.drawable.airwallex_ic_alipay_cn)
-                    itemView.payment_method_name.setText(R.string.alipay)
-                    itemView.payment_method_checked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.ALIPAY_CN) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_alipay_cn)
+                    viewBinding.paymentMethodName.setText(R.string.alipay)
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.ALIPAY_CN) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentMethod = PaymentMethod.Builder()
                             .setType(PaymentMethodType.ALIPAY_CN)
@@ -213,9 +223,9 @@ internal class PaymentMethodsAdapter(
                     }
                 }
                 AvaliablePaymentMethodType.WECHAT -> {
-                    itemView.payment_method_icon.setImageResource(R.drawable.airwallex_ic_wechat)
-                    itemView.payment_method_name.setText(R.string.wechat_pay)
-                    itemView.payment_method_checked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.WECHAT) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_wechat)
+                    viewBinding.paymentMethodName.setText(R.string.wechat_pay)
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.WECHAT) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentMethod = PaymentMethod.Builder()
                             .setType(PaymentMethodType.WECHAT)
@@ -226,9 +236,9 @@ internal class PaymentMethodsAdapter(
                     }
                 }
                 AvaliablePaymentMethodType.ALIPAY_HK -> {
-                    itemView.payment_method_icon.setImageResource(R.drawable.airwallex_ic_alipay_hk)
-                    itemView.payment_method_name.setText(R.string.alipay_hk)
-                    itemView.payment_method_checked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.ALIPAY_HK) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_alipay_hk)
+                    viewBinding.paymentMethodName.setText(R.string.alipay_hk)
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.ALIPAY_HK) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentMethod = PaymentMethod.Builder()
                             .setType(PaymentMethodType.ALIPAY_HK)
@@ -239,9 +249,9 @@ internal class PaymentMethodsAdapter(
                     }
                 }
                 AvaliablePaymentMethodType.DANA -> {
-                    itemView.payment_method_icon.setImageResource(R.drawable.airwallex_ic_dana)
-                    itemView.payment_method_name.setText(R.string.dana)
-                    itemView.payment_method_checked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.DANA) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_dana)
+                    viewBinding.paymentMethodName.setText(R.string.dana)
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.DANA) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentMethod = PaymentMethod.Builder()
                             .setType(PaymentMethodType.DANA)
@@ -252,9 +262,9 @@ internal class PaymentMethodsAdapter(
                     }
                 }
                 AvaliablePaymentMethodType.GCASH -> {
-                    itemView.payment_method_icon.setImageResource(R.drawable.airwallex_ic_gcash)
-                    itemView.payment_method_name.setText(R.string.gcash)
-                    itemView.payment_method_checked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.GCASH) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_gcash)
+                    viewBinding.paymentMethodName.setText(R.string.gcash)
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.GCASH) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentMethod = PaymentMethod.Builder()
                             .setType(PaymentMethodType.GCASH)
@@ -265,9 +275,9 @@ internal class PaymentMethodsAdapter(
                     }
                 }
                 AvaliablePaymentMethodType.KAKAO -> {
-                    itemView.payment_method_icon.setImageResource(R.drawable.airwallex_ic_kakao_pay)
-                    itemView.payment_method_name.setText(R.string.kakao_pay)
-                    itemView.payment_method_checked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.KAKAOPAY) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_kakao_pay)
+                    viewBinding.paymentMethodName.setText(R.string.kakao_pay)
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.KAKAOPAY) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentMethod = PaymentMethod.Builder()
                             .setType(PaymentMethodType.KAKAOPAY)
@@ -278,9 +288,9 @@ internal class PaymentMethodsAdapter(
                     }
                 }
                 AvaliablePaymentMethodType.TNG -> {
-                    itemView.payment_method_icon.setImageResource(R.drawable.airwallex_ic_touchngo)
-                    itemView.payment_method_name.setText(R.string.touchngo)
-                    itemView.payment_method_checked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.TNG) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_touchngo)
+                    viewBinding.paymentMethodName.setText(R.string.touchngo)
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentMethod?.type == PaymentMethodType.TNG) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentMethod = PaymentMethod.Builder()
                             .setType(PaymentMethodType.TNG)
@@ -297,9 +307,29 @@ internal class PaymentMethodsAdapter(
         }
     }
 
-    inner class LoadingHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class LoadingHolder(
+        viewBinding: PaymentMethodItemLoadingBinding
+    ) : RecyclerView.ViewHolder(viewBinding.root) {
+        constructor(context: Context, parent: ViewGroup) : this(
+            PaymentMethodItemLoadingBinding.inflate(
+                LayoutInflater.from(context),
+                parent,
+                false
+            )
+        )
+    }
 
-    inner class SpaceHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class SpaceHolder(
+        viewBinding: PaymentMethodSpaceItemBinding
+    ) : RecyclerView.ViewHolder(viewBinding.root) {
+        constructor(context: Context, parent: ViewGroup) : this(
+            PaymentMethodSpaceItemBinding.inflate(
+                LayoutInflater.from(context),
+                parent,
+                false
+            )
+        )
+
         fun bindView() {
             itemView.layoutParams.height = if (availableThirdPaymentTypes.isNotEmpty()) itemView.context.resources.getDimension(R.dimen.space_height).toInt() else 0
         }

@@ -9,12 +9,21 @@ import com.airwallex.android.model.CreatePaymentMethodParams
 import com.airwallex.android.model.ClientSecret
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.Shipping
-import kotlinx.android.synthetic.main.activity_add_card.*
+import android.view.ViewGroup
+import com.airwallex.android.Airwallex
+import com.airwallex.android.R
+import com.airwallex.android.databinding.ActivityAddCardBinding
 
 /**
  * Activity to add new payment method
  */
 internal class AddPaymentMethodActivity : AirwallexActivity() {
+
+    private val viewBinding: ActivityAddCardBinding by lazy {
+        viewStub.layoutResource = R.layout.activity_add_card
+        val root = viewStub.inflate() as ViewGroup
+        ActivityAddCardBinding.bind(root)
+    }
 
     private val keyboardController: KeyboardController by lazy {
         KeyboardController(this)
@@ -53,11 +62,11 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
 
     private val isValid: Boolean
         get() {
-            return cardWidget.isValid && billingWidget.isValid
+            return viewBinding.cardWidget.isValid && viewBinding.billingWidget.isValid
         }
 
     override fun onActionSave() {
-        val card = cardWidget.paymentMethodCard ?: return
+        val card = viewBinding.cardWidget.paymentMethodCard ?: return
         setLoadingProgress(loading = true, cancelable = false)
         ClientSecretRepository.getInstance().retrieveClientSecret(
             customerId,
@@ -68,7 +77,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
                             clientSecret = clientSecret.value,
                             customerId = customerId,
                             card = card,
-                            billing = billingWidget.billing
+                            billing = viewBinding.billingWidget.billing
                         ),
                         object : Airwallex.PaymentListener<PaymentMethod> {
                             override fun onSuccess(response: PaymentMethod) {
@@ -114,24 +123,21 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
 
     private fun invalidateConfirmStatus() {
         if (isValid) {
-            tvSaveCard.isEnabled = true
+            viewBinding.tvSaveCard.isEnabled = true
             keyboardController.hide()
         } else {
-            tvSaveCard.isEnabled = false
+            viewBinding.tvSaveCard.isEnabled = false
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
-        billingWidget.shipping = shipping
-        billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
+        viewBinding.cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
+        viewBinding.billingWidget.shipping = shipping
+        viewBinding.billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
 
-        tvSaveCard.isEnabled = isValid
-        tvSaveCard.setOnClickListener { onActionSave() }
+        viewBinding.tvSaveCard.isEnabled = isValid
+        viewBinding.tvSaveCard.setOnClickListener { onActionSave() }
     }
-
-    override val layoutResource: Int
-        get() = R.layout.activity_add_card
 }

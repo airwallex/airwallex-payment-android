@@ -6,19 +6,26 @@ import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.R
+import com.airwallex.android.databinding.PaymentMethodItemBinding
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.PaymentMethodType
-import kotlinx.android.synthetic.main.payment_method_item.view.*
 import java.util.*
 
 internal class PaymentMethodItemView constructor(
     context: Context,
     attrs: AttributeSet
 ) : RelativeLayout(context, attrs) {
+
+    private val viewBinding = PaymentMethodItemBinding.inflate(
+        LayoutInflater.from(context),
+        this,
+        true
+    )
 
     private var paymentMethodType: PaymentMethodType? = null
 
@@ -45,7 +52,7 @@ internal class PaymentMethodItemView constructor(
 
     private val textWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
-            cvc = etCardCvc.text?.trim().toString()
+            cvc = viewBinding.etCardCvc.text?.trim().toString()
             if (isValid) {
                 keyboardController.hide()
             }
@@ -60,13 +67,11 @@ internal class PaymentMethodItemView constructor(
     }
 
     init {
-        View.inflate(getContext(), R.layout.payment_method_item, this)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            etCardCvc.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE)
+            viewBinding.etCardCvc.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE)
         }
 
-        etCardCvc.addTextChangedListener(textWatcher)
+        viewBinding.etCardCvc.addTextChangedListener(textWatcher)
     }
 
     internal fun renewalPaymentMethod(paymentMethod: PaymentMethod, cvc: String?) {
@@ -75,18 +80,18 @@ internal class PaymentMethodItemView constructor(
         }
         this.paymentMethodType = paymentMethod.type
         if (paymentMethod.type == PaymentMethodType.WECHAT) {
-            tvPaymentMethod.text = paymentMethod.type.value
+            viewBinding.tvPaymentMethod.text = paymentMethod.type.value
         } else {
-            tvPaymentMethod.text = String.format(
+            viewBinding.tvPaymentMethod.text = String.format(
                 "%s •••• %s",
                 paymentMethod.card?.brand?.toUpperCase(Locale.ROOT),
                 paymentMethod.card?.last4
             )
         }
 
-        etCardCvc.setText(cvc)
+        viewBinding.etCardCvc.setText(cvc)
 
-        tvPaymentMethod.setTextColor(
+        viewBinding.tvPaymentMethod.setTextColor(
             ContextCompat.getColor(
                 context,
                 R.color.airwallex_color_dark_deep

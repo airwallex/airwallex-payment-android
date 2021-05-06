@@ -4,14 +4,21 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.ViewGroup
 import com.airwallex.android.R
+import com.airwallex.android.databinding.ActivityAddShippingBinding
 import com.airwallex.android.model.Shipping
-import kotlinx.android.synthetic.main.activity_add_shipping.*
 
 /**
  * Activity to edit shipping address
  */
 internal class PaymentShippingActivity : AirwallexActivity() {
+
+    private val viewBinding: ActivityAddShippingBinding by lazy {
+        viewStub.layoutResource = R.layout.activity_add_shipping
+        val root = viewStub.inflate() as ViewGroup
+        ActivityAddShippingBinding.bind(root)
+    }
 
     private val args: PaymentShippingActivityLaunch.Args by lazy {
         PaymentShippingActivityLaunch.Args.getExtra(intent)
@@ -19,7 +26,7 @@ internal class PaymentShippingActivity : AirwallexActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menu?.findItem(R.id.action_save)?.isEnabled =
-            contactWidget.isValidContact && shippingWidget.isValidShipping
+            viewBinding.contactWidget.isValidContact && viewBinding.shippingWidget.isValidShipping
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -32,29 +39,26 @@ internal class PaymentShippingActivity : AirwallexActivity() {
         super.onCreate(savedInstanceState)
 
         args.shipping?.let {
-            contactWidget.initializeView(it)
-            shippingWidget.initializeView(it)
+            viewBinding.contactWidget.initializeView(it)
+            viewBinding.shippingWidget.initializeView(it)
         }
 
-        contactWidget.contactChangeCallback = {
+        viewBinding.contactWidget.contactChangeCallback = {
             invalidateOptionsMenu()
         }
 
-        shippingWidget.shippingChangeCallback = {
+        viewBinding.shippingWidget.shippingChangeCallback = {
             invalidateOptionsMenu()
         }
     }
 
-    override val layoutResource: Int
-        get() = R.layout.activity_add_shipping
-
     override fun onActionSave() {
-        val contact = contactWidget.shippingContact
+        val contact = viewBinding.contactWidget.shippingContact
         val shipping = Shipping.Builder()
             .setLastName(contact.first)
             .setFirstName(contact.second)
             .setPhone(contact.third)
-            .setAddress(shippingWidget.address)
+            .setAddress(viewBinding.shippingWidget.address)
             .build()
         setResult(
             Activity.RESULT_OK,

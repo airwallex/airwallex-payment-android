@@ -4,18 +4,25 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import com.airwallex.android.Airwallex
 import com.airwallex.android.model.ContinuePaymentIntentParams
 import com.airwallex.android.Logger
 import com.airwallex.android.R
+import com.airwallex.android.databinding.ActivitySelectCurrencyBinding
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentContinueType
-import kotlinx.android.synthetic.main.activity_select_currency.*
 
 /**
  * Allow the customer to select your currency.
  */
 internal class DccActivity : AirwallexActivity() {
+
+    private val viewBinding: ActivitySelectCurrencyBinding by lazy {
+        viewStub.layoutResource = R.layout.activity_select_currency
+        val root = viewStub.inflate() as ViewGroup
+        ActivitySelectCurrencyBinding.bind(root)
+    }
 
     private val airwallex: Airwallex by lazy { Airwallex(this) }
     private val args: DccActivityLaunch.Args by lazy { DccActivityLaunch.Args.getExtra(intent) }
@@ -24,38 +31,37 @@ internal class DccActivity : AirwallexActivity() {
         super.onCreate(savedInstanceState)
 
         // Current currency
-        current_currency.updateCurrency(args.currency, args.amount)
+        viewBinding.currentCurrency.updateCurrency(args.currency, args.amount)
 
         // Transfer currency
         val dccCurrency = args.dcc.currency
         val dccAmount = args.dcc.amount
         if (dccCurrency != null && dccAmount != null) {
-            transfer_currency.updateCurrency(dccCurrency, dccAmount)
+            viewBinding.transferCurrency.updateCurrency(dccCurrency, dccAmount)
         } else {
-            transfer_currency.visibility = View.GONE
+            viewBinding.transferCurrency.visibility = View.GONE
         }
 
-        rate.text = getString(R.string.rate, args.currency, args.dcc.clientRate, args.dcc.currency)
-
-        current_currency.isSelected = true
-        current_currency.setOnClickListener {
+        viewBinding.rate.text = getString(R.string.rate, args.currency, args.dcc.clientRate, args.dcc.currency)
+        viewBinding.currentCurrency.isSelected = true
+        viewBinding.currentCurrency.setOnClickListener {
             Logger.debug("Current currency selected")
-            current_currency.isSelected = true
-            transfer_currency.isSelected = false
+            viewBinding.currentCurrency.isSelected = true
+            viewBinding.transferCurrency.isSelected = false
         }
-        transfer_currency.setOnClickListener {
+        viewBinding.transferCurrency.setOnClickListener {
             Logger.debug("Transfer currency selected")
-            current_currency.isSelected = false
-            transfer_currency.isSelected = true
+            viewBinding.currentCurrency.isSelected = false
+            viewBinding.transferCurrency.isSelected = true
         }
 
-        confirm.setOnClickListener {
+        viewBinding.confirm.setOnClickListener {
             setLoadingProgress(loading = true, cancelable = false)
             val params = ContinuePaymentIntentParams(
                 paymentIntentId = args.paymentIntentId,
                 clientSecret = args.clientSecret,
                 type = PaymentIntentContinueType.DCC,
-                useDcc = transfer_currency.isSelected
+                useDcc = viewBinding.transferCurrency.isSelected
             )
             airwallex.continuePaymentIntent(
                 applicationContext, ThreeDSecureActivityLaunch(this), params,
@@ -88,9 +94,6 @@ internal class DccActivity : AirwallexActivity() {
         )
         finish()
     }
-
-    override val layoutResource: Int
-        get() = R.layout.activity_select_currency
 
     override fun onActionSave() {
         // Ignore

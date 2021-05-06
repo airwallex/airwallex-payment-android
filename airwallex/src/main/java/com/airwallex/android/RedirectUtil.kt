@@ -46,6 +46,7 @@ internal object RedirectUtil {
         return ResolveResultType.UNKNOWN
     }
 
+    @Suppress("DEPRECATION")
     private fun createRedirectIntent(context: Context, uri: Uri): Intent {
         return if (determineResolveResult(context, uri) === ResolveResultType.APPLICATION) {
             Intent(Intent.ACTION_VIEW, uri)

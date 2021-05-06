@@ -4,14 +4,28 @@ import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.ViewStub
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.airwallex.android.Logger
 import com.airwallex.android.R
-import kotlinx.android.synthetic.main.activity_airwallex.*
+import com.airwallex.android.databinding.ActivityAirwallexBinding
 
 internal abstract class AirwallexActivity : AppCompatActivity() {
+
+    private val viewBinding: ActivityAirwallexBinding by lazy {
+        ActivityAirwallexBinding.inflate(layoutInflater)
+    }
+
+    internal val viewStub: ViewStub by lazy {
+        viewBinding.viewStub
+    }
+
+    internal val toolbar: Toolbar by lazy {
+        viewBinding.toolbar
+    }
 
     val loading: Boolean
         get() {
@@ -22,15 +36,12 @@ internal abstract class AirwallexActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_airwallex)
+        setContentView(viewBinding.root)
 
         setSupportActionBar(toolbar)
         supportActionBar?.setHomeAsUpIndicator(homeAsUpIndicatorResId())
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        viewStub.layoutResource = layoutResource
-        viewStub.inflate()
 
         Logger.debug("$localClassName#onCreate()")
     }
@@ -39,8 +50,6 @@ internal abstract class AirwallexActivity : AppCompatActivity() {
         Logger.debug("$localClassName#onDestroy()")
         super.onDestroy()
     }
-
-    protected abstract val layoutResource: Int
 
     protected abstract fun onActionSave()
 

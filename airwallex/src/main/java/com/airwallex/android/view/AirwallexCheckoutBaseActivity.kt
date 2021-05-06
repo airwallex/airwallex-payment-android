@@ -288,6 +288,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                                 paymentIntentId = paymentIntent.id,
                                 clientSecret = requireNotNull(paymentIntent.clientSecret),
                                 paymentMethod = paymentMethod,
+                                cvc = cvc,
                                 customerId = paymentIntent.customerId,
                                 paymentConsentId = response.id,
                                 listener = listener

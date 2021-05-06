@@ -2,16 +2,26 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.airwallex.android.R
+import com.airwallex.android.databinding.WidgetContactBinding
 import com.airwallex.android.model.Shipping
-import kotlinx.android.synthetic.main.widget_contact.view.*
 
 /**
  * A widget used to collect the contact info of shipping info.
  */
 internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+
+    private val viewBinding = WidgetContactBinding.inflate(
+        LayoutInflater.from(context),
+        this,
+        true
+    )
+
+    private val firstNameTextInputLayout = viewBinding.atlFirstName
+    private val lastNameTextInputLayout = viewBinding.atlLastName
+    private val numberTextInputLayout = viewBinding.atlPhoneNumber
 
     /**
      * The listener of when the shipping contact changed
@@ -23,8 +33,8 @@ internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : Li
      */
     internal val isValidContact: Boolean
         get() {
-            return atlLastName.value.isNotEmpty() &&
-                atlFirstName.value.isNotEmpty()
+            return lastNameTextInputLayout.value.isNotEmpty() &&
+                firstNameTextInputLayout.value.isNotEmpty()
         }
 
     /**
@@ -32,54 +42,49 @@ internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : Li
      */
     internal val shippingContact: Triple<String, String, String>
         get() {
-            return Triple(atlLastName.value, atlFirstName.value, atlPhoneNumber.value)
+            return Triple(lastNameTextInputLayout.value, firstNameTextInputLayout.value, numberTextInputLayout.value)
         }
 
     init {
-        View.inflate(
-            getContext(),
-            R.layout.widget_contact, this
-        )
-
         listenTextChanged()
         listenFocusChanged()
     }
 
     internal fun initializeView(shipping: Shipping) {
         with(shipping) {
-            atlLastName.value = lastName ?: ""
-            atlFirstName.value = firstName ?: ""
-            atlPhoneNumber.value = phoneNumber ?: ""
+            lastNameTextInputLayout.value = lastName ?: ""
+            firstNameTextInputLayout.value = firstName ?: ""
+            numberTextInputLayout.value = phoneNumber ?: ""
         }
     }
 
     private fun listenTextChanged() {
-        atlLastName.afterTextChanged { contactChangeCallback.invoke() }
-        atlFirstName.afterTextChanged { contactChangeCallback.invoke() }
+        lastNameTextInputLayout.afterTextChanged { contactChangeCallback.invoke() }
+        firstNameTextInputLayout.afterTextChanged { contactChangeCallback.invoke() }
     }
 
     private fun listenFocusChanged() {
-        atlLastName.afterFocusChanged { hasFocus ->
+        lastNameTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlLastName.value.isEmpty()) {
-                    atlLastName.error = resources.getString(R.string.empty_last_name)
+                if (lastNameTextInputLayout.value.isEmpty()) {
+                    lastNameTextInputLayout.error = resources.getString(R.string.empty_last_name)
                 } else {
-                    atlLastName.error = null
+                    lastNameTextInputLayout.error = null
                 }
             } else {
-                atlLastName.error = null
+                lastNameTextInputLayout.error = null
             }
         }
 
-        atlFirstName.afterFocusChanged { hasFocus ->
+        firstNameTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
-                if (atlFirstName.value.isEmpty()) {
-                    atlFirstName.error = resources.getString(R.string.empty_first_name)
+                if (firstNameTextInputLayout.value.isEmpty()) {
+                    firstNameTextInputLayout.error = resources.getString(R.string.empty_first_name)
                 } else {
-                    atlFirstName.error = null
+                    firstNameTextInputLayout.error = null
                 }
             } else {
-                atlFirstName.error = null
+                firstNameTextInputLayout.error = null
             }
         }
     }
