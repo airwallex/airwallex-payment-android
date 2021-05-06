@@ -379,9 +379,11 @@ class PaymentCartFragment : BasePaymentCartFragment() {
                 }
 
                 override fun onNextActionWithWeChatPay(weChat: WeChat) {
+                    startWeChatPay(weChat)
                 }
 
                 override fun onNextActionWithAlipayUrl(url: String) {
+                    startAlipay(url)
                 }
 
                 override fun onCancelled() {
