@@ -2,7 +2,7 @@ package com.airwallex.android.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import kotlinx.android.parcel.RawValue
+import kotlinx.parcelize.RawValue
 import java.util.*
 
 @Parcelize

@@ -26,7 +26,6 @@ internal open class AirwallexHttpRequest internal constructor(
                 ACCEPT_HEADER_KEY to ACCEPT_HEADER_VALUE,
                 CONTENT_TYPE_HEADER_KEY to CONTENT_TYPE_HEADER_VALUE,
                 USER_AGENT_KEY to USER_AGENT_VALUE,
-                USER_AGENT_VERSION_KEY to USER_AGENT_VERSION_VALUE,
                 API_VERSION to BuildConfig.API_VERSION,
                 CLIENT_SECRET to options.clientSecret
             )
@@ -82,10 +81,8 @@ internal open class AirwallexHttpRequest internal constructor(
         private const val ACCEPT_HEADER_VALUE = "application/json"
         private const val CONTENT_TYPE_HEADER_KEY = "Content-Type"
         private const val CONTENT_TYPE_HEADER_VALUE = "application/json"
-        private const val USER_AGENT_KEY = "Airwallex-User-Agent"
-        private const val USER_AGENT_VALUE = "Airwallex-Android-SDK"
-        private const val USER_AGENT_VERSION_KEY = "Airwallex-User-Agent-Version"
-        private const val USER_AGENT_VERSION_VALUE = BuildConfig.VERSION_NAME
+        private const val USER_AGENT_KEY = "User-Agent"
+        private const val USER_AGENT_VALUE = "Airwallex-Android-SDK/${BuildConfig.VERSION_NAME}"
         private const val API_VERSION = "x-api-version"
         private const val CLIENT_SECRET = "client-secret"
         private const val AWX_TRACKER = "Awx-Tracker"

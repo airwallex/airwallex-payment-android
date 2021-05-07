@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentConsent
 import com.airwallex.android.model.Shipping
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
 @Parcelize

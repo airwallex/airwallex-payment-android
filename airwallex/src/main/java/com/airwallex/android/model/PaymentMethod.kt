@@ -3,7 +3,7 @@ package com.airwallex.android.model
 import android.os.Parcelable
 import com.airwallex.android.model.parser.PaymentMethodParser
 import kotlinx.parcelize.Parcelize
-import kotlinx.android.parcel.RawValue
+import kotlinx.parcelize.RawValue
 import java.util.*
 
 /**
