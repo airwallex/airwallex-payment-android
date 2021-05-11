@@ -1,5 +1,6 @@
 package com.airwallex.android
 
+import android.net.Uri
 import com.airwallex.android.exception.*
 import com.airwallex.android.model.*
 import com.airwallex.android.model.parser.*
@@ -317,11 +318,17 @@ internal class AirwallexApiRepository : ApiRepository {
     override fun tracker(options: ApiRepository.Options) {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
+                val params = (options as TrackerOptions).request.toParamMap()
+                val builder = Uri.parse(trackerUrl()).buildUpon()
+                params.forEach {
+                    builder.appendQueryParameter(it.key, it.value.toString())
+                }
+                val uri = builder.build()
                 httpClient.execute(
                     AirwallexHttpRequest.createGet(
-                        url = trackerUrl(),
+                        url = uri.toString(),
                         options = options,
-                        params = (options as TrackerOptions).request.toParamMap()
+                        params = null
                     )
                 )
             }.getOrElse {

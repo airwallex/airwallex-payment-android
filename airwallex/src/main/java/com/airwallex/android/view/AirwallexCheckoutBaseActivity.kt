@@ -257,7 +257,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                                             paymentConsent = response,
                                             currency = session.currency,
                                             amount = session.amount,
-                                            cvc = session.cvc,
+                                            cvc = cvc,
                                             listener = listener
                                         )
                                     }
@@ -275,7 +275,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                 val paymentIntent = session.paymentIntent
                 createPaymentConsent(
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
-                    customerId = requireNotNull(paymentIntent.customerId),
+                    customerId = requireNotNull(session.customerId),
                     paymentMethod = paymentMethod,
                     nextTriggeredBy = session.nextTriggerBy,
                     listener = object : Airwallex.PaymentListener<PaymentConsent> {
@@ -284,15 +284,33 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                         }
 
                         override fun onSuccess(response: PaymentConsent) {
-                            confirmPaymentIntent(
-                                paymentIntentId = paymentIntent.id,
-                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                paymentMethod = paymentMethod,
-                                cvc = cvc,
-                                customerId = paymentIntent.customerId,
-                                paymentConsentId = response.id,
-                                listener = listener
-                            )
+                            when (paymentMethod.type) {
+                                PaymentMethodType.CARD -> {
+                                    confirmPaymentIntent(
+                                        paymentIntentId = paymentIntent.id,
+                                        clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                        paymentMethod = paymentMethod,
+                                        cvc = cvc,
+                                        customerId = session.customerId,
+                                        paymentConsentId = response.id,
+                                        listener = listener
+                                    )
+                                }
+                                PaymentMethodType.GCASH,
+                                PaymentMethodType.TNG,
+                                PaymentMethodType.KAKAOPAY,
+                                PaymentMethodType.DANA,
+                                PaymentMethodType.ALIPAY_HK -> {
+                                    verifyPaymentConsent(
+                                        paymentConsent = response,
+                                        currency = session.currency,
+                                        amount = session.amount,
+                                        cvc = cvc,
+                                        listener = listener
+                                    )
+                                }
+                                else -> listener.onFailed(InvalidParamsException("Not support payment method type ${paymentMethod.type}"))
+                            }
                         }
                     }
                 )

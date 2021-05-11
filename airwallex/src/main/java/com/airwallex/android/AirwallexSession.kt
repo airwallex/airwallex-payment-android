@@ -16,6 +16,4 @@ abstract class AirwallexSession(
     abstract val currency: String
 
     abstract val amount: BigDecimal
-
-    abstract val cvc: String?
 }

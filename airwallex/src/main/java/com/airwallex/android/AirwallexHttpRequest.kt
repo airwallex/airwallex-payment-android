@@ -72,7 +72,11 @@ internal open class AirwallexHttpRequest internal constructor(
     }
 
     override fun toString(): String {
-        return "${method.code} $url"
+        return if (Method.POST == method) {
+            "${method.code} $url \n $body"
+        } else {
+            "${method.code} $url"
+        }
     }
 
     internal companion object {

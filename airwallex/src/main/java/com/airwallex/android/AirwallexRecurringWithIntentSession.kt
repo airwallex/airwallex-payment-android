@@ -11,8 +11,7 @@ import java.math.BigDecimal
 @Parcelize
 class AirwallexRecurringWithIntentSession internal constructor(
     val paymentIntent: PaymentIntent,
-    val nextTriggerBy: PaymentConsent.NextTriggeredBy,
-    override val cvc: String? = null,
+    val nextTriggerBy: PaymentConsent.NextTriggeredBy
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
@@ -20,17 +19,10 @@ class AirwallexRecurringWithIntentSession internal constructor(
         private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
     ) : ObjectBuilder<AirwallexRecurringWithIntentSession> {
 
-        private var cvc: String? = null
-
-        fun setCvc(cvc: String?): Builder = apply {
-            this.cvc = cvc
-        }
-
         override fun build(): AirwallexRecurringWithIntentSession {
             return AirwallexRecurringWithIntentSession(
                 paymentIntent = paymentIntent,
-                nextTriggerBy = nextTriggerBy,
-                cvc = cvc
+                nextTriggerBy = nextTriggerBy
             )
         }
     }

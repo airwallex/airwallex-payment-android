@@ -9,24 +9,16 @@ import java.math.BigDecimal
 
 @Parcelize
 class AirwallexPaymentSession internal constructor(
-    val paymentIntent: PaymentIntent,
-    override val cvc: String? = null
+    val paymentIntent: PaymentIntent
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
         private val paymentIntent: PaymentIntent,
     ) : ObjectBuilder<AirwallexPaymentSession> {
 
-        private var cvc: String? = null
-
-        fun setCvc(cvc: String?): Builder = apply {
-            this.cvc = cvc
-        }
-
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
-                paymentIntent = paymentIntent,
-                cvc = cvc
+                paymentIntent = paymentIntent
             )
         }
     }

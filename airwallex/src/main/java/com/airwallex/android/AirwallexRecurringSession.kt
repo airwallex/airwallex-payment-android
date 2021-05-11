@@ -12,7 +12,6 @@ class AirwallexRecurringSession internal constructor(
     val nextTriggerBy: PaymentConsent.NextTriggeredBy,
     override val currency: String,
     override val amount: BigDecimal,
-    override val cvc: String? = null,
     override val shipping: Shipping? = null,
     override val customerId: String? = null
 ) : AirwallexSession(), Parcelable {
@@ -23,13 +22,8 @@ class AirwallexRecurringSession internal constructor(
         private val amount: BigDecimal
     ) : ObjectBuilder<AirwallexRecurringSession> {
 
-        private var cvc: String? = null
         private var shipping: Shipping? = null
         private var customerId: String? = null
-
-        fun setCvc(cvc: String?): Builder = apply {
-            this.cvc = cvc
-        }
 
         fun setShipping(shipping: Shipping?): Builder = apply {
             this.shipping = shipping
@@ -44,7 +38,6 @@ class AirwallexRecurringSession internal constructor(
                 nextTriggerBy = nextTriggerBy,
                 currency = currency,
                 amount = amount,
-                cvc = cvc,
                 shipping = shipping,
                 customerId = customerId
             )

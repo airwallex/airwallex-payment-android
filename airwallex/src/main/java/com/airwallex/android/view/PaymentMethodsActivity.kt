@@ -301,7 +301,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     startCheckout(
                         session = session,
                         paymentMethod = paymentMethod,
-                        cvc = session.cvc,
+                        cvc = null,
                         listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
                             override fun onSuccess(response: PaymentIntent) {
                                 finishWithPaymentIntent(paymentIntent = response)
