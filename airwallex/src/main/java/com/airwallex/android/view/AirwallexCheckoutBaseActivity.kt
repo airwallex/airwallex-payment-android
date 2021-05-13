@@ -222,8 +222,9 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         airwallex.confirmPaymentIntent(params, listener)
     }
 
-    internal fun startCheckout(session: AirwallexSession, paymentMethod: PaymentMethod, cvc: String?, listener: Airwallex.PaymentResultListener<PaymentIntent>) {
+    internal fun startCheckout(session: AirwallexSession, paymentConsent: PaymentConsent, cvc: String?, listener: Airwallex.PaymentResultListener<PaymentIntent>) {
         setLoadingProgress(loading = true, cancelable = false)
+        val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
         when (session) {
             is AirwallexPaymentSession -> {
                 val paymentIntent = session.paymentIntent
@@ -233,6 +234,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     paymentMethod = paymentMethod,
                     cvc = cvc,
                     customerId = paymentIntent.customerId,
+                    paymentConsentId = if (paymentMethod.type == PaymentMethodType.CARD) paymentConsent.id else null,
                     listener = listener
                 )
             }
@@ -246,7 +248,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                                 clientSecret = clientSecret.value,
                                 customerId = customerId,
                                 paymentMethod = paymentMethod,
-                                nextTriggeredBy = session.nextTriggerBy,
+                                nextTriggeredBy = if (paymentMethod.type == PaymentMethodType.CARD) session.nextTriggerBy else PaymentConsent.NextTriggeredBy.MERCHANT,
                                 listener = object : Airwallex.PaymentListener<PaymentConsent> {
                                     override fun onFailed(exception: Exception) {
                                         listener.onFailed(exception)
@@ -277,7 +279,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
                     customerId = requireNotNull(session.customerId),
                     paymentMethod = paymentMethod,
-                    nextTriggeredBy = session.nextTriggerBy,
+                    nextTriggeredBy = if (paymentMethod.type == PaymentMethodType.CARD) session.nextTriggerBy else PaymentConsent.NextTriggeredBy.MERCHANT,
                     listener = object : Airwallex.PaymentListener<PaymentConsent> {
                         override fun onFailed(exception: Exception) {
                             listener.onFailed(exception)

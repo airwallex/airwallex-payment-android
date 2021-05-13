@@ -226,12 +226,21 @@ open class BasePaymentCartFragment : Fragment() {
         when (session) {
             is AirwallexPaymentSession -> {
                 val paymentIntent = session.paymentIntent
+                val paymentConsent = when (paymentMethod.type) {
+                    PaymentMethodType.CARD -> {
+                        paymentIntent.customerPaymentConsents?.find { it.paymentMethod?.id == paymentMethod.id && it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER }
+                    }
+                    else -> {
+                        paymentIntent.customerPaymentConsents?.find { it.paymentMethod?.type == paymentMethod.type && it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER }
+                    }
+                }
                 confirmPaymentIntent(
                     paymentIntentId = paymentIntent.id,
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
                     paymentMethod = paymentMethod,
                     cvc = cvc,
                     customerId = paymentIntent.customerId,
+                    paymentConsentId = paymentConsent?.id,
                     listener = listener
                 )
             }

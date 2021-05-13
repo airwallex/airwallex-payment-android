@@ -9,8 +9,8 @@ import com.airwallex.android.AirwallexSession
 import com.airwallex.android.CurrencyUtils.formatPrice
 import com.airwallex.android.R
 import com.airwallex.android.databinding.ActivityPaymentCheckoutBinding
+import com.airwallex.android.model.PaymentConsent
 import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.WeChat
 import java.lang.Exception
 
@@ -33,8 +33,8 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         PaymentCheckoutActivityLaunch.Args.getExtra(intent)
     }
 
-    private val paymentMethod: PaymentMethod by lazy {
-        args.paymentMethod
+    private val paymentConsent: PaymentConsent by lazy {
+        args.paymentConsent
     }
 
     private val session: AirwallexSession by lazy {
@@ -49,7 +49,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         super.onCreate(savedInstanceState)
 
         viewBinding.tvTotalPrice.text = formatPrice(session.currency, session.amount)
-        viewBinding.paymentMethodItemView.renewalPaymentMethod(paymentMethod, args.cvc)
+        viewBinding.paymentMethodItemView.renewalPaymentMethod(requireNotNull(paymentConsent.paymentMethod), args.cvc)
         viewBinding.paymentMethodItemView.cvcChangedCallback = {
             updateButtonStatus()
         }
@@ -69,7 +69,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     private fun startConfirmPaymentIntent() {
         startCheckout(
             session = session,
-            paymentMethod = paymentMethod,
+            paymentConsent = paymentConsent,
             cvc = viewBinding.paymentMethodItemView.cvc,
             listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {

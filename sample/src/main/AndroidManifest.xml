@@ -42,16 +42,6 @@
             android:name="com.airwallex.paymentacceptance.PaymentCartActivity"
             android:launchMode="singleTask"
             android:theme="@style/ActivityAnimTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="${applicationId}"
-                    android:scheme="airwallexcheckout" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -62,6 +52,36 @@
             android:name="com.airwallex.paymentacceptance.wxapi.WXPayEntryActivity"
             android:exported="true"
             android:launchMode="singleTop" />
+
+        <activity
+            android:name="com.airwallex.paymentacceptance.h5.H5WebViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityAnimTheme" />
+
+        <activity
+            android:name="com.airwallex.paymentacceptance.h5.H5DemoActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityAnimTheme" />
+
+        <activity
+            android:name="com.airwallex.paymentacceptance.PaySuccessActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:theme="@style/ActivityAnimTheme">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!--airwallexcheckout://com.airwallex.paymentacceptance-->
+                <data
+                    android:host="${applicationId}"
+                    android:scheme="airwallexcheckout" />
+            </intent-filter>
+        </activity>
 
         <receiver
             android:name="com.airwallex.paymentacceptance.AppRegister"

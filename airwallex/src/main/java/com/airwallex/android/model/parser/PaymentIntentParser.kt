@@ -8,6 +8,7 @@ import java.math.BigDecimal
 class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
 
     private val paymentMethodParser: PaymentMethodParser = PaymentMethodParser()
+    private val paymentConsentParser: PaymentConsentParser = PaymentConsentParser()
 
     override fun parse(json: JSONObject): PaymentIntent {
         val availablePaymentMethodTypes = json.optJSONArray(FIELD_AVAILABLE_PAYMENT_METHOD_TYPES)?.let {
@@ -23,6 +24,14 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
                 .map { idx -> it.optJSONObject(idx) }
                 .mapNotNull { jsonObject ->
                     paymentMethodParser.parse(jsonObject)
+                }
+        }
+
+        val customerPaymentConsents = json.optJSONArray(FIELD_AVAILABLE_PAYMENT_CONSENTS)?.let {
+            (0 until it.length())
+                .map { idx -> it.optJSONObject(idx) }
+                .mapNotNull { jsonObject ->
+                    paymentConsentParser.parse(jsonObject)
                 }
         }
 
@@ -47,6 +56,7 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
             },
             availablePaymentMethodTypes = availablePaymentMethodTypes,
             customerPaymentMethods = customerPaymentMethods,
+            customerPaymentConsents = customerPaymentConsents,
             clientSecret = AirwallexJsonUtils.optString(json, FIELD_CLIENT_SECRET),
             nextAction = json.optJSONObject(FIELD_NEXT_ACTION)?.let {
                 NextActionParser().parse(it)
@@ -79,6 +89,7 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
         private const val FIELD_LAST_PAYMENT_ATTEMPT = "latest_payment_attempt"
         private const val FIELD_AVAILABLE_PAYMENT_METHOD_TYPES = "available_payment_method_types"
         private const val FIELD_AVAILABLE_PAYMENT_METHODS = "customer_payment_methods"
+        private const val FIELD_AVAILABLE_PAYMENT_CONSENTS = "customer_payment_consents"
         private const val FIELD_CLIENT_SECRET = "client_secret"
         private const val FIELD_NEXT_ACTION = "next_action"
         private const val FIELD_CREATED_AT = "created_at"

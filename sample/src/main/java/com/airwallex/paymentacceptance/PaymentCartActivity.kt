@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.paymentacceptance.databinding.ActivityPaymentCartBinding
+import com.airwallex.paymentacceptance.h5.H5DemoActivity
 
 class PaymentCartActivity : AppCompatActivity() {
 
@@ -48,6 +49,10 @@ class PaymentCartActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.settings -> {
                 startActivity(Intent(this, PaymentSettingsActivity::class.java))
+                true
+            }
+            R.id.h5demo -> {
+                startActivity(Intent(this, H5DemoActivity::class.java))
                 true
             }
             else -> false

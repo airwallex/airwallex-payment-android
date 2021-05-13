@@ -7,10 +7,8 @@ import android.os.Parcel
 import androidx.fragment.app.Fragment
 import com.airwallex.android.AirwallexSession
 import com.airwallex.android.exception.AirwallexException
+import com.airwallex.android.model.*
 import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.WeChat
 import com.airwallex.android.view.PaymentCheckoutActivityLaunch.Args
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
@@ -32,14 +30,14 @@ internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCh
     @Parcelize
     data class Args internal constructor(
         val session: AirwallexSession,
-        val paymentMethod: PaymentMethod,
+        val paymentConsent: PaymentConsent,
         val cvc: String?
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
 
             private lateinit var session: AirwallexSession
-            private lateinit var paymentMethod: PaymentMethod
+            private lateinit var paymentConsent: PaymentConsent
             private var cvc: String? = null
 
             fun setCvc(cvc: String?): Builder = apply {
@@ -50,14 +48,14 @@ internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCh
                 this.session = session
             }
 
-            fun setPaymentMethod(paymentMethod: PaymentMethod): Builder = apply {
-                this.paymentMethod = paymentMethod
+            fun setPaymentConsent(paymentConsent: PaymentConsent): Builder = apply {
+                this.paymentConsent = paymentConsent
             }
 
             override fun build(): Args {
                 return Args(
                     session = session,
-                    paymentMethod = paymentMethod,
+                    paymentConsent = paymentConsent,
                     cvc = cvc
                 )
             }

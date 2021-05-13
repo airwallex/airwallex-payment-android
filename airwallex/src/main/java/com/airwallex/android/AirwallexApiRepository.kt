@@ -288,7 +288,7 @@ internal class AirwallexApiRepository : ApiRepository {
 
     override fun disablePaymentConsent(options: ApiRepository.Options): PaymentConsent? {
         return executeApiRequest(
-            AirwallexHttpRequest.createGet(
+            AirwallexHttpRequest.createPost(
                 url = disablePaymentConsentUrl(
                     AirwallexPlugins.environment.baseUrl(),
                     (options as DisablePaymentConsentOptions).paymentConsentId

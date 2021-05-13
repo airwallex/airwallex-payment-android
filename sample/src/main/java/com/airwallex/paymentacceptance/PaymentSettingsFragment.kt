@@ -6,6 +6,8 @@ import android.text.InputType
 import android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
 import android.widget.Toast
 import androidx.preference.*
+import com.airwallex.android.AirwallexCheckoutMode
+import java.util.*
 
 class PaymentSettingsFragment :
     PreferenceFragmentCompat(),
@@ -39,6 +41,7 @@ class PaymentSettingsFragment :
         if (nextTriggerByPref != null && nextTriggerByPref.value == null) {
             nextTriggerByPref.setValueIndex(0)
         }
+        nextTriggerByPref?.isEnabled = !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
 
         val clearCustomerPref: Preference? =
             findPreference(getString(R.string.clear_customer)) as? Preference?
@@ -50,6 +53,8 @@ class PaymentSettingsFragment :
             Toast.makeText(context, R.string.customer_cleared, Toast.LENGTH_SHORT).show()
             true
         }
+
+        toggleNextTriggerByStatus()
 
         onSharedPreferenceChanged(preferences, getString(R.string.base_url))
         onSharedPreferenceChanged(preferences, getString(R.string.api_key))
@@ -86,6 +91,13 @@ class PaymentSettingsFragment :
             getString(R.string.checkout_mode) -> preference?.summary = Settings.checkoutMode
             getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy
         }
+        toggleNextTriggerByStatus()
+    }
+
+    private fun toggleNextTriggerByStatus() {
+        val checkoutModePref: ListPreference? = findPreference(getString(R.string.checkout_mode)) as? ListPreference?
+        val nextTriggerByPref: ListPreference? = findPreference(getString(R.string.next_trigger_by)) as? ListPreference?
+        nextTriggerByPref?.isEnabled = !(checkoutModePref?.value?.toUpperCase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
     }
 
     private fun registerOnSharedPreferenceChangeListener() {

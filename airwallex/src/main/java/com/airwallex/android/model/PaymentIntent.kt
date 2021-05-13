@@ -86,6 +86,11 @@ data class PaymentIntent internal constructor(
     val customerPaymentMethods: List<PaymentMethod>? = null,
 
     /**
+     * PaymentConsents of the Customer if Customer ID is provided
+     */
+    val customerPaymentConsents: List<PaymentConsent>? = null,
+
+    /**
      * Client secret for browser or app
      */
     val clientSecret: String? = null,
@@ -116,36 +121,6 @@ data class PaymentIntent internal constructor(
     val cancellationReason: String? = null
 
 ) : AirwallexModel, Parcelable {
-
-    val paymentMethodType: PaymentMethodType?
-        get() {
-            if (latestPaymentAttempt == null) {
-                return null
-            }
-            return latestPaymentAttempt.paymentMethod.type
-        }
-
-    val weChat: WeChat?
-        get() {
-            if (latestPaymentAttempt == null ||
-                latestPaymentAttempt.paymentMethod.type != PaymentMethodType.WECHAT ||
-                nextAction == null ||
-                nextAction.type != NextAction.NextActionType.CALL_SDK ||
-                nextAction.data == null
-            ) {
-                return null
-            }
-
-            return WeChat(
-                appId = nextAction.data["appId"] as? String,
-                partnerId = nextAction.data["partnerId"] as? String,
-                prepayId = nextAction.data["prepayId"] as? String,
-                `package` = nextAction.data["package"] as? String,
-                nonceStr = nextAction.data["nonceStr"] as? String,
-                timestamp = nextAction.data["timeStamp"] as? String,
-                sign = nextAction.data["sign"] as? String
-            )
-        }
 
     @Parcelize
     data class PaymentAttempt internal constructor(

@@ -26,7 +26,7 @@ data class PaymentConsent internal constructor(
     /**
      * PaymentMethod information attached for subsequent payments
      */
-    val paymentMethod: PaymentMethod? = null,
+    var paymentMethod: PaymentMethod? = null,
 
     /**
      * ID of the initial PaymentIntent confirmed with this PaymentConsent

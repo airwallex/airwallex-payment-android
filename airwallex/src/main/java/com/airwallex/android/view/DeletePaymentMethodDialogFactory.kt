@@ -4,18 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
 import com.airwallex.android.R
-import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.model.PaymentConsent
 import java.util.*
 
 internal class DeletePaymentMethodDialogFactory internal constructor(
     private val context: Context,
     private val adapter: PaymentMethodsAdapter,
-    private val onDeletedCallback: (PaymentMethod) -> Unit
+    private val onDeletedCallback: (PaymentConsent) -> Unit
 ) {
     @SuppressLint("StringFormatInvalid")
     @JvmSynthetic
-    fun create(paymentMethod: PaymentMethod): AlertDialog {
-        val title = paymentMethod.card?.let {
+    fun create(paymentConsent: PaymentConsent): AlertDialog {
+        val title = paymentConsent.paymentMethod?.card?.let {
             context.resources.getString(
                 R.string.delete_payment_method_prompt_title,
                 String.format("%s •••• %s", it.brand?.toUpperCase(Locale.ROOT), it.last4)
@@ -24,19 +24,19 @@ internal class DeletePaymentMethodDialogFactory internal constructor(
         return AlertDialog.Builder(context)
             .setTitle(title)
             .setPositiveButton(R.string.delete_payment_method_positive) { _, _ ->
-                onDeletedPaymentMethod(paymentMethod)
+                onDeletedPaymentMethod(paymentConsent)
             }
             .setNegativeButton(R.string.delete_payment_method_negative) { _, _ ->
-                adapter.resetPaymentMethod(paymentMethod)
+                adapter.resetPaymentMethod(paymentConsent)
             }
             .setOnCancelListener {
-                adapter.resetPaymentMethod(paymentMethod)
+                adapter.resetPaymentMethod(paymentConsent)
             }
             .create()
     }
 
     @JvmSynthetic
-    internal fun onDeletedPaymentMethod(paymentMethod: PaymentMethod) {
-        onDeletedCallback(paymentMethod)
+    internal fun onDeletedPaymentMethod(paymentConsent: PaymentConsent) {
+        onDeletedCallback(paymentConsent)
     }
 }
