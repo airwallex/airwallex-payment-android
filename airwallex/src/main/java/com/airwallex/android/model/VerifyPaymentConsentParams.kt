@@ -41,7 +41,8 @@ data class VerifyPaymentConsentParams constructor(
     class Builder(
         private val clientSecret: String,
         private val paymentConsentId: String,
-        private val paymentMethodType: PaymentMethodType
+        private val paymentMethodType: PaymentMethodType,
+        private val returnUrl: String
     ) : ObjectBuilder<VerifyPaymentConsentParams> {
 
         private var amount: BigDecimal? = null
@@ -49,8 +50,6 @@ data class VerifyPaymentConsentParams constructor(
         private var currency: String? = null
 
         private var cvc: String? = null
-
-        private var returnUrl: String? = null
 
         fun setAmount(amount: BigDecimal?): Builder = apply {
             this.amount = amount
@@ -62,10 +61,6 @@ data class VerifyPaymentConsentParams constructor(
 
         fun setCvc(cvc: String?): Builder = apply {
             this.cvc = cvc
-        }
-
-        fun setReturnUrl(returnUrl: String?): Builder = apply {
-            this.returnUrl = returnUrl
         }
 
         override fun build(): VerifyPaymentConsentParams {
@@ -97,59 +92,66 @@ data class VerifyPaymentConsentParams constructor(
             return Builder(
                 clientSecret = clientSecret,
                 paymentConsentId = paymentConsentId,
-                paymentMethodType = PaymentMethodType.CARD
+                paymentMethodType = PaymentMethodType.CARD,
+                returnUrl = returnUrl
             )
                 .setAmount(amount = amount)
                 .setCurrency(currency = currency)
                 .setCvc(cvc)
-                .setReturnUrl(returnUrl)
                 .build()
         }
 
         fun createGCashParams(
             clientSecret: String,
             paymentConsentId: String,
+            returnUrl: String
         ): VerifyPaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.GCASH, clientSecret, paymentConsentId)
+            return createThirdPartParams(PaymentMethodType.GCASH, clientSecret, paymentConsentId, returnUrl)
         }
 
         fun createTngParams(
             clientSecret: String,
             paymentConsentId: String,
+            returnUrl: String
         ): VerifyPaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.TNG, clientSecret, paymentConsentId)
+            return createThirdPartParams(PaymentMethodType.TNG, clientSecret, paymentConsentId, returnUrl)
         }
 
         fun createKakaoParams(
             clientSecret: String,
             paymentConsentId: String,
+            returnUrl: String
         ): VerifyPaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.KAKAOPAY, clientSecret, paymentConsentId)
+            return createThirdPartParams(PaymentMethodType.KAKAOPAY, clientSecret, paymentConsentId, returnUrl)
         }
 
         fun createDanaParams(
             clientSecret: String,
             paymentConsentId: String,
+            returnUrl: String
         ): VerifyPaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.DANA, clientSecret, paymentConsentId)
+            return createThirdPartParams(PaymentMethodType.DANA, clientSecret, paymentConsentId, returnUrl)
         }
 
         fun createAlipayHKParams(
             clientSecret: String,
             paymentConsentId: String,
+            returnUrl: String
         ): VerifyPaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.ALIPAY_HK, clientSecret, paymentConsentId)
+            return createThirdPartParams(PaymentMethodType.ALIPAY_HK, clientSecret, paymentConsentId, returnUrl)
         }
 
         private fun createThirdPartParams(
             paymentMethodType: PaymentMethodType,
             clientSecret: String,
             paymentConsentId: String,
+            returnUrl: String
         ): VerifyPaymentConsentParams {
             return Builder(
                 clientSecret = clientSecret,
                 paymentConsentId = paymentConsentId,
-                paymentMethodType = paymentMethodType
+                paymentMethodType = paymentMethodType,
+                returnUrl = returnUrl
             )
                 .build()
         }

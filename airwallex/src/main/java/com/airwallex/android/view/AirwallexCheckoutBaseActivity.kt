@@ -90,35 +90,41 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         if (paymentConsent.requiresCvc && cvc == null) {
             listener.onFailed(InvalidParamsException(message = "CVC is required!"))
         }
+        val returnUrl = "airwallexcheckout://$packageName"
         val params: VerifyPaymentConsentParams = when (requireNotNull(paymentConsent.paymentMethod?.type)) {
             PaymentMethodType.ALIPAY_HK -> {
                 VerifyPaymentConsentParams.createAlipayHKParams(
                     clientSecret = requireNotNull(paymentConsent.clientSecret),
-                    paymentConsentId = requireNotNull(paymentConsent.id)
+                    paymentConsentId = requireNotNull(paymentConsent.id),
+                    returnUrl = returnUrl
                 )
             }
             PaymentMethodType.DANA -> {
                 VerifyPaymentConsentParams.createDanaParams(
                     clientSecret = requireNotNull(paymentConsent.clientSecret),
-                    paymentConsentId = requireNotNull(paymentConsent.id)
+                    paymentConsentId = requireNotNull(paymentConsent.id),
+                    returnUrl = returnUrl
                 )
             }
             PaymentMethodType.GCASH -> {
                 VerifyPaymentConsentParams.createGCashParams(
                     clientSecret = requireNotNull(paymentConsent.clientSecret),
-                    paymentConsentId = requireNotNull(paymentConsent.id)
+                    paymentConsentId = requireNotNull(paymentConsent.id),
+                    returnUrl = returnUrl
                 )
             }
             PaymentMethodType.KAKAOPAY -> {
                 VerifyPaymentConsentParams.createKakaoParams(
                     clientSecret = requireNotNull(paymentConsent.clientSecret),
-                    paymentConsentId = requireNotNull(paymentConsent.id)
+                    paymentConsentId = requireNotNull(paymentConsent.id),
+                    returnUrl = returnUrl
                 )
             }
             PaymentMethodType.TNG -> {
                 VerifyPaymentConsentParams.createTngParams(
                     clientSecret = requireNotNull(paymentConsent.clientSecret),
-                    paymentConsentId = requireNotNull(paymentConsent.id)
+                    paymentConsentId = requireNotNull(paymentConsent.id),
+                    returnUrl = returnUrl
                 )
             }
             PaymentMethodType.CARD -> {
@@ -128,7 +134,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     amount = amount,
                     currency = currency,
                     cvc = cvc,
-                    returnUrl = "airwallexcheckout://$packageName"
+                    returnUrl = returnUrl
                 )
             }
             else -> {
