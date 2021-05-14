@@ -1,5 +1,6 @@
 package com.airwallex.paymentacceptance.h5
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -22,6 +23,7 @@ class H5WebViewActivity : AppCompatActivity() {
         ActivityH5WebviewBinding.inflate(layoutInflater)
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)

@@ -2,6 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "./ktlint.gradle"
 
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+
+static def getDateTime() {
+    DateFormat df = new SimpleDateFormat("MMdd")
+    return df.format(new Date())
+}
+
+
 def getBaseUrl() {
     return readProperty('AIRWALLEX_BASE_URL')
 }
@@ -82,7 +91,7 @@ android {
 
             applicationVariants.all { variant ->
                 variant.outputs.all {
-                    outputFileName = "${variant.versionName}-release.apk"
+                    outputFileName = "${variant.versionName}-${getDateTime()}-release.apk"
                 }
             }
         }
@@ -99,7 +108,7 @@ dependencies {
 //    implementation 'com.airwallex:airwallex-core:2.0.4'
 
     implementation 'com.google.android.material:material:1.3.0'
-    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.preference:preference-ktx:1.1.1'
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
@@ -111,5 +120,5 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
 }
