@@ -411,7 +411,7 @@ class Airwallex internal constructor(
      */
     interface PaymentMethodListener : PaymentFlowListener {
         // CVC returns only when payment is first created, otherwise null
-        fun onSuccess(paymentMethod: PaymentMethod, cvc: String?)
+        fun onSuccess(paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?)
         fun onFailed(error: Exception)
     }
 

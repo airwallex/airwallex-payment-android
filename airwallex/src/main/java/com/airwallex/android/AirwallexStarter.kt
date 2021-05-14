@@ -233,6 +233,7 @@ internal class AirwallexStarter constructor(
                             } else {
                                 selectPaymentMethodFlowListener?.onSuccess(
                                     requireNotNull(result.paymentMethod),
+                                    result.paymentConsentId,
                                     result.cvc
                                 )
                             }

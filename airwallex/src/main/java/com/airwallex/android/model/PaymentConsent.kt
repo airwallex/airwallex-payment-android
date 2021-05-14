@@ -11,7 +11,7 @@ data class PaymentConsent internal constructor(
     /**
      * Unique identifier of this PaymentConsent
      */
-    val id: String,
+    val id: String? = null,
 
     /**
      * Unique request ID specified by the merchant

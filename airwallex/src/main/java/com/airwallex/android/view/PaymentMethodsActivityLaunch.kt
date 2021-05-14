@@ -66,6 +66,7 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
         val paymentMethodType: PaymentMethodType? = null,
         var exception: Exception? = null,
         val paymentMethod: PaymentMethod? = null,
+        val paymentConsentId: String? = null,
         val cvc: String? = null,
         val weChat: WeChat? = null,
         val redirectUrl: String? = null,
@@ -84,6 +85,7 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
                     paymentMethodType = parcel.readParcelable(PaymentMethodType::class.java.classLoader),
                     exception = parcel.readSerializable() as? AirwallexException?,
                     paymentMethod = parcel.readParcelable(PaymentMethod::class.java.classLoader),
+                    paymentConsentId = parcel.readString(),
                     cvc = parcel.readString(),
                     weChat = parcel.readParcelable(WeChat::class.java.classLoader),
                     redirectUrl = parcel.readString(),
@@ -96,6 +98,7 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
                 parcel.writeParcelable(paymentMethodType, 0)
                 parcel.writeSerializable(exception)
                 parcel.writeParcelable(paymentMethod, 0)
+                parcel.writeString(paymentConsentId)
                 parcel.writeString(cvc)
                 parcel.writeParcelable(weChat, 0)
                 parcel.writeString(redirectUrl)

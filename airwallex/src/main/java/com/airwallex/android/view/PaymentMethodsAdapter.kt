@@ -159,10 +159,9 @@ internal class PaymentMethodsAdapter(
                 AvaliablePaymentMethodType.ALIPAY_CN -> {
                     viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_alipay_cn)
                     viewBinding.paymentMethodName.setText(R.string.alipay)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.id == PaymentMethodType.ALIPAY_CN.value) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.ALIPAY_CN) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentConsent = PaymentConsent(
-                            id = PaymentMethodType.ALIPAY_CN.value,
                             paymentMethod = PaymentMethod.Builder()
                                 .setType(PaymentMethodType.ALIPAY_CN)
                                 .build()
@@ -175,10 +174,9 @@ internal class PaymentMethodsAdapter(
                 AvaliablePaymentMethodType.WECHAT -> {
                     viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_wechat)
                     viewBinding.paymentMethodName.setText(R.string.wechat_pay)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.id == PaymentMethodType.WECHAT.value) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.WECHAT) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentConsent = PaymentConsent(
-                            id = PaymentMethodType.WECHAT.value,
                             paymentMethod = PaymentMethod.Builder()
                                 .setType(PaymentMethodType.WECHAT)
                                 .build()
@@ -191,10 +189,9 @@ internal class PaymentMethodsAdapter(
                 AvaliablePaymentMethodType.ALIPAY_HK -> {
                     viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_alipay_hk)
                     viewBinding.paymentMethodName.setText(R.string.alipay_hk)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.id == PaymentMethodType.ALIPAY_HK.value) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.ALIPAY_HK) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentConsent = PaymentConsent(
-                            id = PaymentMethodType.ALIPAY_HK.value,
                             paymentMethod = PaymentMethod.Builder()
                                 .setType(PaymentMethodType.ALIPAY_HK)
                                 .build()
@@ -207,10 +204,9 @@ internal class PaymentMethodsAdapter(
                 AvaliablePaymentMethodType.DANA -> {
                     viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_dana)
                     viewBinding.paymentMethodName.setText(R.string.dana)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.id == PaymentMethodType.DANA.value) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.DANA) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentConsent = PaymentConsent(
-                            id = PaymentMethodType.DANA.value,
                             paymentMethod = PaymentMethod.Builder()
                                 .setType(PaymentMethodType.DANA)
                                 .build()
@@ -223,10 +219,9 @@ internal class PaymentMethodsAdapter(
                 AvaliablePaymentMethodType.GCASH -> {
                     viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_gcash)
                     viewBinding.paymentMethodName.setText(R.string.gcash)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.id == PaymentMethodType.GCASH.value) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.GCASH) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentConsent = PaymentConsent(
-                            id = PaymentMethodType.GCASH.value,
                             paymentMethod = PaymentMethod.Builder()
                                 .setType(PaymentMethodType.GCASH)
                                 .build()
@@ -239,10 +234,9 @@ internal class PaymentMethodsAdapter(
                 AvaliablePaymentMethodType.KAKAO -> {
                     viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_kakao_pay)
                     viewBinding.paymentMethodName.setText(R.string.kakao_pay)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.id == PaymentMethodType.KAKAOPAY.value) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.KAKAOPAY) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentConsent = PaymentConsent(
-                            id = PaymentMethodType.KAKAOPAY.value,
                             paymentMethod = PaymentMethod.Builder()
                                 .setType(PaymentMethodType.KAKAOPAY)
                                 .build()
@@ -255,10 +249,9 @@ internal class PaymentMethodsAdapter(
                 AvaliablePaymentMethodType.TNG -> {
                     viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_touchngo)
                     viewBinding.paymentMethodName.setText(R.string.touchngo)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.id == PaymentMethodType.TNG.value) View.VISIBLE else View.GONE
+                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.TNG) View.VISIBLE else View.GONE
                     itemView.setOnClickListener {
                         selectedPaymentConsent = PaymentConsent(
-                            id = PaymentMethodType.TNG.value,
                             paymentMethod = PaymentMethod.Builder()
                                 .setType(PaymentMethodType.TNG)
                                 .build()

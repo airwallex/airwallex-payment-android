@@ -155,7 +155,7 @@ class PaymentCartFragment : BasePaymentCartFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return viewBinding.root
     }
 
@@ -472,16 +472,18 @@ class PaymentCartFragment : BasePaymentCartFragment() {
      * Only use the Select Payment Methods Flow
      */
     private fun handlePaymentIntentResponseWithCustomFlow1(paymentIntent: PaymentIntent) {
-
         val session = buildSessionWithIntent(paymentIntent)
         airwallex.presentSelectPaymentMethodFlow(
             session,
             clientSecretProvider,
             object : Airwallex.PaymentMethodListener {
-                override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+                override fun onSuccess(paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?) {
                     (activity as? PaymentCartActivity)?.setLoadingProgress(true)
                     startCheckout(
-                        session, paymentMethod, cvc,
+                        session,
+                        paymentMethod,
+                        paymentConsentId,
+                        cvc,
                         object : Airwallex.PaymentResultListener<PaymentIntent> {
                             override fun onFailed(exception: Exception) {
                                 showPaymentError(error = exception.message)
@@ -522,7 +524,7 @@ class PaymentCartFragment : BasePaymentCartFragment() {
             session,
             clientSecretProvider,
             object : Airwallex.PaymentMethodListener {
-                override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
+                override fun onSuccess(paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?) {
                     (activity as? PaymentCartActivity)?.setLoadingProgress(true)
 
                     when (paymentMethod.type) {
@@ -546,7 +548,10 @@ class PaymentCartFragment : BasePaymentCartFragment() {
                         }
                         else -> {
                             startCheckout(
-                                session, paymentMethod, cvc,
+                                session,
+                                paymentMethod,
+                                paymentConsentId,
+                                cvc,
                                 object : Airwallex.PaymentResultListener<PaymentIntent> {
                                     override fun onFailed(exception: Exception) {
                                         showPaymentError(error = exception.message)

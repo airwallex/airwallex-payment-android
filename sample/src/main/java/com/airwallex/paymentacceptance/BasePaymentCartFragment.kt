@@ -134,7 +134,6 @@ open class BasePaymentCartFragment : Fragment() {
                 throw InvalidParamsException(message = "Not support payment method ${paymentConsent.paymentMethod?.type} when verifying payment consent")
             }
         }
-
         airwallex.verifyPaymentConsent(params, listener)
     }
 
@@ -222,25 +221,17 @@ open class BasePaymentCartFragment : Fragment() {
         airwallex.confirmPaymentIntent(params, listener)
     }
 
-    internal fun startCheckout(session: AirwallexSession, paymentMethod: PaymentMethod, cvc: String? = null, listener: Airwallex.PaymentResultListener<PaymentIntent>) {
+    internal fun startCheckout(session: AirwallexSession, paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?, listener: Airwallex.PaymentResultListener<PaymentIntent>) {
         when (session) {
             is AirwallexPaymentSession -> {
                 val paymentIntent = session.paymentIntent
-                val paymentConsent = when (paymentMethod.type) {
-                    PaymentMethodType.CARD -> {
-                        paymentIntent.customerPaymentConsents?.find { it.paymentMethod?.id == paymentMethod.id && it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER }
-                    }
-                    else -> {
-                        paymentIntent.customerPaymentConsents?.find { it.paymentMethod?.type == paymentMethod.type && it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER }
-                    }
-                }
                 confirmPaymentIntent(
                     paymentIntentId = paymentIntent.id,
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
                     paymentMethod = paymentMethod,
                     cvc = cvc,
                     customerId = paymentIntent.customerId,
-                    paymentConsentId = paymentConsent?.id,
+                    paymentConsentId = paymentConsentId,
                     listener = listener
                 )
             }
@@ -254,7 +245,7 @@ open class BasePaymentCartFragment : Fragment() {
                                 clientSecret = clientSecret.value,
                                 customerId = customerId,
                                 paymentMethod = paymentMethod,
-                                nextTriggeredBy = session.nextTriggerBy,
+                                nextTriggeredBy = if (paymentMethod.type == PaymentMethodType.CARD) session.nextTriggerBy else PaymentConsent.NextTriggeredBy.MERCHANT,
                                 listener = object : Airwallex.PaymentListener<PaymentConsent> {
                                     override fun onFailed(exception: Exception) {
                                         listener.onFailed(exception)
@@ -285,7 +276,7 @@ open class BasePaymentCartFragment : Fragment() {
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
                     customerId = requireNotNull(session.customerId),
                     paymentMethod = paymentMethod,
-                    nextTriggeredBy = session.nextTriggerBy,
+                    nextTriggeredBy = if (paymentMethod.type == PaymentMethodType.CARD) session.nextTriggerBy else PaymentConsent.NextTriggeredBy.MERCHANT,
                     listener = object : Airwallex.PaymentListener<PaymentConsent> {
                         override fun onFailed(exception: Exception) {
                             listener.onFailed(exception)

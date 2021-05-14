@@ -222,9 +222,8 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         airwallex.confirmPaymentIntent(params, listener)
     }
 
-    internal fun startCheckout(session: AirwallexSession, paymentConsent: PaymentConsent, cvc: String?, listener: Airwallex.PaymentResultListener<PaymentIntent>) {
+    internal fun startCheckout(session: AirwallexSession, paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?, listener: Airwallex.PaymentResultListener<PaymentIntent>) {
         setLoadingProgress(loading = true, cancelable = false)
-        val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
         when (session) {
             is AirwallexPaymentSession -> {
                 val paymentIntent = session.paymentIntent
@@ -234,7 +233,7 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                     paymentMethod = paymentMethod,
                     cvc = cvc,
                     customerId = paymentIntent.customerId,
-                    paymentConsentId = if (paymentMethod.type == PaymentMethodType.CARD) paymentConsent.id else null,
+                    paymentConsentId = paymentConsentId,
                     listener = listener
                 )
             }

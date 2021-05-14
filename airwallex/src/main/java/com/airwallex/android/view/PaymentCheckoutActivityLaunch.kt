@@ -30,32 +30,39 @@ internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCh
     @Parcelize
     data class Args internal constructor(
         val session: AirwallexSession,
-        val paymentConsent: PaymentConsent,
+        val paymentMethod: PaymentMethod,
+        val paymentConsentId: String?,
         val cvc: String?
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
 
             private lateinit var session: AirwallexSession
-            private lateinit var paymentConsent: PaymentConsent
+            private lateinit var paymentMethod: PaymentMethod
+            private var paymentConsentId: String? = null
             private var cvc: String? = null
 
             fun setCvc(cvc: String?): Builder = apply {
                 this.cvc = cvc
             }
 
+            fun setPaymentConsentId(paymentConsentId: String?): Builder = apply {
+                this.paymentConsentId = paymentConsentId
+            }
+
             fun setAirwallexSession(session: AirwallexSession): Builder = apply {
                 this.session = session
             }
 
-            fun setPaymentConsent(paymentConsent: PaymentConsent): Builder = apply {
-                this.paymentConsent = paymentConsent
+            fun setPaymentMethod(paymentMethod: PaymentMethod): Builder = apply {
+                this.paymentMethod = paymentMethod
             }
 
             override fun build(): Args {
                 return Args(
                     session = session,
-                    paymentConsent = paymentConsent,
+                    paymentMethod = paymentMethod,
+                    paymentConsentId = paymentConsentId,
                     cvc = cvc
                 )
             }

@@ -112,7 +112,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         airwallex.disablePaymentConsent(
                             DisablePaymentConsentParams(
                                 clientSecret = clientSecret.value,
-                                paymentConsentId = it.id,
+                                paymentConsentId = requireNotNull(it.id),
                             ),
                             object : Airwallex.PaymentListener<PaymentConsent> {
 
@@ -292,7 +292,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         .startForResult(
                             PaymentCheckoutActivityLaunch.Args.Builder()
                                 .setAirwallexSession(session)
-                                .setPaymentConsent(paymentConsent)
+                                .setPaymentMethod(paymentMethod)
+                                .setPaymentConsentId(paymentConsent.id)
                                 .setCvc(cvc)
                                 .build()
                         )
@@ -300,7 +301,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 else -> {
                     startCheckout(
                         session = session,
-                        paymentConsent = paymentConsent,
+                        paymentMethod = paymentMethod,
+                        paymentConsentId = paymentConsent.id,
                         cvc = null,
                         listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
                             override fun onSuccess(response: PaymentIntent) {
@@ -326,6 +328,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             // Return the `PaymentMethod` 'cvc' to merchant
             finishWithPaymentMethod(
                 paymentMethod = paymentConsent.paymentMethod,
+                paymentConsentId = paymentConsent.id,
                 cvc = cvc
             )
         }
@@ -343,7 +346,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     viewBinding.rvPaymentMethods.requestLayout()
                     handleProcessPaymentMethod(
                         PaymentConsent(
-                            id = "NEW_ADD",
                             paymentMethod = it.paymentMethod
                         ),
                         it.cvc
@@ -362,6 +364,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private fun finishWithPaymentMethod(
         paymentMethod: PaymentMethod? = null,
+        paymentConsentId: String? = null,
         cvc: String? = null,
         exception: Exception? = null
     ) {
@@ -371,6 +374,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             Intent().putExtras(
                 PaymentMethodsActivityLaunch.Result(
                     paymentMethod = paymentMethod,
+                    paymentConsentId = paymentConsentId,
                     cvc = cvc,
                     includeCheckoutFlow = args.includeCheckoutFlow,
                     exception = exception
