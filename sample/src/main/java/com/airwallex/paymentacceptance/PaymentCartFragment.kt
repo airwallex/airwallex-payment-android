@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.*
 import com.airwallex.android.exception.RedirectException
@@ -27,7 +28,11 @@ import java.math.BigDecimal
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
-class PaymentCartFragment : BasePaymentCartFragment() {
+class PaymentCartFragment : Fragment() {
+
+    private val airwallex by lazy {
+        Airwallex(this)
+    }
 
     private val viewBinding: FragmentCartBinding by lazy {
         FragmentCartBinding.inflate(layoutInflater)
@@ -479,7 +484,7 @@ class PaymentCartFragment : BasePaymentCartFragment() {
             object : Airwallex.PaymentMethodListener {
                 override fun onSuccess(paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?) {
                     (activity as? PaymentCartActivity)?.setLoadingProgress(true)
-                    startCheckout(
+                    airwallex.checkout(
                         session,
                         paymentMethod,
                         paymentConsentId,
@@ -547,7 +552,7 @@ class PaymentCartFragment : BasePaymentCartFragment() {
                             )
                         }
                         else -> {
-                            startCheckout(
+                            airwallex.checkout(
                                 session,
                                 paymentMethod,
                                 paymentConsentId,

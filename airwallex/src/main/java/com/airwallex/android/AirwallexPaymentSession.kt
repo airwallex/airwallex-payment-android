@@ -7,6 +7,9 @@ import com.airwallex.android.model.Shipping
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
+/**
+ * For one-off payment
+ */
 @Parcelize
 class AirwallexPaymentSession internal constructor(
     val paymentIntent: PaymentIntent

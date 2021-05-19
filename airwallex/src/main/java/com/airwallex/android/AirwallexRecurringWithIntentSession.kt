@@ -8,6 +8,9 @@ import com.airwallex.android.model.Shipping
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
+/**
+ * For recurring payment (need create payment intent)
+ */
 @Parcelize
 class AirwallexRecurringWithIntentSession internal constructor(
     val paymentIntent: PaymentIntent,
