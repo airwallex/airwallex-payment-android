@@ -19,6 +19,13 @@ class H5WebViewActivity : AppCompatActivity() {
         const val REFERER = "REFERER"
     }
 
+    private val url by lazy {
+        requireNotNull(intent.getStringExtra(URL))
+    }
+    private val referer by lazy {
+        requireNotNull(intent.getStringExtra(REFERER))
+    }
+
     private val viewBinding: ActivityH5WebviewBinding by lazy {
         ActivityH5WebviewBinding.inflate(layoutInflater)
     }
@@ -56,25 +63,13 @@ class H5WebViewActivity : AppCompatActivity() {
                         }
                         return true
                     } else {
-                        val extraHeaders: MutableMap<String, String> =
-                            HashMap()
-                        extraHeaders["Referer"] = "https://checkout.airwallex.com"
-                        view!!.loadUrl(url, extraHeaders)
+                        view?.loadUrl(url, mapOf<String, String>("Referer" to referer))
                     }
                     return true
                 }
             }
         }
-
-        val url = requireNotNull(intent.getStringExtra(URL))
-        val referer = requireNotNull(intent.getStringExtra(REFERER))
-        val refererUrl =
-            if (referer.startsWith("http") || referer.startsWith("https") || referer.startsWith("android-app")) {
-                referer
-            } else {
-                "https://$referer"
-            }
-        viewBinding.webview.loadUrl(url, mapOf<String, String>("Referer" to refererUrl))
+        viewBinding.webview.loadUrl(url, mapOf<String, String>("Referer" to referer))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
