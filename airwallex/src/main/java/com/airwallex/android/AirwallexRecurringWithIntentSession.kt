@@ -13,8 +13,36 @@ import java.math.BigDecimal
  */
 @Parcelize
 class AirwallexRecurringWithIntentSession internal constructor(
+
+    /**
+     * the ID of the [PaymentIntent], required.
+     */
     val paymentIntent: PaymentIntent,
-    val nextTriggerBy: PaymentConsent.NextTriggeredBy
+
+    /**
+     * The party to trigger subsequent payments. Can be one of merchant, customer. required.
+     */
+    val nextTriggerBy: PaymentConsent.NextTriggeredBy,
+
+    /**
+     * Amount currency. required.
+     */
+    override val currency: String,
+
+    /**
+     * Payment amount. This is the order amount you would like to charge your customer. required.
+     */
+    override val amount: BigDecimal,
+
+    /**
+     * Shipping information. optional
+     */
+    override val shipping: Shipping? = null,
+
+    /**
+     * It is required if the PaymentIntent is created for recurring payment
+     */
+    override val customerId: String
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
@@ -23,22 +51,17 @@ class AirwallexRecurringWithIntentSession internal constructor(
     ) : ObjectBuilder<AirwallexRecurringWithIntentSession> {
 
         override fun build(): AirwallexRecurringWithIntentSession {
+            if (paymentIntent.customerId == null) {
+                throw Exception("Customer id is required if the PaymentIntent is created for recurring payment.")
+            }
             return AirwallexRecurringWithIntentSession(
                 paymentIntent = paymentIntent,
-                nextTriggerBy = nextTriggerBy
+                nextTriggerBy = nextTriggerBy,
+                customerId = paymentIntent.customerId,
+                currency = paymentIntent.currency,
+                amount = paymentIntent.amount,
+                shipping = paymentIntent.order?.shipping
             )
         }
     }
-
-    override val customerId: String?
-        get() = paymentIntent.customerId
-
-    override val shipping: Shipping?
-        get() = paymentIntent.order?.shipping
-
-    override val currency: String
-        get() = paymentIntent.currency
-
-    override val amount: BigDecimal
-        get() = paymentIntent.amount
 }

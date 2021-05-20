@@ -119,17 +119,18 @@ internal class AirwallexStarter constructor(
      * Launch the [PaymentCheckoutActivity] to allow the user to confirm [PaymentIntent] using the specified [PaymentMethod]
      *
      * @param session a [AirwallexSession] used to present the Checkout flow
+     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
+     * @param paymentConsentId the ID of the [PaymentConsent], required.
+     * @param cvc the CVC of the Credit Card, required.
      * @param paymentDetailListener The callback of present the select payment detail flow
      */
     fun presentPaymentDetailFlow(
         session: AirwallexSession,
+        paymentMethod: PaymentMethod,
+        paymentConsentId: String?,
+        cvc: String?,
         paymentDetailListener: Airwallex.PaymentIntentCardListener
     ) {
-        val paymentMethod = session.paymentMethod
-        if (paymentMethod == null) {
-            paymentDetailListener.onFailed(Exception("PaymentMethod is required on PaymentDetailFlow"))
-            return
-        }
         if (paymentMethod.type != PaymentMethodType.CARD) {
             paymentDetailListener.onFailed(Exception("Only card payment is supported on PaymentDetailFlow"))
             return
@@ -138,6 +139,9 @@ internal class AirwallexStarter constructor(
         paymentCheckoutActivityLaunch.startForResult(
             PaymentCheckoutActivityLaunch.Args.Builder()
                 .setAirwallexSession(session)
+                .setPaymentMethod(paymentMethod)
+                .setPaymentConsentId(paymentConsentId)
+                .setCvc(cvc)
                 .build()
         )
     }

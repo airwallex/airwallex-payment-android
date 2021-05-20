@@ -148,8 +148,7 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
                 AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
             }
             AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()))
-                    .setCustomerId(customerId)
+                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
                     .setShipping(shipping)
                     .build()
             }
@@ -245,7 +244,7 @@ Use `presentAddPaymentMethodFlow` to collect card details from your customer. Ne
 Use `presentPaymentDetailFlow` to confirm a payment intent. Needs to pass in a `AirwallexSession` object
 ```kotlin
     val session = buildSessionWithIntent(paymentIntent)
-    airwallex.presentPaymentDetailFlow(session,
+    airwallex.presentPaymentDetailFlow(session, paymentMethod, paymentConsentId, cvc,
         object : Airwallex.PaymentIntentListener {
            override fun onSuccess(paymentIntent: PaymentIntent) {
                Log.d(TAG, "Confirm payment intent success")
@@ -332,8 +331,7 @@ Supported payment methods: [`Cards`](#cards), [`Alipay`](#alipay), [`AlipayHK`](
                 AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
             }
             AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()))
-                    .setCustomerId(customerId)
+                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
                     .setShipping(shipping)
                     .build()
             }
@@ -433,15 +431,14 @@ To redirect the shopper to the page you designated after the payment completed, 
                 AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
             }
             AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()))
-                    .setCustomerId(customerId)
+                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
                     .setShipping(shipping)
                     .build()
             }
         }
     }
     val session = buildSessionWithIntent(paymentIntent)
-    airwallex.checkout(session, paymentMethod, paymentConsentId, cvc, listener)
+  airwallex.checkout(session = session, paymentMethod = paymentMethod, listener = listener)
 ```
 
 And in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
@@ -522,15 +519,14 @@ And in your host Activity or Fragment, implement Activity#onActivityResult and h
                 AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
             }
             AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()))
-                    .setCustomerId(customerId)
+                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
                     .setShipping(shipping)
                     .build()
             }
         }
     }
     val session = buildSessionWithIntent(paymentIntent)
-    airwallex.checkout(session, paymentMethod, paymentConsentId, cvc, listener)
+    airwallex.checkout(session = session, paymentMethod = paymentMethod, listener = listener)
 ```
 
 And in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.

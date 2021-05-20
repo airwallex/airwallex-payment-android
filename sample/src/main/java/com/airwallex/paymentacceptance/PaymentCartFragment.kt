@@ -122,8 +122,10 @@ class PaymentCartFragment : Fragment() {
                 AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
             }
             AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()))
-                    .setCustomerId(customerId)
+                if (customerId == null) {
+                    throw Exception("PaymentIntent is required")
+                }
+                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
                     .setShipping(shipping)
                     .build()
             }
@@ -536,6 +538,9 @@ class PaymentCartFragment : Fragment() {
                         PaymentMethodType.CARD -> {
                             airwallex.presentPaymentDetailFlow(
                                 session,
+                                paymentMethod,
+                                paymentConsentId,
+                                cvc,
                                 object : Airwallex.PaymentIntentCardListener {
                                     override fun onSuccess(paymentIntent: PaymentIntent) {
                                         showPaymentSuccess()

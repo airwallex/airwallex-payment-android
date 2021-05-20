@@ -147,8 +147,7 @@ repositories {
                 AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
             }
             AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()))
-                    .setCustomerId(customerId)
+                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
                     .setShipping(shipping)
                     .build()
             }
@@ -244,7 +243,7 @@ class ExampleClientSecretProvider : ClientSecretProvider {
 使用 `presentPaymentDetailFlow` 来 confirm PaymentIntent. 需要传入一个 `AirwallexSession` 对象
 ```kotlin
     val session = buildSessionWithIntent(paymentIntent)
-    airwallex.presentPaymentDetailFlow(session,
+    airwallex.presentPaymentDetailFlow(session, paymentMethod, paymentConsentId, cvc,
         object : Airwallex.PaymentIntentListener {
            override fun onSuccess(paymentIntent: PaymentIntent) {
                Log.d(TAG, "Confirm payment intent success")
@@ -331,8 +330,7 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
                 AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
             }
             AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()))
-                    .setCustomerId(customerId)
+                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
                     .setShipping(shipping)
                     .build()
             }
@@ -432,8 +430,7 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
                 AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
             }
             AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()))
-                    .setCustomerId(customerId)
+                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
                     .setShipping(shipping)
                     .build()
             }
@@ -521,8 +518,7 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
                 AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
             }
             AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()))
-                    .setCustomerId(customerId)
+                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
                     .setShipping(shipping)
                     .build()
             }

@@ -12,28 +12,43 @@ import java.math.BigDecimal
  */
 @Parcelize
 class AirwallexRecurringSession internal constructor(
+    /**
+     * The party to trigger subsequent payments. Can be one of merchant, customer. required.
+     */
     val nextTriggerBy: PaymentConsent.NextTriggeredBy,
+
+    /**
+     * Amount currency. required.
+     */
     override val currency: String,
+
+    /**
+     * Payment amount. This is the order amount you would like to charge your customer. required.
+     */
     override val amount: BigDecimal,
+
+    /**
+     * Shipping information. optional
+     */
     override val shipping: Shipping? = null,
-    override val customerId: String? = null
+
+    /**
+     * It is required if the PaymentIntent is created for recurring payment
+     */
+    override val customerId: String
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
         private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
         private val currency: String,
-        private val amount: BigDecimal
+        private val amount: BigDecimal,
+        private var customerId: String
     ) : ObjectBuilder<AirwallexRecurringSession> {
 
         private var shipping: Shipping? = null
-        private var customerId: String? = null
 
         fun setShipping(shipping: Shipping?): Builder = apply {
             this.shipping = shipping
-        }
-
-        fun setCustomerId(customerId: String?): Builder = apply {
-            this.customerId = customerId
         }
 
         override fun build(): AirwallexRecurringSession {

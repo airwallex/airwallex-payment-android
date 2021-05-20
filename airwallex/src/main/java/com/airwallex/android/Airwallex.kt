@@ -471,13 +471,19 @@ class Airwallex internal constructor(
      * Launch the [PaymentCheckoutActivity] to allow the user to confirm [PaymentIntent] using the specified [PaymentMethod]
      *
      * @param session a [AirwallexSession] used to present the Checkout flow
+     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
+     * @param paymentConsentId the ID of the [PaymentConsent], required.
+     * @param cvc the CVC of the Credit Card, required.
      * @param paymentDetailListener The callback of present the select payment detail flow
      */
     fun presentPaymentDetailFlow(
         session: AirwallexSession,
+        paymentMethod: PaymentMethod,
+        paymentConsentId: String?,
+        cvc: String?,
         paymentDetailListener: PaymentIntentCardListener
     ) {
-        airwallexStarter.presentPaymentDetailFlow(session, paymentDetailListener)
+        airwallexStarter.presentPaymentDetailFlow(session, paymentMethod, paymentConsentId, cvc, paymentDetailListener)
     }
 
     /**
@@ -812,13 +818,26 @@ class Airwallex internal constructor(
         confirmPaymentIntent(params, listener)
     }
 
+    /**
+     * Checkout the payment, include one-off & recurring
+     *
+     * @param session a [AirwallexSession] used to present the Checkout flow, required.
+     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow, required.
+     * @param paymentConsentId the ID of the [PaymentConsent], optional. (CIT & Card will need this field for subsequent payments, paymentConsentId is not empty indicating a subsequent payment, empty indicating a recurring )
+     * @param cvc the CVC of the Credit Card, optional. (Card payment requires cvc)
+     * @param listener The callback of checkout
+     */
     fun checkout(
         session: AirwallexSession,
         paymentMethod: PaymentMethod,
-        paymentConsentId: String?,
-        cvc: String?,
+        paymentConsentId: String? = null,
+        cvc: String? = null,
         listener: PaymentResultListener<PaymentIntent>
     ) {
+        if (paymentMethod.type == PaymentMethodType.CARD && cvc == null) {
+            listener.onFailed(InvalidParamsException(message = "CVC is required!"))
+            return
+        }
         when (session) {
             is AirwallexPaymentSession -> {
                 val paymentIntent = session.paymentIntent
@@ -833,7 +852,7 @@ class Airwallex internal constructor(
                 )
             }
             is AirwallexRecurringSession -> {
-                val customerId = requireNotNull(session.customerId)
+                val customerId = session.customerId
                 ClientSecretRepository.getInstance().retrieveClientSecret(
                     customerId,
                     object : ClientSecretRepository.ClientSecretRetrieveListener {
@@ -871,7 +890,7 @@ class Airwallex internal constructor(
                 val paymentIntent = session.paymentIntent
                 createPaymentConsent(
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
-                    customerId = requireNotNull(session.customerId),
+                    customerId = session.customerId,
                     paymentMethod = paymentMethod,
                     nextTriggeredBy = if (paymentMethod.type == PaymentMethodType.CARD) session.nextTriggerBy else PaymentConsent.NextTriggeredBy.MERCHANT,
                     listener = object : PaymentListener<PaymentConsent> {
