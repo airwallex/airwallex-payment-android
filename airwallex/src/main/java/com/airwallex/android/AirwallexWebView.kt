@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.core.content.ContextCompat
+import com.airwallex.android.Airwallex.Companion.AIRWALLEX_USER_AGENT
 
 internal class AirwallexWebView @SuppressLint("SetJavaScriptEnabled") constructor(
     context: Context,
@@ -25,5 +26,6 @@ internal class AirwallexWebView @SuppressLint("SetJavaScriptEnabled") constructo
         settings.setSupportMultipleWindows(true)
         settings.cacheMode = WebSettings.LOAD_NO_CACHE
         settings.defaultTextEncodingName = "UTF-8"
+        settings.userAgentString = AIRWALLEX_USER_AGENT
     }
 }

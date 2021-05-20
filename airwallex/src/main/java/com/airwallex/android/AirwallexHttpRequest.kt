@@ -1,5 +1,6 @@
 package com.airwallex.android
 
+import com.airwallex.android.Airwallex.Companion.AIRWALLEX_USER_AGENT
 import com.airwallex.android.exception.InvalidRequestException
 import com.airwallex.android.model.AirwallexJsonUtils
 import java.io.OutputStream
@@ -86,7 +87,7 @@ internal open class AirwallexHttpRequest internal constructor(
         private const val CONTENT_TYPE_HEADER_KEY = "Content-Type"
         private const val CONTENT_TYPE_HEADER_VALUE = "application/json"
         private const val USER_AGENT_KEY = "User-Agent"
-        private const val USER_AGENT_VALUE = "Airwallex-Android-SDK/${BuildConfig.VERSION_NAME}"
+        private const val USER_AGENT_VALUE = AIRWALLEX_USER_AGENT
         private const val API_VERSION = "x-api-version"
         private const val CLIENT_SECRET = "client-secret"
         private const val AWX_TRACKER = "Awx-Tracker"

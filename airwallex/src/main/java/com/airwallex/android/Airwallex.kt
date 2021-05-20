@@ -937,6 +937,8 @@ class Airwallex internal constructor(
 
         private const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout://"
 
+        const val AIRWALLEX_USER_AGENT = "Airwallex-Android-SDK"
+
         /**
          * Initialize some global configurations, better to be called on Application
          */

@@ -10,6 +10,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.Airwallex.Companion.AIRWALLEX_USER_AGENT
 import com.airwallex.paymentacceptance.databinding.ActivityH5WebviewBinding
 
 class H5WebViewActivity : AppCompatActivity() {
@@ -45,6 +46,7 @@ class H5WebViewActivity : AppCompatActivity() {
             settings.setSupportMultipleWindows(true)
             settings.cacheMode = WebSettings.LOAD_NO_CACHE
             settings.defaultTextEncodingName = "UTF-8"
+            settings.userAgentString = AIRWALLEX_USER_AGENT
 
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String): Boolean {
@@ -60,6 +62,7 @@ class H5WebViewActivity : AppCompatActivity() {
                             intent.data = Uri.parse(url)
                             startActivity(intent)
                         } catch (e: ActivityNotFoundException) {
+                            e.printStackTrace()
                         }
                         return true
                     } else {
