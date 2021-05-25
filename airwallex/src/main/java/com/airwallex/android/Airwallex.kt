@@ -170,54 +170,6 @@ class Airwallex internal constructor(
     }
 
     /**
-     * Disable a payment method
-     *
-     * @param params [DisablePaymentMethodParams] used to disable the [PaymentMethod]
-     * @param listener the callback of create [PaymentMethod]
-     */
-    @UiThread
-    internal fun disablePaymentMethod(
-        params: DisablePaymentMethodParams,
-        listener: PaymentListener<PaymentMethod>
-    ) {
-        paymentManager.disablePaymentMethod(
-            AirwallexApiRepository.DisablePaymentMethodOptions(
-                clientSecret = params.clientSecret,
-                paymentMethodId = params.paymentMethodId,
-                request = PaymentMethodDisableRequest.Builder()
-                    .setRequestId(UUID.randomUUID().toString())
-                    .build()
-            ),
-            listener
-        )
-    }
-
-    /**
-     * Retrieve payment methods
-     *
-     * @param params [RetrievePaymentMethodParams] used to retrieve the [PaymentMethod]
-     * @param listener the callback of get [PaymentMethod]
-     */
-    @UiThread
-    internal fun retrievePaymentMethods(
-        params: RetrievePaymentMethodParams,
-        listener: PaymentListener<PaymentMethodResponse>
-    ) {
-        paymentManager.retrievePaymentMethods(
-            AirwallexApiRepository.RetrievePaymentMethodOptions(
-                clientSecret = params.clientSecret,
-                customerId = params.customerId,
-                pageNum = params.pageNum,
-                pageSize = params.pageSize,
-                fromCreatedAt = params.fromCreatedAt,
-                toCreatedAt = params.toCreatedAt,
-                type = params.type
-            ),
-            listener
-        )
-    }
-
-    /**
      * Retrieve available payment methods
      *
      * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve the [AvailablePaymentMethodResponse]

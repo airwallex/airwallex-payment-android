@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.HttpURLConnection
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.jvm.Throws
 
@@ -45,39 +44,6 @@ internal class AirwallexApiRepository : ApiRepository {
     internal data class CreatePaymentMethodOptions internal constructor(
         override val clientSecret: String,
         internal val request: PaymentMethodCreateRequest
-    ) : ApiRepository.Options(clientSecret = clientSecret)
-
-    @Parcelize
-    internal data class DisablePaymentMethodOptions internal constructor(
-        override val clientSecret: String,
-        internal val paymentMethodId: String,
-        internal val request: PaymentMethodDisableRequest
-    ) : ApiRepository.Options(clientSecret = clientSecret)
-
-    @Parcelize
-    internal data class RetrievePaymentMethodOptions internal constructor(
-        override val clientSecret: String,
-        internal val customerId: String,
-        /**
-         * Page number starting from 0
-         */
-        internal val pageNum: Int,
-        /**
-         * Number of payment methods to be listed per page
-         */
-        internal val pageSize: Int,
-        /**
-         * The start time of created_at in ISO8601 format
-         */
-        internal val fromCreatedAt: Date? = null,
-        /**
-         * The end time of created_at in ISO8601 format
-         */
-        internal val toCreatedAt: Date? = null,
-        /**
-         * Payment method type
-         */
-        internal val type: AvaliablePaymentMethodType
     ) : ApiRepository.Options(clientSecret = clientSecret)
 
     @Parcelize
@@ -212,39 +178,6 @@ internal class AirwallexApiRepository : ApiRepository {
                 params = (options as CreatePaymentMethodOptions).request.toParamMap()
             ),
             PaymentMethodParser()
-        )
-    }
-
-    override fun disablePaymentMethod(options: ApiRepository.Options): PaymentMethod? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createPost(
-                url = disablePaymentMethodUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as DisablePaymentMethodOptions).paymentMethodId
-                ),
-                options = options,
-                params = options.request.toParamMap()
-            ),
-            PaymentMethodParser()
-        )
-    }
-
-    override fun retrievePaymentMethods(options: ApiRepository.Options): PaymentMethodResponse? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createGet(
-                url = retrievePaymentMethodsUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as RetrievePaymentMethodOptions).customerId,
-                    options.pageNum,
-                    options.pageSize,
-                    options.fromCreatedAt,
-                    options.toCreatedAt,
-                    options.type
-                ),
-                options = options,
-                params = null
-            ),
-            PaymentMethodResponseParser()
         )
     }
 
@@ -474,51 +407,10 @@ internal class AirwallexApiRepository : ApiRepository {
         }
 
         /**
-         *  `/api/v1/pa/payment_methods/{id}/disable`
-         */
-        private fun disablePaymentMethodUrl(baseUrl: String, paymentMethodId: String): String {
-            return getApiUrl(
-                baseUrl,
-                "payment_methods/%s/disable",
-                paymentMethodId
-            )
-        }
-
-        /**
          *  `/api/v1/checkout/collect`
          */
         internal fun trackerUrl(): String {
             return "${AirwallexPlugins.environment.trackerUrl()}/collect"
-        }
-
-        /**
-         *  `/api/v1/pa/payment_methods/create`
-         */
-        private fun retrievePaymentMethodsUrl(
-            baseUrl: String,
-            customerId: String,
-            pageNum: Int,
-            pageSize: Int,
-            fromCreatedAt: Date?,
-            toCreatedAt: Date?,
-            type: AvaliablePaymentMethodType
-        ): String {
-            val builder = StringBuilder("payment_methods?")
-            builder.append("page_num=$pageNum")
-            builder.append("&page_size=$pageSize")
-            builder.append("&customer_id=$customerId")
-            val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            fromCreatedAt?.let {
-                builder.append("&from_created_at=${format.format(fromCreatedAt)}")
-            }
-            toCreatedAt?.let {
-                builder.append("&to_created_at=${format.format(toCreatedAt)}")
-            }
-            builder.append("&type=${type.value}")
-            return getApiUrl(
-                baseUrl,
-                builder.toString()
-            )
         }
 
         /**

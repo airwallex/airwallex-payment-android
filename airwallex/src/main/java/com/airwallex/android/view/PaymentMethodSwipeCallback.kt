@@ -20,6 +20,7 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
     private var swipedPosition = -1
     private var swipeThreshold = 0.5f
     private val buttonWidth = context.resources.getDimension(R.dimen.swipe_button_width)
+    private val rect = Rect()
 
     private val recoverQueue: LinkedList<Int> = object : LinkedList<Int>() {
         override fun add(element: Int): Boolean {
@@ -43,7 +44,6 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
         val swipedViewHolder = recyclerView.findViewHolderForAdapterPosition(swipedPosition)
             ?: return@OnTouchListener false
         val swipedItem = swipedViewHolder.itemView
-        val rect = Rect()
         swipedItem.getGlobalVisibleRect(rect)
         if (e.action == MotionEvent.ACTION_DOWN || e.action == MotionEvent.ACTION_UP || e.action == MotionEvent.ACTION_MOVE) {
             if (rect.top < point.y && rect.bottom > point.y) gestureDetector.onTouchEvent(e) else {
@@ -70,7 +70,11 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
         val pos = viewHolder.adapterPosition
         if (swipedPosition != pos) recoverQueue.add(swipedPosition)
         swipedPosition = pos
-        if (buttonsBuffer.containsKey(swipedPosition)) buttons = buttonsBuffer[swipedPosition]!! else buttons.clear()
+        if (buttonsBuffer.containsKey(swipedPosition)) {
+            buttons = buttonsBuffer[swipedPosition]!!
+        } else {
+            buttons.clear()
+        }
         buttonsBuffer.clear()
         swipeThreshold = 0.5f * buttons.size * buttonWidth
         recoverSwipedItem()
@@ -89,6 +93,9 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
     }
 
     override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+        if (viewHolder !is PaymentMethodsAdapter.CardHolder) {
+            return
+        }
         val pos = viewHolder.adapterPosition
         var translationX = dX
         val itemView = viewHolder.itemView

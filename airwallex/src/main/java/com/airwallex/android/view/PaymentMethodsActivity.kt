@@ -76,7 +76,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         )
 
         paymentMethodsAdapter.listener = object : PaymentMethodsAdapter.Listener {
-
             override fun onPaymentConsentClick(paymentConsent: PaymentConsent) {
                 handleProcessPaymentMethod(paymentConsent)
             }

@@ -48,7 +48,7 @@
     <string name="select_your_currency_title">Select the currency you would like to pay with</string>
     <string name="confirm_payment">Confirm payment</string>
     <string name="rate">1 %1$s = %2$f %3$s</string>
-    <string name="delete_payment_method_prompt_title">Would you like to delete this consent?</string>
+    <string name="delete_payment_method_prompt_title">Would you like to delete this payment consent?</string>
     <string name="delete_payment_method_positive">Delete</string>
     <string name="delete_payment_method_negative">Cancel</string>
 

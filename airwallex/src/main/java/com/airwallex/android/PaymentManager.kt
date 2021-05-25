@@ -58,28 +58,6 @@ internal interface PaymentManager {
     )
 
     /**
-     * Disable a Airwallex [PaymentMethod] using [ApiRepository.Options]
-     *
-     * @param options contains the disable [PaymentMethod] params
-     * @param listener a [PaymentListener] to receive the response or error
-     */
-    fun disablePaymentMethod(
-        options: ApiRepository.Options,
-        listener: PaymentListener<PaymentMethod>
-    )
-
-    /**
-     * Retrieve all of the customer's [PaymentMethod] using [ApiRepository.Options]
-     *
-     * @param options contains the retrieve [PaymentMethod] params
-     * @param listener a [PaymentListener] to receive the response or error
-     */
-    fun retrievePaymentMethods(
-        options: ApiRepository.Options,
-        listener: PaymentListener<PaymentMethodResponse>
-    )
-
-    /**
      * Retrieve paRes with id
      */
     fun retrieveParesWithId(

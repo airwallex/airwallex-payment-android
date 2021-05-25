@@ -51,24 +51,6 @@ internal interface ApiRepository {
     ): PaymentMethod?
 
     /**
-     * Disable a Airwallex [PaymentMethod] using [ApiRepository.Options]
-     *
-     * @return a [PaymentMethod] from Airwallex server
-     */
-    fun disablePaymentMethod(
-        options: Options
-    ): PaymentMethod?
-
-    /**
-     * Retrieve all of the customer's [PaymentMethod] using [ApiRepository.Options]
-     *
-     * @return a [PaymentMethodResponse] from Airwallex server
-     */
-    fun retrievePaymentMethods(
-        options: Options
-    ): PaymentMethodResponse?
-
-    /**
      * Retrieve paRes with id
      */
     fun retrieveParesWithId(
