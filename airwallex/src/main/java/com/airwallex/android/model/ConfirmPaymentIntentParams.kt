@@ -13,15 +13,15 @@ data class ConfirmPaymentIntentParams internal constructor(
 
     /**
      * [PaymentMethodReference] used to confirm [PaymentIntent].
-     * When [paymentMethodType] is [AvaliablePaymentMethodType.CARD], it's should be not null
-     * When [paymentMethodType] is [AvaliablePaymentMethodType.WECHAT], it's should be null
+     * When [paymentMethodType] is [PaymentMethodType.CARD], it's should be not null
+     * When [paymentMethodType] is [PaymentMethodType.WECHAT], it's should be null
      */
     val paymentMethodReference: PaymentMethodReference? = null,
 
     /**
-     * Payment method type, default is [AvaliablePaymentMethodType.WECHAT]
+     * Payment method type, default is [PaymentMethodType.WECHAT]
      */
-    val paymentMethodType: AvaliablePaymentMethodType = AvaliablePaymentMethodType.WECHAT,
+    val paymentMethodType: PaymentMethodType = PaymentMethodType.WECHAT,
 
     /**
      * Unique identifier of this [PaymentConsent]
@@ -34,7 +34,7 @@ data class ConfirmPaymentIntentParams internal constructor(
         private val clientSecret: String
     ) : ObjectBuilder<ConfirmPaymentIntentParams> {
 
-        private var paymentMethodType: AvaliablePaymentMethodType = AvaliablePaymentMethodType.WECHAT
+        private var paymentMethodType: PaymentMethodType = PaymentMethodType.WECHAT
         private var customerId: String? = null
         private var paymentMethodReference: PaymentMethodReference? = null
         private var paymentConsentId: String? = null
@@ -48,11 +48,11 @@ data class ConfirmPaymentIntentParams internal constructor(
         }
 
         fun setPaymentMethod(
-            paymentMethodType: AvaliablePaymentMethodType,
+            paymentMethodType: PaymentMethodType,
             paymentMethodReference: PaymentMethodReference? = null
         ): Builder = apply {
             this.paymentMethodType = paymentMethodType
-            if (paymentMethodType == AvaliablePaymentMethodType.CARD) {
+            if (paymentMethodType == PaymentMethodType.CARD) {
                 this.paymentMethodReference = requireNotNull(paymentMethodReference)
             }
         }
@@ -79,8 +79,8 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param clientSecret the clientSecret of [PaymentIntent], required.
          * @param customerId the customerId of [PaymentIntent], optional.
          */
-        private fun createThirdPartPayParams(
-            paymentMethodType: AvaliablePaymentMethodType,
+        fun createThirdPartPayParams(
+            paymentMethodType: PaymentMethodType,
             paymentIntentId: String,
             clientSecret: String,
             customerId: String? = null,
@@ -94,118 +94,6 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setPaymentMethod(paymentMethodType)
                 .setPaymentConsentId(paymentConsentId)
                 .build()
-        }
-
-        /**
-         * Return the [ConfirmPaymentIntentParams] for WeChat Pay
-         *
-         * @param paymentIntentId the ID of the [PaymentIntent], required.
-         * @param clientSecret the clientSecret of [PaymentIntent], required.
-         * @param customerId the customerId of [PaymentIntent], optional.
-         */
-        fun createWeChatParams(
-            paymentIntentId: String,
-            clientSecret: String,
-            customerId: String? = null,
-            paymentConsentId: String? = null
-        ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.WECHAT, paymentIntentId, clientSecret, customerId, paymentConsentId)
-        }
-
-        /**
-         * Return the [ConfirmPaymentIntentParams] for AliPay CN
-         *
-         * @param paymentIntentId the ID of the [PaymentIntent], required.
-         * @param clientSecret the clientSecret of [PaymentIntent], required.
-         * @param customerId the customerId of [PaymentIntent], optional.
-         */
-        fun createAlipayParams(
-            paymentIntentId: String,
-            clientSecret: String,
-            customerId: String? = null,
-            paymentConsentId: String? = null
-        ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.ALIPAY_CN, paymentIntentId, clientSecret, customerId, paymentConsentId)
-        }
-
-        /**
-         * Return the [ConfirmPaymentIntentParams] for AliPay HK
-         *
-         * @param paymentIntentId the ID of the [PaymentIntent], required.
-         * @param clientSecret the clientSecret of [PaymentIntent], required.
-         * @param customerId the customerId of [PaymentIntent], optional.
-         */
-        fun createAlipayHKParams(
-            paymentIntentId: String,
-            clientSecret: String,
-            customerId: String? = null,
-            paymentConsentId: String? = null
-        ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.ALIPAY_HK, paymentIntentId, clientSecret, customerId, paymentConsentId)
-        }
-
-        /**
-         * Return the [ConfirmPaymentIntentParams] for Dana
-         *
-         * @param paymentIntentId the ID of the [PaymentIntent], required.
-         * @param clientSecret the clientSecret of [PaymentIntent], required.
-         * @param customerId the customerId of [PaymentIntent], optional.
-         */
-        fun createDanaParams(
-            paymentIntentId: String,
-            clientSecret: String,
-            customerId: String? = null,
-            paymentConsentId: String? = null
-        ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.DANA, paymentIntentId, clientSecret, customerId, paymentConsentId)
-        }
-
-        /**
-         * Return the [ConfirmPaymentIntentParams] for GCash
-         *
-         * @param paymentIntentId the ID of the [PaymentIntent], required.
-         * @param clientSecret the clientSecret of [PaymentIntent], required.
-         * @param customerId the customerId of [PaymentIntent], optional.
-         */
-        fun createGCashParams(
-            paymentIntentId: String,
-            clientSecret: String,
-            customerId: String? = null,
-            paymentConsentId: String? = null
-        ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.GCASH, paymentIntentId, clientSecret, customerId, paymentConsentId)
-        }
-
-        /**
-         * Return the [ConfirmPaymentIntentParams] for kakaopay
-         *
-         * @param paymentIntentId the ID of the [PaymentIntent], required.
-         * @param clientSecret the clientSecret of [PaymentIntent], required.
-         * @param customerId the customerId of [PaymentIntent], optional.
-         */
-        fun createKakaoParams(
-            paymentIntentId: String,
-            clientSecret: String,
-            customerId: String? = null,
-            paymentConsentId: String? = null
-        ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.KAKAO, paymentIntentId, clientSecret, customerId, paymentConsentId)
-        }
-
-        /**
-         * Return the [ConfirmPaymentIntentParams] for tng
-         *
-         * @param paymentIntentId the ID of the [PaymentIntent], required.
-         * @param clientSecret the clientSecret of [PaymentIntent], required.
-         * @param customerId the customerId of [PaymentIntent], optional.
-         */
-        fun createTngParams(
-            paymentIntentId: String,
-            clientSecret: String,
-            customerId: String? = null,
-            paymentConsentId: String? = null
-        ): ConfirmPaymentIntentParams {
-            return createThirdPartPayParams(AvaliablePaymentMethodType.TNG, paymentIntentId, clientSecret, customerId, paymentConsentId)
         }
 
         /**
@@ -231,7 +119,7 @@ data class ConfirmPaymentIntentParams internal constructor(
             )
                 .setCustomerId(customerId)
                 .setPaymentMethod(
-                    AvaliablePaymentMethodType.CARD,
+                    PaymentMethodType.CARD,
                     PaymentMethodReference(paymentMethodId, cvc)
                 )
                 .setPaymentConsentId(paymentConsentId)

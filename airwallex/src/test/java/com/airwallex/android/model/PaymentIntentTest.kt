@@ -26,7 +26,7 @@ class PaymentIntentTest {
             descriptor = "Airwallex - T-shirt",
             status = PaymentIntentStatus.REQUIRES_PAYMENT_METHOD,
             capturedAmount = BigDecimal.valueOf(0.1),
-            availablePaymentMethodTypes = arrayListOf(AvaliablePaymentMethodType.CARD, AvaliablePaymentMethodType.WECHAT),
+            availablePaymentMethodTypes = arrayListOf(PaymentMethodType.CARD, PaymentMethodType.WECHAT),
             customerPaymentMethods = arrayListOf(
                 PaymentMethod.Builder()
                     .setType(PaymentMethodType.CARD)

@@ -1,14 +1,14 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.airwallex.android.model.parser.AliPayRequestParser
+import com.airwallex.android.model.parser.ThirdPartPayRequestParser
 import kotlinx.parcelize.Parcelize
 
 /**
- * Request for WeChatPay
+ * Request for Third Part Pay
  */
 @Parcelize
-data class AliPayRequest constructor(
+data class ThirdPartPayRequest constructor(
 
     /**
      * The specific AliPay Pay flow to use.
@@ -22,12 +22,10 @@ data class AliPayRequest constructor(
     override fun toParamMap(): Map<String, Any> {
         return mapOf<String, Any>()
             .plus(
-                flow?.let {
-                    mapOf(AliPayRequestParser.FIELD_FLOW to it.value)
-                }.orEmpty()
+                mapOf(ThirdPartPayRequestParser.FIELD_FLOW to ThirdPartPayRequestFlow.IN_APP.value)
             )
             .plus(
-                mapOf(AliPayRequestParser.FIELD_OS_TYPE to "android")
+                mapOf(ThirdPartPayRequestParser.FIELD_OS_TYPE to "android")
             )
     }
 }

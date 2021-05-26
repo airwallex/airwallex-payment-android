@@ -17,26 +17,32 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
             card = json.optJSONObject(FIELD_CARD)?.let {
                 CardParser().parse(it)
             },
-            weChatPayRequest = json.optJSONObject(FIELD_WECHAT_PAY_REQUEST)?.let {
-                WeChatPayRequestParser().parse(it)
+            weChatPayRequest = json.optJSONObject(PaymentMethodType.WECHAT.value)?.let {
+                ThirdPartPayRequestParser().parse(it)
             },
-            aliPayCNRequest = json.optJSONObject(FIELD_ALI_PAY_CN_REQUEST)?.let {
-                AliPayRequestParser().parse(it)
+            aliPayCNRequest = json.optJSONObject(PaymentMethodType.ALIPAY_CN.value)?.let {
+                ThirdPartPayRequestParser().parse(it)
             },
-            aliPayHKRequest = json.optJSONObject(FIELD_ALI_PAY_HK_REQUEST)?.let {
-                AliPayRequestParser().parse(it)
+            aliPayHKRequest = json.optJSONObject(PaymentMethodType.ALIPAY_HK.value)?.let {
+                ThirdPartPayRequestParser().parse(it)
             },
-            kakaoPayRequest = json.optJSONObject(FIELD_KAO_KAO_PAY_REQUEST)?.let {
-                AliPayRequestParser().parse(it)
+            kakaoPayRequest = json.optJSONObject(PaymentMethodType.KAKAOPAY.value)?.let {
+                ThirdPartPayRequestParser().parse(it)
             },
-            tngRequest = json.optJSONObject(FIELD_TNG_REQUEST)?.let {
-                AliPayRequestParser().parse(it)
+            tngRequest = json.optJSONObject(PaymentMethodType.TNG.value)?.let {
+                ThirdPartPayRequestParser().parse(it)
             },
-            danaRequest = json.optJSONObject(FIELD_DANA_REQUEST)?.let {
-                AliPayRequestParser().parse(it)
+            danaRequest = json.optJSONObject(PaymentMethodType.DANA.value)?.let {
+                ThirdPartPayRequestParser().parse(it)
             },
-            gCashRequest = json.optJSONObject(FIELD_GCASH_REQUEST)?.let {
-                AliPayRequestParser().parse(it)
+            gCashRequest = json.optJSONObject(PaymentMethodType.GCASH.value)?.let {
+                ThirdPartPayRequestParser().parse(it)
+            },
+            tureMoneyRequest = json.optJSONObject(PaymentMethodType.TRUE_MONEY.value)?.let {
+                ThirdPartPayRequestParser().parse(it)
+            },
+            bKashRequest = json.optJSONObject(PaymentMethodType.BKASH.value)?.let {
+                ThirdPartPayRequestParser().parse(it)
             },
             billing = json.optJSONObject(FIELD_BILLING)?.let {
                 BillingParser().parse(it)
@@ -60,13 +66,6 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
         const val FIELD_CUSTOMER_ID = "customer_id"
         const val FIELD_TYPE = "type"
         const val FIELD_CARD = "card"
-        const val FIELD_WECHAT_PAY_REQUEST = "wechatpay"
-        const val FIELD_ALI_PAY_CN_REQUEST = "alipaycn"
-        const val FIELD_ALI_PAY_HK_REQUEST = "alipayhk"
-        const val FIELD_KAO_KAO_PAY_REQUEST = "kakaopay"
-        const val FIELD_TNG_REQUEST = "tng"
-        const val FIELD_DANA_REQUEST = "dana"
-        const val FIELD_GCASH_REQUEST = "gcash"
         const val FIELD_BILLING = "billing"
         const val FIELD_STATUS = "status"
         const val FIELD_METADATA = "metadata"

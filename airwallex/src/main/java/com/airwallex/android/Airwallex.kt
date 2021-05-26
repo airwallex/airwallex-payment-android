@@ -160,7 +160,7 @@ class Airwallex internal constructor(
                 request = PaymentMethodCreateRequest.Builder()
                     .setCustomerId(params.customerId)
                     .setRequestId(UUID.randomUUID().toString())
-                    .setType(AvaliablePaymentMethodType.CARD)
+                    .setType(PaymentMethodType.CARD)
                     .setCard(params.card)
                     .setBilling(params.billing)
                     .build()
@@ -203,19 +203,6 @@ class Airwallex internal constructor(
         params: CreatePaymentConsentParams,
         listener: PaymentListener<PaymentConsent>
     ) {
-        val availablePaymentMethodTypes = listOf(
-            PaymentMethodType.CARD,
-            PaymentMethodType.GCASH,
-            PaymentMethodType.TNG,
-            PaymentMethodType.KAKAOPAY,
-            PaymentMethodType.DANA,
-            PaymentMethodType.ALIPAY_HK
-        )
-        if (!availablePaymentMethodTypes.contains(params.paymentMethodType)) {
-            listener.onFailed(InvalidParamsException("Not support payment method ${params.paymentMethodType}"))
-            return
-        }
-
         if (params.paymentMethodType != PaymentMethodType.CARD && params.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER) {
             listener.onFailed(InvalidParamsException("next_triggered_by must be merchant with ${params.paymentMethodType}"))
             return
@@ -267,19 +254,6 @@ class Airwallex internal constructor(
         params: VerifyPaymentConsentParams,
         listener: PaymentResultListener<PaymentIntent>
     ) {
-        val availablePaymentMethodTypes = listOf(
-            PaymentMethodType.CARD,
-            PaymentMethodType.GCASH,
-            PaymentMethodType.TNG,
-            PaymentMethodType.KAKAOPAY,
-            PaymentMethodType.DANA,
-            PaymentMethodType.ALIPAY_HK
-        )
-        if (!availablePaymentMethodTypes.contains(params.paymentMethodType)) {
-            listener.onFailed(InvalidParamsException("Not support payment method ${params.paymentMethodType}"))
-            return
-        }
-
         paymentManager.verifyPaymentConsent(applicationContext, params, dccActivityLaunch, threeDSecureActivityLaunch, listener)
     }
 
@@ -565,41 +539,6 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentConsent>
     ) {
         val params: CreatePaymentConsentParams = when (requireNotNull(paymentMethod.type)) {
-            PaymentMethodType.ALIPAY_HK -> {
-                CreatePaymentConsentParams.createAlipayHKParams(
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    merchantTriggerReason = merchantTriggerReason
-                )
-            }
-            PaymentMethodType.DANA -> {
-                CreatePaymentConsentParams.createDanaParams(
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    merchantTriggerReason = merchantTriggerReason
-                )
-            }
-            PaymentMethodType.GCASH -> {
-                CreatePaymentConsentParams.createGCashParams(
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    merchantTriggerReason = merchantTriggerReason
-                )
-            }
-            PaymentMethodType.KAKAOPAY -> {
-                CreatePaymentConsentParams.createKakaoParams(
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    merchantTriggerReason = merchantTriggerReason
-                )
-            }
-            PaymentMethodType.TNG -> {
-                CreatePaymentConsentParams.createTngParams(
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    merchantTriggerReason = merchantTriggerReason
-                )
-            }
             PaymentMethodType.CARD -> {
                 if (requiresCvc && nextTriggeredBy == PaymentConsent.NextTriggeredBy.MERCHANT) {
                     listener.onFailed(InvalidParamsException(message = "Only applicable when next_triggered_by is customer and the payment_method.type is card"))
@@ -615,8 +554,12 @@ class Airwallex internal constructor(
                 )
             }
             else -> {
-                listener.onFailed(InvalidParamsException(message = "Not support payment method ${paymentMethod.type} when creating payment consent"))
-                return
+                CreatePaymentConsentParams.createThirdPartParams(
+                    paymentMethodType = paymentMethod.type,
+                    clientSecret = clientSecret,
+                    customerId = customerId,
+                    merchantTriggerReason = merchantTriggerReason
+                )
             }
         }
         createPaymentConsent(params, listener)
@@ -633,42 +576,8 @@ class Airwallex internal constructor(
             listener.onFailed(InvalidParamsException(message = "CVC is required!"))
         }
         val returnUrl = "$AIRWALLEX_CHECKOUT_SCHEMA${activity.packageName}"
-        val params: VerifyPaymentConsentParams = when (requireNotNull(paymentConsent.paymentMethod?.type)) {
-            PaymentMethodType.ALIPAY_HK -> {
-                VerifyPaymentConsentParams.createAlipayHKParams(
-                    clientSecret = requireNotNull(paymentConsent.clientSecret),
-                    paymentConsentId = requireNotNull(paymentConsent.id),
-                    returnUrl = returnUrl
-                )
-            }
-            PaymentMethodType.DANA -> {
-                VerifyPaymentConsentParams.createDanaParams(
-                    clientSecret = requireNotNull(paymentConsent.clientSecret),
-                    paymentConsentId = requireNotNull(paymentConsent.id),
-                    returnUrl = returnUrl
-                )
-            }
-            PaymentMethodType.GCASH -> {
-                VerifyPaymentConsentParams.createGCashParams(
-                    clientSecret = requireNotNull(paymentConsent.clientSecret),
-                    paymentConsentId = requireNotNull(paymentConsent.id),
-                    returnUrl = returnUrl
-                )
-            }
-            PaymentMethodType.KAKAOPAY -> {
-                VerifyPaymentConsentParams.createKakaoParams(
-                    clientSecret = requireNotNull(paymentConsent.clientSecret),
-                    paymentConsentId = requireNotNull(paymentConsent.id),
-                    returnUrl = returnUrl
-                )
-            }
-            PaymentMethodType.TNG -> {
-                VerifyPaymentConsentParams.createTngParams(
-                    clientSecret = requireNotNull(paymentConsent.clientSecret),
-                    paymentConsentId = requireNotNull(paymentConsent.id),
-                    returnUrl = returnUrl
-                )
-            }
+        val paymentMethodType = paymentConsent.paymentMethod?.type
+        val params: VerifyPaymentConsentParams = when (requireNotNull(paymentMethodType)) {
             PaymentMethodType.CARD -> {
                 VerifyPaymentConsentParams.createCardParams(
                     clientSecret = requireNotNull(paymentConsent.clientSecret),
@@ -680,7 +589,12 @@ class Airwallex internal constructor(
                 )
             }
             else -> {
-                throw InvalidParamsException(message = "Not support payment method ${paymentConsent.paymentMethod?.type} when verifying payment consent")
+                VerifyPaymentConsentParams.createThirdPartParams(
+                    paymentMethodType = paymentMethodType,
+                    clientSecret = requireNotNull(paymentConsent.clientSecret),
+                    paymentConsentId = requireNotNull(paymentConsent.id),
+                    returnUrl = returnUrl
+                )
             }
         }
         verifyPaymentConsent(params, listener)
@@ -696,62 +610,6 @@ class Airwallex internal constructor(
         listener: PaymentResultListener<PaymentIntent>
     ) {
         val params = when (requireNotNull(paymentMethod.type)) {
-            PaymentMethodType.WECHAT -> {
-                ConfirmPaymentIntentParams.createWeChatParams(
-                    paymentIntentId = paymentIntentId,
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    paymentConsentId = paymentConsentId
-                )
-            }
-            PaymentMethodType.ALIPAY_CN -> {
-                ConfirmPaymentIntentParams.createAlipayParams(
-                    paymentIntentId = paymentIntentId,
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    paymentConsentId = paymentConsentId
-                )
-            }
-            PaymentMethodType.ALIPAY_HK -> {
-                ConfirmPaymentIntentParams.createAlipayHKParams(
-                    paymentIntentId = paymentIntentId,
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    paymentConsentId = paymentConsentId
-                )
-            }
-            PaymentMethodType.DANA -> {
-                ConfirmPaymentIntentParams.createDanaParams(
-                    paymentIntentId = paymentIntentId,
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    paymentConsentId = paymentConsentId
-                )
-            }
-            PaymentMethodType.GCASH -> {
-                ConfirmPaymentIntentParams.createGCashParams(
-                    paymentIntentId = paymentIntentId,
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    paymentConsentId = paymentConsentId
-                )
-            }
-            PaymentMethodType.KAKAOPAY -> {
-                ConfirmPaymentIntentParams.createKakaoParams(
-                    paymentIntentId = paymentIntentId,
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    paymentConsentId = paymentConsentId
-                )
-            }
-            PaymentMethodType.TNG -> {
-                ConfirmPaymentIntentParams.createTngParams(
-                    paymentIntentId = paymentIntentId,
-                    clientSecret = clientSecret,
-                    customerId = customerId,
-                    paymentConsentId = paymentConsentId
-                )
-            }
             PaymentMethodType.CARD -> {
                 ConfirmPaymentIntentParams.createCardParams(
                     paymentIntentId = paymentIntentId,
@@ -763,8 +621,13 @@ class Airwallex internal constructor(
                 )
             }
             else -> {
-                listener.onFailed(InvalidParamsException("Not support payment method type ${paymentMethod.type}"))
-                return
+                ConfirmPaymentIntentParams.createThirdPartPayParams(
+                    paymentMethodType = paymentMethod.type,
+                    paymentIntentId = paymentIntentId,
+                    clientSecret = clientSecret,
+                    customerId = customerId,
+                    paymentConsentId = paymentConsentId
+                )
             }
         }
         confirmPaymentIntent(params, listener)
@@ -863,11 +726,7 @@ class Airwallex internal constructor(
                                         listener = listener
                                     )
                                 }
-                                PaymentMethodType.GCASH,
-                                PaymentMethodType.TNG,
-                                PaymentMethodType.KAKAOPAY,
-                                PaymentMethodType.DANA,
-                                PaymentMethodType.ALIPAY_HK -> {
+                                else -> {
                                     verifyPaymentConsent(
                                         paymentConsent = response,
                                         currency = session.currency,
@@ -876,7 +735,6 @@ class Airwallex internal constructor(
                                         listener = listener
                                     )
                                 }
-                                else -> listener.onFailed(InvalidParamsException("Not support payment method type ${paymentMethod.type}"))
                             }
                         }
                     }

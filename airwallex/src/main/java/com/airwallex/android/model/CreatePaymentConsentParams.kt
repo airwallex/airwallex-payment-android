@@ -95,47 +95,7 @@ data class CreatePaymentConsentParams constructor(
                 .build()
         }
 
-        fun createGCashParams(
-            clientSecret: String,
-            customerId: String,
-            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
-        ): CreatePaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.GCASH, clientSecret, customerId, merchantTriggerReason)
-        }
-
-        fun createTngParams(
-            clientSecret: String,
-            customerId: String,
-            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
-        ): CreatePaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.TNG, clientSecret, customerId, merchantTriggerReason)
-        }
-
-        fun createKakaoParams(
-            clientSecret: String,
-            customerId: String,
-            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
-        ): CreatePaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.KAKAOPAY, clientSecret, customerId, merchantTriggerReason)
-        }
-
-        fun createDanaParams(
-            clientSecret: String,
-            customerId: String,
-            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
-        ): CreatePaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.DANA, clientSecret, customerId, merchantTriggerReason)
-        }
-
-        fun createAlipayHKParams(
-            clientSecret: String,
-            customerId: String,
-            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
-        ): CreatePaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.ALIPAY_HK, clientSecret, customerId, merchantTriggerReason)
-        }
-
-        private fun createThirdPartParams(
+        fun createThirdPartParams(
             paymentMethodType: PaymentMethodType,
             clientSecret: String,
             customerId: String,

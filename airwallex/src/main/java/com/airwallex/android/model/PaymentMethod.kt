@@ -42,37 +42,47 @@ data class PaymentMethod internal constructor(
     /**
      * WeChat
      */
-    val weChatPayRequest: WeChatPayRequest? = null,
+    val weChatPayRequest: ThirdPartPayRequest? = null,
 
     /**
      * alipaycn
      */
-    val aliPayCNRequest: AliPayRequest? = null,
+    val aliPayCNRequest: ThirdPartPayRequest? = null,
 
     /**
      *  alipayhk
      */
-    val aliPayHKRequest: AliPayRequest? = null,
+    val aliPayHKRequest: ThirdPartPayRequest? = null,
 
     /**
      *  kakaopay
      */
-    val kakaoPayRequest: AliPayRequest? = null,
+    val kakaoPayRequest: ThirdPartPayRequest? = null,
 
     /**
      *  tng
      */
-    val tngRequest: AliPayRequest? = null,
+    val tngRequest: ThirdPartPayRequest? = null,
 
     /**
      *  dana
      */
-    val danaRequest: AliPayRequest? = null,
+    val danaRequest: ThirdPartPayRequest? = null,
 
     /**
      *  gcash
      */
-    val gCashRequest: AliPayRequest? = null,
+    val gCashRequest: ThirdPartPayRequest? = null,
+
+    /**
+     *  turemoney
+     */
+    val tureMoneyRequest: ThirdPartPayRequest? = null,
+
+    /**
+     *  bKash
+     */
+    val bKashRequest: ThirdPartPayRequest? = null,
 
     /**
      * Billing information for the payment method
@@ -115,37 +125,47 @@ data class PaymentMethod internal constructor(
             )
             .plus(
                 weChatPayRequest?.let {
-                    mapOf(PaymentMethodParser.FIELD_WECHAT_PAY_REQUEST to it.toParamMap())
+                    mapOf(PaymentMethodType.WECHAT.value to it.toParamMap())
                 }.orEmpty()
             )
             .plus(
                 aliPayCNRequest?.let {
-                    mapOf(PaymentMethodParser.FIELD_ALI_PAY_CN_REQUEST to it.toParamMap())
+                    mapOf(PaymentMethodType.ALIPAY_CN.value to it.toParamMap())
                 }.orEmpty()
             )
             .plus(
                 aliPayHKRequest?.let {
-                    mapOf(PaymentMethodParser.FIELD_ALI_PAY_HK_REQUEST to it.toParamMap())
+                    mapOf(PaymentMethodType.ALIPAY_HK.value to it.toParamMap())
                 }.orEmpty()
             )
             .plus(
                 kakaoPayRequest?.let {
-                    mapOf(PaymentMethodParser.FIELD_KAO_KAO_PAY_REQUEST to it.toParamMap())
+                    mapOf(PaymentMethodType.KAKAOPAY.value to it.toParamMap())
                 }.orEmpty()
             )
             .plus(
                 tngRequest?.let {
-                    mapOf(PaymentMethodParser.FIELD_TNG_REQUEST to it.toParamMap())
+                    mapOf(PaymentMethodType.TNG.value to it.toParamMap())
                 }.orEmpty()
             )
             .plus(
                 danaRequest?.let {
-                    mapOf(PaymentMethodParser.FIELD_DANA_REQUEST to it.toParamMap())
+                    mapOf(PaymentMethodType.DANA.value to it.toParamMap())
                 }.orEmpty()
             )
             .plus(
                 gCashRequest?.let {
-                    mapOf(PaymentMethodParser.FIELD_GCASH_REQUEST to it.toParamMap())
+                    mapOf(PaymentMethodType.GCASH.value to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                tureMoneyRequest?.let {
+                    mapOf(PaymentMethodType.TRUE_MONEY.value to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                bKashRequest?.let {
+                    mapOf(PaymentMethodType.BKASH.value to it.toParamMap())
                 }.orEmpty()
             )
     }
@@ -156,13 +176,15 @@ data class PaymentMethod internal constructor(
         private var customerId: String? = null
         private var type: PaymentMethodType? = null
         private var card: Card? = null
-        private var weChatPayRequest: WeChatPayRequest? = null
-        private var aliPayCNRequest: AliPayRequest? = null
-        private var aliPayHKRequest: AliPayRequest? = null
-        private var kakaoPayRequest: AliPayRequest? = null
-        private var tngRequest: AliPayRequest? = null
-        private var danaRequest: AliPayRequest? = null
-        private var gCashRequest: AliPayRequest? = null
+        private var weChatPayRequest: ThirdPartPayRequest? = null
+        private var aliPayCNRequest: ThirdPartPayRequest? = null
+        private var aliPayHKRequest: ThirdPartPayRequest? = null
+        private var kakaoPayRequest: ThirdPartPayRequest? = null
+        private var tngRequest: ThirdPartPayRequest? = null
+        private var danaRequest: ThirdPartPayRequest? = null
+        private var gCashRequest: ThirdPartPayRequest? = null
+        private var tureMoneyRequest: ThirdPartPayRequest? = null
+        private var bKashRequest: ThirdPartPayRequest? = null
 
         private var billing: Billing? = null
         private var metadata: Map<String, Any?>? = null
@@ -194,36 +216,20 @@ data class PaymentMethod internal constructor(
             this.card = card
         }
 
-        fun setWeChatPayRequest(weChatPayRequest: WeChatPayRequest?): Builder = apply {
-            this.weChatPayRequest = weChatPayRequest
-        }
-
-        fun setAliPayCNRequest(aliPayCNRequest: AliPayRequest?): Builder = apply {
-            this.aliPayCNRequest = aliPayCNRequest
-        }
-
-        fun setAliPayHkRequest(aliPayHKRequest: AliPayRequest?): Builder = apply {
-            this.aliPayHKRequest = aliPayHKRequest
-        }
-
-        fun setKakaoPayRequest(kakaoPayRequest: AliPayRequest?): Builder = apply {
-            this.kakaoPayRequest = kakaoPayRequest
-        }
-
-        fun setTngRequest(tngRequest: AliPayRequest?): Builder = apply {
-            this.tngRequest = tngRequest
-        }
-
-        fun setDanaRequest(danaRequest: AliPayRequest?): Builder = apply {
-            this.danaRequest = danaRequest
-        }
-
-        fun setGCashRequest(gCashRequest: AliPayRequest?): Builder = apply {
-            this.gCashRequest = gCashRequest
-        }
-
         fun setType(type: PaymentMethodType): Builder = apply {
             this.type = type
+            when (type) {
+                PaymentMethodType.WECHAT -> weChatPayRequest = ThirdPartPayRequest()
+                PaymentMethodType.ALIPAY_CN -> aliPayCNRequest = ThirdPartPayRequest()
+                PaymentMethodType.ALIPAY_HK -> aliPayHKRequest = ThirdPartPayRequest()
+                PaymentMethodType.KAKAOPAY -> kakaoPayRequest = ThirdPartPayRequest()
+                PaymentMethodType.TNG -> tngRequest = ThirdPartPayRequest()
+                PaymentMethodType.DANA -> danaRequest = ThirdPartPayRequest()
+                PaymentMethodType.GCASH -> gCashRequest = ThirdPartPayRequest()
+                PaymentMethodType.TRUE_MONEY -> tureMoneyRequest = ThirdPartPayRequest()
+                PaymentMethodType.BKASH -> bKashRequest = ThirdPartPayRequest()
+                else -> Unit
+            }
         }
 
         fun setCreatedAt(createdAt: Date?): Builder = apply {

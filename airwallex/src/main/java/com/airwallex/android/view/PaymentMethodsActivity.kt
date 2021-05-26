@@ -58,7 +58,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         Airwallex(this)
     }
 
-    private var availableThirdPaymentTypes: List<AvaliablePaymentMethodType>? = null
+    private var availableThirdPaymentTypes: List<PaymentMethodType>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,12 +66,12 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         fetchPaymentMethods()
     }
 
-    private fun initView(availableThirdPaymentTypes: List<AvaliablePaymentMethodType>) {
+    private fun initView(availableThirdPaymentTypes: List<PaymentMethodType>) {
         this.availableThirdPaymentTypes = availableThirdPaymentTypes
-        val shouldShowCard = availableThirdPaymentTypes.contains(AvaliablePaymentMethodType.CARD)
+        val shouldShowCard = availableThirdPaymentTypes.contains(PaymentMethodType.CARD)
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         paymentMethodsAdapter = PaymentMethodsAdapter(
-            availableThirdPaymentTypes = availableThirdPaymentTypes.filter { it != AvaliablePaymentMethodType.CARD },
+            availableThirdPaymentTypes = availableThirdPaymentTypes.filter { it != PaymentMethodType.CARD },
             shouldShowCard = shouldShowCard
         )
 
@@ -94,7 +94,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 PaymentMethodsDividerItemDecoration(
                     this@PaymentMethodsActivity,
                     R.drawable.airwallex_line_divider,
-                    availableThirdPaymentTypeSize = availableThirdPaymentTypes.filter { it != AvaliablePaymentMethodType.CARD }.size
+                    availableThirdPaymentTypeSize = availableThirdPaymentTypes.filter { it != PaymentMethodType.CARD }.size
                 )
             )
         }
@@ -197,7 +197,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         availablePaymentMethodPageNum: AtomicInteger,
         clientSecret: ClientSecret,
         onFailed: (exception: Exception) -> Unit,
-        onCompleted: (availableThirdPaymentTypes: List<AvaliablePaymentMethodType>) -> Unit
+        onCompleted: (availableThirdPaymentTypes: List<PaymentMethodType>) -> Unit
     ) {
         airwallex.retrieveAvailablePaymentMethods(
             params = RetrieveAvailablePaymentMethodParams.Builder(
@@ -220,10 +220,10 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     } else {
                         when (args.session) {
                             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> {
-                                onCompleted.invoke(availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.RECURRING }.mapNotNull { AvaliablePaymentMethodType.fromValue(it.name) }.distinct())
+                                onCompleted.invoke(availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.RECURRING }.mapNotNull { it.name }.distinct())
                             }
                             is AirwallexPaymentSession -> {
-                                onCompleted.invoke(availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.ONE_OFF }.mapNotNull { AvaliablePaymentMethodType.fromValue(it.name) }.distinct())
+                                onCompleted.invoke(availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.ONE_OFF }.mapNotNull { it.name }.distinct())
                             }
                             else -> Unit
                         }
@@ -234,7 +234,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun retrievePaymentConsents() {
-        if (availableThirdPaymentTypes?.contains(AvaliablePaymentMethodType.CARD) == false) {
+        if (availableThirdPaymentTypes?.contains(PaymentMethodType.CARD) == false) {
             return
         }
 

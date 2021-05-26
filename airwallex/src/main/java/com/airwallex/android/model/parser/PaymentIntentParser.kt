@@ -15,7 +15,7 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
             (0 until it.length())
                 .map { idx -> it.optString(idx) }
                 .mapNotNull { jsonObject ->
-                    AvaliablePaymentMethodType.fromValue(jsonObject)
+                    PaymentMethodType.fromValue(jsonObject)
                 }
         }
 

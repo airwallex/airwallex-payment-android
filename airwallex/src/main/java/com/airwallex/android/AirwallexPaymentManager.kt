@@ -2,14 +2,8 @@ package com.airwallex.android
 
 import android.content.Context
 import com.airwallex.android.Airwallex.PaymentListener
-import com.airwallex.android.PaymentManager.Companion.buildAliPayCnPaymentIntentOptions
-import com.airwallex.android.PaymentManager.Companion.buildAliPayHkPaymentIntentOptions
 import com.airwallex.android.PaymentManager.Companion.buildCardPaymentIntentOptions
-import com.airwallex.android.PaymentManager.Companion.buildDanaPaymentIntentOptions
-import com.airwallex.android.PaymentManager.Companion.buildGCashPaymentIntentOptions
-import com.airwallex.android.PaymentManager.Companion.buildKakaoPayPaymentIntentOptions
-import com.airwallex.android.PaymentManager.Companion.buildTngPaymentIntentOptions
-import com.airwallex.android.PaymentManager.Companion.buildWeChatPaymentIntentOptions
+import com.airwallex.android.PaymentManager.Companion.buildThirdPartPaymentIntentOptions
 import com.airwallex.android.exception.APIException
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.exception.ThreeDSException
@@ -197,7 +191,7 @@ internal class AirwallexPaymentManager(
     ) {
         val device = PaymentManager.buildDeviceInfo(deviceId, applicationContext)
         val options = when (params.paymentMethodType) {
-            AvaliablePaymentMethodType.CARD -> {
+            PaymentMethodType.CARD -> {
                 buildCardPaymentIntentOptions(
                     device, params,
                     ThreeDSecure.Builder()
@@ -205,26 +199,8 @@ internal class AirwallexPaymentManager(
                         .build()
                 )
             }
-            AvaliablePaymentMethodType.WECHAT -> {
-                buildWeChatPaymentIntentOptions(params, device)
-            }
-            AvaliablePaymentMethodType.ALIPAY_CN -> {
-                buildAliPayCnPaymentIntentOptions(params, device)
-            }
-            AvaliablePaymentMethodType.ALIPAY_HK -> {
-                buildAliPayHkPaymentIntentOptions(params, device)
-            }
-            AvaliablePaymentMethodType.KAKAO -> {
-                buildKakaoPayPaymentIntentOptions(params, device)
-            }
-            AvaliablePaymentMethodType.TNG -> {
-                buildTngPaymentIntentOptions(params, device)
-            }
-            AvaliablePaymentMethodType.DANA -> {
-                buildDanaPaymentIntentOptions(params, device)
-            }
-            AvaliablePaymentMethodType.GCASH -> {
-                buildGCashPaymentIntentOptions(params, device)
+            else -> {
+                buildThirdPartPaymentIntentOptions(params, device)
             }
         }
 
@@ -237,7 +213,7 @@ internal class AirwallexPaymentManager(
 
                 override fun onSuccess(response: PaymentIntent) {
                     when (params.paymentMethodType) {
-                        AvaliablePaymentMethodType.CARD -> {
+                        PaymentMethodType.CARD -> {
                             handleDccFlow(
                                 applicationContext,
                                 response.nextAction,
@@ -251,7 +227,7 @@ internal class AirwallexPaymentManager(
                                 listener
                             )
                         }
-                        AvaliablePaymentMethodType.WECHAT -> {
+                        PaymentMethodType.WECHAT -> {
                             val nextAction = response.nextAction
                             if (nextAction == null ||
                                 nextAction.type != NextAction.NextActionType.CALL_SDK ||
@@ -272,12 +248,7 @@ internal class AirwallexPaymentManager(
                                 )
                             )
                         }
-                        AvaliablePaymentMethodType.ALIPAY_CN,
-                        AvaliablePaymentMethodType.ALIPAY_HK,
-                        AvaliablePaymentMethodType.DANA,
-                        AvaliablePaymentMethodType.GCASH,
-                        AvaliablePaymentMethodType.KAKAO,
-                        AvaliablePaymentMethodType.TNG -> {
+                        else -> {
                             val nextAction = response.nextAction
                             val redirectUrl = nextAction?.url
                             if (redirectUrl.isNullOrEmpty()) {
@@ -362,51 +333,26 @@ internal class AirwallexPaymentManager(
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         listener: Airwallex.PaymentResultListener<PaymentIntent>
     ) {
+        val aliPayVerificationOptions = PaymentConsentVerifyRequest.AliPayVerificationOptions()
         val verificationOptions = when (params.paymentMethodType) {
-            PaymentMethodType.CARD ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    card = PaymentConsentVerifyRequest.CardVerificationOptions(
-                        amount = params.amount,
-                        currency = params.currency,
-                        cvc = params.cvc,
-                    )
+            PaymentMethodType.CARD -> PaymentConsentVerifyRequest.VerificationOptions(
+                card = PaymentConsentVerifyRequest.CardVerificationOptions(
+                    amount = params.amount,
+                    currency = params.currency,
+                    cvc = params.cvc,
                 )
-            PaymentMethodType.ALIPAY_HK ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    alipayhk = PaymentConsentVerifyRequest.AliPayVerificationOptions(
-                        flow = ThirdPartPayRequestFlow.IN_APP,
-                        osType = "android"
-                    )
-                )
-            PaymentMethodType.DANA ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    dana = PaymentConsentVerifyRequest.AliPayVerificationOptions(
-                        flow = ThirdPartPayRequestFlow.IN_APP,
-                        osType = "android"
-                    )
-                )
-            PaymentMethodType.GCASH ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    gcash = PaymentConsentVerifyRequest.AliPayVerificationOptions(
-                        flow = ThirdPartPayRequestFlow.IN_APP,
-                        osType = "android"
-                    )
-                )
-            PaymentMethodType.KAKAOPAY ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    kakaopay = PaymentConsentVerifyRequest.AliPayVerificationOptions(
-                        flow = ThirdPartPayRequestFlow.IN_APP,
-                        osType = "android"
-                    )
-                )
-            PaymentMethodType.TNG ->
-                PaymentConsentVerifyRequest.VerificationOptions(
-                    tng = PaymentConsentVerifyRequest.AliPayVerificationOptions(
-                        flow = ThirdPartPayRequestFlow.IN_APP,
-                        osType = "android"
-                    )
-                )
-            else -> null
+            )
+            PaymentMethodType.ALIPAY_HK -> PaymentConsentVerifyRequest.VerificationOptions(alipayhk = aliPayVerificationOptions)
+            PaymentMethodType.DANA -> PaymentConsentVerifyRequest.VerificationOptions(dana = aliPayVerificationOptions)
+            PaymentMethodType.GCASH -> PaymentConsentVerifyRequest.VerificationOptions(gcash = aliPayVerificationOptions)
+            PaymentMethodType.KAKAOPAY -> PaymentConsentVerifyRequest.VerificationOptions(kakaopay = aliPayVerificationOptions)
+            PaymentMethodType.TNG -> PaymentConsentVerifyRequest.VerificationOptions(tng = aliPayVerificationOptions)
+            PaymentMethodType.TRUE_MONEY -> PaymentConsentVerifyRequest.VerificationOptions(trueMoney = aliPayVerificationOptions)
+            PaymentMethodType.BKASH -> PaymentConsentVerifyRequest.VerificationOptions(bKash = aliPayVerificationOptions)
+            else -> {
+                listener.onFailed(Exception("Unsupported PaymentMethod ${params.paymentMethodType} "))
+                return
+            }
         }
 
         verifyPaymentConsent(
@@ -469,12 +415,7 @@ internal class AirwallexPaymentManager(
                                 )
                             )
                         }
-                        PaymentMethodType.ALIPAY_CN,
-                        PaymentMethodType.ALIPAY_HK,
-                        PaymentMethodType.DANA,
-                        PaymentMethodType.GCASH,
-                        PaymentMethodType.KAKAOPAY,
-                        PaymentMethodType.TNG -> {
+                        else -> {
                             val nextAction = response.nextAction
                             val redirectUrl = nextAction?.url
                             if (redirectUrl.isNullOrEmpty()) {
@@ -482,9 +423,6 @@ internal class AirwallexPaymentManager(
                                 return
                             }
                             listener.onNextActionWithAlipayUrl(redirectUrl)
-                        }
-                        else -> {
-                            listener.onFailed(Exception("Unsupported PaymentMethod ${params.paymentMethodType} "))
                         }
                     }
                 }

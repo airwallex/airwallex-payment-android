@@ -4,13 +4,13 @@ import com.airwallex.android.model.*
 import com.airwallex.android.model.AirwallexJsonUtils
 import org.json.JSONObject
 
-class AliPayRequestParser : ModelJsonParser<AliPayRequest> {
+class ThirdPartPayRequestParser : ModelJsonParser<ThirdPartPayRequest> {
 
-    override fun parse(json: JSONObject): AliPayRequest? {
-        return AliPayRequest(
-            flow = ThirdPartPayRequestFlow.fromValue(
-                AirwallexJsonUtils.optString(json, FIELD_FLOW)
-            ),
+    override fun parse(json: JSONObject): ThirdPartPayRequest {
+        return ThirdPartPayRequest(
+            flow = AirwallexJsonUtils.optString(json, FIELD_FLOW)?.let {
+                ThirdPartPayRequestFlow.fromValue(it)
+            },
             osType = AirwallexJsonUtils.optString(json, FIELD_OS_TYPE)
         )
     }

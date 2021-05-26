@@ -36,9 +36,7 @@ internal class PaymentMethodItemView constructor(
 
     internal val isValid: Boolean
         get() {
-            return cvc?.length == CardCvcEditText.VALID_CVC_LENGTH ||
-                paymentMethodType == PaymentMethodType.WECHAT ||
-                paymentMethodType == PaymentMethodType.ALIPAY_CN
+            return cvc?.length == CardCvcEditText.VALID_CVC_LENGTH && paymentMethodType == PaymentMethodType.CARD
         }
 
     /**
@@ -79,18 +77,12 @@ internal class PaymentMethodItemView constructor(
             return
         }
         this.paymentMethodType = paymentMethod.type
-        if (paymentMethod.type == PaymentMethodType.WECHAT) {
-            viewBinding.tvPaymentMethod.text = paymentMethod.type.value
-        } else {
-            viewBinding.tvPaymentMethod.text = String.format(
-                "%s •••• %s",
-                paymentMethod.card?.brand?.toUpperCase(Locale.ROOT),
-                paymentMethod.card?.last4
-            )
-        }
-
+        viewBinding.tvPaymentMethod.text = String.format(
+            "%s •••• %s",
+            paymentMethod.card?.brand?.toUpperCase(Locale.ROOT),
+            paymentMethod.card?.last4
+        )
         viewBinding.etCardCvc.setText(cvc)
-
         viewBinding.tvPaymentMethod.setTextColor(
             ContextCompat.getColor(
                 context,

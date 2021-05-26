@@ -101,47 +101,7 @@ data class VerifyPaymentConsentParams constructor(
                 .build()
         }
 
-        fun createGCashParams(
-            clientSecret: String,
-            paymentConsentId: String,
-            returnUrl: String
-        ): VerifyPaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.GCASH, clientSecret, paymentConsentId, returnUrl)
-        }
-
-        fun createTngParams(
-            clientSecret: String,
-            paymentConsentId: String,
-            returnUrl: String
-        ): VerifyPaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.TNG, clientSecret, paymentConsentId, returnUrl)
-        }
-
-        fun createKakaoParams(
-            clientSecret: String,
-            paymentConsentId: String,
-            returnUrl: String
-        ): VerifyPaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.KAKAOPAY, clientSecret, paymentConsentId, returnUrl)
-        }
-
-        fun createDanaParams(
-            clientSecret: String,
-            paymentConsentId: String,
-            returnUrl: String
-        ): VerifyPaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.DANA, clientSecret, paymentConsentId, returnUrl)
-        }
-
-        fun createAlipayHKParams(
-            clientSecret: String,
-            paymentConsentId: String,
-            returnUrl: String
-        ): VerifyPaymentConsentParams {
-            return createThirdPartParams(PaymentMethodType.ALIPAY_HK, clientSecret, paymentConsentId, returnUrl)
-        }
-
-        private fun createThirdPartParams(
+        fun createThirdPartParams(
             paymentMethodType: PaymentMethodType,
             clientSecret: String,
             paymentConsentId: String,

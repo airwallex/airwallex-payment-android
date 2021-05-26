@@ -14,7 +14,7 @@ import com.airwallex.android.model.*
 import java.util.*
 
 internal class PaymentMethodsAdapter(
-    val availableThirdPaymentTypes: List<AvaliablePaymentMethodType>,
+    val availableThirdPaymentTypes: List<PaymentMethodType>,
     val shouldShowCard: Boolean
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -155,115 +155,19 @@ internal class PaymentMethodsAdapter(
         )
 
         fun bindView(position: Int) {
-            when (availableThirdPaymentTypes[position]) {
-                AvaliablePaymentMethodType.ALIPAY_CN -> {
-                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_alipay_cn)
-                    viewBinding.paymentMethodName.setText(R.string.alipay)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.ALIPAY_CN) View.VISIBLE else View.GONE
-                    itemView.setOnClickListener {
-                        selectedPaymentConsent = PaymentConsent(
-                            paymentMethod = PaymentMethod.Builder()
-                                .setType(PaymentMethodType.ALIPAY_CN)
-                                .build()
-                        )
-                        notifyDataSetChanged()
+            val paymentMethodType = availableThirdPaymentTypes[position]
+            viewBinding.paymentMethodIcon.setImageResource(paymentMethodType.drawableRes)
+            viewBinding.paymentMethodName.text = paymentMethodType.displayName
+            viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == paymentMethodType) View.VISIBLE else View.GONE
+            itemView.setOnClickListener {
+                selectedPaymentConsent = PaymentConsent(
+                    paymentMethod = PaymentMethod.Builder()
+                        .setType(paymentMethodType)
+                        .build()
+                )
+                notifyDataSetChanged()
 
-                        selectedPaymentConsent?.let { listener?.onPaymentConsentClick(it) }
-                    }
-                }
-                AvaliablePaymentMethodType.WECHAT -> {
-                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_wechat)
-                    viewBinding.paymentMethodName.setText(R.string.wechat_pay)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.WECHAT) View.VISIBLE else View.GONE
-                    itemView.setOnClickListener {
-                        selectedPaymentConsent = PaymentConsent(
-                            paymentMethod = PaymentMethod.Builder()
-                                .setType(PaymentMethodType.WECHAT)
-                                .build()
-                        )
-                        notifyDataSetChanged()
-
-                        selectedPaymentConsent?.let { listener?.onPaymentConsentClick(it) }
-                    }
-                }
-                AvaliablePaymentMethodType.ALIPAY_HK -> {
-                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_alipay_hk)
-                    viewBinding.paymentMethodName.setText(R.string.alipay_hk)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.ALIPAY_HK) View.VISIBLE else View.GONE
-                    itemView.setOnClickListener {
-                        selectedPaymentConsent = PaymentConsent(
-                            paymentMethod = PaymentMethod.Builder()
-                                .setType(PaymentMethodType.ALIPAY_HK)
-                                .build()
-                        )
-                        notifyDataSetChanged()
-
-                        selectedPaymentConsent?.let { listener?.onPaymentConsentClick(it) }
-                    }
-                }
-                AvaliablePaymentMethodType.DANA -> {
-                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_dana)
-                    viewBinding.paymentMethodName.setText(R.string.dana)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.DANA) View.VISIBLE else View.GONE
-                    itemView.setOnClickListener {
-                        selectedPaymentConsent = PaymentConsent(
-                            paymentMethod = PaymentMethod.Builder()
-                                .setType(PaymentMethodType.DANA)
-                                .build()
-                        )
-                        notifyDataSetChanged()
-
-                        selectedPaymentConsent?.let { listener?.onPaymentConsentClick(it) }
-                    }
-                }
-                AvaliablePaymentMethodType.GCASH -> {
-                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_gcash)
-                    viewBinding.paymentMethodName.setText(R.string.gcash)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.GCASH) View.VISIBLE else View.GONE
-                    itemView.setOnClickListener {
-                        selectedPaymentConsent = PaymentConsent(
-                            paymentMethod = PaymentMethod.Builder()
-                                .setType(PaymentMethodType.GCASH)
-                                .build()
-                        )
-                        notifyDataSetChanged()
-
-                        selectedPaymentConsent?.let { listener?.onPaymentConsentClick(it) }
-                    }
-                }
-                AvaliablePaymentMethodType.KAKAO -> {
-                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_kakao_pay)
-                    viewBinding.paymentMethodName.setText(R.string.kakao_pay)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.KAKAOPAY) View.VISIBLE else View.GONE
-                    itemView.setOnClickListener {
-                        selectedPaymentConsent = PaymentConsent(
-                            paymentMethod = PaymentMethod.Builder()
-                                .setType(PaymentMethodType.KAKAOPAY)
-                                .build()
-                        )
-                        notifyDataSetChanged()
-
-                        selectedPaymentConsent?.let { listener?.onPaymentConsentClick(it) }
-                    }
-                }
-                AvaliablePaymentMethodType.TNG -> {
-                    viewBinding.paymentMethodIcon.setImageResource(R.drawable.airwallex_ic_touchngo)
-                    viewBinding.paymentMethodName.setText(R.string.touchngo)
-                    viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == PaymentMethodType.TNG) View.VISIBLE else View.GONE
-                    itemView.setOnClickListener {
-                        selectedPaymentConsent = PaymentConsent(
-                            paymentMethod = PaymentMethod.Builder()
-                                .setType(PaymentMethodType.TNG)
-                                .build()
-                        )
-                        notifyDataSetChanged()
-
-                        selectedPaymentConsent?.let { listener?.onPaymentConsentClick(it) }
-                    }
-                }
-                else -> {
-                    // Ignore
-                }
+                selectedPaymentConsent?.let { listener?.onPaymentConsentClick(it) }
             }
         }
     }

@@ -78,7 +78,7 @@ data class PaymentIntent internal constructor(
     /**
      * Available payment method types
      */
-    val availablePaymentMethodTypes: List<AvaliablePaymentMethodType>? = null,
+    val availablePaymentMethodTypes: List<PaymentMethodType>? = null,
 
     /**
      * Payment methods of the customer if customer ID is provided

@@ -27,14 +27,14 @@ internal data class RetrievePaymentMethodParams internal constructor(
     /**
      * Payment method type
      */
-    internal val type: AvaliablePaymentMethodType
+    internal val type: PaymentMethodType
 
 ) : AbstractPaymentMethodParams(customerId = customerId, clientSecret = clientSecret) {
 
     class Builder(
         private val customerId: String,
         private val clientSecret: String,
-        private val type: AvaliablePaymentMethodType,
+        private val type: PaymentMethodType,
         private val pageNum: Int
     ) : ObjectBuilder<RetrievePaymentMethodParams> {
 

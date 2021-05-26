@@ -81,47 +81,58 @@ data class PaymentConsentVerifyRequest internal constructor(
          * Tng information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
          */
         val tng: AliPayVerificationOptions? = null,
-    ) : AirwallexRequestModel, Parcelable {
 
-        private companion object {
-            private const val FIELD_ALIPAY_HK = "alipayhk"
-            private const val FIELD_CARD = "card"
-            private const val FIELD_DANA = "dana"
-            private const val FIELD_GCASH = "gcash"
-            private const val FIELD_KAKAOPAY = "kakaopay"
-            private const val FIELD_TNG = "tng"
-        }
+        /**
+         * TrueMoney information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
+         */
+        val trueMoney: AliPayVerificationOptions? = null,
+
+        /**
+         * bKash information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
+         */
+        val bKash: AliPayVerificationOptions? = null,
+    ) : AirwallexRequestModel, Parcelable {
 
         override fun toParamMap(): Map<String, Any> {
             return mapOf<String, Any>()
                 .plus(
-                    alipayhk?.let {
-                        mapOf(FIELD_ALIPAY_HK to it.toParamMap())
+                    card?.let {
+                        mapOf(PaymentMethodType.CARD.value to it.toParamMap())
                     }.orEmpty()
                 )
                 .plus(
-                    card?.let {
-                        mapOf(FIELD_CARD to it.toParamMap())
+                    alipayhk?.let {
+                        mapOf(PaymentMethodType.ALIPAY_HK.value to it.toParamMap())
                     }.orEmpty()
                 )
                 .plus(
                     dana?.let {
-                        mapOf(FIELD_DANA to it.toParamMap())
+                        mapOf(PaymentMethodType.DANA.value to it.toParamMap())
                     }.orEmpty()
                 )
                 .plus(
                     gcash?.let {
-                        mapOf(FIELD_GCASH to it.toParamMap())
+                        mapOf(PaymentMethodType.GCASH.value to it.toParamMap())
                     }.orEmpty()
                 )
                 .plus(
                     kakaopay?.let {
-                        mapOf(FIELD_KAKAOPAY to it.toParamMap())
+                        mapOf(PaymentMethodType.KAKAOPAY.value to it.toParamMap())
                     }.orEmpty()
                 )
                 .plus(
                     tng?.let {
-                        mapOf(FIELD_TNG to it.toParamMap())
+                        mapOf(PaymentMethodType.TNG.value to it.toParamMap())
+                    }.orEmpty()
+                )
+                .plus(
+                    trueMoney?.let {
+                        mapOf(PaymentMethodType.TRUE_MONEY.value to it.toParamMap())
+                    }.orEmpty()
+                )
+                .plus(
+                    bKash?.let {
+                        mapOf(PaymentMethodType.BKASH.value to it.toParamMap())
                     }.orEmpty()
                 )
         }
@@ -149,14 +160,10 @@ data class PaymentConsentVerifyRequest internal constructor(
         override fun toParamMap(): Map<String, Any> {
             return mapOf<String, Any>()
                 .plus(
-                    flow?.let {
-                        mapOf(FIELD_FLOW to it.value)
-                    }.orEmpty()
+                    mapOf(FIELD_FLOW to ThirdPartPayRequestFlow.IN_APP.value)
                 )
                 .plus(
-                    osType?.let {
-                        mapOf(FIELD_OS_TYPE to it)
-                    }.orEmpty()
+                    mapOf(FIELD_OS_TYPE to "android")
                 )
         }
     }
