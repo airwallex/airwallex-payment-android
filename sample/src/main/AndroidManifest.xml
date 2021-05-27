@@ -25,9 +25,6 @@
         <meta-data
             android:name="com.airwallex.sample.metadata.wechat_app_id"
             android:value="${AIRWALLEX_WECHAT_APP_ID}" />
-        <meta-data
-            android:name="com.airwallex.sample.metadata.wechat_app_signature"
-            android:value="${AIRWALLEX_WECHAT_APP_SIGNATURE}" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.SplashActivity"
@@ -82,6 +79,11 @@
                     android:scheme="airwallexcheckout" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.airwallex.paymentacceptance.wechat.WeChatDemoActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityAnimTheme" />
 
         <receiver
             android:name="com.airwallex.paymentacceptance.AppRegister"

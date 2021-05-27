@@ -484,7 +484,7 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
 
 *前置条件*: 你已经通过 [如何创建PaymentIntent](#创建PaymentIntent)创建了一个PaymentIntent
 - 你已经通过 [如何创建PaymentIntent](#创建PaymentIntent)创建了一个PaymentIntent
-- 在 [WeChat Pay](https://open.weixin.qq.com/) 注册app， 将为商家提供唯一的APP_ID和APP_SIGNATURE。 然后，请与我们联系，我们将在Airwallex仪表板中注册您的微信APPID和APP_SIGNATURE。
+- 在 [WeChat Pay](https://open.weixin.qq.com/) 注册app， 将为商家提供唯一的APP_ID。 然后，请与我们联系，我们将在Airwallex仪表板中注册您的微信APPID。
 
 1. 初始化一个 `Airwallex` 对象, 这个 Airwallex SDK 的入口.
 
@@ -609,10 +609,9 @@ Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-and
     private const val CLIENT_ID = "put your client id here"
 ```
 
-4. 在 [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), 注册app, 然后拷贝 `App ID` 和 `App Signature` 到 [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
+4. 在 [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), 注册app, 然后拷贝 `App ID` 到 [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
 ```
     private const val WECHAT_APP_ID = "put your WeChat app id here"
-    private const val WECHAT_APP_SIGNATURE = "put your WeChat app signature here"
 ```
 
 5. 运行`sample`工程

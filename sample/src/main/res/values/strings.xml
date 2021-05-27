@@ -6,7 +6,6 @@
     <string name="api_key">Api Key</string>
     <string name="client_id">Client Id</string>
     <string name="wechat_app_id">App Id</string>
-    <string name="wechat_app_signature">App Signature</string>
 
     <string name="app_name">Airwallex Sample</string>
     <string name="checkout">Checkout</string>
@@ -51,4 +50,14 @@
     <string name="payment_url">PAYMENT URL</string>
     <string name="referer_url">REFERER URL</string>
     <string name="pay_success">Pay success</string>
+
+    <string name="wechat_demo">WeChat DEMO</string>
+    <string name="wechat_demo_checkout">Checkout with WeChat</string>
+    <string name="wechat_demo_app_id">AppId</string>
+    <string name="wechat_demo_partner_id">PartnerId</string>
+    <string name="wechat_demo_prepay_id">PrepayId</string>
+    <string name="wechat_demo_package">Package</string>
+    <string name="wechat_demo_nonce_str">NonceStr</string>
+    <string name="wechat_demo_timestamp">TimeStamp</string>
+    <string name="wechat_demo_sign">Sign</string>
 </resources>

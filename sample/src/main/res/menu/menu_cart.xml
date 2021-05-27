@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/weChat_demo"
+        android:title="@string/wechat_demo"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/h5demo"
         android:title="@string/h5demo"
         app:showAsAction="ifRoom" />

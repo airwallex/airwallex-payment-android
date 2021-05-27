@@ -15,7 +15,7 @@ class WXPay {
     }
 
     private val weChatApi: IWXAPI by lazy {
-        WXAPIFactory.createWXAPI(SampleApplication.instance, Settings.weChatAppId, true)
+        WXAPIFactory.createWXAPI(SampleApplication.instance, null)
     }
 
     private var listener: WeChatPaymentListener? = null
@@ -38,11 +38,11 @@ class WXPay {
     }
 
     private fun launchWeChat(data: WeChat) {
-        val success = weChatApi.registerApp(Settings.weChatAppSignature)
+        val success = weChatApi.registerApp(Settings.weChatAppId)
         if (success) {
             weChatApi.sendReq(createPayReq(data))
         } else {
-            listener?.onFailure("0", "Register app failed for WeChat app")
+            listener?.onFailure("0", "Failed to start WeChat Pay")
         }
     }
 

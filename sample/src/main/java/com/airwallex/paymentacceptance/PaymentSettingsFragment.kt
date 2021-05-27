@@ -62,7 +62,6 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.price))
         onSharedPreferenceChanged(preferences, getString(R.string.currency))
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_id))
-        onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_signature))
         onSharedPreferenceChanged(preferences, getString(R.string.sdk_env_id))
         onSharedPreferenceChanged(preferences, getString(R.string.checkout_mode))
         onSharedPreferenceChanged(preferences, getString(R.string.next_trigger_by))
@@ -86,7 +85,6 @@ class PaymentSettingsFragment :
             getString(R.string.price) -> preference?.summary = Settings.price
             getString(R.string.currency) -> preference?.summary = Settings.currency
             getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
-            getString(R.string.wechat_app_signature) -> preference?.summary = Settings.weChatAppSignature
             getString(R.string.sdk_env_id) -> preference?.summary = Settings.sdkEnv
             getString(R.string.checkout_mode) -> preference?.summary = Settings.checkoutMode
             getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy

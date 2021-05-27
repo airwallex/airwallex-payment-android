@@ -9,8 +9,8 @@ class AppRegister : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val api = WXAPIFactory.createWXAPI(
             context,
-            Settings.weChatAppId, true
+            null
         )
-        api.registerApp(Settings.weChatAppSignature)
+        api.registerApp(Settings.weChatAppId)
     }
 }

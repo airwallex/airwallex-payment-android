@@ -485,7 +485,7 @@ And in your host Activity or Fragment, implement Activity#onActivityResult and h
 
 *Preconditions*: 
 - You have created a payment intent by [how to create payment intent](#create-payment-intent-on-the-merchants-server)
-- Register app on [WeChat Pay](https://open.weixin.qq.com/) will provide an unique APP_ID and APP_SIGNATURE to the Merchant. Then please contact us, we will register your WeChat APPID and APP_SIGNATURE  in the Airwallex dashboard.
+- Register app on [WeChat Pay](https://open.weixin.qq.com/) will provide an unique APP_ID to the Merchant. Then please contact us, we will register your WeChat APPID in the Airwallex dashboard.
 
 1. Initializes an `Airwallex` object, it's the entry-point of the Airwallex SDK.
 
@@ -610,10 +610,9 @@ To run the example project, you should follow these steps.
     private const val CLIENT_ID = "put your client id here"
 ```
 
-4. Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then copy `App ID` and `App Signature` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
+4. Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then copy `App ID` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
 ```
     private const val WECHAT_APP_ID = "put your WeChat app id here"
-    private const val WECHAT_APP_SIGNATURE = "put your WeChat app signature here"
 ```
 
 5. Run the `sample` project

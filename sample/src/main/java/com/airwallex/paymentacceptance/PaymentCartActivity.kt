@@ -12,6 +12,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.paymentacceptance.databinding.ActivityPaymentCartBinding
 import com.airwallex.paymentacceptance.h5.H5DemoActivity
+import com.airwallex.paymentacceptance.wechat.WeChatDemoActivity
 
 class PaymentCartActivity : AppCompatActivity() {
 
@@ -53,6 +54,10 @@ class PaymentCartActivity : AppCompatActivity() {
             }
             R.id.h5demo -> {
                 startActivity(Intent(this, H5DemoActivity::class.java))
+                true
+            }
+            R.id.weChat_demo -> {
+                startActivity(Intent(this, WeChatDemoActivity::class.java))
                 true
             }
             else -> false

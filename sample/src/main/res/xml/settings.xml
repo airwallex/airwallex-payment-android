@@ -68,9 +68,5 @@
         <EditTextPreference
             android:key="@string/wechat_app_id"
             android:title="@string/wechat_app_id" />
-
-        <EditTextPreference
-            android:key="@string/wechat_app_signature"
-            android:title="@string/wechat_app_signature" />
     </PreferenceCategory>
 </PreferenceScreen>

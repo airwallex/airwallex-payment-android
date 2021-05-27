@@ -402,6 +402,7 @@ class PaymentCartFragment : Fragment() {
     }
 
     private fun startWeChatPay(weChat: WeChat) {
+        Log.e(TAG, "weChat info $weChat")
         (activity as? PaymentCartActivity)?.setLoadingProgress(true)
         val prepayId = weChat.prepayId
         // We use the `URL mock` method to simulate WeChat Pay in the `Staging` environment.

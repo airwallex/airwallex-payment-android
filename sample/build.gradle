@@ -27,10 +27,6 @@ def getWeChatAppId() {
     return readProperty('AIRWALLEX_WECHAT_APP_ID')
 }
 
-def getWeChatAppSignature() {
-    return readProperty('AIRWALLEX_WECHAT_APP_SIGNATURE')
-}
-
 private def readProperty(name) {
     if (hasProperty(name)) {
         return property(name).trim()
@@ -63,8 +59,7 @@ android {
                 AIRWALLEX_BASE_URL            : getBaseUrl(),
                 AIRWALLEX_API_KEY             : getApiKey(),
                 AIRWALLEX_CLIENT_ID           : getClientId(),
-                AIRWALLEX_WECHAT_APP_ID       : getWeChatAppId(),
-                AIRWALLEX_WECHAT_APP_SIGNATURE: getWeChatAppSignature()
+                AIRWALLEX_WECHAT_APP_ID       : getWeChatAppId()
         ]
     }
 

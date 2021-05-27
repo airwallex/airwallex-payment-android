@@ -19,9 +19,6 @@ object Settings {
     // WeChat Pay App Id
     private const val WECHAT_APP_ID = ""
 
-    // WeChat Pay App Signature
-    private const val WECHAT_APP_SIGNATURE = ""
-
     private const val CUSTOMER_ID = "customerId"
     private val context: Context by lazy { SampleApplication.instance }
 
@@ -29,7 +26,6 @@ object Settings {
     private const val METADATA_KEY_API_KEY = "com.airwallex.sample.metadata.api_key"
     private const val METADATA_KEY_CLIENT_ID_KEY = "com.airwallex.sample.metadata.client_id"
     private const val METADATA_KEY_WECHAT_APP_ID_KEY = "com.airwallex.sample.metadata.wechat_app_id"
-    private const val METADATA_KEY_WECHAT_APP_SIGNATURE_KEY = "com.airwallex.sample.metadata.wechat_app_signature"
 
     /**
      * `IMPORTANT` Token cannot appear on the merchant side, this is just for Demo purposes only
@@ -110,12 +106,6 @@ object Settings {
         get() {
             return sharedPreferences.getString(context.getString(R.string.wechat_app_id), getMetadata(METADATA_KEY_WECHAT_APP_ID_KEY))
                 ?: WECHAT_APP_ID
-        }
-
-    val weChatAppSignature: String
-        get() {
-            return sharedPreferences.getString(context.getString(R.string.wechat_app_signature), getMetadata(METADATA_KEY_WECHAT_APP_SIGNATURE_KEY))
-                ?: WECHAT_APP_SIGNATURE
         }
 
     val price: String
