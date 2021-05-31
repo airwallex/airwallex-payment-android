@@ -4,12 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.*
-import com.airwallex.android.ClientSecretRepository
-import com.airwallex.android.model.CreatePaymentMethodParams
-import com.airwallex.android.model.ClientSecret
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.Shipping
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.databinding.ActivityAddCardBinding
@@ -37,10 +35,6 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         args.session
     }
 
-    private val customerId: String by lazy {
-        requireNotNull(session.customerId)
-    }
-
     private val shipping: Shipping? by lazy {
         when (session) {
             is AirwallexPaymentSession -> {
@@ -65,34 +59,30 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
             return viewBinding.cardWidget.isValid && viewBinding.billingWidget.isValid
         }
 
+    private val viewModel: AddPaymentMethodViewModel by lazy {
+        ViewModelProvider(
+            this,
+            AddPaymentMethodViewModel.Factory(
+                application, airwallex, session
+            )
+        )[AddPaymentMethodViewModel::class.java]
+    }
+
     override fun onActionSave() {
         val card = viewBinding.cardWidget.paymentMethodCard ?: return
         setLoadingProgress(loading = true, cancelable = false)
-        ClientSecretRepository.getInstance().retrieveClientSecret(
-            customerId,
-            object : ClientSecretRepository.ClientSecretRetrieveListener {
-                override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                    airwallex.createPaymentMethod(
-                        CreatePaymentMethodParams(
-                            clientSecret = clientSecret.value,
-                            customerId = customerId,
-                            card = card,
-                            billing = viewBinding.billingWidget.billing
-                        ),
-                        object : Airwallex.PaymentListener<PaymentMethod> {
-                            override fun onSuccess(response: PaymentMethod) {
-                                finishWithPaymentMethod(response, requireNotNull(card.cvc))
-                            }
 
-                            override fun onFailed(exception: Exception) {
-                                alertError(exception.message ?: exception.toString())
-                            }
-                        }
-                    )
-                }
-
-                override fun onClientSecretError(errorMessage: String) {
-                    alertError(errorMessage)
+        viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
+            this,
+            {
+                when (it) {
+                    is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
+                        finishWithPaymentMethod(it.paymentMethod, requireNotNull(it.cvc))
+                    }
+                    is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
+                        val exception = it.exception
+                        alertError(exception.message ?: exception.toString())
+                    }
                 }
             }
         )

@@ -6,13 +6,12 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.*
-import com.airwallex.android.ClientSecretRepository
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.model.*
-import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Allow the customer to select one of the payment methods, or add a new one via [AddPaymentMethodActivity].
@@ -36,8 +35,15 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         args.session
     }
 
-    private val customerId: String by lazy {
-        requireNotNull(session.customerId)
+    private val viewModel: PaymentMethodsViewModel by lazy {
+        ViewModelProvider(
+            this,
+            PaymentMethodsViewModel.Factory(
+                application,
+                airwallex,
+                session
+            )
+        )[PaymentMethodsViewModel::class.java]
     }
 
     private val paymentIntent: PaymentIntent? by lazy {
@@ -67,7 +73,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun initView(availableThirdPaymentTypes: List<PaymentMethodType>) {
-        this.availableThirdPaymentTypes = availableThirdPaymentTypes
         val shouldShowCard = availableThirdPaymentTypes.contains(PaymentMethodType.CARD)
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         paymentMethodsAdapter = PaymentMethodsAdapter(
@@ -102,35 +107,21 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         val deletePaymentMethodDialogFactory = DeletePaymentMethodDialogFactory(
             this,
             paymentMethodsAdapter,
-        ) {
+        ) { paymentConsent ->
             setLoadingProgress(loading = true, cancelable = false)
-            ClientSecretRepository.getInstance().retrieveClientSecret(
-                customerId,
-                object : ClientSecretRepository.ClientSecretRetrieveListener {
-                    override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                        airwallex.disablePaymentConsent(
-                            DisablePaymentConsentParams(
-                                clientSecret = clientSecret.value,
-                                paymentConsentId = requireNotNull(it.id),
-                            ),
-                            object : Airwallex.PaymentListener<PaymentConsent> {
-
-                                override fun onFailed(exception: Exception) {
-                                    setLoadingProgress(false)
-                                    alert(message = exception.message ?: exception.toString())
-                                }
-
-                                override fun onSuccess(response: PaymentConsent) {
-                                    setLoadingProgress(false)
-                                    paymentMethodsAdapter.deletePaymentConsent(it)
-                                }
-                            }
-                        )
-                    }
-
-                    override fun onClientSecretError(errorMessage: String) {
-                        setLoadingProgress(false)
-                        alert(message = errorMessage)
+            viewModel.deletePaymentConsent(paymentConsent).observe(
+                this,
+                {
+                    when (it) {
+                        is PaymentMethodsViewModel.PaymentConsentResult.Success -> {
+                            setLoadingProgress(false)
+                            paymentMethodsAdapter.deletePaymentConsent(paymentConsent)
+                        }
+                        is PaymentMethodsViewModel.PaymentConsentResult.Error -> {
+                            val exception = it.exception
+                            setLoadingProgress(false)
+                            alert(message = exception.message ?: exception.toString())
+                        }
                     }
                 }
             )
@@ -158,82 +149,28 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private fun fetchPaymentMethods() {
         setLoadingProgress(loading = true, cancelable = false)
-        ClientSecretRepository.getInstance().retrieveClientSecret(
-            customerId,
-            object : ClientSecretRepository.ClientSecretRetrieveListener {
-                override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                    if (availableThirdPaymentTypes == null) {
-                        retrieveAvailablePaymentMethods(
-                            mutableListOf(),
-                            AtomicInteger(0),
-                            clientSecret = clientSecret,
-                            onFailed = { exception ->
-                                setLoadingProgress(loading = false)
-                                alert(message = exception.message ?: exception.toString())
-                            },
-                            onCompleted = {
-                                setLoadingProgress(loading = false)
-                                // Complete load available payment method type
-                                initView(it)
-                                retrievePaymentConsents()
-                            }
-                        )
-                    } else {
+        viewModel.fetchPaymentMethodTypes().observe(
+            this@PaymentMethodsActivity,
+            {
+                when (it) {
+                    is PaymentMethodsViewModel.PaymentMethodTypeResult.Success -> {
                         setLoadingProgress(loading = false)
-                        retrievePaymentConsents()
+                        // Complete load available payment method type
+                        this.availableThirdPaymentTypes = it.availableThirdPaymentTypes
+                        initView(it.availableThirdPaymentTypes)
+                        filterPaymentConsents()
                     }
-                }
-
-                override fun onClientSecretError(errorMessage: String) {
-                    setLoadingProgress(loading = false)
-                    alert(message = errorMessage)
-                }
-            }
-        )
-    }
-
-    private fun retrieveAvailablePaymentMethods(
-        availablePaymentMethodList: MutableList<AvailablePaymentMethod>,
-        availablePaymentMethodPageNum: AtomicInteger,
-        clientSecret: ClientSecret,
-        onFailed: (exception: Exception) -> Unit,
-        onCompleted: (availableThirdPaymentTypes: List<PaymentMethodType>) -> Unit
-    ) {
-        airwallex.retrieveAvailablePaymentMethods(
-            params = RetrieveAvailablePaymentMethodParams.Builder(
-                clientSecret = requireNotNull(clientSecret.value),
-                pageNum = availablePaymentMethodPageNum.get()
-            )
-                .setActive(true)
-                .setTransactionCurrency(session.currency)
-                .build(),
-            listener = object : Airwallex.PaymentListener<AvailablePaymentMethodResponse> {
-                override fun onFailed(exception: Exception) {
-                    onFailed.invoke(exception)
-                }
-
-                override fun onSuccess(response: AvailablePaymentMethodResponse) {
-                    availablePaymentMethodPageNum.incrementAndGet()
-                    availablePaymentMethodList.addAll(response.items ?: emptyList())
-                    if (response.hasMore) {
-                        retrieveAvailablePaymentMethods(availablePaymentMethodList, availablePaymentMethodPageNum, clientSecret, onFailed, onCompleted)
-                    } else {
-                        when (args.session) {
-                            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> {
-                                onCompleted.invoke(availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.RECURRING }.mapNotNull { it.name }.distinct())
-                            }
-                            is AirwallexPaymentSession -> {
-                                onCompleted.invoke(availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.ONE_OFF }.mapNotNull { it.name }.distinct())
-                            }
-                            else -> Unit
-                        }
+                    is PaymentMethodsViewModel.PaymentMethodTypeResult.Error -> {
+                        val exception = it.exception
+                        setLoadingProgress(loading = false)
+                        alert(message = exception.message ?: exception.toString())
                     }
                 }
             }
         )
     }
 
-    private fun retrievePaymentConsents() {
+    private fun filterPaymentConsents() {
         if (availableThirdPaymentTypes?.contains(PaymentMethodType.CARD) == false) {
             return
         }
@@ -259,24 +196,12 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun startAddPaymentMethod() {
-        ClientSecretRepository.getInstance().retrieveClientSecret(
-            customerId,
-            object : ClientSecretRepository.ClientSecretRetrieveListener {
-                override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                    AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity)
-                        .startForResult(
-                            AddPaymentMethodActivityLaunch.Args.Builder()
-                                .setAirwallexSession(session)
-                                .build()
-                        )
-                }
-
-                override fun onClientSecretError(errorMessage: String) {
-                    setLoadingProgress(loading = false)
-                    alert(message = errorMessage)
-                }
-            }
-        )
+        AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity)
+            .startForResult(
+                AddPaymentMethodActivityLaunch.Args.Builder()
+                    .setAirwallexSession(session)
+                    .build()
+            )
     }
 
     private fun handleProcessPaymentMethod(paymentConsent: PaymentConsent, cvc: String? = null) {
