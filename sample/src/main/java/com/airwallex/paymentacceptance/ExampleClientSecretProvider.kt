@@ -1,6 +1,7 @@
 package com.airwallex.paymentacceptance
 
 import android.text.TextUtils
+import com.airwallex.android.AirwallexPlugins
 import com.airwallex.android.ClientSecretProvider
 import com.airwallex.android.ClientSecretUpdateListener
 import kotlinx.coroutines.CoroutineScope
@@ -12,10 +13,10 @@ class ExampleClientSecretProvider : ClientSecretProvider {
 
     private val api: Api
         get() {
-            if (TextUtils.isEmpty(Settings.baseUrl)) {
+            if (TextUtils.isEmpty(AirwallexPlugins.environment.baseUrl())) {
                 throw IllegalArgumentException("Base url should not be null or empty")
             }
-            return ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
+            return ApiFactory(AirwallexPlugins.environment.baseUrl()).buildRetrofit().create(Api::class.java)
         }
 
     override fun createClientSecret(customerId: String, updateListener: ClientSecretUpdateListener) {

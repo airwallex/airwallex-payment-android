@@ -248,9 +248,23 @@ internal interface PaymentManager {
                 paymentMethod = null
             } else {
                 paymentConsentReference = null
-                paymentMethod = PaymentMethod.Builder()
-                    .setType(params.paymentMethodType)
-                    .build()
+                when (params.paymentMethodType) {
+                    PaymentMethodType.POLI -> {
+                        paymentMethod = PaymentMethod.Builder()
+                            .setPoliRequest(params.paymentMethodType, requireNotNull(params.name))
+                            .build()
+                    }
+                    PaymentMethodType.FPX -> {
+                        paymentMethod = PaymentMethod.Builder()
+                            .setFpxRequest(params.paymentMethodType, requireNotNull(params.name), requireNotNull(params.email), requireNotNull(params.phone))
+                            .build()
+                    }
+                    else -> {
+                        paymentMethod = PaymentMethod.Builder()
+                            .setType(params.paymentMethodType)
+                            .build()
+                    }
+                }
             }
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()

@@ -18,10 +18,18 @@ class SampleApplication : Application() {
     }
 
     fun configAirwallex() {
+
+        val environment = when (Settings.sdkEnv) {
+            "STAGING" -> Environment.STAGING
+            "DEMO" -> Environment.DEMO
+            "PRODUCTION" -> Environment.PRODUCTION
+            else -> throw Exception("No environment")
+        }
+
         Airwallex.initialize(
             AirwallexConfiguration.Builder()
                 .enableLogging(true) // Enable log in sdk, best set to false in release version
-                .setEnvironment(if (Settings.sdkEnv == "DEMO") Environment.DEMO else Environment.PRODUCTION)
+                .setEnvironment(environment)
                 .build()
         )
     }

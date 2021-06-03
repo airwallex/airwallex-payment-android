@@ -85,6 +85,16 @@ data class PaymentMethod internal constructor(
     val bKashRequest: ThirdPartPayRequest? = null,
 
     /**
+     *  POLi
+     */
+    val poliRequest: PoliRequest? = null,
+
+    /**
+     *  FPX
+     */
+    val fpxRequest: FpxRequest? = null,
+
+    /**
      * Billing information for the payment method
      */
     val billing: Billing? = null,
@@ -168,6 +178,16 @@ data class PaymentMethod internal constructor(
                     mapOf(PaymentMethodType.BKASH.value to it.toParamMap())
                 }.orEmpty()
             )
+            .plus(
+                poliRequest?.let {
+                    mapOf(PaymentMethodType.POLI.value to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                fpxRequest?.let {
+                    mapOf(PaymentMethodType.FPX.value to it.toParamMap())
+                }.orEmpty()
+            )
     }
 
     class Builder : ObjectBuilder<PaymentMethod> {
@@ -185,6 +205,8 @@ data class PaymentMethod internal constructor(
         private var gCashRequest: ThirdPartPayRequest? = null
         private var tureMoneyRequest: ThirdPartPayRequest? = null
         private var bKashRequest: ThirdPartPayRequest? = null
+        private var poliRequest: PoliRequest? = null
+        private var fpxRequest: FpxRequest? = null
 
         private var billing: Billing? = null
         private var metadata: Map<String, Any?>? = null
@@ -232,6 +254,16 @@ data class PaymentMethod internal constructor(
             }
         }
 
+        fun setPoliRequest(type: PaymentMethodType, name: String): Builder = apply {
+            this.type = type
+            poliRequest = PoliRequest(name = name)
+        }
+
+        fun setFpxRequest(type: PaymentMethodType, name: String, email: String, phone: String): Builder = apply {
+            this.type = type
+            fpxRequest = FpxRequest(name = name, email = email, phone = phone)
+        }
+
         fun setCreatedAt(createdAt: Date?): Builder = apply {
             this.createdAt = createdAt
         }
@@ -259,6 +291,10 @@ data class PaymentMethod internal constructor(
                 tngRequest = tngRequest,
                 danaRequest = danaRequest,
                 gCashRequest = gCashRequest,
+                tureMoneyRequest = tureMoneyRequest,
+                bKashRequest = bKashRequest,
+                poliRequest = poliRequest,
+                fpxRequest = fpxRequest,
                 metadata = metadata,
                 createdAt = createdAt,
                 updatedAt = updatedAt,

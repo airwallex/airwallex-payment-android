@@ -7,9 +7,6 @@ import androidx.preference.PreferenceManager
 
 object Settings {
 
-    // Base URL
-    private const val BASE_URL = ""
-
     // API Key
     private const val API_KEY = ""
 
@@ -22,7 +19,6 @@ object Settings {
     private const val CUSTOMER_ID = "customerId"
     private val context: Context by lazy { SampleApplication.instance }
 
-    private const val METADATA_KEY_BASE_URL_KEY = "com.airwallex.sample.metadata.base_url"
     private const val METADATA_KEY_API_KEY = "com.airwallex.sample.metadata.api_key"
     private const val METADATA_KEY_CLIENT_ID_KEY = "com.airwallex.sample.metadata.client_id"
     private const val METADATA_KEY_WECHAT_APP_ID_KEY = "com.airwallex.sample.metadata.wechat_app_id"
@@ -51,10 +47,11 @@ object Settings {
             return sharedPreferences.getString(CUSTOMER_ID, "") ?: ""
         }
 
+    // Default Demo
     val sdkEnv: String
         get() {
             val defaultSdkEnv =
-                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0]
+                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[1]
             return sharedPreferences.getString(
                 context.getString(R.string.sdk_env_id),
                 defaultSdkEnv
@@ -82,12 +79,6 @@ object Settings {
                 defaultNextTriggeredBy
             )
                 ?: defaultNextTriggeredBy
-        }
-
-    val baseUrl: String
-        get() {
-            return sharedPreferences.getString(context.getString(R.string.base_url), getMetadata(METADATA_KEY_BASE_URL_KEY))
-                ?: BASE_URL
         }
 
     val apiKey: String

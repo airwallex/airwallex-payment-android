@@ -1,17 +1,28 @@
 package com.airwallex.paymentacceptance
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.InputType
 import android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+import android.util.Log
 import android.widget.Toast
 import androidx.preference.*
 import com.airwallex.android.AirwallexCheckoutMode
 import java.util.*
+import kotlin.system.exitProcess
 
 class PaymentSettingsFragment :
     PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
+
+    companion object {
+        const val TAG = "PaymentSettingsFragment"
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
@@ -27,7 +38,8 @@ class PaymentSettingsFragment :
         val sdkEnvPref: ListPreference? =
             findPreference(getString(R.string.sdk_env_id)) as? ListPreference?
         if (sdkEnvPref != null && sdkEnvPref.value == null) {
-            sdkEnvPref.setValueIndex(0)
+            // Default Demo
+            sdkEnvPref.setValueIndex(1)
         }
 
         val checkoutModePref: ListPreference? =
@@ -56,7 +68,6 @@ class PaymentSettingsFragment :
 
         toggleNextTriggerByStatus()
 
-        onSharedPreferenceChanged(preferences, getString(R.string.base_url))
         onSharedPreferenceChanged(preferences, getString(R.string.api_key))
         onSharedPreferenceChanged(preferences, getString(R.string.client_id))
         onSharedPreferenceChanged(preferences, getString(R.string.price))
@@ -79,7 +90,6 @@ class PaymentSettingsFragment :
         }
         val preference = findPreference<Preference>(key)
         when (key) {
-            getString(R.string.base_url) -> preference?.summary = Settings.baseUrl
             getString(R.string.api_key) -> preference?.summary = Settings.apiKey
             getString(R.string.client_id) -> preference?.summary = Settings.clientId
             getString(R.string.price) -> preference?.summary = Settings.price
@@ -107,5 +117,32 @@ class PaymentSettingsFragment :
         PreferenceManager.setDefaultValues(activity, R.xml.settings, true)
         preferenceScreen.removeAll()
         onCreatePreferences(null, null)
+    }
+
+    private fun doRestart(c: Context) {
+        try {
+            val pm: PackageManager = c.packageManager
+            val activity = pm.getLaunchIntentForPackage(
+                c.packageName
+            )
+            if (activity != null) {
+                activity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                // create a pending intent so the application is restarted after System.exit(0) was called.
+                // We use an AlarmManager to call this intent in 100ms
+                val mPendingIntentId = 223344
+                val mPendingIntent = PendingIntent
+                    .getActivity(
+                        c, mPendingIntentId, activity,
+                        PendingIntent.FLAG_CANCEL_CURRENT
+                    )
+                val mgr = c.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                mgr[AlarmManager.RTC, System.currentTimeMillis() + 100] = mPendingIntent
+                exitProcess(0)
+            } else {
+                Log.e(TAG, "Was not able to restart application, activity null")
+            }
+        } catch (ex: Exception) {
+            Log.e(TAG, "Was not able to restart application")
+        }
     }
 }

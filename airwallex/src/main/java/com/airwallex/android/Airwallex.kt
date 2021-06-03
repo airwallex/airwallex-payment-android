@@ -607,6 +607,9 @@ class Airwallex internal constructor(
         cvc: String? = null,
         customerId: String? = null,
         paymentConsentId: String? = null,
+        name: String? = null,
+        email: String? = null,
+        phone: String? = null,
         listener: PaymentResultListener<PaymentIntent>
     ) {
         val params = when (requireNotNull(paymentMethod.type)) {
@@ -626,7 +629,10 @@ class Airwallex internal constructor(
                     paymentIntentId = paymentIntentId,
                     clientSecret = clientSecret,
                     customerId = customerId,
-                    paymentConsentId = paymentConsentId
+                    paymentConsentId = paymentConsentId,
+                    name = name,
+                    email = email,
+                    phone = phone
                 )
             }
         }
@@ -653,6 +659,24 @@ class Airwallex internal constructor(
             listener.onFailed(InvalidParamsException(message = "CVC is required!"))
             return
         }
+
+        if (session is AirwallexPaymentSession) {
+            when (paymentMethod.type) {
+                PaymentMethodType.POLI -> {
+                    if (session.name == null) {
+                        listener.onFailed(InvalidParamsException(message = "Name is required for POLi!"))
+                        return
+                    }
+                }
+                PaymentMethodType.FPX -> {
+                    if (session.email == null || session.phone == null || session.name == null) {
+                        listener.onFailed(InvalidParamsException(message = "Name, Phone and Email is required for FPX!"))
+                        return
+                    }
+                }
+                else -> Unit
+            }
+        }
         when (session) {
             is AirwallexPaymentSession -> {
                 val paymentIntent = session.paymentIntent
@@ -663,6 +687,9 @@ class Airwallex internal constructor(
                     cvc = cvc,
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
+                    name = session.name,
+                    email = session.email,
+                    phone = session.phone,
                     listener = listener
                 )
             }

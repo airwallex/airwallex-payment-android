@@ -35,7 +35,22 @@ class AirwallexPaymentSession internal constructor(
     /**
      * The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout).
      */
-    override val customerId: String? = null
+    override val customerId: String? = null,
+
+    /**
+     * Name, required for POLi & FPX
+     */
+    val name: String? = null,
+
+    /**
+     * Email, required for FPX
+     */
+    val email: String? = null,
+
+    /**
+     * Phone, required for FPX
+     */
+    val phone: String? = null
 
 ) : AirwallexSession(), Parcelable {
 
@@ -43,13 +58,34 @@ class AirwallexPaymentSession internal constructor(
         private val paymentIntent: PaymentIntent,
     ) : ObjectBuilder<AirwallexPaymentSession> {
 
+        private var name: String? = null
+
+        private var email: String? = null
+
+        private var phone: String? = null
+
+        fun setName(name: String?): Builder = apply {
+            this.name = name
+        }
+
+        fun setEmail(email: String?): Builder = apply {
+            this.email = email
+        }
+
+        fun setPhone(phone: String?): Builder = apply {
+            this.phone = phone
+        }
+
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
                 paymentIntent = paymentIntent,
                 currency = paymentIntent.currency,
                 amount = paymentIntent.amount,
                 shipping = paymentIntent.order?.shipping,
-                customerId = paymentIntent.customerId
+                customerId = paymentIntent.customerId,
+                name = name,
+                email = email,
+                phone = phone
             )
         }
     }

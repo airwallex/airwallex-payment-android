@@ -5,7 +5,7 @@ import android.content.Context
 /**
  * Provide some internal plugins
  */
-internal object AirwallexPlugins {
+object AirwallexPlugins {
 
     private lateinit var configuration: AirwallexConfiguration
 
@@ -29,7 +29,7 @@ internal object AirwallexPlugins {
     /**
      * Environment in the Airwallex
      */
-    internal val environment: Environment
+    val environment: Environment
         get() {
             return configuration.environment
         }

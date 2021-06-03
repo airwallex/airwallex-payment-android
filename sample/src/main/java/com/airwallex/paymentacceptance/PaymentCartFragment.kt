@@ -44,10 +44,10 @@ class PaymentCartFragment : Fragment() {
 
     private val api: Api
         get() {
-            if (TextUtils.isEmpty(Settings.baseUrl)) {
+            if (TextUtils.isEmpty(AirwallexPlugins.environment.baseUrl())) {
                 throw IllegalArgumentException("Base url should not be null or empty")
             }
-            return ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
+            return ApiFactory(AirwallexPlugins.environment.baseUrl()).buildRetrofit().create(Api::class.java)
         }
 
     private var shipping: Shipping = Shipping.Builder()
@@ -113,7 +113,11 @@ class PaymentCartFragment : Fragment() {
                 if (paymentIntent == null) {
                     throw Exception("PaymentIntent is required")
                 }
-                AirwallexPaymentSession.Builder(paymentIntent).build()
+                AirwallexPaymentSession.Builder(paymentIntent)
+                    .setName("John Doe")
+                    .setEmail("john.doe@airwallex.com")
+                    .setPhone("13800000000")
+                    .build()
             }
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
                 if (paymentIntent == null) {

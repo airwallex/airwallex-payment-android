@@ -19,7 +19,9 @@ enum class PaymentMethodType(val value: String, val drawableRes: Int = 0, val di
     KAKAOPAY("kakaopay", R.drawable.airwallex_ic_kakao_pay, "Kakao Pay"),
     TNG("tng", R.drawable.airwallex_ic_touchngo, "Touch 'n Go"),
     TRUE_MONEY("truemoney", R.drawable.airwallex_ic_truemoney, "Truemoney"),
-    BKASH("bkash", R.drawable.airwallex_ic_bkash, "bKash");
+    BKASH("bkash", R.drawable.airwallex_ic_bkash, "bKash"),
+    POLI("poli", 0, "POLi"),
+    FPX("fpx", 0, "FPX");
 
     internal companion object {
         internal fun fromValue(value: String?): PaymentMethodType? {
