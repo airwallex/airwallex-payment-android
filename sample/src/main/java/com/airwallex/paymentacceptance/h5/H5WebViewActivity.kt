@@ -61,6 +61,7 @@ class H5WebViewActivity : AppCompatActivity() {
                             intent.action = Intent.ACTION_VIEW
                             intent.data = Uri.parse(url)
                             startActivity(intent)
+                            finish()
                         } catch (e: ActivityNotFoundException) {
                             e.printStackTrace()
                         }
