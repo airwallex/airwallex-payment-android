@@ -605,11 +605,13 @@ class Airwallex internal constructor(
         clientSecret: String,
         paymentMethod: PaymentMethod,
         cvc: String? = null,
+        currency: String? = null,
         customerId: String? = null,
         paymentConsentId: String? = null,
         name: String? = null,
         email: String? = null,
         phone: String? = null,
+        bank: Bank? = null,
         listener: PaymentResultListener<PaymentIntent>
     ) {
         val params = when (requireNotNull(paymentMethod.type)) {
@@ -630,9 +632,11 @@ class Airwallex internal constructor(
                     clientSecret = clientSecret,
                     customerId = customerId,
                     paymentConsentId = paymentConsentId,
+                    currency = currency,
                     name = name,
                     email = email,
-                    phone = phone
+                    phone = phone,
+                    bank = bank
                 )
             }
         }
@@ -653,29 +657,16 @@ class Airwallex internal constructor(
         paymentMethod: PaymentMethod,
         paymentConsentId: String? = null,
         cvc: String? = null,
+        currency: String? = null,
+        name: String? = null,
+        email: String? = null,
+        phone: String? = null,
+        bank: Bank? = null,
         listener: PaymentResultListener<PaymentIntent>
     ) {
         if (paymentMethod.type == PaymentMethodType.CARD && cvc == null) {
             listener.onFailed(InvalidParamsException(message = "CVC is required!"))
             return
-        }
-
-        if (session is AirwallexPaymentSession) {
-            when (paymentMethod.type) {
-                PaymentMethodType.POLI -> {
-                    if (session.name == null) {
-                        listener.onFailed(InvalidParamsException(message = "Name is required for POLi!"))
-                        return
-                    }
-                }
-                PaymentMethodType.FPX -> {
-                    if (session.email == null || session.phone == null || session.name == null) {
-                        listener.onFailed(InvalidParamsException(message = "Name, Phone and Email is required for FPX!"))
-                        return
-                    }
-                }
-                else -> Unit
-            }
         }
         when (session) {
             is AirwallexPaymentSession -> {
@@ -685,11 +676,13 @@ class Airwallex internal constructor(
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
                     paymentMethod = paymentMethod,
                     cvc = cvc,
+                    currency = currency,
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
-                    name = session.name,
-                    email = session.email,
-                    phone = session.phone,
+                    name = name,
+                    email = email,
+                    phone = phone,
+                    bank = bank,
                     listener = listener
                 )
             }

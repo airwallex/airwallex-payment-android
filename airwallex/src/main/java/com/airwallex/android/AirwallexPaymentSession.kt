@@ -37,44 +37,11 @@ class AirwallexPaymentSession internal constructor(
      */
     override val customerId: String? = null,
 
-    /**
-     * Name, required for POLi & FPX
-     */
-    val name: String? = null,
-
-    /**
-     * Email, required for FPX
-     */
-    val email: String? = null,
-
-    /**
-     * Phone, required for FPX
-     */
-    val phone: String? = null
-
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
         private val paymentIntent: PaymentIntent,
     ) : ObjectBuilder<AirwallexPaymentSession> {
-
-        private var name: String? = null
-
-        private var email: String? = null
-
-        private var phone: String? = null
-
-        fun setName(name: String?): Builder = apply {
-            this.name = name
-        }
-
-        fun setEmail(email: String?): Builder = apply {
-            this.email = email
-        }
-
-        fun setPhone(phone: String?): Builder = apply {
-            this.phone = phone
-        }
 
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
@@ -82,10 +49,7 @@ class AirwallexPaymentSession internal constructor(
                 currency = paymentIntent.currency,
                 amount = paymentIntent.amount,
                 shipping = paymentIntent.order?.shipping,
-                customerId = paymentIntent.customerId,
-                name = name,
-                email = email,
-                phone = phone
+                customerId = paymentIntent.customerId
             )
         }
     }

@@ -28,7 +28,7 @@
         android:textColor="@color/airwallex_color_price"
         android:textSize="14sp" />
 
-    <RelativeLayout
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/rlPayNow"
         android:layout_width="match_parent"
         android:layout_height="@dimen/airwallex_button_height"
@@ -36,24 +36,14 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:background="@drawable/airwallex_button_solid"
-        android:enabled="false"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:clickable="false"
-            android:drawablePadding="10dp"
-            android:duplicateParentState="true"
-            android:focusable="false"
-            android:fontFamily="@font/circularstd_bold"
-            android:orientation="horizontal"
-            android:text="@string/pay_now"
-            android:textColor="@color/airwallex_button_text"
-            android:textSize="14sp"
-            app:drawableStartCompat="@drawable/airwallex_ic_lock_selector" />
-    </RelativeLayout>
+        android:fontFamily="@font/circularstd_bold"
+        android:gravity="center"
+        android:text="@string/pay_now"
+        android:textColor="@color/airwallex_button_text"
+        android:textSize="14sp"
+        app:icon="@drawable/airwallex_ic_lock_selector"
+        app:iconGravity="textStart"
+        app:iconPadding="10dp" />
 
     <com.airwallex.android.view.PaymentMethodItemView
         android:id="@+id/paymentMethodItemView"

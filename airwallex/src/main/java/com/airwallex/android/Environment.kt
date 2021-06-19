@@ -13,7 +13,7 @@ enum class Environment {
 
     fun cybsUrl(): String {
         return when (this) {
-            STAGING -> "https://pci-api-demo.airwallex.com/pa/webhook/cybs"
+            STAGING -> "https://pci-api-staging.airwallex.com/pa/webhook/cybs"
             DEMO -> "https://pci-api-demo.airwallex.com/pa/webhook/cybs"
             PRODUCTION -> "https://pci-api.airwallex.com/pa/webhook/cybs"
         }

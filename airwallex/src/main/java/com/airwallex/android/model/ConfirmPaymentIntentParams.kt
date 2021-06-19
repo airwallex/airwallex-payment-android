@@ -29,6 +29,11 @@ data class ConfirmPaymentIntentParams internal constructor(
     val paymentConsentId: String? = null,
 
     /**
+     * Currency
+     */
+    val currency: String? = null,
+
+    /**
      * Name, required for POLi & FPX
      */
     val name: String? = null,
@@ -41,7 +46,9 @@ data class ConfirmPaymentIntentParams internal constructor(
     /**
      * Phone, required for FPX
      */
-    val phone: String? = null
+    val phone: String? = null,
+
+    val bank: Bank? = null
 
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
 
@@ -54,9 +61,11 @@ data class ConfirmPaymentIntentParams internal constructor(
         private var customerId: String? = null
         private var paymentMethodReference: PaymentMethodReference? = null
         private var paymentConsentId: String? = null
+        private var currency: String? = null
         private var name: String? = null
         private var email: String? = null
         private var phone: String? = null
+        private var bank: Bank? = null
 
         fun setName(name: String?): Builder = apply {
             this.name = name
@@ -70,12 +79,20 @@ data class ConfirmPaymentIntentParams internal constructor(
             this.phone = phone
         }
 
+        fun setBank(bank: Bank?): Builder = apply {
+            this.bank = bank
+        }
+
         fun setCustomerId(customerId: String?): Builder = apply {
             this.customerId = customerId
         }
 
         fun setPaymentConsentId(paymentConsentId: String?): Builder = apply {
             this.paymentConsentId = paymentConsentId
+        }
+
+        fun setCurrency(currency: String?): Builder = apply {
+            this.currency = currency
         }
 
         fun setPaymentMethod(
@@ -96,9 +113,11 @@ data class ConfirmPaymentIntentParams internal constructor(
                 paymentMethodReference = paymentMethodReference,
                 paymentMethodType = paymentMethodType,
                 paymentConsentId = paymentConsentId,
+                currency = currency,
                 name = name,
                 email = email,
-                phone = phone
+                phone = phone,
+                bank = bank
             )
         }
     }
@@ -119,9 +138,11 @@ data class ConfirmPaymentIntentParams internal constructor(
             clientSecret: String,
             customerId: String? = null,
             paymentConsentId: String? = null,
+            currency: String? = null,
             name: String? = null,
             email: String? = null,
-            phone: String? = null
+            phone: String? = null,
+            bank: Bank? = null
         ): ConfirmPaymentIntentParams {
             return Builder(
                 paymentIntentId = paymentIntentId,
@@ -130,9 +151,11 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setCustomerId(customerId)
                 .setPaymentMethod(paymentMethodType)
                 .setPaymentConsentId(paymentConsentId)
+                .setCurrency(currency)
                 .setName(name)
                 .setEmail(email)
                 .setPhone(phone)
+                .setBank(bank)
                 .build()
         }
 

@@ -107,17 +107,23 @@ class PaymentCartFragment : Fragment() {
             }
         }
 
+    private val returnUrl: String
+        get() {
+            return when (Settings.sdkEnv) {
+                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0] -> "https://staging-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
+                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[1] -> "https://demo-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
+                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[2] -> "https://pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
+                else -> throw Exception("Unsupported CheckoutMode: ${Settings.checkoutMode}")
+            }
+        }
+
     private fun buildSessionWithIntent(paymentIntent: PaymentIntent? = null, customerId: String? = null): AirwallexSession {
         return when (checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
                 if (paymentIntent == null) {
                     throw Exception("PaymentIntent is required")
                 }
-                AirwallexPaymentSession.Builder(paymentIntent)
-                    .setName("John Doe")
-                    .setEmail("john.doe@airwallex.com")
-                    .setPhone("13800000000")
-                    .build()
+                AirwallexPaymentSession.Builder(paymentIntent).build()
             }
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
                 if (paymentIntent == null) {
@@ -350,7 +356,8 @@ class PaymentCartFragment : Fragment() {
                     "customer_id" to customerId,
                     "descriptor" to "Airwallex - T-sh  irt",
                     "metadata" to mapOf("id" to 1),
-                    "return_url" to "airwallexcheckout://${context?.packageName}",
+                    "email" to "yimadangxian@airwallex.com",
+                    "return_url" to returnUrl,
                 )
             )
             withContext(Dispatchers.Main) {
@@ -492,11 +499,11 @@ class PaymentCartFragment : Fragment() {
                 override fun onSuccess(paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?) {
                     (activity as? PaymentCartActivity)?.setLoadingProgress(true)
                     airwallex.checkout(
-                        session,
-                        paymentMethod,
-                        paymentConsentId,
-                        cvc,
-                        object : Airwallex.PaymentResultListener<PaymentIntent> {
+                        session = session,
+                        paymentMethod = paymentMethod,
+                        paymentConsentId = paymentConsentId,
+                        cvc = paymentConsentId,
+                        listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
                             override fun onFailed(exception: Exception) {
                                 showPaymentError(error = exception.message)
                             }
@@ -563,11 +570,11 @@ class PaymentCartFragment : Fragment() {
                         }
                         else -> {
                             airwallex.checkout(
-                                session,
-                                paymentMethod,
-                                paymentConsentId,
-                                cvc,
-                                object : Airwallex.PaymentResultListener<PaymentIntent> {
+                                session = session,
+                                paymentMethod = paymentMethod,
+                                paymentConsentId = paymentConsentId,
+                                cvc = cvc,
+                                listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
                                     override fun onFailed(exception: Exception) {
                                         showPaymentError(error = exception.message)
                                     }

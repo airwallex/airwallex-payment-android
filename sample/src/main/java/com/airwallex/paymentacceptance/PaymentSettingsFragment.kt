@@ -8,7 +8,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.InputType
-import android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+import android.text.InputType.*
 import android.util.Log
 import android.widget.Toast
 import androidx.preference.*
@@ -92,8 +92,20 @@ class PaymentSettingsFragment :
         when (key) {
             getString(R.string.api_key) -> preference?.summary = Settings.apiKey
             getString(R.string.client_id) -> preference?.summary = Settings.clientId
-            getString(R.string.price) -> preference?.summary = Settings.price
-            getString(R.string.currency) -> preference?.summary = Settings.currency
+            getString(R.string.price) -> {
+                preference?.summary = Settings.price
+                (preference as EditTextPreference).setOnBindEditTextListener { editText ->
+                    editText.inputType = TYPE_CLASS_NUMBER
+                    editText.setSelection(editText.length())
+                }
+            }
+            getString(R.string.currency) -> {
+                preference?.summary = Settings.currency
+                (preference as EditTextPreference).setOnBindEditTextListener { editText ->
+                    editText.inputType = TYPE_CLASS_TEXT or TYPE_TEXT_FLAG_CAP_CHARACTERS
+                    editText.setSelection(editText.length())
+                }
+            }
             getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
             getString(R.string.sdk_env_id) -> preference?.summary = Settings.sdkEnv
             getString(R.string.checkout_mode) -> preference?.summary = Settings.checkoutMode

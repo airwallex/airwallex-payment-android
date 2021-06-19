@@ -467,26 +467,29 @@ internal class AirwallexApiRepository : ApiRepository {
             transactionCurrency: String?,
             transactionMode: String?
         ): String {
-            val builder = StringBuilder("config/payment_method_types?")
+            val stringBuilder = StringBuilder("config/payment_method_types")
+            val url = getApiUrl(
+                baseUrl,
+                stringBuilder.toString()
+            )
+
+            val builder = Uri.parse(url).buildUpon()
             pageNum?.let {
-                builder.append("&page_num=$it")
+                builder.appendQueryParameter("page_num", it.toString())
             }
             pageSize?.let {
-                builder.append("&page_size=$it")
+                builder.appendQueryParameter("page_size", it.toString())
             }
             active?.let {
-                builder.append("&active=$it")
+                builder.appendQueryParameter("active", it.toString())
             }
             transactionCurrency?.let {
-                builder.append("&transaction_currency=$it")
+                builder.appendQueryParameter("transaction_currency", it)
             }
             transactionMode?.let {
-                builder.append("&transaction_mode=$it")
+                builder.appendQueryParameter("transaction_mode", it)
             }
-            return getApiUrl(
-                baseUrl,
-                builder.toString()
-            )
+            return builder.build().toString()
         }
 
         @Suppress("DEPRECATION")

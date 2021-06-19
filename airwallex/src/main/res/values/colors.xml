@@ -18,6 +18,8 @@
     <color name="airwallex_color_item_label">#54545E</color>
     <color name="airwallex_swipe_bg_color">#D5473F</color>
 
+    <color name="airwallex_color_gray">#545B63</color>
+
     <!-- FIXME Override the color in cardinal -->
     <color name="blue">@color/airwallex_color_primary</color>
 

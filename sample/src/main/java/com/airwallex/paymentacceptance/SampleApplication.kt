@@ -18,11 +18,10 @@ class SampleApplication : Application() {
     }
 
     fun configAirwallex() {
-
         val environment = when (Settings.sdkEnv) {
-            "STAGING" -> Environment.STAGING
-            "DEMO" -> Environment.DEMO
-            "PRODUCTION" -> Environment.PRODUCTION
+            resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
+            resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
+            resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
             else -> throw Exception("No environment")
         }
 

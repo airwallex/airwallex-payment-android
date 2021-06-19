@@ -11,8 +11,19 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         // Ignore
     }
 
-    internal fun startCheckout(session: AirwallexSession, paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?, listener: Airwallex.PaymentResultListener<PaymentIntent>) {
+    internal fun startCheckout(
+        session: AirwallexSession,
+        paymentMethod: PaymentMethod,
+        paymentConsentId: String?,
+        cvc: String?,
+        currency: String? = null,
+        name: String? = null,
+        email: String? = null,
+        phone: String? = null,
+        bank: Bank? = null,
+        listener: Airwallex.PaymentResultListener<PaymentIntent>
+    ) {
         setLoadingProgress(loading = true, cancelable = false)
-        airwallex.checkout(session, paymentMethod, paymentConsentId, cvc, listener)
+        airwallex.checkout(session, paymentMethod, paymentConsentId, cvc, currency, name, email, phone, bank, listener)
     }
 }

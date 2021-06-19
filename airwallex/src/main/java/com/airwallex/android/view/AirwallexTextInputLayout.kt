@@ -18,7 +18,7 @@ import com.google.android.material.textfield.TextInputLayout
 
 internal open class AirwallexTextInputLayout @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet,
+    attrs: AttributeSet? = null,
     resourceLayout: Int = R.layout.common_text_input_layout
 ) : LinearLayout(context, attrs) {
 
@@ -99,6 +99,14 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
         }
     }
 
+    fun setInputType(type: Int) {
+        teInput.inputType = type
+    }
+
+    fun setHint(hint: CharSequence) {
+        tlInput.hint = hint
+    }
+
     private fun updateLayoutColor() {
         if (error.isNullOrEmpty()) {
             vBorder.background =
@@ -115,6 +123,10 @@ internal open class AirwallexTextInputLayout @JvmOverloads constructor(
                     null
                 )
         }
+    }
+
+    fun setImeOptions(imeOptions: Int) {
+        teInput.imeOptions = imeOptions
     }
 
     internal fun requestInputFocus() {

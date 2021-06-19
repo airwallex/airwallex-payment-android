@@ -51,7 +51,7 @@ object Settings {
     val sdkEnv: String
         get() {
             val defaultSdkEnv =
-                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[1]
+                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0]
             return sharedPreferences.getString(
                 context.getString(R.string.sdk_env_id),
                 defaultSdkEnv
