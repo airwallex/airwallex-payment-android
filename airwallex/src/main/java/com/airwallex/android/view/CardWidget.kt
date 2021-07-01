@@ -73,10 +73,10 @@ internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(
             if (!hasFocus) {
                 when {
                     cardNumberTextInputLayout.value.isEmpty() -> {
-                        cardNumberTextInputLayout.error = resources.getString(R.string.empty_card_number)
+                        cardNumberTextInputLayout.error = resources.getString(R.string.airwallex_empty_card_number)
                     }
                     !cardNumberTextInputLayout.isValid -> {
-                        cardNumberTextInputLayout.error = resources.getString(R.string.invalid_card_number)
+                        cardNumberTextInputLayout.error = resources.getString(R.string.airwallex_invalid_card_number)
                     }
                     else -> {
                         cardNumberTextInputLayout.error = null
@@ -90,7 +90,7 @@ internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(
             if (!hasFocus) {
                 when {
                     cardNameTextInputLayout.value.isEmpty() -> {
-                        cardNameTextInputLayout.error = resources.getString(R.string.empty_card_name)
+                        cardNameTextInputLayout.error = resources.getString(R.string.airwallex_empty_card_name)
                     }
                     else -> {
                         cardNameTextInputLayout.error = null
@@ -104,10 +104,10 @@ internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(
             if (!hasFocus) {
                 when {
                     expiryTextInputLayout.value.isEmpty() -> {
-                        expiryTextInputLayout.error = resources.getString(R.string.empty_expiry)
+                        expiryTextInputLayout.error = resources.getString(R.string.airwallex_empty_expiry)
                     }
                     !expiryTextInputLayout.isValid -> {
-                        expiryTextInputLayout.error = resources.getString(R.string.invalid_expiry_date)
+                        expiryTextInputLayout.error = resources.getString(R.string.airwallex_invalid_expiry_date)
                     }
                     else -> {
                         expiryTextInputLayout.error = null
@@ -121,10 +121,10 @@ internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(
             if (!hasFocus) {
                 when {
                     cvcTextInputLayout.value.isEmpty() -> {
-                        cvcTextInputLayout.error = resources.getString(R.string.empty_cvc)
+                        cvcTextInputLayout.error = resources.getString(R.string.airwallex_empty_cvc)
                     }
                     !cvcTextInputLayout.isValid -> {
-                        cvcTextInputLayout.error = resources.getString(R.string.invalid_cvc)
+                        cvcTextInputLayout.error = resources.getString(R.string.airwallex_invalid_cvc)
                     }
                     else -> {
                         cvcTextInputLayout.error = null

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:fontFamily="@font/circularstd_bold"
-        android:text="@string/select_your_currency"
+        android:text="@string/airwallex_select_your_currency"
         android:textColor="@color/airwallex_color_dark_deep"
         android:textSize="18sp" />
 
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/circularstd_regular"
-        android:text="@string/select_your_currency_title"
+        android:text="@string/airwallex_select_your_currency_title"
         android:textColor="@color/airwallex_color_item_label"
         android:textSize="14sp" />
 
@@ -52,7 +52,7 @@
         android:layout_marginTop="16dp"
         android:drawablePadding="8dp"
         app:drawableStartCompat="@drawable/airwallex_rate"
-        tools:text="@string/rate" />
+        tools:text="@string/airwallex_rate" />
 
     <TextView
         android:id="@+id/confirm"
@@ -63,7 +63,7 @@
         android:fontFamily="@font/circularstd_bold"
         android:gravity="center"
         android:padding="0dp"
-        android:text="@string/confirm_payment"
+        android:text="@string/airwallex_confirm_payment"
         android:textColor="@android:color/white"
         android:textSize="14sp" />
 

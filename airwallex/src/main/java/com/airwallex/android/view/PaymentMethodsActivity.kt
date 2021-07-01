@@ -143,7 +143,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             ) {
                 underlayButtons.add(
                     UnderlayButton(
-                        text = resources.getString(R.string.delete_payment_method_positive),
+                        text = resources.getString(R.string.airwallex_delete_payment_method_positive),
                         textSize = resources.getDimensionPixelSize(R.dimen.swipe_size),
                         color = ContextCompat.getColor(
                             baseContext,
@@ -279,7 +279,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     ) {
                         val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(
                             paymentMethodType,
-                            paymentMethodType.displayName,
+                            getString(R.string.airwallex_pay_with, paymentMethodType.displayName),
                             requiredFields
                         )
                         paymentInfoDialog.onCompleted = { name, email, phone ->
@@ -304,7 +304,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         ).any { it == paymentMethodType }
                     ) {
                         val bankDialog = PaymentBankBottomSheetDialog.newInstance(
-                            getString(R.string.select_your_bank),
+                            getString(R.string.airwallex_select_your_bank),
                             session.currency
                         )
                         bankDialog.onCompleted = { bank ->

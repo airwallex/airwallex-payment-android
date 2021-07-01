@@ -17,7 +17,7 @@
         android:layout_marginTop="20dp"
         android:imeOptions="actionNext"
         android:inputType="text"
-        app:hint="@string/card_name_hint" />
+        app:hint="@string/airwallex_card_name_hint" />
 
     <LinearLayout
         android:layout_width="match_parent"

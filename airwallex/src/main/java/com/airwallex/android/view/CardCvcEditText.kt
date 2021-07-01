@@ -40,7 +40,7 @@ internal class CardCvcEditText @JvmOverloads constructor(
         }
 
     init {
-        setHint(R.string.cvc_hint)
+        setHint(R.string.airwallex_cvc_hint)
         maxLines = 1
         filters = arrayOf(InputFilter.LengthFilter(VALID_CVC_LENGTH))
 

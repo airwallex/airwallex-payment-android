@@ -21,9 +21,9 @@
     <string name="payment_cancelled_message">User cancel the payment</string>
 
     <string name="free">Free</string>
-    <string name="total">Total</string>
+    <string name="airwallex_total">Total</string>
 
-    <string name="shipping">Shipping</string>
+    <string name="airwallex_shipping">Shipping</string>
     <string name="price_value">1</string>
     <string name="currency_value">HKD</string>
     <string name="currency">Currency</string>

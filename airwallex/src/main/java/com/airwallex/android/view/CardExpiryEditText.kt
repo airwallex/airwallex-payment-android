@@ -47,7 +47,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
         }
 
     init {
-        setHint(R.string.expires_hint)
+        setHint(R.string.airwallex_expires_hint)
         maxLines = 1
         filters = arrayOf(InputFilter.LengthFilter(VALID_INPUT_LENGTH))
 

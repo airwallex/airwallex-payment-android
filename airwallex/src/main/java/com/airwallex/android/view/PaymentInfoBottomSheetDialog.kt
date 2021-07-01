@@ -65,7 +65,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
         if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_NAME } == true) {
             nameInput = AirwallexTextInputLayout(requireContext(), null)
             nameInput.afterTextChanged { nameInput.error = null }
-            nameInput.setHint(getString(R.string.shopper_name_hint))
+            nameInput.setHint(getString(R.string.airwallex_shopper_name_hint))
             nameInput.setInputType(InputType.TYPE_CLASS_TEXT)
 
             viewBinding.content.addView(
@@ -79,7 +79,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
         if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_EMAIL } == true) {
             emailInput = AirwallexTextInputLayout(requireContext(), null)
             emailInput.afterTextChanged { emailInput.error = null }
-            emailInput.setHint(getString(R.string.shopper_email_hint))
+            emailInput.setHint(getString(R.string.airwallex_shopper_email_hint))
             emailInput.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
             viewBinding.content.addView(
                 emailInput,
@@ -92,7 +92,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
         if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_PHONE } == true) {
             phoneInput = AirwallexTextInputLayout(requireContext(), null)
             phoneInput.afterTextChanged { phoneInput.error = null }
-            phoneInput.setHint(getString(R.string.shopper_phone_hint))
+            phoneInput.setHint(getString(R.string.airwallex_shopper_phone_hint))
             phoneInput.setInputType(InputType.TYPE_CLASS_PHONE)
             viewBinding.content.addView(
                 phoneInput,
@@ -117,24 +117,24 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
         viewBinding.checkout.setOnClickListener {
             // Name
             if (nameInput != null && nameInput.value.isEmpty()) {
-                nameInput.error = getString(R.string.payment_method_filed_empty_error)
+                nameInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
                 return@setOnClickListener
             }
 
             when (arguments?.getParcelable<PaymentMethodType>(PAYMENT_METHOD_TYPE)) {
                 PaymentMethodType.SKRILL -> {
                     if (nameInput != null && nameInput.value.split(" ").size != 2) {
-                        nameInput.error = getString(R.string.invalid_name)
+                        nameInput.error = getString(R.string.airwallex_invalid_name)
                         return@setOnClickListener
                     }
                 }
                 else -> {
                     if (nameInput != null && nameInput.value.length < 3) {
-                        nameInput.error = getString(R.string.name_length_short_error)
+                        nameInput.error = getString(R.string.airwallex_name_length_short_error)
                         return@setOnClickListener
                     }
                     if (nameInput != null && nameInput.value.length > 100) {
-                        nameInput.error = getString(R.string.name_length_long_error)
+                        nameInput.error = getString(R.string.airwallex_name_length_long_error)
                         return@setOnClickListener
                     }
                 }
@@ -142,24 +142,24 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
 
             // Email
             if (emailInput != null && emailInput.value.isEmpty()) {
-                emailInput.error = getString(R.string.payment_method_filed_empty_error)
+                emailInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
                 return@setOnClickListener
             }
             if (emailInput != null && !Patterns.EMAIL_ADDRESS.matcher(emailInput.value).matches()) {
-                emailInput.error = getString(R.string.invalid_email_address)
+                emailInput.error = getString(R.string.airwallex_invalid_email_address)
                 return@setOnClickListener
             }
 
             // Phone
             if (phoneInput != null && phoneInput.value.isEmpty()) {
-                phoneInput.error = getString(R.string.payment_method_filed_empty_error)
+                phoneInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
                 return@setOnClickListener
             }
 
             when (arguments?.getParcelable<PaymentMethodType>(PAYMENT_METHOD_TYPE)) {
                 PaymentMethodType.PAY_EASY -> {
                     if (phoneInput != null && (phoneInput.value.length < 10 || phoneInput.value.length > 11)) {
-                        phoneInput.error = getString(R.string.phone_error)
+                        phoneInput.error = getString(R.string.airwallex_phone_error)
                         return@setOnClickListener
                     }
                 }

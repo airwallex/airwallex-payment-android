@@ -70,7 +70,7 @@ internal class CardNumberEditText @JvmOverloads constructor(
     private var ignoreTextChanges = false
 
     init {
-        setHint(R.string.card_number_hint)
+        setHint(R.string.airwallex_card_number_hint)
         maxLines = 1
         filters = arrayOf<InputFilter>(InputFilter.LengthFilter(MAX_CARD_LENGTH))
         inputType = InputType.TYPE_CLASS_NUMBER

@@ -39,7 +39,7 @@ internal class CardNumberTextInputLayout constructor(
         tlInput.errorIconDrawable = null
         input.errorCallback = { showError ->
             if (showError) {
-                error = resources.getString(R.string.invalid_card_number)
+                error = resources.getString(R.string.airwallex_invalid_card_number)
                 tlInput.error = " "
             } else {
                 error = null

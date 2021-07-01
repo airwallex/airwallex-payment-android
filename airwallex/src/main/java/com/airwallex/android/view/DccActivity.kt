@@ -53,7 +53,7 @@ internal class DccActivity : AirwallexActivity() {
         }
 
         viewBinding.rate.text =
-            getString(R.string.rate, args.currency, args.dcc.clientRate, args.dcc.currency)
+            getString(R.string.airwallex_rate, args.currency, args.dcc.clientRate, args.dcc.currency)
         viewBinding.currentCurrency.isSelected = true
         viewBinding.currentCurrency.setOnClickListener {
             Logger.debug("Current currency selected")

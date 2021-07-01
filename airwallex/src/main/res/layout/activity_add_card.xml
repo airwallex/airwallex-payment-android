@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/circularstd_bold"
-                android:text="@string/new_card"
+                android:text="@string/airwallex_new_card"
                 android:textColor="@color/airwallex_color_dark_deep"
                 android:textSize="32sp"
                 tools:ignore="RtlSymmetry" />
@@ -58,7 +58,7 @@
         android:fontFamily="@font/circularstd_bold"
         android:gravity="center"
         android:orientation="horizontal"
-        android:text="@string/confirm"
+        android:text="@string/airwallex_confirm"
         android:textColor="@color/airwallex_button_text"
         android:textSize="14sp" />
 </RelativeLayout>

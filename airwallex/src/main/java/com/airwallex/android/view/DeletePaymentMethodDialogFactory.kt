@@ -17,16 +17,16 @@ internal class DeletePaymentMethodDialogFactory internal constructor(
     fun create(paymentConsent: PaymentConsent): AlertDialog {
         val title = paymentConsent.paymentMethod?.card?.let {
             context.resources.getString(
-                R.string.delete_payment_method_prompt_title,
+                R.string.airwallex_delete_payment_method_prompt_title,
                 String.format("%s •••• %s", it.brand?.uppercase(Locale.ROOT), it.last4)
             )
         }
         return AlertDialog.Builder(context)
             .setTitle(title)
-            .setPositiveButton(R.string.delete_payment_method_positive) { _, _ ->
+            .setPositiveButton(R.string.airwallex_delete_payment_method_positive) { _, _ ->
                 onDeletedPaymentMethod(paymentConsent)
             }
-            .setNegativeButton(R.string.delete_payment_method_negative) { _, _ ->
+            .setNegativeButton(R.string.airwallex_delete_payment_method_negative) { _, _ ->
                 adapter.resetPaymentMethod(paymentConsent)
             }
             .setOnCancelListener {

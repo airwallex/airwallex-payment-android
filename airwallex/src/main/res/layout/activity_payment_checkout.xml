@@ -24,7 +24,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:fontFamily="@font/circularstd_medium"
-        android:text="@string/total"
+        android:text="@string/airwallex_total"
         android:textColor="@color/airwallex_color_price"
         android:textSize="14sp" />
 
@@ -38,7 +38,7 @@
         android:background="@drawable/airwallex_button_solid"
         android:fontFamily="@font/circularstd_bold"
         android:gravity="center"
-        android:text="@string/pay_now"
+        android:text="@string/airwallex_pay_now"
         android:textColor="@color/airwallex_button_text"
         android:textSize="14sp"
         app:icon="@drawable/airwallex_ic_lock_selector"

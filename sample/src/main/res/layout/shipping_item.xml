@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:fontFamily="@font/circularstd_medium"
-            android:text="@string/shipping"
+            android:text="@string/airwallex_shipping"
             android:textColor="@color/airwallex_color_item_label"
             android:textSize="14sp" />
 

@@ -99,7 +99,7 @@ internal class CountryAutoCompleteView constructor(
                 viewBinding.actCountry.setText(displayCountry)
 
                 error = if (displayCountry.isNullOrBlank()) {
-                    resources.getString(R.string.empty_country)
+                    resources.getString(R.string.airwallex_empty_country)
                 } else {
                     null
                 }

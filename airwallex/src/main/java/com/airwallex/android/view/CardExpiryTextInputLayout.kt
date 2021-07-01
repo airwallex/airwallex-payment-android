@@ -37,7 +37,7 @@ internal class CardExpiryTextInputLayout constructor(
         val input = teInput as CardExpiryEditText
         input.errorCallback = { showError ->
             error = if (showError) {
-                resources.getString(R.string.invalid_expiry_date)
+                resources.getString(R.string.airwallex_invalid_expiry_date)
             } else {
                 null
             }

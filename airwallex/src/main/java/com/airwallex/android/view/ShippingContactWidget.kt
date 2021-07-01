@@ -67,7 +67,7 @@ internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : Li
         lastNameTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 if (lastNameTextInputLayout.value.isEmpty()) {
-                    lastNameTextInputLayout.error = resources.getString(R.string.empty_last_name)
+                    lastNameTextInputLayout.error = resources.getString(R.string.airwallex_empty_last_name)
                 } else {
                     lastNameTextInputLayout.error = null
                 }
@@ -79,7 +79,7 @@ internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : Li
         firstNameTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 if (firstNameTextInputLayout.value.isEmpty()) {
-                    firstNameTextInputLayout.error = resources.getString(R.string.empty_first_name)
+                    firstNameTextInputLayout.error = resources.getString(R.string.airwallex_empty_first_name)
                 } else {
                     firstNameTextInputLayout.error = null
                 }

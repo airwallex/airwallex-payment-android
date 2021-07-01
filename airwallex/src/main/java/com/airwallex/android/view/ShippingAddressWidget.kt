@@ -91,7 +91,7 @@ internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
         stateTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 if (stateTextInputLayout.value.isEmpty()) {
-                    stateTextInputLayout.error = resources.getString(R.string.empty_state)
+                    stateTextInputLayout.error = resources.getString(R.string.airwallex_empty_state)
                 } else {
                     stateTextInputLayout.error = null
                 }
@@ -103,7 +103,7 @@ internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
         cityTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 if (cityTextInputLayout.value.isEmpty()) {
-                    cityTextInputLayout.error = resources.getString(R.string.empty_city)
+                    cityTextInputLayout.error = resources.getString(R.string.airwallex_empty_city)
                 } else {
                     cityTextInputLayout.error = null
                 }
@@ -115,7 +115,7 @@ internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
         addressTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 if (addressTextInputLayout.value.isEmpty()) {
-                    addressTextInputLayout.error = resources.getString(R.string.empty_street)
+                    addressTextInputLayout.error = resources.getString(R.string.airwallex_empty_street)
                 } else {
                     addressTextInputLayout.error = null
                 }

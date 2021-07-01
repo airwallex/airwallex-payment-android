@@ -19,7 +19,7 @@
             android:layout_centerVertical="true"
             android:layout_toStartOf="@id/swSameAsShipping"
             android:fontFamily="@font/circularstd_medium"
-            android:text="@string/same_as_shipping"
+            android:text="@string/airwallex_same_as_shipping"
             android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="14sp" />
 
@@ -52,7 +52,7 @@
             android:inputType="textCapWords"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            app:hint="@string/shipping_first_name_hint" />
+            app:hint="@string/airwallex_shipping_first_name_hint" />
 
         <com.airwallex.android.view.AirwallexTextInputLayout
             android:id="@+id/atlLastName"
@@ -63,7 +63,7 @@
             android:inputType="textCapWords"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            app:hint="@string/shipping_last_name_hint" />
+            app:hint="@string/airwallex_shipping_last_name_hint" />
 
         <com.airwallex.android.view.CountryAutoCompleteView
             android:id="@+id/countryAutocomplete"
@@ -82,7 +82,7 @@
             android:inputType="textCapWords"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            app:hint="@string/shipping_state_name_hint" />
+            app:hint="@string/airwallex_shipping_state_name_hint" />
 
         <com.airwallex.android.view.AirwallexTextInputLayout
             android:id="@+id/atlCity"
@@ -93,7 +93,7 @@
             android:inputType="textCapWords"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            app:hint="@string/shipping_city_name_hint" />
+            app:hint="@string/airwallex_shipping_city_name_hint" />
 
         <com.airwallex.android.view.AirwallexTextInputLayout
             android:id="@+id/atlStreetAddress"
@@ -104,7 +104,7 @@
             android:inputType="textCapWords"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            app:hint="@string/shipping_street_hint" />
+            app:hint="@string/airwallex_shipping_street_hint" />
 
         <com.airwallex.android.view.AirwallexTextInputLayout
             android:id="@+id/atlZipCode"
@@ -115,7 +115,7 @@
             android:inputType="text"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            app:hint="@string/shipping_zip_code_hint" />
+            app:hint="@string/airwallex_shipping_zip_code_hint" />
 
         <com.airwallex.android.view.AirwallexTextInputLayout
             android:id="@+id/atlEmail"
@@ -126,7 +126,7 @@
             android:inputType="text"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            app:hint="@string/contact_email_hint" />
+            app:hint="@string/airwallex_contact_email_hint" />
 
         <com.airwallex.android.view.AirwallexTextInputLayout
             android:id="@+id/atlPhoneNumber"
@@ -137,7 +137,7 @@
             android:inputType="text"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            app:hint="@string/contact_phone_number_hint" />
+            app:hint="@string/airwallex_contact_phone_number_hint" />
     </LinearLayout>
 
 </LinearLayout>

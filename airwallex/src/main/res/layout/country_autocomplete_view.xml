@@ -16,7 +16,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="@string/shipping_country_name_hint"
+            android:hint="@string/airwallex_shipping_country_name_hint"
             android:labelFor="@id/actCountry"
             android:textColorHint="@color/airwallex_color_edit_text_accent"
             app:boxStrokeWidth="0dp"
