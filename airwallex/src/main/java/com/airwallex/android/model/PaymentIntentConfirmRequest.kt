@@ -22,7 +22,7 @@ data class PaymentIntentConfirmRequest internal constructor(
     /**
      * The payment method that you want to confirm
      */
-    val paymentMethod: PaymentMethod? = null,
+    val paymentMethodRequest: PaymentMethodRequest? = null,
 
     /**
      * The payment method reference that you want to confirm
@@ -66,7 +66,7 @@ data class PaymentIntentConfirmRequest internal constructor(
                 }.orEmpty()
             )
             .plus(
-                paymentMethod?.let {
+                paymentMethodRequest?.let {
                     mapOf(FIELD_PAYMENT_METHOD to it.toParamMap())
                 }.orEmpty()
             )
@@ -96,7 +96,7 @@ data class PaymentIntentConfirmRequest internal constructor(
         private val requestId: String
     ) : ObjectBuilder<PaymentIntentConfirmRequest> {
         private var customerId: String? = null
-        private var paymentMethod: PaymentMethod? = null
+        private var paymentMethodRequest: PaymentMethodRequest? = null
         private var paymentMethodReference: PaymentMethodReference? = null
         private var paymentMethodOptions: PaymentMethodOptions? = null
         private var paymentConsentReference: PaymentConsentReference? = null
@@ -110,8 +110,8 @@ data class PaymentIntentConfirmRequest internal constructor(
             this.device = device
         }
 
-        fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
-            this.paymentMethod = paymentMethod
+        fun setPaymentMethodRequest(paymentMethodRequest: PaymentMethodRequest?): Builder = apply {
+            this.paymentMethodRequest = paymentMethodRequest
         }
 
         fun setPaymentMethodReference(paymentMethodReference: PaymentMethodReference?): Builder =
@@ -133,7 +133,7 @@ data class PaymentIntentConfirmRequest internal constructor(
             return PaymentIntentConfirmRequest(
                 requestId = requestId,
                 customerId = customerId,
-                paymentMethod = paymentMethod,
+                paymentMethodRequest = paymentMethodRequest,
                 paymentMethodReference = paymentMethodReference,
                 paymentMethodOptions = paymentMethodOptions,
                 paymentConsentReference = paymentConsentReference,

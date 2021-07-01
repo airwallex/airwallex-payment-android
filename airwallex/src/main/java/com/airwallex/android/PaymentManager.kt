@@ -239,24 +239,23 @@ internal interface PaymentManager {
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
 
             val paymentConsentReference: PaymentConsentReference?
-            val paymentMethod: PaymentMethod?
+            val paymentMethodRequest: PaymentMethodRequest?
 
             if (params.paymentConsentId != null) {
                 paymentConsentReference = PaymentConsentReference.Builder()
                     .setId(params.paymentConsentId)
                     .build()
-                paymentMethod = null
+                paymentMethodRequest = null
             } else {
                 paymentConsentReference = null
-                paymentMethod = PaymentMethod.Builder()
-                    .setType(params.paymentMethodType)
-                    .setPaymentMethodRequest(params.paymentMethodType, params.name, params.email, params.phone, params.currency, params.bank)
+                paymentMethodRequest = PaymentMethodRequest.Builder(params.paymentMethodType)
+                    .setPaymentMethodRequest(params.paymentMethodType, params.name, params.email, params.phone, if (params.bank != null) params.bank.currency else params.currency, params.bank)
                     .build()
             }
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
             )
-                .setPaymentMethod(paymentMethod)
+                .setPaymentMethodRequest(paymentMethodRequest)
                 .setCustomerId(params.customerId)
                 .setDevice(device)
                 .setPaymentConsentReference(paymentConsentReference)

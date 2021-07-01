@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.text.InputType
 import android.text.InputType.*
 import android.util.Log
 import android.widget.Toast
@@ -29,17 +28,17 @@ class PaymentSettingsFragment :
 
         val preferences = preferenceManager.sharedPreferences
         (findPreference<Preference>(getString(R.string.price)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
-            editText.inputType = InputType.TYPE_CLASS_NUMBER or TYPE_NUMBER_FLAG_DECIMAL
+            editText.inputType = TYPE_CLASS_NUMBER or TYPE_NUMBER_FLAG_DECIMAL
         }
         (findPreference<Preference>(getString(R.string.currency)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
-            editText.inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+            editText.inputType = TYPE_TEXT_FLAG_CAP_CHARACTERS
         }
 
         val sdkEnvPref: ListPreference? =
             findPreference(getString(R.string.sdk_env_id)) as? ListPreference?
         if (sdkEnvPref != null && sdkEnvPref.value == null) {
             // Default Demo
-            sdkEnvPref.setValueIndex(1)
+            sdkEnvPref.setValueIndex(0)
         }
 
         val checkoutModePref: ListPreference? =
@@ -117,7 +116,7 @@ class PaymentSettingsFragment :
     private fun toggleNextTriggerByStatus() {
         val checkoutModePref: ListPreference? = findPreference(getString(R.string.checkout_mode)) as? ListPreference?
         val nextTriggerByPref: ListPreference? = findPreference(getString(R.string.next_trigger_by)) as? ListPreference?
-        nextTriggerByPref?.isEnabled = !(checkoutModePref?.value?.toUpperCase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
+        nextTriggerByPref?.isEnabled = !(checkoutModePref?.value?.uppercase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
     }
 
     private fun registerOnSharedPreferenceChangeListener() {

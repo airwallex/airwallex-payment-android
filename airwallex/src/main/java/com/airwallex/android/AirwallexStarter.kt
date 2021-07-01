@@ -222,7 +222,7 @@ internal class AirwallexStarter constructor(
                                         paymentFlowListener?.onNextActionWithWeChatPay(requireNotNull(result.weChat))
                                     }
                                     result.redirectUrl != null -> {
-                                        paymentFlowListener?.onNextActionWithAlipayUrl(requireNotNull(result.redirectUrl))
+                                        paymentFlowListener?.onNextActionWithRedirectUrl(requireNotNull(result.redirectUrl))
                                     }
                                     else -> {
                                         paymentFlowListener?.onSuccess(requireNotNull(result.paymentIntent))

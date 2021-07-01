@@ -34,7 +34,7 @@ internal object CountryUtils {
         .map { code ->
             CountryAutoCompleteView.Country(code, Locale("", code).displayCountry)
         }
-        .sortedBy { it.name.toLowerCase(Locale.ROOT) }
+        .sortedBy { it.name.lowercase(Locale.ROOT) }
 
     /**
      * Return the [CountryAutoCompleteView.Country] via [countryName]

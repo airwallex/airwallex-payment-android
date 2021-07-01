@@ -255,7 +255,7 @@ internal class AirwallexPaymentManager(
                                 listener.onFailed(Exception("Server error, redirect url is null"))
                                 return
                             }
-                            listener.onNextActionWithAlipayUrl(redirectUrl)
+                            listener.onNextActionWithRedirectUrl(redirectUrl)
                         }
                     }
                 }
@@ -333,7 +333,7 @@ internal class AirwallexPaymentManager(
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         listener: Airwallex.PaymentResultListener<PaymentIntent>
     ) {
-        val aliPayVerificationOptions = PaymentConsentVerifyRequest.AliPayVerificationOptions()
+        val redirectVerificationOptions = PaymentConsentVerifyRequest.RedirectVerificationOptions()
         val verificationOptions = when (params.paymentMethodType) {
             PaymentMethodType.CARD -> PaymentConsentVerifyRequest.VerificationOptions(
                 card = PaymentConsentVerifyRequest.CardVerificationOptions(
@@ -342,13 +342,14 @@ internal class AirwallexPaymentManager(
                     cvc = params.cvc,
                 )
             )
-            PaymentMethodType.ALIPAY_HK -> PaymentConsentVerifyRequest.VerificationOptions(alipayhk = aliPayVerificationOptions)
-            PaymentMethodType.DANA -> PaymentConsentVerifyRequest.VerificationOptions(dana = aliPayVerificationOptions)
-            PaymentMethodType.GCASH -> PaymentConsentVerifyRequest.VerificationOptions(gcash = aliPayVerificationOptions)
-            PaymentMethodType.KAKAOPAY -> PaymentConsentVerifyRequest.VerificationOptions(kakaopay = aliPayVerificationOptions)
-            PaymentMethodType.TNG -> PaymentConsentVerifyRequest.VerificationOptions(tng = aliPayVerificationOptions)
-            PaymentMethodType.TRUE_MONEY -> PaymentConsentVerifyRequest.VerificationOptions(trueMoney = aliPayVerificationOptions)
-            PaymentMethodType.BKASH -> PaymentConsentVerifyRequest.VerificationOptions(bKash = aliPayVerificationOptions)
+            PaymentMethodType.ALIPAY_CN -> PaymentConsentVerifyRequest.VerificationOptions(alipayhk = redirectVerificationOptions)
+            PaymentMethodType.ALIPAY_HK -> PaymentConsentVerifyRequest.VerificationOptions(alipayhk = redirectVerificationOptions)
+            PaymentMethodType.DANA -> PaymentConsentVerifyRequest.VerificationOptions(dana = redirectVerificationOptions)
+            PaymentMethodType.GCASH -> PaymentConsentVerifyRequest.VerificationOptions(gcash = redirectVerificationOptions)
+            PaymentMethodType.KAKAOPAY -> PaymentConsentVerifyRequest.VerificationOptions(kakaopay = redirectVerificationOptions)
+            PaymentMethodType.TNG -> PaymentConsentVerifyRequest.VerificationOptions(tng = redirectVerificationOptions)
+            PaymentMethodType.TRUE_MONEY -> PaymentConsentVerifyRequest.VerificationOptions(trueMoney = redirectVerificationOptions)
+            PaymentMethodType.BKASH -> PaymentConsentVerifyRequest.VerificationOptions(bKash = redirectVerificationOptions)
             else -> {
                 listener.onFailed(Exception("Unsupported PaymentMethod ${params.paymentMethodType} "))
                 return
@@ -422,7 +423,7 @@ internal class AirwallexPaymentManager(
                                 listener.onFailed(Exception("Server error, redirect url is null"))
                                 return
                             }
-                            listener.onNextActionWithAlipayUrl(redirectUrl)
+                            listener.onNextActionWithRedirectUrl(redirectUrl)
                         }
                     }
                 }

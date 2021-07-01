@@ -18,7 +18,7 @@ internal class DeletePaymentMethodDialogFactory internal constructor(
         val title = paymentConsent.paymentMethod?.card?.let {
             context.resources.getString(
                 R.string.delete_payment_method_prompt_title,
-                String.format("%s •••• %s", it.brand?.toUpperCase(Locale.ROOT), it.last4)
+                String.format("%s •••• %s", it.brand?.uppercase(Locale.ROOT), it.last4)
             )
         }
         return AlertDialog.Builder(context)

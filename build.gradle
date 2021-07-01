@@ -1,13 +1,13 @@
 buildscript {
-    ext.kotlinVersion = '1.4.20'
+    ext.kotlinVersion = '1.5.20'
     repositories {
         jcenter()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.android.tools.build:gradle:4.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.17"
     }
@@ -28,12 +28,12 @@ task clean(type: Delete) {
 version = '2.0.4'
 
 ext {
-    buildToolsVersion = "29.0.3"
+    buildToolsVersion = "30.0.2"
     compileSdkVersion = 29
     minSdkVersion = 19
 
     ktlintVersion = '0.39.0'
-    kotlinCoroutinesVersion = '1.4.1'
+    kotlinCoroutinesVersion = '1.5.0'
 
     versionCode = 1
     versionName = version

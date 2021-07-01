@@ -41,7 +41,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         args.paymentConsentId
     }
 
-    private val session: AirwallexSession by lazy {
+    override val session: AirwallexSession by lazy {
         args.session
     }
 
@@ -72,25 +72,23 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     private fun startConfirmPaymentIntent() {
         startCheckout(
-            session = session,
             paymentMethod = paymentMethod,
             paymentConsentId = paymentConsentId,
             cvc = viewBinding.paymentMethodItemView.cvc,
-            listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
-                override fun onSuccess(response: PaymentIntent) {
-                    finishWithPaymentIntent(paymentIntent = response)
-                }
-
-                override fun onFailed(exception: Exception) {
-                    finishWithPaymentIntent(exception = exception)
-                }
-
-                override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                    finishWithPaymentIntent(weChat = weChat)
-                }
-
-                override fun onNextActionWithAlipayUrl(url: String) {
-                    finishWithPaymentIntent(redirectUrl = url)
+            observer = {
+                when (it) {
+                    is AirwallexCheckoutViewModel.PaymentResult.Success -> {
+                        finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+                    }
+                    is AirwallexCheckoutViewModel.PaymentResult.Error -> {
+                        finishWithPaymentIntent(exception = it.exception)
+                    }
+                    is AirwallexCheckoutViewModel.PaymentResult.WeChatPay -> {
+                        finishWithPaymentIntent(weChat = it.weChat)
+                    }
+                    is AirwallexCheckoutViewModel.PaymentResult.Redirect -> {
+                        finishWithPaymentIntent(redirectUrl = it.redirectUrl)
+                    }
                 }
             }
         )

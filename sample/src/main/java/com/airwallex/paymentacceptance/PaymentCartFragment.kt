@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.*
 import com.airwallex.android.exception.RedirectException
@@ -42,12 +43,23 @@ class PaymentCartFragment : Fragment() {
         ExampleClientSecretProvider()
     }
 
+    private val viewModel: PaymentCartViewModel by lazy {
+        ViewModelProvider(
+            this,
+            PaymentCartViewModel.Factory(
+                requireActivity().application,
+                airwallex
+            )
+        )[PaymentCartViewModel::class.java]
+    }
+
     private val api: Api
         get() {
             if (TextUtils.isEmpty(AirwallexPlugins.environment.baseUrl())) {
                 throw IllegalArgumentException("Base url should not be null or empty")
             }
-            return ApiFactory(AirwallexPlugins.environment.baseUrl()).buildRetrofit().create(Api::class.java)
+            return ApiFactory(AirwallexPlugins.environment.baseUrl()).buildRetrofit()
+                .create(Api::class.java)
         }
 
     private var shipping: Shipping = Shipping.Builder()
@@ -117,28 +129,43 @@ class PaymentCartFragment : Fragment() {
             }
         }
 
-    private fun buildSessionWithIntent(paymentIntent: PaymentIntent? = null, customerId: String? = null): AirwallexSession {
-        return when (checkoutMode) {
-            AirwallexCheckoutMode.PAYMENT -> {
-                if (paymentIntent == null) {
-                    throw Exception("PaymentIntent is required")
+    private fun buildSessionWithIntent(
+        paymentIntent: PaymentIntent? = null,
+        customerId: String? = null
+    ): AirwallexSession {
+        return try {
+            when (checkoutMode) {
+                AirwallexCheckoutMode.PAYMENT -> {
+                    AirwallexPaymentSession.Builder(
+                        requireNotNull(
+                            paymentIntent,
+                            { "PaymentIntent is required" }
+                        )
+                    ).build()
                 }
-                AirwallexPaymentSession.Builder(paymentIntent).build()
-            }
-            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                if (paymentIntent == null) {
-                    throw Exception("PaymentIntent is required")
+                AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+
+                    AirwallexRecurringWithIntentSession.Builder(
+                        requireNotNull(
+                            paymentIntent,
+                            { "PaymentIntent is required" }
+                        ),
+                        nextTriggerBy
+                    ).build()
                 }
-                AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
-            }
-            AirwallexCheckoutMode.RECURRING -> {
-                if (customerId == null) {
-                    throw Exception("PaymentIntent is required")
+                AirwallexCheckoutMode.RECURRING -> {
+                    AirwallexRecurringSession.Builder(
+                        nextTriggerBy,
+                        Settings.currency,
+                        BigDecimal.valueOf(Settings.price.toDouble()),
+                        requireNotNull(customerId, { "CustomerId is required" })
+                    )
+                        .setShipping(shipping)
+                        .build()
                 }
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
-                    .setShipping(shipping)
-                    .build()
             }
+        } catch (e: Exception) {
+            throw e
         }
     }
 
@@ -181,20 +208,18 @@ class PaymentCartFragment : Fragment() {
 
         viewBinding.shippingItemView.renewalShipping(shipping)
         viewBinding.shippingItemView.onClickAction = {
-            airwallex.presentShippingFlow(
-                shipping,
-                object : Airwallex.PaymentShippingListener {
-                    override fun onSuccess(shipping: Shipping) {
+            viewModel.presentShippingFlow(shipping).observe(viewLifecycleOwner) {
+                when (it) {
+                    is PaymentCartViewModel.ShippingResult.Success -> {
                         Log.d(TAG, "Save the shipping success")
-                        viewBinding.shippingItemView.renewalShipping(shipping)
-                        this@PaymentCartFragment.shipping = shipping
+                        viewBinding.shippingItemView.renewalShipping(it.shipping)
+                        this@PaymentCartFragment.shipping = it.shipping
                     }
-
-                    override fun onCancelled() {
+                    is PaymentCartViewModel.ShippingResult.Cancel -> {
                         Log.d(TAG, "User cancel edit shipping...")
                     }
                 }
-            )
+            }
         }
         initializeProductsViews(products.toMutableList())
         viewBinding.btnCheckout.setOnClickListener {
@@ -268,32 +293,29 @@ class PaymentCartFragment : Fragment() {
             }
 
             (activity as? PaymentCartActivity)?.setLoadingProgress(false)
-            airwallex.presentPaymentFlow(
+
+            viewModel.presentPaymentFlow(
                 buildSessionWithIntent(customerId = customerId),
-                clientSecretProvider,
-                object : Airwallex.PaymentIntentListener {
-                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                clientSecretProvider
+            ).observe(viewLifecycleOwner) {
+                when (it) {
+                    is PaymentCartViewModel.PaymentFlowResult.Success -> {
                         showPaymentSuccess()
                     }
-
-                    override fun onFailed(error: Exception) {
-                        showPaymentError(error.message)
+                    is PaymentCartViewModel.PaymentFlowResult.Error -> {
+                        showPaymentError(it.exception.localizedMessage)
                     }
-
-                    override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                        startWeChatPay(weChat)
+                    is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
+                        startWeChatPay(it.weChat)
                     }
-
-                    override fun onNextActionWithAlipayUrl(url: String) {
-                        startAlipay(url)
+                    is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
+                        startRedirectUrl(it.redirectUrl)
                     }
-
-                    override fun onCancelled() {
-                        Log.d(TAG, "User cancel the payment")
+                    is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
                         showPaymentCancelled()
                     }
                 }
-            )
+            }
         }
     }
 
@@ -384,32 +406,29 @@ class PaymentCartFragment : Fragment() {
      * Use entire flow provided by Airwallex
      */
     private fun handlePaymentIntentResponseWithEntireFlow(paymentIntent: PaymentIntent) {
-        airwallex.presentPaymentFlow(
+        viewModel.presentPaymentFlow(
             buildSessionWithIntent(paymentIntent = paymentIntent),
-            clientSecretProvider,
-            object : Airwallex.PaymentIntentListener {
-                override fun onSuccess(paymentIntent: PaymentIntent) {
+            clientSecretProvider
+        ).observe(viewLifecycleOwner) {
+            when (it) {
+                is PaymentCartViewModel.PaymentFlowResult.Success -> {
                     showPaymentSuccess()
                 }
-
-                override fun onFailed(error: Exception) {
-                    showPaymentError(error.message)
+                is PaymentCartViewModel.PaymentFlowResult.Error -> {
+                    showPaymentError(it.exception.message)
                 }
-
-                override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                    startWeChatPay(weChat)
+                is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
+                    startWeChatPay(it.weChat)
                 }
-
-                override fun onNextActionWithAlipayUrl(url: String) {
-                    startAlipay(url)
+                is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
+                    startRedirectUrl(it.redirectUrl)
                 }
-
-                override fun onCancelled() {
+                is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
                     Log.d(TAG, "User cancel the payment")
                     showPaymentCancelled()
                 }
             }
-        )
+        }
     }
 
     private fun startWeChatPay(weChat: WeChat) {
@@ -479,7 +498,7 @@ class PaymentCartFragment : Fragment() {
         }
     }
 
-    private fun startAlipay(redirectUrl: String) {
+    private fun startRedirectUrl(redirectUrl: String) {
         try {
             airwallex.handleAction(redirectUrl)
         } catch (e: RedirectException) {
@@ -492,46 +511,43 @@ class PaymentCartFragment : Fragment() {
      */
     private fun handlePaymentIntentResponseWithCustomFlow1(paymentIntent: PaymentIntent) {
         val session = buildSessionWithIntent(paymentIntent)
-        airwallex.presentSelectPaymentMethodFlow(
+        viewModel.presentSelectPaymentMethodFlow(
             session,
-            clientSecretProvider,
-            object : Airwallex.PaymentMethodListener {
-                override fun onSuccess(paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?) {
+            clientSecretProvider
+        ).observe(viewLifecycleOwner) {
+            when (it) {
+                is PaymentCartViewModel.PaymentMethodResult.Success -> {
                     (activity as? PaymentCartActivity)?.setLoadingProgress(true)
-                    airwallex.checkout(
+                    viewModel.checkout(
                         session = session,
-                        paymentMethod = paymentMethod,
-                        paymentConsentId = paymentConsentId,
-                        cvc = paymentConsentId,
-                        listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
-                            override fun onFailed(exception: Exception) {
-                                showPaymentError(error = exception.message)
+                        paymentMethod = it.paymentMethod,
+                        paymentConsentId = it.paymentConsentId,
+                        cvc = it.cvc
+                    ).observe(viewLifecycleOwner) { checkoutResult ->
+                        when (checkoutResult) {
+                            is PaymentCartViewModel.PaymentCheckoutResult.Error -> {
+                                showPaymentError(error = checkoutResult.exception.message)
                             }
-
-                            override fun onSuccess(response: PaymentIntent) {
+                            is PaymentCartViewModel.PaymentCheckoutResult.Success -> {
                                 showPaymentSuccess()
                             }
-
-                            override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                                startWeChatPay(weChat)
+                            is PaymentCartViewModel.PaymentCheckoutResult.WeChatPay -> {
+                                startWeChatPay(checkoutResult.weChat)
                             }
-
-                            override fun onNextActionWithAlipayUrl(url: String) {
-                                startAlipay(url)
+                            is PaymentCartViewModel.PaymentCheckoutResult.Redirect -> {
+                                startRedirectUrl(checkoutResult.redirectUrl)
                             }
                         }
-                    )
+                    }
                 }
-
-                override fun onFailed(error: Exception) {
-                    showSelectPaymentError(error = error.message)
+                is PaymentCartViewModel.PaymentMethodResult.Error -> {
+                    showSelectPaymentError(error = it.exception.message)
                 }
-
-                override fun onCancelled() {
+                is PaymentCartViewModel.PaymentMethodResult.Cancel -> {
                     showPaymentCancelled()
                 }
             }
-        )
+        }
     }
 
     /**
@@ -539,72 +555,69 @@ class PaymentCartFragment : Fragment() {
      */
     private fun handlePaymentIntentResponseWithCustomFlow2(paymentIntent: PaymentIntent) {
         val session = buildSessionWithIntent(paymentIntent)
-        airwallex.presentSelectPaymentMethodFlow(
+        viewModel.presentSelectPaymentMethodFlow(
             session,
-            clientSecretProvider,
-            object : Airwallex.PaymentMethodListener {
-                override fun onSuccess(paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?) {
+            clientSecretProvider
+        ).observe(viewLifecycleOwner) {
+            when (it) {
+                is PaymentCartViewModel.PaymentMethodResult.Success -> {
                     (activity as? PaymentCartActivity)?.setLoadingProgress(true)
-
-                    when (paymentMethod.type) {
+                    when (it.paymentMethod.type) {
                         PaymentMethodType.CARD -> {
-                            airwallex.presentPaymentDetailFlow(
+                            viewModel.presentPaymentDetailFlow(
                                 session,
-                                paymentMethod,
-                                paymentConsentId,
-                                cvc,
-                                object : Airwallex.PaymentIntentCardListener {
-                                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                                it.paymentMethod,
+                                it.paymentConsentId,
+                                it.cvc
+                            ).observe(viewLifecycleOwner) {
+                                when (it) {
+                                    is PaymentCartViewModel.PaymentDetailResult.Success -> {
                                         showPaymentSuccess()
                                     }
-
-                                    override fun onFailed(error: Exception) {
-                                        showPaymentError(error.message)
+                                    is PaymentCartViewModel.PaymentDetailResult.Error -> {
+                                        showPaymentError(it.exception.message)
                                     }
 
-                                    override fun onCancelled() {
+                                    is PaymentCartViewModel.PaymentDetailResult.Cancel -> {
                                         showPaymentCancelled()
                                     }
                                 }
-                            )
+                            }
                         }
                         else -> {
-                            airwallex.checkout(
+                            viewModel.checkout(
                                 session = session,
-                                paymentMethod = paymentMethod,
-                                paymentConsentId = paymentConsentId,
-                                cvc = cvc,
-                                listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
-                                    override fun onFailed(exception: Exception) {
-                                        showPaymentError(error = exception.message)
+                                paymentMethod = it.paymentMethod,
+                                paymentConsentId = it.paymentConsentId,
+                                cvc = it.cvc
+                            ).observe(viewLifecycleOwner) { checkoutResult ->
+                                when (checkoutResult) {
+                                    is PaymentCartViewModel.PaymentCheckoutResult.Error -> {
+                                        showPaymentError(error = checkoutResult.exception.message)
                                     }
-
-                                    override fun onSuccess(response: PaymentIntent) {
+                                    is PaymentCartViewModel.PaymentCheckoutResult.Success -> {
                                         showPaymentSuccess()
                                     }
-
-                                    override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                                        startWeChatPay(weChat)
+                                    is PaymentCartViewModel.PaymentCheckoutResult.WeChatPay -> {
+                                        startWeChatPay(checkoutResult.weChat)
                                     }
-
-                                    override fun onNextActionWithAlipayUrl(url: String) {
-                                        startAlipay(url)
+                                    is PaymentCartViewModel.PaymentCheckoutResult.Redirect -> {
+                                        startRedirectUrl(checkoutResult.redirectUrl)
                                     }
                                 }
-                            )
+                            }
                         }
                     }
                 }
 
-                override fun onFailed(error: Exception) {
-                    showSelectPaymentError(error = error.message)
+                is PaymentCartViewModel.PaymentMethodResult.Error -> {
+                    showSelectPaymentError(error = it.exception.message)
                 }
-
-                override fun onCancelled() {
+                is PaymentCartViewModel.PaymentMethodResult.Cancel -> {
                     showPaymentCancelled()
                 }
             }
-        )
+        }
     }
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->

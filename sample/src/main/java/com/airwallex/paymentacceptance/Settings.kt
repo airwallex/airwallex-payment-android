@@ -47,7 +47,7 @@ object Settings {
             return sharedPreferences.getString(CUSTOMER_ID, "") ?: ""
         }
 
-    // Default Demo
+    // Default Staging
     val sdkEnv: String
         get() {
             val defaultSdkEnv =

@@ -194,8 +194,8 @@ internal class CountryAutoCompleteView constructor(
 
         private fun filteredSuggestedCountries(constraint: CharSequence?): List<Country> {
             return countries.filter {
-                it.name.toLowerCase(Locale.ROOT).startsWith(
-                    constraint.toString().toLowerCase(Locale.ROOT)
+                it.name.lowercase(Locale.ROOT).startsWith(
+                    constraint.toString().lowercase(Locale.ROOT)
                 )
             }
         }

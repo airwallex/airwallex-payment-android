@@ -71,7 +71,6 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
     override fun onActionSave() {
         val card = viewBinding.cardWidget.paymentMethodCard ?: return
         setLoadingProgress(loading = true, cancelable = false)
-
         viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
             this,
             {
@@ -80,8 +79,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
                         finishWithPaymentMethod(it.paymentMethod, requireNotNull(it.cvc))
                     }
                     is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
-                        val exception = it.exception
-                        alertError(exception.message ?: exception.toString())
+                        alertError(it.exception.message ?: it.exception.toString())
                     }
                 }
             }

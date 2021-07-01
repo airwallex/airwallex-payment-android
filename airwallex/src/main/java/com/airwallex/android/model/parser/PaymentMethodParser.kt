@@ -17,32 +17,8 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
             card = json.optJSONObject(FIELD_CARD)?.let {
                 CardParser().parse(it)
             },
-            weChatPayRequest = json.optJSONObject(PaymentMethodType.WECHAT.value)?.let {
-                ThirdPartPayRequestParser().parse(it)
-            },
-            aliPayCNRequest = json.optJSONObject(PaymentMethodType.ALIPAY_CN.value)?.let {
-                ThirdPartPayRequestParser().parse(it)
-            },
-            aliPayHKRequest = json.optJSONObject(PaymentMethodType.ALIPAY_HK.value)?.let {
-                ThirdPartPayRequestParser().parse(it)
-            },
-            kakaoPayRequest = json.optJSONObject(PaymentMethodType.KAKAOPAY.value)?.let {
-                ThirdPartPayRequestParser().parse(it)
-            },
-            tngRequest = json.optJSONObject(PaymentMethodType.TNG.value)?.let {
-                ThirdPartPayRequestParser().parse(it)
-            },
-            danaRequest = json.optJSONObject(PaymentMethodType.DANA.value)?.let {
-                ThirdPartPayRequestParser().parse(it)
-            },
-            gCashRequest = json.optJSONObject(PaymentMethodType.GCASH.value)?.let {
-                ThirdPartPayRequestParser().parse(it)
-            },
-            tureMoneyRequest = json.optJSONObject(PaymentMethodType.TRUE_MONEY.value)?.let {
-                ThirdPartPayRequestParser().parse(it)
-            },
-            bKashRequest = json.optJSONObject(PaymentMethodType.BKASH.value)?.let {
-                ThirdPartPayRequestParser().parse(it)
+            redirectRequest = json.optJSONObject(AirwallexJsonUtils.optString(json, FIELD_TYPE))?.let {
+                RedirectRequestParser().parse(it)
             },
             billing = json.optJSONObject(FIELD_BILLING)?.let {
                 BillingParser().parse(it)

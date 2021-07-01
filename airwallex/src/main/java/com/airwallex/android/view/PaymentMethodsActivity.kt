@@ -6,13 +6,14 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.model.*
-import java.util.*
+import com.airwallex.android.view.AirwallexCheckoutViewModel.*
 import kotlin.collections.ArrayList
 
 /**
@@ -33,7 +34,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         PaymentMethodsActivityLaunch.Args.getExtra(intent)
     }
 
-    private val session: AirwallexSession by lazy {
+    override val session: AirwallexSession by lazy {
         args.session
     }
 
@@ -56,8 +57,11 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             is AirwallexRecurringWithIntentSession -> {
                 (session as AirwallexRecurringWithIntentSession).paymentIntent
             }
-            else -> {
+            is AirwallexRecurringSession -> {
                 null
+            }
+            else -> {
+                throw Exception("Not supported session $session")
             }
         }
     }
@@ -90,7 +94,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             }
         }
 
-        viewBinding.addPaymentMethod.container.visibility = if (shouldShowCard) View.VISIBLE else View.GONE
+        viewBinding.addPaymentMethod.container.visibility =
+            if (shouldShowCard) View.VISIBLE else View.GONE
         viewBinding.addPaymentMethod.container.setOnClickListener {
             startAddPaymentMethod()
         }
@@ -122,26 +127,36 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                             paymentMethodsAdapter.deletePaymentConsent(paymentConsent)
                         }
                         is PaymentMethodsViewModel.PaymentConsentResult.Error -> {
-                            val exception = it.exception
                             setLoadingProgress(false)
-                            alert(message = exception.message ?: exception.toString())
+                            alert(message = it.exception.message ?: it.exception.toString())
                         }
                     }
                 }
             )
         }
 
-        object : PaymentMethodSwipeCallback(this@PaymentMethodsActivity, viewBinding.rvPaymentMethods) {
-            override fun instantiateUnderlayButton(viewHolder: RecyclerView.ViewHolder?, underlayButtons: ArrayList<UnderlayButton>) {
+        object :
+            PaymentMethodSwipeCallback(this@PaymentMethodsActivity, viewBinding.rvPaymentMethods) {
+            override fun instantiateUnderlayButton(
+                viewHolder: RecyclerView.ViewHolder?,
+                underlayButtons: ArrayList<UnderlayButton>
+            ) {
                 underlayButtons.add(
                     UnderlayButton(
                         text = resources.getString(R.string.delete_payment_method_positive),
                         textSize = resources.getDimensionPixelSize(R.dimen.swipe_size),
-                        color = ContextCompat.getColor(baseContext, R.color.airwallex_swipe_bg_color),
+                        color = ContextCompat.getColor(
+                            baseContext,
+                            R.color.airwallex_swipe_bg_color
+                        ),
                         clickListener = object : UnderlayButtonClickListener {
                             override fun onClick(position: Int) {
                                 deletePaymentMethodDialogFactory
-                                    .create(paymentMethodsAdapter.getPaymentConsentAtPosition(position))
+                                    .create(
+                                        paymentMethodsAdapter.getPaymentConsentAtPosition(
+                                            position
+                                        )
+                                    )
                                     .show()
                             }
                         }
@@ -165,9 +180,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         filterPaymentConsents()
                     }
                     is PaymentMethodsViewModel.PaymentMethodTypeResult.Error -> {
-                        val exception = it.exception
                         setLoadingProgress(loading = false)
-                        alert(message = exception.message ?: exception.toString())
+                        alert(message = it.exception.message ?: it.exception.toString())
                     }
                 }
             }
@@ -187,7 +201,8 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER && it.status == PaymentConsent.PaymentConsentStatus.VERIFIED && it.paymentMethod?.type == PaymentMethodType.CARD
             }
             paymentConsents.forEach { paymentConsent ->
-                paymentConsent.paymentMethod = customerPaymentMethods.find { paymentMethod -> paymentMethod.id == paymentConsent.paymentMethod?.id }
+                paymentConsent.paymentMethod =
+                    customerPaymentMethods.find { paymentMethod -> paymentMethod.id == paymentConsent.paymentMethod?.id }
             }
             paymentConsents.let {
                 paymentMethodsAdapter.setPaymentConsents(it)
@@ -211,199 +226,109 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     private fun handleProcessPaymentMethod(
         paymentConsent: PaymentConsent,
         cvc: String? = null
-    ) {
-        if (args.includeCheckoutFlow) {
-            val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
-
-            val listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
-                override fun onSuccess(response: PaymentIntent) {
-                    finishWithPaymentIntent(paymentIntent = response)
+    ) = if (args.includeCheckoutFlow) {
+        val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
+        val observer = Observer<PaymentResult> {
+            when (it) {
+                is PaymentResult.Success -> {
+                    finishWithPaymentIntent(paymentIntent = it.paymentIntent)
                 }
-
-                override fun onFailed(exception: Exception) {
-                    finishWithPaymentIntent(exception = exception)
+                is PaymentResult.Error -> {
+                    finishWithPaymentIntent(exception = it.exception)
                 }
-
-                override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                    finishWithPaymentIntent(weChat = weChat)
+                is PaymentResult.WeChatPay -> {
+                    finishWithPaymentIntent(weChat = it.weChat)
                 }
-
-                override fun onNextActionWithAlipayUrl(url: String) {
-                    finishWithPaymentIntent(redirectUrl = url)
+                is PaymentResult.Redirect -> {
+                    finishWithPaymentIntent(redirectUrl = it.redirectUrl)
                 }
             }
+        }
 
-            when (paymentMethod.type) {
-                PaymentMethodType.CARD -> {
-                    setLoadingProgress(false)
+        when (paymentMethod.type) {
+            PaymentMethodType.CARD -> {
+                setLoadingProgress(false)
 
-                    // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
-                    PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
-                        .startForResult(
-                            PaymentCheckoutActivityLaunch.Args.Builder()
-                                .setAirwallexSession(session)
-                                .setPaymentMethod(paymentMethod)
-                                .setPaymentConsentId(paymentConsent.id)
-                                .setCvc(cvc)
-                                .build()
+                // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
+                PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
+                    .startForResult(
+                        PaymentCheckoutActivityLaunch.Args.Builder()
+                            .setAirwallexSession(session)
+                            .setPaymentMethod(paymentMethod)
+                            .setPaymentConsentId(paymentConsent.id)
+                            .setCvc(cvc)
+                            .build()
+                    )
+            }
+            else -> {
+                val paymentMethodType = requireNotNull(paymentConsent.paymentMethod?.type)
+                val requiredFields = paymentMethodType.requiredFields
+
+                if (requiredFields.isEmpty()) {
+                    startCheckout(
+                        paymentMethod = paymentMethod,
+                        paymentConsentId = paymentConsent.id,
+                        cvc = null,
+                        currency = session.currency,
+                        observer = observer
+                    )
+                } else {
+                    fun showPaymentInfoDialog(
+                        requiredFields: List<PaymentMethodRequiredField>,
+                        bank: Bank? = null
+                    ) {
+                        val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(
+                            paymentMethodType,
+                            paymentMethodType.displayName,
+                            requiredFields
                         )
-                }
-                else -> {
-                    when (val paymentMethodType = paymentConsent.paymentMethod?.type) {
-                        PaymentMethodType.POLI,
-                        PaymentMethodType.GRAB_PAY -> {
-                            // name
-                            val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(
-                                paymentMethodType,
-                                getString(R.string.pay_with, paymentConsent.paymentMethod?.type?.displayName),
-                                withName = true,
-                                withEmail = false,
-                                withPhone = false
-                            )
-                            paymentInfoDialog.onCompleted = { name, _, _ ->
-                                startCheckout(
-                                    session = session,
-                                    paymentMethod = paymentMethod,
-                                    paymentConsentId = paymentConsent.id,
-                                    cvc = null,
-                                    currency = paymentIntent?.currency,
-                                    name = name,
-                                    listener = listener
-                                )
-                            }
-                            paymentInfoDialog.show(supportFragmentManager, paymentConsent.paymentMethod?.type?.value)
-                        }
-                        PaymentMethodType.ALFAMART,
-                        PaymentMethodType.DOKU_WALLET,
-                        PaymentMethodType.INDOMARET,
-                        PaymentMethodType.PERMATANET,
-                        PaymentMethodType.SKRILL -> {
-                            // name, email
-                            val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(
-                                paymentMethodType,
-                                getString(R.string.pay_with, paymentConsent.paymentMethod?.type?.displayName),
-                                withName = true,
-                                withEmail = true,
-                                withPhone = false
-                            )
-                            paymentInfoDialog.onCompleted = { name, email, _ ->
-                                startCheckout(
-                                    session = session,
-                                    paymentMethod = paymentMethod,
-                                    paymentConsentId = paymentConsent.id,
-                                    cvc = null,
-                                    currency = paymentIntent?.currency,
-                                    name = name,
-                                    email = email,
-                                    listener = listener
-                                )
-                            }
-                            paymentInfoDialog.show(supportFragmentManager, paymentConsent.paymentMethod?.type?.value)
-                        }
-                        PaymentMethodType.FPX,
-                        PaymentMethodType.E_NETS,
-                        PaymentMethodType.KONBINI,
-                        PaymentMethodType.PAY_EASY,
-                        PaymentMethodType.SEVEN_ELEVEN,
-                        PaymentMethodType.TESCO_LOTUS -> {
-                            // name, email, phone
-                            val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(
-                                paymentMethodType,
-                                getString(R.string.pay_with, paymentConsent.paymentMethod?.type?.displayName)
-                            )
-                            paymentInfoDialog.onCompleted = { name, email, phone ->
-                                startCheckout(
-                                    session = session,
-                                    paymentMethod = paymentMethod,
-                                    paymentConsentId = paymentConsent.id,
-                                    cvc = null,
-                                    currency = paymentIntent?.currency,
-                                    name = name,
-                                    email = email,
-                                    phone = phone,
-                                    listener = listener
-                                )
-                            }
-                            paymentInfoDialog.show(supportFragmentManager, paymentConsent.paymentMethod?.type?.value)
-                        }
-                        PaymentMethodType.DRAGON_PAY -> {
-                            // email, phone
-                            val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(
-                                paymentMethodType,
-                                getString(R.string.pay_with, paymentConsent.paymentMethod?.type?.displayName),
-                                withName = false,
-                                withEmail = true,
-                                withPhone = true
-                            )
-                            paymentInfoDialog.onCompleted = { _, email, phone ->
-                                startCheckout(
-                                    session = session,
-                                    paymentMethod = paymentMethod,
-                                    paymentConsentId = paymentConsent.id,
-                                    cvc = null,
-                                    currency = paymentIntent?.currency,
-                                    email = email,
-                                    phone = phone,
-                                    listener = listener
-                                )
-                            }
-                            paymentInfoDialog.show(supportFragmentManager, paymentConsent.paymentMethod?.type?.value)
-                        }
-                        PaymentMethodType.BANK_TRANSFER,
-                        PaymentMethodType.ONLINE_BANKING -> {
-                            // bank
-                            val withPhone = when (requireNotNull(paymentIntent?.currency)) {
-                                "IDR" -> false
-                                else -> true
-                            }
-                            val bankDialog = PaymentBankBottomSheetDialog.newInstance(getString(R.string.select_your_bank), requireNotNull(paymentIntent?.currency))
-                            bankDialog.onCompleted = { bank ->
-                                val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(
-                                    paymentMethodType,
-                                    requireNotNull(paymentConsent.paymentMethod?.type?.displayName),
-                                    withName = true,
-                                    withEmail = true,
-                                    withPhone = withPhone
-                                )
-                                paymentInfoDialog.onCompleted = { name, email, phone ->
-                                    startCheckout(
-                                        session = session,
-                                        paymentMethod = paymentMethod,
-                                        paymentConsentId = paymentConsent.id,
-                                        cvc = null,
-                                        currency = paymentIntent?.currency,
-                                        bank = bank,
-                                        name = name,
-                                        email = email,
-                                        phone = phone,
-                                        listener = listener
-                                    )
-                                }
-                                paymentInfoDialog.show(supportFragmentManager, paymentConsent.paymentMethod?.type?.value)
-                            }
-                            bankDialog.show(supportFragmentManager, paymentConsent.paymentMethod?.type?.value)
-                        }
-                        else -> {
+                        paymentInfoDialog.onCompleted = { name, email, phone ->
                             startCheckout(
-                                session = session,
                                 paymentMethod = paymentMethod,
                                 paymentConsentId = paymentConsent.id,
                                 cvc = null,
-                                currency = paymentIntent?.currency,
-                                listener = listener
+                                currency = session.currency,
+                                bank = bank,
+                                name = name,
+                                email = email,
+                                phone = phone,
+                                observer = observer
                             )
                         }
+                        paymentInfoDialog.show(supportFragmentManager, paymentMethodType.value)
+                    }
+
+                    if (listOf(
+                            PaymentMethodType.BANK_TRANSFER,
+                            PaymentMethodType.ONLINE_BANKING
+                        ).any { it == paymentMethodType }
+                    ) {
+                        val bankDialog = PaymentBankBottomSheetDialog.newInstance(
+                            getString(R.string.select_your_bank),
+                            session.currency
+                        )
+                        bankDialog.onCompleted = { bank ->
+                            val fields = if (session.currency == "IDR") {
+                                requiredFields.filter { it != PaymentMethodRequiredField.SHOPPER_PHONE }
+                            } else {
+                                requiredFields
+                            }
+                            showPaymentInfoDialog(fields, bank)
+                        }
+                        bankDialog.show(supportFragmentManager, paymentMethodType.value)
+                    } else {
+                        showPaymentInfoDialog(requiredFields)
                     }
                 }
             }
-        } else {
-            // Return the `PaymentMethod` 'cvc' to merchant
-            finishWithPaymentMethod(
-                paymentMethod = paymentConsent.paymentMethod,
-                paymentConsentId = paymentConsent.id,
-                cvc = cvc
-            )
         }
+    } else {
+        // Return the `PaymentMethod` 'cvc' to merchant
+        finishWithPaymentMethod(
+            paymentMethod = paymentConsent.paymentMethod,
+            paymentConsentId = paymentConsent.id,
+            cvc = cvc
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -428,7 +353,10 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
                 val result = PaymentCheckoutActivityLaunch.Result.fromIntent(data)
                 result?.let {
-                    finishWithPaymentIntent(paymentIntent = it.paymentIntent, exception = it.exception)
+                    finishWithPaymentIntent(
+                        paymentIntent = it.paymentIntent,
+                        exception = it.exception
+                    )
                 }
             }
         }

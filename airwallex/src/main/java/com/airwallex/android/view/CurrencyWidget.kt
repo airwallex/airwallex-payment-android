@@ -30,7 +30,13 @@ internal class CurrencyWidget(context: Context, attrs: AttributeSet) :
             if (country == null) {
                 viewBinding.icon.visibility = View.GONE
             } else {
-                val resourceId: Int = resources.getIdentifier(String.format("ic_flag_%s", country.toLowerCase(Locale.US)), "drawable", context.packageName)
+                val resourceId: Int = resources.getIdentifier(
+                    String.format(
+                        "ic_flag_%s",
+                        country.lowercase(Locale.US)
+                    ),
+                    "drawable", context.packageName
+                )
                 viewBinding.icon.setImageDrawable(ResourcesCompat.getDrawable(resources, resourceId, null))
             }
         } catch (e: Exception) {

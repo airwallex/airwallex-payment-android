@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.Airwallex
 import com.airwallex.android.model.ContinuePaymentIntentParams
 import com.airwallex.android.Logger
@@ -26,6 +27,15 @@ internal class DccActivity : AirwallexActivity() {
 
     private val airwallex: Airwallex by lazy { Airwallex(this) }
     private val args: DccActivityLaunch.Args by lazy { DccActivityLaunch.Args.getExtra(intent) }
+    private val viewModel: DccViewModel by lazy {
+        ViewModelProvider(
+            this,
+            DccViewModel.Factory(
+                application,
+                airwallex
+            )
+        )[DccViewModel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +52,8 @@ internal class DccActivity : AirwallexActivity() {
             viewBinding.transferCurrency.visibility = View.GONE
         }
 
-        viewBinding.rate.text = getString(R.string.rate, args.currency, args.dcc.clientRate, args.dcc.currency)
+        viewBinding.rate.text =
+            getString(R.string.rate, args.currency, args.dcc.clientRate, args.dcc.currency)
         viewBinding.currentCurrency.isSelected = true
         viewBinding.currentCurrency.setOnClickListener {
             Logger.debug("Current currency selected")
@@ -63,18 +74,20 @@ internal class DccActivity : AirwallexActivity() {
                 type = PaymentIntentContinueType.DCC,
                 useDcc = viewBinding.transferCurrency.isSelected
             )
-            airwallex.continuePaymentIntent(
-                applicationContext, ThreeDSecureActivityLaunch(this), params,
-                object : Airwallex.PaymentListener<PaymentIntent> {
-                    override fun onFailed(exception: Exception) {
-                        finishWithPaymentIntent(exception = exception)
+            viewModel.continuePaymentIntent(ThreeDSecureActivityLaunch(this), params)
+                .observe(
+                    this,
+                    {
+                        when (it) {
+                            is DccViewModel.PaymentIntentResult.Success -> {
+                                finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+                            }
+                            is DccViewModel.PaymentIntentResult.Error -> {
+                                finishWithPaymentIntent(exception = it.exception)
+                            }
+                        }
                     }
-
-                    override fun onSuccess(response: PaymentIntent) {
-                        finishWithPaymentIntent(paymentIntent = response)
-                    }
-                }
-            )
+                )
         }
     }
 

@@ -43,7 +43,7 @@ class Airwallex internal constructor(
 
     interface PaymentResultListener<T> : PaymentListener<T> {
         fun onNextActionWithWeChatPay(weChat: WeChat)
-        fun onNextActionWithAlipayUrl(url: String)
+        fun onNextActionWithRedirectUrl(url: String)
     }
 
     /**
@@ -229,8 +229,8 @@ class Airwallex internal constructor(
                 request = PaymentConsentCreateRequest.Builder()
                     .setRequestId(UUID.randomUUID().toString())
                     .setCustomerId(params.customerId)
-                    .setPaymentMethod(
-                        PaymentMethod(
+                    .setPaymentMethodRequest(
+                        PaymentMethodRequest(
                             id = params.paymentMethodId,
                             type = params.paymentMethodType
                         )
@@ -322,7 +322,7 @@ class Airwallex internal constructor(
         fun onSuccess(paymentIntent: PaymentIntent)
         fun onFailed(error: Exception)
         fun onNextActionWithWeChatPay(weChat: WeChat)
-        fun onNextActionWithAlipayUrl(url: String)
+        fun onNextActionWithRedirectUrl(url: String)
     }
 
     /**
@@ -517,7 +517,7 @@ class Airwallex internal constructor(
                     Logger.debug("3DS 2.0 canceled")
                     callback.onFailed(ThreeDSException(message = "3DS 2.0 failed. Reason: User cancel the 3DS 2.0"))
                 } else {
-                    if (validateResponse.errorDescription.toLowerCase(Locale.ROOT) == "success") {
+                    if (validateResponse.errorDescription.lowercase(Locale.ROOT) == "success") {
                         Logger.debug("3DS 2.0 success. Response payload: ${validateResponse.payment.processorTransactionId}")
                         callback.onThreeDS2Success(validateResponse.payment.processorTransactionId)
                     } else {

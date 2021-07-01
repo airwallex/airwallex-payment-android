@@ -79,7 +79,7 @@ internal class PaymentMethodItemView constructor(
         this.paymentMethodType = paymentMethod.type
         viewBinding.tvPaymentMethod.text = String.format(
             "%s •••• %s",
-            paymentMethod.card?.brand?.toUpperCase(Locale.ROOT),
+            paymentMethod.card?.brand?.uppercase(Locale.ROOT),
             paymentMethod.card?.last4
         )
         viewBinding.etCardCvc.setText(cvc)

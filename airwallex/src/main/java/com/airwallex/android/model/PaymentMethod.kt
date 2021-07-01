@@ -1,7 +1,6 @@
 package com.airwallex.android.model
 
 import android.os.Parcelable
-import com.airwallex.android.CurrencyUtils
 import com.airwallex.android.model.parser.PaymentMethodParser
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
@@ -31,7 +30,7 @@ data class PaymentMethod internal constructor(
     val customerId: String? = null,
 
     /**
-     * Type of the payment method. One of card, wechatpay
+     * Type of the payment method.
      */
     val type: PaymentMethodType? = null,
 
@@ -39,131 +38,6 @@ data class PaymentMethod internal constructor(
      * Card information for the payment method
      */
     val card: Card? = null,
-
-    /**
-     * WeChat
-     */
-    val weChatPayRequest: ThirdPartPayRequest? = null,
-
-    /**
-     * alipaycn
-     */
-    val aliPayCNRequest: ThirdPartPayRequest? = null,
-
-    /**
-     *  alipayhk
-     */
-    val aliPayHKRequest: ThirdPartPayRequest? = null,
-
-    /**
-     *  kakaopay
-     */
-    val kakaoPayRequest: ThirdPartPayRequest? = null,
-
-    /**
-     *  tng
-     */
-    val tngRequest: ThirdPartPayRequest? = null,
-
-    /**
-     *  dana
-     */
-    val danaRequest: ThirdPartPayRequest? = null,
-
-    /**
-     *  gcash
-     */
-    val gCashRequest: ThirdPartPayRequest? = null,
-
-    /**
-     *  turemoney
-     */
-    val tureMoneyRequest: ThirdPartPayRequest? = null,
-
-    /**
-     *  bKash
-     */
-    val bKashRequest: ThirdPartPayRequest? = null,
-
-    /**
-     *  POLi
-     */
-    val poliRequest: PPRORequest? = null,
-
-    /**
-     *  FPX
-     */
-    val fpxRequest: PPRORequest? = null,
-
-    /**
-     * Alfamart
-     */
-    val alfamartRequest: PPRORequest? = null,
-
-    /**
-     * Doku Ewallet
-     */
-    val dokuEwalletRequest: PPRORequest? = null,
-
-    /**
-     * Indomaret
-     */
-    val indomaretRequest: PPRORequest? = null,
-
-    /**
-     * Permatanet
-     */
-    val permatanetRequest: PPRORequest? = null,
-
-    /**
-     * eNETS
-     */
-    val eNETSRequest: PPRORequest? = null,
-
-    /**
-     * Grabpay
-     */
-    val grabpayRequest: PPRORequest? = null,
-
-    /**
-     * Konbini
-     */
-    val konbiniRequest: PPRORequest? = null,
-
-    /**
-     * Pay-easy
-     */
-    val payEasyRequest: PPRORequest? = null,
-
-    /**
-     * 7-eleven
-     */
-    val sevenElevenRequest: PPRORequest? = null,
-
-    /**
-     * Skrill
-     */
-    val skrillRequest: PPRORequest? = null,
-
-    /**
-     * Skrill
-     */
-    val tescoLotusRequest: PPRORequest? = null,
-
-    /**
-     * DragonPay
-     */
-    val dragonPayRequest: PPRORequest? = null,
-
-    /**
-     *  Bank Transfer
-     */
-    val bankTransferRequest: PPRORequest? = null,
-
-    /**
-     *  Online Bank
-     */
-    val onlineBankRequest: PPRORequest? = null,
 
     /**
      * Billing information for the payment method
@@ -188,148 +62,14 @@ data class PaymentMethod internal constructor(
     /**
      * Last time at which the payment method was updated
      */
-    val updatedAt: Date? = null
+    val updatedAt: Date? = null,
 
-) : AirwallexModel, AirwallexRequestModel, Parcelable {
+    /**
+     * Redirect Request
+     */
+    val redirectRequest: RedirectRequest? = null
 
-    override fun toParamMap(): Map<String, Any> {
-        return mapOf<String, Any>()
-            .plus(
-                id?.let {
-                    mapOf(PaymentMethodParser.FIELD_ID to it)
-                }.orEmpty()
-            )
-            .plus(
-                type?.let {
-                    mapOf(PaymentMethodParser.FIELD_TYPE to it.value)
-                }.orEmpty()
-            )
-            .plus(
-                weChatPayRequest?.let {
-                    mapOf(PaymentMethodType.WECHAT.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                aliPayCNRequest?.let {
-                    mapOf(PaymentMethodType.ALIPAY_CN.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                aliPayHKRequest?.let {
-                    mapOf(PaymentMethodType.ALIPAY_HK.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                kakaoPayRequest?.let {
-                    mapOf(PaymentMethodType.KAKAOPAY.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                tngRequest?.let {
-                    mapOf(PaymentMethodType.TNG.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                danaRequest?.let {
-                    mapOf(PaymentMethodType.DANA.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                gCashRequest?.let {
-                    mapOf(PaymentMethodType.GCASH.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                tureMoneyRequest?.let {
-                    mapOf(PaymentMethodType.TRUE_MONEY.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                bKashRequest?.let {
-                    mapOf(PaymentMethodType.BKASH.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                poliRequest?.let {
-                    mapOf(PaymentMethodType.POLI.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                fpxRequest?.let {
-                    mapOf(PaymentMethodType.FPX.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                alfamartRequest?.let {
-                    mapOf(PaymentMethodType.ALFAMART.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                dokuEwalletRequest?.let {
-                    mapOf(PaymentMethodType.DOKU_WALLET.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                indomaretRequest?.let {
-                    mapOf(PaymentMethodType.INDOMARET.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                permatanetRequest?.let {
-                    mapOf(PaymentMethodType.PERMATANET.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                eNETSRequest?.let {
-                    mapOf(PaymentMethodType.E_NETS.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                grabpayRequest?.let {
-                    mapOf(PaymentMethodType.GRAB_PAY.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                konbiniRequest?.let {
-                    mapOf(PaymentMethodType.KONBINI.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                payEasyRequest?.let {
-                    mapOf(PaymentMethodType.PAY_EASY.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                sevenElevenRequest?.let {
-                    mapOf(PaymentMethodType.SEVEN_ELEVEN.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                skrillRequest?.let {
-                    mapOf(PaymentMethodType.SKRILL.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                tescoLotusRequest?.let {
-                    mapOf(PaymentMethodType.TESCO_LOTUS.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                dragonPayRequest?.let {
-                    mapOf(PaymentMethodType.DRAGON_PAY.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                bankTransferRequest?.let {
-                    mapOf(PaymentMethodType.BANK_TRANSFER.value to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                onlineBankRequest?.let {
-                    mapOf(PaymentMethodType.ONLINE_BANKING.value to it.toParamMap())
-                }.orEmpty()
-            )
-    }
+) : AirwallexModel, Parcelable {
 
     class Builder : ObjectBuilder<PaymentMethod> {
         private var id: String? = null
@@ -337,32 +77,6 @@ data class PaymentMethod internal constructor(
         private var customerId: String? = null
         private var type: PaymentMethodType? = null
         private var card: Card? = null
-        private var weChatPayRequest: ThirdPartPayRequest? = null
-        private var aliPayCNRequest: ThirdPartPayRequest? = null
-        private var aliPayHKRequest: ThirdPartPayRequest? = null
-        private var kakaoPayRequest: ThirdPartPayRequest? = null
-        private var tngRequest: ThirdPartPayRequest? = null
-        private var danaRequest: ThirdPartPayRequest? = null
-        private var gCashRequest: ThirdPartPayRequest? = null
-        private var tureMoneyRequest: ThirdPartPayRequest? = null
-        private var bKashRequest: ThirdPartPayRequest? = null
-        private var poliRequest: PPRORequest? = null
-        private var fpxRequest: PPRORequest? = null
-        private var alfamartRequest: PPRORequest? = null
-        private var dokuEwalletRequest: PPRORequest? = null
-        private var indomaretRequest: PPRORequest? = null
-        private var permatanetRequest: PPRORequest? = null
-        private var eNETSRequest: PPRORequest? = null
-        private var grabpayRequest: PPRORequest? = null
-        private var konbiniRequest: PPRORequest? = null
-        private var payEasyRequest: PPRORequest? = null
-        private var sevenElevenRequest: PPRORequest? = null
-        private var skrillRequest: PPRORequest? = null
-        private var tescoLotusRequest: PPRORequest? = null
-        private var dragonPayRequest: PPRORequest? = null
-        private var bankTransferRequest: PPRORequest? = null
-        private var onlineBankRequest: PPRORequest? = null
-
         private var billing: Billing? = null
         private var metadata: Map<String, Any?>? = null
         private var createdAt: Date? = null
@@ -397,37 +111,6 @@ data class PaymentMethod internal constructor(
             this.type = type
         }
 
-        fun setPaymentMethodRequest(type: PaymentMethodType, name: String?, email: String?, phone: String?, currency: String?, bank: Bank?): Builder = apply {
-            when (type) {
-                PaymentMethodType.WECHAT -> weChatPayRequest = ThirdPartPayRequest()
-                PaymentMethodType.ALIPAY_CN -> aliPayCNRequest = ThirdPartPayRequest()
-                PaymentMethodType.ALIPAY_HK -> aliPayHKRequest = ThirdPartPayRequest()
-                PaymentMethodType.KAKAOPAY -> kakaoPayRequest = ThirdPartPayRequest()
-                PaymentMethodType.TNG -> tngRequest = ThirdPartPayRequest()
-                PaymentMethodType.DANA -> danaRequest = ThirdPartPayRequest()
-                PaymentMethodType.GCASH -> gCashRequest = ThirdPartPayRequest()
-                PaymentMethodType.TRUE_MONEY -> tureMoneyRequest = ThirdPartPayRequest()
-                PaymentMethodType.BKASH -> bKashRequest = ThirdPartPayRequest()
-                PaymentMethodType.POLI -> poliRequest = PPRORequest(name = name, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.FPX -> fpxRequest = PPRORequest(name = name, email = email, phone = phone, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.ALFAMART -> alfamartRequest = PPRORequest(name = name, email = email, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.DOKU_WALLET -> dokuEwalletRequest = PPRORequest(name = name, email = email, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.INDOMARET -> indomaretRequest = PPRORequest(name = name, email = email, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.PERMATANET -> permatanetRequest = PPRORequest(name = name, email = email, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.E_NETS -> eNETSRequest = PPRORequest(name = name, email = email, phone = phone, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.GRAB_PAY -> grabpayRequest = PPRORequest(name = name, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.KONBINI -> konbiniRequest = PPRORequest(name = name, email = email, phone = phone, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.PAY_EASY -> payEasyRequest = PPRORequest(name = name, email = email, phone = phone, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.SEVEN_ELEVEN -> sevenElevenRequest = PPRORequest(name = name, email = email, phone = phone, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.SKRILL -> skrillRequest = PPRORequest(name = name, email = email, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.TESCO_LOTUS -> tescoLotusRequest = PPRORequest(name = name, email = email, phone = phone, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.DRAGON_PAY -> dragonPayRequest = PPRORequest(email = email, phone = phone, countryCode = CurrencyUtils.currencyToCountryMap[currency])
-                PaymentMethodType.BANK_TRANSFER -> bankTransferRequest = PPRORequest(bank = bank, name = name, email = email, phone = phone, countryCode = CurrencyUtils.currencyToCountryMap[bank?.currency])
-                PaymentMethodType.ONLINE_BANKING -> onlineBankRequest = PPRORequest(bank = bank, name = name, email = email, phone = phone, countryCode = CurrencyUtils.currencyToCountryMap[bank?.currency])
-                else -> Unit
-            }
-        }
-
         fun setCreatedAt(createdAt: Date?): Builder = apply {
             this.createdAt = createdAt
         }
@@ -448,31 +131,6 @@ data class PaymentMethod internal constructor(
                 billing = billing,
                 card = card,
                 type = type,
-                weChatPayRequest = weChatPayRequest,
-                aliPayCNRequest = aliPayCNRequest,
-                aliPayHKRequest = aliPayHKRequest,
-                kakaoPayRequest = kakaoPayRequest,
-                tngRequest = tngRequest,
-                danaRequest = danaRequest,
-                gCashRequest = gCashRequest,
-                tureMoneyRequest = tureMoneyRequest,
-                bKashRequest = bKashRequest,
-                poliRequest = poliRequest,
-                fpxRequest = fpxRequest,
-                alfamartRequest = alfamartRequest,
-                dokuEwalletRequest = dokuEwalletRequest,
-                indomaretRequest = indomaretRequest,
-                permatanetRequest = permatanetRequest,
-                eNETSRequest = eNETSRequest,
-                grabpayRequest = grabpayRequest,
-                konbiniRequest = konbiniRequest,
-                payEasyRequest = payEasyRequest,
-                sevenElevenRequest = sevenElevenRequest,
-                skrillRequest = skrillRequest,
-                tescoLotusRequest = tescoLotusRequest,
-                dragonPayRequest = dragonPayRequest,
-                bankTransferRequest = bankTransferRequest,
-                onlineBankRequest = onlineBankRequest,
                 metadata = metadata,
                 createdAt = createdAt,
                 updatedAt = updatedAt,

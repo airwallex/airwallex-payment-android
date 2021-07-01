@@ -22,7 +22,7 @@ data class PaymentConsentCreateRequest internal constructor(
     /**
      * PaymentMethod for subsequent payments. Can be provided later by updating the PaymentConsent
      */
-    val paymentMethod: PaymentMethod? = null,
+    val paymentMethodRequest: PaymentMethodRequest? = null,
 
     /**
      * The party to trigger subsequent payments. Can be one of merchant, customer. If type of payment_method is card, both merchant and customer is supported. Otherwise, only merchant is supported
@@ -70,7 +70,7 @@ data class PaymentConsentCreateRequest internal constructor(
                 }.orEmpty()
             )
             .plus(
-                paymentMethod?.let {
+                paymentMethodRequest?.let {
                     mapOf(FIELD_PAYMENT_METHOD to it.toParamMap())
                 }.orEmpty()
             )
@@ -99,7 +99,7 @@ data class PaymentConsentCreateRequest internal constructor(
     class Builder : ObjectBuilder<PaymentConsentCreateRequest> {
         private var requestId: String? = null
         private var customerId: String? = null
-        private var paymentMethod: PaymentMethod? = null
+        private var paymentMethodRequest: PaymentMethodRequest? = null
         private var nextTriggeredBy: PaymentConsent.NextTriggeredBy? = null
         private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = null
         private var requiresCvc: Boolean? = null
@@ -113,8 +113,8 @@ data class PaymentConsentCreateRequest internal constructor(
             this.customerId = customerId
         }
 
-        fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
-            this.paymentMethod = paymentMethod
+        fun setPaymentMethodRequest(paymentMethodRequest: PaymentMethodRequest?): Builder = apply {
+            this.paymentMethodRequest = paymentMethodRequest
         }
 
         fun setNextTriggeredBy(nextTriggeredBy: PaymentConsent.NextTriggeredBy?): Builder = apply {
@@ -137,7 +137,7 @@ data class PaymentConsentCreateRequest internal constructor(
             return PaymentConsentCreateRequest(
                 requestId = requestId,
                 customerId = customerId,
-                paymentMethod = paymentMethod,
+                paymentMethodRequest = paymentMethodRequest,
                 nextTriggeredBy = nextTriggeredBy,
                 merchantTriggerReason = merchantTriggerReason,
                 requiresCvc = requiresCvc,

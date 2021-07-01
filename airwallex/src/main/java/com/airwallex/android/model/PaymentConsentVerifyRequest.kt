@@ -55,7 +55,7 @@ data class PaymentConsentVerifyRequest internal constructor(
         /**
          * Alipayhk information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
          */
-        val alipayhk: AliPayVerificationOptions? = null,
+        val alipayhk: RedirectVerificationOptions? = null,
 
         /**
          * Card information for verifying PaymentConsent
@@ -65,32 +65,32 @@ data class PaymentConsentVerifyRequest internal constructor(
         /**
          * Dana information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
          */
-        val dana: AliPayVerificationOptions? = null,
+        val dana: RedirectVerificationOptions? = null,
 
         /**
          * Gcash information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
          */
-        val gcash: AliPayVerificationOptions? = null,
+        val gcash: RedirectVerificationOptions? = null,
 
         /**
          * Kakaopay information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
          */
-        val kakaopay: AliPayVerificationOptions? = null,
+        val kakaopay: RedirectVerificationOptions? = null,
 
         /**
          * Tng information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
          */
-        val tng: AliPayVerificationOptions? = null,
+        val tng: RedirectVerificationOptions? = null,
 
         /**
          * TrueMoney information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
          */
-        val trueMoney: AliPayVerificationOptions? = null,
+        val trueMoney: RedirectVerificationOptions? = null,
 
         /**
          * bKash information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
          */
-        val bKash: AliPayVerificationOptions? = null,
+        val bKash: RedirectVerificationOptions? = null,
     ) : AirwallexRequestModel, Parcelable {
 
         override fun toParamMap(): Map<String, Any> {
@@ -139,11 +139,11 @@ data class PaymentConsentVerifyRequest internal constructor(
     }
 
     @Parcelize
-    data class AliPayVerificationOptions internal constructor(
+    data class RedirectVerificationOptions internal constructor(
         /**
          * Refer to the specification of the verification_options of the payment method.
          */
-        val flow: ThirdPartPayRequestFlow? = null,
+        val flow: RedirectRequestFlow? = null,
 
         /**
          * Can be one of ios, android. osType must be set when flow is mweb, inapp.
@@ -160,7 +160,7 @@ data class PaymentConsentVerifyRequest internal constructor(
         override fun toParamMap(): Map<String, Any> {
             return mapOf<String, Any>()
                 .plus(
-                    mapOf(FIELD_FLOW to ThirdPartPayRequestFlow.IN_APP.value)
+                    mapOf(FIELD_FLOW to RedirectRequestFlow.IN_APP.value)
                 )
                 .plus(
                     mapOf(FIELD_OS_TYPE to "android")

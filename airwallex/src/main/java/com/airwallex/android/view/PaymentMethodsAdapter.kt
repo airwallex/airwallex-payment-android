@@ -116,7 +116,7 @@ internal class PaymentMethodsAdapter(
             val method = paymentConsent.paymentMethod ?: return
             val card = method.card ?: return
             viewBinding.tvCardInfo.text =
-                String.format("%s •••• %s", card.brand?.toUpperCase(Locale.ROOT), card.last4)
+                String.format("%s •••• %s", card.brand?.uppercase(Locale.ROOT), card.last4)
             when (card.brand) {
                 CardBrand.Visa.type -> viewBinding.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
                 CardBrand.MasterCard.type -> viewBinding.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)

@@ -74,7 +74,7 @@ data class Address internal constructor(
         private var postcode: String? = null
 
         fun setCountryCode(countryCode: String?): Builder = apply {
-            this.countryCode = countryCode?.toUpperCase(Locale.ROOT)
+            this.countryCode = countryCode?.uppercase(Locale.ROOT)
         }
 
         fun setState(state: String?): Builder = apply {

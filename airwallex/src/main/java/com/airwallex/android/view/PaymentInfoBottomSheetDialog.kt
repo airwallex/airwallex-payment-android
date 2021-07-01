@@ -12,6 +12,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout.LayoutParams
 import com.airwallex.android.R
 import com.airwallex.android.databinding.DialogPaymentInfoBinding
+import com.airwallex.android.model.PaymentMethodRequiredField
 import com.airwallex.android.model.PaymentMethodType
 
 class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
@@ -21,23 +22,17 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
     companion object {
         private const val PAYMENT_METHOD_TYPE = "payment_method_type"
         private const val TITLE = "title"
-        private const val WITH_NAME = "with_name"
-        private const val WITH_EMAIL = "with_email"
-        private const val WITH_PHONE = "with_phone"
+        private const val REQUIRED_FIELDS = "required_fields"
 
         fun newInstance(
             paymentMethodType: PaymentMethodType,
             title: String,
-            withName: Boolean = true,
-            withEmail: Boolean = true,
-            withPhone: Boolean = true
+            requiredFields: List<PaymentMethodRequiredField>
         ): PaymentInfoBottomSheetDialog {
             val args = Bundle()
             args.putParcelable(PAYMENT_METHOD_TYPE, paymentMethodType)
             args.putString(TITLE, title)
-            args.putBoolean(WITH_NAME, withName)
-            args.putBoolean(WITH_EMAIL, withEmail)
-            args.putBoolean(WITH_PHONE, withPhone)
+            args.putParcelableArrayList(REQUIRED_FIELDS, ArrayList(requiredFields))
             val fragment = PaymentInfoBottomSheetDialog()
             fragment.arguments = args
             return fragment
@@ -65,7 +60,9 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
         var emailInput: AirwallexTextInputLayout? = null
         var phoneInput: AirwallexTextInputLayout? = null
 
-        if (arguments?.getBoolean(WITH_NAME) == true) {
+        val requiredFields =
+            arguments?.getParcelableArrayList<PaymentMethodRequiredField>(REQUIRED_FIELDS)
+        if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_NAME } == true) {
             nameInput = AirwallexTextInputLayout(requireContext(), null)
             nameInput.afterTextChanged { nameInput.error = null }
             nameInput.setHint(getString(R.string.shopper_name_hint))
@@ -79,7 +76,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             )
         }
 
-        if (arguments?.getBoolean(WITH_EMAIL) == true) {
+        if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_EMAIL } == true) {
             emailInput = AirwallexTextInputLayout(requireContext(), null)
             emailInput.afterTextChanged { emailInput.error = null }
             emailInput.setHint(getString(R.string.shopper_email_hint))
@@ -92,7 +89,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             )
         }
 
-        if (arguments?.getBoolean(WITH_PHONE) == true) {
+        if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_PHONE } == true) {
             phoneInput = AirwallexTextInputLayout(requireContext(), null)
             phoneInput.afterTextChanged { phoneInput.error = null }
             phoneInput.setHint(getString(R.string.shopper_phone_hint))
@@ -107,14 +104,17 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
 
         for (i in 0 until viewBinding.content.childCount) {
             if (i == viewBinding.content.childCount - 1) {
-                (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout).setImeOptions(EditorInfo.IME_ACTION_DONE)
+                (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout).setImeOptions(
+                    EditorInfo.IME_ACTION_DONE
+                )
             } else {
-                (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout).setImeOptions(EditorInfo.IME_ACTION_NEXT)
+                (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout).setImeOptions(
+                    EditorInfo.IME_ACTION_NEXT
+                )
             }
         }
 
         viewBinding.checkout.setOnClickListener {
-
             // Name
             if (nameInput != null && nameInput.value.isEmpty()) {
                 nameInput.error = getString(R.string.payment_method_filed_empty_error)

@@ -3,7 +3,7 @@ package com.airwallex.android.model.parser
 import com.airwallex.android.model.AirwallexJsonUtils
 import com.airwallex.android.model.AvailablePaymentMethod
 import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.model.ThirdPartPayRequestFlow
+import com.airwallex.android.model.RedirectRequestFlow
 import org.json.JSONObject
 
 class AvailablePaymentMethodParser : ModelJsonParser<AvailablePaymentMethod> {
@@ -13,7 +13,7 @@ class AvailablePaymentMethodParser : ModelJsonParser<AvailablePaymentMethod> {
         return AvailablePaymentMethod(
             name = PaymentMethodType.fromValue(AirwallexJsonUtils.optString(json, FIELD_NAME)),
             transactionMode = AvailablePaymentMethod.TransactionMode.fromValue(AirwallexJsonUtils.optString(json, FIELD_TRANSACTION_MODE)),
-            flows = AirwallexJsonUtils.jsonArrayToList(json.optJSONArray(FIELD_FLOWS)).orEmpty().map { ThirdPartPayRequestFlow.valueOf(it.toString()) },
+            flows = AirwallexJsonUtils.jsonArrayToList(json.optJSONArray(FIELD_FLOWS)).orEmpty().map { RedirectRequestFlow.valueOf(it.toString()) },
             transactionCurrencies = ModelJsonParser.jsonArrayToList(json.optJSONArray(FIELD_TRANSACTION_CURRENCIES)),
             active = AirwallexJsonUtils.optBoolean(json, FIELD_ACTIVE)
         )
