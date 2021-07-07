@@ -76,10 +76,6 @@ internal class AirwallexStarter constructor(
         clientSecretProvider: ClientSecretProvider,
         addPaymentMethodFlowListener: Airwallex.AddPaymentMethodListener
     ) {
-        if (session.customerId == null) {
-            addPaymentMethodFlowListener.onFailed(Exception("Customer id must be provided on AddPaymentMethodFlow"))
-            return
-        }
         this.addPaymentMethodFlowListener = addPaymentMethodFlowListener
         ClientSecretRepository.init(clientSecretProvider)
         addPaymentMethodActivityLaunch.startForResult(
@@ -101,10 +97,6 @@ internal class AirwallexStarter constructor(
         clientSecretProvider: ClientSecretProvider,
         selectPaymentMethodFlowListener: Airwallex.PaymentMethodListener
     ) {
-        if (session.customerId == null) {
-            selectPaymentMethodFlowListener.onFailed(Exception("Customer id must be provided on SelectPaymentMethodFlow"))
-            return
-        }
         this.selectPaymentMethodFlowListener = selectPaymentMethodFlowListener
         ClientSecretRepository.init(clientSecretProvider)
         paymentMethodsActivityLaunch.startForResult(
@@ -150,20 +142,18 @@ internal class AirwallexStarter constructor(
      * Launch the [PaymentMethodsActivity] to allow the user to complete the entire payment flow
      *
      * @param session a [AirwallexSession] used to present the payment flow
-     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
+     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret, not required for anonymous payments
      * @param paymentFlowListener The callback of present entire payment flow
      */
     fun presentPaymentFlow(
         session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider,
+        clientSecretProvider: ClientSecretProvider? = null,
         paymentFlowListener: Airwallex.PaymentIntentListener
     ) {
-        if (session.customerId == null) {
-            paymentFlowListener.onFailed(Exception("Customer id must be provided on presentPaymentFlow"))
-            return
-        }
         this.paymentFlowListener = paymentFlowListener
-        ClientSecretRepository.init(clientSecretProvider)
+        clientSecretProvider?.let {
+            ClientSecretRepository.init(it)
+        }
         paymentMethodsActivityLaunch.startForResult(
             PaymentMethodsActivityLaunch.Args.Builder()
                 .setIncludeCheckoutFlow(true)
@@ -198,7 +188,7 @@ internal class AirwallexStarter constructor(
                     AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
                         val result =
                             AddPaymentMethodActivityLaunch.Result.fromIntent(data) ?: return true
-                        addPaymentMethodFlowListener?.onSuccess(result.paymentMethod, result.cvc)
+                        addPaymentMethodFlowListener?.onSuccess(requireNotNull(result.paymentMethod), requireNotNull(result.cvc))
                         addPaymentMethodFlowListener = null
                         true
                     }

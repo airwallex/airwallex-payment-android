@@ -32,9 +32,9 @@
     <string name="airwallex_empty_country">Please enter your country</string>
 
     <string name="airwallex_save">Save</string>
-    <string name="airwallex_new_card">New card</string>
+    <string name="airwallex_new_card">Card</string>
     <string name="airwallex_same_as_shipping">Same as shipping address</string>
-    <string name="airwallex_enter_new_card">Enter a new card</string>
+    <string name="airwallex_enter_new_card">Card</string>
     <string name="airwallex_no_saved_cards">No saved cards</string>
     <string name="airwallex_payment_methods">Payment methods</string>
     <string name="airwallex_shipping_address">Shipping address</string>

@@ -35,16 +35,16 @@ object Settings {
     /**
      * Cache customerId is just to prevent creating multiple customers
      */
-    var cachedCustomerId: String
+    var cachedCustomerId: String?
         set(value) {
-            if (value.isEmpty()) {
+            if (value?.isEmpty() == true) {
                 sharedPreferences.edit().remove(CUSTOMER_ID).apply()
             } else {
                 sharedPreferences.edit().putString(CUSTOMER_ID, value).apply()
             }
         }
         get() {
-            return sharedPreferences.getString(CUSTOMER_ID, "") ?: ""
+            return sharedPreferences.getString(CUSTOMER_ID, null)
         }
 
     // Default Staging

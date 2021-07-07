@@ -27,6 +27,11 @@
             android:title="@string/next_trigger_by" />
 
         <Preference
+            android:key="@string/generate_customer"
+            android:title="@string/generate_customer" >
+        </Preference>
+
+        <Preference
             android:key="@string/clear_customer"
             android:title="@string/clear_customer" >
         </Preference>

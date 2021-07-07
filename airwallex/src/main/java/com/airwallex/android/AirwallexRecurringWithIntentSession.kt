@@ -47,6 +47,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
 
     class Builder(
         private val paymentIntent: PaymentIntent,
+        private val customerId: String,
         private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
     ) : ObjectBuilder<AirwallexRecurringWithIntentSession> {
 
@@ -57,7 +58,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
             return AirwallexRecurringWithIntentSession(
                 paymentIntent = paymentIntent,
                 nextTriggerBy = nextTriggerBy,
-                customerId = paymentIntent.customerId,
+                customerId = customerId,
                 currency = paymentIntent.currency,
                 amount = paymentIntent.amount,
                 shipping = paymentIntent.order?.shipping

@@ -97,7 +97,7 @@ repositories {
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
             .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
-            .setEnvironment(Environment.DEMO)   // You can change the environment to DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
+            .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
             .build()
     )
 ```
@@ -122,7 +122,7 @@ repositories {
 - 如果您不想使用预构建的UI，则可以选择使用自己的UI页面。 然后，您可以集成不同的支付方式
 
 ## UI集成
-我们提供一些UI姐main，以加快付款功能的集成。
+我们提供一些UI组件，以加快付款功能的集成。
 您可以单独使用它们，也可以按照“集成”指南将所有预构建的UI放在一个流程中。
 
 1. 初始化一个 `Airwallex` 对象, 这个 Airwallex SDK 的入口.
@@ -266,6 +266,7 @@ class ExampleClientSecretProvider : ClientSecretProvider {
         ExampleClientSecretProvider()
     }
     val session = buildSessionWithIntent(paymentIntent)
+    // payment flow does not need clientSecretProvider
     airwallex.presentPaymentFlow(session, clientSecretProvider,
         object : Airwallex.PaymentIntentListener {
             override fun onSuccess(paymentIntent: PaymentIntent) {

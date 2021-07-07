@@ -1,14 +1,15 @@
 package com.airwallex.android
 
+import com.airwallex.android.model.ClientSecret
+
 interface ClientSecretUpdateListener {
 
     /**
      * Client secret update success
      *
-     * @param customerId Id of the current customer
-     * @param responseJson the raw JSON String returned from Airwallex's server
+     * @param clientSecret the clientSecret returned from Airwallex's server
      */
-    fun onClientSecretUpdate(customerId: String, responseJson: String)
+    fun onClientSecretUpdate(clientSecret: ClientSecret)
 
     /**
      * Client secret update failed

@@ -49,23 +49,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         )[PaymentMethodsViewModel::class.java]
     }
 
-    private val paymentIntent: PaymentIntent? by lazy {
-        when (session) {
-            is AirwallexPaymentSession -> {
-                (session as AirwallexPaymentSession).paymentIntent
-            }
-            is AirwallexRecurringWithIntentSession -> {
-                (session as AirwallexRecurringWithIntentSession).paymentIntent
-            }
-            is AirwallexRecurringSession -> {
-                null
-            }
-            else -> {
-                throw Exception("Not supported session $session")
-            }
-        }
-    }
-
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
     }
@@ -193,8 +176,9 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             return
         }
 
+        val paymentIntent = viewModel.paymentIntent
         val customerPaymentConsents = paymentIntent?.customerPaymentConsents ?: return
-        val customerPaymentMethods = paymentIntent?.customerPaymentMethods ?: return
+        val customerPaymentMethods = paymentIntent.customerPaymentMethods ?: return
 
         if (session is AirwallexPaymentSession) {
             val paymentConsents = customerPaymentConsents.filter {
@@ -340,13 +324,18 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
                 val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
                 result?.let {
-                    viewBinding.rvPaymentMethods.requestLayout()
-                    handleProcessPaymentMethod(
-                        PaymentConsent(
-                            paymentMethod = it.paymentMethod
-                        ),
-                        it.cvc
-                    )
+                    if (session is AirwallexPaymentSession) {
+                        finishWithPaymentIntent(
+                            paymentIntent = result.paymentIntent,
+                            exception = result.exception
+                        )
+                    } else {
+                        viewBinding.rvPaymentMethods.requestLayout()
+                        handleProcessPaymentMethod(
+                            PaymentConsent(paymentMethod = it.paymentMethod),
+                            it.cvc
+                        )
+                    }
                 }
             }
 

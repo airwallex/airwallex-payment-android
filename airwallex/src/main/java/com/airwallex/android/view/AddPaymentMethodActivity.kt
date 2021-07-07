@@ -11,11 +11,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.databinding.ActivityAddCardBinding
+import com.airwallex.android.model.PaymentIntent
+import com.airwallex.android.model.PaymentMethodType
 
 /**
  * Activity to add new payment method
  */
-internal class AddPaymentMethodActivity : AirwallexActivity() {
+internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
 
     private val viewBinding: ActivityAddCardBinding by lazy {
         viewStub.layoutResource = R.layout.activity_add_card
@@ -31,7 +33,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         AddPaymentMethodActivityLaunch.Args.getExtra(intent)
     }
 
-    private val session: AirwallexSession by lazy {
+    override val session: AirwallexSession by lazy {
         args.session
     }
 
@@ -50,7 +52,7 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
         }
     }
 
-    private val airwallex: Airwallex by lazy {
+    override val airwallex: Airwallex by lazy {
         Airwallex(this)
     }
 
@@ -71,19 +73,41 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
     override fun onActionSave() {
         val card = viewBinding.cardWidget.paymentMethodCard ?: return
         setLoadingProgress(loading = true, cancelable = false)
-        viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
-            this,
-            {
-                when (it) {
-                    is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
-                        finishWithPaymentMethod(it.paymentMethod, requireNotNull(it.cvc))
-                    }
-                    is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
-                        alertError(it.exception.message ?: it.exception.toString())
+
+        if (session is AirwallexPaymentSession) {
+            startCheckout(
+                paymentMethod = PaymentMethod(
+                    type = PaymentMethodType.CARD,
+                    card = card,
+                    billing = viewBinding.billingWidget.billing
+                ),
+                observer = {
+                    when (it) {
+                        is AirwallexCheckoutViewModel.PaymentResult.Success -> {
+                            finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+                        }
+                        is AirwallexCheckoutViewModel.PaymentResult.Error -> {
+                            finishWithPaymentIntent(exception = it.exception)
+                        }
+                        else -> Unit
                     }
                 }
-            }
-        )
+            )
+        } else {
+            viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
+                this,
+                {
+                    when (it) {
+                        is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
+                            finishWithPaymentMethod(it.paymentMethod, requireNotNull(it.cvc))
+                        }
+                        is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
+                            alertError(it.exception.message ?: it.exception.toString())
+                        }
+                    }
+                }
+            )
+        }
     }
 
     override fun homeAsUpIndicatorResId(): Int {
@@ -93,6 +117,23 @@ internal class AddPaymentMethodActivity : AirwallexActivity() {
     private fun alertError(error: String) {
         setLoadingProgress(false)
         alert(message = error)
+    }
+
+    private fun finishWithPaymentIntent(
+        paymentIntent: PaymentIntent? = null,
+        exception: Exception? = null
+    ) {
+        setLoadingProgress(false)
+        setResult(
+            Activity.RESULT_OK,
+            Intent().putExtras(
+                AddPaymentMethodActivityLaunch.Result(
+                    paymentIntent = paymentIntent,
+                    exception = exception
+                ).toBundle()
+            )
+        )
+        finish()
     }
 
     private fun finishWithPaymentMethod(paymentMethod: PaymentMethod, cvc: String) {

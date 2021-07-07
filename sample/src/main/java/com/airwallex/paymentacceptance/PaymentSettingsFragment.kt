@@ -1,6 +1,7 @@
 package com.airwallex.paymentacceptance
 
 import android.app.AlarmManager
+import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -8,16 +9,64 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.InputType.*
+import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import com.airwallex.android.AirwallexCheckoutMode
+import com.airwallex.android.AirwallexPlugins
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import retrofit2.HttpException
 import java.util.*
 import kotlin.system.exitProcess
 
 class PaymentSettingsFragment :
     PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private val api: Api
+        get() {
+            if (TextUtils.isEmpty(AirwallexPlugins.environment.baseUrl())) {
+                throw IllegalArgumentException("Base url should not be null or empty")
+            }
+            return ApiFactory(AirwallexPlugins.environment.baseUrl()).buildRetrofit()
+                .create(Api::class.java)
+        }
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        activity?.runOnUiThread {
+            if (throwable is HttpException) {
+                showCreateCustomerError(
+                    throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
+                )
+            } else {
+                showCreateCustomerError(throwable.localizedMessage)
+            }
+        }
+    }
+
+    private fun showCreateCustomerError(error: String? = null) {
+        showAlert(
+            getString(R.string.create_payment_intent_failed),
+            error ?: getString(R.string.payment_failed_message)
+        )
+    }
+
+    private fun showAlert(title: String, message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setCancelable(false)
+            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .create()
+            .show()
+    }
 
     companion object {
         const val TAG = "PaymentSettingsFragment"
@@ -37,7 +86,7 @@ class PaymentSettingsFragment :
         val sdkEnvPref: ListPreference? =
             findPreference(getString(R.string.sdk_env_id)) as? ListPreference?
         if (sdkEnvPref != null && sdkEnvPref.value == null) {
-            // Default Demo
+            // Default Staging
             sdkEnvPref.setValueIndex(0)
         }
 
@@ -52,15 +101,54 @@ class PaymentSettingsFragment :
         if (nextTriggerByPref != null && nextTriggerByPref.value == null) {
             nextTriggerByPref.setValueIndex(0)
         }
-        nextTriggerByPref?.isEnabled = !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
+        nextTriggerByPref?.isEnabled =
+            !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
+
+        val generateCustomerPref: Preference? =
+            findPreference(getString(R.string.generate_customer)) as? Preference?
+        generateCustomerPref?.summary = Settings.cachedCustomerId
+        generateCustomerPref?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            viewLifecycleOwner.lifecycleScope.safeLaunch(
+                Dispatchers.IO,
+                coroutineExceptionHandler
+            ) {
+                val response = api.authentication(
+                    apiKey = Settings.apiKey,
+                    clientId = Settings.clientId
+                )
+                Settings.token = JSONObject(response.string())["token"].toString()
+
+                val customerResponse = api.createCustomer(
+                    mutableMapOf(
+                        "request_id" to UUID.randomUUID().toString(),
+                        "merchant_customer_id" to UUID.randomUUID().toString(),
+                        "first_name" to "John",
+                        "last_name" to "Doe",
+                        "email" to "john.doe@airwallex.com",
+                        "phone_number" to "13800000000",
+                        "additional_info" to mapOf(
+                            "registered_via_social_media" to false,
+                            "registration_date" to "2019-09-18",
+                            "first_successful_order_date" to "2019-09-18"
+                        ),
+                        "metadata" to mapOf(
+                            "id" to 1
+                        )
+                    )
+                )
+                val customerId = JSONObject(customerResponse.string())["id"].toString()
+                Settings.cachedCustomerId = customerId
+                withContext(Dispatchers.Main) {
+                    generateCustomerPref?.summary = Settings.cachedCustomerId
+                }
+            }
+            true
+        }
 
         val clearCustomerPref: Preference? =
             findPreference(getString(R.string.clear_customer)) as? Preference?
-
-        clearCustomerPref?.summary = Settings.cachedCustomerId
         clearCustomerPref?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            Settings.cachedCustomerId = ""
-            clearCustomerPref?.summary = ""
+            clearCustomerId()
             Toast.makeText(context, R.string.customer_cleared, Toast.LENGTH_SHORT).show()
             true
         }
@@ -76,6 +164,13 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.checkout_mode))
         onSharedPreferenceChanged(preferences, getString(R.string.next_trigger_by))
         registerOnSharedPreferenceChangeListener()
+    }
+
+    private fun clearCustomerId() {
+        Settings.cachedCustomerId = ""
+        val generateCustomerPref: Preference? =
+            findPreference(getString(R.string.generate_customer)) as? Preference?
+        generateCustomerPref?.summary = ""
     }
 
     override fun onDestroy() {
@@ -114,9 +209,12 @@ class PaymentSettingsFragment :
     }
 
     private fun toggleNextTriggerByStatus() {
-        val checkoutModePref: ListPreference? = findPreference(getString(R.string.checkout_mode)) as? ListPreference?
-        val nextTriggerByPref: ListPreference? = findPreference(getString(R.string.next_trigger_by)) as? ListPreference?
-        nextTriggerByPref?.isEnabled = !(checkoutModePref?.value?.uppercase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
+        val checkoutModePref: ListPreference? =
+            findPreference(getString(R.string.checkout_mode)) as? ListPreference?
+        val nextTriggerByPref: ListPreference? =
+            findPreference(getString(R.string.next_trigger_by)) as? ListPreference?
+        nextTriggerByPref?.isEnabled =
+            !(checkoutModePref?.value?.uppercase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
     }
 
     private fun registerOnSharedPreferenceChangeListener() {

@@ -416,14 +416,18 @@ class Airwallex internal constructor(
      * Launch the [PaymentMethodsActivity] to allow the user to complete the entire payment flow
      *
      * @param session a [AirwallexSession] used to present the payment flow
-     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
+     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret, just required for recurring payments
      * @param paymentFlowListener The callback of present entire payment flow
      */
     fun presentPaymentFlow(
         session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider,
+        clientSecretProvider: ClientSecretProvider? = null,
         paymentFlowListener: PaymentIntentListener
     ) {
+        if (clientSecretProvider == null && (session is AirwallexRecurringSession || session is AirwallexRecurringWithIntentSession)) {
+            paymentFlowListener.onFailed(Exception("clientSecretProvider can not be null on recurring flow"))
+            return
+        }
         airwallexStarter.presentPaymentFlow(session, clientSecretProvider, paymentFlowListener)
     }
 
@@ -619,8 +623,8 @@ class Airwallex internal constructor(
                 ConfirmPaymentIntentParams.createCardParams(
                     paymentIntentId = paymentIntentId,
                     clientSecret = clientSecret,
-                    paymentMethodId = requireNotNull(paymentMethod.id),
-                    cvc = requireNotNull(cvc),
+                    paymentMethod = paymentMethod,
+                    cvc = cvc,
                     customerId = customerId,
                     paymentConsentId = paymentConsentId
                 )
@@ -664,10 +668,6 @@ class Airwallex internal constructor(
         bank: Bank? = null,
         listener: PaymentResultListener<PaymentIntent>
     ) {
-        if (paymentMethod.type == PaymentMethodType.CARD && cvc == null) {
-            listener.onFailed(InvalidParamsException(message = "CVC is required!"))
-            return
-        }
         when (session) {
             is AirwallexPaymentSession -> {
                 val paymentIntent = session.paymentIntent

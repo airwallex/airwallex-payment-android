@@ -3,14 +3,19 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcel
 import androidx.fragment.app.Fragment
 import com.airwallex.android.AirwallexSession
+import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch.Args
+import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
-internal class AddPaymentMethodActivityLaunch : AirwallexActivityLaunch<AddPaymentMethodActivity, Args> {
+internal class AddPaymentMethodActivityLaunch :
+    AirwallexActivityLaunch<AddPaymentMethodActivity, Args> {
 
     constructor(activity: Activity) : super(
         activity,
@@ -52,16 +57,35 @@ internal class AddPaymentMethodActivityLaunch : AirwallexActivityLaunch<AddPayme
 
     @Parcelize
     internal data class Result internal constructor(
-        val paymentMethod: PaymentMethod,
-        val cvc: String
+        val paymentIntent: PaymentIntent? = null,
+        var exception: Exception? = null,
+        val paymentMethod: PaymentMethod? = null,
+        val cvc: String? = null
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
-            val bundle = Bundle()
-            bundle.putParcelable(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA, this)
-            return bundle
+            return Bundle().also {
+                it.putParcelable(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA, this)
+            }
         }
 
-        companion object {
+        internal companion object : Parceler<Result> {
+
+            override fun create(parcel: Parcel): Result {
+                return Result(
+                    paymentIntent = parcel.readParcelable(PaymentIntent::class.java.classLoader),
+                    exception = parcel.readSerializable() as? AirwallexException?,
+                    paymentMethod = parcel.readParcelable(PaymentMethod::class.java.classLoader),
+                    cvc = parcel.readString()
+                )
+            }
+
+            override fun Result.write(parcel: Parcel, flags: Int) {
+                parcel.writeParcelable(paymentIntent, 0)
+                parcel.writeSerializable(exception)
+                parcel.writeParcelable(paymentMethod, 0)
+                parcel.writeString(cvc)
+            }
+
             fun fromIntent(intent: Intent?): Result? {
                 return intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
             }

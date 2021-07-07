@@ -97,7 +97,7 @@ We provide some parameters that can be used to debug the SDK, better to be calle
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
             .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
-            .setEnvironment(Environment.DEMO)   // You can change the environment to DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
+            .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
             .build()
     )
 ```

@@ -39,10 +39,10 @@ class AirwallexRecurringSession internal constructor(
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
-        private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
+        private var customerId: String,
         private val currency: String,
         private val amount: BigDecimal,
-        private var customerId: String
+        private val nextTriggerBy: PaymentConsent.NextTriggeredBy
     ) : ObjectBuilder<AirwallexRecurringSession> {
 
         private var shipping: Shipping? = null

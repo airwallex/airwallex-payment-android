@@ -27,8 +27,8 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
 
     internal fun startCheckout(
         paymentMethod: PaymentMethod,
-        paymentConsentId: String?,
-        cvc: String?,
+        paymentConsentId: String? = null,
+        cvc: String? = null,
         currency: String? = null,
         name: String? = null,
         email: String? = null,

@@ -21,7 +21,17 @@ class PaymentMethodRequest(
     /**
      * Redirect Request
      */
-    val redirectRequest: RedirectRequest? = null
+    val redirectRequest: RedirectRequest? = null,
+
+    /**
+     * Card information for the payment method
+     */
+    val card: PaymentMethod.Card? = null,
+
+    /**
+     * Billing information for the payment method
+     */
+    val billing: Billing? = null
 
 ) : AirwallexRequestModel, Parcelable {
 
@@ -40,6 +50,16 @@ class PaymentMethodRequest(
                     mapOf(type.value to it.toParamMap())
                 }.orEmpty()
             )
+            .plus(
+                card?.let {
+                    mapOf(PaymentMethodParser.FIELD_CARD to it.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                billing?.let {
+                    mapOf(PaymentMethodParser.FIELD_BILLING to it.toParamMap())
+                }.orEmpty()
+            )
     }
 
     class Builder(
@@ -47,8 +67,11 @@ class PaymentMethodRequest(
     ) : ObjectBuilder<PaymentMethodRequest> {
         private var redirectRequest: RedirectRequest? = null
 
-        fun setPaymentMethodRequest(
-            type: PaymentMethodType,
+        private var card: PaymentMethod.Card? = null
+
+        private var billing: Billing? = null
+
+        fun setThirdPartyPaymentMethodRequest(
             name: String?,
             email: String?,
             phone: String?,
@@ -70,10 +93,20 @@ class PaymentMethodRequest(
             }
         }
 
+        fun setCardPaymentMethodRequest(
+            card: PaymentMethod.Card?,
+            billing: Billing?
+        ): Builder = apply {
+            this.card = card
+            this.billing = billing
+        }
+
         override fun build(): PaymentMethodRequest {
             return PaymentMethodRequest(
                 type = type,
-                redirectRequest = redirectRequest
+                redirectRequest = redirectRequest,
+                card = card,
+                billing = billing
             )
         }
     }

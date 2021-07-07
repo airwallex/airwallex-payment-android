@@ -12,16 +12,19 @@ data class ConfirmPaymentIntentParams internal constructor(
     val customerId: String?,
 
     /**
-     * [PaymentMethodReference] used to confirm [PaymentIntent].
-     * When [paymentMethodType] is [PaymentMethodType.CARD], it's should be not null
-     * When [paymentMethodType] is [PaymentMethodType.WECHAT], it's should be null
-     */
-    val paymentMethodReference: PaymentMethodReference? = null,
-
-    /**
      * Payment method type, default is [PaymentMethodType.WECHAT]
      */
     val paymentMethodType: PaymentMethodType = PaymentMethodType.WECHAT,
+
+    /**
+     * Payment Method
+     */
+    val paymentMethod: PaymentMethod? = null,
+
+    /**
+     * CVC
+     */
+    val cvc: String? = null,
 
     /**
      * Unique identifier of this [PaymentConsent]
@@ -58,14 +61,19 @@ data class ConfirmPaymentIntentParams internal constructor(
     ) : ObjectBuilder<ConfirmPaymentIntentParams> {
 
         private var paymentMethodType: PaymentMethodType = PaymentMethodType.WECHAT
+        private var paymentMethod: PaymentMethod? = null
+        private var cvc: String? = null
         private var customerId: String? = null
-        private var paymentMethodReference: PaymentMethodReference? = null
         private var paymentConsentId: String? = null
         private var currency: String? = null
         private var name: String? = null
         private var email: String? = null
         private var phone: String? = null
         private var bank: Bank? = null
+
+        fun setCVC(cvc: String?): Builder = apply {
+            this.cvc = cvc
+        }
 
         fun setName(name: String?): Builder = apply {
             this.name = name
@@ -97,12 +105,10 @@ data class ConfirmPaymentIntentParams internal constructor(
 
         fun setPaymentMethod(
             paymentMethodType: PaymentMethodType,
-            paymentMethodReference: PaymentMethodReference? = null
+            paymentMethod: PaymentMethod? = null
         ): Builder = apply {
             this.paymentMethodType = paymentMethodType
-            if (paymentMethodType == PaymentMethodType.CARD) {
-                this.paymentMethodReference = requireNotNull(paymentMethodReference)
-            }
+            this.paymentMethod = paymentMethod
         }
 
         override fun build(): ConfirmPaymentIntentParams {
@@ -110,8 +116,9 @@ data class ConfirmPaymentIntentParams internal constructor(
                 paymentIntentId = paymentIntentId,
                 clientSecret = clientSecret,
                 customerId = customerId,
-                paymentMethodReference = paymentMethodReference,
                 paymentMethodType = paymentMethodType,
+                paymentMethod = paymentMethod,
+                cvc = cvc,
                 paymentConsentId = paymentConsentId,
                 currency = currency,
                 name = name,
@@ -131,6 +138,12 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param paymentIntentId the ID of the [PaymentIntent], required.
          * @param clientSecret the clientSecret of [PaymentIntent], required.
          * @param customerId the customerId of [PaymentIntent], optional.
+         * @param paymentConsentId the customerId of [PaymentConsent], optional.
+         * @param currency
+         * @param name
+         * @param email
+         * @param phone
+         * @param bank
          */
         fun createThirdPartPayParams(
             paymentMethodType: PaymentMethodType,
@@ -164,15 +177,16 @@ data class ConfirmPaymentIntentParams internal constructor(
          *
          * @param paymentIntentId the ID of the [PaymentIntent], required.
          * @param clientSecret the clientSecret of [PaymentIntent], required.
-         * @param paymentMethodId the ID of the [PaymentMethod], required.
-         * @param cvc the CVC of the Credit Card, required.
+         * @param paymentMethod the object of the [PaymentMethod], required.
+         * @param cvc optional.
          * @param customerId the customerId of [PaymentIntent], optional.
+         * @param paymentConsentId the customerId of [PaymentConsent], optional.
          */
         fun createCardParams(
             paymentIntentId: String,
             clientSecret: String,
-            paymentMethodId: String,
-            cvc: String,
+            paymentMethod: PaymentMethod,
+            cvc: String?,
             customerId: String? = null,
             paymentConsentId: String? = null
         ): ConfirmPaymentIntentParams {
@@ -181,10 +195,8 @@ data class ConfirmPaymentIntentParams internal constructor(
                 clientSecret = clientSecret
             )
                 .setCustomerId(customerId)
-                .setPaymentMethod(
-                    PaymentMethodType.CARD,
-                    PaymentMethodReference(paymentMethodId, cvc)
-                )
+                .setPaymentMethod(PaymentMethodType.CARD, paymentMethod)
+                .setCVC(cvc)
                 .setPaymentConsentId(paymentConsentId)
                 .build()
         }

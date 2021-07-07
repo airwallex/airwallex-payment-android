@@ -194,18 +194,13 @@ internal interface PaymentManager {
             threeDSecure: ThreeDSecure
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
 
-            val paymentConsentReference: PaymentConsentReference?
-            val paymentMethodReference: PaymentMethodReference?
-
-            if (params.paymentConsentId != null) {
-                paymentConsentReference = PaymentConsentReference.Builder()
+            val paymentConsentReference: PaymentConsentReference? = if (params.paymentConsentId != null) {
+                PaymentConsentReference.Builder()
                     .setId(params.paymentConsentId)
-                    .setCvc(params.paymentMethodReference?.cvc)
+                    .setCvc(params.cvc)
                     .build()
-                paymentMethodReference = null
             } else {
-                paymentConsentReference = null
-                paymentMethodReference = requireNotNull(params.paymentMethodReference)
+                null
             }
 
             val request = PaymentIntentConfirmRequest.Builder(
@@ -222,8 +217,19 @@ internal interface PaymentManager {
                 )
                 .setCustomerId(params.customerId)
                 .setDevice(device)
-                .setPaymentMethodReference(paymentMethodReference)
                 .setPaymentConsentReference(paymentConsentReference)
+                .setPaymentMethodRequest(
+                    if (paymentConsentReference != null) {
+                        null
+                    } else {
+                        PaymentMethodRequest.Builder(params.paymentMethodType)
+                            .setCardPaymentMethodRequest(
+                                card = params.paymentMethod?.card,
+                                billing = params.paymentMethod?.billing
+                            )
+                            .build()
+                    }
+                )
                 .build()
 
             return AirwallexApiRepository.ConfirmPaymentIntentOptions(
@@ -249,7 +255,13 @@ internal interface PaymentManager {
             } else {
                 paymentConsentReference = null
                 paymentMethodRequest = PaymentMethodRequest.Builder(params.paymentMethodType)
-                    .setPaymentMethodRequest(params.paymentMethodType, params.name, params.email, params.phone, if (params.bank != null) params.bank.currency else params.currency, params.bank)
+                    .setThirdPartyPaymentMethodRequest(
+                        params.name,
+                        params.email,
+                        params.phone,
+                        if (params.bank != null) params.bank.currency else params.currency,
+                        params.bank
+                    )
                     .build()
             }
             val request = PaymentIntentConfirmRequest.Builder(

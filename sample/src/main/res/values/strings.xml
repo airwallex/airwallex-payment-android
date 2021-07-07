@@ -59,4 +59,5 @@
     <string name="wechat_demo_nonce_str">NonceStr</string>
     <string name="wechat_demo_timestamp">TimeStamp</string>
     <string name="wechat_demo_sign">Sign</string>
+    <string name="generate_customer">Generate Customer</string>
 </resources>

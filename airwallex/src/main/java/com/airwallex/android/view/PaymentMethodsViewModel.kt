@@ -13,26 +13,51 @@ internal class PaymentMethodsViewModel(
     private val session: AirwallexSession
 ) : AndroidViewModel(application) {
 
+    val paymentIntent: PaymentIntent? by lazy {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                session.paymentIntent
+            }
+            is AirwallexRecurringWithIntentSession -> {
+                session.paymentIntent
+            }
+            is AirwallexRecurringSession -> {
+                null
+            }
+            else -> {
+                throw Exception("Not supported session $session")
+            }
+        }
+    }
+
     fun fetchPaymentMethodTypes(): LiveData<PaymentMethodTypeResult> {
         val resultData = MutableLiveData<PaymentMethodTypeResult>()
-        ClientSecretRepository.getInstance().retrieveClientSecret(
-            requireNotNull(session.customerId),
-            object : ClientSecretRepository.ClientSecretRetrieveListener {
-                override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                    retrieveAvailablePaymentMethods(
-                        mutableListOf(),
-                        AtomicInteger(0),
-                        resultData,
-                        clientSecret
-                    )
-                }
+        if (session is AirwallexPaymentSession || session is AirwallexRecurringWithIntentSession) {
+            retrieveAvailablePaymentMethods(
+                mutableListOf(),
+                AtomicInteger(0),
+                resultData,
+                requireNotNull(paymentIntent?.clientSecret)
+            )
+        } else {
+            ClientSecretRepository.getInstance().retrieveClientSecret(
+                requireNotNull(session.customerId),
+                object : ClientSecretRepository.ClientSecretRetrieveListener {
+                    override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
+                        retrieveAvailablePaymentMethods(
+                            mutableListOf(),
+                            AtomicInteger(0),
+                            resultData,
+                            clientSecret.value
+                        )
+                    }
 
-                override fun onClientSecretError(errorMessage: String) {
-                    PaymentMethodTypeResult.Error(Exception(errorMessage))
+                    override fun onClientSecretError(errorMessage: String) {
+                        PaymentMethodTypeResult.Error(Exception(errorMessage))
+                    }
                 }
-            }
-        )
-
+            )
+        }
         return resultData
     }
 
@@ -40,11 +65,11 @@ internal class PaymentMethodsViewModel(
         availablePaymentMethodList: MutableList<AvailablePaymentMethod>,
         availablePaymentMethodPageNum: AtomicInteger,
         resultData: MutableLiveData<PaymentMethodTypeResult>,
-        clientSecret: ClientSecret
+        clientSecret: String
     ) {
         airwallex.retrieveAvailablePaymentMethods(
             params = RetrieveAvailablePaymentMethodParams.Builder(
-                clientSecret = requireNotNull(clientSecret.value),
+                clientSecret = clientSecret,
                 pageNum = availablePaymentMethodPageNum.get()
             )
                 .setActive(true)
@@ -59,17 +84,31 @@ internal class PaymentMethodsViewModel(
                     availablePaymentMethodPageNum.incrementAndGet()
                     availablePaymentMethodList.addAll(response.items ?: emptyList())
                     if (response.hasMore) {
-                        retrieveAvailablePaymentMethods(availablePaymentMethodList, availablePaymentMethodPageNum, resultData, clientSecret)
+                        retrieveAvailablePaymentMethods(
+                            availablePaymentMethodList,
+                            availablePaymentMethodPageNum,
+                            resultData,
+                            clientSecret
+                        )
                     } else {
                         when (session) {
                             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> {
-
-                                resultData.value = PaymentMethodTypeResult.Success(availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.RECURRING }.mapNotNull { it.name }.distinct())
+                                resultData.value =
+                                    PaymentMethodTypeResult.Success(
+                                        availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.RECURRING }
+                                            .mapNotNull { it.name }.distinct()
+                                    )
                             }
                             is AirwallexPaymentSession -> {
-                                resultData.value = PaymentMethodTypeResult.Success(availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.ONE_OFF }.mapNotNull { it.name }.distinct())
+                                resultData.value =
+                                    PaymentMethodTypeResult.Success(
+                                        availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.ONE_OFF }
+                                            .mapNotNull { it.name }.distinct()
+                                    )
                             }
-                            else -> resultData.value = PaymentMethodTypeResult.Error(Exception("Not support session $session"))
+                            else ->
+                                resultData.value =
+                                    PaymentMethodTypeResult.Error(Exception("Not support session $session"))
                         }
                     }
                 }
@@ -115,7 +154,9 @@ internal class PaymentMethodsViewModel(
     }
 
     internal sealed class PaymentMethodTypeResult {
-        data class Success(val availableThirdPaymentTypes: List<PaymentMethodType>) : PaymentMethodTypeResult()
+        data class Success(val availableThirdPaymentTypes: List<PaymentMethodType>) :
+            PaymentMethodTypeResult()
+
         data class Error(val exception: Exception) : PaymentMethodTypeResult()
     }
 

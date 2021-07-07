@@ -27,7 +27,6 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.math.BigDecimal
 import java.util.*
-import kotlin.coroutines.CoroutineContext
 
 class PaymentCartFragment : Fragment() {
 
@@ -51,6 +50,18 @@ class PaymentCartFragment : Fragment() {
                 airwallex
             )
         )[PaymentCartViewModel::class.java]
+    }
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        activity?.runOnUiThread {
+            if (throwable is HttpException) {
+                showCreatePaymentIntentError(
+                    throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
+                )
+            } else {
+                showCreatePaymentIntentError(throwable.localizedMessage)
+            }
+        }
     }
 
     private val api: Api
@@ -121,12 +132,13 @@ class PaymentCartFragment : Fragment() {
 
     private val returnUrl: String
         get() {
-            return when (Settings.sdkEnv) {
-                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0] -> "https://staging-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
-                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[1] -> "https://demo-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
-                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[2] -> "https://pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
-                else -> throw Exception("Unsupported CheckoutMode: ${Settings.checkoutMode}")
-            }
+            return "airwallexcheckout://${context?.packageName}"
+//            return when (Settings.sdkEnv) {
+//                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0] -> "https://staging-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
+//                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[1] -> "https://demo-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
+//                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[2] -> "https://pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
+//                else -> throw Exception("Unsupported CheckoutMode: ${Settings.checkoutMode}")
+//            }
         }
 
     private fun buildSessionWithIntent(
@@ -144,21 +156,24 @@ class PaymentCartFragment : Fragment() {
                     ).build()
                 }
                 AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-
                     AirwallexRecurringWithIntentSession.Builder(
                         requireNotNull(
                             paymentIntent,
                             { "PaymentIntent is required" }
+                        ),
+                        requireNotNull(
+                            paymentIntent.customerId,
+                            { "CustomerId is required" }
                         ),
                         nextTriggerBy
                     ).build()
                 }
                 AirwallexCheckoutMode.RECURRING -> {
                     AirwallexRecurringSession.Builder(
-                        nextTriggerBy,
+                        requireNotNull(customerId, { "CustomerId is required" }),
                         Settings.currency,
                         BigDecimal.valueOf(Settings.price.toDouble()),
-                        requireNotNull(customerId, { "CustomerId is required" })
+                        nextTriggerBy
                     )
                         .setShipping(shipping)
                         .build()
@@ -203,34 +218,6 @@ class PaymentCartFragment : Fragment() {
         return viewBinding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        viewBinding.shippingItemView.renewalShipping(shipping)
-        viewBinding.shippingItemView.onClickAction = {
-            viewModel.presentShippingFlow(shipping).observe(viewLifecycleOwner) {
-                when (it) {
-                    is PaymentCartViewModel.ShippingResult.Success -> {
-                        Log.d(TAG, "Save the shipping success")
-                        viewBinding.shippingItemView.renewalShipping(it.shipping)
-                        this@PaymentCartFragment.shipping = it.shipping
-                    }
-                    is PaymentCartViewModel.ShippingResult.Cancel -> {
-                        Log.d(TAG, "User cancel edit shipping...")
-                    }
-                }
-            }
-        }
-        initializeProductsViews(products.toMutableList())
-        viewBinding.btnCheckout.setOnClickListener {
-            if (checkoutMode == AirwallexCheckoutMode.RECURRING) {
-                startRecurringFlow()
-            } else {
-                authAndCreatePaymentIntent()
-            }
-        }
-    }
-
     private fun initializeProductsViews(products: MutableList<PhysicalProduct>) {
         viewBinding.llProducts.removeAllViews()
         products.map {
@@ -255,17 +242,127 @@ class PaymentCartFragment : Fragment() {
         viewBinding.tvOrderSum.text = products.sumBy { it.quantity ?: 0 }.toString()
     }
 
-    private fun startRecurringFlow() {
-        viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.Main) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewBinding.shippingItemView.renewalShipping(shipping)
+        viewBinding.shippingItemView.onClickAction = {
+            viewModel.presentShippingFlow(shipping).observe(viewLifecycleOwner) {
+                when (it) {
+                    is PaymentCartViewModel.ShippingResult.Success -> {
+                        Log.d(TAG, "Save the shipping success")
+                        viewBinding.shippingItemView.renewalShipping(it.shipping)
+                        this@PaymentCartFragment.shipping = it.shipping
+                    }
+                    is PaymentCartViewModel.ShippingResult.Cancel -> {
+                        Log.d(TAG, "User cancel edit shipping...")
+                    }
+                }
+            }
+        }
+        initializeProductsViews(products.toMutableList())
+        viewBinding.btnCheckout.setOnClickListener {
+            when (checkoutMode) {
+                AirwallexCheckoutMode.PAYMENT -> {
+                    startPaymentFlow()
+                }
+                AirwallexCheckoutMode.RECURRING -> {
+                    startRecurringFlow()
+                }
+                AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                    startRecurringWithIntentFlow()
+                }
+            }
+        }
+    }
+
+    /**
+     * one-off payment
+     *
+     */
+    private fun startPaymentFlow() {
+        viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
             (activity as? PaymentCartActivity)?.setLoadingProgress(true)
-            val customerId = withContext(Dispatchers.IO) {
+            val paymentIntentResponse = withContext(Dispatchers.IO) {
+                Settings.token = null
                 val response = api.authentication(
                     apiKey = Settings.apiKey,
                     clientId = Settings.clientId
                 )
                 Settings.token = JSONObject(response.string())["token"].toString()
 
+                val products = products
+                val shipping = shipping
+                val body = mutableMapOf(
+                    "request_id" to UUID.randomUUID().toString(),
+//                            "amount" to products.sumByDouble { product ->
+//                                product.unitPrice ?: 0 * (product.quantity ?: 0).toDouble()
+//                            },
+                    "amount" to Settings.price.toDouble(),
+                    "currency" to Settings.currency,
+                    "merchant_order_id" to UUID.randomUUID().toString(),
+                    "order" to PurchaseOrder.Builder()
+                        .setProducts(products)
+                        .setShipping(shipping)
+                        .setType("physical_goods")
+                        .build()
+                        .toParamMap(),
+                    "descriptor" to "Airwallex - T-sh  irt",
+                    "metadata" to mapOf("id" to 1),
+                    "email" to "yimadangxian@airwallex.com",
+                    "return_url" to returnUrl,
+                )
+                Settings.cachedCustomerId?.let {
+                    body.put("customer_id", it)
+                }
+                api.createPaymentIntent(body)
+            }
+
+            (activity as? PaymentCartActivity)?.setLoadingProgress(false)
+
+            val paymentIntent =
+                PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
+
+            viewModel.presentPaymentFlow(
+                AirwallexPaymentSession.Builder(paymentIntent).build()
+            ).observe(viewLifecycleOwner) {
+                when (it) {
+                    is PaymentCartViewModel.PaymentFlowResult.Success -> {
+                        showPaymentSuccess()
+                    }
+                    is PaymentCartViewModel.PaymentFlowResult.Error -> {
+                        showPaymentError(it.exception.message)
+                    }
+                    is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
+                        startWeChatPay(it.weChat)
+                    }
+                    is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
+                        startRedirectUrl(it.redirectUrl)
+                    }
+                    is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
+                        Log.d(TAG, "User cancel the payment")
+                        showPaymentCancelled()
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Recurring flow
+     */
+    private fun startRecurringFlow() {
+        viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
+            (activity as? PaymentCartActivity)?.setLoadingProgress(true)
+            // Recurring flow require customer id
+            val customerId = withContext(Dispatchers.IO) {
                 if (TextUtils.isEmpty(Settings.cachedCustomerId)) {
+                    val response = api.authentication(
+                        apiKey = Settings.apiKey,
+                        clientId = Settings.clientId
+                    )
+                    Settings.token = JSONObject(response.string())["token"].toString()
+
                     val customerResponse = api.createCustomer(
                         mutableMapOf(
                             "request_id" to UUID.randomUUID().toString(),
@@ -295,7 +392,14 @@ class PaymentCartFragment : Fragment() {
             (activity as? PaymentCartActivity)?.setLoadingProgress(false)
 
             viewModel.presentPaymentFlow(
-                buildSessionWithIntent(customerId = customerId),
+                AirwallexRecurringSession.Builder(
+                    requireNotNull(customerId, { "CustomerId is required" }),
+                    Settings.currency,
+                    BigDecimal.valueOf(Settings.price.toDouble()),
+                    nextTriggerBy
+                )
+                    .setShipping(shipping)
+                    .build(),
                 clientSecretProvider
             ).observe(viewLifecycleOwner) {
                 when (it) {
@@ -320,48 +424,48 @@ class PaymentCartFragment : Fragment() {
     }
 
     /**
-     * `IMPORTANT` This code must be placed on the merchant server, this is just for Demo purposes only
+     * Recurring with payment intent flow
      */
-    private fun authAndCreatePaymentIntent() {
-        (activity as? PaymentCartActivity)?.setLoadingProgress(true)
-        Settings.token = null
-        viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.IO) {
-            val response = api.authentication(
-                apiKey = Settings.apiKey,
-                clientId = Settings.clientId
-            )
-            Settings.token = JSONObject(response.string())["token"].toString()
+    private fun startRecurringWithIntentFlow() {
+        viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
+            (activity as? PaymentCartActivity)?.setLoadingProgress(true)
+            // Recurring flow require customer id
+            val paymentIntentResponse = withContext(Dispatchers.IO) {
+                val customerId = if (TextUtils.isEmpty(Settings.cachedCustomerId)) {
+                    val response = api.authentication(
+                        apiKey = Settings.apiKey,
+                        clientId = Settings.clientId
+                    )
+                    Settings.token = JSONObject(response.string())["token"].toString()
 
-            val customerId = if (TextUtils.isEmpty(Settings.cachedCustomerId)) {
-                val customerResponse = api.createCustomer(
-                    mutableMapOf(
-                        "request_id" to UUID.randomUUID().toString(),
-                        "merchant_customer_id" to UUID.randomUUID().toString(),
-                        "first_name" to "John",
-                        "last_name" to "Doe",
-                        "email" to "john.doe@airwallex.com",
-                        "phone_number" to "13800000000",
-                        "additional_info" to mapOf(
-                            "registered_via_social_media" to false,
-                            "registration_date" to "2019-09-18",
-                            "first_successful_order_date" to "2019-09-18"
-                        ),
-                        "metadata" to mapOf(
-                            "id" to 1
+                    val customerResponse = api.createCustomer(
+                        mutableMapOf(
+                            "request_id" to UUID.randomUUID().toString(),
+                            "merchant_customer_id" to UUID.randomUUID().toString(),
+                            "first_name" to "John",
+                            "last_name" to "Doe",
+                            "email" to "john.doe@airwallex.com",
+                            "phone_number" to "13800000000",
+                            "additional_info" to mapOf(
+                                "registered_via_social_media" to false,
+                                "registration_date" to "2019-09-18",
+                                "first_successful_order_date" to "2019-09-18"
+                            ),
+                            "metadata" to mapOf(
+                                "id" to 1
+                            )
                         )
                     )
-                )
-                val customerId = JSONObject(customerResponse.string())["id"].toString()
-                Settings.cachedCustomerId = customerId
-                customerId
-            } else {
-                Settings.cachedCustomerId
-            }
+                    val customerId = JSONObject(customerResponse.string())["id"].toString()
+                    Settings.cachedCustomerId = customerId
+                    customerId
+                } else {
+                    Settings.cachedCustomerId
+                }
 
-            val products = products
-            val shipping = shipping
-            val paymentIntentResponse = api.createPaymentIntent(
-                mutableMapOf(
+                val products = products
+                val shipping = shipping
+                val body = mutableMapOf(
                     "request_id" to UUID.randomUUID().toString(),
 //                            "amount" to products.sumByDouble { product ->
 //                                product.unitPrice ?: 0 * (product.quantity ?: 0).toDouble()
@@ -375,57 +479,46 @@ class PaymentCartFragment : Fragment() {
                         .setType("physical_goods")
                         .build()
                         .toParamMap(),
-                    "customer_id" to customerId,
+                    "customer_id" to requireNotNull(customerId),
                     "descriptor" to "Airwallex - T-sh  irt",
                     "metadata" to mapOf("id" to 1),
                     "email" to "yimadangxian@airwallex.com",
                     "return_url" to returnUrl,
                 )
-            )
-            withContext(Dispatchers.Main) {
-                (activity as? PaymentCartActivity)?.setLoadingProgress(false)
-                handlePaymentIntentResponse(paymentIntentResponse)
+                api.createPaymentIntent(body)
             }
-        }
-    }
 
-    /**
-     * PaymentIntent must come from merchant's server
-     */
-    private fun handlePaymentIntentResponse(responseBody: ResponseBody) {
-        val paymentIntent = PaymentIntentParser().parse(JSONObject(responseBody.string()))
-        handlePaymentIntentResponseWithEntireFlow(paymentIntent)
-
-        // Only use the Select Payment Methods Flow
-//        handlePaymentIntentResponseWithCustomFlow1(paymentIntent)
-        // Use the Select Payment Methods Flow & Checkout Detail Flow
-//        handlePaymentIntentResponseWithCustomFlow2(paymentIntent)
-    }
-
-    /**
-     * Use entire flow provided by Airwallex
-     */
-    private fun handlePaymentIntentResponseWithEntireFlow(paymentIntent: PaymentIntent) {
-        viewModel.presentPaymentFlow(
-            buildSessionWithIntent(paymentIntent = paymentIntent),
-            clientSecretProvider
-        ).observe(viewLifecycleOwner) {
-            when (it) {
-                is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                    showPaymentSuccess()
-                }
-                is PaymentCartViewModel.PaymentFlowResult.Error -> {
-                    showPaymentError(it.exception.message)
-                }
-                is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
-                    startWeChatPay(it.weChat)
-                }
-                is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
-                    startRedirectUrl(it.redirectUrl)
-                }
-                is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
-                    Log.d(TAG, "User cancel the payment")
-                    showPaymentCancelled()
+            (activity as? PaymentCartActivity)?.setLoadingProgress(false)
+            val paymentIntent =
+                PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
+            viewModel.presentPaymentFlow(
+                AirwallexRecurringWithIntentSession.Builder(
+                    paymentIntent,
+                    requireNotNull(
+                        paymentIntent.customerId,
+                        { "CustomerId is required" }
+                    ),
+                    nextTriggerBy
+                ).build(),
+                clientSecretProvider
+            ).observe(viewLifecycleOwner) {
+                when (it) {
+                    is PaymentCartViewModel.PaymentFlowResult.Success -> {
+                        showPaymentSuccess()
+                    }
+                    is PaymentCartViewModel.PaymentFlowResult.Error -> {
+                        showPaymentError(it.exception.message)
+                    }
+                    is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
+                        startWeChatPay(it.weChat)
+                    }
+                    is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
+                        startRedirectUrl(it.redirectUrl)
+                    }
+                    is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
+                        Log.d(TAG, "User cancel the payment")
+                        showPaymentCancelled()
+                    }
                 }
             }
         }
@@ -620,18 +713,6 @@ class PaymentCartFragment : Fragment() {
         }
     }
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        activity?.runOnUiThread {
-            if (throwable is HttpException) {
-                showCreatePaymentIntentError(
-                    throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
-                )
-            } else {
-                showCreatePaymentIntentError(throwable.localizedMessage)
-            }
-        }
-    }
-
     /**
      * After successful payment, Airwallex server will notify the Merchant,
      * Then Merchant can retrieve the `PaymentIntent` to check the `status` of the PaymentIntent.
@@ -709,18 +790,6 @@ class PaymentCartFragment : Fragment() {
             getString(R.string.payment_cancelled),
             error ?: getString(R.string.payment_cancelled_message)
         )
-    }
-
-    private fun CoroutineScope.safeLaunch(
-        customContext: CoroutineContext? = null,
-        work: suspend CoroutineScope.() -> Unit
-    ): Job {
-        return if (customContext == null) launch(
-            context = coroutineExceptionHandler,
-            block = work
-        ) else launch(context = coroutineExceptionHandler) {
-            launch(context = customContext, block = work)
-        }
     }
 
     companion object {

@@ -58,7 +58,7 @@ internal class PaymentCartViewModel(
 
     fun presentPaymentFlow(
         session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider
+        clientSecretProvider: ClientSecretProvider? = null
     ): LiveData<PaymentFlowResult> {
         val resultData = MutableLiveData<PaymentFlowResult>()
         airwallex.presentPaymentFlow(

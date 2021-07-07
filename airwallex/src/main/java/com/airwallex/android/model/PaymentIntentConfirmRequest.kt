@@ -25,11 +25,6 @@ data class PaymentIntentConfirmRequest internal constructor(
     val paymentMethodRequest: PaymentMethodRequest? = null,
 
     /**
-     * The payment method reference that you want to confirm
-     */
-    val paymentMethodReference: PaymentMethodReference? = null,
-
-    /**
      * Options for payment method
      */
     val paymentMethodOptions: PaymentMethodOptions? = null,
@@ -47,7 +42,6 @@ data class PaymentIntentConfirmRequest internal constructor(
         private const val FIELD_REQUEST_ID = "request_id"
         private const val FIELD_CUSTOMER_ID = "customer_id"
         private const val FIELD_PAYMENT_METHOD = "payment_method"
-        private const val FIELD_PAYMENT_METHOD_REFERENCE = "payment_method_reference"
         private const val FIELD_PAYMENT_METHOD_OPTIONS = "payment_method_options"
         private const val FIELD_PAYMENT_CONSENT_REFERENCE = "payment_consent_reference"
         private const val FIELD_DEVICE = "device"
@@ -68,11 +62,6 @@ data class PaymentIntentConfirmRequest internal constructor(
             .plus(
                 paymentMethodRequest?.let {
                     mapOf(FIELD_PAYMENT_METHOD to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                paymentMethodReference?.let {
-                    mapOf(FIELD_PAYMENT_METHOD_REFERENCE to it.toParamMap())
                 }.orEmpty()
             )
             .plus(
@@ -97,7 +86,6 @@ data class PaymentIntentConfirmRequest internal constructor(
     ) : ObjectBuilder<PaymentIntentConfirmRequest> {
         private var customerId: String? = null
         private var paymentMethodRequest: PaymentMethodRequest? = null
-        private var paymentMethodReference: PaymentMethodReference? = null
         private var paymentMethodOptions: PaymentMethodOptions? = null
         private var paymentConsentReference: PaymentConsentReference? = null
         private var device: Device? = null
@@ -114,11 +102,6 @@ data class PaymentIntentConfirmRequest internal constructor(
             this.paymentMethodRequest = paymentMethodRequest
         }
 
-        fun setPaymentMethodReference(paymentMethodReference: PaymentMethodReference?): Builder =
-            apply {
-                this.paymentMethodReference = paymentMethodReference
-            }
-
         fun setPaymentMethodOptions(paymentMethodOptions: PaymentMethodOptions?): Builder =
             apply {
                 this.paymentMethodOptions = paymentMethodOptions
@@ -134,7 +117,6 @@ data class PaymentIntentConfirmRequest internal constructor(
                 requestId = requestId,
                 customerId = customerId,
                 paymentMethodRequest = paymentMethodRequest,
-                paymentMethodReference = paymentMethodReference,
                 paymentMethodOptions = paymentMethodOptions,
                 paymentConsentReference = paymentConsentReference,
                 device = device
