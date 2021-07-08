@@ -74,7 +74,7 @@ internal interface PaymentManager {
         params: ConfirmPaymentIntentParams,
         selectCurrencyActivityLaunch: DccActivityLaunch,
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
-        listener: Airwallex.PaymentResultListener<PaymentIntent>
+        listener: PaymentListener<PaymentIntent>
     )
 
     /**
@@ -106,7 +106,7 @@ internal interface PaymentManager {
         params: VerifyPaymentConsentParams,
         selectCurrencyActivityLaunch: DccActivityLaunch,
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
-        listener: Airwallex.PaymentResultListener<PaymentIntent>
+        listener: PaymentListener<PaymentIntent>
     )
 
     /**
@@ -194,14 +194,15 @@ internal interface PaymentManager {
             threeDSecure: ThreeDSecure
         ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
 
-            val paymentConsentReference: PaymentConsentReference? = if (params.paymentConsentId != null) {
-                PaymentConsentReference.Builder()
-                    .setId(params.paymentConsentId)
-                    .setCvc(params.cvc)
-                    .build()
-            } else {
-                null
-            }
+            val paymentConsentReference: PaymentConsentReference? =
+                if (params.paymentConsentId != null) {
+                    PaymentConsentReference.Builder()
+                        .setId(params.paymentConsentId)
+                        .setCvc(params.cvc)
+                        .build()
+                } else {
+                    null
+                }
 
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()
@@ -254,15 +255,20 @@ internal interface PaymentManager {
                 paymentMethodRequest = null
             } else {
                 paymentConsentReference = null
-                paymentMethodRequest = PaymentMethodRequest.Builder(params.paymentMethodType)
-                    .setThirdPartyPaymentMethodRequest(
-                        params.name,
-                        params.email,
-                        params.phone,
-                        if (params.bank != null) params.bank.currency else params.currency,
-                        params.bank
+                val builder = PaymentMethodRequest.Builder(params.paymentMethodType)
+                val pproInfo = params.pproAdditionalInfo
+                if (pproInfo != null) {
+                    builder.setThirdPartyPaymentMethodRequest(
+                        pproInfo.name,
+                        pproInfo.email,
+                        pproInfo.phone,
+                        if (pproInfo.bank != null) pproInfo.bank.currency else params.currency,
+                        pproInfo.bank
                     )
-                    .build()
+                } else {
+                    builder.setThirdPartyPaymentMethodRequest()
+                }
+                paymentMethodRequest = builder.build()
             }
             val request = PaymentIntentConfirmRequest.Builder(
                 requestId = UUID.randomUUID().toString()

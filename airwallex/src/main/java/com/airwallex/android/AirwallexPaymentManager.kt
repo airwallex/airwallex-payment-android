@@ -187,7 +187,7 @@ internal class AirwallexPaymentManager(
         params: ConfirmPaymentIntentParams,
         selectCurrencyActivityLaunch: DccActivityLaunch,
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
-        listener: Airwallex.PaymentResultListener<PaymentIntent>
+        listener: PaymentListener<PaymentIntent>
     ) {
         val device = PaymentManager.buildDeviceInfo(deviceId, applicationContext)
         val options = when (params.paymentMethodType) {
@@ -331,7 +331,7 @@ internal class AirwallexPaymentManager(
         params: VerifyPaymentConsentParams,
         selectCurrencyActivityLaunch: DccActivityLaunch,
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
-        listener: Airwallex.PaymentResultListener<PaymentIntent>
+        listener: PaymentListener<PaymentIntent>
     ) {
         val redirectVerificationOptions = PaymentConsentVerifyRequest.RedirectVerificationOptions()
         val verificationOptions = when (params.paymentMethodType) {

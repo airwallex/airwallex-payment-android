@@ -38,12 +38,15 @@ class Airwallex internal constructor(
      */
     interface PaymentListener<T> {
         fun onFailed(exception: Exception)
-        fun onSuccess(response: T)
-    }
-
-    interface PaymentResultListener<T> : PaymentListener<T> {
-        fun onNextActionWithWeChatPay(weChat: WeChat)
-        fun onNextActionWithRedirectUrl(url: String)
+        fun onSuccess(response: T) {
+            Logger.debug("Card payment success")
+        }
+        fun onNextActionWithWeChatPay(weChat: WeChat) {
+            Logger.debug("Start WeChat Pay $weChat")
+        }
+        fun onNextActionWithRedirectUrl(url: String) {
+            Logger.debug("Start Redirect Url Pay $url")
+        }
     }
 
     /**
@@ -76,7 +79,7 @@ class Airwallex internal constructor(
     @UiThread
     fun confirmPaymentIntent(
         params: ConfirmPaymentIntentParams,
-        listener: PaymentResultListener<PaymentIntent>
+        listener: PaymentListener<PaymentIntent>
     ) {
         // Retrieve Device Fingerprinting
         securityConnector.retrieveSecurityToken(
@@ -84,7 +87,14 @@ class Airwallex internal constructor(
             object : AirwallexSecurityConnector.SecurityTokenListener {
                 override fun onResponse(deviceId: String) {
                     // Confirm PaymentIntent with Device Fingerprinting
-                    paymentManager.confirmPaymentIntent(applicationContext, deviceId, params, dccActivityLaunch, threeDSecureActivityLaunch, listener)
+                    paymentManager.confirmPaymentIntent(
+                        applicationContext,
+                        deviceId,
+                        params,
+                        dccActivityLaunch,
+                        threeDSecureActivityLaunch,
+                        listener
+                    )
                 }
             }
         )
@@ -252,9 +262,15 @@ class Airwallex internal constructor(
     @UiThread
     fun verifyPaymentConsent(
         params: VerifyPaymentConsentParams,
-        listener: PaymentResultListener<PaymentIntent>
+        listener: PaymentListener<PaymentIntent>
     ) {
-        paymentManager.verifyPaymentConsent(applicationContext, params, dccActivityLaunch, threeDSecureActivityLaunch, listener)
+        paymentManager.verifyPaymentConsent(
+            applicationContext,
+            params,
+            dccActivityLaunch,
+            threeDSecureActivityLaunch,
+            listener
+        )
     }
 
     /**
@@ -321,8 +337,13 @@ class Airwallex internal constructor(
     interface PaymentIntentListener : PaymentFlowListener {
         fun onSuccess(paymentIntent: PaymentIntent)
         fun onFailed(error: Exception)
-        fun onNextActionWithWeChatPay(weChat: WeChat)
-        fun onNextActionWithRedirectUrl(url: String)
+        fun onNextActionWithWeChatPay(weChat: WeChat) {
+            Logger.debug("Start WeChat Pay $weChat")
+        }
+
+        fun onNextActionWithRedirectUrl(url: String) {
+            Logger.debug("Start Redirect Url Pay $url")
+        }
     }
 
     /**
@@ -370,12 +391,16 @@ class Airwallex internal constructor(
      * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
      * @param addPaymentMethodFlowListener The callback of present the add payment method flow
      */
-    fun presentAddPaymentMethodFlow(
+    private fun presentAddPaymentMethodFlow(
         session: AirwallexSession,
         clientSecretProvider: ClientSecretProvider,
         addPaymentMethodFlowListener: AddPaymentMethodListener
     ) {
-        airwallexStarter.presentAddPaymentMethodFlow(session, clientSecretProvider, addPaymentMethodFlowListener)
+        airwallexStarter.presentAddPaymentMethodFlow(
+            session,
+            clientSecretProvider,
+            addPaymentMethodFlowListener
+        )
     }
 
     /**
@@ -385,12 +410,16 @@ class Airwallex internal constructor(
      * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
      * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
      */
-    fun presentSelectPaymentMethodFlow(
+    private fun presentSelectPaymentMethodFlow(
         session: AirwallexSession,
         clientSecretProvider: ClientSecretProvider,
         selectPaymentMethodFlowListener: PaymentMethodListener
     ) {
-        airwallexStarter.presentSelectPaymentMethodFlow(session, clientSecretProvider, selectPaymentMethodFlowListener)
+        airwallexStarter.presentSelectPaymentMethodFlow(
+            session,
+            clientSecretProvider,
+            selectPaymentMethodFlowListener
+        )
     }
 
     /**
@@ -402,14 +431,20 @@ class Airwallex internal constructor(
      * @param cvc the CVC of the Credit Card, required.
      * @param paymentDetailListener The callback of present the select payment detail flow
      */
-    fun presentPaymentDetailFlow(
+    private fun presentPaymentDetailFlow(
         session: AirwallexSession,
         paymentMethod: PaymentMethod,
         paymentConsentId: String?,
         cvc: String?,
         paymentDetailListener: PaymentIntentCardListener
     ) {
-        airwallexStarter.presentPaymentDetailFlow(session, paymentMethod, paymentConsentId, cvc, paymentDetailListener)
+        airwallexStarter.presentPaymentDetailFlow(
+            session,
+            paymentMethod,
+            paymentConsentId,
+            cvc,
+            paymentDetailListener
+        )
     }
 
     /**
@@ -498,12 +533,14 @@ class Airwallex internal constructor(
                     Logger.debug("3DS 1.0 success. Response payload: $payload")
                     callback.onThreeDS1Success(payload)
                 } else {
-                    val cancel = data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
+                    val cancel =
+                        data.getBooleanExtra(ThreeDSecureActivity.EXTRA_THREE_CANCEL, false)
                     if (cancel) {
                         Logger.debug("3DS 1.0 canceled")
                         callback.onFailed(ThreeDSException(message = "3DS 1.0 failed. Reason: User cancel the 3DS 1.0"))
                     } else {
-                        val reason = data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_FAILED_REASON)
+                        val reason =
+                            data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_FAILED_REASON)
                         Logger.debug("3DS 1.0 failed. Reason: $reason")
                         callback.onFailed(
                             ThreeDSException(
@@ -516,7 +553,8 @@ class Airwallex internal constructor(
             }
             ThreeDSecureManager.ThreeDSecureType.THREE_D_SECURE_2 -> {
                 // 2.0 Flow
-                val validateResponse = data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
+                val validateResponse =
+                    data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
                 if (validateResponse.actionCode != null && validateResponse.actionCode == CardinalActionCode.CANCEL) {
                     Logger.debug("3DS 2.0 canceled")
                     callback.onFailed(ThreeDSException(message = "3DS 2.0 failed. Reason: User cancel the 3DS 2.0"))
@@ -574,7 +612,7 @@ class Airwallex internal constructor(
         currency: String,
         amount: BigDecimal? = null,
         cvc: String? = null,
-        listener: PaymentResultListener<PaymentIntent>
+        listener: PaymentListener<PaymentIntent>
     ) {
         if (paymentConsent.requiresCvc && cvc == null) {
             listener.onFailed(InvalidParamsException(message = "CVC is required!"))
@@ -612,11 +650,8 @@ class Airwallex internal constructor(
         currency: String? = null,
         customerId: String? = null,
         paymentConsentId: String? = null,
-        name: String? = null,
-        email: String? = null,
-        phone: String? = null,
-        bank: Bank? = null,
-        listener: PaymentResultListener<PaymentIntent>
+        pproAdditionalInfo: PPROAdditionalInfo? = null,
+        listener: PaymentListener<PaymentIntent>
     ) {
         val params = when (requireNotNull(paymentMethod.type)) {
             PaymentMethodType.CARD -> {
@@ -637,10 +672,7 @@ class Airwallex internal constructor(
                     customerId = customerId,
                     paymentConsentId = paymentConsentId,
                     currency = currency,
-                    name = name,
-                    email = email,
-                    phone = phone,
-                    bank = bank
+                    pproAdditionalInfo = pproAdditionalInfo
                 )
             }
         }
@@ -661,12 +693,8 @@ class Airwallex internal constructor(
         paymentMethod: PaymentMethod,
         paymentConsentId: String? = null,
         cvc: String? = null,
-        currency: String? = null,
-        name: String? = null,
-        email: String? = null,
-        phone: String? = null,
-        bank: Bank? = null,
-        listener: PaymentResultListener<PaymentIntent>
+        pproAdditionalInfo: PPROAdditionalInfo? = null,
+        listener: PaymentListener<PaymentIntent>
     ) {
         when (session) {
             is AirwallexPaymentSession -> {
@@ -676,13 +704,10 @@ class Airwallex internal constructor(
                     clientSecret = requireNotNull(paymentIntent.clientSecret),
                     paymentMethod = paymentMethod,
                     cvc = cvc,
-                    currency = currency,
+                    currency = session.currency,
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
-                    name = name,
-                    email = email,
-                    phone = phone,
-                    bank = bank,
+                    pproAdditionalInfo = pproAdditionalInfo,
                     listener = listener
                 )
             }
@@ -751,7 +776,6 @@ class Airwallex internal constructor(
                                         paymentConsent = response,
                                         currency = session.currency,
                                         amount = session.amount,
-                                        cvc = cvc,
                                         listener = listener
                                     )
                                 }

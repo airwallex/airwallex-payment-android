@@ -29,16 +29,12 @@ internal abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         paymentMethod: PaymentMethod,
         paymentConsentId: String? = null,
         cvc: String? = null,
-        currency: String? = null,
-        name: String? = null,
-        email: String? = null,
-        phone: String? = null,
-        bank: Bank? = null,
+        pproAdditionalInfo: PPROAdditionalInfo? = null,
         observer: Observer<AirwallexCheckoutViewModel.PaymentResult>
     ) {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.checkout(
-            paymentMethod, paymentConsentId, cvc, currency, name, email, phone, bank
+            paymentMethod, paymentConsentId, cvc, pproAdditionalInfo
         ).observe(this, observer)
     }
 }

@@ -16,17 +16,16 @@ internal class AirwallexCheckoutViewModel(
         paymentMethod: PaymentMethod,
         paymentConsentId: String?,
         cvc: String?,
-        currency: String? = null,
-        name: String? = null,
-        email: String? = null,
-        phone: String? = null,
-        bank: Bank? = null
+        pproAdditionalInfo: PPROAdditionalInfo? = null
     ): LiveData<PaymentResult> {
         val resultData = MutableLiveData<PaymentResult>()
         airwallex.checkout(
-            session, paymentMethod, paymentConsentId, cvc, currency,
-            name, email, phone, bank,
-            object : Airwallex.PaymentResultListener<PaymentIntent> {
+            session,
+            paymentMethod,
+            paymentConsentId,
+            cvc,
+            pproAdditionalInfo,
+            object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onFailed(exception: Exception) {
                     resultData.value = PaymentResult.Error(exception)
                 }

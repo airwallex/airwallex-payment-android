@@ -72,11 +72,11 @@ class PaymentMethodRequest(
         private var billing: Billing? = null
 
         fun setThirdPartyPaymentMethodRequest(
-            name: String?,
-            email: String?,
-            phone: String?,
-            currency: String?,
-            bank: Bank?
+            name: String? = null,
+            email: String? = null,
+            phone: String? = null,
+            currency: String? = null,
+            bank: Bank? = null
         ): Builder = apply {
             when (type.classify) {
                 PaymentMethodClassify.WECHAT,

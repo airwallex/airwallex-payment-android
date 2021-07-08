@@ -130,62 +130,6 @@ repositories {
     val airwallex = Airwallex(this)
 ```
 
-2. 构建一个 `AirwallexSession` 对象
-```kotlin
-    private fun buildSessionWithIntent(paymentIntent: PaymentIntent? = null, customerId: String? = null): AirwallexSession {
-        return when (checkoutMode) {
-            AirwallexCheckoutMode.PAYMENT -> {
-                if (paymentIntent == null) {
-                    throw Exception("PaymentIntent is required")
-                }
-                AirwallexPaymentSession.Builder(paymentIntent).build()
-            }
-            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                if (paymentIntent == null) {
-                    throw Exception("PaymentIntent is required")
-                }
-                AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
-            }
-            AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
-                    .setShipping(shipping)
-                    .build()
-            }
-        }
-    }
-```
-
-3. 配置 `ClientSecretProvider`
-实现一个 `ClientSecretProvider` 接口, 并重写`createClientSecret()`. 实现这个方法之后, 通过customerId调用 `generate_client_secret` 接口. 查阅我们的示例应用程序来了解更多
-```kotlin
-class ExampleClientSecretProvider : ClientSecretProvider {
-
-    private val api: Api
-        get() {
-            if (TextUtils.isEmpty(Settings.baseUrl)) {
-                throw IllegalArgumentException("Base url should not be null or empty")
-            }
-            return ApiFactory(Settings.baseUrl).buildRetrofit().create(Api::class.java)
-        }
-
-    override fun createClientSecret(customerId: String, updateListener: ClientSecretUpdateListener) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = kotlin.runCatching { api.createClientSecret(customerId) }
-            withContext(Dispatchers.Main) {
-                response.fold(
-                    onSuccess = {
-                        updateListener.onClientSecretUpdate(customerId, it.string())
-                    },
-                    onFailure = {
-                        updateListener.onClientSecretUpdateFailure(it.message ?: "")
-                    }
-                )
-            }
-        }
-    }
-}
-```
-
 ### Edit shipping info
 使用 `presentShippingFlow` 允许用户提供送货地址以及选择送货方式. `shipping` 字段是可选的
 ```kotlin
@@ -201,76 +145,24 @@ class ExampleClientSecretProvider : ClientSecretProvider {
         })
 ```
 
-### Selecting payment method page
-使用 `presentSelectPaymentMethodFlow` 向客户显示付款方式并允许他们选择一种或添加新付款方式的方法。使用这个方法, 你必须传入一个 `PaymentIntent` 和 `ClientSecretProvider` 对象
-```kotlin
-    private val clientSecretProvider by lazy {
-        ExampleClientSecretProvider()
-    }
-    val session = buildSessionWithIntent(paymentIntent)
-    airwallex.presentSelectPaymentMethodFlow(session, clientSecretProvider,
-        object : Airwallex.PaymentMethodListener {
-            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String?) {
-                Log.d(TAG, "Select PaymentMethod success")
-            }
-
-            override fun onCancelled() {
-                Log.d(TAG, "User cancel select PaymentMethod")
-            }
-        })
-```
-
-### Input card information module
-使用 `presentAddPaymentMethodFlow` 从用户收集卡信息. 需要传入一个 `AirwallexSession` 和 `ClientSecretProvider` 对象
-```kotlin
-    private val clientSecretProvider by lazy {
-        ExampleClientSecretProvider()
-    }
-    val session = buildSessionWithIntent(paymentIntent)
-    airwallex.presentAddPaymentMethodFlow(session, clientSecretProvider,
-        object : Airwallex.AddPaymentMethodListener {
-            override fun onSuccess(paymentMethod: PaymentMethod, cvc: String) {
-                Log.d(TAG, "Create PaymentMethod success")
-            }
-
-            override fun onCancelled() {
-                Log.d(TAG, "User cancel create PaymentMethod")
-            }
-        })
-```
-
-### Confirm payment intent page
-使用 `presentPaymentDetailFlow` 来 confirm PaymentIntent. 需要传入一个 `AirwallexSession` 对象
-```kotlin
-    val session = buildSessionWithIntent(paymentIntent)
-    airwallex.presentPaymentDetailFlow(session, paymentMethod, paymentConsentId, cvc,
-        object : Airwallex.PaymentIntentListener {
-           override fun onSuccess(paymentIntent: PaymentIntent) {
-               Log.d(TAG, "Confirm payment intent success")
-            }
-
-           override fun onFailed(exception: Exception) {
-               Log.d(TAG, "Confirm payment intent failed")
-           }
-                           
-           override fun onCancelled() {
-               Log.d(TAG, "User cancel confirm payment intent")
-           }
-        })
-```
-
 ### Use the entire Native UI in one flow
 使用 `presentPaymentFlow` 来完成整个支付流程. 需要传入一个 `AirwallexSession` 和 `ClientSecretProvider` 对象
 ```kotlin
-    private val clientSecretProvider by lazy {
-        ExampleClientSecretProvider()
-    }
-    val session = buildSessionWithIntent(paymentIntent)
-    // payment flow does not need clientSecretProvider
-    airwallex.presentPaymentFlow(session, clientSecretProvider,
+    airwallex.presentPaymentFlow(AirwallexPaymentSession.Builder(paymentIntent).build(),
         object : Airwallex.PaymentIntentListener {
+            // If you need to support card, it's optional
             override fun onSuccess(paymentIntent: PaymentIntent) {
                 Log.d(TAG, "Confirm payment intent success")
+            }
+            
+            // If you need to support wechatpay, it's optional
+            override fun onNextActionWithWeChatPay(weChat: WeChat) {
+                Log.d(TAG, "Confirm payment intent success, start WeChat Pay")
+            }
+
+            // If you need to support redirect url, it's optional
+            override fun onNextActionWithRedirectUrl(url: String) {
+                Log.d(TAG, "Confirm payment intent success, start Redirect URL")
             }
 
             override fun onFailed(exception: Exception) {
@@ -316,27 +208,6 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
 
 3. 然后你可以通过`checkout`完成支付
 ```kotlin
-    private fun buildSessionWithIntent(paymentIntent: PaymentIntent? = null, customerId: String? = null): AirwallexSession {
-        return when (checkoutMode) {
-            AirwallexCheckoutMode.PAYMENT -> {
-                if (paymentIntent == null) {
-                    throw Exception("PaymentIntent is required")
-                }
-                AirwallexPaymentSession.Builder(paymentIntent).build()
-            }
-            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                if (paymentIntent == null) {
-                    throw Exception("PaymentIntent is required")
-                }
-                AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
-            }
-            AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
-                    .setShipping(shipping)
-                    .build()
-            }
-        }
-    }
     val listener = object : Airwallex.PaymentListener<PaymentIntent> {
         override fun onSuccess(response: PaymentIntent) {
             // Confirm Payment Intent success
@@ -347,8 +218,12 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
         }
     }
 
-    val session = buildSessionWithIntent(paymentIntent)
-    airwallex.checkout(session, paymentMethod, paymentConsentId, cvc, listener)
+    val paymentMethod = PaymentMethod(
+        type = PaymentMethodType.CARD,
+        card = card,
+        billing = billing
+    )
+    airwallex.checkout(AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod, listener)
 ```
 
 在你的Activity或Fragment中, 重写 Activity#onActivityResult 方法
@@ -416,29 +291,17 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
 
 3. 通过`checkout`完成支付
 ```kotlin
-    private fun buildSessionWithIntent(paymentIntent: PaymentIntent? = null, customerId: String? = null): AirwallexSession {
-        return when (checkoutMode) {
-            AirwallexCheckoutMode.PAYMENT -> {
-                if (paymentIntent == null) {
-                    throw Exception("PaymentIntent is required")
-                }
-                AirwallexPaymentSession.Builder(paymentIntent).build()
-            }
-            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                if (paymentIntent == null) {
-                    throw Exception("PaymentIntent is required")
-                }
-                AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
-            }
-            AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
-                    .setShipping(shipping)
-                    .build()
-            }
+    val listener = object : Airwallex.PaymentListener<PaymentIntent> {
+        override fun onNextActionWithRedirectUrl(url: String) {
+            Logger.debug("Start RedirectUrl $url")
+        }
+    
+        override fun onFailed(exception: Exception) {
+            // Confirm Payment Intent failed
         }
     }
-    val session = buildSessionWithIntent(paymentIntent)
-    airwallex.checkout(session, paymentMethod, paymentConsentId, cvc, listener)
+
+    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod(type = PaymentMethodType.ALIPAY_CN), listener = listener)
 ```
 
 在你的Activity或Fragment中, 重写 Activity#onActivityResult 方法
@@ -496,37 +359,16 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
 2. 完成checkout，你需要调用 `checkout` 方法. 
 ```kotlin
     val listener = object : Airwallex.PaymentListener<PaymentIntent> {
-        override fun onSuccess(response: PaymentIntent) {
-            // Confirm Payment Intent success
+        override fun onNextActionWithWeChatPay(weChat: WeChat) {
+            Logger.debug("Start WeChat Pay $weChat")
         }
-
+    
         override fun onFailed(exception: Exception) {
             // Confirm Payment Intent failed
         }
     }
-    private fun buildSessionWithIntent(paymentIntent: PaymentIntent? = null, customerId: String? = null): AirwallexSession {
-        return when (checkoutMode) {
-            AirwallexCheckoutMode.PAYMENT -> {
-                if (paymentIntent == null) {
-                    throw Exception("PaymentIntent is required")
-                }
-                AirwallexPaymentSession.Builder(paymentIntent).build()
-            }
-            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                if (paymentIntent == null) {
-                    throw Exception("PaymentIntent is required")
-                }
-                AirwallexRecurringWithIntentSession.Builder(paymentIntent, nextTriggerBy).build()
-            }
-            AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(nextTriggerBy, Settings.currency, BigDecimal.valueOf(Settings.price.toDouble()), customerId)
-                    .setShipping(shipping)
-                    .build()
-            }
-        }
-    }
-    val session = buildSessionWithIntent(paymentIntent)
-    airwallex.checkout(session, paymentMethod, paymentConsentId, cvc, listener)
+
+    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod(type = PaymentMethodType.WECHAT), listener = listener)
 ```
 
 在你的Activity或Fragment中, 重写 Activity#onActivityResult 方法
@@ -543,9 +385,6 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
 Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/tree/master) for more details.
 
 ```kotlin
-    // The callback after confirmPaymentIntent succeeds will include payment intent. `paymentIntent.weChat` contains all the data needed for WeChat Pay, then you need to send `weChat` to [WeChat Pay SDK](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml).
-
-    val weChat = response.weChat
     val weChatReq = PayReq()
     weChatReq.appId = weChat.appId
     weChatReq.partnerId = weChat.partnerId

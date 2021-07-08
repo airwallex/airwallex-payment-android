@@ -252,8 +252,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     startCheckout(
                         paymentMethod = paymentMethod,
                         paymentConsentId = paymentConsent.id,
-                        cvc = null,
-                        currency = session.currency,
                         observer = observer
                     )
                 } else {
@@ -270,12 +268,9 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                             startCheckout(
                                 paymentMethod = paymentMethod,
                                 paymentConsentId = paymentConsent.id,
-                                cvc = null,
-                                currency = session.currency,
-                                bank = bank,
-                                name = name,
-                                email = email,
-                                phone = phone,
+                                pproAdditionalInfo = PPROAdditionalInfo(
+                                    name = name, email = email, phone = phone, bank = bank
+                                ),
                                 observer = observer
                             )
                         }

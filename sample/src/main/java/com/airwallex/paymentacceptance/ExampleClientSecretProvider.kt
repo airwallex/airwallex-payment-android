@@ -4,12 +4,15 @@ import android.text.TextUtils
 import com.airwallex.android.AirwallexPlugins
 import com.airwallex.android.ClientSecretProvider
 import com.airwallex.android.ClientSecretUpdateListener
+import com.airwallex.android.model.AirwallexError
+import com.airwallex.android.model.parser.AirwallexErrorParser
 import com.airwallex.android.model.parser.ClientSecretParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import retrofit2.HttpException
 
 class ExampleClientSecretProvider : ClientSecretProvider {
 
@@ -27,7 +30,7 @@ class ExampleClientSecretProvider : ClientSecretProvider {
         updateListener: ClientSecretUpdateListener
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = kotlin.runCatching {
+            val response = runCatching {
                 val response = api.authentication(
                     apiKey = Settings.apiKey,
                     clientId = Settings.clientId
@@ -41,10 +44,25 @@ class ExampleClientSecretProvider : ClientSecretProvider {
                         updateListener.onClientSecretUpdate(ClientSecretParser().parse(JSONObject(it.string())))
                     },
                     onFailure = {
-                        updateListener.onClientSecretUpdateFailure(it.message ?: "")
+                        val errorMessage = if (it is HttpException) {
+                            getErrorMessageFromResponse(it)?.message ?: "Failed to generate client secret!"
+                        } else {
+                            it.message ?: "Failed to generate client secret!"
+                        }
+                        updateListener.onClientSecretUpdateFailure(errorMessage)
                     }
                 )
             }
+        }
+    }
+
+    private fun getErrorMessageFromResponse(httpException: HttpException): AirwallexError? {
+        return try {
+            val body = httpException.response()?.errorBody()
+            AirwallexErrorParser().parse(JSONObject(body?.string() ?: ""))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }

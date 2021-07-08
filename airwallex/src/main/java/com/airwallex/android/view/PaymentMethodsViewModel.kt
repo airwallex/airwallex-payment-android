@@ -32,31 +32,35 @@ internal class PaymentMethodsViewModel(
 
     fun fetchPaymentMethodTypes(): LiveData<PaymentMethodTypeResult> {
         val resultData = MutableLiveData<PaymentMethodTypeResult>()
-        if (session is AirwallexPaymentSession || session is AirwallexRecurringWithIntentSession) {
-            retrieveAvailablePaymentMethods(
-                mutableListOf(),
-                AtomicInteger(0),
-                resultData,
-                requireNotNull(paymentIntent?.clientSecret)
-            )
-        } else {
-            ClientSecretRepository.getInstance().retrieveClientSecret(
-                requireNotNull(session.customerId),
-                object : ClientSecretRepository.ClientSecretRetrieveListener {
-                    override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                        retrieveAvailablePaymentMethods(
-                            mutableListOf(),
-                            AtomicInteger(0),
-                            resultData,
-                            clientSecret.value
-                        )
-                    }
+        when (session) {
+            is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
+                retrieveAvailablePaymentMethods(
+                    mutableListOf(),
+                    AtomicInteger(0),
+                    resultData,
+                    requireNotNull(paymentIntent?.clientSecret)
+                )
+            }
+            is AirwallexRecurringSession -> {
+                ClientSecretRepository.getInstance().retrieveClientSecret(
+                    requireNotNull(session.customerId),
+                    object : ClientSecretRepository.ClientSecretRetrieveListener {
+                        override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
+                            retrieveAvailablePaymentMethods(
+                                mutableListOf(),
+                                AtomicInteger(0),
+                                resultData,
+                                clientSecret.value
+                            )
+                        }
 
-                    override fun onClientSecretError(errorMessage: String) {
-                        PaymentMethodTypeResult.Error(Exception(errorMessage))
+                        override fun onClientSecretError(errorMessage: String) {
+                            resultData.value =
+                                PaymentMethodTypeResult.Error(Exception(errorMessage))
+                        }
                     }
-                }
-            )
+                )
+            }
         }
         return resultData
     }

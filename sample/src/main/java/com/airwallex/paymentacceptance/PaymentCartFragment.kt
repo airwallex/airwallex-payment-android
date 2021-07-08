@@ -525,7 +525,7 @@ class PaymentCartFragment : Fragment() {
     }
 
     private fun startWeChatPay(weChat: WeChat) {
-        Log.e(TAG, "weChat info $weChat")
+        Log.d(TAG, "weChat info $weChat")
         (activity as? PaymentCartActivity)?.setLoadingProgress(true)
         val prepayId = weChat.prepayId
         // We use the `URL mock` method to simulate WeChat Pay in the `Staging` environment.
@@ -596,120 +596,6 @@ class PaymentCartFragment : Fragment() {
             airwallex.handleAction(redirectUrl)
         } catch (e: RedirectException) {
             showPaymentError(e.localizedMessage)
-        }
-    }
-
-    /**
-     * Only use the Select Payment Methods Flow
-     */
-    private fun handlePaymentIntentResponseWithCustomFlow1(paymentIntent: PaymentIntent) {
-        val session = buildSessionWithIntent(paymentIntent)
-        viewModel.presentSelectPaymentMethodFlow(
-            session,
-            clientSecretProvider
-        ).observe(viewLifecycleOwner) {
-            when (it) {
-                is PaymentCartViewModel.PaymentMethodResult.Success -> {
-                    (activity as? PaymentCartActivity)?.setLoadingProgress(true)
-                    viewModel.checkout(
-                        session = session,
-                        paymentMethod = it.paymentMethod,
-                        paymentConsentId = it.paymentConsentId,
-                        cvc = it.cvc
-                    ).observe(viewLifecycleOwner) { checkoutResult ->
-                        when (checkoutResult) {
-                            is PaymentCartViewModel.PaymentCheckoutResult.Error -> {
-                                showPaymentError(error = checkoutResult.exception.message)
-                            }
-                            is PaymentCartViewModel.PaymentCheckoutResult.Success -> {
-                                showPaymentSuccess()
-                            }
-                            is PaymentCartViewModel.PaymentCheckoutResult.WeChatPay -> {
-                                startWeChatPay(checkoutResult.weChat)
-                            }
-                            is PaymentCartViewModel.PaymentCheckoutResult.Redirect -> {
-                                startRedirectUrl(checkoutResult.redirectUrl)
-                            }
-                        }
-                    }
-                }
-                is PaymentCartViewModel.PaymentMethodResult.Error -> {
-                    showSelectPaymentError(error = it.exception.message)
-                }
-                is PaymentCartViewModel.PaymentMethodResult.Cancel -> {
-                    showPaymentCancelled()
-                }
-            }
-        }
-    }
-
-    /**
-     * Use the Select Payment Methods Flow & Checkout Detail Flow
-     */
-    private fun handlePaymentIntentResponseWithCustomFlow2(paymentIntent: PaymentIntent) {
-        val session = buildSessionWithIntent(paymentIntent)
-        viewModel.presentSelectPaymentMethodFlow(
-            session,
-            clientSecretProvider
-        ).observe(viewLifecycleOwner) {
-            when (it) {
-                is PaymentCartViewModel.PaymentMethodResult.Success -> {
-                    (activity as? PaymentCartActivity)?.setLoadingProgress(true)
-                    when (it.paymentMethod.type) {
-                        PaymentMethodType.CARD -> {
-                            viewModel.presentPaymentDetailFlow(
-                                session,
-                                it.paymentMethod,
-                                it.paymentConsentId,
-                                it.cvc
-                            ).observe(viewLifecycleOwner) {
-                                when (it) {
-                                    is PaymentCartViewModel.PaymentDetailResult.Success -> {
-                                        showPaymentSuccess()
-                                    }
-                                    is PaymentCartViewModel.PaymentDetailResult.Error -> {
-                                        showPaymentError(it.exception.message)
-                                    }
-
-                                    is PaymentCartViewModel.PaymentDetailResult.Cancel -> {
-                                        showPaymentCancelled()
-                                    }
-                                }
-                            }
-                        }
-                        else -> {
-                            viewModel.checkout(
-                                session = session,
-                                paymentMethod = it.paymentMethod,
-                                paymentConsentId = it.paymentConsentId,
-                                cvc = it.cvc
-                            ).observe(viewLifecycleOwner) { checkoutResult ->
-                                when (checkoutResult) {
-                                    is PaymentCartViewModel.PaymentCheckoutResult.Error -> {
-                                        showPaymentError(error = checkoutResult.exception.message)
-                                    }
-                                    is PaymentCartViewModel.PaymentCheckoutResult.Success -> {
-                                        showPaymentSuccess()
-                                    }
-                                    is PaymentCartViewModel.PaymentCheckoutResult.WeChatPay -> {
-                                        startWeChatPay(checkoutResult.weChat)
-                                    }
-                                    is PaymentCartViewModel.PaymentCheckoutResult.Redirect -> {
-                                        startRedirectUrl(checkoutResult.redirectUrl)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                is PaymentCartViewModel.PaymentMethodResult.Error -> {
-                    showSelectPaymentError(error = it.exception.message)
-                }
-                is PaymentCartViewModel.PaymentMethodResult.Cancel -> {
-                    showPaymentCancelled()
-                }
-            }
         }
     }
 

@@ -110,6 +110,12 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        airwallex.handlePaymentData(requestCode, resultCode, data)
+    }
+
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_back
     }

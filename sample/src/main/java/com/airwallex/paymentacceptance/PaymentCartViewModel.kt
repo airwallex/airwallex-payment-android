@@ -10,35 +10,6 @@ internal class PaymentCartViewModel(
     private val airwallex: Airwallex
 ) : AndroidViewModel(application) {
 
-    fun presentSelectPaymentMethodFlow(
-        session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider
-    ): LiveData<PaymentMethodResult> {
-        val resultData = MutableLiveData<PaymentMethodResult>()
-        airwallex.presentSelectPaymentMethodFlow(
-            session,
-            clientSecretProvider,
-            object : Airwallex.PaymentMethodListener {
-                override fun onSuccess(
-                    paymentMethod: PaymentMethod,
-                    paymentConsentId: String?,
-                    cvc: String?
-                ) {
-                    resultData.value = PaymentMethodResult.Success(paymentMethod, paymentConsentId, cvc)
-                }
-
-                override fun onFailed(error: Exception) {
-                    resultData.value = PaymentMethodResult.Error(error)
-                }
-
-                override fun onCancelled() {
-                    resultData.value = PaymentMethodResult.Cancel
-                }
-            }
-        )
-        return resultData
-    }
-
     fun presentShippingFlow(shipping: Shipping?): LiveData<ShippingResult> {
         val resultData = MutableLiveData<ShippingResult>()
         airwallex.presentShippingFlow(
@@ -89,90 +60,6 @@ internal class PaymentCartViewModel(
         return resultData
     }
 
-    fun checkout(
-        session: AirwallexSession,
-        paymentMethod: PaymentMethod,
-        paymentConsentId: String?,
-        cvc: String?,
-    ): LiveData<PaymentCheckoutResult> {
-        val resultData = MutableLiveData<PaymentCheckoutResult>()
-        airwallex.checkout(
-            session = session,
-            paymentMethod = paymentMethod,
-            paymentConsentId = paymentConsentId,
-            cvc = cvc,
-            listener = object : Airwallex.PaymentResultListener<PaymentIntent> {
-                override fun onFailed(exception: Exception) {
-                    resultData.value = PaymentCheckoutResult.Error(exception)
-                }
-
-                override fun onSuccess(response: PaymentIntent) {
-                    resultData.value = PaymentCheckoutResult.Success(response)
-                }
-
-                override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                    resultData.value = PaymentCheckoutResult.WeChatPay(weChat)
-                }
-
-                override fun onNextActionWithRedirectUrl(url: String) {
-                    resultData.value = PaymentCheckoutResult.Redirect(url)
-                }
-            }
-        )
-        return resultData
-    }
-
-    fun presentPaymentDetailFlow(
-        session: AirwallexSession,
-        paymentMethod: PaymentMethod,
-        paymentConsentId: String?,
-        cvc: String?
-    ): LiveData<PaymentDetailResult> {
-        val resultData = MutableLiveData<PaymentDetailResult>()
-        airwallex.presentPaymentDetailFlow(
-            session,
-            paymentMethod,
-            paymentConsentId,
-            cvc,
-            object : Airwallex.PaymentIntentCardListener {
-                override fun onSuccess(paymentIntent: PaymentIntent) {
-                    resultData.value = PaymentDetailResult.Success(paymentIntent)
-                }
-
-                override fun onFailed(error: Exception) {
-                    resultData.value = PaymentDetailResult.Error(error)
-                }
-
-                override fun onCancelled() {
-                    resultData.value = PaymentDetailResult.Cancel
-                }
-            }
-        )
-        return resultData
-    }
-
-    sealed class PaymentMethodResult {
-        data class Success(
-            val paymentMethod: PaymentMethod,
-            val paymentConsentId: String?,
-            val cvc: String?
-        ) : PaymentMethodResult()
-
-        data class Error(val exception: Exception) : PaymentMethodResult()
-
-        object Cancel : PaymentMethodResult()
-    }
-
-    sealed class PaymentCheckoutResult {
-        data class Success(val paymentIntent: PaymentIntent) : PaymentCheckoutResult()
-
-        data class Error(val exception: Exception) : PaymentCheckoutResult()
-
-        data class WeChatPay(val weChat: WeChat) : PaymentCheckoutResult()
-
-        data class Redirect(val redirectUrl: String) : PaymentCheckoutResult()
-    }
-
     sealed class ShippingResult {
         data class Success(val shipping: Shipping) : ShippingResult()
 
@@ -189,14 +76,6 @@ internal class PaymentCartViewModel(
         data class Redirect(val redirectUrl: String) : PaymentFlowResult()
 
         object Cancel : PaymentFlowResult()
-    }
-
-    sealed class PaymentDetailResult {
-        data class Success(val paymentIntent: PaymentIntent) : PaymentDetailResult()
-
-        data class Error(val exception: Exception) : PaymentDetailResult()
-
-        object Cancel : PaymentDetailResult()
     }
 
     internal class Factory(
