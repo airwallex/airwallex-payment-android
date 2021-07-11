@@ -1,0 +1,14 @@
+apply plugin: "org.jetbrains.dokka"
+
+tasks.named("dokkaHtmlMultiModule") {
+    def dokkaDir = "$rootProject.buildDir/docs"
+    outputDirectory.set(file(dokkaDir))
+    doLast {
+        copy {
+            from dokkaDir
+            into dokkaDir
+            include "-modules.html"
+            rename("-modules.html", "index.html")
+        }
+    }
+}

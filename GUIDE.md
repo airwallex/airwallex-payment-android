@@ -65,11 +65,13 @@ Airwallex Native UI is a prebuilt UI which enables you to customize the UI color
 The Airwallex Android SDK is compatible with apps supporting Android API level 19 and above.
 
 - Install the SDK
+The Components are available through [Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), you only need to add the Gradle dependency.
+
 To install the SDK, in your app-level `build.gradle`, add the following:
 
 ```groovy
     dependencies {
-        implementation 'com.airwallex:airwallex-core:2.0.4'
+        implementation 'io.github.airwallex:airwallex-core:2.0.5'
     }
 ```
 

@@ -9,10 +9,12 @@
 Airwallx Android SDK 可以很方便得在你的Android用用中添加支付功能，支持Android 19及以上版本。
 
 ## 添加依赖
+已经上传到[Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), 你只需要添加Gradle依赖项。
+
 在 `build.gradle`中添加以下依赖
 ```groovy
 dependencies {
-    implementation 'com.airwallex:airwallex-core:2.0.4'
+    implementation 'io.github.airwallex:airwallex-core:2.0.5'
 }
 ```
 

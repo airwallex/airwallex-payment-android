@@ -1,92 +1,67 @@
-version = libraryVersion
-group = publishedGroupId    // Maven Group ID for the artifact
+apply plugin: "maven-publish"
+apply plugin: "signing"
 
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.dcendents.android-maven'
-
-if (project.hasProperty("android")) { // Android libraries
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    if (project.plugins.findPlugin("com.android.library")) {
         from android.sourceSets.main.java.srcDirs
-    }
-
-    task javadoc(type: Javadoc) {
-        source = android.sourceSets.main.java.srcDirs
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    }
-
-    apply plugin: "org.jetbrains.dokka-android"
-    task dokkaJavadoc(type: dokka.getClass()) {
-        outputFormat = 'javadoc'
-        outputDirectory = "$buildDir/javadoc"
-    }
-
-    task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-        classifier = 'javadoc'
-        from "$buildDir/javadoc"
-    }
-} else { // Java libraries
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    apply plugin: "org.jetbrains.dokka"
-    task dokkaJavadoc(type: dokka.getClass()) {
-        outputFormat = 'javadoc'
-        outputDirectory = "$buildDir/javadoc"
-    }
-
-    task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-        classifier = 'javadoc'
-        from "$buildDir/javadoc"
+    } else {
+        from sourceSets.main.java.srcDirs
     }
 }
 
-bintrayUpload.dependsOn assemble
-bintrayUpload.dependsOn sourcesJar
-bintrayUpload.dependsOn javadocJar
+apply plugin: "org.jetbrains.dokka"
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveClassifier.set('javadoc')
+    from dokkaJavadoc.outputDirectory
+}
 
 artifacts {
+    archives androidSourcesJar
     archives javadocJar
-    archives sourcesJar
 }
 
-install {
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging 'aar'
-                groupId publishedGroupId
-                artifactId artifact
+project.afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId airwallexGroupId
+                artifactId airwallexArtifactId
+                version libraryVersion
 
-                // Add your description here
-                name libraryName
-                description libraryDescription
-                url siteUrl
+                artifact androidSourcesJar
+                artifact javadocJar
+                artifact bundleReleaseAar
 
-                // Set your license
-                licenses {
-                    license {
-                        name licenseName
-                        url licenseSite
+                pom {
+                    name = airwallexName
+                    description = airwallexDescription
+                    url = airwallexUrl
+                    licenses {
+                        license {
+                            name = airwallexLicenseName
+                            url = airwallexLicenseUrl
+                        }
+                    }
+                    organization {
+                        name = airwallexOrganizationName
+                        url = airwallexOrganizationUrl
+                    }
+                    developers {
+                        developer {
+                            organization = airwallexOrganizationName
+                            organizationUrl = airwallexOrganizationUrl
+                        }
+                    }
+                    scm {
+                        connection = airwallexScmConnection
+                        developerConnection = airwallexScmConnection
+                        url = airwallexScmUrl
                     }
                 }
-                developers {
-                    developer {
-                        id developerId
-                        name developerName
-                        email developerEmail
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
 
-                }
-                withXml {
+                pom.withXml {
                     def dependenciesNode = asNode().appendNode('dependencies')
                     configurations.api.allDependencies.each {
                         if (it.name != 'unspecified') {
@@ -110,27 +85,20 @@ install {
                 }
             }
         }
-    }
-}
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-    configurations = ['archives']
-    pkg {
-        repo = bintrayRepo
-        name = bintrayName
-        desc = libraryDescription
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-        licenses = [licenseCode]
-        publish = true
-        publicDownloadNumbers = true
-        version {
-            desc = libraryDescription
+        repositories {
+            maven {
+                name = "sonatype"
+                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                credentials {
+                    username ossrhUsername
+                    password ossrhPassword
+                }
+            }
         }
+    }
+
+    signing {
+        sign publishing.publications
     }
 }

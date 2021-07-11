@@ -65,11 +65,13 @@ Airwallex Native UI 是一个预构建的UI，可让您自定义UI颜色并适�
 Airwallex Android SDK 支持Android API 19及以上版本。
 
 - 安装SDK
+已经上传到[Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), 你只需要添加Gradle依赖项。
+
 在项目的根目录下，打开`build.gradle`，并添加以下内容：
 
 ```groovy
     dependencies {
-        implementation 'com.airwallex:airwallex-core:2.0.4'
+        implementation 'io.github.airwallex:airwallex-core:2.0.5'
     }
 ```
 

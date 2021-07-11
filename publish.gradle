@@ -1,21 +1,38 @@
 ext {
-    siteUrl = 'https://github.com/airwallex/airwallex-payment-android'          // git repo url
-    gitUrl = 'https://github.com/airwallex/airwallex-payment-android.git'       // git repo vcs url
+    airwallexGroupId = "io.github.airwallex"
+    airwallexArtifactId = MAVEN_ARTIFACT_ID
 
-    artifact = POM_ARTIFACT                                                     // this is the artifact we want to see in implementation line
-    publishedGroupId = PUBLISHED_GROUP_ID                                       // this is the ID we want to see in implementation line
+    airwallexName = MAVEN_ARTIFACT_NAME
+    airwallexDescription = MAVEN_ARTIFACT_DESCRIPTION
+    airwallexUrl = "https://github.com/airwallex/airwallex-payment-android"
 
-    bintrayRepo = 'airwallex-payment-android'                                   // Repo name in bintray dashboard
-    bintrayName = POM_BINTRAY_NAME                                              // package name of the bintray repo
+    airwallexLicenseName = "MIT License"
+    airwallexLicenseUrl = "https://opensource.org/licenses/MIT"
 
-    libraryName = POM_LIBRARY_NAME                                              // this is the module name of library
-    libraryDescription = POM_LIBRARY_DESCRIPTION                                // description of library
+    airwallexOrganizationName = "Airwallex"
+    airwallexOrganizationUrl = "https://www.airwallex.com/"
 
-    licenseName = 'The MIT License (MIT)'
-    licenseSite = 'https://opensource.org/licenses/MIT'
-    licenseCode = 'MIT'
+    airwallexScmConnection = "https://github.com/airwallex/airwallex-payment-android.git"
+    airwallexScmUrl = "https://github.com/airwallex/airwallex-payment-android"
+}
 
-    developerId = 'pa-mobile-sdk'                                               // This is your bintray username
-    developerName = 'Airwallex'                                                 // Developer's name
-    developerEmail = 'pa_mobile_sdk@airwallex.com'                              // Developer's email
+ext["signing.keyId"] = ''
+ext["signing.password"] = ''
+ext["signing.secretKeyRingFile"] = ''
+ext["ossrhUsername"] = ''
+ext["ossrhPassword"] = ''
+
+File secretPropsFile = project.rootProject.file('local.properties')
+if (secretPropsFile.exists()) {
+    Properties p = new Properties()
+    p.load(new FileInputStream(secretPropsFile))
+    p.each { name, value ->
+        ext[name] = value
+    }
+} else {
+    ext["signing.keyId"] = System.getenv('SIGNING_KEY_ID')
+    ext["signing.password"] = System.getenv('SIGNING_PASSWORD')
+    ext["signing.secretKeyRingFile"] = System.getenv('SIGNING_SECRET_KEY_RING_FILE')
+    ext["ossrhUsername"] = System.getenv('OSSRH_USERNAME')
+    ext["ossrhPassword"] = System.getenv('OSSRH_PASSWORD')
 }

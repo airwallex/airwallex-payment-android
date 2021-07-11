@@ -11,10 +11,12 @@ This library makes it quick and easy to build an excellent payment experience in
 Airwallex's Android SDK is available for Android SDK >= 19.
 
 ## Installation
+The Components are available through [Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), you only need to add the Gradle dependency.
+
 Add the dependency in your `build.gradle`.
 ```groovy
 dependencies {
-    implementation 'com.airwallex:airwallex-core:2.0.4'
+    implementation 'io.github.airwallex:airwallex-core:2.0.5'
 }
 ```
 
