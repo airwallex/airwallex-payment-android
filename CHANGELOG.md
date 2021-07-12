@@ -1,6 +1,11 @@
 # Airwallex Android SDK Changelog
 All notable changes to the SDK will be documented in this file.
 
+## Version 2.0.6 (July 12, 2021)
+- Bug fix
+- Switch to maven central
+- Support recurring & recurring with intent
+
 ## Version 2.0.4 (March 12, 2021)
 - Bug fix
 

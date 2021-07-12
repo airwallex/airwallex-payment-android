@@ -100,7 +100,7 @@ android {
 dependencies {
     implementation project(':airwallex')
 
-//    implementation 'io.github.airwallex:airwallex-core:2.0.5'
+//    implementation 'io.github.airwallex:airwallex-core:2.0.6'
 
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.preference:preference-ktx:1.1.1'

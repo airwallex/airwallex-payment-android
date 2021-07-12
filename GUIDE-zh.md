@@ -71,7 +71,7 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 
 ```groovy
     dependencies {
-        implementation 'io.github.airwallex:airwallex-core:2.0.5'
+        implementation 'io.github.airwallex:airwallex-core:2.0.6'
     }
 ```
 
