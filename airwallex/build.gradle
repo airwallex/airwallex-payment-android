@@ -74,12 +74,14 @@ dependencies {
     // material
     implementation 'com.google.android.material:material:1.4.0'
     // cardinal
-    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.3-2'
+    api 'io.github.airwallex:cardinalmobilesdk:2.2.3-2'
     // fingerprinting
     api 'io.github.airwallex:TrustDefender:5.0-96'
 
     // kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
 

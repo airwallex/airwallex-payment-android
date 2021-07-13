@@ -32,3 +32,14 @@
 -keep class com.cardinalcommerce.** { *; }
 ## Cardinal SDK
 -dontwarn com.cardinalcommerce**
+
+# Rules for Kotlin Coroutines
+# https://github.com/Kotlin/kotlinx.coroutines/blob/master/ui/kotlinx-coroutines-android/example-app/app/proguard-rules.pro
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepnames class kotlinx.coroutines.android.AndroidExceptionPreHandler {}
+-keepnames class kotlinx.coroutines.android.AndroidDispatcherFactory {}
+
+-keepclassmembernames class kotlinx.** {
+    volatile <fields>;
+}

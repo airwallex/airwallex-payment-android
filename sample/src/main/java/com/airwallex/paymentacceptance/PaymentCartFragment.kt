@@ -141,49 +141,6 @@ class PaymentCartFragment : Fragment() {
 //            }
         }
 
-    private fun buildSessionWithIntent(
-        paymentIntent: PaymentIntent? = null,
-        customerId: String? = null
-    ): AirwallexSession {
-        return try {
-            when (checkoutMode) {
-                AirwallexCheckoutMode.PAYMENT -> {
-                    AirwallexPaymentSession.Builder(
-                        requireNotNull(
-                            paymentIntent,
-                            { "PaymentIntent is required" }
-                        )
-                    ).build()
-                }
-                AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                    AirwallexRecurringWithIntentSession.Builder(
-                        requireNotNull(
-                            paymentIntent,
-                            { "PaymentIntent is required" }
-                        ),
-                        requireNotNull(
-                            paymentIntent.customerId,
-                            { "CustomerId is required" }
-                        ),
-                        nextTriggerBy
-                    ).build()
-                }
-                AirwallexCheckoutMode.RECURRING -> {
-                    AirwallexRecurringSession.Builder(
-                        requireNotNull(customerId, { "CustomerId is required" }),
-                        Settings.currency,
-                        BigDecimal.valueOf(Settings.price.toDouble()),
-                        nextTriggerBy
-                    )
-                        .setShipping(shipping)
-                        .build()
-                }
-            }
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
     private class CartItem constructor(
         order: PhysicalProduct,
         context: Context?,

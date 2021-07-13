@@ -158,10 +158,10 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
 
     private fun invalidateConfirmStatus() {
         if (isValid) {
-            viewBinding.tvSaveCard.isEnabled = true
+            viewBinding.btnSaveCard.isEnabled = true
             keyboardController.hide()
         } else {
-            viewBinding.tvSaveCard.isEnabled = false
+            viewBinding.btnSaveCard.isEnabled = false
         }
     }
 
@@ -172,7 +172,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         viewBinding.billingWidget.shipping = shipping
         viewBinding.billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
 
-        viewBinding.tvSaveCard.isEnabled = isValid
-        viewBinding.tvSaveCard.setOnClickListener { onActionSave() }
+        viewBinding.btnSaveCard.isEnabled = isValid
+        viewBinding.btnSaveCard.setOnClickListener { onActionSave() }
     }
 }

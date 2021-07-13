@@ -10,7 +10,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/tvSaveCard">
+        android:layout_above="@id/btnSaveCard">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,8 +46,8 @@
         </LinearLayout>
     </ScrollView>
 
-    <TextView
-        android:id="@+id/tvSaveCard"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSaveCard"
         android:layout_width="match_parent"
         android:layout_height="@dimen/airwallex_button_height"
         android:layout_alignParentBottom="true"
