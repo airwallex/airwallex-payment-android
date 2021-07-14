@@ -189,7 +189,7 @@ class PaymentSettingsFragment :
             getString(R.string.price) -> {
                 preference?.summary = Settings.price
                 (preference as EditTextPreference).setOnBindEditTextListener { editText ->
-                    editText.inputType = TYPE_CLASS_NUMBER
+                    editText.inputType = TYPE_CLASS_NUMBER or TYPE_NUMBER_FLAG_DECIMAL
                     editText.setSelection(editText.length())
                 }
             }
