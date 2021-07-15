@@ -80,7 +80,7 @@ internal class PaymentCheckoutActivityLaunch : AirwallexActivityLaunch<PaymentCh
         val paymentIntent: PaymentIntent? = null,
         val weChat: WeChat? = null,
         val redirectUrl: String? = null,
-        var exception: Exception? = null
+        val exception: Exception? = null
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
             return Bundle().also {

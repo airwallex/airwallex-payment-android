@@ -11,6 +11,7 @@ import com.airwallex.android.databinding.PaymentMethodItemCardBinding
 import com.airwallex.android.databinding.PaymentMethodSpaceItemBinding
 import com.airwallex.android.databinding.PaymentMethodThirdItemBinding
 import com.airwallex.android.model.*
+import com.airwallex.android.setOnSingleClickListener
 import java.util.*
 
 internal class PaymentMethodsAdapter(
@@ -21,7 +22,7 @@ internal class PaymentMethodsAdapter(
     private var selectedPaymentConsent: PaymentConsent? = null
     private val paymentConsents = mutableListOf<PaymentConsent>()
     internal var listener: Listener? = null
-    private val spaceCount = 1
+    private val spaceCount = if (availableThirdPaymentTypes.isNotEmpty()) 1 else 0
 
     internal fun isEmpty(): Boolean {
         return paymentConsents.isEmpty()
@@ -51,7 +52,7 @@ internal class PaymentMethodsAdapter(
     }
 
     private fun isSpacePosition(position: Int): Boolean {
-        return availableThirdPaymentTypes.size == position
+        return if (spaceCount > 0) availableThirdPaymentTypes.size == position else false
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -112,7 +113,8 @@ internal class PaymentMethodsAdapter(
         )
 
         fun bindView(position: Int) {
-            val paymentConsent = paymentConsents[position - availableThirdPaymentTypes.size - spaceCount]
+            val paymentConsent =
+                paymentConsents[position - availableThirdPaymentTypes.size - spaceCount]
             val method = paymentConsent.paymentMethod ?: return
             val card = method.card ?: return
             viewBinding.tvCardInfo.text =
@@ -121,7 +123,7 @@ internal class PaymentMethodsAdapter(
                 CardBrand.Visa.type -> viewBinding.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
                 CardBrand.MasterCard.type -> viewBinding.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
             }
-            viewBinding.rlCard.setOnClickListener {
+            viewBinding.rlCard.setOnSingleClickListener {
                 if (selectedPaymentConsent?.id != paymentConsent.id) {
                     selectedPaymentConsent = paymentConsent
 
@@ -158,8 +160,9 @@ internal class PaymentMethodsAdapter(
             val paymentMethodType = availableThirdPaymentTypes[position]
             viewBinding.paymentMethodIcon.setImageResource(paymentMethodType.drawableRes)
             viewBinding.paymentMethodName.text = paymentMethodType.displayName
-            viewBinding.paymentMethodChecked.visibility = if (selectedPaymentConsent?.paymentMethod?.type == paymentMethodType) View.VISIBLE else View.GONE
-            itemView.setOnClickListener {
+            viewBinding.paymentMethodChecked.visibility =
+                if (selectedPaymentConsent?.paymentMethod?.type == paymentMethodType) View.VISIBLE else View.GONE
+            itemView.setOnSingleClickListener {
                 selectedPaymentConsent = PaymentConsent(
                     paymentMethod = PaymentMethod.Builder()
                         .setType(paymentMethodType)
@@ -184,7 +187,10 @@ internal class PaymentMethodsAdapter(
         )
 
         fun bindView() {
-            itemView.layoutParams.height = if (availableThirdPaymentTypes.isNotEmpty() && paymentConsents.size == 0) 0 else itemView.context.resources.getDimension(R.dimen.space_height).toInt()
+            itemView.layoutParams.height =
+                if (availableThirdPaymentTypes.isNotEmpty() && paymentConsents.size == 0) 0 else itemView.context.resources.getDimension(
+                    R.dimen.space_height
+                ).toInt()
         }
     }
 

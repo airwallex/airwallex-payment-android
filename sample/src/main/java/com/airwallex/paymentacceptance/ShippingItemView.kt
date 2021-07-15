@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.model.Shipping
+import com.airwallex.android.setOnSingleClickListener
 import com.airwallex.paymentacceptance.databinding.ShippingItemBinding
 import java.util.*
 
@@ -23,7 +24,7 @@ class ShippingItemView constructor(
     var onClickAction: (() -> Unit)? = null
 
     init {
-        viewBinding.rlBilling.setOnClickListener {
+        viewBinding.rlBilling.setOnSingleClickListener {
             onClickAction?.invoke()
         }
     }

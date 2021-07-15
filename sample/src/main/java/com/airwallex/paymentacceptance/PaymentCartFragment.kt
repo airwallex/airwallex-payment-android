@@ -161,7 +161,7 @@ class PaymentCartFragment : Fragment() {
             viewBinding.tvProductType.text = String.format("%s x %d", order.type, order.quantity)
             viewBinding.tvProductPrice.text =
                 String.format("$%.2f", order.unitPrice ?: 0 * (order.quantity ?: 0))
-            viewBinding.tvRemove.setOnClickListener {
+            viewBinding.tvRemove.setOnSingleClickListener {
                 removeHandler.invoke()
             }
         }
@@ -218,7 +218,7 @@ class PaymentCartFragment : Fragment() {
             }
         }
         initializeProductsViews(products.toMutableList())
-        viewBinding.btnCheckout.setOnClickListener {
+        viewBinding.btnCheckout.setOnSingleClickListener {
             when (checkoutMode) {
                 AirwallexCheckoutMode.PAYMENT -> {
                     startPaymentFlow()

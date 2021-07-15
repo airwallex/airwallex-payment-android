@@ -7,6 +7,7 @@ import com.airwallex.android.*
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.Shipping
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
@@ -73,6 +74,17 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
     override fun onActionSave() {
         val card = viewBinding.cardWidget.paymentMethodCard ?: return
         setLoadingProgress(loading = true, cancelable = false)
+        val observer = Observer<AirwallexCheckoutViewModel.PaymentResult> {
+            when (it) {
+                is AirwallexCheckoutViewModel.PaymentResult.Success -> {
+                    finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+                }
+                is AirwallexCheckoutViewModel.PaymentResult.Error -> {
+                    finishWithPaymentIntent(exception = it.exception)
+                }
+                else -> Unit
+            }
+        }
 
         if (session is AirwallexPaymentSession) {
             startCheckout(
@@ -81,17 +93,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
                     card = card,
                     billing = viewBinding.billingWidget.billing
                 ),
-                observer = {
-                    when (it) {
-                        is AirwallexCheckoutViewModel.PaymentResult.Success -> {
-                            finishWithPaymentIntent(paymentIntent = it.paymentIntent)
-                        }
-                        is AirwallexCheckoutViewModel.PaymentResult.Error -> {
-                            finishWithPaymentIntent(exception = it.exception)
-                        }
-                        else -> Unit
-                    }
-                }
+                observer = observer
             )
         } else {
             viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
@@ -99,10 +101,14 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
                 {
                     when (it) {
                         is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
-                            finishWithPaymentMethod(it.paymentMethod, requireNotNull(it.cvc))
+                            startCheckout(
+                                paymentMethod = it.paymentMethod,
+                                cvc = it.cvc,
+                                observer = observer
+                            )
                         }
                         is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
-                            alertError(it.exception.message ?: it.exception.toString())
+                            finishWithPaymentIntent(exception = it.exception)
                         }
                     }
                 }
@@ -120,11 +126,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         return R.drawable.airwallex_ic_back
     }
 
-    private fun alertError(error: String) {
-        setLoadingProgress(false)
-        alert(message = error)
-    }
-
     private fun finishWithPaymentIntent(
         paymentIntent: PaymentIntent? = null,
         exception: Exception? = null
@@ -136,20 +137,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
                 AddPaymentMethodActivityLaunch.Result(
                     paymentIntent = paymentIntent,
                     exception = exception
-                ).toBundle()
-            )
-        )
-        finish()
-    }
-
-    private fun finishWithPaymentMethod(paymentMethod: PaymentMethod, cvc: String) {
-        setLoadingProgress(false)
-        setResult(
-            Activity.RESULT_OK,
-            Intent().putExtras(
-                AddPaymentMethodActivityLaunch.Result(
-                    paymentMethod = paymentMethod,
-                    cvc = cvc
                 ).toBundle()
             )
         )
@@ -173,6 +160,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         viewBinding.billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
 
         viewBinding.btnSaveCard.isEnabled = isValid
-        viewBinding.btnSaveCard.setOnClickListener { onActionSave() }
+        viewBinding.btnSaveCard.setOnSingleClickListener { onActionSave() }
     }
 }

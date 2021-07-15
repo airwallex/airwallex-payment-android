@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.model.WeChat
+import com.airwallex.android.setOnSingleClickListener
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.WXPay
@@ -31,36 +32,36 @@ class WeChatDemoActivity : AppCompatActivity() {
         viewBinding.partnerId.setText("353449704")
         viewBinding.packageStr.setText("Sign=WXPay")
 
-        viewBinding.buttonNext.setOnClickListener {
+        viewBinding.buttonNext.setOnSingleClickListener {
 
             if (viewBinding.partnerId.text.toString().isEmpty()) {
                 showPaymentError("Missing PartnerId")
-                return@setOnClickListener
+                return@setOnSingleClickListener
             }
 
             if (viewBinding.prepayId.text.toString().isEmpty()) {
                 showPaymentError("Missing PrepayId")
-                return@setOnClickListener
+                return@setOnSingleClickListener
             }
 
             if (viewBinding.packageStr.text.toString().isEmpty()) {
                 showPaymentError("Missing Package")
-                return@setOnClickListener
+                return@setOnSingleClickListener
             }
 
             if (viewBinding.nonceStr.text.toString().isEmpty()) {
                 showPaymentError("Missing NonceStr")
-                return@setOnClickListener
+                return@setOnSingleClickListener
             }
 
             if (viewBinding.timestamp.text.toString().isEmpty()) {
                 showPaymentError("Missing Timestamp")
-                return@setOnClickListener
+                return@setOnSingleClickListener
             }
 
             if (viewBinding.sign.text.toString().isEmpty()) {
                 showPaymentError("Missing Sign")
-                return@setOnClickListener
+                return@setOnSingleClickListener
             }
 
             val weChat = WeChat(

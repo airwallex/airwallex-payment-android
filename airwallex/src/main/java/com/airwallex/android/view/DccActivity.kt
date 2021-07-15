@@ -13,6 +13,7 @@ import com.airwallex.android.R
 import com.airwallex.android.databinding.ActivitySelectCurrencyBinding
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentIntentContinueType
+import com.airwallex.android.setOnSingleClickListener
 
 /**
  * Allow the customer to select your currency.
@@ -55,18 +56,18 @@ internal class DccActivity : AirwallexActivity() {
         viewBinding.rate.text =
             getString(R.string.airwallex_rate, args.currency, args.dcc.clientRate, args.dcc.currency)
         viewBinding.currentCurrency.isSelected = true
-        viewBinding.currentCurrency.setOnClickListener {
+        viewBinding.currentCurrency.setOnSingleClickListener {
             Logger.debug("Current currency selected")
             viewBinding.currentCurrency.isSelected = true
             viewBinding.transferCurrency.isSelected = false
         }
-        viewBinding.transferCurrency.setOnClickListener {
+        viewBinding.transferCurrency.setOnSingleClickListener {
             Logger.debug("Transfer currency selected")
             viewBinding.currentCurrency.isSelected = false
             viewBinding.transferCurrency.isSelected = true
         }
 
-        viewBinding.confirm.setOnClickListener {
+        viewBinding.confirm.setOnSingleClickListener {
             setLoadingProgress(loading = true, cancelable = false)
             val params = ContinuePaymentIntentParams(
                 paymentIntentId = args.paymentIntentId,

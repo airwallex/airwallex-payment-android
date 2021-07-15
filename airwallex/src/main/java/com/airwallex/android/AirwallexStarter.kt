@@ -14,37 +14,28 @@ import com.airwallex.android.view.*
  */
 internal class AirwallexStarter constructor(
     private val activity: Activity,
-    private val addPaymentMethodActivityLaunch: AddPaymentMethodActivityLaunch,
     private val paymentShippingActivityLaunch: PaymentShippingActivityLaunch,
-    private val paymentMethodsActivityLaunch: PaymentMethodsActivityLaunch,
-    private val paymentCheckoutActivityLaunch: PaymentCheckoutActivityLaunch
+    private val paymentMethodsActivityLaunch: PaymentMethodsActivityLaunch
 ) {
 
     constructor(
         fragment: Fragment
     ) : this(
         fragment.requireActivity(),
-        AddPaymentMethodActivityLaunch(fragment),
         PaymentShippingActivityLaunch(fragment),
-        PaymentMethodsActivityLaunch(fragment),
-        PaymentCheckoutActivityLaunch(fragment)
+        PaymentMethodsActivityLaunch(fragment)
     )
 
     constructor(
         activity: Activity
     ) : this(
         activity,
-        AddPaymentMethodActivityLaunch(activity),
         PaymentShippingActivityLaunch(activity),
-        PaymentMethodsActivityLaunch(activity),
-        PaymentCheckoutActivityLaunch(activity)
+        PaymentMethodsActivityLaunch(activity)
     )
 
     private var shippingFlowListener: Airwallex.PaymentShippingListener? = null
     private var paymentFlowListener: Airwallex.PaymentIntentListener? = null
-    private var paymentDetailListener: Airwallex.PaymentIntentCardListener? = null
-    private var addPaymentMethodFlowListener: Airwallex.AddPaymentMethodListener? = null
-    private var selectPaymentMethodFlowListener: Airwallex.PaymentMethodListener? = null
 
     /**
      * Launch the [PaymentShippingActivity] to allow the user to fill the shipping information
@@ -60,80 +51,6 @@ internal class AirwallexStarter constructor(
         paymentShippingActivityLaunch.startForResult(
             PaymentShippingActivityLaunch.Args.Builder()
                 .setShipping(shipping)
-                .build()
-        )
-    }
-
-    /**
-     * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
-     *
-     * @param session a [AirwallexSession] used to present the Add Payment Method flow
-     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
-     * @param addPaymentMethodFlowListener The callback of present the add payment method flow
-     */
-    fun presentAddPaymentMethodFlow(
-        session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider,
-        addPaymentMethodFlowListener: Airwallex.AddPaymentMethodListener
-    ) {
-        this.addPaymentMethodFlowListener = addPaymentMethodFlowListener
-        ClientSecretRepository.init(clientSecretProvider)
-        addPaymentMethodActivityLaunch.startForResult(
-            AddPaymentMethodActivityLaunch.Args.Builder()
-                .setAirwallexSession(session)
-                .build()
-        )
-    }
-
-    /**
-     * Launch the [PaymentMethodsActivity] to allow the user to select a payment method or add a new one
-     *
-     * @param session a [AirwallexSession] used to present the Select Payment Method flow
-     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
-     * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
-     */
-    fun presentSelectPaymentMethodFlow(
-        session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider,
-        selectPaymentMethodFlowListener: Airwallex.PaymentMethodListener
-    ) {
-        this.selectPaymentMethodFlowListener = selectPaymentMethodFlowListener
-        ClientSecretRepository.init(clientSecretProvider)
-        paymentMethodsActivityLaunch.startForResult(
-            PaymentMethodsActivityLaunch.Args.Builder()
-                .setIncludeCheckoutFlow(false)
-                .setAirwallexSession(session)
-                .build()
-        )
-    }
-
-    /**
-     * Launch the [PaymentCheckoutActivity] to allow the user to confirm [PaymentIntent] using the specified [PaymentMethod]
-     *
-     * @param session a [AirwallexSession] used to present the Checkout flow
-     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
-     * @param paymentConsentId the ID of the [PaymentConsent], required.
-     * @param cvc the CVC of the Credit Card, required.
-     * @param paymentDetailListener The callback of present the select payment detail flow
-     */
-    fun presentPaymentDetailFlow(
-        session: AirwallexSession,
-        paymentMethod: PaymentMethod,
-        paymentConsentId: String?,
-        cvc: String?,
-        paymentDetailListener: Airwallex.PaymentIntentCardListener
-    ) {
-        if (paymentMethod.type != PaymentMethodType.CARD) {
-            paymentDetailListener.onFailed(Exception("Only card payment is supported on PaymentDetailFlow"))
-            return
-        }
-        this.paymentDetailListener = paymentDetailListener
-        paymentCheckoutActivityLaunch.startForResult(
-            PaymentCheckoutActivityLaunch.Args.Builder()
-                .setAirwallexSession(session)
-                .setPaymentMethod(paymentMethod)
-                .setPaymentConsentId(paymentConsentId)
-                .setCvc(cvc)
                 .build()
         )
     }
@@ -156,7 +73,6 @@ internal class AirwallexStarter constructor(
         }
         paymentMethodsActivityLaunch.startForResult(
             PaymentMethodsActivityLaunch.Args.Builder()
-                .setIncludeCheckoutFlow(true)
                 .setAirwallexSession(session)
                 .build()
         )
@@ -185,13 +101,6 @@ internal class AirwallexStarter constructor(
         when (resultCode) {
             Activity.RESULT_OK -> {
                 return when (requestCode) {
-                    AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
-                        val result =
-                            AddPaymentMethodActivityLaunch.Result.fromIntent(data) ?: return true
-                        addPaymentMethodFlowListener?.onSuccess(requireNotNull(result.paymentMethod), requireNotNull(result.cvc))
-                        addPaymentMethodFlowListener = null
-                        true
-                    }
                     PaymentShippingActivityLaunch.REQUEST_CODE -> {
                         val result =
                             PaymentShippingActivityLaunch.Result.fromIntent(data) ?: return true
@@ -202,49 +111,24 @@ internal class AirwallexStarter constructor(
                     PaymentMethodsActivityLaunch.REQUEST_CODE -> {
                         val result =
                             PaymentMethodsActivityLaunch.Result.fromIntent(data) ?: return true
-                        if (result.includeCheckoutFlow) {
-                            val exception = result.exception
-                            if (exception != null) {
-                                paymentFlowListener?.onFailed(exception)
-                            } else {
-                                when {
-                                    result.weChat != null -> {
-                                        paymentFlowListener?.onNextActionWithWeChatPay(requireNotNull(result.weChat))
-                                    }
-                                    result.redirectUrl != null -> {
-                                        paymentFlowListener?.onNextActionWithRedirectUrl(requireNotNull(result.redirectUrl))
-                                    }
-                                    else -> {
-                                        paymentFlowListener?.onSuccess(requireNotNull(result.paymentIntent))
-                                    }
-                                }
+                        when {
+                            result.exception != null -> {
+                                paymentFlowListener?.onFailed(result.exception)
                             }
-                            paymentFlowListener = null
-                        } else {
-                            val exception = result.exception
-                            if (exception != null) {
-                                selectPaymentMethodFlowListener?.onFailed(exception)
-                            } else {
-                                selectPaymentMethodFlowListener?.onSuccess(
-                                    requireNotNull(result.paymentMethod),
-                                    result.paymentConsentId,
-                                    result.cvc
-                                )
+                            result.weChat != null -> {
+                                paymentFlowListener?.onNextActionWithWeChatPay(result.weChat)
                             }
-                            selectPaymentMethodFlowListener = null
+                            result.redirectUrl != null -> {
+                                paymentFlowListener?.onNextActionWithRedirectUrl(result.redirectUrl)
+                            }
+                            result.paymentIntent != null -> {
+                                paymentFlowListener?.onSuccess(result.paymentIntent)
+                            }
+                            else -> {
+                                paymentFlowListener?.onFailed(Exception("Unknown exception."))
+                            }
                         }
-                        true
-                    }
-                    PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
-                        val result =
-                            PaymentCheckoutActivityLaunch.Result.fromIntent(data) ?: return true
-                        val exception = result.exception
-                        if (exception != null) {
-                            paymentDetailListener?.onFailed(exception)
-                        } else {
-                            paymentDetailListener?.onSuccess(requireNotNull(result.paymentIntent))
-                        }
-                        paymentDetailListener = null
+                        paymentFlowListener = null
                         true
                     }
                     else -> false
@@ -252,29 +136,14 @@ internal class AirwallexStarter constructor(
             }
             Activity.RESULT_CANCELED -> {
                 return when (requestCode) {
-                    AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
-                        addPaymentMethodFlowListener?.onCancelled()
-                        addPaymentMethodFlowListener = null
-                        true
-                    }
                     PaymentShippingActivityLaunch.REQUEST_CODE -> {
                         shippingFlowListener?.onCancelled()
                         shippingFlowListener = null
                         true
                     }
                     PaymentMethodsActivityLaunch.REQUEST_CODE -> {
-                        if (paymentFlowListener != null) {
-                            paymentFlowListener?.onCancelled()
-                            paymentFlowListener = null
-                        } else {
-                            selectPaymentMethodFlowListener?.onCancelled()
-                            selectPaymentMethodFlowListener = null
-                        }
-                        true
-                    }
-                    PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
-                        paymentDetailListener?.onCancelled()
-                        paymentDetailListener = null
+                        paymentFlowListener?.onCancelled()
+                        paymentFlowListener = null
                         true
                     }
                     else -> false
@@ -288,9 +157,7 @@ internal class AirwallexStarter constructor(
 
         private val VALID_REQUEST_CODES = setOf(
             PaymentMethodsActivityLaunch.REQUEST_CODE,
-            PaymentShippingActivityLaunch.REQUEST_CODE,
-            AddPaymentMethodActivityLaunch.REQUEST_CODE,
-            PaymentCheckoutActivityLaunch.REQUEST_CODE
+            PaymentShippingActivityLaunch.REQUEST_CODE
         )
     }
 }

@@ -1,7 +1,3 @@
-/**************************************************************************************************
- * Copyright VaxCare (c) 2020.                                                                    *
- **************************************************************************************************/
-
 package com.airwallex.android.view
 
 import android.os.Bundle
@@ -14,6 +10,7 @@ import com.airwallex.android.R
 import com.airwallex.android.databinding.DialogPaymentInfoBinding
 import com.airwallex.android.model.PaymentMethodRequiredField
 import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.setOnSingleClickListener
 
 class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
 
@@ -114,28 +111,28 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             }
         }
 
-        viewBinding.checkout.setOnClickListener {
+        viewBinding.checkout.setOnSingleClickListener {
             // Name
             if (nameInput != null && nameInput.value.isEmpty()) {
                 nameInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
-                return@setOnClickListener
+                return@setOnSingleClickListener
             }
 
             when (arguments?.getParcelable<PaymentMethodType>(PAYMENT_METHOD_TYPE)) {
                 PaymentMethodType.SKRILL -> {
                     if (nameInput != null && nameInput.value.split(" ").size != 2) {
                         nameInput.error = getString(R.string.airwallex_invalid_name)
-                        return@setOnClickListener
+                        return@setOnSingleClickListener
                     }
                 }
                 else -> {
                     if (nameInput != null && nameInput.value.length < 3) {
                         nameInput.error = getString(R.string.airwallex_name_length_short_error)
-                        return@setOnClickListener
+                        return@setOnSingleClickListener
                     }
                     if (nameInput != null && nameInput.value.length > 100) {
                         nameInput.error = getString(R.string.airwallex_name_length_long_error)
-                        return@setOnClickListener
+                        return@setOnSingleClickListener
                     }
                 }
             }
@@ -143,24 +140,24 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             // Email
             if (emailInput != null && emailInput.value.isEmpty()) {
                 emailInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
-                return@setOnClickListener
+                return@setOnSingleClickListener
             }
             if (emailInput != null && !Patterns.EMAIL_ADDRESS.matcher(emailInput.value).matches()) {
                 emailInput.error = getString(R.string.airwallex_invalid_email_address)
-                return@setOnClickListener
+                return@setOnSingleClickListener
             }
 
             // Phone
             if (phoneInput != null && phoneInput.value.isEmpty()) {
                 phoneInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
-                return@setOnClickListener
+                return@setOnSingleClickListener
             }
 
             when (arguments?.getParcelable<PaymentMethodType>(PAYMENT_METHOD_TYPE)) {
                 PaymentMethodType.PAY_EASY -> {
                     if (phoneInput != null && (phoneInput.value.length < 10 || phoneInput.value.length > 11)) {
                         phoneInput.error = getString(R.string.airwallex_phone_error)
-                        return@setOnClickListener
+                        return@setOnSingleClickListener
                     }
                 }
                 else -> Unit

@@ -9,7 +9,6 @@ import com.airwallex.android.AirwallexSession
 import com.airwallex.android.exception.AirwallexException
 import com.airwallex.android.model.ObjectBuilder
 import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch.Args
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
@@ -58,9 +57,7 @@ internal class AddPaymentMethodActivityLaunch :
     @Parcelize
     internal data class Result internal constructor(
         val paymentIntent: PaymentIntent? = null,
-        var exception: Exception? = null,
-        val paymentMethod: PaymentMethod? = null,
-        val cvc: String? = null
+        val exception: Exception? = null
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
             return Bundle().also {
@@ -73,17 +70,13 @@ internal class AddPaymentMethodActivityLaunch :
             override fun create(parcel: Parcel): Result {
                 return Result(
                     paymentIntent = parcel.readParcelable(PaymentIntent::class.java.classLoader),
-                    exception = parcel.readSerializable() as? AirwallexException?,
-                    paymentMethod = parcel.readParcelable(PaymentMethod::class.java.classLoader),
-                    cvc = parcel.readString()
+                    exception = parcel.readSerializable() as? AirwallexException?
                 )
             }
 
             override fun Result.write(parcel: Parcel, flags: Int) {
                 parcel.writeParcelable(paymentIntent, 0)
                 parcel.writeSerializable(exception)
-                parcel.writeParcelable(paymentMethod, 0)
-                parcel.writeString(cvc)
             }
 
             fun fromIntent(intent: Intent?): Result? {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -52,13 +53,14 @@
         android:layout_height="@dimen/airwallex_button_height"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
         android:background="@drawable/airwallex_button_solid"
         android:fontFamily="@font/circularstd_bold"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:text="@string/airwallex_confirm"
+        android:text="@string/airwallex_pay_now"
         android:textColor="@color/airwallex_button_text"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        app:icon="@drawable/airwallex_ic_lock_selector"
+        app:iconGravity="textStart"
+        app:iconPadding="10dp" />
 </RelativeLayout>

@@ -29,17 +29,11 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
 
     @Parcelize
     data class Args internal constructor(
-        val includeCheckoutFlow: Boolean,
         val session: AirwallexSession
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var session: AirwallexSession
-            private var includeCheckoutFlow: Boolean = true
-
-            fun setIncludeCheckoutFlow(includeCheckoutFlow: Boolean): Builder = apply {
-                this.includeCheckoutFlow = includeCheckoutFlow
-            }
 
             fun setAirwallexSession(session: AirwallexSession): Builder = apply {
                 this.session = session
@@ -47,7 +41,6 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
 
             override fun build(): Args {
                 return Args(
-                    includeCheckoutFlow = includeCheckoutFlow,
                     session = session
                 )
             }
@@ -64,13 +57,12 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
     internal data class Result internal constructor(
         val paymentIntent: PaymentIntent? = null,
         val paymentMethodType: PaymentMethodType? = null,
-        var exception: Exception? = null,
+        val exception: Exception? = null,
         val paymentMethod: PaymentMethod? = null,
         val paymentConsentId: String? = null,
         val cvc: String? = null,
         val weChat: WeChat? = null,
-        val redirectUrl: String? = null,
-        val includeCheckoutFlow: Boolean = false
+        val redirectUrl: String? = null
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
             return Bundle().also {
@@ -88,8 +80,7 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
                     paymentConsentId = parcel.readString(),
                     cvc = parcel.readString(),
                     weChat = parcel.readParcelable(WeChat::class.java.classLoader),
-                    redirectUrl = parcel.readString(),
-                    includeCheckoutFlow = parcel.readInt() == 1
+                    redirectUrl = parcel.readString()
                 )
             }
 
@@ -102,7 +93,6 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
                 parcel.writeString(cvc)
                 parcel.writeParcelable(weChat, 0)
                 parcel.writeString(redirectUrl)
-                parcel.writeInt(if (includeCheckoutFlow) 1 else 0)
             }
 
             fun fromIntent(intent: Intent?): Result? {

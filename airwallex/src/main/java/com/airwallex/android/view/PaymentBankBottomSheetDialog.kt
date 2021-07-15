@@ -1,7 +1,3 @@
-/**************************************************************************************************
- * Copyright VaxCare (c) 2020.                                                                    *
- **************************************************************************************************/
-
 package com.airwallex.android.view
 
 import android.content.Context
@@ -12,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.databinding.DialogBankItemBinding
 import com.airwallex.android.databinding.DialogBankBinding
 import com.airwallex.android.model.Bank
+import com.airwallex.android.setOnSingleClickListener
 
 class PaymentBankBottomSheetDialog : BottomSheetDialog() {
 
@@ -90,7 +87,7 @@ class PaymentBankBottomSheetDialog : BottomSheetDialog() {
             viewBinding.bankName.text = bank.displayName
             viewBinding.bankLogo.setImageResource(bank.drawableRes)
 
-            viewBinding.bankItem.setOnClickListener {
+            viewBinding.bankItem.setOnSingleClickListener {
                 onCompleted?.invoke(bank)
                 dismiss()
             }

@@ -347,27 +347,11 @@ class Airwallex internal constructor(
     }
 
     /**
-     * Represents a listener for PaymentIntent Card actions
-     */
-    interface PaymentIntentCardListener : PaymentFlowListener {
-        fun onSuccess(paymentIntent: PaymentIntent)
-        fun onFailed(error: Exception)
-    }
-
-    /**
      * Represents a listener for PaymentMethod actions
      */
     interface PaymentMethodListener : PaymentFlowListener {
         // CVC returns only when payment is first created, otherwise null
         fun onSuccess(paymentMethod: PaymentMethod, paymentConsentId: String?, cvc: String?)
-        fun onFailed(error: Exception)
-    }
-
-    /**
-     * Represents a listener for Add PaymentMethod
-     */
-    interface AddPaymentMethodListener : PaymentFlowListener {
-        fun onSuccess(paymentMethod: PaymentMethod, cvc: String)
         fun onFailed(error: Exception)
     }
 
@@ -382,69 +366,6 @@ class Airwallex internal constructor(
         shippingFlowListener: PaymentShippingListener
     ) {
         airwallexStarter.presentShippingFlow(shipping, shippingFlowListener)
-    }
-
-    /**
-     * Launch the [AddPaymentMethodActivity] to allow the user to add a payment method
-     *
-     * @param session a [AirwallexSession] used to present the Add Payment Method flow
-     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
-     * @param addPaymentMethodFlowListener The callback of present the add payment method flow
-     */
-    private fun presentAddPaymentMethodFlow(
-        session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider,
-        addPaymentMethodFlowListener: AddPaymentMethodListener
-    ) {
-        airwallexStarter.presentAddPaymentMethodFlow(
-            session,
-            clientSecretProvider,
-            addPaymentMethodFlowListener
-        )
-    }
-
-    /**
-     * Launch the [PaymentMethodsActivity] to allow the user to select a payment method or add a new one
-     *
-     * @param session a [AirwallexSession] used to present the Select Payment Method flow
-     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret
-     * @param selectPaymentMethodFlowListener The callback of present the select payment method flow
-     */
-    private fun presentSelectPaymentMethodFlow(
-        session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider,
-        selectPaymentMethodFlowListener: PaymentMethodListener
-    ) {
-        airwallexStarter.presentSelectPaymentMethodFlow(
-            session,
-            clientSecretProvider,
-            selectPaymentMethodFlowListener
-        )
-    }
-
-    /**
-     * Launch the [PaymentCheckoutActivity] to allow the user to confirm [PaymentIntent] using the specified [PaymentMethod]
-     *
-     * @param session a [AirwallexSession] used to present the Checkout flow
-     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow
-     * @param paymentConsentId the ID of the [PaymentConsent], required.
-     * @param cvc the CVC of the Credit Card, required.
-     * @param paymentDetailListener The callback of present the select payment detail flow
-     */
-    private fun presentPaymentDetailFlow(
-        session: AirwallexSession,
-        paymentMethod: PaymentMethod,
-        paymentConsentId: String?,
-        cvc: String?,
-        paymentDetailListener: PaymentIntentCardListener
-    ) {
-        airwallexStarter.presentPaymentDetailFlow(
-            session,
-            paymentMethod,
-            paymentConsentId,
-            cvc,
-            paymentDetailListener
-        )
     }
 
     /**

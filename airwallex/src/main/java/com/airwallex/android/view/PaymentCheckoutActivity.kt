@@ -12,6 +12,7 @@ import com.airwallex.android.databinding.ActivityPaymentCheckoutBinding
 import com.airwallex.android.model.PaymentIntent
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.WeChat
+import com.airwallex.android.setOnSingleClickListener
 import java.lang.Exception
 
 /**
@@ -58,7 +59,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             updateButtonStatus()
         }
 
-        viewBinding.rlPayNow.setOnClickListener {
+        viewBinding.rlPayNow.setOnSingleClickListener {
             startConfirmPaymentIntent()
         }
         updateButtonStatus()

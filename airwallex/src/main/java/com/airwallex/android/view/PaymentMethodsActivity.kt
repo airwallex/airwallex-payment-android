@@ -79,7 +79,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
         viewBinding.addPaymentMethod.container.visibility =
             if (shouldShowCard) View.VISIBLE else View.GONE
-        viewBinding.addPaymentMethod.container.setOnClickListener {
+        viewBinding.addPaymentMethod.container.setOnSingleClickListener {
             startAddPaymentMethod()
         }
 
@@ -210,7 +210,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     private fun handleProcessPaymentMethod(
         paymentConsent: PaymentConsent,
         cvc: String? = null
-    ) = if (args.includeCheckoutFlow) {
+    ) {
         val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
         val observer = Observer<PaymentResult> {
             when (it) {
@@ -301,13 +301,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 }
             }
         }
-    } else {
-        // Return the `PaymentMethod` 'cvc' to merchant
-        finishWithPaymentMethod(
-            paymentMethod = paymentConsent.paymentMethod,
-            paymentConsentId = paymentConsent.id,
-            cvc = cvc
-        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -319,18 +312,10 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
                 val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
                 result?.let {
-                    if (session is AirwallexPaymentSession) {
-                        finishWithPaymentIntent(
-                            paymentIntent = result.paymentIntent,
-                            exception = result.exception
-                        )
-                    } else {
-                        viewBinding.rvPaymentMethods.requestLayout()
-                        handleProcessPaymentMethod(
-                            PaymentConsent(paymentMethod = it.paymentMethod),
-                            it.cvc
-                        )
-                    }
+                    finishWithPaymentIntent(
+                        paymentIntent = result.paymentIntent,
+                        exception = result.exception
+                    )
                 }
             }
 
@@ -344,28 +329,6 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 }
             }
         }
-    }
-
-    private fun finishWithPaymentMethod(
-        paymentMethod: PaymentMethod? = null,
-        paymentConsentId: String? = null,
-        cvc: String? = null,
-        exception: Exception? = null
-    ) {
-        setLoadingProgress(false)
-        setResult(
-            Activity.RESULT_OK,
-            Intent().putExtras(
-                PaymentMethodsActivityLaunch.Result(
-                    paymentMethod = paymentMethod,
-                    paymentConsentId = paymentConsentId,
-                    cvc = cvc,
-                    includeCheckoutFlow = args.includeCheckoutFlow,
-                    exception = exception
-                ).toBundle()
-            )
-        )
-        finish()
     }
 
     private fun finishWithPaymentIntent(
@@ -382,8 +345,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     paymentIntent = paymentIntent,
                     exception = exception,
                     weChat = weChat,
-                    redirectUrl = redirectUrl,
-                    includeCheckoutFlow = args.includeCheckoutFlow
+                    redirectUrl = redirectUrl
                 ).toBundle()
             )
         )
