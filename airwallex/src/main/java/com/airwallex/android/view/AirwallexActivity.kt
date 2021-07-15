@@ -3,12 +3,12 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
+import android.support.annotation.DrawableRes
+import android.support.v7.app.AlertDialog
 import android.view.MenuItem
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.ViewStub
-import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import com.airwallex.android.Logger
 import com.airwallex.android.R
 import com.airwallex.android.databinding.ActivityAirwallexBinding

@@ -1,14 +1,14 @@
 package com.airwallex.android.view
 
 import android.app.Activity
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
 import android.content.Intent
 import android.os.Bundle
 import com.airwallex.android.*
 import com.airwallex.android.model.PaymentMethod
 import com.airwallex.android.model.Shipping
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.Airwallex
 import com.airwallex.android.R
 import com.airwallex.android.databinding.ActivityAddCardBinding

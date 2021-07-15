@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.textfield.TextInputLayout
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/layout_app_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop_20"
+        android:layout_marginTop="@dimen/wechat_demo_marginTop"
         android:background="@android:color/white"
         android:hint="@string/wechat_demo_app_id"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,13 +24,13 @@
             android:imeOptions="actionNext"
             android:singleLine="true"
             android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </android.support.design.widget.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/layout_partner_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginTop="@dimen/wechat_demo_marginTop"
         android:hint="@string/wechat_demo_partner_id"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,13 +43,13 @@
             android:imeOptions="actionNext"
             android:singleLine="true"
             android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </android.support.design.widget.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/layout_prepay_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginTop="@dimen/wechat_demo_marginTop"
         android:hint="@string/wechat_demo_prepay_id"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,13 +62,13 @@
             android:imeOptions="actionNext"
             android:singleLine="true"
             android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </android.support.design.widget.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/layout_package"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginTop="@dimen/wechat_demo_marginTop"
         android:hint="@string/wechat_demo_package"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,13 +81,13 @@
             android:imeOptions="actionNext"
             android:singleLine="true"
             android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </android.support.design.widget.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/layout_nonce_str"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginTop="@dimen/wechat_demo_marginTop"
         android:hint="@string/wechat_demo_nonce_str"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -100,13 +100,13 @@
             android:imeOptions="actionNext"
             android:singleLine="true"
             android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </android.support.design.widget.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/layout_timestamp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginTop="@dimen/wechat_demo_marginTop"
         android:hint="@string/wechat_demo_timestamp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -119,13 +119,13 @@
             android:imeOptions="actionNext"
             android:singleLine="true"
             android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </android.support.design.widget.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/layout_sign"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop"
+        android:layout_marginTop="@dimen/wechat_demo_marginTop"
         android:hint="@string/wechat_demo_sign"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -138,7 +138,7 @@
             android:imeOptions="actionNext"
             android:singleLine="true"
             android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/button_next"
@@ -150,4 +150,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

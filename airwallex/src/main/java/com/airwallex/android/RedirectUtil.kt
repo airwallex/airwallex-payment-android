@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
+import android.support.customtabs.CustomTabsIntent
 import com.airwallex.android.exception.RedirectException
 import kotlin.jvm.Throws
 

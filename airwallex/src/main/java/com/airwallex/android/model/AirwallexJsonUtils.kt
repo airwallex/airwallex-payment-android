@@ -1,6 +1,6 @@
 package com.airwallex.android.model
 
-import androidx.annotation.Size
+import android.support.annotation.Size
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject

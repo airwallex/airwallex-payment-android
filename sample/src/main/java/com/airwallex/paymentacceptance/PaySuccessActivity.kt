@@ -2,8 +2,8 @@ package com.airwallex.paymentacceptance
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.paymentacceptance.databinding.ActivityPaySuccessBinding
 
 class PaySuccessActivity : AppCompatActivity() {

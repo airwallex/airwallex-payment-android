@@ -230,5 +230,9 @@ internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayo
                 addressTextInputLayout.error = null
             }
         }
+
+        zipcodeTextInputLayout.afterFocusChanged {}
+        emailTextInputLayout.afterFocusChanged {}
+        numberTextInputLayout.afterFocusChanged {}
     }
 }

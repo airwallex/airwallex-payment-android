@@ -3,12 +3,12 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.annotation.UiThread
-import androidx.fragment.app.Fragment
 import com.airwallex.android.exception.DccException
 import com.airwallex.android.exception.InvalidParamsException
 import com.airwallex.android.exception.RedirectException
 import com.airwallex.android.exception.ThreeDSException
+import android.support.annotation.UiThread
+import android.support.v4.app.Fragment
 import com.airwallex.android.model.*
 import com.airwallex.android.view.*
 import com.airwallex.android.view.DccActivityLaunch

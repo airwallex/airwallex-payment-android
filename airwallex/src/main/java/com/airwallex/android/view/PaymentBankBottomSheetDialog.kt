@@ -3,8 +3,8 @@ package com.airwallex.android.view
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import com.airwallex.android.databinding.DialogBankItemBinding
 import com.airwallex.android.databinding.DialogBankBinding
 import com.airwallex.android.model.Bank

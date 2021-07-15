@@ -1,13 +1,13 @@
 package com.airwallex.android.view
 
 import android.content.Context
+import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
 import com.airwallex.android.databinding.CountryAutocompleteViewBinding
 import java.util.*
@@ -105,6 +105,13 @@ internal class CountryAutoCompleteView constructor(
                 }
             }
         }
+        viewBinding.actCountry.setOnDismissListener {
+            viewBinding.dropDown.rotation = 0f
+        }
+        viewBinding.dropDown.setOnClickListener {
+            viewBinding.actCountry.showDropDown()
+            viewBinding.dropDown.rotation = 180f
+        }
     }
 
     internal fun setInitCountry(countryCode: String?) {
@@ -172,7 +179,7 @@ internal class CountryAutoCompleteView constructor(
     }
 
     private class CountryFilter(
-        internal var countries: List<Country>,
+        var countries: List<Country>,
         private val adapter: CountryAdapter
     ) : Filter() {
         override fun performFiltering(constraint: CharSequence?): FilterResults {

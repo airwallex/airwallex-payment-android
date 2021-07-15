@@ -71,7 +71,7 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 
 ```groovy
     dependencies {
-        implementation 'io.github.airwallex:airwallex-core:2.0.6'
+        implementation 'io.github.airwallex:airwallex-core:2.0.4-3-support'
     }
 ```
 
@@ -81,10 +81,10 @@ Additionally, add the following Maven repository and (non-sensitive) credentials
 ```groovy
 repositories {
     maven {
-        url "https://cardinalcommerce.bintray.com/android"
+        url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
         credentials {
-            username 'qiao.zhao@cardinalcommerce'
-            password '99796fb351b999db8dced5b3f6ba6015efc862e7'
+            username ''
+            password ''
         }
     }
 }

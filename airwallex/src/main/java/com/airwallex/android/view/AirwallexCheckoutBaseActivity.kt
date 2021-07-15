@@ -1,7 +1,7 @@
 package com.airwallex.android.view
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
 import com.airwallex.android.*
 import com.airwallex.android.model.*
 

@@ -8,20 +8,20 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.v7.preference.*
 import android.text.InputType.*
 import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
-import androidx.preference.*
+import java.util.*
 import com.airwallex.android.AirwallexCheckoutMode
 import com.airwallex.android.AirwallexPlugins
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import retrofit2.HttpException
-import java.util.*
 import kotlin.system.exitProcess
 
 class PaymentSettingsFragment :
@@ -76,12 +76,12 @@ class PaymentSettingsFragment :
         addPreferencesFromResource(R.xml.settings)
 
         val preferences = preferenceManager.sharedPreferences
-        (findPreference<Preference>(getString(R.string.price)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
-            editText.inputType = TYPE_CLASS_NUMBER or TYPE_NUMBER_FLAG_DECIMAL
+        /*(findPreference<Preference>(getString(R.string.price)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
+            editText.inputType = InputType.TYPE_CLASS_NUMBER or TYPE_NUMBER_FLAG_DECIMAL
         }
         (findPreference<Preference>(getString(R.string.currency)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
-            editText.inputType = TYPE_TEXT_FLAG_CAP_CHARACTERS
-        }
+            editText.inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+        }*/
 
         val sdkEnvPref: ListPreference? =
             findPreference(getString(R.string.sdk_env_id)) as? ListPreference?
@@ -105,10 +105,10 @@ class PaymentSettingsFragment :
             !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
 
         val generateCustomerPref: Preference? =
-            findPreference(getString(R.string.generate_customer)) as? Preference?
+            findPreference(getString(R.string.generate_customer))
         generateCustomerPref?.summary = Settings.cachedCustomerId
         generateCustomerPref?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            viewLifecycleOwner.lifecycleScope.safeLaunch(
+            GlobalScope.safeLaunch(
                 Dispatchers.IO,
                 coroutineExceptionHandler
             ) {
@@ -146,7 +146,7 @@ class PaymentSettingsFragment :
         }
 
         val clearCustomerPref: Preference? =
-            findPreference(getString(R.string.clear_customer)) as? Preference?
+            findPreference(getString(R.string.clear_customer))
         clearCustomerPref?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             clearCustomerId()
             Toast.makeText(context, R.string.customer_cleared, Toast.LENGTH_SHORT).show()
@@ -169,7 +169,7 @@ class PaymentSettingsFragment :
     private fun clearCustomerId() {
         Settings.cachedCustomerId = ""
         val generateCustomerPref: Preference? =
-            findPreference(getString(R.string.generate_customer)) as? Preference?
+            findPreference(getString(R.string.generate_customer))
         generateCustomerPref?.summary = ""
     }
 
@@ -182,23 +182,23 @@ class PaymentSettingsFragment :
         if (key == null) {
             return
         }
-        val preference = findPreference<Preference>(key)
+        val preference = findPreference(key)
         when (key) {
             getString(R.string.api_key) -> preference?.summary = Settings.apiKey
             getString(R.string.client_id) -> preference?.summary = Settings.clientId
             getString(R.string.price) -> {
                 preference?.summary = Settings.price
-                (preference as EditTextPreference).setOnBindEditTextListener { editText ->
-                    editText.inputType = TYPE_CLASS_NUMBER or TYPE_NUMBER_FLAG_DECIMAL
-                    editText.setSelection(editText.length())
-                }
+//                (preference as EditTextPreference).setOnBindEditTextListener { editText ->
+//                    editText.inputType = TYPE_CLASS_NUMBER or TYPE_NUMBER_FLAG_DECIMAL
+//                    editText.setSelection(editText.length())
+//                }
             }
             getString(R.string.currency) -> {
                 preference?.summary = Settings.currency
-                (preference as EditTextPreference).setOnBindEditTextListener { editText ->
-                    editText.inputType = TYPE_CLASS_TEXT or TYPE_TEXT_FLAG_CAP_CHARACTERS
-                    editText.setSelection(editText.length())
-                }
+//                (preference as EditTextPreference).setOnBindEditTextListener { editText ->
+//                    editText.inputType = TYPE_CLASS_TEXT or TYPE_TEXT_FLAG_CAP_CHARACTERS
+//                    editText.setSelection(editText.length())
+//                }
             }
             getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
             getString(R.string.sdk_env_id) -> preference?.summary = Settings.sdkEnv

@@ -5,11 +5,11 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.Airwallex.Companion.AIRWALLEX_USER_AGENT
 import com.airwallex.paymentacceptance.databinding.ActivityH5WebviewBinding
 

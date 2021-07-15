@@ -1,6 +1,6 @@
 package com.airwallex.android.view
 
-import androidx.annotation.Size
+import android.support.annotation.Size
 import java.util.*
 
 internal object ExpiryDateUtils {

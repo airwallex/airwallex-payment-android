@@ -1,11 +1,11 @@
 package com.airwallex.android.view
 
 import android.app.Activity
+import android.arch.lifecycle.ViewModelProvider
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.Airwallex
 import com.airwallex.android.model.ContinuePaymentIntentParams
 import com.airwallex.android.Logger

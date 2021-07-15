@@ -1,9 +1,9 @@
 package com.airwallex.android
 
 import android.content.Context
+import android.support.annotation.AttrRes
+import android.support.annotation.ColorInt
 import android.util.TypedValue
-import androidx.annotation.AttrRes
-import androidx.annotation.ColorInt
 
 internal object ThemeUtil {
     @ColorInt

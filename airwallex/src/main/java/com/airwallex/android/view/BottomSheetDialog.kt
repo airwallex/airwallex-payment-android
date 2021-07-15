@@ -1,9 +1,9 @@
 package com.airwallex.android.view
 
 import android.os.Bundle
+import android.support.design.widget.BottomSheetDialogFragment
 import android.view.WindowManager
 import com.airwallex.android.R
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 abstract class BottomSheetDialog : BottomSheetDialogFragment() {
 

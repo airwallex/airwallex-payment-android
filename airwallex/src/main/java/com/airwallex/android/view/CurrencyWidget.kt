@@ -1,11 +1,11 @@
 package com.airwallex.android.view
 
 import android.content.Context
+import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
-import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.CurrencyUtils
 import com.airwallex.android.CurrencyUtils.formatPrice
 import com.airwallex.android.databinding.WidgetCurrencyBinding

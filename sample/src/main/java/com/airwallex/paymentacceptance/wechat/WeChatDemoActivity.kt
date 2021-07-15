@@ -3,9 +3,9 @@ package com.airwallex.paymentacceptance.wechat
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.model.WeChat
 import com.airwallex.android.setOnSingleClickListener
 import com.airwallex.paymentacceptance.R

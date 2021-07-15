@@ -2,7 +2,7 @@ package com.airwallex.android.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.appcompat.app.AlertDialog
+import android.support.v7.app.AlertDialog
 import com.airwallex.android.R
 import com.airwallex.android.model.PaymentConsent
 import java.util.*

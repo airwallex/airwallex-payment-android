@@ -123,5 +123,7 @@ internal class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
                 addressTextInputLayout.error = null
             }
         }
+
+        zipcodeTextInputLayout.afterFocusChanged {}
     }
 }

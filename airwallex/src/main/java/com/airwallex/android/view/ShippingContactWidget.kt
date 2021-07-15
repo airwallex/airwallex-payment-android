@@ -87,5 +87,6 @@ internal class ShippingContactWidget(context: Context, attrs: AttributeSet) : Li
                 firstNameTextInputLayout.error = null
             }
         }
+        numberTextInputLayout.afterFocusChanged {}
     }
 }

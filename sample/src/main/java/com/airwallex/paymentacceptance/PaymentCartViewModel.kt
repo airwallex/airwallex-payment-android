@@ -1,7 +1,7 @@
 package com.airwallex.paymentacceptance
 
 import android.app.Application
-import androidx.lifecycle.*
+import android.arch.lifecycle.*
 import com.airwallex.android.*
 import com.airwallex.android.model.*
 

@@ -1,7 +1,7 @@
 package com.airwallex.android.view
 
 import android.app.Application
-import androidx.lifecycle.*
+import android.arch.lifecycle.*
 import com.airwallex.android.Airwallex
 import com.airwallex.android.AirwallexSession
 import com.airwallex.android.model.*

@@ -39,7 +39,7 @@
             android:lineSpacingExtra="4dp"
             android:textColor="@color/airwallex_color_dark_deep"
             android:textSize="14sp"
-            app:drawableEndCompat="@drawable/ic_right_arrow" />
+            android:drawableEnd="@drawable/ic_right_arrow" />
     </RelativeLayout>
 
     <View

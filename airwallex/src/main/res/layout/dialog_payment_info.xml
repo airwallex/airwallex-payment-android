@@ -26,21 +26,32 @@
         android:orientation="vertical"
         android:paddingHorizontal="20dp" />
 
-    <com.google.android.material.button.MaterialButton
+
+    <RelativeLayout
         android:id="@+id/checkout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="20dp"
+        android:layout_height="@dimen/airwallex_button_height"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:background="@drawable/airwallex_button_solid"
-        android:fontFamily="@font/circularstd_bold"
-        android:gravity="center"
-        android:text="@string/airwallex_pay_now"
-        android:textColor="@color/airwallex_button_text"
-        android:textSize="14sp"
-        app:icon="@drawable/airwallex_ic_lock_selector"
-        app:iconGravity="textStart"
-        app:iconPadding="10dp" />
+        android:enabled="false"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:clickable="false"
+            android:drawableStart="@drawable/airwallex_ic_lock_selector"
+            android:drawablePadding="10dp"
+            android:duplicateParentState="true"
+            android:focusable="false"
+            android:fontFamily="@font/circularstd_bold"
+            android:orientation="horizontal"
+            android:text="@string/airwallex_pay_now"
+            android:textColor="@color/airwallex_button_text"
+            android:textSize="14sp" />
+    </RelativeLayout>
 
 </LinearLayout>
 

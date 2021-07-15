@@ -1,8 +1,10 @@
 package com.airwallex.paymentacceptance
 
+import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.Log
@@ -10,9 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.*
 import com.airwallex.android.exception.RedirectException
 import com.airwallex.android.model.*
@@ -28,6 +27,7 @@ import java.io.IOException
 import java.math.BigDecimal
 import java.util.*
 
+@DelicateCoroutinesApi
 class PaymentCartFragment : Fragment() {
 
     private val airwallex by lazy {
@@ -238,7 +238,9 @@ class PaymentCartFragment : Fragment() {
      *
      */
     private fun startPaymentFlow() {
-        viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
+        // Should use viewLifecycleOwner.lifecycle.coroutineScope
+        // But this is from android.support.v4.app.Fragment, just for support version, no good way to handle this
+        GlobalScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
             (activity as? PaymentCartActivity)?.setLoadingProgress(true)
             val paymentIntentResponse = withContext(Dispatchers.IO) {
                 Settings.token = null
@@ -309,7 +311,7 @@ class PaymentCartFragment : Fragment() {
      * Recurring flow
      */
     private fun startRecurringFlow() {
-        viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
+        GlobalScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
             (activity as? PaymentCartActivity)?.setLoadingProgress(true)
             // Recurring flow require customer id
             val customerId = withContext(Dispatchers.IO) {
@@ -384,7 +386,7 @@ class PaymentCartFragment : Fragment() {
      * Recurring with payment intent flow
      */
     private fun startRecurringWithIntentFlow() {
-        viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
+        GlobalScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
             (activity as? PaymentCartActivity)?.setLoadingProgress(true)
             // Recurring flow require customer id
             val paymentIntentResponse = withContext(Dispatchers.IO) {
