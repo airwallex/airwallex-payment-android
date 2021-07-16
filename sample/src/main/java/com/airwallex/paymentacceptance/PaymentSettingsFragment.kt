@@ -51,8 +51,8 @@ class PaymentSettingsFragment :
 
     private fun showCreateCustomerError(error: String? = null) {
         showAlert(
-            getString(R.string.create_payment_intent_failed),
-            error ?: getString(R.string.payment_failed_message)
+            getString(R.string.generate_customer_failed),
+            error ?: getString(R.string.generate_customer_failed_message)
         )
     }
 

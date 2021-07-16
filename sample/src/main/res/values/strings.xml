@@ -60,4 +60,7 @@
     <string name="wechat_demo_timestamp">TimeStamp</string>
     <string name="wechat_demo_sign">Sign</string>
     <string name="generate_customer">Generate Customer</string>
+    <string name="next">NEXT</string>
+    <string name="generate_customer_failed">Generate customer failed</string>
+    <string name="generate_customer_failed_message">There was an error while generate customer. Please try again.</string>
 </resources>
