@@ -206,9 +206,7 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
     val airwallex = Airwallex(this)
 ```
 
-2. 通过 [Select Payment Method](#selecting-payment-method-page) 或者 [Create Payment Method](#input-card-information-module) 得到一个PaymentMethod
-
-3. 然后你可以通过`checkout`完成支付
+2. 然后你可以通过`checkout`完成支付
 ```kotlin
     val listener = object : Airwallex.PaymentListener<PaymentIntent> {
         override fun onSuccess(response: PaymentIntent) {
@@ -220,11 +218,11 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
         }
     }
 
-    val paymentMethod = PaymentMethod(
-        type = PaymentMethodType.CARD,
-        card = card,
-        billing = billing
-    )
+    val paymentMethod = PaymentMethod.Builder()
+        .setType(PaymentMethodType.CARD)
+        .setCard(card)
+        .setBilling(billing)
+        .build()
     airwallex.checkout(AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod, listener)
 ```
 
@@ -237,7 +235,7 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
         airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
-4. 获取支付结果, 你可以通过调用 `retrievePaymentIntent` 方法检查最新的状态，并提供用户结果
+3. 获取支付结果, 你可以通过调用 `retrievePaymentIntent` 方法检查最新的状态，并提供用户结果
 ```kotlin
     airwallex.retrievePaymentIntent(
         params = RetrievePaymentIntentParams(
@@ -303,7 +301,7 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
         }
     }
 
-    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod(type = PaymentMethodType.ALIPAY_CN), listener = listener)
+    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod.Builder().setType(PaymentMethodType.ALIPAY_CN).build(), listener = listener)
 ```
 
 在你的Activity或Fragment中, 重写 Activity#onActivityResult 方法
@@ -370,7 +368,7 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
         }
     }
 
-    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod(type = PaymentMethodType.WECHAT), listener = listener)
+    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod.Builder().setType(PaymentMethodType.WECHAT).build(), listener = listener)
 ```
 
 在你的Activity或Fragment中, 重写 Activity#onActivityResult 方法

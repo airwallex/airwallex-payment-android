@@ -218,11 +218,11 @@ Supported payment methods: [`Cards`](#cards), [`Alipay`](#alipay), [`AlipayHK`](
         }
     }
 
-    val paymentMethod = PaymentMethod(
-        type = PaymentMethodType.CARD,
-        card = card,
-        billing = billing
-    )
+    val paymentMethod = PaymentMethod.Builder()
+        .setType(PaymentMethodType.CARD)
+        .setCard(card)
+        .setBilling(billing)
+        .build()
     airwallex.checkout(AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod, listener)
 ```
 
@@ -235,7 +235,7 @@ And in your host Activity or Fragment, implement Activity#onActivityResult and h
         airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
-4. To obtain the payment result, you can use the `retrievePaymentIntent` method and check the latest status. Then you can prompt the shopper with the result.
+3. To obtain the payment result, you can use the `retrievePaymentIntent` method and check the latest status. Then you can prompt the shopper with the result.
 ```kotlin
     airwallex.retrievePaymentIntent(
         params = RetrievePaymentIntentParams(
@@ -301,7 +301,7 @@ To redirect the shopper to the page you designated after the payment completed, 
         }
     }
 
-    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod(type = PaymentMethodType.ALIPAY_CN), listener = listener)
+    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod.Builder().setType(PaymentMethodType.ALIPAY_CN).build(), listener = listener)
 ```
 
 And in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
@@ -368,7 +368,7 @@ And in your host Activity or Fragment, implement Activity#onActivityResult and h
         }
     }
 
-    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod(type = PaymentMethodType.WECHAT), listener = listener)
+    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod.Builder().setType(PaymentMethodType.WECHAT).build(), listener = listener)
 ```
 
 And in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.

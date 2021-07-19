@@ -88,11 +88,11 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
 
         if (session is AirwallexPaymentSession) {
             startCheckout(
-                paymentMethod = PaymentMethod(
-                    type = PaymentMethodType.CARD,
-                    card = card,
-                    billing = viewBinding.billingWidget.billing
-                ),
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.CARD)
+                    .setCard(card)
+                    .setBilling(viewBinding.billingWidget.billing)
+                    .build(),
                 observer = observer
             )
         } else {
