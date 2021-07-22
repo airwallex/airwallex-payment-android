@@ -20,7 +20,7 @@ data class AvailablePaymentMethod internal constructor(
      *
      The supported flows for the payment method type and the transaction mode. A flow can be one of webqr, mweb, inapp
      */
-    val flows: List<RedirectRequestFlow>? = null,
+    val flows: List<AirwallexPaymentRequestFlow>? = null,
 
     /**
      * The supported transaction currencies for the payment method type and the transaction mode

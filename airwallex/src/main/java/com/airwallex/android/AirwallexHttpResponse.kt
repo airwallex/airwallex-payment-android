@@ -36,7 +36,7 @@ internal data class AirwallexHttpResponse internal constructor(
     }
 
     override fun toString(): String {
-        return "Status Code: $code, Trace-Id: $traceId"
+        return "Status Code: $code, Trace-Id: $traceId \n $body"
     }
 
     private companion object {

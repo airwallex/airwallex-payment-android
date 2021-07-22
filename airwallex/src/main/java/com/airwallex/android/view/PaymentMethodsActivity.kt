@@ -232,17 +232,24 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         when (paymentMethod.type) {
             PaymentMethodType.CARD -> {
                 setLoadingProgress(false)
-
                 // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
-                PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
-                    .startForResult(
-                        PaymentCheckoutActivityLaunch.Args.Builder()
-                            .setAirwallexSession(session)
-                            .setPaymentMethod(paymentMethod)
-                            .setPaymentConsentId(paymentConsent.id)
-                            .setCvc(cvc)
-                            .build()
+                if (paymentConsent.requiresCvc) {
+                    PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
+                        .startForResult(
+                            PaymentCheckoutActivityLaunch.Args.Builder()
+                                .setAirwallexSession(session)
+                                .setPaymentMethod(paymentMethod)
+                                .setPaymentConsentId(paymentConsent.id)
+                                .setCvc(cvc)
+                                .build()
+                        )
+                } else {
+                    startCheckout(
+                        paymentMethod = paymentMethod,
+                        paymentConsentId = paymentConsent.id,
+                        observer = observer
                     )
+                }
             }
             else -> {
                 val paymentMethodType = requireNotNull(paymentConsent.paymentMethod?.type)
@@ -305,6 +312,9 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        airwallex.handlePaymentData(requestCode, resultCode, data)
+
         if (resultCode != Activity.RESULT_OK || data == null) {
             return
         }

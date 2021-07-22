@@ -67,7 +67,7 @@ data class PaymentMethod internal constructor(
     /**
      * Redirect Request
      */
-    val redirectRequest: RedirectRequest? = null
+    val redirectRequest: AirwallexPaymentRequest? = null
 
 ) : AirwallexModel, Parcelable {
 

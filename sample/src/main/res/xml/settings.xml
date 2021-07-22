@@ -26,6 +26,13 @@
             android:key="@string/next_trigger_by"
             android:title="@string/next_trigger_by" />
 
+        <ListPreference
+            android:dialogTitle="@string/requires_cvc"
+            android:entries="@array/array_requires_cvc"
+            android:entryValues="@array/array_requires_cvc"
+            android:key="@string/requires_cvc"
+            android:title="@string/requires_cvc" />
+
         <Preference
             android:key="@string/generate_customer"
             android:title="@string/generate_customer" >

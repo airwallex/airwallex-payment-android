@@ -333,26 +333,20 @@ internal class AirwallexPaymentManager(
         threeDSecureActivityLaunch: ThreeDSecureActivityLaunch,
         listener: PaymentListener<PaymentIntent>
     ) {
-        val redirectVerificationOptions = PaymentConsentVerifyRequest.RedirectVerificationOptions()
-        val verificationOptions = when (params.paymentMethodType) {
+        val verificationOptions = when (val paymentMethodType = params.paymentMethodType) {
             PaymentMethodType.CARD -> PaymentConsentVerifyRequest.VerificationOptions(
-                card = PaymentConsentVerifyRequest.CardVerificationOptions(
+                type = paymentMethodType,
+                cardOptions = PaymentConsentVerifyRequest.CardVerificationOptions(
                     amount = params.amount,
                     currency = params.currency,
                     cvc = params.cvc,
                 )
             )
-            PaymentMethodType.ALIPAY_CN -> PaymentConsentVerifyRequest.VerificationOptions(alipayhk = redirectVerificationOptions)
-            PaymentMethodType.ALIPAY_HK -> PaymentConsentVerifyRequest.VerificationOptions(alipayhk = redirectVerificationOptions)
-            PaymentMethodType.DANA -> PaymentConsentVerifyRequest.VerificationOptions(dana = redirectVerificationOptions)
-            PaymentMethodType.GCASH -> PaymentConsentVerifyRequest.VerificationOptions(gcash = redirectVerificationOptions)
-            PaymentMethodType.KAKAOPAY -> PaymentConsentVerifyRequest.VerificationOptions(kakaopay = redirectVerificationOptions)
-            PaymentMethodType.TNG -> PaymentConsentVerifyRequest.VerificationOptions(tng = redirectVerificationOptions)
-            PaymentMethodType.TRUE_MONEY -> PaymentConsentVerifyRequest.VerificationOptions(trueMoney = redirectVerificationOptions)
-            PaymentMethodType.BKASH -> PaymentConsentVerifyRequest.VerificationOptions(bKash = redirectVerificationOptions)
             else -> {
-                listener.onFailed(Exception("Unsupported PaymentMethod ${params.paymentMethodType} "))
-                return
+                PaymentConsentVerifyRequest.VerificationOptions(
+                    type = paymentMethodType,
+                    thirdPartOptions = PaymentConsentVerifyRequest.ThirdPartVerificationOptions()
+                )
             }
         }
 

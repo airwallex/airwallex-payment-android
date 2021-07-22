@@ -26,13 +26,13 @@ data class CreatePaymentConsentParams constructor(
      * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled.
      * Default: unscheduled
      */
-    val merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
+    val merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = null,
 
     /**
      * Only applicable when next_triggered_by is customer. If false, the customer must provide cvc for subsequent payments with this PaymentConsent.
      * Default: false
      */
-    val requiresCvc: Boolean = false
+    val requiresCvc: Boolean? = null
 ) {
 
     class Builder(
@@ -44,9 +44,9 @@ data class CreatePaymentConsentParams constructor(
 
         private var paymentMethodId: String? = null
 
-        private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+        private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = null
 
-        private var requiresCvc: Boolean = false
+        private var requiresCvc: Boolean? = null
 
         fun setPaymentMethodId(paymentMethodId: String?): Builder = apply {
             this.paymentMethodId = paymentMethodId
@@ -56,7 +56,7 @@ data class CreatePaymentConsentParams constructor(
             this.merchantTriggerReason = merchantTriggerReason
         }
 
-        fun setRequiresCvc(requiresCvc: Boolean): Builder = apply {
+        fun setRequiresCvc(requiresCvc: Boolean?): Builder = apply {
             this.requiresCvc = requiresCvc
         }
 
@@ -98,8 +98,7 @@ data class CreatePaymentConsentParams constructor(
         fun createThirdPartParams(
             paymentMethodType: PaymentMethodType,
             clientSecret: String,
-            customerId: String,
-            merchantTriggerReason: PaymentConsent.MerchantTriggerReason
+            customerId: String
         ): CreatePaymentConsentParams {
             return Builder(
                 clientSecret = clientSecret,
@@ -107,7 +106,6 @@ data class CreatePaymentConsentParams constructor(
                 paymentMethodType = paymentMethodType,
                 nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT
             )
-                .setMerchantTriggerReason(merchantTriggerReason = merchantTriggerReason)
                 .build()
         }
     }

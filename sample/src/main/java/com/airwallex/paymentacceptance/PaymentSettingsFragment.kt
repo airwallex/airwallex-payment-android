@@ -104,6 +104,14 @@ class PaymentSettingsFragment :
         nextTriggerByPref?.isEnabled =
             !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
 
+        val requireCVCPref: ListPreference? =
+            findPreference(getString(R.string.requires_cvc)) as? ListPreference?
+        if (requireCVCPref != null && requireCVCPref.value == null) {
+            requireCVCPref.setValueIndex(0)
+        }
+        requireCVCPref?.isEnabled =
+            !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && requireCVCPref != null)
+
         val generateCustomerPref: Preference? =
             findPreference(getString(R.string.generate_customer)) as? Preference?
         generateCustomerPref?.summary = Settings.cachedCustomerId
@@ -163,6 +171,7 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.sdk_env_id))
         onSharedPreferenceChanged(preferences, getString(R.string.checkout_mode))
         onSharedPreferenceChanged(preferences, getString(R.string.next_trigger_by))
+        onSharedPreferenceChanged(preferences, getString(R.string.requires_cvc))
         registerOnSharedPreferenceChangeListener()
     }
 
@@ -204,6 +213,7 @@ class PaymentSettingsFragment :
             getString(R.string.sdk_env_id) -> preference?.summary = Settings.sdkEnv
             getString(R.string.checkout_mode) -> preference?.summary = Settings.checkoutMode
             getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy
+            getString(R.string.requires_cvc) -> preference?.summary = Settings.requiresCVC
         }
         toggleNextTriggerByStatus()
     }
@@ -213,8 +223,12 @@ class PaymentSettingsFragment :
             findPreference(getString(R.string.checkout_mode)) as? ListPreference?
         val nextTriggerByPref: ListPreference? =
             findPreference(getString(R.string.next_trigger_by)) as? ListPreference?
+        val requireCVCByPref: ListPreference? =
+            findPreference(getString(R.string.requires_cvc)) as? ListPreference?
         nextTriggerByPref?.isEnabled =
             !(checkoutModePref?.value?.uppercase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
+        requireCVCByPref?.isEnabled =
+            !(checkoutModePref?.value?.uppercase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && requireCVCByPref != null)
     }
 
     private fun registerOnSharedPreferenceChangeListener() {

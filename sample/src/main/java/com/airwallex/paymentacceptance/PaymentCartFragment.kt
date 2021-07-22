@@ -130,6 +130,15 @@ class PaymentCartFragment : Fragment() {
             }
         }
 
+    private val requiresCVC: Boolean
+        get() {
+            return when (Settings.requiresCVC) {
+                SampleApplication.instance.resources.getStringArray(R.array.array_requires_cvc)[0] -> false
+                SampleApplication.instance.resources.getStringArray(R.array.array_requires_cvc)[1] -> true
+                else -> throw Exception("Unsupported requiresCVC: ${Settings.requiresCVC}")
+            }
+        }
+
     private val returnUrl: String
         get() {
             return "airwallexcheckout://${context?.packageName}"
@@ -353,7 +362,8 @@ class PaymentCartFragment : Fragment() {
                     requireNotNull(customerId, { "CustomerId is required" }),
                     Settings.currency,
                     BigDecimal.valueOf(Settings.price.toDouble()),
-                    nextTriggerBy
+                    nextTriggerBy,
+                    requiresCVC
                 )
                     .setShipping(shipping)
                     .build(),
@@ -455,7 +465,8 @@ class PaymentCartFragment : Fragment() {
                         paymentIntent.customerId,
                         { "CustomerId is required" }
                     ),
-                    nextTriggerBy
+                    nextTriggerBy,
+                    requiresCVC
                 ).build(),
                 clientSecretProvider
             ).observe(viewLifecycleOwner) {

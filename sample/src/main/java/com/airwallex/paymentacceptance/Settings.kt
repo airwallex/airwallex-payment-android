@@ -81,6 +81,17 @@ object Settings {
                 ?: defaultNextTriggeredBy
         }
 
+    val requiresCVC: String
+        get() {
+            val defaultRequireCVC =
+                SampleApplication.instance.resources.getStringArray(R.array.array_requires_cvc)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.requires_cvc),
+                defaultRequireCVC
+            )
+                ?: defaultRequireCVC
+        }
+
     val apiKey: String
         get() {
             return sharedPreferences.getString(context.getString(R.string.api_key), getMetadata(METADATA_KEY_API_KEY))

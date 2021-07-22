@@ -7,13 +7,13 @@ import kotlinx.parcelize.Parcelize
  * Request for Bank
  */
 @Parcelize
-data class RedirectRequest constructor(
+data class AirwallexPaymentRequest constructor(
     val bank: Bank? = null,
     val name: String? = null,
     val email: String? = null,
     val phone: String? = null,
     val countryCode: String? = null,
-    val flow: RedirectRequestFlow? = null,
+    val flow: AirwallexPaymentRequestFlow? = null,
     val osType: String? = null
 ) : AirwallexModel, AirwallexRequestModel, Parcelable {
 
@@ -55,7 +55,7 @@ data class RedirectRequest constructor(
                 }.orEmpty()
             )
             .plus(
-                mapOf(FIELD_FLOW to RedirectRequestFlow.IN_APP.value)
+                mapOf(FIELD_FLOW to AirwallexPaymentRequestFlow.IN_APP.value)
             )
             .plus(
                 mapOf(FIELD_OS_TYPE to "android")

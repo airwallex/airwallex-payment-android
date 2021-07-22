@@ -53,97 +53,42 @@ data class PaymentConsentVerifyRequest internal constructor(
     @Parcelize
     data class VerificationOptions internal constructor(
         /**
-         * Alipayhk information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
+         * Type of the payment method
          */
-        val alipayhk: RedirectVerificationOptions? = null,
+        val type: PaymentMethodType,
 
         /**
          * Card information for verifying PaymentConsent
          */
-        val card: CardVerificationOptions? = null,
+        val cardOptions: CardVerificationOptions? = null,
 
         /**
-         * Dana information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
+         * Redirect information for verifying PaymentConsent.
          */
-        val dana: RedirectVerificationOptions? = null,
-
-        /**
-         * Gcash information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
-         */
-        val gcash: RedirectVerificationOptions? = null,
-
-        /**
-         * Kakaopay information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
-         */
-        val kakaopay: RedirectVerificationOptions? = null,
-
-        /**
-         * Tng information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
-         */
-        val tng: RedirectVerificationOptions? = null,
-
-        /**
-         * TrueMoney information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
-         */
-        val trueMoney: RedirectVerificationOptions? = null,
-
-        /**
-         * bKash information for verifying PaymentConsent. flow can be one of webqr, mweb, inapp
-         */
-        val bKash: RedirectVerificationOptions? = null,
+        val thirdPartOptions: ThirdPartVerificationOptions? = null
     ) : AirwallexRequestModel, Parcelable {
 
         override fun toParamMap(): Map<String, Any> {
             return mapOf<String, Any>()
                 .plus(
-                    card?.let {
-                        mapOf(PaymentMethodType.CARD.value to it.toParamMap())
+                    cardOptions?.let {
+                        mapOf(type.value to it.toParamMap())
                     }.orEmpty()
                 )
                 .plus(
-                    alipayhk?.let {
-                        mapOf(PaymentMethodType.ALIPAY_HK.value to it.toParamMap())
-                    }.orEmpty()
-                )
-                .plus(
-                    dana?.let {
-                        mapOf(PaymentMethodType.DANA.value to it.toParamMap())
-                    }.orEmpty()
-                )
-                .plus(
-                    gcash?.let {
-                        mapOf(PaymentMethodType.GCASH.value to it.toParamMap())
-                    }.orEmpty()
-                )
-                .plus(
-                    kakaopay?.let {
-                        mapOf(PaymentMethodType.KAKAOPAY.value to it.toParamMap())
-                    }.orEmpty()
-                )
-                .plus(
-                    tng?.let {
-                        mapOf(PaymentMethodType.TNG.value to it.toParamMap())
-                    }.orEmpty()
-                )
-                .plus(
-                    trueMoney?.let {
-                        mapOf(PaymentMethodType.TRUE_MONEY.value to it.toParamMap())
-                    }.orEmpty()
-                )
-                .plus(
-                    bKash?.let {
-                        mapOf(PaymentMethodType.BKASH.value to it.toParamMap())
+                    thirdPartOptions?.let {
+                        mapOf(type.value to it.toParamMap())
                     }.orEmpty()
                 )
         }
     }
 
     @Parcelize
-    data class RedirectVerificationOptions internal constructor(
+    data class ThirdPartVerificationOptions internal constructor(
         /**
          * Refer to the specification of the verification_options of the payment method.
          */
-        val flow: RedirectRequestFlow? = null,
+        val flow: AirwallexPaymentRequestFlow? = null,
 
         /**
          * Can be one of ios, android. osType must be set when flow is mweb, inapp.
@@ -160,7 +105,7 @@ data class PaymentConsentVerifyRequest internal constructor(
         override fun toParamMap(): Map<String, Any> {
             return mapOf<String, Any>()
                 .plus(
-                    mapOf(FIELD_FLOW to RedirectRequestFlow.IN_APP.value)
+                    mapOf(FIELD_FLOW to AirwallexPaymentRequestFlow.IN_APP.value)
                 )
                 .plus(
                     mapOf(FIELD_OS_TYPE to "android")

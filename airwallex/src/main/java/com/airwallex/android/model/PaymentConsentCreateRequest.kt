@@ -125,7 +125,7 @@ data class PaymentConsentCreateRequest internal constructor(
             this.merchantTriggerReason = merchantTriggerReason
         }
 
-        fun setRequiresCvc(requiresCvc: Boolean): Builder = apply {
+        fun setRequiresCvc(requiresCvc: Boolean?): Builder = apply {
             this.requiresCvc = requiresCvc
         }
 

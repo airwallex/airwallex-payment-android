@@ -25,6 +25,12 @@ class AirwallexRecurringWithIntentSession internal constructor(
     val nextTriggerBy: PaymentConsent.NextTriggeredBy,
 
     /**
+     * Only applicable when next_triggered_by is customer and the payment_method.type is card.If true, the customer must provide cvc for the subsequent payment with this PaymentConsent.
+     * Default: false
+     */
+    val requiresCVC: Boolean = false,
+
+    /**
      * Amount currency. required.
      */
     override val currency: String,
@@ -49,6 +55,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
         private val paymentIntent: PaymentIntent,
         private val customerId: String,
         private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
+        private val requiresCVC: Boolean
     ) : ObjectBuilder<AirwallexRecurringWithIntentSession> {
 
         override fun build(): AirwallexRecurringWithIntentSession {
@@ -58,6 +65,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
             return AirwallexRecurringWithIntentSession(
                 paymentIntent = paymentIntent,
                 nextTriggerBy = nextTriggerBy,
+                requiresCVC = requiresCVC,
                 customerId = customerId,
                 currency = paymentIntent.currency,
                 amount = paymentIntent.amount,

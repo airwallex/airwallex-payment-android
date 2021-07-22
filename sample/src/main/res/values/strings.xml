@@ -63,4 +63,5 @@
     <string name="next">NEXT</string>
     <string name="generate_customer_failed">Generate customer failed</string>
     <string name="generate_customer_failed_message">There was an error while generate customer. Please try again.</string>
+    <string name="requires_cvc">Requires CVC</string>
 </resources>

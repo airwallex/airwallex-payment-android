@@ -4,10 +4,10 @@ import com.airwallex.android.model.*
 import com.airwallex.android.model.AirwallexJsonUtils
 import org.json.JSONObject
 
-class RedirectRequestParser : ModelJsonParser<RedirectRequest> {
+class AirwallexPaymentRequestParser : ModelJsonParser<AirwallexPaymentRequest> {
 
-    override fun parse(json: JSONObject): RedirectRequest {
-        return RedirectRequest(
+    override fun parse(json: JSONObject): AirwallexPaymentRequest {
+        return AirwallexPaymentRequest(
             bank = AirwallexJsonUtils.optString(json, BANK_NAME)?.let {
                 Bank.fromValue(it)
             },
@@ -16,7 +16,7 @@ class RedirectRequestParser : ModelJsonParser<RedirectRequest> {
             phone = AirwallexJsonUtils.optString(json, SHOPPER_PHONE),
             countryCode = AirwallexJsonUtils.optString(json, COUNTRY_CODE),
             flow = AirwallexJsonUtils.optString(json, FIELD_FLOW)?.let {
-                RedirectRequestFlow.fromValue(it)
+                AirwallexPaymentRequestFlow.fromValue(it)
             },
             osType = AirwallexJsonUtils.optString(json, FIELD_OS_TYPE)
         )

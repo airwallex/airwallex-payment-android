@@ -29,9 +29,9 @@ data class VerifyPaymentConsentParams constructor(
     val cvc: String? = null,
 
     /**
-     * Type of the PaymentMethod. One of card, alipayhk, kakaopay, gcash, dana, tng
+     * Type of the PaymentMethod.
      */
-    val paymentMethodType: PaymentMethodType? = null,
+    val paymentMethodType: PaymentMethodType,
 
     /**
      * The URL to which your customer will be redirected after they verify PaymentConsent on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively provide an application URI scheme.

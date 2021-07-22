@@ -12,21 +12,18 @@ enum class PaymentMethodType(
     val value: String,
     val drawableRes: Int = 0,
     val displayName: String = "",
-    val classify: PaymentMethodClassify,
     val requiredFields: List<PaymentMethodRequiredField> = emptyList()
 ) : Parcelable {
 
     CARD(
         "card",
         0,
-        "",
-        PaymentMethodClassify.CARD
+        ""
     ),
     WECHAT(
         "wechatpay",
         R.drawable.airwallex_ic_wechat,
-        "WeChat Pay",
-        PaymentMethodClassify.WECHAT
+        "WeChat Pay"
     ),
 
     // Redirect_method
@@ -34,50 +31,42 @@ enum class PaymentMethodType(
     ALIPAY_CN(
         "alipaycn",
         R.drawable.airwallex_ic_alipay_cn,
-        "Alipay",
-        PaymentMethodClassify.REDIRECT
+        "Alipay"
     ),
     ALIPAY_HK(
         "alipayhk",
         R.drawable.airwallex_ic_alipay_hk,
-        "AlipayHK",
-        PaymentMethodClassify.REDIRECT
+        "AlipayHK"
     ),
     TRUE_MONEY(
         "truemoney",
         R.drawable.airwallex_ic_truemoney,
-        "Truemoney",
-        PaymentMethodClassify.REDIRECT
+        "TrueMoney"
     ),
     BKASH(
         "bkash",
         R.drawable.airwallex_ic_bkash,
-        "bKash",
-        PaymentMethodClassify.REDIRECT
+        "bKash"
     ),
     GCASH(
         "gcash",
         R.drawable.airwallex_ic_gcash,
-        "GCash",
-        PaymentMethodClassify.REDIRECT
+        "GCash"
     ),
     DANA(
         "dana",
         R.drawable.airwallex_ic_dana,
-        "DANA",
-        PaymentMethodClassify.REDIRECT
+        "DANA"
     ),
     KAKAOPAY(
         "kakaopay",
         R.drawable.airwallex_ic_kakao_pay,
-        "Kakao Pay",
-        PaymentMethodClassify.REDIRECT
+        "Kakao Pay"
     ),
     TNG(
         "tng",
         R.drawable.airwallex_ic_touchngo,
-        "Touch 'n Go",
-        PaymentMethodClassify.REDIRECT
+        "Touch 'n Go"
     ),
 
     // * PPRO *
@@ -86,7 +75,6 @@ enum class PaymentMethodType(
         "dragonpay",
         0,
         "DragonPay",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL,
@@ -99,7 +87,6 @@ enum class PaymentMethodType(
         "permatanet",
         R.drawable.airwallex_ic_permatanet,
         "Permatanet",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL
@@ -110,7 +97,6 @@ enum class PaymentMethodType(
         "alfamart",
         R.drawable.airwallex_ic_alfamart,
         "Alfamart",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL
@@ -121,7 +107,6 @@ enum class PaymentMethodType(
         "indomaret",
         R.drawable.airwallex_ic_indomaret,
         "Indomaret",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL
@@ -132,7 +117,6 @@ enum class PaymentMethodType(
         "doku_ewallet",
         R.drawable.airwallex_ic_doku_wallet,
         "DOKU Wallet",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL
@@ -144,7 +128,6 @@ enum class PaymentMethodType(
         "fpx",
         R.drawable.airwallex_ic_fpx,
         "FPX",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL,
@@ -156,7 +139,6 @@ enum class PaymentMethodType(
         "seven_eleven",
         R.drawable.airwallex_ic_eleven,
         "7eleven",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL,
@@ -169,7 +151,6 @@ enum class PaymentMethodType(
         "poli",
         R.drawable.airwallex_ic_poli,
         "POLi",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME
         )
@@ -180,7 +161,6 @@ enum class PaymentMethodType(
         "tesco_lotus",
         R.drawable.airwallex_ic_tesco_lotus_cash,
         "Tesco Lotus",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL,
@@ -193,7 +173,6 @@ enum class PaymentMethodType(
         "enets",
         R.drawable.airwallex_ic_enets,
         "eNETS",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL,
@@ -205,7 +184,6 @@ enum class PaymentMethodType(
         "grabpay",
         R.drawable.airwallex_ic_grabpay,
         "Grabpay",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME
         )
@@ -216,7 +194,6 @@ enum class PaymentMethodType(
         "payeasy",
         R.drawable.airwallex_ic_pay_easy,
         "Pay-easy",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL,
@@ -228,7 +205,6 @@ enum class PaymentMethodType(
         "konbini",
         R.drawable.airwallex_ic_konbini,
         "Konbini",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL,
@@ -241,7 +217,6 @@ enum class PaymentMethodType(
         "skrill",
         R.drawable.airwallex_ic_skrill,
         "Skrill",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL
@@ -253,7 +228,6 @@ enum class PaymentMethodType(
         "bank_transfer",
         R.drawable.airwallex_ic_bank_transfer,
         "Bank transfer",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL,
@@ -266,7 +240,6 @@ enum class PaymentMethodType(
         "online_banking",
         R.drawable.airwallex_ic_online_banking,
         "Online banking",
-        PaymentMethodClassify.REDIRECT,
         listOf(
             PaymentMethodRequiredField.SHOPPER_NAME,
             PaymentMethodRequiredField.SHOPPER_EMAIL,

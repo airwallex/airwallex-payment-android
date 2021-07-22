@@ -21,7 +21,7 @@ class PaymentMethodRequest(
     /**
      * Redirect Request
      */
-    val redirectRequest: RedirectRequest? = null,
+    val redirectRequest: AirwallexPaymentRequest? = null,
 
     /**
      * Card information for the payment method
@@ -65,7 +65,7 @@ class PaymentMethodRequest(
     class Builder(
         val type: PaymentMethodType
     ) : ObjectBuilder<PaymentMethodRequest> {
-        private var redirectRequest: RedirectRequest? = null
+        private var redirectRequest: AirwallexPaymentRequest? = null
 
         private var card: PaymentMethod.Card? = null
 
@@ -78,9 +78,8 @@ class PaymentMethodRequest(
             currency: String? = null,
             bank: Bank? = null
         ): Builder = apply {
-            when (type.classify) {
-                PaymentMethodClassify.WECHAT,
-                PaymentMethodClassify.REDIRECT -> redirectRequest = RedirectRequest(
+            if (type != PaymentMethodType.CARD) {
+                redirectRequest = AirwallexPaymentRequest(
                     bank = bank,
                     name = name,
                     email = email,
@@ -89,7 +88,6 @@ class PaymentMethodRequest(
                         CurrencyUtils.currencyToCountryMap[currency]
                     }
                 )
-                else -> Unit
             }
         }
 
