@@ -1,5 +1,6 @@
 name: Publish Docs
 
+# Every time we merge to the main branch we publish the docs.
 on:
   push:
     branches: [ master ]
