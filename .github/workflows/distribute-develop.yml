@@ -1,4 +1,6 @@
 name: Distribute Develop
+
+# Every time we merge to develop branch we publish a release.
 on:
   workflow_dispatch:
   push:
