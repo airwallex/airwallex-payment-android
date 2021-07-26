@@ -1,5 +1,6 @@
 name: Publish Release
 
+# Every time we merge to main branch we publish a release.
 on:
   push:
     branches: [ master ]
