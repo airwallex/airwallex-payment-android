@@ -25,9 +25,6 @@ Our demo application is available open source on [Github](https://github.com/air
         * [Create Payment Intent](#create-payment-intent-on-the-merchants-server)
 * [Airwallex Native UI integration](#airwallex-native-ui-integration)
     * [Edit Shipping Info](#edit-shipping-info)
-    * [Selecting payment method page](#selecting-payment-method-page)
-    * [Input card information module](#input-card-information-module)
-    * [Confirm payment intent page](#confirm-payment-intent-page)
     * [Use the entire Native UI in one flow](#use-the-entire-native-ui-in-one-flow)
     * [Custom Theme](#custom-theme)
 * [Airwallex API integration](#airwallex-api-integration)
@@ -134,7 +131,7 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
 ```
 
 ### Use the entire Native UI in one flow
-Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `AirwallexSession` and `ClientSecretProvider` object
+Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `AirwallexSession` object
 ```kotlin
     airwallex.presentPaymentFlow(AirwallexPaymentSession.Builder(paymentIntent).build(),
         object : Airwallex.PaymentIntentListener {

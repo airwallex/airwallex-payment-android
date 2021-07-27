@@ -25,9 +25,6 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
         * [创建PaymentIntent](#创建PaymentIntent)
 * [UI集成](#UI集成)
     * [Edit Shipping Info](#edit-shipping-info)
-    * [Selecting payment method page](#selecting-payment-method-page)
-    * [Input card information module](#input-card-information-module)
-    * [Confirm payment intent page](#confirm-payment-intent-page)
     * [Use the entire Native UI in one flow](#use-the-entire-native-ui-in-one-flow)
     * [Custom Theme](#custom-theme)
 * [API集成](#API集成)
@@ -133,7 +130,7 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ```
 
 ### Use the entire Native UI in one flow
-使用 `presentPaymentFlow` 来完成整个支付流程. 需要传入一个 `AirwallexSession` 和 `ClientSecretProvider` 对象
+使用 `presentPaymentFlow` 来完成整个支付流程. 需要传入一个 `AirwallexSession`对象
 ```kotlin
     airwallex.presentPaymentFlow(AirwallexPaymentSession.Builder(paymentIntent).build(),
         object : Airwallex.PaymentIntentListener {
