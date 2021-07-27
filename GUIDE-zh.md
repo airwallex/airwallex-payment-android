@@ -75,21 +75,6 @@ Airwallex Android SDK 支持Android API 19及以上版本。
     }
 ```
 
-- 添加 `cardinalcommerce` 依赖
-
-此外，将以下Maven存储库添加到 `build.gralde`:
-```groovy
-repositories {
-    maven {
-        url "https://cardinalcommerce.bintray.com/android"
-        credentials {
-            username 'qiao.zhao@cardinalcommerce'
-            password '99796fb351b999db8dced5b3f6ba6015efc862e7'
-        }
-    }
-}
-```
-
 ### 配置SDK
 设置SDK后，需要使用一些参数来配置SDK。 在使用Airwallex SDK confirm PaymentIntent并完成付款之前，您应在自己的服务器中创建PaymentIntent，以确保在自己的系统中维护信息
 #### 初始化SDK

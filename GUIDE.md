@@ -75,21 +75,6 @@ To install the SDK, in your app-level `build.gradle`, add the following:
     }
 ```
 
-- Add the `cardinalcommerce` Maven repo
-
-Additionally, add the following Maven repository and (non-sensitive) credentials to your app-level `build.gralde`:
-```groovy
-repositories {
-    maven {
-        url "https://cardinalcommerce.bintray.com/android"
-        credentials {
-            username 'qiao.zhao@cardinalcommerce'
-            password '99796fb351b999db8dced5b3f6ba6015efc862e7'
-        }
-    }
-}
-```
-
 ### Step 2: Configuration and preparation
 After setting up the SDK, you are required to config your SDK with some parameters. Before using Airwallex SDK to confirm payment intents and complete the payments, you shall create payment intents in your own server, to make sure you maintain information in your own system
 #### Configuration the SDK
