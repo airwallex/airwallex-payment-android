@@ -62,12 +62,7 @@ data class PaymentMethod internal constructor(
     /**
      * Last time at which the payment method was updated
      */
-    val updatedAt: Date? = null,
-
-    /**
-     * Redirect Request
-     */
-    val redirectRequest: AirwallexPaymentRequest? = null
+    val updatedAt: Date? = null
 
 ) : AirwallexModel, Parcelable {
 

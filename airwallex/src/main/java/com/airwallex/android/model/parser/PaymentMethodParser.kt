@@ -17,9 +17,6 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
             card = json.optJSONObject(FIELD_CARD)?.let {
                 CardParser().parse(it)
             },
-            redirectRequest = json.optJSONObject(AirwallexJsonUtils.optString(json, FIELD_TYPE))?.let {
-                AirwallexPaymentRequestParser().parse(it)
-            },
             billing = json.optJSONObject(FIELD_BILLING)?.let {
                 BillingParser().parse(it)
             },
