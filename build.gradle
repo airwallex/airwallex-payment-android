@@ -12,8 +12,6 @@ buildscript {
     }
 }
 
-apply from: "dokka.gradle"
-
 allprojects {
     repositories {
         google()
