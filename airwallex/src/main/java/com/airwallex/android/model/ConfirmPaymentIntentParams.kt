@@ -109,8 +109,8 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param clientSecret the clientSecret of [PaymentIntent], required.
          * @param customerId the customerId of [PaymentIntent], optional.
          * @param paymentConsentId the customerId of [PaymentConsent], optional.
-         * @param currency
-         * @param pproAdditionalInfo
+         * @param currency amount currency
+         * @param pproAdditionalInfo to support ppro payment
          */
         fun createThirdPartPayParams(
             paymentMethodType: PaymentMethodType,

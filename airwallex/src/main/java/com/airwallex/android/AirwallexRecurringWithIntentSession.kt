@@ -31,6 +31,12 @@ class AirwallexRecurringWithIntentSession internal constructor(
     val requiresCVC: Boolean = false,
 
     /**
+     * Indicate whether the subsequent payments are scheduled. Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled.
+     * Default: unscheduled
+     */
+    val merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
+
+    /**
      * Amount currency. required.
      */
     override val currency: String,
@@ -54,9 +60,21 @@ class AirwallexRecurringWithIntentSession internal constructor(
     class Builder(
         private val paymentIntent: PaymentIntent,
         private val customerId: String,
-        private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
-        private val requiresCVC: Boolean
+        private val nextTriggerBy: PaymentConsent.NextTriggeredBy
     ) : ObjectBuilder<AirwallexRecurringWithIntentSession> {
+
+        private var requiresCVC: Boolean = false
+        private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason =
+            PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+
+        fun setRequireCvc(requiresCVC: Boolean): Builder = apply {
+            this.requiresCVC = requiresCVC
+        }
+
+        fun setMerchantTriggerReason(merchantTriggerReason: PaymentConsent.MerchantTriggerReason): Builder =
+            apply {
+                this.merchantTriggerReason = merchantTriggerReason
+            }
 
         override fun build(): AirwallexRecurringWithIntentSession {
             if (paymentIntent.customerId == null) {

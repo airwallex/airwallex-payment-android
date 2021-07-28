@@ -69,7 +69,6 @@ internal object CardUtils {
     /**
      * Get all possible card brands of the card number
      *
-     *
      * @param cardNumber the credit card number
      * @return [CardBrand] of the card number
      */

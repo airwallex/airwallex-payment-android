@@ -9,8 +9,9 @@ import com.airwallex.android.view.*
 /**
  *  Entry-point to the Airwallex Payment Flow. Create a AirwallexStarter attached to the given host Activity.
  *
- *  @param activity This Activity will receive results in `Activity#onActivityResult(int, int, Intent)`
- *  that should be passed back to this session.
+ *  @param activity This Activity will receive results in `Activity#onActivityResult(int, int, Intent)` that should be passed back to this session.
+ *  @param paymentShippingActivityLaunch instance of [PaymentShippingActivityLaunch]
+ *  @param paymentMethodsActivityLaunch instance of [PaymentMethodsActivityLaunch]
  */
 internal class AirwallexStarter constructor(
     private val activity: Activity,

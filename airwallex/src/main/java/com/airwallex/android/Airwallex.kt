@@ -41,9 +41,11 @@ class Airwallex internal constructor(
         fun onSuccess(response: T) {
             Logger.debug("Card payment success")
         }
+
         fun onNextActionWithWeChatPay(weChat: WeChat) {
             Logger.debug("Start WeChat Pay $weChat")
         }
+
         fun onNextActionWithRedirectUrl(url: String) {
             Logger.debug("Start Redirect Url Pay $url")
         }
@@ -104,6 +106,7 @@ class Airwallex internal constructor(
      * Continue a [PaymentIntent] - select your current currency
      *
      * @param applicationContext the Application Context that is start confirm the payment intent
+     * @param threeDSecureActivityLaunch used to launch [ThreeDSecureActivity]
      * @param params [ContinuePaymentIntentParams] used to continue [PaymentIntent]
      * @param listener a [PaymentListener] to receive the response or error
      */
@@ -206,6 +209,7 @@ class Airwallex internal constructor(
     /**
      * Create a [PaymentConsent]
      *
+     * @param params [CreatePaymentConsentParams] used to create the [PaymentConsent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
@@ -243,6 +247,7 @@ class Airwallex internal constructor(
     /**
      * Verify a [PaymentConsent]
      *
+     * @param params [VerifyPaymentConsentParams] used to verify the [PaymentConsent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
@@ -261,7 +266,7 @@ class Airwallex internal constructor(
 
     /**
      * Disable a [PaymentConsent] by ID
-     *
+     * @param params [DisablePaymentConsentParams] used to disable the [PaymentConsent]
      * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
@@ -484,6 +489,7 @@ class Airwallex internal constructor(
         paymentMethod: PaymentMethod,
         nextTriggeredBy: PaymentConsent.NextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
         requiresCvc: Boolean,
+        merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
         listener: PaymentListener<PaymentConsent>
     ) {
         val params: CreatePaymentConsentParams = when (requireNotNull(paymentMethod.type)) {
@@ -493,7 +499,7 @@ class Airwallex internal constructor(
                     customerId = customerId,
                     paymentMethodId = requireNotNull(paymentMethod.id),
                     nextTriggeredBy = nextTriggeredBy,
-                    merchantTriggerReason = PaymentConsent.MerchantTriggerReason.SCHEDULED,
+                    merchantTriggerReason = merchantTriggerReason,
                     requiresCvc = requiresCvc
                 )
             }
@@ -581,12 +587,27 @@ class Airwallex internal constructor(
     }
 
     /**
+     * Checkout the one-off payment
+     *
+     * @param session a [AirwallexSession] used to present the Checkout flow, required.
+     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow, required.
+     * @param listener The callback of checkout
+     */
+    fun checkout(
+        session: AirwallexSession,
+        paymentMethod: PaymentMethod,
+        listener: PaymentListener<PaymentIntent>
+    ) {
+        this.checkout(session, paymentMethod, null, null, null, listener)
+    }
+
+    /**
      * Checkout the payment, include one-off & recurring
      *
      * @param session a [AirwallexSession] used to present the Checkout flow, required.
      * @param paymentMethod a [PaymentMethod] used to present the Checkout flow, required.
      * @param paymentConsentId the ID of the [PaymentConsent], optional. (CIT & Card will need this field for subsequent payments, paymentConsentId is not empty indicating a subsequent payment, empty indicating a recurring )
-     * @param cvc the CVC of the Credit Card, optional. (Card payment requires cvc)
+     * @param cvc the CVC of the Credit Card, optional.
      * @param pproAdditionalInfo to support ppro payment
      * @param listener The callback of checkout
      */
@@ -625,6 +646,7 @@ class Airwallex internal constructor(
                                 paymentMethod = paymentMethod,
                                 nextTriggeredBy = session.nextTriggerBy,
                                 requiresCvc = session.requiresCVC,
+                                merchantTriggerReason = session.merchantTriggerReason,
                                 listener = object : PaymentListener<PaymentConsent> {
                                     override fun onFailed(exception: Exception) {
                                         listener.onFailed(exception)
@@ -657,6 +679,7 @@ class Airwallex internal constructor(
                     paymentMethod = paymentMethod,
                     nextTriggeredBy = session.nextTriggerBy,
                     requiresCvc = session.requiresCVC,
+                    merchantTriggerReason = session.merchantTriggerReason,
                     listener = object : PaymentListener<PaymentConsent> {
                         override fun onFailed(exception: Exception) {
                             listener.onFailed(exception)

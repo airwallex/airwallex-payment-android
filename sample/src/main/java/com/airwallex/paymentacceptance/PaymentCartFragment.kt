@@ -198,14 +198,14 @@ class PaymentCartFragment : Fragment() {
         }.forEach { viewBinding.llProducts.addView(it) }
 
         val subtotalPrice =
-            products.sumByDouble { it.unitPrice ?: 0 * (it.quantity ?: 0).toDouble() }
+            products.sumOf { it.unitPrice ?: 0 * (it.quantity ?: 0).toDouble() }
         val shipping = 0
         val totalPrice = subtotalPrice + shipping
 
         viewBinding.tvOrderSubtotalPrice.text = String.format("$%.2f", subtotalPrice)
         viewBinding.tvOrderTotalPrice.text = String.format("$%.2f", totalPrice)
         viewBinding.tvShipping.text = getString(R.string.free)
-        viewBinding.tvOrderSum.text = products.sumBy { it.quantity ?: 0 }.toString()
+        viewBinding.tvOrderSum.text = products.sumOf { it.quantity ?: 0 }.toString()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -362,10 +362,11 @@ class PaymentCartFragment : Fragment() {
                     requireNotNull(customerId, { "CustomerId is required" }),
                     Settings.currency,
                     BigDecimal.valueOf(Settings.price.toDouble()),
-                    nextTriggerBy,
-                    requiresCVC
+                    nextTriggerBy
                 )
                     .setShipping(shipping)
+                    .setRequireCvc(requiresCVC)
+                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .build(),
                 clientSecretProvider
             ).observe(viewLifecycleOwner) {
@@ -465,9 +466,11 @@ class PaymentCartFragment : Fragment() {
                         paymentIntent.customerId,
                         { "CustomerId is required" }
                     ),
-                    nextTriggerBy,
-                    requiresCVC
-                ).build(),
+                    nextTriggerBy
+                )
+                    .setRequireCvc(requiresCVC)
+                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .build(),
                 clientSecretProvider
             ).observe(viewLifecycleOwner) {
                 when (it) {
