@@ -4,10 +4,10 @@ apply plugin: "signing"
 apply from: rootProject.file('publish.gradle')
 
 configurations.maybeCreate("default")
-def publishArtifact = artifacts.add("default", file('TrustDefender-5.0-96.aar'))
+def publishArtifact = artifacts.add("default", file('TMXBehavioralBiometrics-RL-6.1-67.aar'))
 
 ext {
-    libraryVersion = '5.0-96'
+    libraryVersion = '6.1-67'
 }
 project.afterEvaluate {
     publishing {

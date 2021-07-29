@@ -1,2 +1,2 @@
-include ':sample', ':airwallex', ':airwallex-fingerprinting', ':airwallex-cardinal'
+include ':sample', ':airwallex', ':airwallex-fingerprinting-behavioral', ':airwallex-fingerprinting-profiling', ':airwallex-fingerprinting-profiling-connections', ':airwallex-cardinal'
 rootProject.name = 'airwallex-android'

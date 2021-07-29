@@ -64,7 +64,9 @@ dependencies {
     // cardinal
     api 'io.github.airwallex:cardinalmobilesdk:2.2.3-2'
     // fingerprinting
-    api 'io.github.airwallex:TrustDefender:5.0-96'
+    api 'io.github.airwallex:TrustDefender-Behavioral:6.1-67'
+    api 'io.github.airwallex:TrustDefender-Profiling:6.1-67'
+    api 'io.github.airwallex:TrustDefender-Profiling-Connections:6.1-67'
 
     // kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
