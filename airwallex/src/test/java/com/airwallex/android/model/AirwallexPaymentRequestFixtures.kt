@@ -1,10 +1,7 @@
 package com.airwallex.android.model
 
-import com.airwallex.android.model.parser.AddressParser
-import com.airwallex.android.model.parser.AirwallexErrorParser
 import com.airwallex.android.model.parser.AirwallexPaymentRequestParser
 import org.json.JSONObject
-import java.lang.Error
 
 internal object AirwallexPaymentRequestFixtures {
     val REQUEST: AirwallexPaymentRequest = AirwallexPaymentRequestParser().parse(

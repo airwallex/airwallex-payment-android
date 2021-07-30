@@ -1,6 +1,5 @@
 package com.airwallex.android.model
 
-import com.airwallex.android.model.parser.AddressParser
 import com.airwallex.android.model.parser.ClientSecretParser
 import org.json.JSONObject
 
