@@ -3,47 +3,25 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="16dp">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/tvTotalPrice"
+        style="@style/AirwallexPaymentPriceInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/circularstd_bold"
-        android:textColor="@color/airwallex_color_price"
-        android:textSize="40sp" />
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:id="@+id/tvTotalLabel"
+        style="@style/AirwallexPaymentPriceLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tvTotalPrice"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:fontFamily="@font/circularstd_medium"
-        android:text="@string/airwallex_total"
-        android:textColor="@color/airwallex_color_price"
-        android:textSize="14sp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/rlPayNow"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/airwallex_button_height"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:background="@drawable/airwallex_button_solid"
-        android:fontFamily="@font/circularstd_bold"
-        android:gravity="center"
-        android:text="@string/airwallex_pay_now"
-        android:textColor="@color/airwallex_button_text"
-        android:textSize="14sp"
-        app:icon="@drawable/airwallex_ic_lock_selector"
-        app:iconGravity="textStart"
-        app:iconPadding="10dp" />
+        android:text="@string/airwallex_total" />
 
     <com.airwallex.android.view.PaymentMethodItemView
         android:id="@+id/paymentMethodItemView"
@@ -51,5 +29,18 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tvTotalLabel"
         android:layout_marginTop="40dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/rlPayNow"
+        style="@style/AirwallexPaymentButton"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/airwallex_pay_now"
+        app:icon="@drawable/airwallex_ic_lock_selector"
+        app:iconGravity="textStart"
+        app:iconPadding="10dp" />
 
 </RelativeLayout>

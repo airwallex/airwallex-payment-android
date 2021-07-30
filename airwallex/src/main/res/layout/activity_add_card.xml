@@ -4,9 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="16dp">
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -19,20 +17,16 @@
             android:orientation="vertical">
 
             <TextView
+                style="@style/AirwallexPaymentTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:fontFamily="@font/circularstd_bold"
                 android:text="@string/airwallex_new_card"
-                android:textColor="@color/airwallex_color_dark_deep"
-                android:textSize="32sp"
                 tools:ignore="RtlSymmetry" />
 
             <com.airwallex.android.view.CardWidget
                 android:id="@+id/cardWidget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
                 android:background="@android:color/white"
                 android:paddingLeft="16dp"
                 android:paddingTop="20dp"
@@ -49,17 +43,13 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSaveCard"
+        style="@style/AirwallexPaymentButton"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/airwallex_button_height"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:background="@drawable/airwallex_button_solid"
-        android:fontFamily="@font/circularstd_bold"
-        android:gravity="center"
         android:text="@string/airwallex_pay_now"
-        android:textColor="@color/airwallex_button_text"
-        android:textSize="14sp"
         app:icon="@drawable/airwallex_ic_lock_selector"
         app:iconGravity="textStart"
         app:iconPadding="10dp" />

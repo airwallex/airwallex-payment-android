@@ -12,4 +12,5 @@
         <item name="android:navigationBarColor">@color/airwallex_color_bg</item>
         <item name="colorControlActivated">@color/airwallex_color_primary</item>
     </style>
+
 </resources>
