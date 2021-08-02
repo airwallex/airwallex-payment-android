@@ -52,7 +52,7 @@ internal object PaymentConsentFixtures {
             "created_at":"2021-03-30T03:04:00+0000",
             "updated_at":"2021-03-30T03:04:00+0000",
             "next_action":{
-                "type":"",
+                "type":"render_qr_code",
                 "dcc_data":{
                     "currency":"1",
                     "amount":0.1,
