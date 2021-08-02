@@ -13,5 +13,13 @@ internal object ParcelUtils {
         return requireNotNull(bundle.getParcelable(KEY))
     }
 
+    internal fun <Source : Parcelable?> createMaybeNull(
+        source: Source
+    ): Source {
+        val bundle = Bundle()
+        bundle.putParcelable(KEY, source)
+        return requireNotNull(bundle.getParcelable(KEY))
+    }
+
     private const val KEY = "parcelable"
 }
