@@ -31,7 +31,11 @@ internal class ThreeDSecureActivity : AirwallexActivity() {
 
         if (threeDSecureLookup.version.startsWith("1.")) {
             // 3DS 1.0
-            if (threeDSecureLookup.payload == null || threeDSecureLookup.acsUrl == null) {
+
+            val payload = threeDSecureLookup.payload
+            val acsUrl = threeDSecureLookup.acsUrl
+
+            if (payload == null || acsUrl == null) {
                 finishThreeDSecure1(null, false, "3DS failed. Missing PaReq or acs url.")
                 return
             }
@@ -69,8 +73,6 @@ internal class ThreeDSecureActivity : AirwallexActivity() {
                 }
             }
 
-            val payload = threeDSecureLookup.payload
-            val acsUrl = threeDSecureLookup.acsUrl
             val postData = String.format(
                 "PaReq=%s&TermUrl=%s",
                 URLEncoder.encode(payload, "UTF-8"),
