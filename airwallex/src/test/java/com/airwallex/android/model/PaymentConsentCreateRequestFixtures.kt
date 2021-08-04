@@ -1,10 +1,10 @@
 package com.airwallex.android.model
 
-import com.airwallex.android.model.parser.PaymentMethodDisableRequestParser
+import com.airwallex.android.model.parser.PaymentConsentCreateRequestParser
 import org.json.JSONObject
 
 internal object PaymentConsentCreateRequestFixtures {
-    val PCCR: PaymentMethodDisableRequest = PaymentMethodDisableRequestParser().parse(
+    val PCCR: PaymentConsentCreateRequest = PaymentConsentCreateRequestParser().parse(
         JSONObject(
             """
         {
@@ -44,8 +44,7 @@ internal object PaymentConsentCreateRequestFixtures {
                     "created_at":"2020-03-30T03:04:00+0000",
                     "updated_at":"2020-03-30T03:04:00+0000"
             },
-            "next_triggered_by":"merchant",
-            "merchant_trigger_reason":"test"
+            "next_triggered_by":"merchant"
         }
             """.trimIndent()
         )

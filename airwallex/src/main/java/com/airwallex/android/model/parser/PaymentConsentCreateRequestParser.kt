@@ -16,9 +16,6 @@ class PaymentConsentCreateRequestParser : ModelJsonParser<PaymentConsentCreateRe
             nextTriggeredBy = PaymentConsent.NextTriggeredBy.fromValue(
                 AirwallexJsonUtils.optString(json, FIELD_NEXT_TRIGGERED_BY)
             ),
-            merchantTriggerReason = PaymentConsent.MerchantTriggerReason.fromValue(
-                AirwallexJsonUtils.optString(json, FIELD_MERCHANT_TRIGGER_REASON)
-            )!!,
             requiresCvc = AirwallexJsonUtils.optBoolean(json, FIELD_REQUIRES_CVC)
         )
     }
@@ -28,7 +25,6 @@ class PaymentConsentCreateRequestParser : ModelJsonParser<PaymentConsentCreateRe
         private const val FIELD_CUSTOMER_ID = "customer_id"
         private const val FIELD_PAYMENT_METHOD = "payment_method"
         private const val FIELD_NEXT_TRIGGERED_BY = "next_triggered_by"
-        private const val FIELD_MERCHANT_TRIGGER_REASON = "merchant_trigger_reason"
         private const val FIELD_REQUIRES_CVC = "requires_cvc"
     }
 }
