@@ -2,17 +2,17 @@ package com.airwallex.android
 
 import android.content.Context
 import com.airwallex.android.model.PaymentIntent
-import com.threatmetrix.TrustDefender.Config
-import com.threatmetrix.TrustDefender.Profile
-import com.threatmetrix.TrustDefender.ProfilingOptions
-import com.threatmetrix.TrustDefender.TrustDefender
+import com.threatmetrix.TrustDefender.RL.*
+import com.threatmetrix.TrustDefender.RL.TMXProfiling.*
+import com.threatmetrix.TrustDefender.RL.TMXProfilingConnections.*
+import java.util.concurrent.TimeUnit
 
 /**
  * The implementation of [SecurityConnector] to retrieve the Device Fingerprinting token
  */
 internal class AirwallexSecurityConnector : SecurityConnector {
 
-    private var profilingHandle: Profile.Handle? = null
+    private var profilingHandle: TMXProfilingHandle? = null
 
     /**
      * Retrieve SecurityToken listener
@@ -33,13 +33,15 @@ internal class AirwallexSecurityConnector : SecurityConnector {
         applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
-        Logger.debug(
-            TAG,
-            "Start init TrustDefender " + TrustDefender.version
-        )
-        val config = Config().setOrgId(BuildConfig.DEVICE_FINGERPRINT_ORG_ID)
+        Logger.debug(TAG, "Start init TrustDefender")
+        val profilingConnections: TMXProfilingConnectionsInterface = TMXProfilingConnections()
+            .setConnectionTimeout(20, TimeUnit.SECONDS)
+            .setRetryTimes(3)
+        val config = TMXConfig().setOrgId(BuildConfig.DEVICE_FINGERPRINT_ORG_ID)
             .setContext(applicationContext)
-        TrustDefender.getInstance().init(config)
+        config.setProfilingConnections(profilingConnections)
+        getInstance().init(config)
+
         Logger.debug(TAG, "Successfully init init-ed")
         doProfile(paymentIntentId, securityTokenListener)
     }
@@ -50,9 +52,9 @@ internal class AirwallexSecurityConnector : SecurityConnector {
     private fun doProfile(paymentIntentId: String, securityTokenListener: SecurityTokenListener) {
         val fraudSessionId = "$paymentIntentId${System.currentTimeMillis()}"
         val sessionID = "${BuildConfig.DEVICE_FINGERPRINT_MERCHANT_ID}$fraudSessionId"
-        val options = ProfilingOptions().setSessionID(sessionID)
+        val options = TMXProfilingOptions().setSessionID(sessionID)
         // Fire off the profiling request.
-        profilingHandle = TrustDefender.getInstance().doProfileRequest(options) { result ->
+        profilingHandle = getInstance().profile(options) { result ->
             Logger.debug(
                 TAG,
                 "Session id: ${result.sessionID}, Session status: ${result.status}"

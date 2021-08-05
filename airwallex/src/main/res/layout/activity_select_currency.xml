@@ -54,17 +54,12 @@
         app:drawableStartCompat="@drawable/airwallex_rate"
         tools:text="@string/airwallex_rate" />
 
-    <TextView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/confirm"
+        style="@style/AirwallexPaymentButton"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/airwallex_button_height"
         android:layout_marginTop="40dp"
-        android:background="@drawable/airwallex_button_solid"
-        android:fontFamily="@font/circularstd_bold"
-        android:gravity="center"
         android:padding="0dp"
-        android:text="@string/airwallex_confirm_payment"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
+        android:text="@string/airwallex_confirm_payment" />
 
 </LinearLayout>

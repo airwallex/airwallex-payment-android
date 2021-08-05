@@ -24,20 +24,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp" />
+        android:paddingHorizontal="24dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/checkout"
+        style="@style/AirwallexPaymentButton"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="20dp"
+        android:layout_marginHorizontal="24dp"
         android:layout_marginVertical="20dp"
-        android:background="@drawable/airwallex_button_solid"
-        android:fontFamily="@font/circularstd_bold"
-        android:gravity="center"
         android:text="@string/airwallex_pay_now"
-        android:textColor="@color/airwallex_button_text"
-        android:textSize="14sp"
         app:icon="@drawable/airwallex_ic_lock_selector"
         app:iconGravity="textStart"
         app:iconPadding="10dp" />

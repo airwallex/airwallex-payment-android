@@ -24,7 +24,7 @@ internal object ThreeDSecureManager {
      */
     private fun configureCardinal(applicationContext: Context) {
         val cardinalConfigurationParameters = CardinalConfigurationParameters()
-        cardinalConfigurationParameters.environment = if (AirwallexPlugins.environment == Environment.DEMO) CardinalEnvironment.STAGING else CardinalEnvironment.PRODUCTION
+        cardinalConfigurationParameters.environment = if (AirwallexPlugins.environment == Environment.PRODUCTION) CardinalEnvironment.PRODUCTION else CardinalEnvironment.STAGING
         cardinalConfigurationParameters.requestTimeout = 8000
         cardinalConfigurationParameters.challengeTimeout = 5
 

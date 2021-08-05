@@ -39,4 +39,34 @@
         <item name="android:background">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
+
+    <style name="AirwallexPaymentTitle">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/airwallex_color_dark_deep</item>
+        <item name="android:fontFamily">@font/circularstd_bold</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
+    <style name="AirwallexPaymentPriceInfo">
+        <item name="android:textSize">40sp</item>
+        <item name="android:textColor">@color/airwallex_color_price</item>
+        <item name="android:fontFamily">@font/circularstd_bold</item>
+    </style>
+
+    <style name="AirwallexPaymentPriceLabel">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/airwallex_color_price</item>
+        <item name="android:fontFamily">@font/circularstd_medium</item>
+    </style>
+
+    <style name="AirwallexPaymentButton">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/airwallex_button_text</item>
+        <item name="android:fontFamily">@font/circularstd_bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/airwallex_button_solid</item>
+        <item name="android:layout_height">@dimen/airwallex_button_height</item>
+    </style>
 </resources>

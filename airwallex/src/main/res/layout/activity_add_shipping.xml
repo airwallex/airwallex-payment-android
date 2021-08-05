@@ -8,28 +8,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingTop="8dp"
-        android:paddingRight="16dp"
         android:paddingBottom="16dp">
 
         <TextView
+            style="@style/AirwallexPaymentTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="@font/circularstd_bold"
-            android:text="@string/airwallex_shipping"
-            android:textColor="@color/airwallex_color_dark_deep"
-            android:textSize="32sp" />
+            android:text="@string/airwallex_shipping" />
 
         <com.airwallex.android.view.ShippingContactWidget
             android:id="@+id/contactWidget"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" />
 
         <com.airwallex.android.view.ShippingAddressWidget
             android:id="@+id/shippingWidget"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" />
     </LinearLayout>
 </ScrollView>
