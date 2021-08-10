@@ -1,6 +1,6 @@
 package com.airwallex.paymentacceptance
 
-import com.airwallex.android.model.WeChat
+import com.airwallex.android.core.model.WeChat
 import com.tencent.mm.opensdk.modelbase.BaseResp
 import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI

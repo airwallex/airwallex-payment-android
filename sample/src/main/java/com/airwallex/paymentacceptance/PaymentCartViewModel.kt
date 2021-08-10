@@ -2,8 +2,13 @@ package com.airwallex.paymentacceptance
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.airwallex.android.*
-import com.airwallex.android.model.*
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.ClientSecretProvider
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.model.Shipping
+import com.airwallex.android.core.model.WeChat
 
 internal class PaymentCartViewModel(
     application: Application,
@@ -21,6 +26,10 @@ internal class PaymentCartViewModel(
 
                 override fun onCancelled() {
                     resultData.value = ShippingResult.Cancel
+                }
+
+                override fun onFailed(error: AirwallexException) {
+                    resultData.value = ShippingResult.Error(error)
                 }
             }
         )
@@ -40,7 +49,7 @@ internal class PaymentCartViewModel(
                     resultData.value = PaymentFlowResult.Success(paymentIntent)
                 }
 
-                override fun onFailed(error: Exception) {
+                override fun onFailed(error: AirwallexException) {
                     resultData.value = PaymentFlowResult.Error(error)
                 }
 
@@ -64,6 +73,8 @@ internal class PaymentCartViewModel(
         data class Success(val shipping: Shipping) : ShippingResult()
 
         object Cancel : ShippingResult()
+
+        data class Error(val exception: Exception) : ShippingResult()
     }
 
     sealed class PaymentFlowResult {

@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.model.WeChat
-import com.airwallex.android.setOnSingleClickListener
+import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.model.WeChat
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.WXPay

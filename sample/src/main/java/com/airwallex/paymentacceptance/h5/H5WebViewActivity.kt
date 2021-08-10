@@ -10,7 +10,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.Airwallex.Companion.AIRWALLEX_USER_AGENT
+import com.airwallex.android.core.AirwallexPlugins.AIRWALLEX_USER_AGENT
 import com.airwallex.paymentacceptance.databinding.ActivityH5WebviewBinding
 
 class H5WebViewActivity : AppCompatActivity() {

@@ -14,10 +14,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.*
-import com.airwallex.android.exception.RedirectException
-import com.airwallex.android.model.*
-import com.airwallex.android.model.Address
-import com.airwallex.android.model.parser.PaymentIntentParser
+import com.airwallex.android.core.*
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.Address
+import com.airwallex.android.core.model.parser.PaymentIntentParser
+import com.airwallex.android.redirect.exception.RedirectException
+import com.airwallex.android.redirect.util.RedirectUtil
 import com.airwallex.paymentacceptance.databinding.CartItemBinding
 import com.airwallex.paymentacceptance.databinding.FragmentCartBinding
 import kotlinx.coroutines.*
@@ -564,7 +568,7 @@ class PaymentCartFragment : Fragment() {
 
     private fun startRedirectUrl(redirectUrl: String) {
         try {
-            airwallex.handleAction(redirectUrl)
+            RedirectUtil.makeRedirect(activity = requireActivity(), redirectUrl = redirectUrl)
         } catch (e: RedirectException) {
             showPaymentError(e.localizedMessage)
         }
@@ -596,7 +600,8 @@ class PaymentCartFragment : Fragment() {
                     }
                 }
 
-                override fun onFailed(exception: Exception) {
+                override fun onFailed(exception: AirwallexException) {
+                    Log.e(TAG, "Retrieve PaymentIntent failed", exception)
                 }
             }
         )

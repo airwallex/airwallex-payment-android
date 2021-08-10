@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
-import com.airwallex.android.model.Shipping
-import com.airwallex.android.setOnSingleClickListener
+import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.model.Shipping
 import com.airwallex.paymentacceptance.databinding.ShippingItemBinding
 import java.util.*
 

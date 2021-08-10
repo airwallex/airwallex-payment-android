@@ -1,12 +1,12 @@
 package com.airwallex.paymentacceptance
 
 import android.text.TextUtils
-import com.airwallex.android.AirwallexPlugins
-import com.airwallex.android.ClientSecretProvider
-import com.airwallex.android.ClientSecretUpdateListener
-import com.airwallex.android.model.AirwallexError
-import com.airwallex.android.model.parser.AirwallexErrorParser
-import com.airwallex.android.model.parser.ClientSecretParser
+import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.android.core.ClientSecretProvider
+import com.airwallex.android.core.ClientSecretUpdateListener
+import com.airwallex.android.core.model.AirwallexError
+import com.airwallex.android.core.model.parser.AirwallexErrorParser
+import com.airwallex.android.core.model.parser.ClientSecretParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

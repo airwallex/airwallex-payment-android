@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.airwallex.android.card">
+
+    <application tools:targetApi="n">
+        <activity
+            android:name=".view.ThreeDSecureActivity"
+            android:theme="@style/AirwallexDefaultTheme" />
+
+        <activity
+            android:name=".view.DccActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AirwallexDefaultTheme" />
+    </application>
+
+</manifest>
