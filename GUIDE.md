@@ -296,10 +296,10 @@ And in your host Activity or Fragment, implement Activity#onActivityResult and h
     }
 ```
 
-4. After confirming the payment intent, you need to use the handleAction method to pull up the corresponding App in the shopper’s mobile phone. The shopper will complete the payment within the wallet App.
+4. After confirming the payment intent, you need to use the RedirectUtil.makeRedirect method to pull up the corresponding App in the shopper’s mobile phone. The shopper will complete the payment within the wallet App.
 ```kotlin
     try {
-        airwallex.handleAction(redirectUrl)
+        RedirectUtil.makeRedirect(activity = requireActivity(), redirectUrl = redirectUrl)
     } catch (e: RedirectException) {
         showPaymentError(e.localizedMessage)
     }

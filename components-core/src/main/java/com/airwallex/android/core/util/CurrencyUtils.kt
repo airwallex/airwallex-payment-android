@@ -1,5 +1,6 @@
 package com.airwallex.android.core.util
 
+import androidx.annotation.VisibleForTesting
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -72,7 +73,8 @@ object CurrencyUtils {
         TreeMap(Comparator { c1, c2 -> c1.currencyCode.compareTo(c2.currencyCode) })
     }
 
-    private fun getCurrencySymbol(currencyCode: String?): String {
+    @VisibleForTesting
+    fun getCurrencySymbol(currencyCode: String?): String {
         val currency = Currency.getInstance(currencyCode)
         if (currencyLocaleMap.containsKey(currency)) {
             return currency.getSymbol(currencyLocaleMap[currency])

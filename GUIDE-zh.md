@@ -296,10 +296,10 @@ PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一�
     }
 ```
 
-4. 您需要使用handleAction来跳转到购物者的电子钱包应用中完成付款。
+4. 您需要使用RedirectUtil.makeRedirect来跳转到购物者的电子钱包应用中完成付款。
 ```kotlin
     try { 
-        airwallex.handleAction(redirectUrl)
+        RedirectUtil.makeRedirect(activity = requireActivity(), redirectUrl = redirectUrl)
     } catch (e: RedirectException) {
         showPaymentError(e.localizedMessage)
     }

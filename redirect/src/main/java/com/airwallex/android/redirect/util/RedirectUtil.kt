@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.annotation.VisibleForTesting
 import androidx.browser.customtabs.CustomTabsIntent
 import com.airwallex.android.redirect.exception.RedirectException
 
@@ -47,7 +48,8 @@ object RedirectUtil {
     }
 
     @Suppress("DEPRECATION")
-    private fun createRedirectIntent(context: Context, uri: Uri): Intent {
+    @VisibleForTesting
+    fun createRedirectIntent(context: Context, uri: Uri): Intent {
         return if (determineResolveResult(context, uri) === ResolveResultType.APPLICATION) {
             Intent(Intent.ACTION_VIEW, uri)
         } else {
