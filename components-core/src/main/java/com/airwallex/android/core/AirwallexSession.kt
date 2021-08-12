@@ -25,4 +25,9 @@ abstract class AirwallexSession : Parcelable {
      * Payment amount. This is the order amount you would like to charge your customer
      */
     abstract val amount: BigDecimal
+
+    /**
+     * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
+     */
+    abstract val returnUrl: String?
 }

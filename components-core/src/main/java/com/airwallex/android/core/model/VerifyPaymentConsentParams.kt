@@ -36,20 +36,18 @@ data class VerifyPaymentConsentParams constructor(
     /**
      * The URL to which your customer will be redirected after they verify PaymentConsent on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively provide an application URI scheme.
      */
-    val returnUrl: String?
+    val returnUrl: String? = null
 ) {
     class Builder(
         private val clientSecret: String,
         private val paymentConsentId: String,
-        private val paymentMethodType: PaymentMethodType,
-        private val returnUrl: String
+        private val paymentMethodType: PaymentMethodType
     ) : ObjectBuilder<VerifyPaymentConsentParams> {
 
         private var amount: BigDecimal? = null
-
         private var currency: String? = null
-
         private var cvc: String? = null
+        private var returnUrl: String? = null
 
         fun setAmount(amount: BigDecimal?): Builder = apply {
             this.amount = amount
@@ -61,6 +59,10 @@ data class VerifyPaymentConsentParams constructor(
 
         fun setCvc(cvc: String?): Builder = apply {
             this.cvc = cvc
+        }
+
+        fun setReturnUrl(returnUrl: String?): Builder = apply {
+            this.returnUrl = returnUrl
         }
 
         override fun build(): VerifyPaymentConsentParams {
@@ -87,17 +89,17 @@ data class VerifyPaymentConsentParams constructor(
             amount: BigDecimal?,
             currency: String?,
             cvc: String?,
-            returnUrl: String
+            returnUrl: String?
         ): VerifyPaymentConsentParams {
             return Builder(
                 clientSecret = clientSecret,
                 paymentConsentId = paymentConsentId,
-                paymentMethodType = PaymentMethodType.CARD,
-                returnUrl = returnUrl
+                paymentMethodType = PaymentMethodType.CARD
             )
                 .setAmount(amount = amount)
                 .setCurrency(currency = currency)
                 .setCvc(cvc)
+                .setReturnUrl(returnUrl)
                 .build()
         }
 
@@ -105,14 +107,14 @@ data class VerifyPaymentConsentParams constructor(
             paymentMethodType: PaymentMethodType,
             clientSecret: String,
             paymentConsentId: String,
-            returnUrl: String
+            returnUrl: String?
         ): VerifyPaymentConsentParams {
             return Builder(
                 clientSecret = clientSecret,
                 paymentConsentId = paymentConsentId,
                 paymentMethodType = paymentMethodType,
-                returnUrl = returnUrl
             )
+                .setReturnUrl(returnUrl)
                 .build()
         }
     }

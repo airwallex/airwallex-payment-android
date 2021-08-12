@@ -277,6 +277,7 @@ class Airwallex internal constructor(
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
                     pproAdditionalInfo = pproAdditionalInfo,
+                    returnUrl = session.returnUrl,
                     listener = listener
                 )
             }
@@ -304,6 +305,7 @@ class Airwallex internal constructor(
                                             currency = session.currency,
                                             amount = session.amount,
                                             cvc = cvc,
+                                            returnUrl = session.returnUrl,
                                             listener = listener
                                         )
                                     }
@@ -341,6 +343,7 @@ class Airwallex internal constructor(
                                         cvc = cvc,
                                         customerId = session.customerId,
                                         paymentConsentId = response.id,
+                                        returnUrl = session.returnUrl,
                                         listener = listener
                                     )
                                 }
@@ -349,6 +352,7 @@ class Airwallex internal constructor(
                                         paymentConsent = response,
                                         currency = session.currency,
                                         amount = session.amount,
+                                        returnUrl = session.returnUrl,
                                         listener = listener
                                     )
                                 }
@@ -369,6 +373,7 @@ class Airwallex internal constructor(
         customerId: String? = null,
         paymentConsentId: String? = null,
         pproAdditionalInfo: PPROAdditionalInfo? = null,
+        returnUrl: String? = null,
         listener: PaymentListener<PaymentIntent>
     ) {
         val params = when (val paymentMethodType = requireNotNull(paymentMethod.type)) {
@@ -379,7 +384,8 @@ class Airwallex internal constructor(
                     paymentMethod = paymentMethod,
                     cvc = cvc,
                     customerId = customerId,
-                    paymentConsentId = paymentConsentId
+                    paymentConsentId = paymentConsentId,
+                    returnUrl = returnUrl
                 )
             }
             else -> {
@@ -390,7 +396,8 @@ class Airwallex internal constructor(
                     customerId = customerId,
                     paymentConsentId = paymentConsentId,
                     currency = currency,
-                    pproAdditionalInfo = pproAdditionalInfo
+                    pproAdditionalInfo = pproAdditionalInfo,
+                    returnUrl = returnUrl
                 )
             }
         }
@@ -403,10 +410,9 @@ class Airwallex internal constructor(
     ) {
         if (params.paymentMethodType == PaymentMethodType.CARD) {
             try {
-                val constructor =
-                    Class.forName("com.airwallex.android.card.AirwallexSecurityConnector")
-                        .getConstructor()
-                (constructor.newInstance() as SecurityConnector).retrieveSecurityToken(
+                val securityConnector = Class.forName(AIRWALLEX_SECURITY_CONNECTOR_CLASS_NAME)
+                    .getConstructor().newInstance() as SecurityConnector
+                securityConnector.retrieveSecurityToken(
                     params.paymentIntentId, applicationContext,
                     object : SecurityTokenListener {
                         override fun onResponse(deviceId: String) {
@@ -428,16 +434,25 @@ class Airwallex internal constructor(
         }
     }
 
+    /**
+     * Confirm PaymentIntent with Device Fingerprinting
+     */
     fun confirmPaymentIntentWithDevice(
         device: Device? = null,
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
-        // Confirm PaymentIntent with Device Fingerprinting
         try {
             componentProvider = buildComponentProvider(params.paymentMethodType)
             val provider = requireNotNull(componentProvider)
-            val options = provider.buildConfirmPaymentIntentOptions(params, device)
+            val options = when (params.paymentMethodType) {
+                PaymentMethodType.CARD -> {
+                    buildCardPaymentIntentOptions(params, device)
+                }
+                else -> {
+                    buildThirdPartPaymentIntentOptions(params, device)
+                }
+            }
             paymentManager.confirmPaymentIntent(
                 options,
                 object : PaymentListener<PaymentIntent> {
@@ -462,6 +477,106 @@ class Airwallex internal constructor(
             Logger.error("Build ComponentProvider failed", e)
             listener.onFailed(AirwallexCheckoutException(message = "You need add the appropriate dependencies!"))
         }
+    }
+
+    private fun buildCardPaymentIntentOptions(
+        params: ConfirmPaymentIntentParams,
+        device: Device?
+    ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+        val paymentConsentReference: PaymentConsentReference? =
+            if (params.paymentConsentId != null) {
+                PaymentConsentReference.Builder()
+                    .setId(params.paymentConsentId)
+                    .setCvc(params.cvc)
+                    .build()
+            } else {
+                null
+            }
+
+        val threeDSecure = ThreeDSecure.Builder()
+            .setReturnUrl("https://www.airwallex.com")
+            .build()
+
+        val request = PaymentIntentConfirmRequest.Builder(
+            requestId = UUID.randomUUID().toString()
+        )
+            .setPaymentMethodOptions(
+                PaymentMethodOptions.Builder()
+                    .setCardOptions(
+                        PaymentMethodOptions.CardOptions.Builder()
+                            .setAutoCapture(true)
+                            .setThreeDSecure(threeDSecure).build()
+                    )
+                    .build()
+            )
+            .setCustomerId(params.customerId)
+            .setDevice(device)
+            .setPaymentConsentReference(paymentConsentReference)
+            .setPaymentMethodRequest(
+                if (paymentConsentReference != null) {
+                    null
+                } else {
+                    PaymentMethodRequest.Builder(params.paymentMethodType)
+                        .setCardPaymentMethodRequest(
+                            card = params.paymentMethod?.card,
+                            billing = params.paymentMethod?.billing
+                        )
+                        .build()
+                }
+            )
+            .build()
+
+        return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+            clientSecret = params.clientSecret,
+            paymentIntentId = params.paymentIntentId,
+            request = request
+        )
+    }
+
+    private fun buildThirdPartPaymentIntentOptions(
+        params: ConfirmPaymentIntentParams,
+        device: Device?
+    ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+
+        val paymentConsentReference: PaymentConsentReference?
+        val paymentMethodRequest: PaymentMethodRequest?
+
+        if (params.paymentConsentId != null) {
+            paymentConsentReference = PaymentConsentReference.Builder()
+                .setId(params.paymentConsentId)
+                .build()
+            paymentMethodRequest = null
+        } else {
+            paymentConsentReference = null
+            val builder = PaymentMethodRequest.Builder(params.paymentMethodType)
+            val pproInfo = params.pproAdditionalInfo
+            if (pproInfo != null) {
+                builder.setThirdPartyPaymentMethodRequest(
+                    pproInfo.name,
+                    pproInfo.email,
+                    pproInfo.phone,
+                    if (pproInfo.bank != null) pproInfo.bank.currency else params.currency,
+                    pproInfo.bank
+                )
+            } else {
+                builder.setThirdPartyPaymentMethodRequest()
+            }
+            paymentMethodRequest = builder.build()
+        }
+        val request = PaymentIntentConfirmRequest.Builder(
+            requestId = UUID.randomUUID().toString()
+        )
+            .setPaymentMethodRequest(paymentMethodRequest)
+            .setCustomerId(params.customerId)
+            .setDevice(device)
+            .setPaymentConsentReference(paymentConsentReference)
+            .build()
+
+        return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+            clientSecret = params.clientSecret,
+            paymentIntentId = params.paymentIntentId,
+            request = request
+        )
     }
 
     fun continuePaymentIntent(
@@ -574,13 +689,13 @@ class Airwallex internal constructor(
         currency: String,
         amount: BigDecimal? = null,
         cvc: String? = null,
+        returnUrl: String? = null,
         listener: PaymentListener<PaymentIntent>
     ) {
         if (paymentConsent.requiresCvc && cvc == null) {
             listener.onFailed(InvalidParamsException(message = "CVC is required!"))
             return
         }
-        val returnUrl = "$AIRWALLEX_CHECKOUT_SCHEMA${activity.packageName}"
         val paymentMethodType = paymentConsent.paymentMethod?.type
         val params: VerifyPaymentConsentParams = when (requireNotNull(paymentMethodType)) {
             PaymentMethodType.CARD -> {
@@ -608,13 +723,13 @@ class Airwallex internal constructor(
     private fun buildComponentProvider(paymentMethodType: PaymentMethodType): ComponentProvider {
         val componentProviderClass = when (paymentMethodType) {
             PaymentMethodType.CARD -> {
-                Class.forName("com.airwallex.android.card.CardComponentProvider")
+                Class.forName(COMPONENT_PROVIDER_CARD_CLASS_NAME)
             }
             PaymentMethodType.WECHAT -> {
-                Class.forName("com.airwallex.android.wechat.WeChatComponentProvider")
+                Class.forName(COMPONENT_PROVIDER_WECHAT_CLASS_NAME)
             }
             else -> {
-                Class.forName("com.airwallex.android.redirect.RedirectComponentProvider")
+                Class.forName(COMPONENT_PROVIDER_REDIRECT_CLASS_NAME)
             }
         }
 
@@ -710,7 +825,7 @@ class Airwallex internal constructor(
     }
 
     private fun buildAirwallexStarter(): AbstractAirwallexStarter {
-        val airwallexStarterClass = Class.forName("com.airwallex.android.ui.AirwallexStarter")
+        val airwallexStarterClass = Class.forName(AIRWALLEX_STARTER_CLASS_NAME)
         return if (fragment != null) {
             val constructor = airwallexStarterClass.getConstructor(
                 Fragment::class.java
@@ -730,7 +845,22 @@ class Airwallex internal constructor(
 
     companion object {
 
-        private const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout://"
+        private const val COMPONENT_PROVIDER_CARD_CLASS_NAME =
+            "com.airwallex.android.card.CardComponentProvider"
+
+        private const val COMPONENT_PROVIDER_WECHAT_CLASS_NAME =
+            "com.airwallex.android.wechat.WeChatComponentProvider"
+
+        private const val COMPONENT_PROVIDER_REDIRECT_CLASS_NAME =
+            "com.airwallex.android.redirect.RedirectComponentProvider"
+
+        private const val AIRWALLEX_STARTER_CLASS_NAME =
+            "com.airwallex.android.ui.AirwallexStarter"
+
+        private const val AIRWALLEX_SECURITY_CONNECTOR_CLASS_NAME =
+            "com.airwallex.android.card.AirwallexSecurityConnector"
+
+        const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout://"
 
         /**
          * Initialize some global configurations, better to be called on Application

@@ -37,11 +37,21 @@ class AirwallexPaymentSession internal constructor(
      */
     override val customerId: String? = null,
 
+    /**
+     * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
+     */
+    override val returnUrl: String?
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
         private val paymentIntent: PaymentIntent,
     ) : ObjectBuilder<AirwallexPaymentSession> {
+
+        private var returnUrl: String? = null
+
+        fun setReturnUrl(returnUrl: String?): Builder = apply {
+            this.returnUrl = returnUrl
+        }
 
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
@@ -49,7 +59,8 @@ class AirwallexPaymentSession internal constructor(
                 currency = paymentIntent.currency,
                 amount = paymentIntent.amount,
                 shipping = paymentIntent.order?.shipping,
-                customerId = paymentIntent.customerId
+                customerId = paymentIntent.customerId,
+                returnUrl = returnUrl
             )
         }
     }

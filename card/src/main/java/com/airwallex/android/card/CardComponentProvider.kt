@@ -48,60 +48,6 @@ class CardComponentProvider internal constructor(
     private var dccCallback: DccCallback? = null
     private var threeDSecureCallback: ThreeDSecureCallback? = null
 
-    override fun buildConfirmPaymentIntentOptions(
-        params: ConfirmPaymentIntentParams,
-        device: Device?
-    ): Options {
-        val paymentConsentReference: PaymentConsentReference? =
-            if (params.paymentConsentId != null) {
-                PaymentConsentReference.Builder()
-                    .setId(params.paymentConsentId)
-                    .setCvc(params.cvc)
-                    .build()
-            } else {
-                null
-            }
-
-        val threeDSecure = ThreeDSecure.Builder()
-            .setReturnUrl(ThreeDSecureManager.THREE_DS_RETURN_URL)
-            .build()
-
-        val request = PaymentIntentConfirmRequest.Builder(
-            requestId = UUID.randomUUID().toString()
-        )
-            .setPaymentMethodOptions(
-                PaymentMethodOptions.Builder()
-                    .setCardOptions(
-                        PaymentMethodOptions.CardOptions.Builder()
-                            .setAutoCapture(true)
-                            .setThreeDSecure(threeDSecure).build()
-                    )
-                    .build()
-            )
-            .setCustomerId(params.customerId)
-            .setDevice(device)
-            .setPaymentConsentReference(paymentConsentReference)
-            .setPaymentMethodRequest(
-                if (paymentConsentReference != null) {
-                    null
-                } else {
-                    PaymentMethodRequest.Builder(params.paymentMethodType)
-                        .setCardPaymentMethodRequest(
-                            card = params.paymentMethod?.card,
-                            billing = params.paymentMethod?.billing
-                        )
-                        .build()
-                }
-            )
-            .build()
-
-        return AirwallexApiRepository.ConfirmPaymentIntentOptions(
-            clientSecret = params.clientSecret,
-            paymentIntentId = params.paymentIntentId,
-            request = request
-        )
-    }
-
     override fun handlePaymentIntentResponse(
         clientSecret: String,
         nextAction: NextAction?,

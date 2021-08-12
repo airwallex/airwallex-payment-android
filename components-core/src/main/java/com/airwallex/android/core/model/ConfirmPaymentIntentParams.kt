@@ -39,7 +39,12 @@ data class ConfirmPaymentIntentParams internal constructor(
     /**
      * PPROAdditionalInfo
      */
-    val pproAdditionalInfo: PPROAdditionalInfo? = null
+    val pproAdditionalInfo: PPROAdditionalInfo? = null,
+
+    /**
+     * The URL to redirect your customer back to after they authenticate their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
+     */
+    val returnUrl: String? = null
 
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
 
@@ -55,6 +60,7 @@ data class ConfirmPaymentIntentParams internal constructor(
         private var paymentConsentId: String? = null
         private var currency: String? = null
         private var pproAdditionalInfo: PPROAdditionalInfo? = null
+        private var returnUrl: String? = null
 
         fun setCVC(cvc: String?): Builder = apply {
             this.cvc = cvc
@@ -84,6 +90,10 @@ data class ConfirmPaymentIntentParams internal constructor(
             this.paymentMethod = paymentMethod
         }
 
+        fun setReturnUrl(returnUrl: String?): Builder = apply {
+            this.returnUrl = returnUrl
+        }
+
         override fun build(): ConfirmPaymentIntentParams {
             return ConfirmPaymentIntentParams(
                 paymentIntentId = paymentIntentId,
@@ -94,7 +104,8 @@ data class ConfirmPaymentIntentParams internal constructor(
                 cvc = cvc,
                 paymentConsentId = paymentConsentId,
                 currency = currency,
-                pproAdditionalInfo = pproAdditionalInfo
+                pproAdditionalInfo = pproAdditionalInfo,
+                returnUrl = returnUrl
             )
         }
     }
@@ -111,6 +122,7 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param paymentConsentId the customerId of [PaymentConsent], optional.
          * @param currency amount currency
          * @param pproAdditionalInfo to support ppro payment
+         * @param returnUrl optional
          */
         fun createThirdPartPayParams(
             paymentMethodType: PaymentMethodType,
@@ -119,7 +131,8 @@ data class ConfirmPaymentIntentParams internal constructor(
             customerId: String? = null,
             paymentConsentId: String? = null,
             currency: String? = null,
-            pproAdditionalInfo: PPROAdditionalInfo? = null
+            pproAdditionalInfo: PPROAdditionalInfo? = null,
+            returnUrl: String? = null
         ): ConfirmPaymentIntentParams {
             return Builder(
                 paymentIntentId = paymentIntentId,
@@ -130,6 +143,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setPaymentConsentId(paymentConsentId)
                 .setCurrency(currency)
                 .setPPROAdditionalInfo(pproAdditionalInfo)
+                .setReturnUrl(returnUrl)
                 .build()
         }
 
@@ -142,6 +156,7 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param cvc optional.
          * @param customerId the customerId of [PaymentIntent], optional.
          * @param paymentConsentId the customerId of [PaymentConsent], optional.
+         * @param returnUrl optional
          */
         fun createCardParams(
             paymentIntentId: String,
@@ -149,7 +164,8 @@ data class ConfirmPaymentIntentParams internal constructor(
             paymentMethod: PaymentMethod,
             cvc: String?,
             customerId: String? = null,
-            paymentConsentId: String? = null
+            paymentConsentId: String? = null,
+            returnUrl: String? = null
         ): ConfirmPaymentIntentParams {
             return Builder(
                 paymentIntentId = paymentIntentId,
@@ -159,6 +175,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setPaymentMethod(PaymentMethodType.CARD, paymentMethod)
                 .setCVC(cvc)
                 .setPaymentConsentId(paymentConsentId)
+                .setReturnUrl(returnUrl)
                 .build()
         }
     }

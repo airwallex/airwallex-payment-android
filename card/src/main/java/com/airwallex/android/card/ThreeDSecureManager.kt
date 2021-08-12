@@ -16,10 +16,6 @@ import org.json.JSONArray
 
 object ThreeDSecureManager {
 
-    // Use RequestBin(http://requestbin.net/) to see what your HTTP client is sending or to inspect and debug webhook requests.
-    // Just for staging test, should be optional later.
-    const val THREE_DS_RETURN_URL = "https://www.airwallex.com"
-
     private const val TAG = "ThreeDSecure"
 
     /**

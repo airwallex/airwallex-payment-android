@@ -34,7 +34,15 @@ data class PaymentIntentConfirmRequest internal constructor(
      */
     val paymentConsentReference: PaymentConsentReference? = null,
 
-    val device: Device? = null
+    /**
+     * Device info
+     */
+    val device: Device? = null,
+
+    /**
+     * The URL to redirect your customer back to after they authenticate their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
+     */
+    val returnUrl: String? = null
 
 ) : AirwallexRequestModel, Parcelable {
 
@@ -45,6 +53,7 @@ data class PaymentIntentConfirmRequest internal constructor(
         private const val FIELD_PAYMENT_METHOD_OPTIONS = "payment_method_options"
         private const val FIELD_PAYMENT_CONSENT_REFERENCE = "payment_consent_reference"
         private const val FIELD_DEVICE = "device"
+        private const val FIELD_RETURN_URL = "return_url"
     }
 
     override fun toParamMap(): Map<String, Any> {
@@ -79,6 +88,11 @@ data class PaymentIntentConfirmRequest internal constructor(
                     mapOf(FIELD_DEVICE to it.toParamMap())
                 }.orEmpty()
             )
+            .plus(
+                returnUrl?.let {
+                    mapOf(FIELD_RETURN_URL to it)
+                }.orEmpty()
+            )
     }
 
     class Builder(
@@ -89,6 +103,7 @@ data class PaymentIntentConfirmRequest internal constructor(
         private var paymentMethodOptions: PaymentMethodOptions? = null
         private var paymentConsentReference: PaymentConsentReference? = null
         private var device: Device? = null
+        private var returnUrl: String? = null
 
         fun setCustomerId(customerId: String?): Builder = apply {
             this.customerId = customerId
@@ -112,6 +127,10 @@ data class PaymentIntentConfirmRequest internal constructor(
                 this.paymentConsentReference = paymentConsentReference
             }
 
+        fun setReturnUrl(returnUrl: String?): Builder = apply {
+            this.returnUrl = returnUrl
+        }
+
         override fun build(): PaymentIntentConfirmRequest {
             return PaymentIntentConfirmRequest(
                 requestId = requestId,
@@ -119,7 +138,8 @@ data class PaymentIntentConfirmRequest internal constructor(
                 paymentMethodRequest = paymentMethodRequest,
                 paymentMethodOptions = paymentMethodOptions,
                 paymentConsentReference = paymentConsentReference,
-                device = device
+                device = device,
+                returnUrl = returnUrl
             )
         }
     }

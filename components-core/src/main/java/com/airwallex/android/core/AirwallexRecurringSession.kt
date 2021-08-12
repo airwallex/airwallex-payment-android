@@ -47,7 +47,12 @@ class AirwallexRecurringSession internal constructor(
     /**
      * It is required if the PaymentIntent is created for recurring payment
      */
-    override val customerId: String
+    override val customerId: String,
+
+    /**
+     * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
+     */
+    override val returnUrl: String?
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
@@ -61,6 +66,7 @@ class AirwallexRecurringSession internal constructor(
         private var requiresCVC: Boolean = false
         private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason =
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+        private var returnUrl: String? = null
 
         fun setShipping(shipping: Shipping?): Builder = apply {
             this.shipping = shipping
@@ -75,6 +81,10 @@ class AirwallexRecurringSession internal constructor(
                 this.merchantTriggerReason = merchantTriggerReason
             }
 
+        fun setReturnUrl(returnUrl: String?): Builder = apply {
+            this.returnUrl = returnUrl
+        }
+
         override fun build(): AirwallexRecurringSession {
             return AirwallexRecurringSession(
                 nextTriggerBy = nextTriggerBy,
@@ -83,7 +93,8 @@ class AirwallexRecurringSession internal constructor(
                 currency = currency,
                 amount = amount,
                 shipping = shipping,
-                customerId = customerId
+                customerId = customerId,
+                returnUrl = returnUrl
             )
         }
     }

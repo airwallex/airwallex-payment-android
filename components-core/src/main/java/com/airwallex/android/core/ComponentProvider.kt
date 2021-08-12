@@ -6,11 +6,6 @@ import java.math.BigDecimal
 
 interface ComponentProvider {
 
-    fun buildConfirmPaymentIntentOptions(
-        params: ConfirmPaymentIntentParams,
-        device: Device?
-    ): Options
-
     fun handlePaymentIntentResponse(
         clientSecret: String,
         nextAction: NextAction?,

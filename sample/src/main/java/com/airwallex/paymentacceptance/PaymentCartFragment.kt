@@ -145,7 +145,7 @@ class PaymentCartFragment : Fragment() {
 
     private val returnUrl: String
         get() {
-            return "airwallexcheckout://${context?.packageName}"
+            return "${Airwallex.AIRWALLEX_CHECKOUT_SCHEMA}${context?.packageName}"
 //            return when (Settings.sdkEnv) {
 //                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0] -> "https://staging-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
 //                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[1] -> "https://demo-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
@@ -294,7 +294,9 @@ class PaymentCartFragment : Fragment() {
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
 
             viewModel.presentPaymentFlow(
-                AirwallexPaymentSession.Builder(paymentIntent).build()
+                AirwallexPaymentSession.Builder(paymentIntent)
+                    .setReturnUrl(returnUrl)
+                    .build()
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
@@ -371,6 +373,7 @@ class PaymentCartFragment : Fragment() {
                     .setShipping(shipping)
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .setReturnUrl(returnUrl)
                     .build(),
                 clientSecretProvider
             ).observe(viewLifecycleOwner) {
@@ -474,6 +477,7 @@ class PaymentCartFragment : Fragment() {
                 )
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .setReturnUrl(returnUrl)
                     .build(),
                 clientSecretProvider
             ).observe(viewLifecycleOwner) {
