@@ -1,9 +1,12 @@
 package com.airwallex.paymentacceptance
 
 import android.app.Application
+import com.airwallex.android.card.CardComponent
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexConfiguration
 import com.airwallex.android.core.Environment
+import com.airwallex.android.redirect.RedirectComponent
+import com.airwallex.android.wechat.WeChatComponent
 
 class SampleApplication : Application() {
 
@@ -29,6 +32,13 @@ class SampleApplication : Application() {
             AirwallexConfiguration.Builder()
                 .enableLogging(true) // Enable log in sdk, best set to false in release version
                 .setEnvironment(environment)
+                .setSupportComponentProviders(
+                    listOf(
+                        CardComponent.PROVIDER,
+                        WeChatComponent.PROVIDER,
+                        RedirectComponent.PROVIDER
+                    )
+                )
                 .build()
         )
     }

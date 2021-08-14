@@ -9,7 +9,7 @@ import com.airwallex.android.card.view.DccActivityLaunch.Args
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.core.model.PaymentIntent
-import com.airwallex.android.ui.view.AirwallexActivityLaunch
+import com.airwallex.android.ui.AirwallexActivityLaunch
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal

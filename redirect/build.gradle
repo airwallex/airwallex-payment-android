@@ -51,6 +51,8 @@ android {
 dependencies {
 
     api project(':components-core')
+    api project(':ui-core')
+
 
     implementation 'androidx.browser:browser:1.3.0'
 

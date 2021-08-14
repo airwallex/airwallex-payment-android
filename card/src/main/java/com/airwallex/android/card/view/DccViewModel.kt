@@ -17,7 +17,7 @@ internal class DccViewModel(
     ): LiveData<PaymentIntentResult> {
         val resultData = MutableLiveData<PaymentIntentResult>()
 
-        airwallex.continuePaymentIntent(
+        airwallex.continueDccPaymentIntent(
             params,
             object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onFailed(exception: AirwallexException) {

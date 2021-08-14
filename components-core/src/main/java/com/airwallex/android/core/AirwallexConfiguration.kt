@@ -2,7 +2,8 @@ package com.airwallex.android.core
 
 data class AirwallexConfiguration internal constructor(
     val enableLogging: Boolean,
-    val environment: Environment
+    val environment: Environment,
+    val supportComponentProviders: List<ActionComponentProvider<out ActionComponent>>
 ) {
     class Builder {
 
@@ -16,6 +17,12 @@ data class AirwallexConfiguration internal constructor(
          */
         private var environment: Environment = Environment.PRODUCTION
 
+        /**
+         * Supported ComponentProvider (Card, WeChat, Redirect)
+         */
+        private var supportComponentProviders: List<ActionComponentProvider<out ActionComponent>> =
+            listOf()
+
         fun enableLogging(enable: Boolean): Builder = apply {
             this.enableLogging = enable
         }
@@ -24,10 +31,16 @@ data class AirwallexConfiguration internal constructor(
             this.environment = environment
         }
 
+        fun setSupportComponentProviders(supportComponentProviders: List<ActionComponentProvider<out ActionComponent>>): Builder =
+            apply {
+                this.supportComponentProviders = supportComponentProviders
+            }
+
         fun build(): AirwallexConfiguration {
             return AirwallexConfiguration(
                 enableLogging = enableLogging,
-                environment = environment
+                environment = environment,
+                supportComponentProviders = supportComponentProviders
             )
         }
     }

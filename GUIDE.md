@@ -110,15 +110,11 @@ Next Step:
 We provide native screens to facilitate the integration of payment functions.
 You can use these individually, or take all of the prebuilt UI in one flow by following the Integration guide.
 
-1. Initialize an Airwallex object, it’s the entry-point of the Airwallex SDK
-```kotlin
-    val airwallex = Airwallex(this)
-```
 
 ### Edit shipping info
 Use `presentShippingFlow` to allow users to provide a shipping address as well as select a shipping method. `shipping` parameter is optional.
 ```kotlin
-    airwallex.presentShippingFlow(shipping,
+    AirwallexStarter.presentShippingFlow(this, shipping,
         object : Airwallex.PaymentShippingListener {
             override fun onSuccess(shipping: Shipping) {
                 Log.d(TAG, "Save the shipping success")
@@ -133,7 +129,7 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
 ### Use the entire Native UI in one flow
 Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `AirwallexSession` object
 ```kotlin
-    airwallex.presentPaymentFlow(AirwallexPaymentSession.Builder(paymentIntent).build(),
+    AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent).build(),
         object : Airwallex.PaymentIntentListener {
             // If you need to support card, it's optional
             override fun onSuccess(paymentIntent: PaymentIntent) {

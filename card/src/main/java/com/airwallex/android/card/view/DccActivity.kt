@@ -14,7 +14,7 @@ import com.airwallex.android.core.log.Logger
 import com.airwallex.android.core.model.ContinuePaymentIntentParams
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentContinueType
-import com.airwallex.android.ui.view.AirwallexActivity
+import com.airwallex.android.ui.AirwallexActivity
 
 /**
  * Allow the customer to select your currency.

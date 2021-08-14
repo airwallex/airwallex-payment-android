@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- FIXME Override the color in cardinal -->
+    <color name="blue">@color/airwallex_color_primary</color>
+</resources>

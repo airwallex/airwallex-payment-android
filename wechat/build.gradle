@@ -51,6 +51,8 @@ android {
 dependencies {
 
     api project(':components-core')
+    api project(':ui-core')
+
 
     // material
     implementation 'com.google.android.material:material:1.4.0'

@@ -3,7 +3,6 @@ package com.airwallex.android.card
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.fragment.app.Fragment
 import com.airwallex.android.card.exception.DccException
 import com.airwallex.android.card.exception.ThreeDSException
 import com.airwallex.android.card.view.DccActivityLaunch
@@ -20,43 +19,39 @@ import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import java.util.*
 
-@Suppress("unused")
-class CardComponentProvider internal constructor(
-    private val applicationContext: Context,
-    private val paymentManager: PaymentManager,
-    private val dccActivityLaunch: DccActivityLaunch,
-    private val threeDSecureActivityLaunch: ThreeDSecureActivityLaunch
-) : ComponentProvider {
-
-    constructor(fragment: Fragment, paymentManager: PaymentManager) : this(
-        fragment.requireContext().applicationContext,
-        paymentManager,
-        DccActivityLaunch(fragment),
-        ThreeDSecureActivityLaunch(fragment)
-    )
-
-    constructor(activity: Activity, paymentManager: PaymentManager) : this(
-        activity.applicationContext,
-        paymentManager,
-        DccActivityLaunch(activity),
-        ThreeDSecureActivityLaunch(activity)
-    )
+class CardComponentProvider : ActionComponentProvider<CardComponent> {
 
     private var dccCallback: DccCallback? = null
     private var threeDSecureCallback: ThreeDSecureCallback? = null
 
     override fun handlePaymentIntentResponse(
-        clientSecret: String,
         nextAction: NextAction?,
-        device: Device?,
-        paymentIntentId: String,
-        currency: String,
-        amount: BigDecimal,
+        cardNextActionModel: ComponentProvider.CardNextActionModel?,
         listener: PaymentListener<PaymentIntent>
     ) {
+        if (cardNextActionModel == null) {
+            listener.onFailed(AirwallexCheckoutException(message = "No required card model"))
+            return
+        }
+
+        val fragment = cardNextActionModel.fragment
+        val activity = cardNextActionModel.activity
+
+        val dccActivityLaunch: DccActivityLaunch
+        val threeDSecureActivityLaunch: ThreeDSecureActivityLaunch
+        val applicationContext: Context
+        if (fragment != null) {
+            dccActivityLaunch = DccActivityLaunch(fragment)
+            threeDSecureActivityLaunch = ThreeDSecureActivityLaunch(fragment)
+            applicationContext = fragment.requireContext().applicationContext
+        } else {
+            dccActivityLaunch = DccActivityLaunch(activity)
+            threeDSecureActivityLaunch = ThreeDSecureActivityLaunch(activity)
+            applicationContext = activity.applicationContext
+        }
+
         when {
             // DCC flow
             nextAction?.type == NextAction.NextActionType.DCC && nextAction.dcc != null -> {
@@ -75,11 +70,11 @@ class CardComponentProvider internal constructor(
                 // DCC flow, please select your currency
                 dccActivityLaunch.startForResult(
                     DccActivityLaunch.Args(
-                        nextAction.dcc!!,
-                        paymentIntentId,
-                        currency,
-                        amount,
-                        clientSecret
+                        dcc = requireNotNull(nextAction.dcc),
+                        paymentIntentId = cardNextActionModel.paymentIntentId,
+                        currency = cardNextActionModel.currency,
+                        amount = cardNextActionModel.amount,
+                        clientSecret = cardNextActionModel.clientSecret
                     )
                 )
             }
@@ -96,12 +91,13 @@ class CardComponentProvider internal constructor(
                         .build()
                 )
                 handle3DSFlow(
-                    applicationContext,
-                    threeDSecureActivityLaunch,
-                    paymentIntentId,
-                    clientSecret,
-                    serverJwt,
-                    device,
+                    applicationContext = applicationContext,
+                    threeDSecureActivityLaunch = threeDSecureActivityLaunch,
+                    paymentIntentId = cardNextActionModel.paymentIntentId,
+                    clientSecret = cardNextActionModel.clientSecret,
+                    serverJwt = serverJwt,
+                    device = cardNextActionModel.device,
+                    paymentManager = cardNextActionModel.paymentManager,
                     object : PaymentListener<PaymentIntent> {
                         override fun onFailed(exception: AirwallexException) {
                             Tracker.track(
@@ -126,10 +122,10 @@ class CardComponentProvider internal constructor(
             }
             else -> {
                 Logger.debug("Don't need the 3DS Flow")
-                paymentManager.retrievePaymentIntent(
+                cardNextActionModel.paymentManager.retrievePaymentIntent(
                     AirwallexApiRepository.RetrievePaymentIntentOptions(
-                        clientSecret = clientSecret,
-                        paymentIntentId = paymentIntentId
+                        clientSecret = cardNextActionModel.clientSecret,
+                        paymentIntentId = cardNextActionModel.paymentIntentId
                     ),
                     listener
                 )
@@ -151,6 +147,7 @@ class CardComponentProvider internal constructor(
      * @param clientSecret the clientSecret of [PaymentIntent], required.
      * @param serverJwt for perform 3ds flow
      * @param device device info
+     * @param paymentManager instance of [PaymentManager]
      * @param listener a [PaymentListener] to receive the response or error
      */
     private fun handle3DSFlow(
@@ -160,6 +157,7 @@ class CardComponentProvider internal constructor(
         clientSecret: String,
         serverJwt: String,
         device: Device?,
+        paymentManager: PaymentManager,
         listener: PaymentListener<PaymentIntent>
     ) {
         Logger.debug("Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK")
@@ -385,5 +383,21 @@ class CardComponentProvider internal constructor(
                 }
             }
         }
+    }
+
+    override fun canHandleAction(paymentMethodType: PaymentMethodType): Boolean {
+        return paymentMethodType == PaymentMethodType.CARD
+    }
+
+    override fun retrieveSecurityToken(
+        paymentIntentId: String,
+        applicationContext: Context,
+        securityTokenListener: SecurityTokenListener
+    ) {
+        AirwallexSecurityConnector().retrieveSecurityToken(
+            paymentIntentId,
+            applicationContext,
+            securityTokenListener
+        )
     }
 }

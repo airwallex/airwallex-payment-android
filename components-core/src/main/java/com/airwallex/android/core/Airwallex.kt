@@ -19,9 +19,6 @@ class Airwallex internal constructor(
     private val paymentManager: PaymentManager,
     private val applicationContext: Context,
 ) {
-    private var componentProvider: ComponentProvider? = null
-    private var airwallexStarter: AbstractAirwallexStarter? = null
-
     interface PaymentListener<T> {
         fun onFailed(exception: AirwallexException)
         fun onSuccess(response: T) {
@@ -66,10 +63,15 @@ class Airwallex internal constructor(
      * otherwise `false`
      */
     fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        if (componentProvider?.onActivityResult(requestCode, resultCode, data) == true) {
+        val provider = AirwallexPlugins.getProvider(PaymentMethodType.CARD)
+        if (provider == null) {
+            Logger.error("You should add CardComponent.PROVIDER when initialize Airwallex")
+            return false
+        }
+        if (provider.onActivityResult(requestCode, resultCode, data)) {
             return true
         }
-        return airwallexStarter?.onActivityResult(requestCode, resultCode, data) ?: false
+        return false
     }
 
     /**
@@ -187,22 +189,26 @@ class Airwallex internal constructor(
                 }
 
                 override fun onSuccess(response: PaymentConsent) {
-                    try {
-                        componentProvider = buildComponentProvider(params.paymentMethodType)
-                        val provider = requireNotNull(componentProvider)
-                        provider.handlePaymentIntentResponse(
-                            params.clientSecret,
-                            response.nextAction,
-                            null,
-                            requireNotNull(response.initialPaymentIntentId),
+                    val provider = AirwallexPlugins.getProvider(params.paymentMethodType)
+                    if (provider == null) {
+                        Logger.error("You should add match PROVIDER when initialize Airwallex")
+                        listener.onFailed(AirwallexCheckoutException(message = "You should add match PROVIDER when initialize Airwallex!"))
+                        return
+                    }
+                    provider.handlePaymentIntentResponse(
+                        response.nextAction,
+                        ComponentProvider.CardNextActionModel(
+                            fragment = fragment,
+                            activity = activity,
+                            paymentManager = paymentManager,
+                            clientSecret = params.clientSecret,
+                            device = null,
+                            paymentIntentId = requireNotNull(response.initialPaymentIntentId),
                             currency = requireNotNull(params.currency),
                             amount = requireNotNull(params.amount),
-                            listener
-                        )
-                    } catch (e: Exception) {
-                        Logger.error("Build ComponentProvider failed", e)
-                        listener.onFailed(AirwallexCheckoutException(message = "You need add the appropriate dependencies!"))
-                    }
+                        ),
+                        listener
+                    )
                 }
             }
         )
@@ -410,9 +416,13 @@ class Airwallex internal constructor(
     ) {
         if (params.paymentMethodType == PaymentMethodType.CARD) {
             try {
-                val securityConnector = Class.forName(AIRWALLEX_SECURITY_CONNECTOR_CLASS_NAME)
-                    .getConstructor().newInstance() as SecurityConnector
-                securityConnector.retrieveSecurityToken(
+                val provider = AirwallexPlugins.getProvider(params.paymentMethodType)
+                if (provider == null) {
+                    Logger.error("You should add match PROVIDER when initialize Airwallex")
+                    listener.onFailed(AirwallexCheckoutException(message = "You should add match PROVIDER when initialize Airwallex!"))
+                    return
+                }
+                provider.retrieveSecurityToken(
                     params.paymentIntentId, applicationContext,
                     object : SecurityTokenListener {
                         override fun onResponse(deviceId: String) {
@@ -442,41 +452,46 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
-        try {
-            componentProvider = buildComponentProvider(params.paymentMethodType)
-            val provider = requireNotNull(componentProvider)
-            val options = when (params.paymentMethodType) {
-                PaymentMethodType.CARD -> {
-                    buildCardPaymentIntentOptions(params, device)
+        val provider = AirwallexPlugins.getProvider(params.paymentMethodType)
+        if (provider == null) {
+            Logger.error("You should add match PROVIDER when initialize Airwallex")
+            listener.onFailed(AirwallexCheckoutException(message = "You should add match PROVIDER when initialize Airwallex!"))
+            return
+        }
+
+        val options = when (params.paymentMethodType) {
+            PaymentMethodType.CARD -> {
+                buildCardPaymentIntentOptions(params, device)
+            }
+            else -> {
+                buildThirdPartPaymentIntentOptions(params, device)
+            }
+        }
+        paymentManager.confirmPaymentIntent(
+            options,
+            object : PaymentListener<PaymentIntent> {
+                override fun onFailed(exception: AirwallexException) {
+                    listener.onFailed(exception)
                 }
-                else -> {
-                    buildThirdPartPaymentIntentOptions(params, device)
+
+                override fun onSuccess(response: PaymentIntent) {
+                    provider.handlePaymentIntentResponse(
+                        response.nextAction,
+                        ComponentProvider.CardNextActionModel(
+                            fragment = fragment,
+                            activity = activity,
+                            paymentManager = paymentManager,
+                            clientSecret = params.clientSecret,
+                            device = device,
+                            paymentIntentId = response.id,
+                            currency = response.currency,
+                            amount = response.amount,
+                        ),
+                        listener
+                    )
                 }
             }
-            paymentManager.confirmPaymentIntent(
-                options,
-                object : PaymentListener<PaymentIntent> {
-                    override fun onFailed(exception: AirwallexException) {
-                        listener.onFailed(exception)
-                    }
-
-                    override fun onSuccess(response: PaymentIntent) {
-                        provider.handlePaymentIntentResponse(
-                            params.clientSecret,
-                            response.nextAction,
-                            device,
-                            response.id,
-                            response.currency,
-                            response.amount,
-                            listener
-                        )
-                    }
-                }
-            )
-        } catch (e: Exception) {
-            Logger.error("Build ComponentProvider failed", e)
-            listener.onFailed(AirwallexCheckoutException(message = "You need add the appropriate dependencies!"))
-        }
+        )
     }
 
     private fun buildCardPaymentIntentOptions(
@@ -579,7 +594,7 @@ class Airwallex internal constructor(
         )
     }
 
-    fun continuePaymentIntent(
+    fun continueDccPaymentIntent(
         params: ContinuePaymentIntentParams,
         listener: PaymentListener<PaymentIntent>
     ) {
@@ -599,13 +614,24 @@ class Airwallex internal constructor(
 
             override fun onSuccess(response: PaymentIntent) {
                 // Handle next action
-                componentProvider?.handlePaymentIntentResponse(
-                    params.clientSecret,
+                val provider = AirwallexPlugins.getProvider(PaymentMethodType.CARD)
+                if (provider == null) {
+                    Logger.error("You should add CardComponent.PROVIDER when initialize Airwallex")
+                    listener.onFailed(AirwallexCheckoutException(message = "You should add CardComponent.PROVIDER when initialize Airwallex!"))
+                    return
+                }
+                provider.handlePaymentIntentResponse(
                     response.nextAction,
-                    params.device,
-                    response.id,
-                    response.currency,
-                    response.amount,
+                    ComponentProvider.CardNextActionModel(
+                        fragment = fragment,
+                        activity = activity,
+                        paymentManager = paymentManager,
+                        clientSecret = params.clientSecret,
+                        device = params.device,
+                        paymentIntentId = response.id,
+                        currency = response.currency,
+                        amount = response.amount,
+                    ),
                     listener
                 )
             }
@@ -720,40 +746,6 @@ class Airwallex internal constructor(
         verifyPaymentConsent(params, listener)
     }
 
-    private fun buildComponentProvider(paymentMethodType: PaymentMethodType): ComponentProvider {
-        val componentProviderClass = when (paymentMethodType) {
-            PaymentMethodType.CARD -> {
-                Class.forName(COMPONENT_PROVIDER_CARD_CLASS_NAME)
-            }
-            PaymentMethodType.WECHAT -> {
-                Class.forName(COMPONENT_PROVIDER_WECHAT_CLASS_NAME)
-            }
-            else -> {
-                Class.forName(COMPONENT_PROVIDER_REDIRECT_CLASS_NAME)
-            }
-        }
-
-        return if (fragment != null) {
-            val constructor = componentProviderClass.getConstructor(
-                Fragment::class.java,
-                PaymentManager::class.java
-            )
-            constructor.newInstance(
-                fragment,
-                paymentManager
-            ) as ComponentProvider
-        } else {
-            val constructor = componentProviderClass.getConstructor(
-                Activity::class.java,
-                PaymentManager::class.java
-            )
-            constructor.newInstance(
-                activity,
-                paymentManager
-            ) as ComponentProvider
-        }
-    }
-
     /**
      * For custom UI Flow
      */
@@ -780,85 +772,9 @@ class Airwallex internal constructor(
         }
     }
 
-    /**
-     * Launch the shipping flow to allow the user to fill the shipping information
-     *
-     * @param shipping a [Shipping] used to present the shipping flow, it's optional
-     * @param shippingFlowListener The callback of present the shipping flow
-     */
-    fun presentShippingFlow(
-        shipping: Shipping? = null,
-        shippingFlowListener: PaymentShippingListener
-    ) {
-        try {
-            airwallexStarter = buildAirwallexStarter()
-            airwallexStarter?.presentShippingFlow(shipping, shippingFlowListener)
-        } catch (e: Exception) {
-            Logger.error("Can not find AirwallexStarter", e)
-            shippingFlowListener.onFailed(AirwallexCheckoutException(message = "Please add ui-core dependency"))
-        }
-    }
-
-    /**
-     * Launch the payment flow to allow the user to complete the entire payment flow
-     *
-     * @param session a [AirwallexSession] used to present the payment flow
-     * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret, just required for recurring payments
-     * @param paymentFlowListener The callback of present entire payment flow
-     */
-    fun presentPaymentFlow(
-        session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider? = null,
-        paymentFlowListener: PaymentIntentListener
-    ) {
-        if (clientSecretProvider == null && (session is AirwallexRecurringSession || session is AirwallexRecurringWithIntentSession)) {
-            paymentFlowListener.onFailed(AirwallexCheckoutException(message = "clientSecretProvider can not be null on recurring flow"))
-            return
-        }
-        try {
-            airwallexStarter = buildAirwallexStarter()
-            airwallexStarter?.presentPaymentFlow(session, clientSecretProvider, paymentFlowListener)
-        } catch (e: Exception) {
-            Logger.error("Can not find AirwallexStarter", e)
-            paymentFlowListener.onFailed(AirwallexCheckoutException(message = "Please add ui-core dependency"))
-        }
-    }
-
-    private fun buildAirwallexStarter(): AbstractAirwallexStarter {
-        val airwallexStarterClass = Class.forName(AIRWALLEX_STARTER_CLASS_NAME)
-        return if (fragment != null) {
-            val constructor = airwallexStarterClass.getConstructor(
-                Fragment::class.java
-            )
-            constructor.newInstance(
-                fragment
-            ) as AbstractAirwallexStarter
-        } else {
-            val constructor = airwallexStarterClass.getConstructor(
-                Activity::class.java
-            )
-            constructor.newInstance(
-                activity,
-            ) as AbstractAirwallexStarter
-        }
-    }
-
     companion object {
-
-        private const val COMPONENT_PROVIDER_CARD_CLASS_NAME =
-            "com.airwallex.android.card.CardComponentProvider"
-
-        private const val COMPONENT_PROVIDER_WECHAT_CLASS_NAME =
-            "com.airwallex.android.wechat.WeChatComponentProvider"
-
-        private const val COMPONENT_PROVIDER_REDIRECT_CLASS_NAME =
-            "com.airwallex.android.redirect.RedirectComponentProvider"
-
         private const val AIRWALLEX_STARTER_CLASS_NAME =
-            "com.airwallex.android.ui.AirwallexStarter"
-
-        private const val AIRWALLEX_SECURITY_CONNECTOR_CLASS_NAME =
-            "com.airwallex.android.card.AirwallexSecurityConnector"
+            "com.airwallex.android.AirwallexStarter"
 
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout://"
 

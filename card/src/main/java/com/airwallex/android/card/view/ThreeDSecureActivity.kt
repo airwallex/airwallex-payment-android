@@ -14,7 +14,7 @@ import com.airwallex.android.card.databinding.ActivityThreedsBinding
 import com.airwallex.android.card.exception.WebViewConnectionException
 import com.airwallex.android.core.AirwallexApiRepository
 import com.airwallex.android.core.log.Logger
-import com.airwallex.android.ui.view.AirwallexActivity
+import com.airwallex.android.ui.AirwallexActivity
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import java.net.URLEncoder

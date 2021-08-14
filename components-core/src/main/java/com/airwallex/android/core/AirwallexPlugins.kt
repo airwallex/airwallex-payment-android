@@ -1,6 +1,7 @@
 package com.airwallex.android.core
 
 import android.content.Context
+import com.airwallex.android.core.model.PaymentMethodType
 
 /**
  * Provide some internal plugins
@@ -35,4 +36,8 @@ object AirwallexPlugins {
         get() {
             return configuration.environment
         }
+
+    fun getProvider(paymentMethodType: PaymentMethodType): ActionComponentProvider<out ActionComponent>? {
+        return configuration.supportComponentProviders.firstOrNull { it.canHandleAction(paymentMethodType) }
+    }
 }

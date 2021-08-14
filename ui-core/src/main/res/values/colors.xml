@@ -3,24 +3,13 @@
     <color name="airwallex_color_accent">#131415</color>
     <color name="airwallex_color_primary">#612FFF</color>
     <color name="airwallex_color_primary_dark">#3711AE</color>
-
     <color name="airwallex_color_edit_text_error">#FF4F42</color>
     <color name="airwallex_color_edit_text_accent">#A9A9AE</color>
     <color name="airwallex_color_edit_text_default">#DE000000</color>
-
     <color name="airwallex_color_dark">#D1D2D5</color>
     <color name="airwallex_color_dark_deep">#2A2A2A</color>
     <color name="airwallex_color_dark_light">#A9A9A9</color>
     <color name="airwallex_color_bg">#F7F7F9</color>
-
     <color name="airwallex_color_border">#EBECF0</color>
-    <color name="airwallex_color_price">#1E272E</color>
     <color name="airwallex_color_item_label">#54545E</color>
-    <color name="airwallex_swipe_bg_color">#D5473F</color>
-
-    <color name="airwallex_color_gray">#545B63</color>
-
-    <!-- FIXME Override the color in cardinal -->
-    <color name="blue">@color/airwallex_color_primary</color>
-
 </resources>

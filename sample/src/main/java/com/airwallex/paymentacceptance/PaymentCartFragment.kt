@@ -34,10 +34,6 @@ import java.util.*
 
 class PaymentCartFragment : Fragment() {
 
-    private val airwallex by lazy {
-        Airwallex(this)
-    }
-
     private val viewBinding: FragmentCartBinding by lazy {
         FragmentCartBinding.inflate(layoutInflater)
     }
@@ -50,8 +46,7 @@ class PaymentCartFragment : Fragment() {
         ViewModelProvider(
             this,
             PaymentCartViewModel.Factory(
-                requireActivity().application,
-                airwallex
+                requireActivity().application
             )
         )[PaymentCartViewModel::class.java]
     }
@@ -217,7 +212,7 @@ class PaymentCartFragment : Fragment() {
 
         viewBinding.shippingItemView.renewalShipping(shipping)
         viewBinding.shippingItemView.onClickAction = {
-            viewModel.presentShippingFlow(shipping).observe(viewLifecycleOwner) {
+            viewModel.presentShippingFlow(this, shipping).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.ShippingResult.Success -> {
                         Log.d(TAG, "Save the shipping success")
@@ -294,6 +289,7 @@ class PaymentCartFragment : Fragment() {
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
 
             viewModel.presentPaymentFlow(
+                this@PaymentCartFragment,
                 AirwallexPaymentSession.Builder(paymentIntent)
                     .setReturnUrl(returnUrl)
                     .build()
@@ -364,6 +360,7 @@ class PaymentCartFragment : Fragment() {
             (activity as? PaymentCartActivity)?.setLoadingProgress(false)
 
             viewModel.presentPaymentFlow(
+                this@PaymentCartFragment,
                 AirwallexRecurringSession.Builder(
                     requireNotNull(customerId, { "CustomerId is required" }),
                     Settings.currency,
@@ -467,6 +464,7 @@ class PaymentCartFragment : Fragment() {
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
             viewModel.presentPaymentFlow(
+                this@PaymentCartFragment,
                 AirwallexRecurringWithIntentSession.Builder(
                     paymentIntent,
                     requireNotNull(
@@ -615,7 +613,7 @@ class PaymentCartFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // We need to handle activity result
-        airwallex.handlePaymentData(requestCode, resultCode, data)
+        AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
     }
 
     private fun showPaymentSuccess() {

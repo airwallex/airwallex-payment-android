@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.card.view.ThreeDSecureActivityLaunch.Args
 import com.airwallex.android.core.model.ThreeDSecureLookup
-import com.airwallex.android.ui.view.AirwallexActivityLaunch
+import com.airwallex.android.ui.AirwallexActivityLaunch
 import kotlinx.parcelize.Parcelize
 
 class ThreeDSecureActivityLaunch : AirwallexActivityLaunch<ThreeDSecureActivity, Args> {

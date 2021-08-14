@@ -109,15 +109,10 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 我们提供一些UI组件，以加快付款功能的集成。
 您可以单独使用它们，也可以按照“集成”指南将所有预构建的UI放在一个流程中。
 
-1. 初始化一个 `Airwallex` 对象, 这个 Airwallex SDK 的入口.
-```kotlin
-    val airwallex = Airwallex(this)
-```
-
 ### Edit shipping info
 使用 `presentShippingFlow` 允许用户提供送货地址以及选择送货方式. `shipping` 字段是可选的
 ```kotlin
-    airwallex.presentShippingFlow(shipping,
+    AirwallexStarter.presentShippingFlow(this, shipping,
         object : Airwallex.PaymentShippingListener {
             override fun onSuccess(shipping: Shipping) {
                 Log.d(TAG, "Save the shipping success")
@@ -132,7 +127,7 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ### Use the entire Native UI in one flow
 使用 `presentPaymentFlow` 来完成整个支付流程. 需要传入一个 `AirwallexSession`对象
 ```kotlin
-    airwallex.presentPaymentFlow(AirwallexPaymentSession.Builder(paymentIntent).build(),
+    AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent).build(),
         object : Airwallex.PaymentIntentListener {
             // If you need to support card, it's optional
             override fun onSuccess(paymentIntent: PaymentIntent) {

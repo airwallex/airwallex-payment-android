@@ -98,9 +98,7 @@ android {
 }
 
 dependencies {
-    api project(":card")
-    api project(":redirect")
-    api project(":wechat")
+    api project(":airwallex")
 
 //    implementation 'io.github.airwallex:airwallex-core:2.0.6'
 

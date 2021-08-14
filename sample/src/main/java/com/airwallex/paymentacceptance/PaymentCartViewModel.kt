@@ -1,7 +1,9 @@
 package com.airwallex.paymentacceptance
 
 import android.app.Application
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
+import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.ClientSecretProvider
@@ -11,13 +13,13 @@ import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.core.model.WeChat
 
 internal class PaymentCartViewModel(
-    application: Application,
-    private val airwallex: Airwallex
+    application: Application
 ) : AndroidViewModel(application) {
 
-    fun presentShippingFlow(shipping: Shipping?): LiveData<ShippingResult> {
+    fun presentShippingFlow(fragment: Fragment, shipping: Shipping?): LiveData<ShippingResult> {
         val resultData = MutableLiveData<ShippingResult>()
-        airwallex.presentShippingFlow(
+        AirwallexStarter.presentShippingFlow(
+            fragment,
             shipping,
             object : Airwallex.PaymentShippingListener {
                 override fun onSuccess(shipping: Shipping) {
@@ -37,11 +39,13 @@ internal class PaymentCartViewModel(
     }
 
     fun presentPaymentFlow(
+        fragment: Fragment,
         session: AirwallexSession,
         clientSecretProvider: ClientSecretProvider? = null
     ): LiveData<PaymentFlowResult> {
         val resultData = MutableLiveData<PaymentFlowResult>()
-        airwallex.presentPaymentFlow(
+        AirwallexStarter.presentPaymentFlow(
+            fragment,
             session,
             clientSecretProvider,
             object : Airwallex.PaymentIntentListener {
@@ -90,13 +94,12 @@ internal class PaymentCartViewModel(
     }
 
     internal class Factory(
-        private val application: Application,
-        private val airwallex: Airwallex
+        private val application: Application
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return PaymentCartViewModel(
-                application, airwallex
+                application
             ) as T
         }
     }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="divider_padding">16dp</dimen>
+    <dimen name="payment_method_item_height">58dp</dimen>
+    <dimen name="space_height">24dp</dimen>
+    <dimen name="swipe_size">20sp</dimen>
+    <dimen name="swipe_button_width">100dp</dimen>
+    <dimen name="airwallex_marginTop_20">20dp</dimen>
+</resources>

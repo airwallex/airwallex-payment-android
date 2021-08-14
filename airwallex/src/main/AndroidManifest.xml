@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.airwallex.android">
+
+    <application tools:targetApi="n">
+        <activity
+            android:name=".view.PaymentShippingActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AirwallexDefaultTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+
+        <activity
+            android:name=".view.PaymentMethodsActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AirwallexDefaultTheme" />
+
+        <activity
+            android:name=".view.AddPaymentMethodActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AirwallexDefaultTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+
+        <activity
+            android:name=".view.PaymentCheckoutActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AirwallexDefaultTheme" />
+    </application>
+</manifest>
