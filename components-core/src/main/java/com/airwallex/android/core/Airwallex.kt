@@ -65,7 +65,7 @@ class Airwallex internal constructor(
     fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         val provider = AirwallexPlugins.getProvider(PaymentMethodType.CARD)
         if (provider == null) {
-            Logger.error("You should add CardComponent.PROVIDER when initialize Airwallex")
+            Logger.error("Missing ${PaymentMethodType.CARD.dependencyName} dependency!")
             return false
         }
         if (provider.onActivityResult(requestCode, resultCode, data)) {
@@ -191,8 +191,7 @@ class Airwallex internal constructor(
                 override fun onSuccess(response: PaymentConsent) {
                     val provider = AirwallexPlugins.getProvider(params.paymentMethodType)
                     if (provider == null) {
-                        Logger.error("You should add match PROVIDER when initialize Airwallex")
-                        listener.onFailed(AirwallexCheckoutException(message = "You should add match PROVIDER when initialize Airwallex!"))
+                        listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
                         return
                     }
                     provider.handlePaymentIntentResponse(
@@ -418,8 +417,7 @@ class Airwallex internal constructor(
             try {
                 val provider = AirwallexPlugins.getProvider(params.paymentMethodType)
                 if (provider == null) {
-                    Logger.error("You should add match PROVIDER when initialize Airwallex")
-                    listener.onFailed(AirwallexCheckoutException(message = "You should add match PROVIDER when initialize Airwallex!"))
+                    listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
                     return
                 }
                 provider.retrieveSecurityToken(
@@ -454,8 +452,7 @@ class Airwallex internal constructor(
     ) {
         val provider = AirwallexPlugins.getProvider(params.paymentMethodType)
         if (provider == null) {
-            Logger.error("You should add match PROVIDER when initialize Airwallex")
-            listener.onFailed(AirwallexCheckoutException(message = "You should add match PROVIDER when initialize Airwallex!"))
+            listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
             return
         }
 
@@ -616,8 +613,7 @@ class Airwallex internal constructor(
                 // Handle next action
                 val provider = AirwallexPlugins.getProvider(PaymentMethodType.CARD)
                 if (provider == null) {
-                    Logger.error("You should add CardComponent.PROVIDER when initialize Airwallex")
-                    listener.onFailed(AirwallexCheckoutException(message = "You should add CardComponent.PROVIDER when initialize Airwallex!"))
+                    listener.onFailed(AirwallexCheckoutException(message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"))
                     return
                 }
                 provider.handlePaymentIntentResponse(
@@ -773,9 +769,6 @@ class Airwallex internal constructor(
     }
 
     companion object {
-        private const val AIRWALLEX_STARTER_CLASS_NAME =
-            "com.airwallex.android.AirwallexStarter"
-
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout://"
 
         /**

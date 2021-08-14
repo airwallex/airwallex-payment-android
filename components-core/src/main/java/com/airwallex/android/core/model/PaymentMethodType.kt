@@ -219,6 +219,15 @@ enum class PaymentMethodType(
         )
     );
 
+    val dependencyName: String
+        get() {
+            return when (this) {
+                CARD -> "payment-card"
+                WECHAT -> "payment-wechat"
+                else -> "payment-redirect"
+            }
+        }
+
     companion object {
         fun fromValue(value: String?): PaymentMethodType? {
             return values().firstOrNull { it.value == value }
