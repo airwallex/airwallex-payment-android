@@ -57,20 +57,9 @@ android.buildTypes.each { type ->
 }
 
 dependencies {
-
     api project(':card')
     api project(':wechat')
     api project(':redirect')
-
-    // material
-    implementation 'com.google.android.material:material:1.4.0'
-
-    // kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlinVersion"
-    implementation "org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlinVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
 
     // test
     testImplementation 'junit:junit:4.13.2'

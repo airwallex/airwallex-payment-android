@@ -57,27 +57,15 @@ android.buildTypes.each { type ->
 }
 
 dependencies {
-
-    api project(':components-core')
     api project(':ui-core')
 
-    // material
-    implementation 'com.google.android.material:material:1.4.0'
-
     // cardinal
-    api 'io.github.airwallex:cardinalmobilesdk:2.2.3-2'
+    implementation 'io.github.airwallex:cardinalmobilesdk:2.2.3-2'
 
     // fingerprinting
-    api 'io.github.airwallex:TrustDefender-Behavioral:6.1-67'
-    api 'io.github.airwallex:TrustDefender-Profiling:6.1-67'
-    api 'io.github.airwallex:TrustDefender-Profiling-Connections:6.1-67'
-
-    // kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlinVersion"
-    implementation "org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlinVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
+    implementation 'io.github.airwallex:TrustDefender-Behavioral:6.1-67'
+    implementation 'io.github.airwallex:TrustDefender-Profiling:6.1-67'
+    implementation 'io.github.airwallex:TrustDefender-Profiling-Connections:6.1-67'
 
     // test
     testImplementation 'junit:junit:4.13.2'
