@@ -22,7 +22,7 @@ class ThreeDSecureViewModel(
             payload,
             activity
         ) { _, validateResponse, jwt ->
-            resultData.value = ThreeDSecureResult.Complete(validateResponse, jwt)
+            resultData.postValue(ThreeDSecureResult.Complete(validateResponse, jwt))
         }
         return resultData
     }
