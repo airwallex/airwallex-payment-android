@@ -53,19 +53,22 @@
         <activity
             android:name="com.airwallex.paymentacceptance.h5.H5WebViewActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ActivityAnimTheme" />
+            android:theme="@style/ActivityAnimTheme"
+            tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.h5.H5DemoActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ActivityAnimTheme" />
+            android:theme="@style/ActivityAnimTheme"
+            tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.PaySuccessActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            android:theme="@style/ActivityAnimTheme">
+            android:theme="@style/ActivityAnimTheme"
+            tools:ignore="LockedOrientationActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -83,7 +86,8 @@
         <activity
             android:name="com.airwallex.paymentacceptance.wechat.WeChatDemoActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ActivityAnimTheme" />
+            android:theme="@style/ActivityAnimTheme"
+            tools:ignore="LockedOrientationActivity" />
 
         <receiver
             android:name="com.airwallex.paymentacceptance.AppRegister"

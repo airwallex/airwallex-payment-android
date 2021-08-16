@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.airwallex.android">
 
-    <application tools:targetApi="n">
+    <application
+        android:supportsRtl="true"
+        tools:targetApi="n">
         <activity
             android:name=".view.PaymentShippingActivity"
             android:launchMode="singleTop"
