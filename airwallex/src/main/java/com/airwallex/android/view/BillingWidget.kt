@@ -17,7 +17,7 @@ import com.airwallex.android.R
 /**
  * A widget used to collect the [Billing] info
  */
-class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+class BillingWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
 
     private val viewBinding = WidgetBillingBinding.inflate(
         LayoutInflater.from(context),
@@ -40,8 +40,12 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
     var billingChangeCallback: () -> Unit = {}
 
-    private val keyboardController: KeyboardController by lazy {
-        KeyboardController(context as Activity)
+    private val keyboardController: KeyboardController? by lazy {
+        if (context is Activity) {
+            KeyboardController(context)
+        } else {
+            null
+        }
     }
 
     /**
@@ -140,7 +144,7 @@ class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(contex
 
         sameAsShippingSwitch.setOnCheckedChangeListener { _, isChecked ->
             billingViewGroup.visibility = if (isChecked) View.GONE else View.VISIBLE
-            keyboardController.hide()
+            keyboardController?.hide()
             billingChangeCallback.invoke()
         }
 

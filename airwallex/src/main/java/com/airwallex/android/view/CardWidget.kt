@@ -11,7 +11,7 @@ import com.airwallex.android.R
 /**
  * A widget used to collect the card info
  */
-class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
 
     private val viewBinding = WidgetCardBinding.inflate(
         LayoutInflater.from(context),

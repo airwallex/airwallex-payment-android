@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
  * Purchase order information
  */
 @Parcelize
-data class PurchaseOrder internal constructor(
+data class PurchaseOrder(
 
     /**
      * Product list

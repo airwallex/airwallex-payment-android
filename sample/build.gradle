@@ -100,9 +100,7 @@ android {
 
     lintOptions {
         abortOnError true
-        disable 'VectorPath'
-        disable 'Autofill'
-        disable 'LabelFor'
+        disable 'VectorPath', 'Autofill', 'LabelFor'
     }
 }
 

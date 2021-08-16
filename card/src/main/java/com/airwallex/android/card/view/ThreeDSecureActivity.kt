@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.card.R
 import com.airwallex.android.card.ThreeDSecureManager
 import com.airwallex.android.card.ThreeDSecureWebViewClient
 import com.airwallex.android.card.databinding.ActivityThreedsBinding
+import com.airwallex.android.card.destroyWebView
 import com.airwallex.android.card.exception.WebViewConnectionException
 import com.airwallex.android.core.AirwallexApiRepository
 import com.airwallex.android.core.log.Logger
@@ -27,7 +29,20 @@ class ThreeDSecureActivity : AirwallexActivity() {
         ActivityThreedsBinding.bind(root)
     }
 
-    private val args: ThreeDSecureActivityLaunch.Args by lazy { ThreeDSecureActivityLaunch.Args.getExtra(intent) }
+    private val viewModel: ThreeDSecureViewModel by lazy {
+        ViewModelProvider(
+            this,
+            ThreeDSecureViewModel.Factory(
+                application,
+            )
+        )[ThreeDSecureViewModel::class.java]
+    }
+
+    private val args: ThreeDSecureActivityLaunch.Args by lazy {
+        ThreeDSecureActivityLaunch.Args.getExtra(
+            intent
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,26 +64,27 @@ class ThreeDSecureActivity : AirwallexActivity() {
             viewBinding.pbLoading.max = 100
             viewBinding.pbLoading.progress = 1
 
-            viewBinding.webView.webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
-                override fun onWebViewConfirmation(payload: String) {
-                    Logger.debug("3DS 1 onWebViewConfirmation $payload")
-                    finishThreeDSecure1(payload, false, null)
-                }
+            viewBinding.webView.webViewClient =
+                ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
+                    override fun onWebViewConfirmation(payload: String) {
+                        Logger.debug("3DS 1 onWebViewConfirmation $payload")
+                        finishThreeDSecure1(payload, false, null)
+                    }
 
-                override fun onWebViewError(error: WebViewConnectionException) {
-                    Logger.debug("3DS 1 onWebViewError $error")
-                    // Handle WebView connection failed
-                    finishThreeDSecure1(null, false, error.message)
-                }
+                    override fun onWebViewError(error: WebViewConnectionException) {
+                        Logger.debug("3DS 1 onWebViewError $error")
+                        // Handle WebView connection failed
+                        finishThreeDSecure1(null, false, error.message)
+                    }
 
-                override fun onPageFinished(url: String?) {
-                    viewBinding.pbLoading.visibility = View.GONE
-                }
+                    override fun onPageFinished(url: String?) {
+                        viewBinding.pbLoading.visibility = View.GONE
+                    }
 
-                override fun onPageStarted(url: String?) {
-                    viewBinding.pbLoading.visibility = View.VISIBLE
-                }
-            })
+                    override fun onPageStarted(url: String?) {
+                        viewBinding.pbLoading.visibility = View.VISIBLE
+                    }
+                })
 
             viewBinding.webView.webChromeClient = object : WebChromeClient() {
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
@@ -85,11 +101,20 @@ class ThreeDSecureActivity : AirwallexActivity() {
             viewBinding.webView.postUrl(acsUrl, postData.toByteArray())
         } else {
             // 3DS 2.0
-            Cardinal.getInstance().cca_continue(
+            viewModel.continueThreeDSecure(
                 threeDSecureLookup.transactionId,
                 threeDSecureLookup.payload,
                 this
-            ) { _, validateResponse, jwt -> finishThreeDSecure2(validateResponse, jwt) }
+            ).observe(
+                this,
+                {
+                    when (it) {
+                        is ThreeDSecureViewModel.ThreeDSecureResult.Complete -> {
+                            finishThreeDSecure2(it.validateResponse, it.jwt)
+                        }
+                    }
+                }
+            )
         }
     }
 
@@ -103,10 +128,7 @@ class ThreeDSecureActivity : AirwallexActivity() {
         super.onDestroy()
         // Cleanup Cardinal
         Cardinal.getInstance().cleanup()
-        val root = window.decorView.findViewById<ViewGroup>(android.R.id.content)
-        root.removeView(viewBinding.webView)
-        viewBinding.webView.removeAllViews()
-        viewBinding.webView.destroy()
+        viewBinding.webView.destroyWebView()
     }
 
     override fun onActionSave() {

@@ -123,7 +123,7 @@ data class PaymentIntent constructor(
 ) : AirwallexModel, Parcelable {
 
     @Parcelize
-    data class PaymentAttempt internal constructor(
+    data class PaymentAttempt(
 
         /**
          * Unique identifier for the payment attempt
@@ -172,7 +172,7 @@ data class PaymentIntent constructor(
     ) : AirwallexModel, Parcelable
 
     @Parcelize
-    data class PaymentAttemptAuthData internal constructor(
+    data class PaymentAttemptAuthData(
 
         val dsData: PaymentAttemptAuthDSData?,
 

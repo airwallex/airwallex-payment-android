@@ -12,7 +12,7 @@ import com.airwallex.android.databinding.WidgetShippingBinding
 /**
  * A widget used to collect the shipping [Address] of shipping info.
  */
-class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
+class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
     LinearLayout(context, attrs) {
 
     private val viewBinding = WidgetShippingBinding.inflate(
@@ -37,7 +37,7 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet) :
     /**
      * Return [Address] based on user input.
      */
-    val address: Address?
+    val address: Address
         get() {
             return Address.Builder()
                 .setCountryCode(country?.code)

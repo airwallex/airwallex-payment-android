@@ -14,7 +14,7 @@ import java.util.*
 
 class CountryAutoCompleteView constructor(
     context: Context,
-    attrs: AttributeSet
+    attrs: AttributeSet?
 ) : FrameLayout(context, attrs) {
 
     private val viewBinding = CountryAutocompleteViewBinding.inflate(
@@ -39,7 +39,9 @@ class CountryAutoCompleteView constructor(
             return viewBinding.tvError.text.toString()
         }
 
-    private val countryAdapter: CountryAdapter
+    private val countryAdapter: CountryAdapter by lazy {
+        CountryAdapter(getContext(), CountryUtils.COUNTRIES)
+    }
 
     /**
      * Country selected changed callback
@@ -76,7 +78,6 @@ class CountryAutoCompleteView constructor(
     }
 
     init {
-        countryAdapter = CountryAdapter(getContext(), CountryUtils.COUNTRIES)
         viewBinding.actCountry.threshold = 0
         viewBinding.actCountry.setAdapter(countryAdapter)
 

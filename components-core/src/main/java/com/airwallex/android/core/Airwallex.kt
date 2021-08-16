@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.annotation.UiThread
+import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
@@ -49,6 +50,14 @@ class Airwallex internal constructor(
         activity,
         AirwallexPaymentManager(AirwallexApiRepository()),
         activity.applicationContext
+    )
+
+    @VisibleForTesting
+    constructor(activity: Activity, applicationContext: Context) : this(
+        null,
+        activity,
+        AirwallexPaymentManager(AirwallexApiRepository()),
+        applicationContext
     )
 
     /**

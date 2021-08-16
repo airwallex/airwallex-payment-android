@@ -12,8 +12,18 @@ import com.airwallex.android.core.util.CurrencyUtils.formatPrice
 import java.math.BigDecimal
 import java.util.*
 
-class CurrencyWidget(context: Context, attrs: AttributeSet) :
+class CurrencyWidget(context: Context, attrs: AttributeSet?) :
     FrameLayout(context, attrs) {
+
+    val currency: String
+        get() {
+            return viewBinding.tvCurrency.text.toString()
+        }
+
+    val price: String
+        get() {
+            return viewBinding.tvPrice.text.toString()
+        }
 
     private val viewBinding = WidgetCurrencyBinding.inflate(
         LayoutInflater.from(context),
@@ -37,7 +47,13 @@ class CurrencyWidget(context: Context, attrs: AttributeSet) :
                     ),
                     "drawable", context.packageName
                 )
-                viewBinding.icon.setImageDrawable(ResourcesCompat.getDrawable(resources, resourceId, null))
+                viewBinding.icon.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        resources,
+                        resourceId,
+                        null
+                    )
+                )
             }
         } catch (e: Exception) {
             viewBinding.icon.visibility = View.GONE

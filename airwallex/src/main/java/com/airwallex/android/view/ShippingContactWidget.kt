@@ -11,7 +11,7 @@ import com.airwallex.android.databinding.WidgetContactBinding
 /**
  * A widget used to collect the contact info of shipping info.
  */
-class ShippingContactWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+class ShippingContactWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
 
     private val viewBinding = WidgetContactBinding.inflate(
         LayoutInflater.from(context),

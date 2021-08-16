@@ -10,7 +10,7 @@ import com.airwallex.android.R
  */
 internal class CardNumberTextInputLayout constructor(
     context: Context,
-    attrs: AttributeSet
+    attrs: AttributeSet?
 ) : AirwallexTextInputLayout(context, attrs, R.layout.card_number_input_layout) {
 
     /**

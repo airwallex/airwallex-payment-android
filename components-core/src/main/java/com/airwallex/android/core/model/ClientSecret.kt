@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 import java.util.*
 
 @Parcelize
-data class ClientSecret internal constructor(
+data class ClientSecret(
 
     val value: String,
 

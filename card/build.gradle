@@ -49,8 +49,7 @@ android {
 
     lintOptions {
         abortOnError true
-        disable 'ParcelCreator'
-        disable 'VectorPath'
+        disable 'ParcelCreator', 'VectorPath'
     }
 }
 
@@ -76,6 +75,7 @@ dependencies {
     testImplementation "androidx.test:core:$testCoreVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 }
 
 apply from: rootProject.file('publish.gradle')
