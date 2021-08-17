@@ -1,6 +1,9 @@
 package com.airwallex.android.core
 
 import com.airwallex.android.core.model.TrackerRequest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 object Tracker {
 
@@ -10,6 +13,8 @@ object Tracker {
         val options = AirwallexApiRepository.TrackerOptions(
             request = request
         )
-        apiRepository.tracker(options)
+        CoroutineScope(Dispatchers.IO).launch {
+            apiRepository.tracker(options)
+        }
     }
 }

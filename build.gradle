@@ -31,7 +31,7 @@ ext {
     compileSdkVersion = 29
     minSdkVersion = 19
 
-    ktlintVersion = '0.39.0'
+    ktlintVersion = '0.41.0'
     kotlinCoroutinesVersion = '1.5.1'
 
     junitVersion = '4.13.2'

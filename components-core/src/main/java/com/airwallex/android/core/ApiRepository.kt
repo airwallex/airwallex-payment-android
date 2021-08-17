@@ -12,7 +12,7 @@ interface ApiRepository {
      *
      * @return a [PaymentIntent] from Airwallex server
      */
-    fun continuePaymentIntent(
+    suspend fun continuePaymentIntent(
         options: Options
     ): PaymentIntent?
 
@@ -21,7 +21,7 @@ interface ApiRepository {
      *
      * @return a [PaymentIntent] from Airwallex server
      */
-    fun confirmPaymentIntent(
+    suspend fun confirmPaymentIntent(
         options: Options
     ): PaymentIntent?
 
@@ -30,7 +30,7 @@ interface ApiRepository {
      *
      * @return a [PaymentIntent] from Airwallex server
      */
-    fun retrievePaymentIntent(
+    suspend fun retrievePaymentIntent(
         options: Options
     ): PaymentIntent?
 
@@ -39,56 +39,56 @@ interface ApiRepository {
      *
      * @return a [PaymentMethod] from Airwallex server
      */
-    fun createPaymentMethod(
+    suspend fun createPaymentMethod(
         options: Options
     ): PaymentMethod?
 
     /**
      * Retrieve paRes with id
      */
-    fun retrieveParesWithId(
+    suspend fun retrieveParesWithId(
         options: Options
     ): ThreeDSecurePares?
 
     /**
      * Create a PaymentConsent
      */
-    fun createPaymentConsent(
+    suspend fun createPaymentConsent(
         options: Options
     ): PaymentConsent?
 
     /**
      * Verify a PaymentConsent
      */
-    fun verifyPaymentConsent(
+    suspend fun verifyPaymentConsent(
         options: Options
     ): PaymentConsent?
 
     /**
      * Disable a PaymentConsent
      */
-    fun disablePaymentConsent(
+    suspend fun disablePaymentConsent(
         options: Options
     ): PaymentConsent?
 
     /**
      * Retrieve a PaymentConsent
      */
-    fun retrievePaymentConsent(
+    suspend fun retrievePaymentConsent(
         options: Options
     ): PaymentConsent?
 
     /**
      * Tracker
      */
-    fun tracker(
+    suspend fun tracker(
         options: Options
     )
 
     /**
      * Retrieve available payment method types
      */
-    fun retrieveAvailablePaymentMethods(
+    suspend fun retrieveAvailablePaymentMethods(
         options: Options
     ): AvailablePaymentMethodResponse?
 }

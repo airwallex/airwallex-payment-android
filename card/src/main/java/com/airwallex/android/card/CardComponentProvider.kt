@@ -122,7 +122,7 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
             }
             else -> {
                 Logger.debug("Don't need the 3DS Flow")
-                cardNextActionModel.paymentManager.retrievePaymentIntent(
+                cardNextActionModel.paymentManager.startOperation(
                     AirwallexApiRepository.RetrievePaymentIntentOptions(
                         clientSecret = cardNextActionModel.clientSecret,
                         paymentIntentId = cardNextActionModel.paymentIntentId
@@ -171,7 +171,7 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
                 }
             } else {
                 Logger.debug("Step2: 3DS Enrollment with `referenceId`")
-                paymentManager.continuePaymentIntent(
+                paymentManager.startOperation(
                     build3DSContinuePaymentIntentOptions(
                         device, paymentIntentId, clientSecret, PaymentIntentContinueType.ENROLLMENT,
                         ThreeDSecure.Builder()
@@ -204,7 +204,7 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
                             threeDSecureCallback = object : ThreeDSecureCallback {
                                 private fun continuePaymentIntent(transactionId: String) {
                                     Logger.debug("Step 4: 3DS Validate with `processorTransactionId`")
-                                    paymentManager.continuePaymentIntent(
+                                    paymentManager.startOperation(
                                         build3DSContinuePaymentIntentOptions(
                                             device,
                                             paymentIntentId,
@@ -221,7 +221,7 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
                                 override fun onThreeDS1Success(payload: String) {
                                     Logger.debug("3DS1 Success, Retrieve pares with paResId start...")
                                     threeDSecureCallback = null
-                                    paymentManager.retrieveParesWithId(
+                                    paymentManager.startOperation(
                                         AirwallexApiRepository.RetrievePaResOptions(
                                             clientSecret,
                                             payload

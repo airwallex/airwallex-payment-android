@@ -8,9 +8,8 @@ import com.airwallex.android.core.http.AirwallexHttpResponse
 import com.airwallex.android.core.log.Logger
 import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.parser.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -117,7 +116,7 @@ class AirwallexApiRepository : ApiRepository {
      * @param options contains the confirm params
      * @return a [PaymentIntent] from Airwallex server
      */
-    override fun continuePaymentIntent(options: Options): PaymentIntent? {
+    override suspend fun continuePaymentIntent(options: Options): PaymentIntent? {
         return executeApiRequest(
             AirwallexHttpRequest.createPost(
                 url = continuePaymentIntentUrl(
@@ -137,7 +136,7 @@ class AirwallexApiRepository : ApiRepository {
      * @param options contains the confirm params
      * @return a [PaymentIntent] from Airwallex server
      */
-    override fun confirmPaymentIntent(options: Options): PaymentIntent? {
+    override suspend fun confirmPaymentIntent(options: Options): PaymentIntent? {
         return executeApiRequest(
             AirwallexHttpRequest.createPost(
                 url = confirmPaymentIntentUrl(
@@ -157,7 +156,7 @@ class AirwallexApiRepository : ApiRepository {
      * @param options contains the retrieve params
      * @return a [PaymentIntent] from Airwallex server
      */
-    override fun retrievePaymentIntent(options: Options): PaymentIntent? {
+    override suspend fun retrievePaymentIntent(options: Options): PaymentIntent? {
         return executeApiRequest(
             AirwallexHttpRequest.createGet(
                 url = retrievePaymentIntentUrl(
@@ -171,7 +170,7 @@ class AirwallexApiRepository : ApiRepository {
         )
     }
 
-    override fun createPaymentMethod(options: Options): PaymentMethod? {
+    override suspend fun createPaymentMethod(options: Options): PaymentMethod? {
         return executeApiRequest(
             AirwallexHttpRequest.createPost(
                 url = createPaymentMethodUrl(
@@ -184,7 +183,7 @@ class AirwallexApiRepository : ApiRepository {
         )
     }
 
-    override fun retrieveParesWithId(options: Options): ThreeDSecurePares? {
+    override suspend fun retrieveParesWithId(options: Options): ThreeDSecurePares? {
         return executeApiRequest(
             AirwallexHttpRequest.createGet(
                 url = paResRetrieveUrl((options as RetrievePaResOptions).paResId),
@@ -195,7 +194,7 @@ class AirwallexApiRepository : ApiRepository {
         )
     }
 
-    override fun createPaymentConsent(options: Options): PaymentConsent? {
+    override suspend fun createPaymentConsent(options: Options): PaymentConsent? {
         return executeApiRequest(
             AirwallexHttpRequest.createPost(
                 url = createPaymentConsentUrl(
@@ -208,7 +207,7 @@ class AirwallexApiRepository : ApiRepository {
         )
     }
 
-    override fun verifyPaymentConsent(options: Options): PaymentConsent? {
+    override suspend fun verifyPaymentConsent(options: Options): PaymentConsent? {
         return executeApiRequest(
             AirwallexHttpRequest.createPost(
                 url = verifyPaymentConsentUrl(
@@ -222,7 +221,7 @@ class AirwallexApiRepository : ApiRepository {
         )
     }
 
-    override fun disablePaymentConsent(options: Options): PaymentConsent? {
+    override suspend fun disablePaymentConsent(options: Options): PaymentConsent? {
         return executeApiRequest(
             AirwallexHttpRequest.createPost(
                 url = disablePaymentConsentUrl(
@@ -236,7 +235,7 @@ class AirwallexApiRepository : ApiRepository {
         )
     }
 
-    override fun retrievePaymentConsent(options: Options): PaymentConsent? {
+    override suspend fun retrievePaymentConsent(options: Options): PaymentConsent? {
         return executeApiRequest(
             AirwallexHttpRequest.createGet(
                 url = retrievePaymentConsentUrl(
@@ -251,29 +250,27 @@ class AirwallexApiRepository : ApiRepository {
         )
     }
 
-    override fun tracker(options: Options) {
-        CoroutineScope(Dispatchers.IO).launch {
-            runCatching {
-                val params = (options as TrackerOptions).request.toParamMap()
-                val builder = Uri.parse(trackerUrl()).buildUpon()
-                params.forEach {
-                    builder.appendQueryParameter(it.key, it.value.toString())
-                }
-                val uri = builder.build()
-                httpClient.execute(
-                    AirwallexHttpRequest.createGet(
-                        url = uri.toString(),
-                        options = options,
-                        params = null
-                    )
-                )
-            }.getOrElse {
-                Logger.debug("Tracker failed.")
+    override suspend fun tracker(options: Options) {
+        runCatching {
+            val params = (options as TrackerOptions).request.toParamMap()
+            val builder = Uri.parse(trackerUrl()).buildUpon()
+            params.forEach {
+                builder.appendQueryParameter(it.key, it.value.toString())
             }
+            val uri = builder.build()
+            httpClient.execute(
+                AirwallexHttpRequest.createGet(
+                    url = uri.toString(),
+                    options = options,
+                    params = null
+                )
+            )
+        }.getOrElse {
+            Logger.debug("Tracker failed.")
         }
     }
 
-    override fun retrieveAvailablePaymentMethods(options: Options): AvailablePaymentMethodResponse? {
+    override suspend fun retrieveAvailablePaymentMethods(options: Options): AvailablePaymentMethodResponse? {
         return executeApiRequest(
             AirwallexHttpRequest.createGet(
                 url = retrieveAvailablePaymentMethodsUrl(
@@ -298,10 +295,11 @@ class AirwallexApiRepository : ApiRepository {
         APIException::class,
         APIConnectionException::class
     )
-    private fun <ModelType : AirwallexModel> executeApiRequest(
+
+    private suspend fun <ModelType : AirwallexModel> executeApiRequest(
         request: AirwallexHttpRequest,
         jsonParser: ModelJsonParser<ModelType>
-    ): ModelType? {
+    ): ModelType? = withContext(Dispatchers.IO) {
         val response = runCatching {
             httpClient.execute(request)
         }.getOrElse {
@@ -315,7 +313,7 @@ class AirwallexApiRepository : ApiRepository {
             handleApiError(response)
         }
 
-        return jsonParser.parse(response.responseJson)
+        jsonParser.parse(response.responseJson)
     }
 
     @Throws(
