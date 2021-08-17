@@ -17,6 +17,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
 
+        multiDexEnabled true
+
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
 
@@ -31,6 +33,12 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+        }
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
         }
     }
 

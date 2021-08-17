@@ -47,6 +47,7 @@ android {
         applicationId "com.airwallex.paymentacceptance"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
+
         multiDexEnabled true
 
         versionCode rootProject.ext.versionCode

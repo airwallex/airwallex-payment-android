@@ -10,7 +10,8 @@ object AirwallexPlugins {
 
     const val AIRWALLEX_USER_AGENT = "Airwallex-Android-SDK"
 
-    private lateinit var configuration: AirwallexConfiguration
+    private var configuration: AirwallexConfiguration =
+        AirwallexConfiguration(false, Environment.PRODUCTION, emptyList())
 
     fun getSdkVersion(context: Context): String {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
@@ -38,6 +39,11 @@ object AirwallexPlugins {
         }
 
     fun getProvider(paymentMethodType: PaymentMethodType): ActionComponentProvider<out ActionComponent>? {
-        return configuration.supportComponentProviders.firstOrNull { it.canHandleAction(paymentMethodType) }
+        return configuration.supportComponentProviders
+            .firstOrNull {
+                it.canHandleAction(
+                    paymentMethodType
+                )
+            }
     }
 }

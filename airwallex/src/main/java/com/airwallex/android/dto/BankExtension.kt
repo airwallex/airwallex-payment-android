@@ -4,6 +4,10 @@ import androidx.annotation.DrawableRes
 import com.airwallex.android.core.model.Bank
 import com.airwallex.android.R
 
+/**
+ * The logo of the bank
+ * That will be removed after API adjustment
+ */
 @get:DrawableRes
 val Bank.drawableRes: Int
     get() {

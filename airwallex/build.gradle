@@ -34,6 +34,12 @@ android {
         }
     }
 
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+    }
+
     buildFeatures {
         viewBinding true
     }

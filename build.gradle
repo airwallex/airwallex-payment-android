@@ -12,11 +12,20 @@ buildscript {
     }
 }
 
+plugins {
+    id "nl.neotech.plugin.rootcoverage" version "1.4.0"
+}
+
 allprojects {
     repositories {
         google()
         mavenCentral()
     }
+}
+
+jacoco {
+    // https://www.jacoco.org/jacoco/trunk/doc/changes.html
+    toolVersion = "0.8.7"
 }
 
 task clean(type: Delete) {
