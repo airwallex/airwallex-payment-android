@@ -1,10 +1,8 @@
 name: Test Coverage
 
-# Every time we merge to main branch we publish a release.
+# Every time we merge send a PR
 on:
-  push:
-    branches: [ split ]
-  workflow_dispatch:
+  pull_request:
 
 jobs:
   build:
