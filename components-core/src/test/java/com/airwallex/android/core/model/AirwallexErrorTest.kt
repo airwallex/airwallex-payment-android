@@ -13,4 +13,12 @@ class AirwallexErrorTest {
     fun testParcelable() {
         assertEquals(AirwallexErrorFixtures.Error, ParcelUtils.create(AirwallexErrorFixtures.Error))
     }
+
+    @Test
+    fun testParams() {
+        val error = AirwallexErrorFixtures.Error
+        assertEquals("200", error.code)
+        assertEquals("airwallex", error.source)
+        assertEquals("success", error.message)
+    }
 }

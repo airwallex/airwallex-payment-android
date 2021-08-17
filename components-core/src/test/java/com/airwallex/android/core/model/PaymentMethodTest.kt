@@ -9,9 +9,8 @@ import kotlin.test.assertEquals
 @RunWith(RobolectricTestRunner::class)
 class PaymentMethodTest {
 
-    @Test
-    fun builderConstructor() {
-        val paymentMethod = PaymentMethod.Builder()
+    private val paymentMethod by lazy {
+        PaymentMethod.Builder()
             .setType(PaymentMethodType.CARD)
             .setCard(
                 PaymentMethod.Card.Builder()
@@ -39,6 +38,10 @@ class PaymentMethodTest {
                     .build()
             )
             .build()
+    }
+
+    @Test
+    fun builderConstructor() {
         assertEquals(paymentMethod, PaymentMethodFixtures.PAYMENT_METHOD)
     }
 
@@ -47,6 +50,38 @@ class PaymentMethodTest {
         assertEquals(
             PaymentMethodFixtures.PAYMENT_METHOD,
             ParcelUtils.create(PaymentMethodFixtures.PAYMENT_METHOD)
+        )
+    }
+
+    @Test
+    fun testParams() {
+        assertEquals(PaymentMethodType.CARD, paymentMethod.type)
+        assertEquals(
+            PaymentMethod.Card.Builder()
+                .setNumber("4012000300001003")
+                .setExpiryMonth("12")
+                .setExpiryYear("2020")
+                .setCvc("123")
+                .setName("Adam")
+                .build(),
+            paymentMethod.card
+        )
+        assertEquals(
+            Billing.Builder()
+                .setFirstName("Jim")
+                .setLastName("He")
+                .setPhone("1367875786")
+                .setAddress(
+                    Address.Builder()
+                        .setCountryCode("CN")
+                        .setState("Shanghai")
+                        .setCity("Shanghai")
+                        .setStreet("Pudong District")
+                        .setPostcode("201304")
+                        .build()
+                )
+                .build(),
+            paymentMethod.billing
         )
     }
 }

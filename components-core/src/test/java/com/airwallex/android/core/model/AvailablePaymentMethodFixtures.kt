@@ -12,7 +12,7 @@ internal object AvailablePaymentMethodFixtures {
             "transaction_mode":"oneoff",
             "active":true,
             "transaction_currencies":["dollar","RMB"],
-            "flows":"in_app"
+            "flows":["IN_APP"]
         }
             """.trimIndent()
         )

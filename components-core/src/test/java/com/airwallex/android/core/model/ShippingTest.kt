@@ -9,9 +9,8 @@ import kotlin.test.assertEquals
 @RunWith(RobolectricTestRunner::class)
 class ShippingTest {
 
-    @Test
-    fun builderConstructor() {
-        val billing = Shipping.Builder()
+    private val shipping by lazy {
+        Shipping.Builder()
             .setFirstName("John")
             .setLastName("Doe")
             .setPhone("13800000000")
@@ -25,11 +24,32 @@ class ShippingTest {
                     .build()
             )
             .build()
-        assertEquals(billing, ShippingFixtures.SHIPPING)
+    }
+
+    @Test
+    fun builderConstructor() {
+        assertEquals(shipping, ShippingFixtures.SHIPPING)
     }
 
     @Test
     fun testParcelable() {
         assertEquals(ShippingFixtures.SHIPPING, ParcelUtils.create(ShippingFixtures.SHIPPING))
+    }
+
+    @Test
+    fun testParams() {
+        assertEquals("John", shipping.firstName)
+        assertEquals("Doe", shipping.lastName)
+        assertEquals("13800000000", shipping.phoneNumber)
+        assertEquals(
+            Address(
+                countryCode = "CN",
+                state = "Shanghai",
+                city = "Shanghai",
+                street = "Pudong District",
+                postcode = "100000"
+            ),
+            shipping.address
+        )
     }
 }

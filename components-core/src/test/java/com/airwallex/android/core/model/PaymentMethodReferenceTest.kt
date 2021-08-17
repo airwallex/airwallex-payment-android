@@ -16,4 +16,11 @@ class PaymentMethodReferenceTest {
             ParcelUtils.createMaybeNull(PaymentMethodReferenceFixtures.PAYMENTMETHODREFERRENCE)
         )
     }
+
+    @Test
+    fun testParams() {
+        val paymentMethodReference = PaymentMethodReferenceFixtures.PAYMENTMETHODREFERRENCE!!
+        assertEquals("1", paymentMethodReference.id)
+        assertEquals("123", paymentMethodReference.cvc)
+    }
 }

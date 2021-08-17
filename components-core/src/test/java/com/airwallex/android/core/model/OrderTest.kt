@@ -8,9 +8,9 @@ import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class OrderTest {
-    @Test
-    fun builderConstructor() {
-        val shipping: Shipping = Shipping.Builder()
+
+    private val shipping: Shipping by lazy {
+        Shipping.Builder()
             .setFirstName("John")
             .setLastName("Doe")
             .setPhone("13800000000")
@@ -24,7 +24,10 @@ class OrderTest {
                     .build()
             )
             .build()
-        val products = mutableListOf(
+    }
+
+    private val products by lazy {
+        mutableListOf(
             PhysicalProduct.Builder()
                 .setCode("123")
                 .setName("AirPods Pro")
@@ -46,16 +49,30 @@ class OrderTest {
                 .setQuantity(1)
                 .build()
         )
-        val order = PurchaseOrder.Builder()
+    }
+
+    private val order by lazy {
+        PurchaseOrder.Builder()
             .setProducts(products)
             .setShipping(shipping)
             .setType("physical_goods")
             .build()
+    }
+
+    @Test
+    fun builderConstructor() {
         assertEquals(order, OrderFixtures.ORDER)
     }
 
     @Test
     fun testParcelable() {
         assertEquals(OrderFixtures.ORDER, ParcelUtils.create(OrderFixtures.ORDER))
+    }
+
+    @Test
+    fun testParams() {
+        assertEquals(products, order.products)
+        assertEquals(shipping, order.shipping)
+        assertEquals("physical_goods", order.type)
     }
 }

@@ -16,4 +16,11 @@ class ThreeDSecureParesTest {
             ParcelUtils.create(ThreeDSecureParesFixtures.THREEDSECUREPARES)
         )
     }
+
+    @Test
+    fun testParams() {
+        val threeDSecurePares = ThreeDSecureParesFixtures.THREEDSECUREPARES
+        assertEquals("1", threeDSecurePares.paresId)
+        assertEquals("render_qr_code", threeDSecurePares.pares)
+    }
 }

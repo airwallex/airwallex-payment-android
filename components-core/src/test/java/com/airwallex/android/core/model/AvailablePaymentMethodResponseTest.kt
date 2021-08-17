@@ -8,11 +8,30 @@ import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class AvailablePaymentMethodResponseTest {
+
     @Test
     fun testParcelable() {
         assertEquals(
             AvailablePaymentMethodResponseFixtures.PAYMENMETHODRESPONSE,
             ParcelUtils.create(AvailablePaymentMethodResponseFixtures.PAYMENMETHODRESPONSE)
+        )
+    }
+
+    @Test
+    fun testParams() {
+        val availablePaymentMethodResponse =
+            AvailablePaymentMethodResponseFixtures.PAYMENMETHODRESPONSE
+        assertEquals(
+            listOf(
+                AvailablePaymentMethod(
+                    name = PaymentMethodType.CARD,
+                    transactionMode = AvailablePaymentMethod.TransactionMode.ONE_OFF,
+                    active = true,
+                    transactionCurrencies = listOf("dollar", "RMB"),
+                    flows = listOf(AirwallexPaymentRequestFlow.IN_APP)
+                )
+            ),
+            availablePaymentMethodResponse.items
         )
     }
 }

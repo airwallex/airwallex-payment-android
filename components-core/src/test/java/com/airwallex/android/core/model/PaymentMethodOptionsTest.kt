@@ -8,9 +8,8 @@ import kotlin.test.assertEquals
 @RunWith(RobolectricTestRunner::class)
 class PaymentMethodOptionsTest {
 
-    @Test
-    fun builderConstructor() {
-        val paymentMethodOptions = PaymentMethodOptions.Builder()
+    private val paymentMethodOptions by lazy {
+        PaymentMethodOptions.Builder()
             .setCardOptions(
                 PaymentMethodOptions.CardOptions.Builder()
                     .setAutoCapture(true)
@@ -24,6 +23,27 @@ class PaymentMethodOptionsTest {
                     .build()
             )
             .build()
+    }
+
+    @Test
+    fun builderConstructor() {
         assertEquals(paymentMethodOptions, PaymentMethodOptionsFixtures.PAYMENTMETHODOPTIONS)
+    }
+
+    @Test
+    fun testParams() {
+        assertEquals(
+            PaymentMethodOptions.CardOptions.Builder()
+                .setAutoCapture(true)
+                .setThreeDSecure(
+                    ThreeDSecure.Builder()
+                        .setReturnUrl("https://www.360safe.com")
+                        .setDeviceDataCollectionRes("abc")
+                        .setTransactionId("123")
+                        .build()
+                )
+                .build(),
+            paymentMethodOptions.cardOptions
+        )
     }
 }

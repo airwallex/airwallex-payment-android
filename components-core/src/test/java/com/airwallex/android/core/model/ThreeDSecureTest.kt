@@ -16,4 +16,12 @@ class ThreeDSecureTest {
             ParcelUtils.createMaybeNull(ThreeDSecureFixtures.THREEDSECURE)
         )
     }
+
+    @Test
+    fun testParams() {
+        val threeDSecure = ThreeDSecureFixtures.THREEDSECURE!!
+        assertEquals("https://www.airwallex.com", threeDSecure.returnUrl)
+        assertEquals("abc", threeDSecure.deviceDataCollectionRes)
+        assertEquals("123", threeDSecure.transactionId)
+    }
 }

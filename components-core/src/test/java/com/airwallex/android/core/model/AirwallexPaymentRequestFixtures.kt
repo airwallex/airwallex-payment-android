@@ -10,7 +10,7 @@ internal object AirwallexPaymentRequestFixtures {
         {
             "country_code":"CN",
             "shopper_name":"cstore",
-            "bank_name":"ICBC",
+            "bank_name":"krungsri",
             "shopper_email":"cstore@163.com",
             "shopper_phone":"18833332222",
             "flow":"inapp",

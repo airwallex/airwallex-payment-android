@@ -11,6 +11,21 @@ class AirwallexPaymentRequestTest {
 
     @Test
     fun testParcelable() {
-        assertEquals(AirwallexPaymentRequestFixtures.REQUEST, ParcelUtils.create(AirwallexPaymentRequestFixtures.REQUEST))
+        assertEquals(
+            AirwallexPaymentRequestFixtures.REQUEST,
+            ParcelUtils.create(AirwallexPaymentRequestFixtures.REQUEST)
+        )
+    }
+
+    @Test
+    fun testParams() {
+        val airwallexPaymentRequest = AirwallexPaymentRequestFixtures.REQUEST
+        assertEquals("CN", airwallexPaymentRequest.countryCode)
+        assertEquals("cstore@163.com", airwallexPaymentRequest.email)
+        assertEquals("cstore", airwallexPaymentRequest.name)
+        assertEquals(Bank.KRUNGSRI, airwallexPaymentRequest.bank)
+        assertEquals("18833332222", airwallexPaymentRequest.phone)
+        assertEquals(AirwallexPaymentRequestFlow.IN_APP, airwallexPaymentRequest.flow)
+        assertEquals("android", airwallexPaymentRequest.osType)
     }
 }
