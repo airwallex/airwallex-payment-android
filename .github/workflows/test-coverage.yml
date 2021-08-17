@@ -1,0 +1,40 @@
+name: Test Coverage
+
+# Every time we merge to main branch we publish a release.
+on:
+  push:
+    branches: [ split ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Set up our JDK environment
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'zulu'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Gradle check
+        run: ./gradlew check
+
+      - name: Run Coverage
+        run: |
+          chmod +x gradlew
+          ./gradlew testCoverage
+
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.1
+        with:
+          path: ${{ github.workspace }}/build/reports/jacoco/index.xml
+          token: ${{ secrets.TEST_COVERAGE_GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
