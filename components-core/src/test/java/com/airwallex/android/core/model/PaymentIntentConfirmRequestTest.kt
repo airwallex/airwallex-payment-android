@@ -20,7 +20,12 @@ class PaymentIntentConfirmRequestTest {
         )
         .setPaymentMethodRequest(null)
         .setPaymentMethodOptions(null)
-        .setPaymentConsentReference(null)
+        .setPaymentConsentReference(
+            PaymentConsentReference.Builder()
+                .setId("cst_hkdmr7v9rg1j5g4azy6")
+                .setCvc("123")
+                .build()
+        )
         .setReturnUrl("https://www.airwallex.com")
         .build()
 
@@ -30,7 +35,14 @@ class PaymentIntentConfirmRequestTest {
         assertEquals("111", request.customerId)
         assertEquals(null, request.paymentMethodRequest)
         assertEquals(null, request.paymentMethodOptions)
-        assertEquals(null, request.paymentConsentReference)
+        assertEquals(
+            PaymentConsentReference.Builder()
+                .setId("cst_hkdmr7v9rg1j5g4azy6")
+                .setCvc("123")
+                .build()
+                .toString(),
+            request.paymentConsentReference.toString()
+        )
         assertEquals(
             Device.Builder()
                 .setDeviceId("123456")
@@ -51,6 +63,10 @@ class PaymentIntentConfirmRequestTest {
             mapOf(
                 "request_id" to "aaaa",
                 "customer_id" to "111",
+                "payment_consent_reference" to mapOf(
+                    "id" to "cst_hkdmr7v9rg1j5g4azy6",
+                    "cvc" to "123",
+                ),
                 "device" to mapOf(
                     "device_id" to "123456",
                     "device_model" to "Mate30 pro",

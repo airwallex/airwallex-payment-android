@@ -10,6 +10,12 @@ import kotlin.test.assertEquals
 class CardComponentProviderTest {
 
     @Test
+    fun onActivityResultTest() {
+        val cardComponentProvider = CardComponentProvider()
+        assertEquals(false, cardComponentProvider.onActivityResult(1, 1, null))
+    }
+
+    @Test
     fun canHandleActionTest() {
         val cardComponentProvider = CardComponentProvider()
         assertEquals(true, cardComponentProvider.canHandleAction(PaymentMethodType.CARD))

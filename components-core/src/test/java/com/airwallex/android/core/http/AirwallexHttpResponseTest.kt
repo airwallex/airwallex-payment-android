@@ -6,24 +6,20 @@ import kotlin.test.assertEquals
 class AirwallexHttpResponseTest {
 
     @Test
-    fun responseCodeTest() {
+    fun responseTest() {
         val response = AirwallexHttpResponse(
             code = 200,
-            body = "{}",
+            body = "{\"aaa\": \"bbb\"}",
             headers = mapOf("aaa" to listOf("123"))
         )
 
         assertEquals(200, response.code)
-    }
-
-    @Test
-    fun responseBodyTest() {
-        val response = AirwallexHttpResponse(
-            code = 200,
-            body = "{}",
-            headers = mapOf("aaa" to listOf("123"))
+        assertEquals("{\"aaa\": \"bbb\"}", response.body)
+        assertEquals("{\"aaa\":\"bbb\"}", response.responseJson.toString())
+        assertEquals(
+            "Status Code: 200, Trace-Id: null \n" +
+                " {\"aaa\": \"bbb\"}",
+            response.toString()
         )
-
-        assertEquals("{}", response.body)
     }
 }

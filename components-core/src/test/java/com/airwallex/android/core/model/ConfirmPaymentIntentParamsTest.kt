@@ -6,8 +6,8 @@ import kotlin.test.assertEquals
 class ConfirmPaymentIntentParamsTest {
 
     private val request = ConfirmPaymentIntentParams.Builder(
-        paymentIntentId = "123",
-        clientSecret = "abc"
+        paymentIntentId = "int_hkdmr7v9rg1j58ky8re",
+        clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="
     )
         .setCustomerId("111")
         .setCVC("123")
@@ -20,8 +20,11 @@ class ConfirmPaymentIntentParamsTest {
 
     @Test
     fun testParams() {
-        assertEquals("123", request.paymentIntentId)
-        assertEquals("abc", request.clientSecret)
+        assertEquals("int_hkdmr7v9rg1j58ky8re", request.paymentIntentId)
+        assertEquals(
+            "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
+            request.clientSecret
+        )
         assertEquals("111", request.customerId)
         assertEquals(PaymentMethodType.WECHAT, request.paymentMethodType)
         assertEquals(null, request.paymentMethod)

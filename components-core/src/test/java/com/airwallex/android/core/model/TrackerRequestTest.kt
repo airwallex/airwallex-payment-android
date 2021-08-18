@@ -7,6 +7,20 @@ class TrackerRequestTest {
 
     private val trackerRequest by lazy {
         TrackerRequest.Builder()
+            .setComplete(false)
+            .setEmpty(false)
+            .setType(TrackerRequest.TrackerType.CARD)
+            .setError("aaa")
+            .setIntentId("aaa")
+            .setStatus("aaa")
+            .setNextActionType("dcc")
+            .setNextActionUrl("www.airwallex.com")
+            .setBrand("brand")
+            .setCardBin("bin")
+            .setPath("path")
+            .setReq(null)
+            .setRes(null)
+            .setHeader(null)
             .setOrigin("1111")
             .setCode(TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED)
             .build()
@@ -15,23 +29,23 @@ class TrackerRequestTest {
     @Test
     fun testParams() {
         assertEquals("1111", trackerRequest.origin)
-        assertEquals(null, trackerRequest.complete)
-        assertEquals(null, trackerRequest.empty)
+        assertEquals(false, trackerRequest.complete)
+        assertEquals(false, trackerRequest.empty)
         assertEquals(null, trackerRequest.application)
-        assertEquals(null, trackerRequest.type)
+        assertEquals(TrackerRequest.TrackerType.CARD, trackerRequest.type)
 
         val code = trackerRequest.code!!
         assertEquals("onPaymentMethodCreated", code.value)
         assertEquals(TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED, code)
 
-        assertEquals(null, trackerRequest.error)
-        assertEquals(null, trackerRequest.intentId)
-        assertEquals(null, trackerRequest.status)
-        assertEquals(null, trackerRequest.nextActionType)
-        assertEquals(null, trackerRequest.nextActionUrl)
-        assertEquals(null, trackerRequest.brand)
-        assertEquals(null, trackerRequest.cardBin)
-        assertEquals(null, trackerRequest.path)
+        assertEquals("aaa", trackerRequest.error)
+        assertEquals("aaa", trackerRequest.intentId)
+        assertEquals("aaa", trackerRequest.status)
+        assertEquals("dcc", trackerRequest.nextActionType)
+        assertEquals("www.airwallex.com", trackerRequest.nextActionUrl)
+        assertEquals("brand", trackerRequest.brand)
+        assertEquals("bin", trackerRequest.cardBin)
+        assertEquals("path", trackerRequest.path)
         assertEquals(null, trackerRequest.req)
         assertEquals(null, trackerRequest.res)
         assertEquals(null, trackerRequest.header)
@@ -43,10 +57,21 @@ class TrackerRequestTest {
         assertEquals(
             mapOf(
                 "origin" to "1111",
+                "complete" to "false",
+                "empty" to "false",
                 "application" to "android",
-                "code" to "onPaymentMethodCreated"
-            ),
-            trackerParams
+                "type" to "card",
+                "code" to "onPaymentMethodCreated",
+                "error" to "aaa",
+                "intent_id" to "aaa",
+                "status" to "aaa",
+                "next_action_type" to "dcc",
+                "next_action_url" to "www.airwallex.com",
+                "brand" to "brand",
+                "cardBin" to "bin",
+                "path" to "path"
+            ).toString(),
+            trackerParams.toString()
         )
     }
 

@@ -26,7 +26,10 @@ class PaymentIntentTest {
             descriptor = "Airwallex - T-shirt",
             status = PaymentIntentStatus.REQUIRES_PAYMENT_METHOD,
             capturedAmount = BigDecimal.valueOf(0.1),
-            availablePaymentMethodTypes = arrayListOf(PaymentMethodType.CARD, PaymentMethodType.WECHAT),
+            availablePaymentMethodTypes = arrayListOf(
+                PaymentMethodType.CARD,
+                PaymentMethodType.WECHAT
+            ),
             customerPaymentMethods = arrayListOf(
                 PaymentMethod.Builder()
                     .setType(PaymentMethodType.CARD)
@@ -62,6 +65,76 @@ class PaymentIntentTest {
                     )
                     .build()
 
+            ),
+            customerPaymentConsents = listOf(
+                PaymentConsent(
+                    id = "123",
+                    requestId = "abc",
+                    customerId = "1",
+                    paymentMethod = PaymentMethod.Builder()
+                        .setId("mtd_4iyImkz7wglVXRad6hZWreqRJY0")
+                        .setRequestId(null)
+                        .setStatus(PaymentMethod.PaymentMethodStatus.VERIFIED)
+                        .setType(PaymentMethodType.CARD)
+                        .setCard(
+                            PaymentMethod.Card.Builder()
+                                .setExpiryMonth("01")
+                                .setExpiryYear("2023")
+                                .setName("Adam")
+                                .setBin("520000")
+                                .setLast4("1005")
+                                .setBrand("mastercard")
+                                .setIssuerCountryCode("MY")
+                                .setCardType("credit")
+                                .setFingerprint("290a1f394301fa8bd83be3f081a5d308d7f9fd89dd72c7c4108029dec75f72ae")
+                                .setCvcCheck("unknown")
+                                .setAvsCheck("unknown")
+                                .build()
+                        )
+                        .setBilling(
+                            Billing.Builder()
+                                .setFirstName("Jim")
+                                .setLastName("passlist")
+                                .setDateOfBirth("2011-10-12")
+                                .setEmail("jim631@sina.com")
+                                .setPhone("1367875788")
+                                .setAddress(
+                                    Address.Builder()
+                                        .setCountryCode("CN")
+                                        .setState("Beijing")
+                                        .setCity("Shanghai")
+                                        .setStreet("Pudong District")
+                                        .setPostcode("33333")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .setCreatedAt(Date(1617073440000))
+                        .setUpdatedAt(Date(1617073440000))
+                        .build(),
+                    initialPaymentIntentId = null,
+                    nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
+                    merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
+                    status = PaymentConsent.PaymentConsentStatus.VERIFIED,
+                    createdAt = Date(1617073440000),
+                    updatedAt = Date(1617073440000),
+                    nextAction = NextAction(
+                        type = NextAction.NextActionType.RENDER_QR_CODE,
+                        dcc = NextAction.DccData(
+                            currency = "1",
+                            amount = BigDecimal.valueOf(0.1),
+                            currencyPair = "1",
+                            clientRate = 6.44,
+                            rateSource = "financialMarket",
+                            rateTimestamp = "1627881115",
+                            rateExpiry = "1"
+                        ),
+                        url = "https://www.airwallex.com",
+                        method = "post",
+                        data = null
+                    ),
+                    clientSecret = "faqCACD3TAaeVjaltPa-Ig"
+                )
             ),
             clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             createdAt = Date(1585537417000),
@@ -115,7 +188,22 @@ class PaymentIntentTest {
                 createdAt = Date(1585537440000),
                 updatedAt = Date(1585537440000),
                 amount = BigDecimal.valueOf(0.1),
-                authenticationData = PaymentIntent.PaymentAttemptAuthData(null, null, null, null)
+                authenticationData = PaymentIntent.PaymentAttemptAuthData(
+                    PaymentIntent.PaymentAttemptAuthDSData(
+                        version = "2.1.0",
+                        liabilityShiftIndicator = "Y",
+                        eci = "05",
+                        cavv = null,
+                        xid = "TzRUOW9Eb1VXemZpMmhVa1RINTA=",
+                        enrolled = "Y",
+                        paResStatus = "Y",
+                        challengeCancellationReason = null,
+                        frictionless = "N"
+                    ),
+                    PaymentIntent.PaymentAttemptAuthFraudData(action = "VERIFY", score = "0"),
+                    "U",
+                    "U"
+                )
             )
         )
         assertEquals(paymentIntent, PaymentIntentFixtures.PAYMENT_INTENT)

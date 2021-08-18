@@ -11,10 +11,4 @@ enum class PaymentIntentContinueType(val value: String) : Parcelable {
     VALIDATE("3dsValidate"),
 
     DCC("dcc");
-
-    internal companion object {
-        internal fun fromValue(value: String?): PaymentIntentContinueType? {
-            return values().firstOrNull { it.value == value }
-        }
-    }
 }

@@ -330,11 +330,6 @@ data class TrackerRequest internal constructor(
         HPP("hpp"),
 
         REDIRECT_PAGE("redirectPage");
-        internal companion object {
-            internal fun fromValue(value: String?): TrackerType? {
-                return values().firstOrNull { it.value == value }
-            }
-        }
     }
 
     @Parcelize
@@ -386,10 +381,5 @@ data class TrackerRequest internal constructor(
         ON_SWITCH_METHOD("onSwitchMethod"),
 
         ON_CLICK_CONFIRM_BUTTON("onClickConfirmButton");
-        internal companion object {
-            internal fun fromValue(value: String?): TrackerCode? {
-                return values().firstOrNull { it.value == value }
-            }
-        }
     }
 }

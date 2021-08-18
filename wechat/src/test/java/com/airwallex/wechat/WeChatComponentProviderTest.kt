@@ -21,6 +21,12 @@ class WeChatComponentProviderTest {
     }
 
     @Test
+    fun onActivityResultTest() {
+        val weChatComponentProvider = WeChatComponentProvider()
+        assertEquals(false, weChatComponentProvider.onActivityResult(1, 1, null))
+    }
+
+    @Test
     fun retrieveSecurityTokenTest() {
         val weChatComponentProvider = WeChatComponentProvider()
 

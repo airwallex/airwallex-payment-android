@@ -19,6 +19,15 @@ class AirwallexHttpRequestTest {
     }
 
     @Test
+    fun headersTest() {
+        val headers = AirwallexHttpRequest.createGet(
+            AirwallexPlugins.environment.baseUrl(),
+            options
+        ).headers
+        assertEquals("Airwallex-Android-SDK", headers["User-Agent"])
+    }
+
+    @Test
     fun urlTest() {
         val url = AirwallexHttpRequest.createGet(
             url = AirwallexPlugins.environment.baseUrl(),

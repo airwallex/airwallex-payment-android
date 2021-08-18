@@ -53,4 +53,26 @@ class BillingTest {
             billing.address
         )
     }
+
+    @Test
+    fun testToParamMap() {
+        val paramMap = billing.toParamMap()
+        assertEquals(
+            mapOf(
+                "first_name" to "John",
+                "last_name" to "Doe",
+                "phone_number" to "13800000000",
+
+                "email" to "john.doe@airwallex.com",
+                "address" to mapOf(
+                    "country_code" to "CN",
+                    "state" to "Shanghai",
+                    "city" to "Shanghai",
+                    "street" to "Pudong District",
+                    "postcode" to "100000"
+                )
+            ),
+            paramMap
+        )
+    }
 }

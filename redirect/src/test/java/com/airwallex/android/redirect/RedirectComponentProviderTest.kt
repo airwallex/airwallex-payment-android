@@ -20,6 +20,12 @@ class RedirectComponentProviderTest {
     }
 
     @Test
+    fun onActivityResultTest() {
+        val redirectComponentProvider = RedirectComponentProvider()
+        assertEquals(false, redirectComponentProvider.onActivityResult(1, 1, null))
+    }
+
+    @Test
     fun retrieveSecurityTokenTest() {
         val redirectComponentProvider = RedirectComponentProvider()
 
