@@ -31,4 +31,19 @@ class DeviceTest {
         assertEquals("10.0", device.sdkVersion)
         assertEquals("huawei", device.platformType)
     }
+
+    @Test
+    fun testToParamsMap() {
+        val cardParamMap = device.toParamMap()
+        assertEquals(
+            mapOf(
+                "device_id" to "123456",
+                "device_model" to "Mate30 pro",
+                "sdk_version" to "10.0",
+                "platform_type" to "huawei",
+                "device_os" to "android"
+            ),
+            cardParamMap
+        )
+    }
 }

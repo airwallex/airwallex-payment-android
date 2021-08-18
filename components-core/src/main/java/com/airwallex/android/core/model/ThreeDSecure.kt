@@ -20,7 +20,7 @@ data class ThreeDSecure internal constructor(
     /**
      * Transaction ID for 3D Secure
      */
-    var transactionId: String? = null
+    val transactionId: String? = null
 
 ) : AirwallexModel, AirwallexRequestModel, Parcelable {
 

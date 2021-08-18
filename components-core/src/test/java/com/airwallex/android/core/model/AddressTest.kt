@@ -37,4 +37,13 @@ class AddressTest {
         assertEquals("Pudong District", address.street)
         assertEquals("100000", address.postcode)
     }
+
+    @Test
+    fun testToParamMap() {
+        val addressParams = Address.Builder()
+            .setCountryCode("CN")
+            .build()
+            .toParamMap()
+        assertEquals(mapOf("country_code" to "CN"), addressParams)
+    }
 }

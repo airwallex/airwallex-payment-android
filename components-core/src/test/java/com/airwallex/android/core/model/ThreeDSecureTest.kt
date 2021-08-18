@@ -24,4 +24,17 @@ class ThreeDSecureTest {
         assertEquals("abc", threeDSecure.deviceDataCollectionRes)
         assertEquals("123", threeDSecure.transactionId)
     }
+
+    @Test
+    fun testToParamsMap() {
+        val paramMap = ThreeDSecureFixtures.THREEDSECURE!!.toParamMap()
+        assertEquals(
+            mapOf(
+                "return_url" to "https://www.airwallex.com",
+                "device_data_collection_res" to "abc",
+                "ds_transaction_id" to "123"
+            ),
+            paramMap
+        )
+    }
 }

@@ -22,6 +22,9 @@ class ClientSecretTest {
     fun testParams() {
         val clientSecret = ClientSecretFixtures.CLIENTSECRET
         assertEquals("vvXOivbXQt-bjXxFicgLgA", clientSecret.value)
-        assertEquals(2015 - 1900, clientSecret.expiredTime.year)
+
+        val calendar = Calendar.getInstance()
+        calendar.time = clientSecret.expiredTime
+        assertEquals(2015, calendar.get(Calendar.YEAR))
     }
 }

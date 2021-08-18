@@ -52,4 +52,22 @@ class ShippingTest {
             shipping.address
         )
     }
+
+    @Test
+    fun testToParamMap() {
+        val shippingParams = Shipping.Builder()
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setPhone("13800000000")
+            .build()
+            .toParamMap()
+        assertEquals(
+            mapOf(
+                "first_name" to "John",
+                "last_name" to "Doe",
+                "phone_number" to "13800000000"
+            ),
+            shippingParams
+        )
+    }
 }
