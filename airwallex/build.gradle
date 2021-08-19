@@ -65,10 +65,6 @@ android.buildTypes.each { type ->
 }
 
 dependencies {
-    compileOnly project(':card')
-    compileOnly project(':wechat')
-    compileOnly project(':redirect')
-
     api project(':ui-core')
 
     // test

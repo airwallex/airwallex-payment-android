@@ -14,9 +14,11 @@ import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization
 import org.json.JSONArray
 
-object ThreeDSecureManager {
+class ThreeDSecureManager {
 
-    private const val TAG = "ThreeDSecure"
+    companion object {
+        private const val TAG = "ThreeDSecure"
+    }
 
     /**
      * Configure Cardinal Mobile SDK

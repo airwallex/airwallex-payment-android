@@ -27,8 +27,9 @@ class BillingWidget(context: Context, attrs: AttributeSet?) : LinearLayout(conte
 
     private val sameAsShippingViewGroup = viewBinding.rlSameAsShipping
     private val sameAsShippingSwitch = viewBinding.swSameAsShipping
-    private val firstNameTextInputLayout = viewBinding.atlFirstName
-    private val lastNameTextInputLayout = viewBinding.atlLastName
+
+    internal val firstNameTextInputLayout = viewBinding.atlFirstName
+    internal val lastNameTextInputLayout = viewBinding.atlLastName
     private val countryAutocomplete = viewBinding.countryAutocomplete
     private val stateTextInputLayout = viewBinding.atlState
     private val cityTextInputLayout = viewBinding.atlCity

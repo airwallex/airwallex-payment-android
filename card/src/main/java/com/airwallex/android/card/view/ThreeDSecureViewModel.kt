@@ -28,7 +28,7 @@ class ThreeDSecureViewModel(
     }
 
     sealed class ThreeDSecureResult {
-        data class Complete(val validateResponse: ValidateResponse, val jwt: String) :
+        data class Complete(val validateResponse: ValidateResponse?, val jwt: String?) :
             ThreeDSecureResult()
     }
 

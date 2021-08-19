@@ -10,7 +10,7 @@ class WeChatComponentProvider : ActionComponentProvider<WeChatComponent> {
 
     override fun handlePaymentIntentResponse(
         nextAction: NextAction?,
-        cardNextActionModel: ComponentProvider.CardNextActionModel?,
+        cardNextActionModel: CardNextActionModel?,
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         val nextActionData = nextAction?.data

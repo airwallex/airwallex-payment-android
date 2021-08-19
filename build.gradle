@@ -30,7 +30,15 @@ jacoco {
 
 rootCoverage {
 
-    excludes = ["**/extension", "**/ui", "**/log"]
+    excludes = [
+            "**/extension",
+            "**/ui",
+            "**/log",
+            "**/card/AirwallexSecurityConnector.class",
+            "**/card/ThreeDSecureManager.class",
+            "**/*Activity*.*",
+            "**/*ActivityLaunch*.*"
+    ]
 
     generateHtml true
     generateXml true

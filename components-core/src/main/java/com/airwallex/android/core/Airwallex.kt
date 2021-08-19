@@ -203,9 +203,9 @@ class Airwallex internal constructor(
                         listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
                         return
                     }
-                    provider.handlePaymentIntentResponse(
-                        response.nextAction,
-                        ComponentProvider.CardNextActionModel(
+
+                    val cardNextActionModel = when (params.paymentMethodType) {
+                        PaymentMethodType.CARD -> CardNextActionModel(
                             fragment = fragment,
                             activity = activity,
                             paymentManager = paymentManager,
@@ -214,7 +214,13 @@ class Airwallex internal constructor(
                             paymentIntentId = requireNotNull(response.initialPaymentIntentId),
                             currency = requireNotNull(params.currency),
                             amount = requireNotNull(params.amount),
-                        ),
+                        )
+                        else -> null
+                    }
+
+                    provider.handlePaymentIntentResponse(
+                        response.nextAction,
+                        cardNextActionModel,
                         listener
                     )
                 }
@@ -481,9 +487,8 @@ class Airwallex internal constructor(
                 }
 
                 override fun onSuccess(response: PaymentIntent) {
-                    provider.handlePaymentIntentResponse(
-                        response.nextAction,
-                        ComponentProvider.CardNextActionModel(
+                    val cardNextActionModel = when (params.paymentMethodType) {
+                        PaymentMethodType.CARD -> CardNextActionModel(
                             fragment = fragment,
                             activity = activity,
                             paymentManager = paymentManager,
@@ -492,7 +497,12 @@ class Airwallex internal constructor(
                             paymentIntentId = response.id,
                             currency = response.currency,
                             amount = response.amount,
-                        ),
+                        )
+                        else -> null
+                    }
+                    provider.handlePaymentIntentResponse(
+                        response.nextAction,
+                        cardNextActionModel,
                         listener
                     )
                 }
@@ -625,9 +635,10 @@ class Airwallex internal constructor(
                     listener.onFailed(AirwallexCheckoutException(message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"))
                     return
                 }
+                // Only card
                 provider.handlePaymentIntentResponse(
                     response.nextAction,
-                    ComponentProvider.CardNextActionModel(
+                    CardNextActionModel(
                         fragment = fragment,
                         activity = activity,
                         paymentManager = paymentManager,

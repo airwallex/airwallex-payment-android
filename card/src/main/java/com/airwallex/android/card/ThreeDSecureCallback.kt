@@ -1,5 +1,7 @@
 package com.airwallex.android.card
 
+import com.airwallex.android.core.exception.AirwallexException
+
 /**
  * Callback for 3DS
  */
@@ -15,7 +17,7 @@ interface ThreeDSecureCallback {
     fun onThreeDS2Success(transactionId: String)
 
     /**
-     * 3DS failed with [AirwallexError]
+     * 3DS failed with [AirwallexException]
      */
-    fun onFailed(exception: Exception)
+    fun onFailed(exception: AirwallexException)
 }

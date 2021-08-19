@@ -8,7 +8,9 @@ import com.airwallex.android.core.model.Shipping
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.shadows.ShadowLooper.idleMainLooper
 import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -19,6 +21,8 @@ class BillingWidgetTest {
         ApplicationProvider.getApplicationContext(),
         R.style.AirwallexDefaultTheme
     )
+
+    private var billingChangedCount = 0
 
     private val billingWidget: BillingWidget by lazy {
         BillingWidget(context, null)
@@ -42,6 +46,10 @@ class BillingWidgetTest {
     @BeforeTest
     fun setup() {
         billingWidget.shipping = shipping
+
+        billingWidget.billingChangeCallback = {
+            billingChangedCount++
+        }
     }
 
     @Test
@@ -52,5 +60,24 @@ class BillingWidgetTest {
     @Test
     fun billingValueTest() {
         assertNotNull(billingWidget.billing)
+    }
+
+    @Test
+    fun billingChangeCallbackTest() {
+        updateFirstName()
+        assertEquals(1, billingChangedCount)
+
+        updateLastName()
+        assertEquals(2, billingChangedCount)
+    }
+
+    private fun updateFirstName() {
+        billingWidget.firstNameTextInputLayout.value = "first"
+        idleMainLooper()
+    }
+
+    private fun updateLastName() {
+        billingWidget.lastNameTextInputLayout.value = "last"
+        idleMainLooper()
     }
 }

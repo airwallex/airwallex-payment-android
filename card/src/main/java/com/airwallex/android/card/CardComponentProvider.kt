@@ -25,10 +25,13 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
 
     private var dccCallback: DccCallback? = null
     private var threeDSecureCallback: ThreeDSecureCallback? = null
+    private val threeDSecureManager by lazy {
+        ThreeDSecureManager()
+    }
 
     override fun handlePaymentIntentResponse(
         nextAction: NextAction?,
-        cardNextActionModel: ComponentProvider.CardNextActionModel?,
+        cardNextActionModel: CardNextActionModel?,
         listener: PaymentListener<PaymentIntent>
     ) {
         if (cardNextActionModel == null) {
@@ -161,7 +164,7 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
         listener: PaymentListener<PaymentIntent>
     ) {
         Logger.debug("Step 1: Request `referenceId` with `serverJwt` by Cardinal SDK")
-        ThreeDSecureManager.performCardinalInitialize(
+        threeDSecureManager.performCardinalInitialize(
             applicationContext,
             serverJwt
         ) { referenceId, validateResponse ->
@@ -249,10 +252,10 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
                                     continuePaymentIntent(transactionId)
                                 }
 
-                                override fun onFailed(exception: Exception) {
+                                override fun onFailed(exception: AirwallexException) {
                                     Logger.debug("3DS Failed, Reason ${exception.message}")
                                     threeDSecureCallback = null
-                                    listener.onFailed(AirwallexCheckoutException(e = exception))
+                                    listener.onFailed(exception)
                                 }
                             }
 
@@ -357,10 +360,7 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
                             data.getStringExtra(ThreeDSecureActivity.EXTRA_THREE_FAILED_REASON)
                         Logger.debug("3DS 1.0 failed. Reason: $reason")
                         callback.onFailed(
-                            ThreeDSException(
-                                message = reason
-                                    ?: "3DS 1.0 verification failed"
-                            )
+                            ThreeDSException(message = reason ?: "3DS 1.0 verification failed")
                         )
                     }
                 }

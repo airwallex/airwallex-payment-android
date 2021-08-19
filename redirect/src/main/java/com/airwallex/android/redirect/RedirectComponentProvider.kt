@@ -10,7 +10,7 @@ class RedirectComponentProvider : ActionComponentProvider<RedirectComponent> {
 
     override fun handlePaymentIntentResponse(
         nextAction: NextAction?,
-        cardNextActionModel: ComponentProvider.CardNextActionModel?,
+        cardNextActionModel: CardNextActionModel?,
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
         val redirectUrl = nextAction?.url
