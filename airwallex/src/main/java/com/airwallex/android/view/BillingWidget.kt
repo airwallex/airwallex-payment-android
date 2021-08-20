@@ -17,7 +17,7 @@ import com.airwallex.android.model.Shipping
 /**
  * A widget used to collect the [Billing] info
  */
-internal class BillingWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+internal class BillingWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
 
     private val viewBinding = WidgetBillingBinding.inflate(
         LayoutInflater.from(context),
