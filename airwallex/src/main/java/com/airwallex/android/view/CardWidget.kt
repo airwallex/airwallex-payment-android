@@ -11,7 +11,7 @@ import com.airwallex.android.model.PaymentMethod
 /**
  * A widget used to collect the card info
  */
-internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+internal class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
 
     private val viewBinding = WidgetCardBinding.inflate(
         LayoutInflater.from(context),
