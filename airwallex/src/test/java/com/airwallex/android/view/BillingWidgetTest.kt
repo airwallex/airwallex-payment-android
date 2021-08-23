@@ -12,7 +12,7 @@ import kotlin.test.*
 class BillingWidgetTest {
 
     private var attributes: AttributeSet? = null
-    private lateinit var billingWidgets: BillingWidget
+    private lateinit var billingWidget: BillingWidget
 
     private val context = ContextThemeWrapper(
         ApplicationProvider.getApplicationContext(),
@@ -21,7 +21,7 @@ class BillingWidgetTest {
 
     @BeforeTest
     fun setup() {
-        billingWidgets = BillingWidget(context, attributes)
+        billingWidget = BillingWidget(context, attributes)
     }
 
     @Test
@@ -31,6 +31,6 @@ class BillingWidgetTest {
 
     @Test
     fun isValidTest() {
-        assertFalse(billingWidgets.isValid)
+        assertFalse(billingWidget.isValid)
     }
 }
