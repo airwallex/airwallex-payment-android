@@ -231,4 +231,16 @@ internal class BillingWidget(context: Context, attrs: AttributeSet?) : LinearLay
             }
         }
     }
+    fun isValid(
+        sameAsShipping: Boolean,
+        firstName: String,
+        lastName: String,
+        country: String,
+        state: String,
+        city: String,
+        address: String,
+        email: String
+    ): Boolean {
+        return !sameAsShipping && !firstName.isEmpty() && !lastName.isEmpty() && !country.isEmpty() && !state.isEmpty() && !city.isEmpty() && !address.isEmpty() && !email.isEmpty()
+    }
 }

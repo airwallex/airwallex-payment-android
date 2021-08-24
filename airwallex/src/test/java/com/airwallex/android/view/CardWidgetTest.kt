@@ -31,6 +31,6 @@ class CardWidgetTest {
 
     @Test
     fun isValidTest() {
-        assertFalse(cardWidget.isValid)
+        assertEquals(true, cardWidget.isValid("1234567898", "ICBC", Pair(3, 4), true))
     }
 }

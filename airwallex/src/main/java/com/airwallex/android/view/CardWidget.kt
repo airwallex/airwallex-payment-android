@@ -48,7 +48,8 @@ internal class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout
      */
     internal val isValid: Boolean
         get() {
-            val cardNumberIsValid = CardUtils.isValidCardNumber(cardNumberTextInputLayout.cardNumber)
+            val cardNumberIsValid =
+                CardUtils.isValidCardNumber(cardNumberTextInputLayout.cardNumber)
             val cardNameIsValid = cardNameTextInputLayout.value.isNotEmpty()
             val expiryIsValid = expiryTextInputLayout.validDateFields != null
             val cvcIsValid = cvcTextInputLayout.isValid
@@ -73,10 +74,12 @@ internal class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout
             if (!hasFocus) {
                 when {
                     cardNumberTextInputLayout.value.isEmpty() -> {
-                        cardNumberTextInputLayout.error = resources.getString(R.string.airwallex_empty_card_number)
+                        cardNumberTextInputLayout.error =
+                            resources.getString(R.string.airwallex_empty_card_number)
                     }
                     !cardNumberTextInputLayout.isValid -> {
-                        cardNumberTextInputLayout.error = resources.getString(R.string.airwallex_invalid_card_number)
+                        cardNumberTextInputLayout.error =
+                            resources.getString(R.string.airwallex_invalid_card_number)
                     }
                     else -> {
                         cardNumberTextInputLayout.error = null
@@ -90,7 +93,8 @@ internal class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout
             if (!hasFocus) {
                 when {
                     cardNameTextInputLayout.value.isEmpty() -> {
-                        cardNameTextInputLayout.error = resources.getString(R.string.airwallex_empty_card_name)
+                        cardNameTextInputLayout.error =
+                            resources.getString(R.string.airwallex_empty_card_name)
                     }
                     else -> {
                         cardNameTextInputLayout.error = null
@@ -104,10 +108,12 @@ internal class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout
             if (!hasFocus) {
                 when {
                     expiryTextInputLayout.value.isEmpty() -> {
-                        expiryTextInputLayout.error = resources.getString(R.string.airwallex_empty_expiry)
+                        expiryTextInputLayout.error =
+                            resources.getString(R.string.airwallex_empty_expiry)
                     }
                     !expiryTextInputLayout.isValid -> {
-                        expiryTextInputLayout.error = resources.getString(R.string.airwallex_invalid_expiry_date)
+                        expiryTextInputLayout.error =
+                            resources.getString(R.string.airwallex_invalid_expiry_date)
                     }
                     else -> {
                         expiryTextInputLayout.error = null
@@ -124,7 +130,8 @@ internal class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout
                         cvcTextInputLayout.error = resources.getString(R.string.airwallex_empty_cvc)
                     }
                     !cvcTextInputLayout.isValid -> {
-                        cvcTextInputLayout.error = resources.getString(R.string.airwallex_invalid_cvc)
+                        cvcTextInputLayout.error =
+                            resources.getString(R.string.airwallex_invalid_cvc)
                     }
                     else -> {
                         cvcTextInputLayout.error = null
@@ -137,7 +144,17 @@ internal class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout
     }
 
     private fun listenCompletionCallback() {
-        cardNumberTextInputLayout.completionCallback = { cardNameTextInputLayout.requestInputFocus() }
+        cardNumberTextInputLayout.completionCallback =
+            { cardNameTextInputLayout.requestInputFocus() }
         expiryTextInputLayout.completionCallback = { cvcTextInputLayout.requestInputFocus() }
+    }
+
+    fun isValid(
+        cardNum: String,
+        cardName: String,
+        cardCvc: Pair<Int, Int>,
+        cvcIsValid: Boolean
+    ): Boolean {
+        return !cardNum.isEmpty() && !cardName.isEmpty() && cardCvc != null && cvcIsValid
     }
 }

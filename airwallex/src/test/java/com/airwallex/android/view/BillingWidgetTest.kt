@@ -31,6 +31,6 @@ class BillingWidgetTest {
 
     @Test
     fun isValidTest() {
-        assertFalse(billingWidget.isValid)
+        assertEquals(true, billingWidget.isValid(false, "neil", "Nie", "china", "jiangsu", "suzhou", "lianhuastrict", "94706078@qq.com"))
     }
 }
