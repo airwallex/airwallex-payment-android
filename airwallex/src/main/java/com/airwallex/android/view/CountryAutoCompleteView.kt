@@ -7,7 +7,6 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
 import com.airwallex.android.databinding.CountryAutocompleteViewBinding
 import java.util.*
@@ -25,19 +24,19 @@ class CountryAutoCompleteView constructor(
 
     private var selectedCountry: Country? = null
 
-    private var error: String?
-        set(value) {
-            viewBinding.tvError.visibility = when (value) {
-                null -> View.GONE
-                else -> View.VISIBLE
-            }
-
-            viewBinding.tvError.text = value
-            updateLayoutColor()
-        }
-        get() {
-            return viewBinding.tvError.text.toString()
-        }
+    private var error: String? = null
+//        set(value) {
+//            viewBinding.tvError.visibility = when (value) {
+//                null -> View.GONE
+//                else -> View.VISIBLE
+//            }
+//
+//            viewBinding.tvError.text = value
+//            updateLayoutColor()
+//        }
+//        get() {
+//            return viewBinding.tvError.text.toString()
+//        }
 
     private val countryAdapter: CountryAdapter by lazy {
         CountryAdapter(getContext(), CountryUtils.COUNTRIES)
@@ -60,21 +59,21 @@ class CountryAutoCompleteView constructor(
         }
 
     private fun updateLayoutColor() {
-        if (error.isNullOrEmpty()) {
-            viewBinding.vBorder.background =
-                ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.airwallex_input_layout_border,
-                    null
-                )
-        } else {
-            viewBinding.vBorder.background =
-                ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.airwallex_input_layout_border_error,
-                    null
-                )
-        }
+//        if (error.isNullOrEmpty()) {
+//            viewBinding.vBorder.background =
+//                ResourcesCompat.getDrawable(
+//                    resources,
+//                    R.drawable.airwallex_input_layout_border,
+//                    null
+//                )
+//        } else {
+//            viewBinding.vBorder.background =
+//                ResourcesCompat.getDrawable(
+//                    resources,
+//                    R.drawable.airwallex_input_layout_border_error,
+//                    null
+//                )
+//        }
     }
 
     init {

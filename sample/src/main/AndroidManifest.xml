@@ -38,7 +38,7 @@
         <activity
             android:name="com.airwallex.paymentacceptance.PaymentCartActivity"
             android:launchMode="singleTask"
-            android:theme="@style/ActivityAnimTheme">
+            android:theme="@style/AirwallexDefaultTheme">
         </activity>
 
         <activity
@@ -86,6 +86,7 @@
         <activity
             android:name="com.airwallex.paymentacceptance.wechat.WeChatDemoActivity"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/ActivityAnimTheme"
             tools:ignore="LockedOrientationActivity" />
 

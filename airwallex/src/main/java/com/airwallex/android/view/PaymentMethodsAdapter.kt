@@ -12,9 +12,9 @@ import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.TrackerRequest
 import com.airwallex.android.databinding.PaymentMethodItemCardBinding
-import com.airwallex.android.databinding.PaymentMethodSpaceItemBinding
 import com.airwallex.android.databinding.PaymentMethodThirdItemBinding
 import com.airwallex.android.R
+import com.airwallex.android.databinding.PaymentMethodItemAddCardBinding
 import com.airwallex.android.dto.drawableRes
 import java.util.*
 
@@ -26,7 +26,6 @@ internal class PaymentMethodsAdapter(
     private var selectedPaymentConsent: PaymentConsent? = null
     private val paymentConsents = mutableListOf<PaymentConsent>()
     internal var listener: Listener? = null
-    private val spaceCount = if (availableThirdPaymentTypes.isNotEmpty()) 1 else 0
 
     internal fun isEmpty(): Boolean {
         return paymentConsents.isEmpty()
@@ -39,15 +38,14 @@ internal class PaymentMethodsAdapter(
 
     override fun getItemCount(): Int {
         return availableThirdPaymentTypes.size + // third part payment
-            spaceCount + // space
-            if (shouldShowCard) paymentConsents.size else 0 // card
+            (if (shouldShowCard) paymentConsents.size + 1 else 0) // card
     }
 
     override fun getItemViewType(position: Int): Int {
         return when {
             isThirdPosition(position) -> ItemViewType.ThirdPay.ordinal
-            isSpacePosition(position) -> ItemViewType.Space.ordinal
-            else -> ItemViewType.Card.ordinal
+            isCardPosition(position) -> ItemViewType.Card.ordinal
+            else -> ItemViewType.AddCard.ordinal
         }
     }
 
@@ -55,23 +53,23 @@ internal class PaymentMethodsAdapter(
         return position < availableThirdPaymentTypes.size
     }
 
-    private fun isSpacePosition(position: Int): Boolean {
-        return if (spaceCount > 0) availableThirdPaymentTypes.size == position else false
+    private fun isCardPosition(position: Int): Boolean {
+        return position >= availableThirdPaymentTypes.size && position < itemCount - 1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (ItemViewType.values()[viewType]) {
             ItemViewType.ThirdPay -> ThirdPayHolder(parent.context, parent)
-            ItemViewType.Space -> SpaceHolder(parent.context, parent)
             ItemViewType.Card -> CardHolder(parent.context, parent)
+            ItemViewType.AddCard -> AddCardHolder(parent.context, parent)
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ThirdPayHolder -> holder.bindView(position)
-            is SpaceHolder -> holder.bindView()
             is CardHolder -> holder.bindView(position)
+            is AddCardHolder -> holder.bindView()
         }
     }
 
@@ -92,7 +90,7 @@ internal class PaymentMethodsAdapter(
 
     private fun getPosition(paymentConsent: PaymentConsent): Int? {
         return paymentConsents.indexOfFirst { it.id == paymentConsent.id }.takeIf { it >= 0 }?.let {
-            it + availableThirdPaymentTypes.size + spaceCount
+            it + availableThirdPaymentTypes.size
         }
     }
 
@@ -102,7 +100,7 @@ internal class PaymentMethodsAdapter(
     }
 
     private fun getPaymentConsentIndex(position: Int): Int {
-        return position - (availableThirdPaymentTypes.size + spaceCount)
+        return position - availableThirdPaymentTypes.size
     }
 
     inner class CardHolder(
@@ -118,11 +116,19 @@ internal class PaymentMethodsAdapter(
 
         fun bindView(position: Int) {
             val paymentConsent =
-                paymentConsents[position - availableThirdPaymentTypes.size - spaceCount]
+                paymentConsents[position - availableThirdPaymentTypes.size]
             val method = paymentConsent.paymentMethod ?: return
             val card = method.card ?: return
             viewBinding.tvCardInfo.text =
-                String.format("%s •••• %s", card.brand?.uppercase(Locale.ROOT), card.last4)
+                String.format(
+                    "%s •••• %s",
+                    card.brand?.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(
+                            Locale.getDefault()
+                        ) else it.toString()
+                    },
+                    card.last4
+                )
             when (card.brand) {
                 CardBrand.Visa.type -> viewBinding.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
                 CardBrand.MasterCard.type -> viewBinding.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
@@ -179,11 +185,11 @@ internal class PaymentMethodsAdapter(
         }
     }
 
-    inner class SpaceHolder(
-        viewBinding: PaymentMethodSpaceItemBinding
+    inner class AddCardHolder(
+        val viewBinding: PaymentMethodItemAddCardBinding
     ) : RecyclerView.ViewHolder(viewBinding.root) {
         constructor(context: Context, parent: ViewGroup) : this(
-            PaymentMethodSpaceItemBinding.inflate(
+            PaymentMethodItemAddCardBinding.inflate(
                 LayoutInflater.from(context),
                 parent,
                 false
@@ -191,20 +197,27 @@ internal class PaymentMethodsAdapter(
         )
 
         fun bindView() {
-            itemView.layoutParams.height =
-                if (availableThirdPaymentTypes.isNotEmpty() && paymentConsents.size == 0) 0 else itemView.context.resources.getDimension(
-                    R.dimen.space_height
-                ).toInt()
+            if (paymentConsents.size > 0) {
+                viewBinding.tvAddCardInfo.setText(R.string.airwallex_pay_with_another_card)
+            } else {
+                viewBinding.tvAddCardInfo.setText(R.string.airwallex_pay_with_card)
+            }
+
+            itemView.setOnClickListener {
+                listener?.onAddCardClick()
+            }
         }
     }
 
     internal interface Listener {
         fun onPaymentConsentClick(paymentConsent: PaymentConsent)
+
+        fun onAddCardClick()
     }
 
     internal enum class ItemViewType {
         Card,
-        ThirdPay,
-        Space
+        AddCard,
+        ThirdPay
     }
 }

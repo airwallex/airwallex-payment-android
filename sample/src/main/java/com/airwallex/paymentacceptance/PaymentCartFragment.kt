@@ -73,15 +73,16 @@ class PaymentCartFragment : Fragment() {
         }
 
     private var shipping: Shipping = Shipping.Builder()
-        .setFirstName("Verify")
-        .setLastName("Doe")
+        .setFirstName("Doe")
+        .setLastName("John")
         .setPhone("13800000000")
+        .setEmail("john.doe@airwallex.com")
         .setAddress(
             Address.Builder()
                 .setCountryCode("CN")
                 .setState("Shanghai")
                 .setCity("Shanghai")
-                .setStreet("Pudong District")
+                .setStreet("Julu road")
                 .setPostcode("100000")
                 .build()
         )
@@ -90,11 +91,11 @@ class PaymentCartFragment : Fragment() {
     private val products = mutableListOf(
         PhysicalProduct.Builder()
             .setCode("123")
-            .setName("AirPods Pro")
+            .setName("AirPods")
             .setDesc("Buy AirPods Pro, per month with trade-in")
             .setSku("piece")
-            .setType("Free engraving")
-            .setUnitPrice(399.00)
+            .setType("White")
+            .setUnitPrice(500.00)
             .setUrl("www.aircross.com")
             .setQuantity(1)
             .build(),
@@ -104,7 +105,7 @@ class PaymentCartFragment : Fragment() {
             .setDesc("Buy HomePod, per month with trade-in")
             .setSku("piece")
             .setType("White")
-            .setUnitPrice(469.00)
+            .setUnitPrice(500.00)
             .setUrl("www.aircross.com")
             .setQuantity(1)
             .build()
@@ -203,8 +204,6 @@ class PaymentCartFragment : Fragment() {
 
         viewBinding.tvOrderSubtotalPrice.text = String.format("$%.2f", subtotalPrice)
         viewBinding.tvOrderTotalPrice.text = String.format("$%.2f", totalPrice)
-        viewBinding.tvShipping.text = getString(R.string.free)
-        viewBinding.tvOrderSum.text = products.sumOf { it.quantity ?: 0 }.toString()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

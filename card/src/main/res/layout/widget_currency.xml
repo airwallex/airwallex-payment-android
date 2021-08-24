@@ -39,8 +39,7 @@
                 android:id="@+id/tv_currency"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/circularstd_regular"
-                android:textColor="@color/airwallex_color_item_label"
+                android:textColor="@color/airwallex_color_grey_70"
                 android:textSize="14sp"
                 tools:text="USD" />
         </LinearLayout>
@@ -51,8 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:fontFamily="@font/circularstd_bold"
-            android:textColor="@color/airwallex_color_dark_deep"
+            android:textColor="@color/airwallex_color_grey_100"
             android:textSize="18sp"
             tools:text="$ 100.00" />
     </LinearLayout>

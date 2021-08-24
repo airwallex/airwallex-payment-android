@@ -72,7 +72,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         )[AddPaymentMethodViewModel::class.java]
     }
 
-    override fun onActionSave() {
+    private fun onSaveCard() {
         val card = viewBinding.cardWidget.paymentMethodCard ?: return
         setLoadingProgress(loading = true, cancelable = false)
         val observer = Observer<AirwallexCheckoutViewModel.PaymentResult> {
@@ -124,7 +124,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
     }
 
     override fun homeAsUpIndicatorResId(): Int {
-        return R.drawable.airwallex_ic_back
+        return R.drawable.airwallex_ic_close
     }
 
     private fun finishWithPaymentIntent(
@@ -161,6 +161,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         viewBinding.billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
 
         viewBinding.btnSaveCard.isEnabled = isValid
-        viewBinding.btnSaveCard.setOnSingleClickListener { onActionSave() }
+        viewBinding.btnSaveCard.setOnSingleClickListener { onSaveCard() }
     }
 }

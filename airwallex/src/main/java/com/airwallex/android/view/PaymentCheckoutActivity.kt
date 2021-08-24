@@ -14,6 +14,7 @@ import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.core.util.CurrencyUtils.formatPrice
 import com.airwallex.android.databinding.ActivityPaymentCheckoutBinding
 import com.airwallex.android.R
+import java.util.*
 
 /**
  * Activity to confirm payment intent
@@ -28,6 +29,10 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
+    }
+
+    private val keyboardController: KeyboardController by lazy {
+        KeyboardController(this)
     }
 
     private val args: PaymentCheckoutActivityLaunch.Args by lazy {
@@ -52,10 +57,25 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewBinding.header.text = getString(
+            R.string.airwallex_enter_cvv,
+            String.format(
+                "%s •••• %s",
+                paymentMethod.card?.brand?.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                },
+                paymentMethod.card?.last4
+            )
+        )
+        viewBinding.tvTotalPrice.text =
+            getString(R.string.airwallex_total, formatPrice(session.currency, session.amount))
 
-        viewBinding.tvTotalPrice.text = formatPrice(session.currency, session.amount)
-        viewBinding.paymentMethodItemView.renewalPaymentMethod(paymentMethod, args.cvc)
-        viewBinding.paymentMethodItemView.cvcChangedCallback = {
+        viewBinding.atlCardCvc.afterTextChanged {
+            if (viewBinding.atlCardCvc.isValid) {
+                keyboardController.hide()
+            }
             updateButtonStatus()
         }
 
@@ -75,7 +95,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         startCheckout(
             paymentMethod = paymentMethod,
             paymentConsentId = paymentConsentId,
-            cvc = viewBinding.paymentMethodItemView.cvc,
+            cvc = viewBinding.atlCardCvc.value,
             observer = {
                 when (it) {
                     is AirwallexCheckoutViewModel.PaymentResult.Success -> {
@@ -117,6 +137,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun updateButtonStatus() {
-        viewBinding.rlPayNow.isEnabled = viewBinding.paymentMethodItemView.isValid
+        viewBinding.rlPayNow.isEnabled = viewBinding.atlCardCvc.isValid
     }
 }

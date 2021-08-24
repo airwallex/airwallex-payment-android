@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rlAddCard"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@id/container"
-    android:orientation="vertical">
+    android:layout_height="@dimen/payment_method_item_height"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:paddingHorizontal="24dp">
+
+    <ImageView
+        android:id="@+id/ivAddCardIcon"
+        android:layout_width="35dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:contentDescription="@null"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/airwallex_ic_card_default" />
 
     <TextView
-        android:id="@+id/tvAddCard"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/airwallex_button_border"
-        android:drawablePadding="8dp"
-        android:fontFamily="@font/circularstd_bold"
-        android:gravity="center"
-        android:text="@string/airwallex_enter_new_card"
-        android:textColor="@color/airwallex_color_primary" />
-</LinearLayout>
+        android:id="@+id/tvAddCardInfo"
+        style="@style/AirwallexPaymentSubHeaderRegular"
+        android:layout_marginHorizontal="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/ivAddCardIcon" />
+
+</RelativeLayout>

@@ -3,7 +3,6 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -15,7 +14,6 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.R
@@ -75,12 +73,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     paymentConsent = paymentConsent
                 )
             }
-        }
 
-        viewBinding.addPaymentMethod.container.visibility =
-            if (shouldShowCard) View.VISIBLE else View.GONE
-        viewBinding.addPaymentMethod.container.setOnSingleClickListener {
-            startAddPaymentMethod()
+            override fun onAddCardClick() {
+                startAddPaymentMethod()
+            }
         }
 
         viewBinding.rvPaymentMethods.apply {
@@ -90,8 +86,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             addItemDecoration(
                 PaymentMethodsDividerItemDecoration(
                     this@PaymentMethodsActivity,
-                    R.drawable.airwallex_line_divider,
-                    availableThirdPaymentTypeSize = availableThirdPaymentTypes.filter { it != PaymentMethodType.CARD }.size
+                    R.drawable.airwallex_line_divider
                 )
             )
         }
@@ -130,7 +125,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         textSize = resources.getDimensionPixelSize(R.dimen.swipe_size),
                         color = ContextCompat.getColor(
                             baseContext,
-                            R.color.airwallex_swipe_bg_color
+                            R.color.airwallex_color_red
                         ),
                         clickListener = object : UnderlayButtonClickListener {
                             override fun onClick(position: Int) {

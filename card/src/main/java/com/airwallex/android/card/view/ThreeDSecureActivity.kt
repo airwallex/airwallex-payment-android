@@ -131,10 +131,6 @@ class ThreeDSecureActivity : AirwallexActivity() {
         viewBinding.webView.destroyWebView()
     }
 
-    override fun onActionSave() {
-        // Ignore
-    }
-
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_back
     }

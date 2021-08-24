@@ -2,15 +2,13 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.AttributeSet
-import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
 import com.airwallex.android.R.styleable
 import com.google.android.material.textfield.TextInputEditText
@@ -24,27 +22,25 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
 
     var tlInput: TextInputLayout
     var teInput: TextInputEditText
-    private var vBorder: View
-    private var tvError: TextView
 
-    var error: String?
+    private val borderWidthDefault by lazy {
+        resources.getDimension(R.dimen.airwallex_input_layout_border_width_default).toInt()
+    }
+
+    private val borderWidthFocused by lazy {
+        resources.getDimension(R.dimen.airwallex_input_layout_border_width_focused).toInt()
+    }
+
+    var error: String? = null
         set(value) {
-            when (value) {
-                null -> {
-                    tvError.visibility = View.GONE
-                    tlInput.error = null
-                }
-                else -> {
-                    tvError.visibility = View.VISIBLE
-                    tlInput.error = " "
-                }
+            field = value
+            if (TextUtils.isEmpty(value)) {
+                tlInput.isErrorEnabled = false
+                tlInput.boxStrokeWidth = borderWidthDefault
+            } else {
+                tlInput.error = value
+                tlInput.boxStrokeWidth = borderWidthFocused
             }
-
-            tvError.text = value
-            updateLayoutColor()
-        }
-        get() {
-            return tvError.text.toString()
         }
 
     var value: String
@@ -60,10 +56,6 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
 
         tlInput = findViewById(R.id.tlInput)
         teInput = findViewById(R.id.teInput)
-        vBorder = findViewById(R.id.vBorder)
-        tvError = findViewById(R.id.tvError)
-
-        tlInput.errorIconDrawable = null
 
         context.theme.obtainStyledAttributes(
             attrs,
@@ -107,24 +99,6 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
         tlInput.hint = hint
     }
 
-    private fun updateLayoutColor() {
-        if (error.isNullOrEmpty()) {
-            vBorder.background =
-                ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.airwallex_input_layout_border,
-                    null
-                )
-        } else {
-            vBorder.background =
-                ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.airwallex_input_layout_border_error,
-                    null
-                )
-        }
-    }
-
     fun setImeOptions(imeOptions: Int) {
         teInput.imeOptions = imeOptions
     }
@@ -140,12 +114,6 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
     fun afterFocusChanged(afterFocusChanged: (Boolean) -> Unit) {
         teInput.setOnFocusChangeListener { _, hasFocus ->
             afterFocusChanged.invoke(hasFocus)
-        }
-    }
-
-    internal fun setOnEditorActionListener(l: (actionId: Int, event: KeyEvent?) -> Boolean) {
-        teInput.setOnEditorActionListener { _, actionId, event ->
-            l.invoke(actionId, event)
         }
     }
 }

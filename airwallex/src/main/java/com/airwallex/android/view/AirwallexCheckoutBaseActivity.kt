@@ -24,10 +24,6 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         )[AirwallexCheckoutViewModel::class.java]
     }
 
-    override fun onActionSave() {
-        // Ignore
-    }
-
     fun startCheckout(
         paymentMethod: PaymentMethod,
         paymentConsentId: String? = null,

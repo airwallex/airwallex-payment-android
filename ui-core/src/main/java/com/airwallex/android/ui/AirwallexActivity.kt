@@ -50,8 +50,6 @@ abstract class AirwallexActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    protected abstract fun onActionSave()
-
     @DrawableRes
     protected abstract fun homeAsUpIndicatorResId(): Int
 
@@ -62,16 +60,11 @@ abstract class AirwallexActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Logger.debug("$localClassName#onCreateOptionsMenu()")
-        return if (item.itemId == R.id.action_save) {
-            onActionSave()
-            true
-        } else {
-            val handled = super.onOptionsItemSelected(item)
-            if (!handled) {
-                onBackPressed()
-            }
-            handled
+        val handled = super.onOptionsItemSelected(item)
+        if (!handled) {
+            onBackPressed()
         }
+        return handled
     }
 
     fun alert(title: String = "", message: String) {

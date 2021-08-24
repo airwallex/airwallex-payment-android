@@ -1,46 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingHorizontal="24dp">
+
+    <TextView
+        android:id="@+id/header"
+        style="@style/AirwallexPaymentHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/airwallex_enter_cvv"
+        tools:ignore="RtlSymmetry" />
 
     <TextView
         android:id="@+id/tvTotalPrice"
-        style="@style/AirwallexPaymentPriceInfo"
+        style="@style/AirwallexPaymentBodyGrey50"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp" />
+        android:layout_below="@id/header" />
 
-    <TextView
-        android:id="@+id/tvTotalLabel"
-        style="@style/AirwallexPaymentPriceLabel"
-        android:layout_width="wrap_content"
+    <com.airwallex.android.view.CardCvcTextInputLayout
+        android:id="@+id/atlCardCvc"
+        android:layout_width="124dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/tvTotalPrice"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:text="@string/airwallex_total" />
+        android:layout_marginTop="16dp"
+        android:imeOptions="actionDone" />
 
-    <com.airwallex.android.view.PaymentMethodItemView
-        android:id="@+id/paymentMethodItemView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvTotalLabel"
-        android:layout_marginTop="40dp" />
-
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/rlPayNow"
         style="@style/AirwallexPaymentButton"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/airwallex_pay_now"
-        app:icon="@drawable/airwallex_ic_lock_selector"
-        app:iconGravity="textStart"
-        app:iconPadding="10dp" />
+        android:layout_marginVertical="24dp"
+        android:text="@string/airwallex_pay_now" />
 
 </RelativeLayout>

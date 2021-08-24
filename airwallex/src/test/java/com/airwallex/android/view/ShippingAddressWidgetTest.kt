@@ -45,6 +45,6 @@ class ShippingAddressWidgetTest {
 
     @Test
     fun isValidShippingTest() {
-        assertTrue(shippingAddressWidget.isValidShipping)
+        assertTrue(shippingAddressWidget.isValid)
     }
 }

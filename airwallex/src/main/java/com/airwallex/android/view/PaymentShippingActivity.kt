@@ -3,11 +3,10 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import android.view.ViewGroup
-import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.databinding.ActivityAddShippingBinding
 import com.airwallex.android.R
+import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.ui.AirwallexActivity
 
 /**
@@ -25,42 +24,24 @@ class PaymentShippingActivity : AirwallexActivity() {
         PaymentShippingActivityLaunch.Args.getExtra(intent)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.action_save)?.isEnabled =
-            viewBinding.contactWidget.isValidContact && viewBinding.shippingWidget.isValidShipping
-        return super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.airwallex_menu_save, menu)
-        return true
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         args.shipping?.let {
-            viewBinding.contactWidget.initializeView(it)
             viewBinding.shippingWidget.initializeView(it)
         }
 
-        viewBinding.contactWidget.contactChangeCallback = {
-            invalidateOptionsMenu()
+        viewBinding.shippingWidget.shippingChangeCallback = {
+            viewBinding.btnSaveShipping.isEnabled = viewBinding.shippingWidget.isValid
         }
 
-        viewBinding.shippingWidget.shippingChangeCallback = {
-            invalidateOptionsMenu()
+        viewBinding.btnSaveShipping.setOnSingleClickListener {
+            onSaveShipping()
         }
     }
 
-    override fun onActionSave() {
-        val contact = viewBinding.contactWidget.shippingContact
-        val shipping = Shipping.Builder()
-            .setLastName(contact.first)
-            .setFirstName(contact.second)
-            .setPhone(contact.third)
-            .setAddress(viewBinding.shippingWidget.address)
-            .build()
+    private fun onSaveShipping() {
+        val shipping = viewBinding.shippingWidget.shipping
         setResult(
             Activity.RESULT_OK,
             Intent().putExtras(

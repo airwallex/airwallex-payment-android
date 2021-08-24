@@ -30,6 +30,11 @@ data class Shipping internal constructor(
      */
     val shippingMethod: String? = null,
 
+    /**
+     * Email address of the customer
+     */
+    val email: String? = null,
+
     val address: Address? = null
 ) : AirwallexModel, AirwallexRequestModel, Parcelable {
 
@@ -51,6 +56,11 @@ data class Shipping internal constructor(
                 }.orEmpty()
             )
             .plus(
+                email?.let {
+                    mapOf(ShippingParser.FIELD_EMAIL to it)
+                }.orEmpty()
+            )
+            .plus(
                 shippingMethod?.let {
                     mapOf(ShippingParser.FIELD_SHIPPING_METHOD to it)
                 }.orEmpty()
@@ -66,6 +76,7 @@ data class Shipping internal constructor(
         private var firstName: String? = null
         private var lastName: String? = null
         private var phoneNumber: String? = null
+        private var email: String? = null
         private var shippingMethod: String? = null
         private var address: Address? = null
 
@@ -81,6 +92,10 @@ data class Shipping internal constructor(
             this.phoneNumber = phone
         }
 
+        fun setEmail(email: String?): Builder = apply {
+            this.email = email
+        }
+
         fun setShippingMethod(shippingMethod: String?): Builder = apply {
             this.shippingMethod = shippingMethod
         }
@@ -94,6 +109,7 @@ data class Shipping internal constructor(
                 firstName = firstName,
                 lastName = lastName,
                 phoneNumber = phoneNumber,
+                email = email,
                 shippingMethod = shippingMethod,
                 address = address
             )

@@ -5,17 +5,25 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <com.airwallex.android.view.AirwallexTextInputLayout
+        android:id="@+id/atlFirstName"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:fontFamily="@font/circularstd_bold"
-        android:text="@string/airwallex_shipping_address"
-        android:textColor="@color/airwallex_color_dark_deep"
-        android:textSize="18sp" />
+        android:imeOptions="actionNext"
+        android:inputType="textCapWords"
+        app:hint="@string/airwallex_shipping_first_name_hint" />
+
+    <com.airwallex.android.view.AirwallexTextInputLayout
+        android:id="@+id/atlLastName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:imeOptions="actionNext"
+        android:inputType="textCapWords"
+        app:hint="@string/airwallex_shipping_last_name_hint" />
 
     <com.airwallex.android.view.CountryAutoCompleteView
+        android:layout_marginTop="16dp"
         android:id="@+id/countryAutocomplete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -24,7 +32,7 @@
         android:id="@+id/atlState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:imeOptions="actionNext"
         android:inputType="textCapWords"
         app:hint="@string/airwallex_shipping_state_name_hint" />
@@ -33,7 +41,7 @@
         android:id="@+id/atlCity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:imeOptions="actionNext"
         android:inputType="textCapWords"
         app:hint="@string/airwallex_shipping_city_name_hint" />
@@ -42,7 +50,7 @@
         android:id="@+id/atlStreetAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:imeOptions="actionNext"
         android:inputType="textCapWords"
         app:hint="@string/airwallex_shipping_street_hint" />
@@ -51,8 +59,26 @@
         android:id="@+id/atlZipCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:imeOptions="actionNext"
         android:inputType="text"
         app:hint="@string/airwallex_shipping_zip_code_hint" />
+
+    <com.airwallex.android.view.AirwallexTextInputLayout
+        android:id="@+id/atlEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        app:hint="@string/airwallex_shipping_email_hint" />
+
+    <com.airwallex.android.view.AirwallexTextInputLayout
+        android:id="@+id/atlPhoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        app:hint="@string/airwallex_contact_phone_number_hint" />
 </LinearLayout>

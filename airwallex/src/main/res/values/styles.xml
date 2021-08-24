@@ -1,21 +1,31 @@
 <resources>
 
-    <style name="AirwallexTextInputLayout" parent="Base.Widget.MaterialComponents.TextInputLayout">
-        <item name="materialThemeOverlay">@style/AirwallexMaterialThemeOverlay</item>
-        <item name="android:background">#00000000</item>
-        <item name="boxBackgroundMode">filled</item>
-        <item name="boxBackgroundColor">@null</item>
-        <item name="boxCollapsedPaddingTop">9dp</item>
-        <item name="boxStrokeColor">@color/airwallex_stroke_color</item>
+    <style name="AirwallexTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/airwallex_text_input_layout_stroke_color</item>
+        <item name="boxStrokeWidthFocused">@dimen/airwallex_input_layout_border_width_focused</item>
+        <item name="boxStrokeWidth">@dimen/airwallex_input_layout_border_width_default</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="errorTextColor">@color/airwallex_color_red</item>
+        <item name="hintTextColor">@color/airwallex_text_input_hint_color</item>
+        <item name="boxStrokeErrorColor">@color/airwallex_color_red</item>
+        <item name="errorIconDrawable">@null</item>
     </style>
 
-    <style name="AirwallexMaterialThemeOverlay">
-        <item name="editTextStyle">@style/AirwallexEditTextPadding</item>
-    </style>
-
-    <style name="AirwallexEditTextPadding" parent="Base.Widget.MaterialComponents.TextInputEditText">
-        <item name="android:paddingTop">26dp</item>
-        <item name="android:paddingBottom">8dp</item>
+    <style name="AirwallexCountryTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/airwallex_text_input_layout_stroke_color</item>
+        <item name="boxStrokeWidthFocused">@dimen/airwallex_input_layout_border_width_focused</item>
+        <item name="boxStrokeWidth">@dimen/airwallex_input_layout_border_width_default</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="errorTextColor">@color/airwallex_color_red</item>
+        <item name="hintTextColor">@color/airwallex_text_input_hint_color</item>
+        <item name="boxStrokeErrorColor">@color/airwallex_color_red</item>
+        <item name="errorIconDrawable">@null</item>
     </style>
 
     <style name="TransBottomSheetDialogStyle" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
@@ -24,26 +34,30 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-    <style name="AirwallexPaymentTitle">
-        <item name="android:textSize">32sp</item>
-        <item name="android:textColor">@color/airwallex_color_dark_deep</item>
-        <item name="android:fontFamily">@font/circularstd_bold</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
-        <item name="android:layout_marginBottom">10dp</item>
+    <style name="AirwallexPaymentHeader">
+        <item name="android:textSize">28sp</item>
+        <item name="android:textColor">@color/airwallex_color_grey_100</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="AirwallexPaymentPriceInfo">
-        <item name="android:textSize">40sp</item>
-        <item name="android:textColor">@color/airwallex_color_price</item>
-        <item name="android:fontFamily">@font/circularstd_bold</item>
+    <style name="AirwallexPaymentSubHeaderBold">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/airwallex_color_grey_100</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="AirwallexPaymentPriceLabel">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/airwallex_color_price</item>
-        <item name="android:fontFamily">@font/circularstd_medium</item>
+    <style name="AirwallexPaymentSubHeaderRegular">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/airwallex_color_grey_100</item>
+        <item name="android:textStyle">normal</item>
     </style>
+
+    <style name="AirwallexPaymentBodyGrey50">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/airwallex_color_grey_50</item>
+    </style>
+
 </resources>

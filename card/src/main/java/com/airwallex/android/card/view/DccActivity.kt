@@ -115,8 +115,6 @@ class DccActivity : AirwallexActivity() {
         finish()
     }
 
-    override fun onActionSave() {}
-
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_close
     }

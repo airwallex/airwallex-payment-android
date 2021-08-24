@@ -33,12 +33,6 @@ class ShippingItemView constructor(
         if (shipping == null) {
             viewBinding.tvShippingAddress.text =
                 context.getString(R.string.enter_shipping)
-            viewBinding.tvShippingAddress.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.airwallex_color_dark_light
-                )
-            )
             return
         }
 
@@ -60,7 +54,7 @@ class ShippingItemView constructor(
         viewBinding.tvShippingAddress.setTextColor(
             ContextCompat.getColor(
                 context,
-                R.color.airwallex_color_dark_deep
+                R.color.airwallex_color_grey_100
             )
         )
     }

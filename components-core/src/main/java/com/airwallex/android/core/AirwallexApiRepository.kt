@@ -346,7 +346,7 @@ class AirwallexApiRepository : ApiRepository {
         /**
          * paRes base url
          */
-        private fun retrievePaResBaseUrl(): String {
+        internal fun retrievePaResBaseUrl(): String {
             return AirwallexPlugins.environment.cybsUrl()
         }
 
@@ -400,7 +400,7 @@ class AirwallexApiRepository : ApiRepository {
         /**
          *  `/api/v1/pa/payment_methods/create`
          */
-        private fun createPaymentMethodUrl(baseUrl: String): String {
+        internal fun createPaymentMethodUrl(baseUrl: String): String {
             return getApiUrl(
                 baseUrl,
                 "payment_methods/create"
@@ -494,7 +494,7 @@ class AirwallexApiRepository : ApiRepository {
         }
 
         @Suppress("DEPRECATION")
-        private fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
+        internal fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
             return "$baseUrl/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
         }
     }

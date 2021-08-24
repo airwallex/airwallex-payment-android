@@ -6,26 +6,24 @@
     android:layout_height="@dimen/payment_method_item_height"
     android:background="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingHorizontal="24dp">
 
     <ImageView
         android:id="@+id/ivCardIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="35dp"
+        android:layout_height="24dp"
         android:layout_centerVertical="true"
-        android:contentDescription="@null" />
+        android:contentDescription="@null"
+        android:scaleType="centerInside" />
 
     <TextView
         android:id="@+id/tvCardInfo"
+        style="@style/AirwallexPaymentSubHeaderRegular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
-        android:layout_toEndOf="@id/ivCardIcon"
-        android:fontFamily="@font/circularstd_medium"
-        android:textColor="@color/airwallex_color_dark_deep"
-        android:textSize="14sp" />
+        android:layout_marginHorizontal="16dp"
+        android:layout_toEndOf="@id/ivCardIcon" />
 
     <ImageView
         android:id="@+id/ivCardChecked"
@@ -34,6 +32,6 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:contentDescription="@null"
-        app:srcCompat="@drawable/airwallex_ic_tick"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:srcCompat="@drawable/airwallex_ic_tick" />
 </RelativeLayout>

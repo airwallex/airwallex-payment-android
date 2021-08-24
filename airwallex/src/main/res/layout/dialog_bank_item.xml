@@ -15,7 +15,6 @@
         android:layout_centerVertical="true"
         android:layout_toStartOf="@id/bank_logo"
         android:ellipsize="end"
-        android:fontFamily="@font/circularstd_medium"
         android:singleLine="true"
         android:textColor="@color/airwallex_bank_text"
         android:textSize="14sp" />

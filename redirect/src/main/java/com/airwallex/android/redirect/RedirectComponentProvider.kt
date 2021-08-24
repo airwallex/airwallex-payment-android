@@ -13,12 +13,19 @@ class RedirectComponentProvider : ActionComponentProvider<RedirectComponent> {
         cardNextActionModel: CardNextActionModel?,
         listener: Airwallex.PaymentListener<PaymentIntent>
     ) {
-        val redirectUrl = nextAction?.url
-        if (redirectUrl.isNullOrEmpty()) {
-            listener.onFailed(APIException(message = "Server error, redirect url is null"))
-            return
+        when (nextAction?.type) {
+            NextAction.NextActionType.REDIRECT -> {
+                val redirectUrl = nextAction.url
+                if (redirectUrl.isNullOrEmpty()) {
+                    listener.onFailed(APIException(message = "Server error, redirect url is null"))
+                    return
+                }
+                listener.onNextActionWithRedirectUrl(redirectUrl)
+            }
+            else -> {
+                listener.onFailed(APIException(message = "Unsupported next action"))
+            }
         }
-        listener.onNextActionWithRedirectUrl(redirectUrl)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {

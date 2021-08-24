@@ -55,9 +55,14 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
             applicationContext = activity.applicationContext
         }
 
-        when {
+        when (nextAction?.type) {
             // DCC flow
-            nextAction?.type == NextAction.NextActionType.DCC && nextAction.dcc != null -> {
+            NextAction.NextActionType.DCC -> {
+                val dcc = nextAction.dcc
+                if (dcc == null) {
+                    listener.onFailed(AirwallexCheckoutException(message = "Missing dcc data from Airwallex server"))
+                    return
+                }
                 dccCallback = object : DccCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
                         dccCallback = null
@@ -73,7 +78,7 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
                 // DCC flow, please select your currency
                 dccActivityLaunch.startForResult(
                     DccActivityLaunch.Args(
-                        dcc = requireNotNull(nextAction.dcc),
+                        dcc = dcc,
                         paymentIntentId = cardNextActionModel.paymentIntentId,
                         currency = cardNextActionModel.currency,
                         amount = cardNextActionModel.amount,
@@ -81,9 +86,13 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
                     )
                 )
             }
-            // Handle 3DS flow - Check jwt if existed
-            nextAction?.data?.get("jwt") != null -> {
-                val serverJwt = nextAction.data?.get("jwt") as String
+            // 3DS flow
+            NextAction.NextActionType.REDIRECT -> {
+                val serverJwt = nextAction.data?.get("jwt") as? String
+                if (serverJwt == null) {
+                    listener.onFailed(AirwallexCheckoutException(message = "Missing jwt from Airwallex server"))
+                    return
+                }
                 Logger.debug("Prepare 3DS Flow, serverJwt: $serverJwt")
                 // 3D Secure Flow
                 Tracker.track(
@@ -124,7 +133,6 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
                 )
             }
             else -> {
-                Logger.debug("Don't need the 3DS Flow")
                 cardNextActionModel.paymentManager.startOperation(
                     AirwallexApiRepository.RetrievePaymentIntentOptions(
                         clientSecret = cardNextActionModel.clientSecret,

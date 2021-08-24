@@ -10,7 +10,7 @@
             android:name=".view.PaymentShippingActivity"
             android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".view.PaymentMethodsActivity"
@@ -21,11 +21,12 @@
             android:name=".view.AddPaymentMethodActivity"
             android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".view.PaymentCheckoutActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AirwallexDefaultTheme" />
+            android:theme="@style/AirwallexDefaultTheme"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

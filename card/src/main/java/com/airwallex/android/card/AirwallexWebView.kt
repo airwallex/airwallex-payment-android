@@ -18,7 +18,7 @@ internal class AirwallexWebView @SuppressLint("SetJavaScriptEnabled") constructo
         setBackgroundColor(
             ContextCompat.getColor(
                 context,
-                R.color.airwallex_color_bg
+                R.color.airwallex_color_white
             )
         )
         settings.javaScriptEnabled = true
