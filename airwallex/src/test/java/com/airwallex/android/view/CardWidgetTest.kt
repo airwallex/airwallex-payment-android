@@ -3,9 +3,11 @@ package com.airwallex.android.view
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.R
+import com.airwallex.android.core.model.PaymentMethod
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
@@ -55,5 +57,35 @@ class CardWidgetTest {
         cvcTextInputLayout.value = "123"
         expiryTextInputLayout.value = "102022"
         assertEquals(false, cardWidget.isValid)
+
+        cardNameTextInputLayout.value = "aaa"
+        cardNumberTextInputLayout.value = "4242424242424242"
+        cvcTextInputLayout.value = "123"
+        expiryTextInputLayout.value = "102023"
+        assertEquals(
+            PaymentMethod.Card.Builder()
+                .setName("aaa")
+                .setNumber("4242424242424242")
+                .setCvc("123")
+                .setExpiryMonth("10")
+                .setExpiryYear("2023")
+                .build(),
+            cardWidget.paymentMethodCard
+        )
+    }
+
+    @Test
+    fun cardChangeCallbackTest() {
+        val latch = CountDownLatch(1)
+        var success = false
+
+        cardWidget.cardChangeCallback = {
+            success = true
+            latch.countDown()
+        }
+        cardNumberTextInputLayout.value = "4242424242424242"
+
+        latch.await()
+        assertEquals(true, success)
     }
 }

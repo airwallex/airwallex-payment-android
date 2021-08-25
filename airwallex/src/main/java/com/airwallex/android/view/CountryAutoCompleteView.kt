@@ -118,7 +118,7 @@ class CountryAutoCompleteView constructor(
         }
     }
 
-    private fun updatedSelectedCountryCode(country: Country) {
+    fun updatedSelectedCountryCode(country: Country) {
         if (selectedCountry != country) {
             selectedCountry = country
             countryChangeCallback.invoke(country)

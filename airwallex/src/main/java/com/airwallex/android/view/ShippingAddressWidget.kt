@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.annotation.VisibleForTesting
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.R
@@ -22,15 +23,27 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
         true
     )
 
-    private val firstNameTextInputLayout = viewBinding.atlFirstName
-    private val lastNameTextInputLayout = viewBinding.atlLastName
+    @VisibleForTesting
+    val firstNameTextInputLayout = viewBinding.atlFirstName
+
+    @VisibleForTesting
+    val lastNameTextInputLayout = viewBinding.atlLastName
+
+    @VisibleForTesting
+    val stateTextInputLayout = viewBinding.atlState
+
+    @VisibleForTesting
+    val cityTextInputLayout = viewBinding.atlCity
+
+    @VisibleForTesting
+    val addressTextInputLayout = viewBinding.atlStreetAddress
+
+    @VisibleForTesting
+    val emailTextInputLayout = viewBinding.atlEmail
+
+    private val zipcodeTextInputLayout = viewBinding.atlZipCode
     private val numberTextInputLayout = viewBinding.atlPhoneNumber
     private val countryAutocomplete = viewBinding.countryAutocomplete
-    private val stateTextInputLayout = viewBinding.atlState
-    private val cityTextInputLayout = viewBinding.atlCity
-    private val addressTextInputLayout = viewBinding.atlStreetAddress
-    private val zipcodeTextInputLayout = viewBinding.atlZipCode
-    private val emailTextInputLayout = viewBinding.atlEmail
 
     /**
      * The listener of when the shipping address changed

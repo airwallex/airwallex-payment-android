@@ -6,6 +6,7 @@ import com.airwallex.android.R
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -38,5 +39,20 @@ class CardNumberTextInputLayoutTest {
         cardNumberEditText.setText("")
         cardNumberEditText.setText("4242 4242 4242 4242")
         assertEquals("4242424242424242", cardNumberEditText.cardNumber)
+    }
+
+    @Test
+    fun completionCallbackTest() {
+        val latch = CountDownLatch(1)
+        var success = false
+
+        cardNumberTextInputLayout.completionCallback = {
+            success = true
+            latch.countDown()
+        }
+        cardNumberTextInputLayout.value = "4242424242424242"
+
+        latch.await()
+        assertEquals(true, success)
     }
 }

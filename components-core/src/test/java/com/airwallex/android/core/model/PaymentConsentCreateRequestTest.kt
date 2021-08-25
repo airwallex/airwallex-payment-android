@@ -6,8 +6,8 @@ import kotlin.test.assertEquals
 class PaymentConsentCreateRequestTest {
 
     private val request = PaymentConsentCreateRequest.Builder()
-        .setRequestId("aaaa")
-        .setCustomerId("111")
+        .setRequestId("3d702b7b-ac7a-46b5-bf62-9fee0dd713bf")
+        .setCustomerId("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu")
         .setPaymentMethodRequest(
             PaymentMethodRequest.Builder(
                 type = PaymentMethodType.ALIPAY_CN
@@ -29,8 +29,8 @@ class PaymentConsentCreateRequestTest {
 
     @Test
     fun testParams() {
-        assertEquals("aaaa", request.requestId)
-        assertEquals("111", request.customerId)
+        assertEquals("3d702b7b-ac7a-46b5-bf62-9fee0dd713bf", request.requestId)
+        assertEquals("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu", request.customerId)
         assertEquals(
             PaymentMethodRequest.Builder(
                 type = PaymentMethodType.ALIPAY_CN
@@ -63,8 +63,8 @@ class PaymentConsentCreateRequestTest {
         val paramMap = request.toParamMap()
         assertEquals(
             mapOf(
-                "request_id" to "aaaa",
-                "customer_id" to "111",
+                "request_id" to "3d702b7b-ac7a-46b5-bf62-9fee0dd713bf",
+                "customer_id" to "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
                 "payment_method" to mapOf(
                     "type" to "alipaycn",
                     "alipaycn" to mapOf(

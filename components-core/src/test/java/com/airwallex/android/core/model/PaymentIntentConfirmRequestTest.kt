@@ -6,9 +6,9 @@ import kotlin.test.assertEquals
 class PaymentIntentConfirmRequestTest {
 
     private val request = PaymentIntentConfirmRequest.Builder(
-        requestId = "aaaa"
+        requestId = "3d702b7b-ac7a-46b5-bf62-9fee0dd713bf"
     )
-        .setCustomerId("111")
+        .setCustomerId("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu")
         .setDevice(
             Device.Builder()
                 .setDeviceId("123456")
@@ -31,8 +31,8 @@ class PaymentIntentConfirmRequestTest {
 
     @Test
     fun testParams() {
-        assertEquals("aaaa", request.requestId)
-        assertEquals("111", request.customerId)
+        assertEquals("3d702b7b-ac7a-46b5-bf62-9fee0dd713bf", request.requestId)
+        assertEquals("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu", request.customerId)
         assertEquals(null, request.paymentMethodRequest)
         assertEquals(null, request.paymentMethodOptions)
         assertEquals(
@@ -61,8 +61,8 @@ class PaymentIntentConfirmRequestTest {
         val paramMap = request.toParamMap()
         assertEquals(
             mapOf(
-                "request_id" to "aaaa",
-                "customer_id" to "111",
+                "request_id" to "3d702b7b-ac7a-46b5-bf62-9fee0dd713bf",
+                "customer_id" to "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
                 "payment_consent_reference" to mapOf(
                     "id" to "cst_hkdmr7v9rg1j5g4azy6",
                     "cvc" to "123",

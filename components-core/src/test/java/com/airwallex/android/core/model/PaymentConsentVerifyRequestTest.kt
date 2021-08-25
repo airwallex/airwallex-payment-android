@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 
 class PaymentConsentVerifyRequestTest {
 
-    private val request = PaymentConsentVerifyRequest.Builder()
+    private val cardRequest = PaymentConsentVerifyRequest.Builder()
         .setRequestId("aaaa")
         .setReturnUrl("https://www.airwallex.com")
         .setVerificationOptions(
@@ -22,10 +22,24 @@ class PaymentConsentVerifyRequestTest {
         )
         .build()
 
+    private val thirdPartRequest = PaymentConsentVerifyRequest.Builder()
+        .setRequestId("aaaa")
+        .setReturnUrl("https://www.airwallex.com")
+        .setVerificationOptions(
+            PaymentConsentVerifyRequest.VerificationOptions(
+                type = PaymentMethodType.ALIPAY_CN,
+                thirdPartOptions = PaymentConsentVerifyRequest.ThirdPartVerificationOptions(
+                    flow = AirwallexPaymentRequestFlow.IN_APP,
+                    osType = "android"
+                )
+            )
+        )
+        .build()
+
     @Test
     fun testParams() {
-        assertEquals("aaaa", request.requestId)
-        assertEquals("https://www.airwallex.com", request.returnUrl)
+        assertEquals("aaaa", cardRequest.requestId)
+        assertEquals("https://www.airwallex.com", cardRequest.returnUrl)
         assertEquals(
             JSONObject(
                 mapOf(
@@ -36,13 +50,13 @@ class PaymentConsentVerifyRequestTest {
                     )
                 )
             ).toString(),
-            JSONObject(request.verificationOptions!!.toParamMap()).toString()
+            JSONObject(cardRequest.verificationOptions!!.toParamMap()).toString()
         )
     }
 
     @Test
     fun testToParamsMap() {
-        val paramMap = request.toParamMap()
+        val cardParamMap = cardRequest.toParamMap()
         assertEquals(
             JSONObject(
                 mapOf(
@@ -57,7 +71,24 @@ class PaymentConsentVerifyRequestTest {
                     )
                 )
             ).toString(),
-            JSONObject(paramMap).toString()
+            JSONObject(cardParamMap).toString()
+        )
+
+        val thirdPartParamMap = thirdPartRequest.toParamMap()
+        assertEquals(
+            JSONObject(
+                mapOf(
+                    "request_id" to "aaaa",
+                    "return_url" to "https://www.airwallex.com",
+                    "verification_options" to mapOf(
+                        "alipaycn" to mapOf(
+                            "flow" to "inapp",
+                            "os_type" to "android"
+                        )
+                    )
+                )
+            ).toString(),
+            JSONObject(thirdPartParamMap).toString()
         )
     }
 }

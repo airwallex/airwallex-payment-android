@@ -44,15 +44,13 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
 
         val dccActivityLaunch: DccActivityLaunch
         val threeDSecureActivityLaunch: ThreeDSecureActivityLaunch
-        val applicationContext: Context
+        val applicationContext: Context = cardNextActionModel.applicationContext
         if (fragment != null) {
             dccActivityLaunch = DccActivityLaunch(fragment)
             threeDSecureActivityLaunch = ThreeDSecureActivityLaunch(fragment)
-            applicationContext = fragment.requireContext().applicationContext
         } else {
             dccActivityLaunch = DccActivityLaunch(activity)
             threeDSecureActivityLaunch = ThreeDSecureActivityLaunch(activity)
-            applicationContext = activity.applicationContext
         }
 
         when (nextAction?.type) {

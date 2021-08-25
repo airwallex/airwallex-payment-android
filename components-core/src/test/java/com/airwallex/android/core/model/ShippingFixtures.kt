@@ -11,6 +11,8 @@ internal object ShippingFixtures {
             "first_name": "John",
             "last_name": "Doe",
             "phone_number": "13800000000",
+            "email": "john.doe@airwallex.com",
+            "shipping_method": "shipping",
             "address": {
                 "country_code": "CN",
                 "state": "Shanghai",

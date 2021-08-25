@@ -14,6 +14,8 @@ class ShippingTest {
             .setFirstName("John")
             .setLastName("Doe")
             .setPhone("13800000000")
+            .setEmail("john.doe@airwallex.com")
+            .setShippingMethod("shipping")
             .setAddress(
                 Address.Builder()
                     .setCountryCode("CN")
@@ -41,6 +43,8 @@ class ShippingTest {
         assertEquals("John", shipping.firstName)
         assertEquals("Doe", shipping.lastName)
         assertEquals("13800000000", shipping.phoneNumber)
+        assertEquals("john.doe@airwallex.com", shipping.email)
+        assertEquals("shipping", shipping.shippingMethod)
         assertEquals(
             Address(
                 countryCode = "CN",

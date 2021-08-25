@@ -9,6 +9,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
@@ -27,6 +28,7 @@ class ShippingAddressWidgetTest {
         .setFirstName("Verify")
         .setLastName("Doe")
         .setPhone("13800000000")
+        .setEmail("john.doe@airwallex.com")
         .setAddress(
             Address.Builder()
                 .setCountryCode("CN")
@@ -46,5 +48,37 @@ class ShippingAddressWidgetTest {
     @Test
     fun isValidShippingTest() {
         assertTrue(shippingAddressWidget.isValid)
+    }
+
+    @Test
+    fun shippingValueTest() {
+        assertEquals(shipping, shippingAddressWidget.shipping)
+    }
+
+    @Test
+    fun listenFocusChangedTest() {
+        shippingAddressWidget.firstNameTextInputLayout.value = "a"
+        shippingAddressWidget.firstNameTextInputLayout.requestInputFocus()
+        assertEquals(null, shippingAddressWidget.firstNameTextInputLayout.error)
+
+        shippingAddressWidget.lastNameTextInputLayout.value = "a"
+        shippingAddressWidget.lastNameTextInputLayout.requestInputFocus()
+        assertEquals(null, shippingAddressWidget.lastNameTextInputLayout.error)
+
+        shippingAddressWidget.stateTextInputLayout.value = ""
+        shippingAddressWidget.stateTextInputLayout.requestInputFocus()
+        assertEquals(null, shippingAddressWidget.stateTextInputLayout.error)
+
+        shippingAddressWidget.cityTextInputLayout.value = "city"
+        shippingAddressWidget.cityTextInputLayout.requestInputFocus()
+        assertEquals(null, shippingAddressWidget.cityTextInputLayout.error)
+
+        shippingAddressWidget.addressTextInputLayout.value = "address"
+        shippingAddressWidget.addressTextInputLayout.requestInputFocus()
+        assertEquals(null, shippingAddressWidget.addressTextInputLayout.error)
+
+        shippingAddressWidget.emailTextInputLayout.value = "jim631@sina.com"
+        shippingAddressWidget.emailTextInputLayout.requestInputFocus()
+        assertEquals(null, shippingAddressWidget.emailTextInputLayout.error)
     }
 }

@@ -216,4 +216,28 @@ class PaymentIntentTest {
             ParcelUtils.create(PaymentIntentFixtures.PAYMENT_INTENT)
         )
     }
+
+    @Test
+    fun testParams() {
+        val dsData = PaymentIntent.PaymentAttemptAuthDSData(
+            version = "2.1.0",
+            liabilityShiftIndicator = "Y",
+            eci = "05",
+            cavv = null,
+            xid = "TzRUOW9Eb1VXemZpMmhVa1RINTA=",
+            enrolled = "Y",
+            paResStatus = "Y",
+            challengeCancellationReason = null,
+            frictionless = "N"
+        )
+        assertEquals("2.1.0", dsData.version)
+        assertEquals("Y", dsData.liabilityShiftIndicator)
+        assertEquals("05", dsData.eci)
+        assertEquals(null, dsData.cavv)
+        assertEquals("TzRUOW9Eb1VXemZpMmhVa1RINTA=", dsData.xid)
+        assertEquals("Y", dsData.enrolled)
+        assertEquals("Y", dsData.paResStatus)
+        assertEquals(null, dsData.challengeCancellationReason)
+        assertEquals("N", dsData.frictionless)
+    }
 }

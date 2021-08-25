@@ -6,8 +6,8 @@ import kotlin.test.assertEquals
 class PaymentMethodCreateRequestTest {
 
     private val request = PaymentMethodCreateRequest.Builder()
-        .setRequestId("aaaa")
-        .setCustomerId("111")
+        .setRequestId("3d702b7b-ac7a-46b5-bf62-9fee0dd713bf")
+        .setCustomerId("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu")
         .setType(PaymentMethodType.CARD)
         .setCard(
             PaymentMethod.Card.Builder()
@@ -28,8 +28,8 @@ class PaymentMethodCreateRequestTest {
 
     @Test
     fun testParams() {
-        assertEquals("aaaa", request.requestId)
-        assertEquals("111", request.customerId)
+        assertEquals("3d702b7b-ac7a-46b5-bf62-9fee0dd713bf", request.requestId)
+        assertEquals("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu", request.customerId)
         assertEquals(PaymentMethodType.CARD, request.type)
         assertEquals(
             PaymentMethod.Card.Builder()
@@ -54,8 +54,8 @@ class PaymentMethodCreateRequestTest {
         val paramMap = request.toParamMap()
         assertEquals(
             mapOf(
-                "request_id" to "aaaa",
-                "customer_id" to "111",
+                "request_id" to "3d702b7b-ac7a-46b5-bf62-9fee0dd713bf",
+                "customer_id" to "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
                 "type" to "card",
                 "card" to mapOf(
                     "expiry_month" to "12",

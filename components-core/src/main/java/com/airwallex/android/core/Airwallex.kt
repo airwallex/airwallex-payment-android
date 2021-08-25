@@ -208,6 +208,7 @@ class Airwallex internal constructor(
                         PaymentMethodType.CARD -> CardNextActionModel(
                             fragment = fragment,
                             activity = activity,
+                            applicationContext = applicationContext,
                             paymentManager = paymentManager,
                             clientSecret = params.clientSecret,
                             device = null,
@@ -491,6 +492,7 @@ class Airwallex internal constructor(
                         PaymentMethodType.CARD -> CardNextActionModel(
                             fragment = fragment,
                             activity = activity,
+                            applicationContext = applicationContext,
                             paymentManager = paymentManager,
                             clientSecret = params.clientSecret,
                             device = device,
@@ -641,6 +643,7 @@ class Airwallex internal constructor(
                     CardNextActionModel(
                         fragment = fragment,
                         activity = activity,
+                        applicationContext = applicationContext,
                         paymentManager = paymentManager,
                         clientSecret = params.clientSecret,
                         device = params.device,

@@ -6,7 +6,7 @@ import kotlinx.parcelize.RawValue
 import java.math.BigDecimal
 
 @Parcelize
-data class NextAction internal constructor(
+data class NextAction(
 
     /**
      * Type of next action, can be one of render_qr_code, call_sdk, redirect, display

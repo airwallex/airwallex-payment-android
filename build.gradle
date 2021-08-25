@@ -34,10 +34,17 @@ rootCoverage {
             "**/extension",
             "**/ui",
             "**/log",
+            "**/AirwallexStarter*.*",
             "**/card/AirwallexSecurityConnector.class",
             "**/card/ThreeDSecureManager.class",
             "**/*Activity*.*",
-            "**/*ActivityLaunch*.*"
+            "**/*ActivityLaunch*.*",
+            "**/core/Airwallex.class",
+            "**/core/AirwallexPaymentManager.class",
+            "**/core/AirwallexApiRepository.class",
+            // These will be change
+            "**/view/PaymentInfoBottomSheetDialog.class",
+            "**/view/PaymentMethods*.*"
     ]
 
     generateHtml true
