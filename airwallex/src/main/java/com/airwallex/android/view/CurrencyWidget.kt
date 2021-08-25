@@ -12,7 +12,7 @@ import com.airwallex.android.databinding.WidgetCurrencyBinding
 import java.math.BigDecimal
 import java.util.*
 
-internal class CurrencyWidget(context: Context, attrs: AttributeSet) :
+internal class CurrencyWidget(context: Context, attrs: AttributeSet?) :
     FrameLayout(context, attrs) {
 
     private val viewBinding = WidgetCurrencyBinding.inflate(
@@ -42,5 +42,10 @@ internal class CurrencyWidget(context: Context, attrs: AttributeSet) :
         } catch (e: Exception) {
             viewBinding.icon.visibility = View.GONE
         }
+    }
+    fun isValid(currency: String, amount: BigDecimal): Boolean{
+
+        return !currency.isEmpty() && !formatPrice(currency,amount).isEmpty()
+
     }
 }
