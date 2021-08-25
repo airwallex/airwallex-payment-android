@@ -43,9 +43,8 @@ internal class CurrencyWidget(context: Context, attrs: AttributeSet?) :
             viewBinding.icon.visibility = View.GONE
         }
     }
-    fun isValid(currency: String, amount: BigDecimal): Boolean{
+    fun isValid(currency: String, amount: BigDecimal): Boolean {
 
-        return !currency.isEmpty() && !formatPrice(currency,amount).isEmpty()
-
+        return !currency.isEmpty() && !formatPrice(currency, amount).isEmpty()
     }
 }
