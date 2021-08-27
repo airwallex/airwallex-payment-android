@@ -13,7 +13,8 @@ open class AirwallexHttpRequest internal constructor(
     val url: String,
     val params: Map<String, *>? = null,
     val options: Options,
-    private val awxTracker: String? = null
+    private val awxTracker: String? = null,
+    private val accept: String? = null
 ) {
     private val mimeType: MimeType = MimeType.Json
 
@@ -25,11 +26,10 @@ open class AirwallexHttpRequest internal constructor(
     internal val headers: Map<String, String>
         get() {
             return mapOf(
-                ACCEPT_HEADER_KEY to ACCEPT_HEADER_VALUE,
+                ACCEPT_HEADER_KEY to (accept ?: ACCEPT_HEADER_VALUE),
                 CONTENT_TYPE_HEADER_KEY to CONTENT_TYPE_HEADER_VALUE,
                 USER_AGENT_KEY to USER_AGENT_VALUE,
-                API_VERSION to BuildConfig.API_VERSION,
-                CLIENT_SECRET to options.clientSecret
+                API_VERSION to BuildConfig.API_VERSION
             )
                 .plus(
                     if (options.clientSecret.isEmpty()) {
@@ -45,7 +45,7 @@ open class AirwallexHttpRequest internal constructor(
                 )
         }
 
-    protected val body: String
+    private val body: String
         @Throws(InvalidRequestException::class, UnsupportedEncodingException::class)
         get() {
             return AirwallexJsonUtils.mapToJsonObject(params).toString()
@@ -97,9 +97,10 @@ open class AirwallexHttpRequest internal constructor(
             url: String,
             options: Options,
             params: Map<String, *>? = null,
-            awxTracker: String? = null
+            awxTracker: String? = null,
+            accept: String? = null
         ): AirwallexHttpRequest {
-            return AirwallexHttpRequest(Method.GET, url, params, options, awxTracker)
+            return AirwallexHttpRequest(Method.GET, url, params, options, awxTracker, accept)
         }
 
         fun createPost(

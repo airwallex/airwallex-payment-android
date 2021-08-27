@@ -270,6 +270,21 @@ class AirwallexApiRepository : ApiRepository {
         }
     }
 
+    override suspend fun executeMockWeChat(mockWeChatUrl: String) {
+        runCatching {
+            httpClient.execute(
+                AirwallexHttpRequest.createGet(
+                    url = mockWeChatUrl,
+                    options = Options(""),
+                    params = null,
+                    accept = "*/*;q=0.8"
+                )
+            )
+        }.getOrElse {
+            Logger.debug("Execute Mock WeChat failed.")
+        }
+    }
+
     override suspend fun retrieveAvailablePaymentMethods(options: Options): AvailablePaymentMethodResponse? {
         return executeApiRequest(
             AirwallexHttpRequest.createGet(

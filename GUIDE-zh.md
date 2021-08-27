@@ -113,9 +113,13 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 使用 `presentShippingFlow` 允许用户提供送货地址以及选择送货方式. `shipping` 字段是可选的
 ```kotlin
     AirwallexStarter.presentShippingFlow(this, shipping,
-        object : Airwallex.PaymentShippingListener {
+        object : Airwallex.PaymentListener<Shipping> {
             override fun onSuccess(shipping: Shipping) {
                 Log.d(TAG, "Save the shipping success")
+            }
+
+            override fun onFailed(exception: Exception) {
+                Log.d(TAG, "Save the shipping failed")
             }
 
             override fun onCancelled() {
@@ -129,21 +133,10 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ```kotlin
     AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent).build(),
         object : Airwallex.PaymentIntentListener {
-            // If you need to support card, it's optional
             override fun onSuccess(paymentIntent: PaymentIntent) {
                 Log.d(TAG, "Confirm payment intent success")
             }
             
-            // If you need to support wechatpay, it's optional
-            override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                Log.d(TAG, "Confirm payment intent success, start WeChat Pay")
-            }
-
-            // If you need to support redirect url, it's optional
-            override fun onNextActionWithRedirectUrl(url: String) {
-                Log.d(TAG, "Confirm payment intent success, start Redirect URL")
-            }
-
             override fun onFailed(exception: Exception) {
                 Log.d(TAG, "Confirm payment intent failed")
             }
@@ -156,15 +149,7 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ### Custom Theme
 您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格。 https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
 ```
-    <!--   a secondary color for controls like checkboxes and text fields -->
-    <color name="airwallex_color_accent">@color/color_accent</color>
-
-    <!--   color for the app bar and other primary UI elements -->
-    <color name="airwallex_color_primary">@color/color_primary</color>
-
-    <!--   a darker variant of the primary color, used for
-           the status bar (on Android 5.0+) and contextual app bars -->
-    <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
+    <color name="airwallex_tint_color">@color/airwallex_color_red</color>
 ```
 
 ## API集成

@@ -20,19 +20,18 @@ import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.parser.PaymentIntentParser
-import com.airwallex.android.redirect.exception.RedirectException
-import com.airwallex.android.redirect.util.RedirectUtil
 import com.airwallex.paymentacceptance.databinding.CartItemBinding
 import com.airwallex.paymentacceptance.databinding.FragmentCartBinding
 import kotlinx.coroutines.*
 import okhttp3.*
 import org.json.JSONObject
 import retrofit2.HttpException
-import java.io.IOException
 import java.math.BigDecimal
 import java.util.*
 
 class PaymentCartFragment : Fragment() {
+
+    private val airwallex: Airwallex by lazy { Airwallex(this) }
 
     private val viewBinding: FragmentCartBinding by lazy {
         FragmentCartBinding.inflate(layoutInflater)
@@ -295,16 +294,19 @@ class PaymentCartFragment : Fragment() {
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        showPaymentSuccess()
+                        retrievePaymentIntent(
+                            airwallex,
+                            it.paymentIntentId,
+                            paymentIntent.clientSecret!!
+                        ) { paymentIntent ->
+                            val type = paymentIntent.latestPaymentAttempt?.paymentMethod?.type
+                            if (type == PaymentMethodType.CARD || type == PaymentMethodType.WECHAT) {
+                                showPaymentSuccess()
+                            }
+                        }
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.message)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
-                        startWeChatPay(it.weChat)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
-                        startRedirectUrl(it.redirectUrl)
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
                         Log.d(TAG, "User cancel the payment")
@@ -375,16 +377,19 @@ class PaymentCartFragment : Fragment() {
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        showPaymentSuccess()
+                        retrievePaymentIntent(
+                            airwallex,
+                            it.paymentIntentId,
+                            null
+                        ) { paymentIntent ->
+                            val type = paymentIntent.latestPaymentAttempt?.paymentMethod?.type
+                            if (type == PaymentMethodType.CARD || type == PaymentMethodType.WECHAT) {
+                                showPaymentSuccess()
+                            }
+                        }
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.localizedMessage)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
-                        startWeChatPay(it.weChat)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
-                        startRedirectUrl(it.redirectUrl)
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
                         showPaymentCancelled()
@@ -480,16 +485,19 @@ class PaymentCartFragment : Fragment() {
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        showPaymentSuccess()
+                        retrievePaymentIntent(
+                            airwallex,
+                            it.paymentIntentId,
+                            paymentIntent.clientSecret!!
+                        ) { paymentIntent ->
+                            val type = paymentIntent.latestPaymentAttempt?.paymentMethod?.type
+                            if (type == PaymentMethodType.CARD || type == PaymentMethodType.WECHAT) {
+                                showPaymentSuccess()
+                            }
+                        }
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.message)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
-                        startWeChatPay(it.weChat)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
-                        startRedirectUrl(it.redirectUrl)
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
                         Log.d(TAG, "User cancel the payment")
@@ -500,81 +508,6 @@ class PaymentCartFragment : Fragment() {
         }
     }
 
-    private fun startWeChatPay(weChat: WeChat) {
-        Log.d(TAG, "weChat info $weChat")
-        (activity as? PaymentCartActivity)?.setLoadingProgress(true)
-        val prepayId = weChat.prepayId
-        // We use the `URL mock` method to simulate WeChat Pay in the `Staging` environment.
-        // By requesting this URL, we will set the status of the `PaymentIntent` to success.
-        if (prepayId?.startsWith("http") == true) {
-            // **This is just for test on Staging env**
-            Log.d(
-                TAG,
-                "Confirm PaymentIntent success, MOCK WeChat Pay on staging env."
-            )
-            // MOCK WeChat Pay
-            val client = OkHttpClient()
-            val builder = Request.Builder()
-            builder.url(prepayId)
-            client.newCall(builder.build()).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    activity?.runOnUiThread {
-                        Log.e(TAG, "Mock WeChat Pay failed, reason: $e.message")
-                        showPaymentError(e.message)
-                    }
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    activity?.runOnUiThread {
-                        if (response.isSuccessful) {
-                            Log.d(TAG, "Mock WeChat Pay successful.")
-                            showPaymentSuccess()
-                        } else {
-                            Log.e(TAG, "Mock WeChat Pay failed.")
-                            showPaymentError("Mock WeChat Pay failed.")
-                        }
-                    }
-                }
-            })
-        } else {
-            Log.d(TAG, "Confirm PaymentIntent success, launch REAL WeChat Pay.")
-            // Launch WeChat Pay
-            WXPay.instance.launchWeChat(
-                data = weChat,
-                listener = object : WXPay.WeChatPaymentListener {
-                    override fun onSuccess() {
-                        Log.d(TAG, "REAL WeChat Pay successful.")
-                        showPaymentSuccess()
-                    }
-
-                    override fun onFailure(
-                        errCode: String?,
-                        errMessage: String?
-                    ) {
-                        Log.e(
-                            TAG,
-                            "REAL WeChat Pay failed, reason: $errMessage"
-                        )
-                        showPaymentError(errMessage)
-                    }
-
-                    override fun onCancel() {
-                        Log.d(TAG, "REAL WeChat Pay cancelled.")
-                        showPaymentError("REAL WeChat Pay cancelled.")
-                    }
-                }
-            )
-        }
-    }
-
-    private fun startRedirectUrl(redirectUrl: String) {
-        try {
-            RedirectUtil.makeRedirect(activity = requireActivity(), redirectUrl = redirectUrl)
-        } catch (e: RedirectException) {
-            showPaymentError(e.localizedMessage)
-        }
-    }
-
     /**
      * After successful payment, Airwallex server will notify the Merchant,
      * Then Merchant can retrieve the `PaymentIntent` to check the `status` of the PaymentIntent.
@@ -582,30 +515,59 @@ class PaymentCartFragment : Fragment() {
     private fun retrievePaymentIntent(
         airwallex: Airwallex,
         paymentIntentId: String,
-        clientSecret: String
+        clientSecret: String?,
+        onComplete: (paymentIntent: PaymentIntent) -> Unit
     ) {
-        airwallex.retrievePaymentIntent(
-            params = RetrievePaymentIntentParams(
-                // the ID of the `PaymentIntent`, required.
-                paymentIntentId = paymentIntentId,
-                // the clientSecret of `PaymentIntent`, required.
-                clientSecret = clientSecret
-            ),
-            listener = object : Airwallex.PaymentListener<PaymentIntent> {
-                override fun onSuccess(response: PaymentIntent) {
-                    if (response.status == PaymentIntentStatus.SUCCEEDED) {
-                        // payment successful
-                        showPaymentSuccess()
-                    } else {
-                        showPaymentError(response.status?.value)
+        if (clientSecret != null) {
+            airwallex.retrievePaymentIntent(
+                params = RetrievePaymentIntentParams(
+                    // the ID of the `PaymentIntent`, required.
+                    paymentIntentId = paymentIntentId,
+                    // the clientSecret of `PaymentIntent`, required.
+                    clientSecret = clientSecret
+                ),
+                listener = object : Airwallex.PaymentListener<PaymentIntent> {
+                    override fun onSuccess(response: PaymentIntent) {
+                        onComplete.invoke(response)
+                    }
+
+                    override fun onFailed(exception: AirwallexException) {
+                        Log.e(TAG, "Retrieve PaymentIntent failed", exception)
                     }
                 }
+            )
+        } else {
+            Settings.cachedCustomerId?.let {
+                clientSecretProvider.createClientSecret(
+                    it,
+                    object : ClientSecretUpdateListener {
+                        override fun onClientSecretUpdate(clientSecret: ClientSecret) {
+                            airwallex.retrievePaymentIntent(
+                                params = RetrievePaymentIntentParams(
+                                    // the ID of the `PaymentIntent`, required.
+                                    paymentIntentId = paymentIntentId,
+                                    // the clientSecret of `PaymentIntent`, required.
+                                    clientSecret = clientSecret.value
+                                ),
+                                listener = object : Airwallex.PaymentListener<PaymentIntent> {
+                                    override fun onSuccess(response: PaymentIntent) {
+                                        onComplete.invoke(response)
+                                    }
 
-                override fun onFailed(exception: AirwallexException) {
-                    Log.e(TAG, "Retrieve PaymentIntent failed", exception)
-                }
+                                    override fun onFailed(exception: AirwallexException) {
+                                        Log.e(TAG, "Retrieve PaymentIntent failed", exception)
+                                    }
+                                }
+                            )
+                        }
+
+                        override fun onClientSecretUpdateFailure(message: String) {
+                            Log.e(TAG, "Generate client secret failed")
+                        }
+                    }
+                )
             }
-        )
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

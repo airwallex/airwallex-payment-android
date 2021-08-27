@@ -6,9 +6,7 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.PPROAdditionalInfo
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
-import com.airwallex.android.core.model.WeChat
 
 class AirwallexCheckoutViewModel(
     application: Application,
@@ -29,21 +27,13 @@ class AirwallexCheckoutViewModel(
             paymentConsentId,
             cvc,
             pproAdditionalInfo,
-            object : Airwallex.PaymentListener<PaymentIntent> {
+            object : Airwallex.PaymentListener<String> {
                 override fun onFailed(exception: AirwallexException) {
                     resultData.value = PaymentResult.Error(exception)
                 }
 
-                override fun onSuccess(response: PaymentIntent) {
+                override fun onSuccess(response: String) {
                     resultData.value = PaymentResult.Success(response)
-                }
-
-                override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                    resultData.value = PaymentResult.WeChatPay(weChat)
-                }
-
-                override fun onNextActionWithRedirectUrl(url: String) {
-                    resultData.value = PaymentResult.Redirect(url)
                 }
             }
         )
@@ -51,13 +41,9 @@ class AirwallexCheckoutViewModel(
     }
 
     sealed class PaymentResult {
-        data class Success(val paymentIntent: PaymentIntent) : PaymentResult()
+        data class Success(val paymentIntentId: String) : PaymentResult()
 
         data class Error(val exception: AirwallexException) : PaymentResult()
-
-        data class WeChatPay(val weChat: WeChat) : PaymentResult()
-
-        data class Redirect(val redirectUrl: String) : PaymentResult()
     }
 
     internal class Factory(

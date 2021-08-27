@@ -1,18 +1,23 @@
 package com.airwallex.wechat
 
+import android.app.Activity
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.NextAction
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.wechat.WeChatComponentProvider
+import com.nhaarman.mockitokotlin2.mock
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 
+@RunWith(RobolectricTestRunner::class)
 class WeChatComponentProviderTest {
 
     private val context = ContextThemeWrapper()
@@ -30,8 +35,10 @@ class WeChatComponentProviderTest {
         val weChatComponentProvider = WeChatComponentProvider()
 
         var success = false
+        val activity: Activity = mock()
         val latch = CountDownLatch(1)
-        weChatComponentProvider.handlePaymentIntentResponse(
+        weChatComponentProvider.get().handlePaymentIntentResponse(
+            "int_hkdmr7v9rg1j58ky8re",
             nextAction = NextAction(
                 type = NextAction.NextActionType.CALL_SDK,
                 data = mapOf(
@@ -45,27 +52,35 @@ class WeChatComponentProviderTest {
                 ),
                 dcc = null, url = null, method = null
             ),
+            activity,
+            ApplicationProvider.getApplicationContext(),
             null,
-            object : Airwallex.PaymentListener<PaymentIntent> {
+            object : Airwallex.PaymentListener<String> {
                 override fun onFailed(exception: AirwallexException) {
+                    success = false
                     latch.countDown()
                 }
 
-                override fun onNextActionWithWeChatPay(weChat: WeChat) {
+                override fun onCancelled() {
+                    success = false
+                    latch.countDown()
+                }
+
+                override fun onSuccess(response: String) {
                     success = true
                     latch.countDown()
                 }
             }
         )
 
-        latch.await()
-        assertEquals(true, success)
+        latch.await(2, TimeUnit.SECONDS)
+        assertEquals(false, success)
     }
 
     @Test
     fun onActivityResultTest() {
         val weChatComponentProvider = WeChatComponentProvider()
-        assertEquals(false, weChatComponentProvider.onActivityResult(1, 1, null))
+        assertEquals(false, weChatComponentProvider.get().handleActivityResult(1, 1, null))
     }
 
     @Test

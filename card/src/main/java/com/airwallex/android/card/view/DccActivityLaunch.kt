@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.card.view.DccActivityLaunch.Args
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.NextAction
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
@@ -46,7 +45,7 @@ internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
 
     @Parcelize
     internal data class Result internal constructor(
-        val paymentIntent: PaymentIntent? = null,
+        val paymentIntentId: String? = null,
         val exception: Exception? = null
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
@@ -58,13 +57,13 @@ internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
         internal companion object : Parceler<Result> {
             override fun create(parcel: Parcel): Result {
                 return Result(
-                    paymentIntent = parcel.readParcelable(PaymentIntent::class.java.classLoader),
+                    paymentIntentId = parcel.readString(),
                     exception = parcel.readSerializable() as? AirwallexException?
                 )
             }
 
             override fun Result.write(parcel: Parcel, flags: Int) {
-                parcel.writeParcelable(paymentIntent, 0)
+                parcel.writeString(paymentIntentId)
                 parcel.writeSerializable(exception)
             }
 

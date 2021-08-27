@@ -155,6 +155,7 @@ internal class PaymentMethodsViewModel(
 
     internal sealed class PaymentConsentResult {
         data class Success(val paymentConsent: PaymentConsent) : PaymentConsentResult()
+
         data class Error(val exception: AirwallexException) : PaymentConsentResult()
     }
 

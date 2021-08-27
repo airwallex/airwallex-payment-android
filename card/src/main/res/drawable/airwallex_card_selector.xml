@@ -5,7 +5,7 @@
         <shape android:shape="rectangle">
             <corners android:radius="6dp" />
             <solid android:color="#FFFFFF" />
-            <stroke android:width="1.5dp" android:color="@color/airwallex_color_primary" />
+            <stroke android:width="1.5dp" android:color="@color/airwallex_tint_color" />
         </shape>
     </item>
 
@@ -14,7 +14,7 @@
         <shape android:shape="rectangle">
             <corners android:radius="6dp" />
             <solid android:color="#FFFFFF" />
-            <stroke android:width="1.5dp" android:color="@color/airwallex_color_primary" />
+            <stroke android:width="1.5dp" android:color="@color/airwallex_tint_color" />
         </shape>
     </item>
 

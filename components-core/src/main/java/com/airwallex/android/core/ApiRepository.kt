@@ -86,6 +86,13 @@ interface ApiRepository {
     )
 
     /**
+     * Execute mock wechat (Just for demo env)
+     */
+    suspend fun executeMockWeChat(
+        mockWeChatUrl: String
+    )
+
+    /**
      * Retrieve available payment method types
      */
     suspend fun retrieveAvailablePaymentMethods(

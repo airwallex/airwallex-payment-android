@@ -8,7 +8,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.Shipping
@@ -78,7 +77,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         val observer = Observer<AirwallexCheckoutViewModel.PaymentResult> {
             when (it) {
                 is AirwallexCheckoutViewModel.PaymentResult.Success -> {
-                    finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+                    finishWithPaymentIntent(paymentIntentId = it.paymentIntentId)
                 }
                 is AirwallexCheckoutViewModel.PaymentResult.Error -> {
                     finishWithPaymentIntent(exception = it.exception)
@@ -128,7 +127,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun finishWithPaymentIntent(
-        paymentIntent: PaymentIntent? = null,
+        paymentIntentId: String? = null,
         exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
@@ -136,7 +135,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
             Activity.RESULT_OK,
             Intent().putExtras(
                 AddPaymentMethodActivityLaunch.Result(
-                    paymentIntent = paymentIntent,
+                    paymentIntentId = paymentIntentId,
                     exception = exception
                 ).toBundle()
             )

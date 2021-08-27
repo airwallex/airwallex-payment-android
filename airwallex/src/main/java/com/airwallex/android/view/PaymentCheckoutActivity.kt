@@ -8,7 +8,6 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.core.util.CurrencyUtils.formatPrice
@@ -99,16 +98,10 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             observer = {
                 when (it) {
                     is AirwallexCheckoutViewModel.PaymentResult.Success -> {
-                        finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+                        finishWithPaymentIntent(paymentIntentId = it.paymentIntentId)
                     }
                     is AirwallexCheckoutViewModel.PaymentResult.Error -> {
                         finishWithPaymentIntent(exception = it.exception)
-                    }
-                    is AirwallexCheckoutViewModel.PaymentResult.WeChatPay -> {
-                        finishWithPaymentIntent(weChat = it.weChat)
-                    }
-                    is AirwallexCheckoutViewModel.PaymentResult.Redirect -> {
-                        finishWithPaymentIntent(redirectUrl = it.redirectUrl)
                     }
                 }
             }
@@ -116,7 +109,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun finishWithPaymentIntent(
-        paymentIntent: PaymentIntent? = null,
+        paymentIntentId: String? = null,
         weChat: WeChat? = null,
         redirectUrl: String? = null,
         exception: AirwallexException? = null
@@ -126,7 +119,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             Activity.RESULT_OK,
             Intent().putExtras(
                 PaymentCheckoutActivityLaunch.Result(
-                    paymentIntent = paymentIntent,
+                    paymentIntentId = paymentIntentId,
                     weChat = weChat,
                     redirectUrl = redirectUrl,
                     exception = exception

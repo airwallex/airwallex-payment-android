@@ -115,9 +115,13 @@ You can use these individually, or take all of the prebuilt UI in one flow by fo
 Use `presentShippingFlow` to allow users to provide a shipping address as well as select a shipping method. `shipping` parameter is optional.
 ```kotlin
     AirwallexStarter.presentShippingFlow(this, shipping,
-        object : Airwallex.PaymentShippingListener {
+       object : Airwallex.PaymentListener<Shipping> {
             override fun onSuccess(shipping: Shipping) {
                 Log.d(TAG, "Save the shipping success")
+            }
+
+            override fun onFailed(exception: Exception) {
+                Log.d(TAG, "Save the shipping failed")
             }
 
             override fun onCancelled() {
@@ -130,22 +134,11 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
 Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `AirwallexSession` object
 ```kotlin
     AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent).build(),
-        object : Airwallex.PaymentIntentListener {
-            // If you need to support card, it's optional
+        object : Airwallex.PaymentListener<PaymentIntent> {
             override fun onSuccess(paymentIntent: PaymentIntent) {
                 Log.d(TAG, "Confirm payment intent success")
             }
             
-            // If you need to support wechatpay, it's optional
-            override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                Log.d(TAG, "Confirm payment intent success, start WeChat Pay")
-            }
-
-            // If you need to support redirect url, it's optional
-            override fun onNextActionWithRedirectUrl(url: String) {
-                Log.d(TAG, "Confirm payment intent success, start Redirect URL")
-            }
-
             override fun onFailed(exception: Exception) {
                 Log.d(TAG, "Confirm payment intent failed")
             }
@@ -158,15 +151,7 @@ Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a
 ### Custom Theme
 You can overwrite these color values in your app. https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
 ```
-    <!--   a secondary color for controls like checkboxes and text fields -->
-    <color name="airwallex_color_accent">@color/color_accent</color>
-
-    <!--   color for the app bar and other primary UI elements -->
-    <color name="airwallex_color_primary">@color/color_primary</color>
-
-    <!--   a darker variant of the primary color, used for
-           the status bar (on Android 5.0+) and contextual app bars -->
-    <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
+    <color name="airwallex_tint_color">@color/airwallex_color_red</color>
 ```
 
 ## Airwallex API integration

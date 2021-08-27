@@ -9,7 +9,6 @@ import com.airwallex.android.view.PaymentCheckoutActivityLaunch.Args
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.ObjectBuilder
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.ui.AirwallexActivityLaunch
@@ -81,7 +80,7 @@ internal class PaymentCheckoutActivityLaunch :
 
     @Parcelize
     internal data class Result internal constructor(
-        val paymentIntent: PaymentIntent? = null,
+        val paymentIntentId: String? = null,
         val weChat: WeChat? = null,
         val redirectUrl: String? = null,
         val exception: AirwallexException? = null
@@ -95,7 +94,7 @@ internal class PaymentCheckoutActivityLaunch :
         internal companion object : Parceler<Result> {
             override fun create(parcel: Parcel): Result {
                 return Result(
-                    paymentIntent = parcel.readParcelable(PaymentIntent::class.java.classLoader),
+                    paymentIntentId = parcel.readString(),
                     weChat = parcel.readParcelable(WeChat::class.java.classLoader),
                     redirectUrl = parcel.readString(),
                     exception = parcel.readSerializable() as? AirwallexException?
@@ -103,7 +102,7 @@ internal class PaymentCheckoutActivityLaunch :
             }
 
             override fun Result.write(parcel: Parcel, flags: Int) {
-                parcel.writeParcelable(paymentIntent, 0)
+                parcel.writeString(paymentIntentId)
                 parcel.writeParcelable(weChat, 0)
                 parcel.writeString(redirectUrl)
                 parcel.writeSerializable(exception)

@@ -210,16 +210,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         val observer = Observer<AirwallexCheckoutViewModel.PaymentResult> {
             when (it) {
                 is AirwallexCheckoutViewModel.PaymentResult.Success -> {
-                    finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+                    finishWithPaymentIntent(paymentIntentId = it.paymentIntentId)
                 }
                 is AirwallexCheckoutViewModel.PaymentResult.Error -> {
                     finishWithPaymentIntent(exception = it.exception)
-                }
-                is AirwallexCheckoutViewModel.PaymentResult.WeChatPay -> {
-                    finishWithPaymentIntent(weChat = it.weChat)
-                }
-                is AirwallexCheckoutViewModel.PaymentResult.Redirect -> {
-                    finishWithPaymentIntent(redirectUrl = it.redirectUrl)
                 }
             }
         }
@@ -318,7 +312,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
                 result?.let {
                     finishWithPaymentIntent(
-                        paymentIntent = result.paymentIntent,
+                        paymentIntentId = result.paymentIntentId,
                         exception = result.exception
                     )
                 }
@@ -328,7 +322,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 val result = PaymentCheckoutActivityLaunch.Result.fromIntent(data)
                 result?.let {
                     finishWithPaymentIntent(
-                        paymentIntent = it.paymentIntent,
+                        paymentIntentId = it.paymentIntentId,
                         exception = it.exception
                     )
                 }
@@ -337,9 +331,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun finishWithPaymentIntent(
-        paymentIntent: PaymentIntent? = null,
-        weChat: WeChat? = null,
-        redirectUrl: String? = null,
+        paymentIntentId: String? = null,
         exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
@@ -347,10 +339,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             Activity.RESULT_OK,
             Intent().putExtras(
                 PaymentMethodsActivityLaunch.Result(
-                    paymentIntent = paymentIntent,
-                    exception = exception,
-                    weChat = weChat,
-                    redirectUrl = redirectUrl
+                    paymentIntentId = paymentIntentId,
+                    exception = exception
                 ).toBundle()
             )
         )

@@ -59,12 +59,16 @@ android {
 dependencies {
     api project(':ui-core')
 
+    // WeChat Pay
+    implementation "com.tencent.mm.opensdk:wechat-sdk-android-without-mta:$wechatPayVersion"
+
     // test
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.robolectric:robolectric:$robolectricVersion"
     testImplementation "androidx.test:core:$testCoreVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 }
 
 ext {

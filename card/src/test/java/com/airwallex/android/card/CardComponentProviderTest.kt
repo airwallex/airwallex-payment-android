@@ -8,7 +8,6 @@ import com.airwallex.android.core.AirwallexPaymentManager
 import com.airwallex.android.core.CardNextActionModel
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.NextAction
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethodType
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,7 +23,7 @@ class CardComponentProviderTest {
     @Test
     fun onActivityResultTest() {
         val cardComponentProvider = CardComponentProvider()
-        assertEquals(false, cardComponentProvider.onActivityResult(1, 1, null))
+        assertEquals(false, cardComponentProvider.get().handleActivityResult(1, 1, null))
     }
 
     @Test
@@ -45,7 +44,8 @@ class CardComponentProviderTest {
         val activity: Activity = mock()
 
         try {
-            cardComponentProvider.handlePaymentIntentResponse(
+            cardComponentProvider.get().handlePaymentIntentResponse(
+                "int_hkdmr7v9rg1j58ky8re",
                 NextAction(
                     type = NextAction.NextActionType.REDIRECT,
                     data = mapOf(
@@ -56,10 +56,11 @@ class CardComponentProviderTest {
                     url = "https://api-demo.airwallex.com/api/v1/pa/card3ds-mock/fingerprint",
                     method = "POST"
                 ),
+                activity,
+                ApplicationProvider.getApplicationContext(),
                 CardNextActionModel(
                     fragment = null,
                     activity = activity,
-                    applicationContext = ApplicationProvider.getApplicationContext(),
                     paymentManager = AirwallexPaymentManager(AirwallexApiRepository()),
                     clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
                     device = null,
@@ -67,13 +68,18 @@ class CardComponentProviderTest {
                     currency = "CNY",
                     amount = BigDecimal.TEN
                 ),
-                object : Airwallex.PaymentListener<PaymentIntent> {
+                object : Airwallex.PaymentListener<String> {
                     override fun onFailed(exception: AirwallexException) {
                         success = false
                         latch.countDown()
                     }
 
-                    override fun onNextActionWithRedirectUrl(url: String) {
+                    override fun onCancelled() {
+                        success = false
+                        latch.countDown()
+                    }
+
+                    override fun onSuccess(response: String) {
                         success = true
                         latch.countDown()
                     }
@@ -96,7 +102,8 @@ class CardComponentProviderTest {
 
         val latch = CountDownLatch(1)
         val activity: Activity = mock()
-        cardComponentProvider.handlePaymentIntentResponse(
+        cardComponentProvider.get().handlePaymentIntentResponse(
+            "int_hkdmr7v9rg1j58ky8re",
             NextAction(
                 type = NextAction.NextActionType.DCC,
                 data = null,
@@ -104,10 +111,11 @@ class CardComponentProviderTest {
                 url = null,
                 method = "POST"
             ),
+            activity,
+            ApplicationProvider.getApplicationContext(),
             CardNextActionModel(
                 fragment = null,
                 activity = activity,
-                applicationContext = ApplicationProvider.getApplicationContext(),
                 paymentManager = AirwallexPaymentManager(AirwallexApiRepository()),
                 clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
                 device = null,
@@ -115,13 +123,18 @@ class CardComponentProviderTest {
                 currency = "CNY",
                 amount = BigDecimal.TEN
             ),
-            object : Airwallex.PaymentListener<PaymentIntent> {
+            object : Airwallex.PaymentListener<String> {
                 override fun onFailed(exception: AirwallexException) {
                     success = false
                     latch.countDown()
                 }
 
-                override fun onNextActionWithRedirectUrl(url: String) {
+                override fun onCancelled() {
+                    success = false
+                    latch.countDown()
+                }
+
+                override fun onSuccess(response: String) {
                     success = true
                     latch.countDown()
                 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
+import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
@@ -13,9 +14,15 @@ import com.airwallex.android.view.PaymentShippingActivityLaunch
  */
 class AirwallexStarter {
 
+    interface PaymentFlowListener<T> {
+        fun onSuccess(response: T)
+        fun onFailed(exception: AirwallexException)
+        fun onCancelled()
+    }
+
     companion object {
-        private var shippingFlowListener: Airwallex.PaymentShippingListener? = null
-        private var paymentFlowListener: Airwallex.PaymentIntentListener? = null
+        private var shippingFlowListener: PaymentFlowListener<Shipping>? = null
+        private var paymentFlowListener: PaymentFlowListener<String>? = null
 
         private val VALID_REQUEST_CODES = setOf(
             PaymentMethodsActivityLaunch.REQUEST_CODE,
@@ -32,13 +39,12 @@ class AirwallexStarter {
         fun presentShippingFlow(
             fragment: Fragment,
             shipping: Shipping?,
-            shippingFlowListener: Airwallex.PaymentShippingListener
+            shippingFlowListener: PaymentFlowListener<Shipping>
         ) {
-            this.shippingFlowListener = shippingFlowListener
-            PaymentShippingActivityLaunch(fragment).startForResult(
-                PaymentShippingActivityLaunch.Args.Builder()
-                    .setShipping(shipping)
-                    .build()
+            presentShippingFlow(
+                PaymentShippingActivityLaunch(fragment),
+                shipping,
+                shippingFlowListener
             )
         }
 
@@ -52,10 +58,22 @@ class AirwallexStarter {
         fun presentShippingFlow(
             activity: Activity,
             shipping: Shipping?,
-            shippingFlowListener: Airwallex.PaymentShippingListener
+            shippingFlowListener: PaymentFlowListener<Shipping>
+        ) {
+            presentShippingFlow(
+                PaymentShippingActivityLaunch(activity),
+                shipping,
+                shippingFlowListener
+            )
+        }
+
+        private fun presentShippingFlow(
+            launch: PaymentShippingActivityLaunch,
+            shipping: Shipping?,
+            shippingFlowListener: PaymentFlowListener<Shipping>
         ) {
             this.shippingFlowListener = shippingFlowListener
-            PaymentShippingActivityLaunch(activity).startForResult(
+            launch.startForResult(
                 PaymentShippingActivityLaunch.Args.Builder()
                     .setShipping(shipping)
                     .build()
@@ -74,16 +92,13 @@ class AirwallexStarter {
             fragment: Fragment,
             session: AirwallexSession,
             clientSecretProvider: ClientSecretProvider?,
-            paymentFlowListener: Airwallex.PaymentIntentListener
+            paymentFlowListener: PaymentFlowListener<String>
         ) {
-            this.paymentFlowListener = paymentFlowListener
-            clientSecretProvider?.let {
-                ClientSecretRepository.init(it)
-            }
-            PaymentMethodsActivityLaunch(fragment).startForResult(
-                PaymentMethodsActivityLaunch.Args.Builder()
-                    .setAirwallexSession(session)
-                    .build()
+            presentPaymentFlow(
+                PaymentMethodsActivityLaunch(fragment),
+                session,
+                clientSecretProvider,
+                paymentFlowListener
             )
         }
 
@@ -99,13 +114,27 @@ class AirwallexStarter {
             activity: Activity,
             session: AirwallexSession,
             clientSecretProvider: ClientSecretProvider?,
-            paymentFlowListener: Airwallex.PaymentIntentListener
+            paymentFlowListener: PaymentFlowListener<String>
+        ) {
+            presentPaymentFlow(
+                PaymentMethodsActivityLaunch(activity),
+                session,
+                clientSecretProvider,
+                paymentFlowListener
+            )
+        }
+
+        private fun presentPaymentFlow(
+            launch: PaymentMethodsActivityLaunch,
+            session: AirwallexSession,
+            clientSecretProvider: ClientSecretProvider?,
+            paymentFlowListener: PaymentFlowListener<String>
         ) {
             this.paymentFlowListener = paymentFlowListener
             clientSecretProvider?.let {
                 ClientSecretRepository.init(it)
             }
-            PaymentMethodsActivityLaunch(activity).startForResult(
+            launch.startForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
                     .build()
@@ -149,14 +178,8 @@ class AirwallexStarter {
                                 result.exception != null -> {
                                     paymentFlowListener?.onFailed(result.exception)
                                 }
-                                result.weChat != null -> {
-                                    paymentFlowListener?.onNextActionWithWeChatPay(result.weChat)
-                                }
-                                result.redirectUrl != null -> {
-                                    paymentFlowListener?.onNextActionWithRedirectUrl(result.redirectUrl)
-                                }
-                                result.paymentIntent != null -> {
-                                    paymentFlowListener?.onSuccess(result.paymentIntent)
+                                result.paymentIntentId != null -> {
+                                    paymentFlowListener?.onSuccess(result.paymentIntentId)
                                 }
                             }
                             paymentFlowListener = null

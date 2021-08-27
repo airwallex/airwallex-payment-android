@@ -4,13 +4,10 @@ import android.app.Application
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.airwallex.android.AirwallexStarter
-import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.ClientSecretProvider
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
-import com.airwallex.android.core.model.WeChat
 
 internal class PaymentCartViewModel(
     application: Application
@@ -21,17 +18,17 @@ internal class PaymentCartViewModel(
         AirwallexStarter.presentShippingFlow(
             fragment,
             shipping,
-            object : Airwallex.PaymentShippingListener {
-                override fun onSuccess(shipping: Shipping) {
-                    resultData.value = ShippingResult.Success(shipping)
+            object : AirwallexStarter.PaymentFlowListener<Shipping> {
+                override fun onSuccess(response: Shipping) {
+                    resultData.value = ShippingResult.Success(response)
+                }
+
+                override fun onFailed(exception: AirwallexException) {
+                    resultData.value = ShippingResult.Error(exception)
                 }
 
                 override fun onCancelled() {
                     resultData.value = ShippingResult.Cancel
-                }
-
-                override fun onFailed(error: AirwallexException) {
-                    resultData.value = ShippingResult.Error(error)
                 }
             }
         )
@@ -48,21 +45,13 @@ internal class PaymentCartViewModel(
             fragment,
             session,
             clientSecretProvider,
-            object : Airwallex.PaymentIntentListener {
-                override fun onSuccess(paymentIntent: PaymentIntent) {
-                    resultData.value = PaymentFlowResult.Success(paymentIntent)
+            object : AirwallexStarter.PaymentFlowListener<String> {
+                override fun onSuccess(response: String) {
+                    resultData.value = PaymentFlowResult.Success(response)
                 }
 
-                override fun onFailed(error: AirwallexException) {
-                    resultData.value = PaymentFlowResult.Error(error)
-                }
-
-                override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                    resultData.value = PaymentFlowResult.WeChatPay(weChat)
-                }
-
-                override fun onNextActionWithRedirectUrl(url: String) {
-                    resultData.value = PaymentFlowResult.Redirect(url)
+                override fun onFailed(exception: AirwallexException) {
+                    resultData.value = PaymentFlowResult.Error(exception)
                 }
 
                 override fun onCancelled() {
@@ -76,19 +65,15 @@ internal class PaymentCartViewModel(
     sealed class ShippingResult {
         data class Success(val shipping: Shipping) : ShippingResult()
 
-        object Cancel : ShippingResult()
-
         data class Error(val exception: Exception) : ShippingResult()
+
+        object Cancel : ShippingResult()
     }
 
     sealed class PaymentFlowResult {
-        data class Success(val paymentIntent: PaymentIntent) : PaymentFlowResult()
+        data class Success(val paymentIntentId: String) : PaymentFlowResult()
 
         data class Error(val exception: Exception) : PaymentFlowResult()
-
-        data class WeChatPay(val weChat: WeChat) : PaymentFlowResult()
-
-        data class Redirect(val redirectUrl: String) : PaymentFlowResult()
 
         object Cancel : PaymentFlowResult()
     }

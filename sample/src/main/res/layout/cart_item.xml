@@ -49,7 +49,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="8dp"
         android:text="@string/remove"
-        android:textColor="@color/airwallex_color_primary"
+        android:textColor="@color/airwallex_tint_color"
         android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/tvProductType"

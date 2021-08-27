@@ -121,9 +121,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
 
-    // WeChat Pay
-    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.6.4'
-
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"

@@ -46,11 +46,6 @@
             android:theme="@style/ActivityAnimTheme" />
 
         <activity
-            android:name="com.airwallex.paymentacceptance.wxapi.WXPayEntryActivity"
-            android:exported="true"
-            android:launchMode="singleTop" />
-
-        <activity
             android:name="com.airwallex.paymentacceptance.h5.H5WebViewActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ActivityAnimTheme"
@@ -89,14 +84,6 @@
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/ActivityAnimTheme"
             tools:ignore="LockedOrientationActivity" />
-
-        <receiver
-            android:name="com.airwallex.paymentacceptance.AppRegister"
-            android:permission="com.tencent.mm.plugin.permission.SEND">
-            <intent-filter>
-                <action android:name="com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

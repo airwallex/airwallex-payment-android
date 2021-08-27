@@ -20,19 +20,10 @@ class Airwallex internal constructor(
     private val paymentManager: PaymentManager,
     private val applicationContext: Context,
 ) {
+
     interface PaymentListener<T> {
+        fun onSuccess(response: T)
         fun onFailed(exception: AirwallexException)
-        fun onSuccess(response: T) {
-            Logger.debug("Card payment success")
-        }
-
-        fun onNextActionWithWeChatPay(weChat: WeChat) {
-            Logger.debug("Start WeChat Pay $weChat")
-        }
-
-        fun onNextActionWithRedirectUrl(url: String) {
-            Logger.debug("Start Redirect Url Pay $url")
-        }
     }
 
     /**
@@ -77,7 +68,7 @@ class Airwallex internal constructor(
             Logger.error("Missing ${PaymentMethodType.CARD.dependencyName} dependency!")
             return false
         }
-        if (provider.onActivityResult(requestCode, resultCode, data)) {
+        if (provider.get().handleActivityResult(requestCode, resultCode, data)) {
             return true
         }
         return false
@@ -162,7 +153,7 @@ class Airwallex internal constructor(
     @UiThread
     fun verifyPaymentConsent(
         params: VerifyPaymentConsentParams,
-        listener: PaymentListener<PaymentIntent>
+        listener: PaymentListener<String>
     ) {
 
         val verificationOptions = when (val paymentMethodType = params.paymentMethodType) {
@@ -204,23 +195,26 @@ class Airwallex internal constructor(
                         return
                     }
 
+                    val paymentIntentId = requireNotNull(response.initialPaymentIntentId)
                     val cardNextActionModel = when (params.paymentMethodType) {
                         PaymentMethodType.CARD -> CardNextActionModel(
                             fragment = fragment,
                             activity = activity,
-                            applicationContext = applicationContext,
                             paymentManager = paymentManager,
                             clientSecret = params.clientSecret,
                             device = null,
-                            paymentIntentId = requireNotNull(response.initialPaymentIntentId),
+                            paymentIntentId = paymentIntentId,
                             currency = requireNotNull(params.currency),
                             amount = requireNotNull(params.amount),
                         )
                         else -> null
                     }
 
-                    provider.handlePaymentIntentResponse(
+                    provider.get().handlePaymentIntentResponse(
+                        paymentIntentId,
                         response.nextAction,
+                        activity,
+                        applicationContext,
                         cardNextActionModel,
                         listener
                     )
@@ -259,10 +253,10 @@ class Airwallex internal constructor(
      * @param listener The callback of checkout
      */
     @UiThread
-    fun checkout(
+    internal fun checkout(
         session: AirwallexSession,
         paymentMethod: PaymentMethod,
-        listener: PaymentListener<PaymentIntent>
+        listener: PaymentListener<String>
     ) {
         this.checkout(session, paymentMethod, null, null, null, listener)
     }
@@ -284,7 +278,7 @@ class Airwallex internal constructor(
         paymentConsentId: String? = null,
         cvc: String? = null,
         pproAdditionalInfo: PPROAdditionalInfo? = null,
-        listener: PaymentListener<PaymentIntent>
+        listener: PaymentListener<String>
     ) {
         when (session) {
             is AirwallexPaymentSession -> {
@@ -395,7 +389,7 @@ class Airwallex internal constructor(
         paymentConsentId: String? = null,
         pproAdditionalInfo: PPROAdditionalInfo? = null,
         returnUrl: String? = null,
-        listener: PaymentListener<PaymentIntent>
+        listener: PaymentListener<String>
     ) {
         val params = when (val paymentMethodType = requireNotNull(paymentMethod.type)) {
             PaymentMethodType.CARD -> {
@@ -427,7 +421,7 @@ class Airwallex internal constructor(
 
     private fun confirmPaymentIntent(
         params: ConfirmPaymentIntentParams,
-        listener: PaymentListener<PaymentIntent>
+        listener: PaymentListener<String>
     ) {
         if (params.paymentMethodType == PaymentMethodType.CARD) {
             try {
@@ -464,7 +458,7 @@ class Airwallex internal constructor(
     fun confirmPaymentIntentWithDevice(
         device: Device? = null,
         params: ConfirmPaymentIntentParams,
-        listener: PaymentListener<PaymentIntent>
+        listener: PaymentListener<String>
     ) {
         val provider = AirwallexPlugins.getProvider(params.paymentMethodType)
         if (provider == null) {
@@ -492,7 +486,6 @@ class Airwallex internal constructor(
                         PaymentMethodType.CARD -> CardNextActionModel(
                             fragment = fragment,
                             activity = activity,
-                            applicationContext = applicationContext,
                             paymentManager = paymentManager,
                             clientSecret = params.clientSecret,
                             device = device,
@@ -502,8 +495,11 @@ class Airwallex internal constructor(
                         )
                         else -> null
                     }
-                    provider.handlePaymentIntentResponse(
+                    provider.get().handlePaymentIntentResponse(
+                        response.id,
                         response.nextAction,
+                        activity,
+                        applicationContext,
                         cardNextActionModel,
                         listener
                     )
@@ -614,7 +610,7 @@ class Airwallex internal constructor(
 
     fun continueDccPaymentIntent(
         params: ContinuePaymentIntentParams,
-        listener: PaymentListener<PaymentIntent>
+        listener: PaymentListener<String>
     ) {
         val request = PaymentIntentContinueRequest(
             requestId = UUID.randomUUID().toString(),
@@ -638,12 +634,14 @@ class Airwallex internal constructor(
                     return
                 }
                 // Only card
-                provider.handlePaymentIntentResponse(
+                provider.get().handlePaymentIntentResponse(
+                    response.id,
                     response.nextAction,
+                    activity,
+                    applicationContext,
                     CardNextActionModel(
                         fragment = fragment,
                         activity = activity,
-                        applicationContext = applicationContext,
                         paymentManager = paymentManager,
                         clientSecret = params.clientSecret,
                         device = params.device,
@@ -735,7 +733,7 @@ class Airwallex internal constructor(
         amount: BigDecimal? = null,
         cvc: String? = null,
         returnUrl: String? = null,
-        listener: PaymentListener<PaymentIntent>
+        listener: PaymentListener<String>
     ) {
         if (paymentConsent.requiresCvc && cvc == null) {
             listener.onFailed(InvalidParamsException(message = "CVC is required!"))
@@ -763,32 +761,6 @@ class Airwallex internal constructor(
             }
         }
         verifyPaymentConsent(params, listener)
-    }
-
-    /**
-     * For custom UI Flow
-     */
-    interface PaymentFlowListener {
-        fun onCancelled()
-        fun onFailed(error: AirwallexException)
-    }
-
-    interface PaymentShippingListener : PaymentFlowListener {
-        fun onSuccess(shipping: Shipping)
-    }
-
-    interface PaymentIntentListener : PaymentFlowListener {
-        fun onSuccess(paymentIntent: PaymentIntent) {
-            Logger.debug("Card payment success")
-        }
-
-        fun onNextActionWithWeChatPay(weChat: WeChat) {
-            Logger.debug("Start WeChat Pay $weChat")
-        }
-
-        fun onNextActionWithRedirectUrl(url: String) {
-            Logger.debug("Start Redirect Url Pay $url")
-        }
     }
 
     companion object {

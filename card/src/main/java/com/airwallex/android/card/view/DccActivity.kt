@@ -12,7 +12,6 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.log.Logger
 import com.airwallex.android.core.model.ContinuePaymentIntentParams
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentContinueType
 import com.airwallex.android.ui.AirwallexActivity
 
@@ -87,7 +86,7 @@ class DccActivity : AirwallexActivity() {
                     {
                         when (it) {
                             is DccViewModel.PaymentIntentResult.Success -> {
-                                finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+                                finishWithPaymentIntent(paymentIntentId = it.paymentIntentId)
                             }
                             is DccViewModel.PaymentIntentResult.Error -> {
                                 finishWithPaymentIntent(exception = it.exception)
@@ -99,7 +98,7 @@ class DccActivity : AirwallexActivity() {
     }
 
     private fun finishWithPaymentIntent(
-        paymentIntent: PaymentIntent? = null,
+        paymentIntentId: String? = null,
         exception: Exception? = null
     ) {
         setLoadingProgress(false)
@@ -107,7 +106,7 @@ class DccActivity : AirwallexActivity() {
             Activity.RESULT_OK,
             Intent().putExtras(
                 DccActivityLaunch.Result(
-                    paymentIntent = paymentIntent,
+                    paymentIntentId = paymentIntentId,
                     exception = exception
                 ).toBundle()
             )
