@@ -76,14 +76,21 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 设置SDK后，需要使用一些参数来配置SDK。 在使用Airwallex SDK confirm PaymentIntent并完成付款之前，您应在自己的服务器中创建PaymentIntent，以确保在自己的系统中维护信息
 #### 初始化SDK
 
-我们提供了一些可用于调试SDK的参数，最好在Application中调用
-```groovy
+我们提供了一些可用于调试SDK的参数，你可以在Application中调用
+```kotlin
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
             .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
             .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
+            .setSupportComponentProviders(
+                listOf(
+                    CardComponent.PROVIDER,
+                    WeChatComponent.PROVIDER,
+                    RedirectComponent.PROVIDER
+                )
+            )
             .build()
-    )
+        )
 ```
 
 #### 创建PaymentIntent
@@ -107,7 +114,15 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 
 ## UI集成
 我们提供一些UI组件，以加快付款功能的集成。
-您可以单独使用它们，也可以按照“集成”指南将所有预构建的UI放在一个流程中。
+首先，在你的Activity或Fragment中，重写 Activity#onActivityResult 方法，并调用AirwallexStarter.handlePaymentData方法。
+```kotlin
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        
+        // You must call this method on `onActivityResult`
+        AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
+    }
+```
 
 ### Edit shipping info
 使用 `presentShippingFlow` 允许用户提供送货地址以及选择送货方式. `shipping` 字段是可选的

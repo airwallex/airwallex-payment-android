@@ -55,11 +55,6 @@ class RedirectComponentProviderTest {
                         latch.countDown()
                     }
 
-                    override fun onCancelled() {
-                        success = false
-                        latch.countDown()
-                    }
-
                     override fun onSuccess(response: String) {
                         success = true
                         latch.countDown()
@@ -85,7 +80,7 @@ class RedirectComponentProviderTest {
 
         val latch = CountDownLatch(1)
         var device = "11"
-        redirectComponentProvider.retrieveSecurityToken(
+        redirectComponentProvider.get().retrieveSecurityToken(
             "11", context,
             object :
                 SecurityTokenListener {

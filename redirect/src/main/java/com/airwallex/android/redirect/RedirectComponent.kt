@@ -3,10 +3,7 @@ package com.airwallex.android.redirect
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import com.airwallex.android.core.ActionComponent
-import com.airwallex.android.core.ActionComponentProvider
-import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.CardNextActionModel
+import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.redirect.exception.RedirectException
@@ -48,5 +45,14 @@ class RedirectComponent : ActionComponent {
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         return false
+    }
+
+    override fun retrieveSecurityToken(
+        paymentIntentId: String,
+        applicationContext: Context,
+        securityTokenListener: SecurityTokenListener
+    ) {
+        // Since only card payments require a device ID, this will not be executed
+        securityTokenListener.onResponse("")
     }
 }

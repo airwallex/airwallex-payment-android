@@ -21,4 +21,10 @@ interface ActionComponent {
         resultCode: Int,
         data: Intent?
     ): Boolean
+
+    fun retrieveSecurityToken(
+        paymentIntentId: String,
+        applicationContext: Context,
+        securityTokenListener: SecurityTokenListener
+    )
 }

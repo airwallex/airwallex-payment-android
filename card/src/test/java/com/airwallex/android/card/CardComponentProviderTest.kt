@@ -74,11 +74,6 @@ class CardComponentProviderTest {
                         latch.countDown()
                     }
 
-                    override fun onCancelled() {
-                        success = false
-                        latch.countDown()
-                    }
-
                     override fun onSuccess(response: String) {
                         success = true
                         latch.countDown()
@@ -125,11 +120,6 @@ class CardComponentProviderTest {
             ),
             object : Airwallex.PaymentListener<String> {
                 override fun onFailed(exception: AirwallexException) {
-                    success = false
-                    latch.countDown()
-                }
-
-                override fun onCancelled() {
                     success = false
                     latch.countDown()
                 }

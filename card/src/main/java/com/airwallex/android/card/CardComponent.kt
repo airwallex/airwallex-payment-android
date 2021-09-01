@@ -328,6 +328,18 @@ class CardComponent : ActionComponent {
         return false
     }
 
+    override fun retrieveSecurityToken(
+        paymentIntentId: String,
+        applicationContext: Context,
+        securityTokenListener: SecurityTokenListener
+    ) {
+        AirwallexSecurityConnector().retrieveSecurityToken(
+            paymentIntentId,
+            applicationContext,
+            securityTokenListener
+        )
+    }
+
     private fun handleDccData(
         data: Intent?,
         resultCode: Int,

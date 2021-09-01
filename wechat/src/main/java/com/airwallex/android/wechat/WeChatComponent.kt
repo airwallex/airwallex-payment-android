@@ -9,6 +9,7 @@ import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.core.model.WeChat
 import com.tencent.mm.opensdk.modelbase.BaseReq
 import com.tencent.mm.opensdk.modelbase.BaseResp
+import com.tencent.mm.opensdk.modelpay.PayReq
 import com.tencent.mm.opensdk.openapi.IWXAPI
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
@@ -38,7 +39,9 @@ class WeChatComponent : ActionComponent {
                 override fun onResp(resp: BaseResp) {
                     when (resp.errCode) {
                         BaseResp.ErrCode.ERR_OK -> listener?.onSuccess(paymentIntentId)
-                        BaseResp.ErrCode.ERR_USER_CANCEL -> listener?.onFailed(AirwallexCheckoutException(message = "WeChat Pay has been cancelled!"))
+                        BaseResp.ErrCode.ERR_USER_CANCEL -> listener?.onFailed(
+                            AirwallexCheckoutException(message = "WeChat Pay has been cancelled!")
+                        )
                         else -> listener?.onFailed(AirwallexCheckoutException(message = "Failed to process WeChat Pay, errCode ${resp.errCode}, errStr ${resp.errStr}"))
                     }
                     onEnd.invoke()
@@ -106,10 +109,35 @@ class WeChatComponent : ActionComponent {
         return false
     }
 
+    override fun retrieveSecurityToken(
+        paymentIntentId: String,
+        applicationContext: Context,
+        securityTokenListener: SecurityTokenListener
+    ) {
+        // Since only card payments require a device ID, this will not be executed
+        securityTokenListener.onResponse("")
+    }
+
     private fun initiateWeChatPay(
         weChatPaySdkData: WeChat
     ): Boolean {
         weChatApi?.registerApp(weChatPaySdkData.appId)
-        return weChatApi?.sendReq(WeChatPayUtils.createPayReq(weChatPaySdkData)) ?: false
+        return weChatApi?.sendReq(createPayReq(weChatPaySdkData)) ?: false
+    }
+
+    private fun createPayReq(weChat: WeChat): PayReq {
+        val weChatReq = PayReq()
+        weChatReq.appId = weChat.appId
+        weChatReq.partnerId = weChat.partnerId
+        weChatReq.prepayId = weChat.prepayId
+        weChatReq.packageValue = weChat.`package`
+        weChatReq.nonceStr = weChat.nonceStr
+        weChatReq.timeStamp = weChat.timestamp
+        weChatReq.sign = weChat.sign
+
+        weChatReq.options = PayReq.Options()
+        weChatReq.options.callbackClassName = WeChatPayAuthActivity::class.java.name
+
+        return weChatReq
     }
 }

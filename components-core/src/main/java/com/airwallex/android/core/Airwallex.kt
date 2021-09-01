@@ -63,7 +63,7 @@ class Airwallex internal constructor(
      * otherwise `false`
      */
     fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        val provider = AirwallexPlugins.getProvider(PaymentMethodType.CARD)
+        val provider = AirwallexPlugins.getCardProvider()
         if (provider == null) {
             Logger.error("Missing ${PaymentMethodType.CARD.dependencyName} dependency!")
             return false
@@ -189,7 +189,7 @@ class Airwallex internal constructor(
                 }
 
                 override fun onSuccess(response: PaymentConsent) {
-                    val provider = AirwallexPlugins.getProvider(params.paymentMethodType)
+                    val provider = AirwallexPlugins.getProvider(response.nextAction)
                     if (provider == null) {
                         listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
                         return
@@ -425,12 +425,12 @@ class Airwallex internal constructor(
     ) {
         if (params.paymentMethodType == PaymentMethodType.CARD) {
             try {
-                val provider = AirwallexPlugins.getProvider(params.paymentMethodType)
+                val provider = AirwallexPlugins.getCardProvider()
                 if (provider == null) {
                     listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
                     return
                 }
-                provider.retrieveSecurityToken(
+                provider.get().retrieveSecurityToken(
                     params.paymentIntentId, applicationContext,
                     object : SecurityTokenListener {
                         override fun onResponse(deviceId: String) {
@@ -460,12 +460,6 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<String>
     ) {
-        val provider = AirwallexPlugins.getProvider(params.paymentMethodType)
-        if (provider == null) {
-            listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
-            return
-        }
-
         val options = when (params.paymentMethodType) {
             PaymentMethodType.CARD -> {
                 buildCardPaymentIntentOptions(params, device)
@@ -494,6 +488,11 @@ class Airwallex internal constructor(
                             amount = response.amount,
                         )
                         else -> null
+                    }
+                    val provider = AirwallexPlugins.getProvider(response.nextAction)
+                    if (provider == null) {
+                        listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
+                        return
                     }
                     provider.get().handlePaymentIntentResponse(
                         response.id,
@@ -628,7 +627,7 @@ class Airwallex internal constructor(
 
             override fun onSuccess(response: PaymentIntent) {
                 // Handle next action
-                val provider = AirwallexPlugins.getProvider(PaymentMethodType.CARD)
+                val provider = AirwallexPlugins.getCardProvider()
                 if (provider == null) {
                     listener.onFailed(AirwallexCheckoutException(message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"))
                     return

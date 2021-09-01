@@ -1,6 +1,5 @@
 package com.airwallex.android.card
 
-import android.content.Context
 import com.airwallex.android.core.*
 import com.airwallex.android.core.model.*
 
@@ -10,23 +9,15 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
         CardComponent()
     }
 
-    override fun canHandleAction(paymentMethodType: PaymentMethodType): Boolean {
-        return paymentMethodType == PaymentMethodType.CARD
-    }
-
-    override fun retrieveSecurityToken(
-        paymentIntentId: String,
-        applicationContext: Context,
-        securityTokenListener: SecurityTokenListener
-    ) {
-        AirwallexSecurityConnector().retrieveSecurityToken(
-            paymentIntentId,
-            applicationContext,
-            securityTokenListener
-        )
+    override fun canHandleAction(nextAction: NextAction?): Boolean {
+        return nextAction == null || nextAction.type == NextAction.NextActionType.DCC || (nextAction.type == NextAction.NextActionType.REDIRECT && nextAction.data != null)
     }
 
     override fun get(): CardComponent {
         return cardComponent
+    }
+
+    override fun getType(): ActionComponentProviderType {
+        return ActionComponentProviderType.CARD
     }
 }

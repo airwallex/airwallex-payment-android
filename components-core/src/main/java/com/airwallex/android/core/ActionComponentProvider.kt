@@ -1,20 +1,12 @@
 package com.airwallex.android.core
 
-import android.content.Context
-import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.core.model.NextAction
 
 interface ActionComponentProvider<Component : ActionComponent?> {
 
     fun get(): Component
 
-    fun canHandleAction(
-        paymentMethodType:
-            PaymentMethodType
-    ): Boolean
+    fun getType(): ActionComponentProviderType
 
-    fun retrieveSecurityToken(
-        paymentIntentId: String,
-        applicationContext: Context,
-        securityTokenListener: SecurityTokenListener
-    )
+    fun canHandleAction(nextAction: NextAction?): Boolean
 }

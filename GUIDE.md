@@ -76,14 +76,21 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 After setting up the SDK, you are required to config your SDK with some parameters. Before using Airwallex SDK to confirm payment intents and complete the payments, you shall create payment intents in your own server, to make sure you maintain information in your own system
 #### Configuration the SDK
 
-We provide some parameters that can be used to debug the SDK, better to be called in Application
-```groovy
+We provide some parameters that can be used to debug the SDK, you can call it in Application
+```kotlin
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
             .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
             .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
+            .setSupportComponentProviders(
+                listOf(
+                    CardComponent.PROVIDER,
+                    WeChatComponent.PROVIDER,
+                    RedirectComponent.PROVIDER
+                )
+            )
             .build()
-    )
+        )
 ```
 
 #### Create Payment Intent (On the Merchant’s server)
@@ -108,8 +115,16 @@ Next Step:
 
 ## Airwallex Native UI integration
 We provide native screens to facilitate the integration of payment functions.
-You can use these individually, or take all of the prebuilt UI in one flow by following the Integration guide.
 
+First, and below code in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
+```kotlin
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        
+        // You must call this method on `onActivityResult`
+        AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
+    }
+```
 
 ### Edit shipping info
 Use `presentShippingFlow` to allow users to provide a shipping address as well as select a shipping method. `shipping` parameter is optional.
