@@ -7,7 +7,6 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.NextAction
-import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.wechat.WeChatComponentProvider
 import com.nhaarman.mockitokotlin2.mock
 import org.junit.Test
@@ -25,9 +24,33 @@ class WeChatComponentProviderTest {
     @Test
     fun canHandleActionTest() {
         val weChatComponentProvider = WeChatComponentProvider()
-        assertEquals(true, weChatComponentProvider.canHandleAction(PaymentMethodType.WECHAT))
-        assertEquals(false, weChatComponentProvider.canHandleAction(PaymentMethodType.CARD))
-        assertEquals(false, weChatComponentProvider.canHandleAction(PaymentMethodType.ALIPAY_CN))
+        assertEquals(
+            true,
+            weChatComponentProvider.canHandleAction(
+                NextAction(
+                    type = NextAction.NextActionType.CALL_SDK,
+                    data = null,
+                    dcc = null,
+                    url = null,
+                    method = null
+                )
+            )
+        )
+        assertEquals(
+            false,
+            weChatComponentProvider.canHandleAction(
+                NextAction(
+                    type = NextAction.NextActionType.REDIRECT,
+                    data = null,
+                    dcc = null,
+                    url = null,
+                    method = null
+                )
+            )
+        )
+        assertEquals(
+            false, weChatComponentProvider.canHandleAction(null)
+        )
     }
 
     @Test

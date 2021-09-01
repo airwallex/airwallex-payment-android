@@ -7,7 +7,6 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.NextAction
-import com.airwallex.android.core.model.PaymentMethodType
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
@@ -23,9 +22,31 @@ class RedirectComponentProviderTest {
     @Test
     fun canHandleActionTest() {
         val redirectComponentProvider = RedirectComponentProvider()
-        assertEquals(true, redirectComponentProvider.canHandleAction(PaymentMethodType.ALIPAY_CN))
-        assertEquals(false, redirectComponentProvider.canHandleAction(PaymentMethodType.CARD))
-        assertEquals(false, redirectComponentProvider.canHandleAction(PaymentMethodType.WECHAT))
+        assertEquals(
+            false,
+            redirectComponentProvider.canHandleAction(
+                NextAction(
+                    type = NextAction.NextActionType.REDIRECT,
+                    data = mapOf("1" to "2"),
+                    dcc = null,
+                    url = null,
+                    method = null
+                )
+            )
+        )
+        assertEquals(
+            true,
+            redirectComponentProvider.canHandleAction(
+                NextAction(
+                    type = NextAction.NextActionType.REDIRECT,
+                    data = null,
+                    dcc = null,
+                    url = null,
+                    method = null
+                )
+            )
+        )
+        assertEquals(false, redirectComponentProvider.canHandleAction(null))
     }
 
     @Test

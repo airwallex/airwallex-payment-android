@@ -8,7 +8,6 @@ import com.airwallex.android.core.AirwallexPaymentManager
 import com.airwallex.android.core.CardNextActionModel
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.NextAction
-import com.airwallex.android.core.model.PaymentMethodType
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -29,9 +28,42 @@ class CardComponentProviderTest {
     @Test
     fun canHandleActionTest() {
         val cardComponentProvider = CardComponentProvider()
-        assertEquals(true, cardComponentProvider.canHandleAction(PaymentMethodType.CARD))
-        assertEquals(false, cardComponentProvider.canHandleAction(PaymentMethodType.ALIPAY_CN))
-        assertEquals(false, cardComponentProvider.canHandleAction(PaymentMethodType.WECHAT))
+        assertEquals(
+            true,
+            cardComponentProvider.canHandleAction(
+                NextAction(
+                    type = NextAction.NextActionType.DCC,
+                    data = null,
+                    dcc = null,
+                    url = null,
+                    method = null
+                )
+            )
+        )
+        assertEquals(
+            true,
+            cardComponentProvider.canHandleAction(
+                NextAction(
+                    type = NextAction.NextActionType.REDIRECT,
+                    data = mapOf("1" to "2"),
+                    dcc = null,
+                    url = null,
+                    method = null
+                )
+            )
+        )
+        assertEquals(
+            false,
+            cardComponentProvider.canHandleAction(
+                NextAction(
+                    type = NextAction.NextActionType.CALL_SDK,
+                    data = null,
+                    dcc = null,
+                    url = null,
+                    method = null
+                )
+            )
+        )
     }
 
     @Test
