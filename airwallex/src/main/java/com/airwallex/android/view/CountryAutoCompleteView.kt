@@ -25,18 +25,6 @@ class CountryAutoCompleteView constructor(
     private var selectedCountry: Country? = null
 
     private var error: String? = null
-//        set(value) {
-//            viewBinding.tvError.visibility = when (value) {
-//                null -> View.GONE
-//                else -> View.VISIBLE
-//            }
-//
-//            viewBinding.tvError.text = value
-//            updateLayoutColor()
-//        }
-//        get() {
-//            return viewBinding.tvError.text.toString()
-//        }
 
     private val countryAdapter: CountryAdapter by lazy {
         CountryAdapter(getContext(), CountryUtils.COUNTRIES)
@@ -57,24 +45,6 @@ class CountryAutoCompleteView constructor(
         get() {
             return CountryUtils.getCountryByName(viewBinding.actCountry.text.toString())?.code
         }
-
-    private fun updateLayoutColor() {
-//        if (error.isNullOrEmpty()) {
-//            viewBinding.vBorder.background =
-//                ResourcesCompat.getDrawable(
-//                    resources,
-//                    R.drawable.airwallex_input_layout_border,
-//                    null
-//                )
-//        } else {
-//            viewBinding.vBorder.background =
-//                ResourcesCompat.getDrawable(
-//                    resources,
-//                    R.drawable.airwallex_input_layout_border_error,
-//                    null
-//                )
-//        }
-    }
 
     init {
         viewBinding.actCountry.threshold = 0
@@ -173,7 +143,7 @@ class CountryAutoCompleteView constructor(
     }
 
     private class CountryFilter(
-        internal var countries: List<Country>,
+        var countries: List<Country>,
         private val adapter: CountryAdapter
     ) : Filter() {
         override fun performFiltering(constraint: CharSequence?): FilterResults {
