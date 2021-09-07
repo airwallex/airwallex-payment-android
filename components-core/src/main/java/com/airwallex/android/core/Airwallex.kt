@@ -769,7 +769,17 @@ class Airwallex internal constructor(
          * Initialize some global configurations, better to be called on Application
          */
         fun initialize(configuration: AirwallexConfiguration) {
+            initialize(configuration, null)
+        }
+
+        /**
+         * Initialize some global configurations, better to be called on Application
+         */
+        fun initialize(configuration: AirwallexConfiguration, clientSecretProvider: ClientSecretProvider? = null) {
             AirwallexPlugins.initialize(configuration)
+            clientSecretProvider?.let {
+                ClientSecretRepository.init(it)
+            }
         }
     }
 }

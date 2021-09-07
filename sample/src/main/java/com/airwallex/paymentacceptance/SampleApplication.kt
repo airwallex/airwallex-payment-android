@@ -39,7 +39,8 @@ class SampleApplication : Application() {
                         RedirectComponent.PROVIDER
                     )
                 )
-                .build()
+                .build(),
+            ExampleClientSecretProvider()
         )
     }
 }

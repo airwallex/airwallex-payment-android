@@ -3,16 +3,9 @@ package com.airwallex.paymentacceptance
 import android.text.TextUtils
 import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.ClientSecretProvider
-import com.airwallex.android.core.ClientSecretUpdateListener
-import com.airwallex.android.core.model.AirwallexError
-import com.airwallex.android.core.model.parser.AirwallexErrorParser
+import com.airwallex.android.core.model.ClientSecret
 import com.airwallex.android.core.model.parser.ClientSecretParser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import retrofit2.HttpException
 
 class ExampleClientSecretProvider : ClientSecretProvider {
 
@@ -25,44 +18,13 @@ class ExampleClientSecretProvider : ClientSecretProvider {
                 .create(Api::class.java)
         }
 
-    override fun createClientSecret(
-        customerId: String,
-        updateListener: ClientSecretUpdateListener
-    ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = runCatching {
-                val response = api.authentication(
-                    apiKey = Settings.apiKey,
-                    clientId = Settings.clientId
-                )
-                Settings.token = JSONObject(response.string())["token"].toString()
-                api.createClientSecret(customerId)
-            }
-            withContext(Dispatchers.Main) {
-                response.fold(
-                    onSuccess = {
-                        updateListener.onClientSecretUpdate(ClientSecretParser().parse(JSONObject(it.string())))
-                    },
-                    onFailure = {
-                        val errorMessage = if (it is HttpException) {
-                            getErrorMessageFromResponse(it)?.message ?: "Failed to generate client secret!"
-                        } else {
-                            it.message ?: "Failed to generate client secret!"
-                        }
-                        updateListener.onClientSecretUpdateFailure(errorMessage)
-                    }
-                )
-            }
-        }
-    }
-
-    private fun getErrorMessageFromResponse(httpException: HttpException): AirwallexError? {
-        return try {
-            val body = httpException.response()?.errorBody()
-            AirwallexErrorParser().parse(JSONObject(body?.string() ?: ""))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+    override fun provideClientSecret(customerId: String): ClientSecret {
+        val authResponse = api.authenticationSynchronous(
+            apiKey = Settings.apiKey,
+            clientId = Settings.clientId
+        ).execute().body()
+        Settings.token = JSONObject(authResponse!!.string())["token"].toString()
+        val clientSecretResponse = api.createClientSecretSynchronous(customerId).execute().body()
+        return ClientSecretParser().parse(JSONObject(clientSecretResponse!!.string()))
     }
 }

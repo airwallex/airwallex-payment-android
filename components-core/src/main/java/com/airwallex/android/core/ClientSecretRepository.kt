@@ -1,27 +1,25 @@
 package com.airwallex.android.core
 
 import com.airwallex.android.core.model.ClientSecret
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class ClientSecretRepository(
-    private val clientSecretProvider: ClientSecretProvider
-) : ClientSecretUpdateListener {
-    private var clientSecretRetrieveListener: ClientSecretRetrieveListener? = null
+class ClientSecretRepository(private val provider: ClientSecretProvider) {
 
     fun retrieveClientSecret(customerId: String, listener: ClientSecretRetrieveListener) {
-        clientSecretRetrieveListener = listener
-        clientSecretProvider.createClientSecret(customerId, this)
-    }
-
-    override fun onClientSecretUpdate(clientSecret: ClientSecret) {
-        try {
-            clientSecretRetrieveListener?.onClientSecretRetrieve(clientSecret)
-        } catch (e: Exception) {
-            clientSecretRetrieveListener?.onClientSecretError("Exception while parsing responseJson to ClientSecret. ")
+        CoroutineScope(Dispatchers.Main).launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    provider.provideClientSecret(customerId)
+                }
+            }
+            result.fold(
+                onSuccess = { listener.onClientSecretRetrieve(it) },
+                onFailure = { listener.onClientSecretError("Could not retrieve client secret from the given provider") }
+            )
         }
-    }
-
-    override fun onClientSecretUpdateFailure(message: String) {
-        clientSecretRetrieveListener?.onClientSecretError(message)
     }
 
     interface ClientSecretRetrieveListener {

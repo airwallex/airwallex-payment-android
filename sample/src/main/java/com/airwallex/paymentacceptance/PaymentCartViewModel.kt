@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.core.ClientSecretProvider
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Shipping
 
@@ -38,13 +37,11 @@ internal class PaymentCartViewModel(
     fun presentPaymentFlow(
         fragment: Fragment,
         session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider? = null
     ): LiveData<PaymentFlowResult> {
         val resultData = MutableLiveData<PaymentFlowResult>()
         AirwallexStarter.presentPaymentFlow(
             fragment,
             session,
-            clientSecretProvider,
             object : AirwallexStarter.PaymentFlowListener<String> {
                 override fun onSuccess(response: String) {
                     resultData.value = PaymentFlowResult.Success(response)

@@ -37,10 +37,6 @@ class PaymentCartFragment : Fragment() {
         FragmentCartBinding.inflate(layoutInflater)
     }
 
-    private val clientSecretProvider by lazy {
-        ExampleClientSecretProvider()
-    }
-
     private val viewModel: PaymentCartViewModel by lazy {
         ViewModelProvider(
             this,
@@ -294,16 +290,7 @@ class PaymentCartFragment : Fragment() {
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        retrievePaymentIntent(
-                            airwallex,
-                            it.paymentIntentId,
-                            paymentIntent.clientSecret!!
-                        ) { paymentIntent ->
-                            val type = paymentIntent.latestPaymentAttempt?.paymentMethod?.type
-                            if (type == PaymentMethodType.CARD || type == PaymentMethodType.WECHAT) {
-                                showPaymentSuccess()
-                            }
-                        }
+                        showPaymentSuccess()
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.message)
@@ -372,21 +359,11 @@ class PaymentCartFragment : Fragment() {
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .setReturnUrl(returnUrl)
-                    .build(),
-                clientSecretProvider
+                    .build()
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        retrievePaymentIntent(
-                            airwallex,
-                            it.paymentIntentId,
-                            null
-                        ) { paymentIntent ->
-                            val type = paymentIntent.latestPaymentAttempt?.paymentMethod?.type
-                            if (type == PaymentMethodType.CARD || type == PaymentMethodType.WECHAT) {
-                                showPaymentSuccess()
-                            }
-                        }
+                        showPaymentSuccess()
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.localizedMessage)
@@ -480,21 +457,11 @@ class PaymentCartFragment : Fragment() {
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .setReturnUrl(returnUrl)
-                    .build(),
-                clientSecretProvider
+                    .build()
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        retrievePaymentIntent(
-                            airwallex,
-                            it.paymentIntentId,
-                            paymentIntent.clientSecret!!
-                        ) { paymentIntent ->
-                            val type = paymentIntent.latestPaymentAttempt?.paymentMethod?.type
-                            if (type == PaymentMethodType.CARD || type == PaymentMethodType.WECHAT) {
-                                showPaymentSuccess()
-                            }
-                        }
+                        showPaymentSuccess()
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.message)
@@ -515,59 +482,26 @@ class PaymentCartFragment : Fragment() {
     private fun retrievePaymentIntent(
         airwallex: Airwallex,
         paymentIntentId: String,
-        clientSecret: String?,
+        clientSecret: String,
         onComplete: (paymentIntent: PaymentIntent) -> Unit
     ) {
-        if (clientSecret != null) {
-            airwallex.retrievePaymentIntent(
-                params = RetrievePaymentIntentParams(
-                    // the ID of the `PaymentIntent`, required.
-                    paymentIntentId = paymentIntentId,
-                    // the clientSecret of `PaymentIntent`, required.
-                    clientSecret = clientSecret
-                ),
-                listener = object : Airwallex.PaymentListener<PaymentIntent> {
-                    override fun onSuccess(response: PaymentIntent) {
-                        onComplete.invoke(response)
-                    }
-
-                    override fun onFailed(exception: AirwallexException) {
-                        Log.e(TAG, "Retrieve PaymentIntent failed", exception)
-                    }
+        airwallex.retrievePaymentIntent(
+            params = RetrievePaymentIntentParams(
+                // the ID of the `PaymentIntent`, required.
+                paymentIntentId = paymentIntentId,
+                // the clientSecret of `PaymentIntent`, required.
+                clientSecret = clientSecret
+            ),
+            listener = object : Airwallex.PaymentListener<PaymentIntent> {
+                override fun onSuccess(response: PaymentIntent) {
+                    onComplete.invoke(response)
                 }
-            )
-        } else {
-            Settings.cachedCustomerId?.let {
-                clientSecretProvider.createClientSecret(
-                    it,
-                    object : ClientSecretUpdateListener {
-                        override fun onClientSecretUpdate(clientSecret: ClientSecret) {
-                            airwallex.retrievePaymentIntent(
-                                params = RetrievePaymentIntentParams(
-                                    // the ID of the `PaymentIntent`, required.
-                                    paymentIntentId = paymentIntentId,
-                                    // the clientSecret of `PaymentIntent`, required.
-                                    clientSecret = clientSecret.value
-                                ),
-                                listener = object : Airwallex.PaymentListener<PaymentIntent> {
-                                    override fun onSuccess(response: PaymentIntent) {
-                                        onComplete.invoke(response)
-                                    }
 
-                                    override fun onFailed(exception: AirwallexException) {
-                                        Log.e(TAG, "Retrieve PaymentIntent failed", exception)
-                                    }
-                                }
-                            )
-                        }
-
-                        override fun onClientSecretUpdateFailure(message: String) {
-                            Log.e(TAG, "Generate client secret failed")
-                        }
-                    }
-                )
+                override fun onFailed(exception: AirwallexException) {
+                    Log.e(TAG, "Retrieve PaymentIntent failed", exception)
+                }
             }
-        }
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

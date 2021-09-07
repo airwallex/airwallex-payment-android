@@ -85,19 +85,16 @@ class AirwallexStarter {
          *
          * @param fragment fragment {@link Fragment}
          * @param session a [AirwallexSession] used to present the payment flow
-         * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret, not required for anonymous payments
          * @param paymentFlowListener The callback of present entire payment flow
          */
         fun presentPaymentFlow(
             fragment: Fragment,
             session: AirwallexSession,
-            clientSecretProvider: ClientSecretProvider?,
             paymentFlowListener: PaymentFlowListener<String>
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(fragment),
                 session,
-                clientSecretProvider,
                 paymentFlowListener
             )
         }
@@ -107,19 +104,16 @@ class AirwallexStarter {
          *
          * @param activity activity {@link Activity}
          * @param session a [AirwallexSession] used to present the payment flow
-         * @param clientSecretProvider a [ClientSecretProvider] used to generate client-secret, not required for anonymous payments
          * @param paymentFlowListener The callback of present entire payment flow
          */
         fun presentPaymentFlow(
             activity: Activity,
             session: AirwallexSession,
-            clientSecretProvider: ClientSecretProvider?,
             paymentFlowListener: PaymentFlowListener<String>
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(activity),
                 session,
-                clientSecretProvider,
                 paymentFlowListener
             )
         }
@@ -127,13 +121,9 @@ class AirwallexStarter {
         private fun presentPaymentFlow(
             launch: PaymentMethodsActivityLaunch,
             session: AirwallexSession,
-            clientSecretProvider: ClientSecretProvider?,
             paymentFlowListener: PaymentFlowListener<String>
         ) {
             this.paymentFlowListener = paymentFlowListener
-            clientSecretProvider?.let {
-                ClientSecretRepository.init(it)
-            }
             launch.startForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
