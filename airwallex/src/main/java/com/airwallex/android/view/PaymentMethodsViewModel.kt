@@ -2,9 +2,10 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.airwallex.android.*
-import com.airwallex.android.model.*
-import com.airwallex.android.model.RetrieveAvailablePaymentMethodParams
+import com.airwallex.android.core.*
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.model.*
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class PaymentMethodsViewModel(
@@ -56,7 +57,7 @@ internal class PaymentMethodsViewModel(
 
                         override fun onClientSecretError(errorMessage: String) {
                             resultData.value =
-                                PaymentMethodTypeResult.Error(Exception(errorMessage))
+                                PaymentMethodTypeResult.Error(AirwallexCheckoutException(message = errorMessage))
                         }
                     }
                 )
@@ -80,7 +81,7 @@ internal class PaymentMethodsViewModel(
                 .setTransactionCurrency(session.currency)
                 .build(),
             listener = object : Airwallex.PaymentListener<AvailablePaymentMethodResponse> {
-                override fun onFailed(exception: Exception) {
+                override fun onFailed(exception: AirwallexException) {
                     resultData.value = PaymentMethodTypeResult.Error(exception)
                 }
 
@@ -112,7 +113,7 @@ internal class PaymentMethodsViewModel(
                             }
                             else ->
                                 resultData.value =
-                                    PaymentMethodTypeResult.Error(Exception("Not support session $session"))
+                                    PaymentMethodTypeResult.Error(AirwallexCheckoutException(message = "Not support session $session"))
                         }
                     }
                 }
@@ -133,7 +134,7 @@ internal class PaymentMethodsViewModel(
                         ),
                         object : Airwallex.PaymentListener<PaymentConsent> {
 
-                            override fun onFailed(exception: Exception) {
+                            override fun onFailed(exception: AirwallexException) {
                                 resultData.value = PaymentConsentResult.Error(exception)
                             }
 
@@ -145,7 +146,7 @@ internal class PaymentMethodsViewModel(
                 }
 
                 override fun onClientSecretError(errorMessage: String) {
-                    resultData.value = PaymentConsentResult.Error(Exception(errorMessage))
+                    resultData.value = PaymentConsentResult.Error(AirwallexCheckoutException(message = errorMessage))
                 }
             }
         )
@@ -154,14 +155,15 @@ internal class PaymentMethodsViewModel(
 
     internal sealed class PaymentConsentResult {
         data class Success(val paymentConsent: PaymentConsent) : PaymentConsentResult()
-        data class Error(val exception: Exception) : PaymentConsentResult()
+
+        data class Error(val exception: AirwallexException) : PaymentConsentResult()
     }
 
     internal sealed class PaymentMethodTypeResult {
         data class Success(val availableThirdPaymentTypes: List<PaymentMethodType>) :
             PaymentMethodTypeResult()
 
-        data class Error(val exception: Exception) : PaymentMethodTypeResult()
+        data class Error(val exception: AirwallexException) : PaymentMethodTypeResult()
     }
 
     internal class Factory(

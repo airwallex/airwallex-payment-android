@@ -1,22 +1,29 @@
 package com.airwallex.paymentacceptance
 
 import android.app.Application
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
-import com.airwallex.android.*
-import com.airwallex.android.model.*
+import com.airwallex.android.AirwallexStarter
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.model.Shipping
 
 internal class PaymentCartViewModel(
-    application: Application,
-    private val airwallex: Airwallex
+    application: Application
 ) : AndroidViewModel(application) {
 
-    fun presentShippingFlow(shipping: Shipping?): LiveData<ShippingResult> {
+    fun presentShippingFlow(fragment: Fragment, shipping: Shipping?): LiveData<ShippingResult> {
         val resultData = MutableLiveData<ShippingResult>()
-        airwallex.presentShippingFlow(
+        AirwallexStarter.presentShippingFlow(
+            fragment,
             shipping,
-            object : Airwallex.PaymentShippingListener {
-                override fun onSuccess(shipping: Shipping) {
-                    resultData.value = ShippingResult.Success(shipping)
+            object : AirwallexStarter.PaymentFlowListener<Shipping> {
+                override fun onSuccess(response: Shipping) {
+                    resultData.value = ShippingResult.Success(response)
+                }
+
+                override fun onFailed(exception: AirwallexException) {
+                    resultData.value = ShippingResult.Error(exception)
                 }
 
                 override fun onCancelled() {
@@ -28,28 +35,20 @@ internal class PaymentCartViewModel(
     }
 
     fun presentPaymentFlow(
+        fragment: Fragment,
         session: AirwallexSession,
-        clientSecretProvider: ClientSecretProvider? = null
     ): LiveData<PaymentFlowResult> {
         val resultData = MutableLiveData<PaymentFlowResult>()
-        airwallex.presentPaymentFlow(
+        AirwallexStarter.presentPaymentFlow(
+            fragment,
             session,
-            clientSecretProvider,
-            object : Airwallex.PaymentIntentListener {
-                override fun onSuccess(paymentIntent: PaymentIntent) {
-                    resultData.value = PaymentFlowResult.Success(paymentIntent)
+            object : AirwallexStarter.PaymentFlowListener<String> {
+                override fun onSuccess(response: String) {
+                    resultData.value = PaymentFlowResult.Success(response)
                 }
 
-                override fun onFailed(error: Exception) {
-                    resultData.value = PaymentFlowResult.Error(error)
-                }
-
-                override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                    resultData.value = PaymentFlowResult.WeChatPay(weChat)
-                }
-
-                override fun onNextActionWithRedirectUrl(url: String) {
-                    resultData.value = PaymentFlowResult.Redirect(url)
+                override fun onFailed(exception: AirwallexException) {
+                    resultData.value = PaymentFlowResult.Error(exception)
                 }
 
                 override fun onCancelled() {
@@ -63,29 +62,26 @@ internal class PaymentCartViewModel(
     sealed class ShippingResult {
         data class Success(val shipping: Shipping) : ShippingResult()
 
+        data class Error(val exception: Exception) : ShippingResult()
+
         object Cancel : ShippingResult()
     }
 
     sealed class PaymentFlowResult {
-        data class Success(val paymentIntent: PaymentIntent) : PaymentFlowResult()
+        data class Success(val paymentIntentId: String) : PaymentFlowResult()
 
         data class Error(val exception: Exception) : PaymentFlowResult()
-
-        data class WeChatPay(val weChat: WeChat) : PaymentFlowResult()
-
-        data class Redirect(val redirectUrl: String) : PaymentFlowResult()
 
         object Cancel : PaymentFlowResult()
     }
 
     internal class Factory(
-        private val application: Application,
-        private val airwallex: Airwallex
+        private val application: Application
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return PaymentCartViewModel(
-                application, airwallex
+                application
             ) as T
         }
     }

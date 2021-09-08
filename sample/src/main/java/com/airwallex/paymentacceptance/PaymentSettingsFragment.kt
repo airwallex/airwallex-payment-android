@@ -14,8 +14,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
-import com.airwallex.android.AirwallexCheckoutMode
-import com.airwallex.android.AirwallexPlugins
+import com.airwallex.android.core.AirwallexCheckoutMode
+import com.airwallex.android.core.AirwallexPlugins
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

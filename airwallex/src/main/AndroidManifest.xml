@@ -3,37 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.airwallex.android">
 
-    <application tools:targetApi="n">
+    <application
+        android:supportsRtl="true"
+        tools:targetApi="n">
         <activity
-            android:name="com.airwallex.android.view.PaymentMethodsActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AirwallexDefaultTheme" />
-
-        <activity
-            android:name="com.airwallex.android.view.PaymentCheckoutActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AirwallexDefaultTheme" />
-
-        <activity
-            android:name="com.airwallex.android.view.AddPaymentMethodActivity"
+            android:name=".view.PaymentShippingActivity"
             android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name="com.airwallex.android.view.PaymentShippingActivity"
+            android:name=".view.PaymentMethodsActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AirwallexDefaultTheme" />
+
+        <activity
+            android:name=".view.AddPaymentMethodActivity"
             android:launchMode="singleTop"
             android:theme="@style/AirwallexDefaultTheme"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name="com.airwallex.android.view.DccActivity"
+            android:name=".view.PaymentCheckoutActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AirwallexDefaultTheme" />
-
-        <activity
-            android:name=".view.ThreeDSecureActivity"
-            android:theme="@style/AirwallexDefaultTheme" />
+            android:theme="@style/AirwallexDefaultTheme"
+            android:windowSoftInputMode="adjustResize" />
     </application>
-
 </manifest>

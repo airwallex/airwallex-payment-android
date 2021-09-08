@@ -2,10 +2,10 @@ package com.airwallex.paymentacceptance.h5
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
 import android.widget.Toast
-import com.airwallex.android.setOnSingleClickListener
+import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ActivityH5DemoBinding
 

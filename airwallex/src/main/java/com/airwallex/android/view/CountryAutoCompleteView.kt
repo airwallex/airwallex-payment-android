@@ -7,14 +7,13 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.R
 import com.airwallex.android.databinding.CountryAutocompleteViewBinding
 import java.util.*
 
-internal class CountryAutoCompleteView constructor(
+class CountryAutoCompleteView constructor(
     context: Context,
-    attrs: AttributeSet
+    attrs: AttributeSet?
 ) : FrameLayout(context, attrs) {
 
     private val viewBinding = CountryAutocompleteViewBinding.inflate(
@@ -25,28 +24,18 @@ internal class CountryAutoCompleteView constructor(
 
     private var selectedCountry: Country? = null
 
-    private var error: String?
-        set(value) {
-            viewBinding.tvError.visibility = when (value) {
-                null -> View.GONE
-                else -> View.VISIBLE
-            }
+    private var error: String? = null
 
-            viewBinding.tvError.text = value
-            updateLayoutColor()
-        }
-        get() {
-            return viewBinding.tvError.text.toString()
-        }
-
-    private val countryAdapter: CountryAdapter
+    private val countryAdapter: CountryAdapter by lazy {
+        CountryAdapter(getContext(), CountryUtils.COUNTRIES)
+    }
 
     /**
      * Country selected changed callback
      */
-    internal var countryChangeCallback: (Country) -> Unit = {}
+    var countryChangeCallback: (Country) -> Unit = {}
 
-    internal var country: String? = null
+    var country: String? = null
         set(value) {
             value?.let {
                 viewBinding.actCountry.setText(CountryUtils.getCountryByCode(it)?.name)
@@ -57,32 +46,14 @@ internal class CountryAutoCompleteView constructor(
             return CountryUtils.getCountryByName(viewBinding.actCountry.text.toString())?.code
         }
 
-    private fun updateLayoutColor() {
-        if (error.isNullOrEmpty()) {
-            viewBinding.vBorder.background =
-                ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.airwallex_input_layout_border,
-                    null
-                )
-        } else {
-            viewBinding.vBorder.background =
-                ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.airwallex_input_layout_border_error,
-                    null
-                )
-        }
-    }
-
     init {
-        countryAdapter = CountryAdapter(getContext(), CountryUtils.COUNTRIES)
         viewBinding.actCountry.threshold = 0
         viewBinding.actCountry.setAdapter(countryAdapter)
 
-        viewBinding.actCountry.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-            updatedSelectedCountryCode(countryAdapter.getItem(position))
-        }
+        viewBinding.actCountry.onItemClickListener =
+            AdapterView.OnItemClickListener { _, _, position, _ ->
+                updatedSelectedCountryCode(countryAdapter.getItem(position))
+            }
         viewBinding.actCountry.onFocusChangeListener = OnFocusChangeListener { _, focused ->
             if (focused) {
                 viewBinding.actCountry.showDropDown()
@@ -117,14 +88,14 @@ internal class CountryAutoCompleteView constructor(
         }
     }
 
-    private fun updatedSelectedCountryCode(country: Country) {
+    fun updatedSelectedCountryCode(country: Country) {
         if (selectedCountry != country) {
             selectedCountry = country
             countryChangeCallback.invoke(country)
         }
     }
 
-    internal data class Country(
+    data class Country(
         val code: String,
         val name: String
     ) {
@@ -172,7 +143,7 @@ internal class CountryAutoCompleteView constructor(
     }
 
     private class CountryFilter(
-        internal var countries: List<Country>,
+        var countries: List<Country>,
         private val adapter: CountryAdapter
     ) : Filter() {
         override fun performFiltering(constraint: CharSequence?): FilterResults {

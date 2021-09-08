@@ -20,10 +20,6 @@
     <string name="payment_cancelled">Payment cancelled</string>
     <string name="payment_cancelled_message">User cancel the payment</string>
 
-    <string name="free">Free</string>
-    <string name="airwallex_total">Total</string>
-
-    <string name="airwallex_shipping">Shipping</string>
     <string name="price_value">1</string>
     <string name="currency_value">HKD</string>
     <string name="currency">Currency</string>
@@ -64,4 +60,7 @@
     <string name="generate_customer_failed">Generate customer failed</string>
     <string name="generate_customer_failed_message">There was an error while generate customer. Please try again.</string>
     <string name="requires_cvc">Requires CVC</string>
+    <string name="shipping">Shipping</string>
+    <string name="item">Item</string>
+    <string name="total">Total</string>
 </resources>

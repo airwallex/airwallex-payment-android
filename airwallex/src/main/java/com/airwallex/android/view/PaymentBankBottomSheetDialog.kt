@@ -2,13 +2,16 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airwallex.android.databinding.DialogBankItemBinding
+import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.model.Bank
 import com.airwallex.android.databinding.DialogBankBinding
-import com.airwallex.android.model.Bank
-import com.airwallex.android.setOnSingleClickListener
+import com.airwallex.android.databinding.DialogBankItemBinding
+import com.airwallex.android.dto.drawableRes
 
 class PaymentBankBottomSheetDialog : BottomSheetDialog() {
 
@@ -54,7 +57,7 @@ class PaymentBankBottomSheetDialog : BottomSheetDialog() {
     }
 
     inner class BottomDialogAdapter(
-        val values: MutableList<Bank>
+        private val values: MutableList<Bank>
     ) :
         RecyclerView.Adapter<BottomDialogHolder>() {
 

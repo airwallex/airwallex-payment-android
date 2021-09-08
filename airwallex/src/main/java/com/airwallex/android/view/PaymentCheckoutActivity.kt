@@ -4,16 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
-import com.airwallex.android.Airwallex
-import com.airwallex.android.AirwallexSession
-import com.airwallex.android.CurrencyUtils.formatPrice
-import com.airwallex.android.R
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.WeChat
+import com.airwallex.android.core.util.CurrencyUtils.formatPrice
 import com.airwallex.android.databinding.ActivityPaymentCheckoutBinding
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.WeChat
-import com.airwallex.android.setOnSingleClickListener
-import java.lang.Exception
+import com.airwallex.android.R
+import java.util.*
 
 /**
  * Activity to confirm payment intent
@@ -28,6 +28,10 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
+    }
+
+    private val keyboardController: KeyboardController by lazy {
+        KeyboardController(this)
     }
 
     private val args: PaymentCheckoutActivityLaunch.Args by lazy {
@@ -52,10 +56,25 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewBinding.header.text = getString(
+            R.string.airwallex_enter_cvv,
+            String.format(
+                "%s •••• %s",
+                paymentMethod.card?.brand?.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                },
+                paymentMethod.card?.last4
+            )
+        )
+        viewBinding.tvTotalPrice.text =
+            getString(R.string.airwallex_total, formatPrice(session.currency, session.amount))
 
-        viewBinding.tvTotalPrice.text = formatPrice(session.currency, session.amount)
-        viewBinding.paymentMethodItemView.renewalPaymentMethod(paymentMethod, args.cvc)
-        viewBinding.paymentMethodItemView.cvcChangedCallback = {
+        viewBinding.atlCardCvc.afterTextChanged {
+            if (viewBinding.atlCardCvc.isValid) {
+                keyboardController.hide()
+            }
             updateButtonStatus()
         }
 
@@ -75,20 +94,14 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         startCheckout(
             paymentMethod = paymentMethod,
             paymentConsentId = paymentConsentId,
-            cvc = viewBinding.paymentMethodItemView.cvc,
+            cvc = viewBinding.atlCardCvc.value,
             observer = {
                 when (it) {
                     is AirwallexCheckoutViewModel.PaymentResult.Success -> {
-                        finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+                        finishWithPaymentIntent(paymentIntentId = it.paymentIntentId)
                     }
                     is AirwallexCheckoutViewModel.PaymentResult.Error -> {
                         finishWithPaymentIntent(exception = it.exception)
-                    }
-                    is AirwallexCheckoutViewModel.PaymentResult.WeChatPay -> {
-                        finishWithPaymentIntent(weChat = it.weChat)
-                    }
-                    is AirwallexCheckoutViewModel.PaymentResult.Redirect -> {
-                        finishWithPaymentIntent(redirectUrl = it.redirectUrl)
                     }
                 }
             }
@@ -96,17 +109,17 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun finishWithPaymentIntent(
-        paymentIntent: PaymentIntent? = null,
+        paymentIntentId: String? = null,
         weChat: WeChat? = null,
         redirectUrl: String? = null,
-        exception: Exception? = null
+        exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK,
             Intent().putExtras(
                 PaymentCheckoutActivityLaunch.Result(
-                    paymentIntent = paymentIntent,
+                    paymentIntentId = paymentIntentId,
                     weChat = weChat,
                     redirectUrl = redirectUrl,
                     exception = exception
@@ -117,6 +130,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun updateButtonStatus() {
-        viewBinding.rlPayNow.isEnabled = viewBinding.paymentMethodItemView.isValid
+        viewBinding.rlPayNow.isEnabled = viewBinding.atlCardCvc.isValid
     }
 }

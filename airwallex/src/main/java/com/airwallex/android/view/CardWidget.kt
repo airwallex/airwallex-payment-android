@@ -4,14 +4,14 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import com.airwallex.android.R
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.databinding.WidgetCardBinding
-import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.R
 
 /**
  * A widget used to collect the card info
  */
-internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
+class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
 
     private val viewBinding = WidgetCardBinding.inflate(
         LayoutInflater.from(context),
@@ -24,9 +24,9 @@ internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(
     private val cvcTextInputLayout = viewBinding.atlCardCvc
     private val expiryTextInputLayout = viewBinding.atlCardExpiry
 
-    internal var cardChangeCallback: () -> Unit = {}
+    var cardChangeCallback: () -> Unit = {}
 
-    internal val paymentMethodCard: PaymentMethod.Card?
+    val paymentMethodCard: PaymentMethod.Card?
         get() {
             return if (isValid) {
                 expiryTextInputLayout.validDateFields?.let { (month, year) ->
@@ -46,7 +46,7 @@ internal class CardWidget(context: Context, attrs: AttributeSet) : LinearLayout(
     /**
      * Check the card info to see whether or not it is a valid card
      */
-    internal val isValid: Boolean
+    val isValid: Boolean
         get() {
             val cardNumberIsValid = CardUtils.isValidCardNumber(cardNumberTextInputLayout.cardNumber)
             val cardNameIsValid = cardNameTextInputLayout.value.isNotEmpty()

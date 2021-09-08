@@ -9,8 +9,7 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
 1. [准备集成](#准备集成) SDK之前, 您需要配置SDK，并在服务端创建PaymentIntent
 
 *集成选项*
-1. [Airwallex API Integration](#airwallex-api-integration)If you prefer to use your own payment UI, you can choose to integrate Airwallex Android SDK via API.
-2. [Airwallex Native UI integration](#airwallex-native-ui-integration)You can choose to use Airwallex Android SDK with our prebuilt UI page
+1. [Airwallex Native UI integration](#airwallex-native-ui-integration)You can choose to use Airwallex Android SDK with our prebuilt UI page
 
 我们的Demo开源在 [Github](https://github.com/airwallex/airwallex-payment-android)，可以帮助你更好地了解如何在你的Android项目中集成Airwallex Android SDK。
 
@@ -27,10 +26,6 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
     * [Edit Shipping Info](#edit-shipping-info)
     * [Use the entire Native UI in one flow](#use-the-entire-native-ui-in-one-flow)
     * [Custom Theme](#custom-theme)
-* [API集成](#API集成)
-    * [Cards](#cards)
-    * [Alipay, AlipayHK, DANA, GCash, Kakao Pay, Touch ‘n Go](#alipay-alipayhk-dana-gcash-kakao-pay-touch-n-go)
-    * [WeChat](#wechat)
 * [SDK Example](#sdk-example)
 * [测试卡号](#测试卡号)
 * [贡献](#贡献)
@@ -68,7 +63,13 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 
 ```groovy
     dependencies {
-        implementation 'io.github.airwallex:airwallex-core:2.0.6'
+        // It's required
+        implementation 'io.github.airwallex:payment:3.0.0'
+        
+        // Select the payment method you want to support.
+        implementation 'io.github.airwallex:payment-card:3.0.0'
+        implementation 'io.github.airwallex:payment-redirect:3.0.0'
+        implementation 'io.github.airwallex:payment-wechat:3.0.0'
     }
 ```
 
@@ -76,14 +77,21 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 设置SDK后，需要使用一些参数来配置SDK。 在使用Airwallex SDK confirm PaymentIntent并完成付款之前，您应在自己的服务器中创建PaymentIntent，以确保在自己的系统中维护信息
 #### 初始化SDK
 
-我们提供了一些可用于调试SDK的参数，最好在Application中调用
-```groovy
+我们提供了一些可用于调试SDK的参数，你可以在Application中调用
+```kotlin
     Airwallex.initialize(
         AirwallexConfiguration.Builder()
             .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
             .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
+            .setSupportComponentProviders(
+                listOf(
+                    CardComponent.PROVIDER,
+                    WeChatComponent.PROVIDER,
+                    RedirectComponent.PROVIDER
+                )
+            )
             .build()
-    )
+        )
 ```
 
 #### 创建PaymentIntent
@@ -107,20 +115,27 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 
 ## UI集成
 我们提供一些UI组件，以加快付款功能的集成。
-您可以单独使用它们，也可以按照“集成”指南将所有预构建的UI放在一个流程中。
-
-1. 初始化一个 `Airwallex` 对象, 这个 Airwallex SDK 的入口.
+首先，在你的Activity或Fragment中，重写 Activity#onActivityResult 方法，并调用AirwallexStarter.handlePaymentData方法。
 ```kotlin
-    val airwallex = Airwallex(this)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        
+        // You must call this method on `onActivityResult`
+        AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
+    }
 ```
 
 ### Edit shipping info
 使用 `presentShippingFlow` 允许用户提供送货地址以及选择送货方式. `shipping` 字段是可选的
 ```kotlin
-    airwallex.presentShippingFlow(shipping,
-        object : Airwallex.PaymentShippingListener {
+    AirwallexStarter.presentShippingFlow(this, shipping,
+        object : Airwallex.PaymentListener<Shipping> {
             override fun onSuccess(shipping: Shipping) {
                 Log.d(TAG, "Save the shipping success")
+            }
+
+            override fun onFailed(exception: Exception) {
+                Log.d(TAG, "Save the shipping failed")
             }
 
             override fun onCancelled() {
@@ -132,23 +147,12 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ### Use the entire Native UI in one flow
 使用 `presentPaymentFlow` 来完成整个支付流程. 需要传入一个 `AirwallexSession`对象
 ```kotlin
-    airwallex.presentPaymentFlow(AirwallexPaymentSession.Builder(paymentIntent).build(),
+    AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent).build(),
         object : Airwallex.PaymentIntentListener {
-            // If you need to support card, it's optional
             override fun onSuccess(paymentIntent: PaymentIntent) {
                 Log.d(TAG, "Confirm payment intent success")
             }
             
-            // If you need to support wechatpay, it's optional
-            override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                Log.d(TAG, "Confirm payment intent success, start WeChat Pay")
-            }
-
-            // If you need to support redirect url, it's optional
-            override fun onNextActionWithRedirectUrl(url: String) {
-                Log.d(TAG, "Confirm payment intent success, start Redirect URL")
-            }
-
             override fun onFailed(exception: Exception) {
                 Log.d(TAG, "Confirm payment intent failed")
             }
@@ -161,257 +165,7 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ### Custom Theme
 您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格。 https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
 ```
-    <!--   a secondary color for controls like checkboxes and text fields -->
-    <color name="airwallex_color_accent">@color/color_accent</color>
-
-    <!--   color for the app bar and other primary UI elements -->
-    <color name="airwallex_color_primary">@color/color_primary</color>
-
-    <!--   a darker variant of the primary color, used for
-           the status bar (on Android 5.0+) and contextual app bars -->
-    <color name="airwallex_color_primary_dark">@color/color_primary_dark</color>
-```
-
-## API集成
-
-PaymentMethod代表您客户的付款方式。 它们可以与PaymentIntent一起使用以完成付款。
-
-支持的支付方式有: [`Cards`](#cards), [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay). You can choose to integrate with the payment method you need to support and we will display the available payment methods based on the transaction currency. The additional implementation effort for offering a new payment method depends on your type of integration.
-
-### Cards
-
-*前置条件*: 你已经通过 [如何创建PaymentIntent](#创建PaymentIntent)创建了一个PaymentIntent
-
-1. 初始化一个 `Airwallex` 对象, 这个 Airwallex SDK 的入口.
-
-```kotlin
-    val airwallex = Airwallex(this)
-```
-
-2. 然后你可以通过`checkout`完成支付
-```kotlin
-    val listener = object : Airwallex.PaymentListener<PaymentIntent> {
-        override fun onSuccess(response: PaymentIntent) {
-            // Confirm Payment Intent success
-        }
-
-        override fun onFailed(exception: Exception) {
-            // Confirm Payment Intent failed
-        }
-    }
-
-    val paymentMethod = PaymentMethod.Builder()
-        .setType(PaymentMethodType.CARD)
-        .setCard(card)
-        .setBilling(billing)
-        .build()
-    airwallex.checkout(AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod, listener)
-```
-
-在你的Activity或Fragment中, 重写 Activity#onActivityResult 方法
-```kotlin
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        
-        // You must call this method on `onActivityResult`
-        airwallex.handlePaymentData(requestCode, resultCode, data)
-    }
-```
-3. 获取支付结果, 你可以通过调用 `retrievePaymentIntent` 方法检查最新的状态，并提供用户结果
-```kotlin
-    airwallex.retrievePaymentIntent(
-        params = RetrievePaymentIntentParams(
-            paymentIntentId = paymentIntentId,  // the ID of the `PaymentIntent`, required.
-            clientSecret = clientSecret         // the clientSecret of `PaymentIntent`, required.
-        ),
-        listener = object : Airwallex.PaymentListener<PaymentIntent> {
-            override fun onSuccess(response: PaymentIntent) {
-                if (response.status == PaymentIntentStatus.SUCCEEDED) {
-                   // Payment successful
-                }
-            }
-    
-            override fun onFailed(exception: Exception) {
-                
-            }
-        })
-```
-
-### Alipay, AlipayHK, DANA, GCash, Kakao Pay, Touch ‘n Go
-
-*前置条件*: 你已经通过 [如何创建PaymentIntent](#创建PaymentIntent)创建了一个PaymentIntent
-
-*注意*:
-为了支付完成之后跳转到app，需要在创建PaymentIntent时需要传入returnUrl。
-```kotlin
-    api.createPaymentIntent(
-        mutableMapOf(
-                
-            // The HTTP request method that you should use. After the shopper completes the payment, they will be redirected back to your return_url.
-            "return_url" to "$airwallexcheckout://$packageName"
-        )
-    )
-```
-
-1. 初始化一个 `Airwallex` 对象, 这个 Airwallex SDK 的入口.
-
-```kotlin
-    val airwallex = Airwallex(this)
-```
-
-2. 在AndroidManifest添加以下信息，用户在支付成功之后返回app
-```xml
-    <activity android:name="...">
-        <intent-filter>
-
-            <data
-                android:host="${applicationId}"
-                android:scheme="${checkoutRedirectScheme}" />
-        </intent-filter>
-    </activity>
-```
-
-3. 通过`checkout`完成支付
-```kotlin
-    val listener = object : Airwallex.PaymentListener<PaymentIntent> {
-        override fun onNextActionWithRedirectUrl(url: String) {
-            Logger.debug("Start RedirectUrl $url")
-        }
-    
-        override fun onFailed(exception: Exception) {
-            // Confirm Payment Intent failed
-        }
-    }
-
-    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod.Builder().setType(PaymentMethodType.ALIPAY_CN).build(), listener = listener)
-```
-
-在你的Activity或Fragment中, 重写 Activity#onActivityResult 方法
-```kotlin
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        
-        // You must call this method on `onActivityResult`
-        airwallex.handlePaymentData(requestCode, resultCode, data)
-    }
-```
-
-4. 您需要使用handleAction来跳转到购物者的电子钱包应用中完成付款。
-```kotlin
-    try { 
-        airwallex.handleAction(redirectUrl)
-    } catch (e: RedirectException) {
-        showPaymentError(e.localizedMessage)
-    }
-```
-
-
-5. 获取支付结果, 你可以通过调用 `retrievePaymentIntent` 方法检查最新的状态，并提供用户结果
-```kotlin
-    airwallex.retrievePaymentIntent(
-        params = RetrievePaymentIntentParams(
-            paymentIntentId = paymentIntentId,  // the ID of the `PaymentIntent`, required.
-            clientSecret = clientSecret         // the clientSecret of `PaymentIntent`, required.
-        ),
-        listener = object : Airwallex.PaymentListener<PaymentIntent> {
-            override fun onSuccess(response: PaymentIntent) {
-                if (response.status == PaymentIntentStatus.SUCCEEDED) {
-                   // Payment successful
-                }
-            }
-    
-            override fun onFailed(exception: Exception) {
-                
-            }
-        })
-```
-
-### WeChat
-
-*前置条件*: 你已经通过 [如何创建PaymentIntent](#创建PaymentIntent)创建了一个PaymentIntent
-- 你已经通过 [如何创建PaymentIntent](#创建PaymentIntent)创建了一个PaymentIntent
-- 在 [WeChat Pay](https://open.weixin.qq.com/) 注册app， 将为商家提供唯一的APP_ID。 然后，请与我们联系，我们将在Airwallex仪表板中注册您的微信APPID。
-
-1. 初始化一个 `Airwallex` 对象, 这个 Airwallex SDK 的入口.
-
-```kotlin
-    val airwallex = Airwallex(this)
-```
-
-2. 完成checkout，你需要调用 `checkout` 方法. 
-```kotlin
-    val listener = object : Airwallex.PaymentListener<PaymentIntent> {
-        override fun onNextActionWithWeChatPay(weChat: WeChat) {
-            Logger.debug("Start WeChat Pay $weChat")
-        }
-    
-        override fun onFailed(exception: Exception) {
-            // Confirm Payment Intent failed
-        }
-    }
-
-    airwallex.checkout(session = AirwallexPaymentSession.Builder(paymentIntent).build(), paymentMethod = PaymentMethod.Builder().setType(PaymentMethodType.WECHAT).build(), listener = listener)
-```
-
-在你的Activity或Fragment中, 重写 Activity#onActivityResult 方法
-```kotlin
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        
-        // You must call this method on `onActivityResult`
-        airwallex.handlePaymentData(requestCode, resultCode, data)
-    }
-```
-
-3. 成功确认付款意向后，Airwallex将返回微信支付所需的所有参数。 你需要调用 [WeChat Pay SDK](https://pay.weixin.qq.com/wiki/doc/api/wxpay/pay/In-AppPay/chapter6_2.shtml) 完成最终支付
-Check the [WeChat Pay Sample](https://github.com/airwallex/airwallex-payment-android/tree/master) for more details.
-
-```kotlin
-    val weChatReq = PayReq()
-    weChatReq.appId = weChat.appId
-    weChatReq.partnerId = weChat.partnerId
-    weChatReq.prepayId = weChat.prepayId
-    weChatReq.packageValue = weChat.`package`
-    weChatReq.nonceStr = weChat.nonceStr
-    weChatReq.timeStamp = weChat.timestamp
-    weChatReq.sign = weChat.sign
-     
-    val weChatApi = WXAPIFactory.createWXAPI(applicationContext, appId)
-    weChatApi.sendReq(weChatReq)
-```
-4. 付款完成后，您可以使用onResp（）方法将购物者重定向回您的应用，可以检查最终付款状态。
-```kotlin
-    override fun onResp(resp: BaseResp?) {
-        if (resp is PayResp) {
-            when (resp.errCode) {
-                BaseResp.ErrCode.ERR_OK -> listener?.onSuccess()
-                BaseResp.ErrCode.ERR_COMM -> listener?.onFailure(errCode.toString(), errText)
-                BaseResp.ErrCode.ERR_USER_CANCEL -> listener?.onCancel()
-                else -> listener?.onFailure(errCode.toString(), errText)
-            }
-
-        }
-    }
-```
-
-5. 获取支付结果, 你可以通过调用 `retrievePaymentIntent` 方法检查最新的状态，并提供用户结果
-```kotlin
-    airwallex.retrievePaymentIntent(
-        params = RetrievePaymentIntentParams(
-            paymentIntentId = paymentIntentId,  // the ID of the `PaymentIntent`, required.
-            clientSecret = clientSecret         // the clientSecret of `PaymentIntent`, required.
-        ),
-        listener = object : Airwallex.PaymentListener<PaymentIntent> {
-            override fun onSuccess(response: PaymentIntent) {
-                if (response.status == PaymentIntentStatus.SUCCEEDED) {
-                   // Payment successful
-                }
-            }
-    
-            override fun onFailed(exception: Exception) {
-                
-            }
-        })
+    <color name="airwallex_tint_color">@color/airwallex_color_red</color>
 ```
 
 ## SDK Example

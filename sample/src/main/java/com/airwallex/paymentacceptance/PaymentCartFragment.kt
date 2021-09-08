@@ -14,40 +14,34 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.*
-import com.airwallex.android.exception.RedirectException
-import com.airwallex.android.model.*
-import com.airwallex.android.model.Address
-import com.airwallex.android.model.parser.PaymentIntentParser
+import com.airwallex.android.core.*
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.Address
+import com.airwallex.android.core.model.parser.PaymentIntentParser
 import com.airwallex.paymentacceptance.databinding.CartItemBinding
 import com.airwallex.paymentacceptance.databinding.FragmentCartBinding
 import kotlinx.coroutines.*
 import okhttp3.*
 import org.json.JSONObject
 import retrofit2.HttpException
-import java.io.IOException
 import java.math.BigDecimal
 import java.util.*
 
 class PaymentCartFragment : Fragment() {
 
-    private val airwallex by lazy {
-        Airwallex(this)
-    }
+    private val airwallex: Airwallex by lazy { Airwallex(this) }
 
     private val viewBinding: FragmentCartBinding by lazy {
         FragmentCartBinding.inflate(layoutInflater)
-    }
-
-    private val clientSecretProvider by lazy {
-        ExampleClientSecretProvider()
     }
 
     private val viewModel: PaymentCartViewModel by lazy {
         ViewModelProvider(
             this,
             PaymentCartViewModel.Factory(
-                requireActivity().application,
-                airwallex
+                requireActivity().application
             )
         )[PaymentCartViewModel::class.java]
     }
@@ -74,15 +68,16 @@ class PaymentCartFragment : Fragment() {
         }
 
     private var shipping: Shipping = Shipping.Builder()
-        .setFirstName("Verify")
-        .setLastName("Doe")
+        .setFirstName("Doe")
+        .setLastName("John")
         .setPhone("13800000000")
+        .setEmail("john.doe@airwallex.com")
         .setAddress(
             Address.Builder()
                 .setCountryCode("CN")
                 .setState("Shanghai")
                 .setCity("Shanghai")
-                .setStreet("Pudong District")
+                .setStreet("Julu road")
                 .setPostcode("100000")
                 .build()
         )
@@ -91,11 +86,11 @@ class PaymentCartFragment : Fragment() {
     private val products = mutableListOf(
         PhysicalProduct.Builder()
             .setCode("123")
-            .setName("AirPods Pro")
+            .setName("AirPods")
             .setDesc("Buy AirPods Pro, per month with trade-in")
             .setSku("piece")
-            .setType("Free engraving")
-            .setUnitPrice(399.00)
+            .setType("White")
+            .setUnitPrice(500.00)
             .setUrl("www.aircross.com")
             .setQuantity(1)
             .build(),
@@ -105,7 +100,7 @@ class PaymentCartFragment : Fragment() {
             .setDesc("Buy HomePod, per month with trade-in")
             .setSku("piece")
             .setType("White")
-            .setUnitPrice(469.00)
+            .setUnitPrice(500.00)
             .setUrl("www.aircross.com")
             .setQuantity(1)
             .build()
@@ -141,7 +136,7 @@ class PaymentCartFragment : Fragment() {
 
     private val returnUrl: String
         get() {
-            return "airwallexcheckout://${context?.packageName}"
+            return "${Airwallex.AIRWALLEX_CHECKOUT_SCHEMA}${context?.packageName}"
 //            return when (Settings.sdkEnv) {
 //                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0] -> "https://staging-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
 //                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[1] -> "https://demo-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
@@ -204,8 +199,6 @@ class PaymentCartFragment : Fragment() {
 
         viewBinding.tvOrderSubtotalPrice.text = String.format("$%.2f", subtotalPrice)
         viewBinding.tvOrderTotalPrice.text = String.format("$%.2f", totalPrice)
-        viewBinding.tvShipping.text = getString(R.string.free)
-        viewBinding.tvOrderSum.text = products.sumOf { it.quantity ?: 0 }.toString()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -213,7 +206,7 @@ class PaymentCartFragment : Fragment() {
 
         viewBinding.shippingItemView.renewalShipping(shipping)
         viewBinding.shippingItemView.onClickAction = {
-            viewModel.presentShippingFlow(shipping).observe(viewLifecycleOwner) {
+            viewModel.presentShippingFlow(this, shipping).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.ShippingResult.Success -> {
                         Log.d(TAG, "Save the shipping success")
@@ -290,7 +283,10 @@ class PaymentCartFragment : Fragment() {
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
 
             viewModel.presentPaymentFlow(
-                AirwallexPaymentSession.Builder(paymentIntent).build()
+                this@PaymentCartFragment,
+                AirwallexPaymentSession.Builder(paymentIntent)
+                    .setReturnUrl(returnUrl)
+                    .build()
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
@@ -298,12 +294,6 @@ class PaymentCartFragment : Fragment() {
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.message)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
-                        startWeChatPay(it.weChat)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
-                        startRedirectUrl(it.redirectUrl)
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
                         Log.d(TAG, "User cancel the payment")
@@ -358,6 +348,7 @@ class PaymentCartFragment : Fragment() {
             (activity as? PaymentCartActivity)?.setLoadingProgress(false)
 
             viewModel.presentPaymentFlow(
+                this@PaymentCartFragment,
                 AirwallexRecurringSession.Builder(
                     requireNotNull(customerId, { "CustomerId is required" }),
                     Settings.currency,
@@ -367,8 +358,8 @@ class PaymentCartFragment : Fragment() {
                     .setShipping(shipping)
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-                    .build(),
-                clientSecretProvider
+                    .setReturnUrl(returnUrl)
+                    .build()
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
@@ -376,12 +367,6 @@ class PaymentCartFragment : Fragment() {
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.localizedMessage)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
-                        startWeChatPay(it.weChat)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
-                        startRedirectUrl(it.redirectUrl)
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
                         showPaymentCancelled()
@@ -460,6 +445,7 @@ class PaymentCartFragment : Fragment() {
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
             viewModel.presentPaymentFlow(
+                this@PaymentCartFragment,
                 AirwallexRecurringWithIntentSession.Builder(
                     paymentIntent,
                     requireNotNull(
@@ -470,8 +456,8 @@ class PaymentCartFragment : Fragment() {
                 )
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-                    .build(),
-                clientSecretProvider
+                    .setReturnUrl(returnUrl)
+                    .build()
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
@@ -479,12 +465,6 @@ class PaymentCartFragment : Fragment() {
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.message)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.WeChatPay -> {
-                        startWeChatPay(it.weChat)
-                    }
-                    is PaymentCartViewModel.PaymentFlowResult.Redirect -> {
-                        startRedirectUrl(it.redirectUrl)
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
                         Log.d(TAG, "User cancel the payment")
@@ -495,81 +475,6 @@ class PaymentCartFragment : Fragment() {
         }
     }
 
-    private fun startWeChatPay(weChat: WeChat) {
-        Log.d(TAG, "weChat info $weChat")
-        (activity as? PaymentCartActivity)?.setLoadingProgress(true)
-        val prepayId = weChat.prepayId
-        // We use the `URL mock` method to simulate WeChat Pay in the `Staging` environment.
-        // By requesting this URL, we will set the status of the `PaymentIntent` to success.
-        if (prepayId?.startsWith("http") == true) {
-            // **This is just for test on Staging env**
-            Log.d(
-                TAG,
-                "Confirm PaymentIntent success, MOCK WeChat Pay on staging env."
-            )
-            // MOCK WeChat Pay
-            val client = OkHttpClient()
-            val builder = Request.Builder()
-            builder.url(prepayId)
-            client.newCall(builder.build()).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    activity?.runOnUiThread {
-                        Log.e(TAG, "Mock WeChat Pay failed, reason: $e.message")
-                        showPaymentError(e.message)
-                    }
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    activity?.runOnUiThread {
-                        if (response.isSuccessful) {
-                            Log.d(TAG, "Mock WeChat Pay successful.")
-                            showPaymentSuccess()
-                        } else {
-                            Log.e(TAG, "Mock WeChat Pay failed.")
-                            showPaymentError("Mock WeChat Pay failed.")
-                        }
-                    }
-                }
-            })
-        } else {
-            Log.d(TAG, "Confirm PaymentIntent success, launch REAL WeChat Pay.")
-            // Launch WeChat Pay
-            WXPay.instance.launchWeChat(
-                data = weChat,
-                listener = object : WXPay.WeChatPaymentListener {
-                    override fun onSuccess() {
-                        Log.d(TAG, "REAL WeChat Pay successful.")
-                        showPaymentSuccess()
-                    }
-
-                    override fun onFailure(
-                        errCode: String?,
-                        errMessage: String?
-                    ) {
-                        Log.e(
-                            TAG,
-                            "REAL WeChat Pay failed, reason: $errMessage"
-                        )
-                        showPaymentError(errMessage)
-                    }
-
-                    override fun onCancel() {
-                        Log.d(TAG, "REAL WeChat Pay cancelled.")
-                        showPaymentError("REAL WeChat Pay cancelled.")
-                    }
-                }
-            )
-        }
-    }
-
-    private fun startRedirectUrl(redirectUrl: String) {
-        try {
-            airwallex.handleAction(redirectUrl)
-        } catch (e: RedirectException) {
-            showPaymentError(e.localizedMessage)
-        }
-    }
-
     /**
      * After successful payment, Airwallex server will notify the Merchant,
      * Then Merchant can retrieve the `PaymentIntent` to check the `status` of the PaymentIntent.
@@ -577,7 +482,8 @@ class PaymentCartFragment : Fragment() {
     private fun retrievePaymentIntent(
         airwallex: Airwallex,
         paymentIntentId: String,
-        clientSecret: String
+        clientSecret: String,
+        onComplete: (paymentIntent: PaymentIntent) -> Unit
     ) {
         airwallex.retrievePaymentIntent(
             params = RetrievePaymentIntentParams(
@@ -588,15 +494,11 @@ class PaymentCartFragment : Fragment() {
             ),
             listener = object : Airwallex.PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
-                    if (response.status == PaymentIntentStatus.SUCCEEDED) {
-                        // payment successful
-                        showPaymentSuccess()
-                    } else {
-                        showPaymentError(response.status?.value)
-                    }
+                    onComplete.invoke(response)
                 }
 
-                override fun onFailed(exception: Exception) {
+                override fun onFailed(exception: AirwallexException) {
+                    Log.e(TAG, "Retrieve PaymentIntent failed", exception)
                 }
             }
         )
@@ -606,7 +508,7 @@ class PaymentCartFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // We need to handle activity result
-        airwallex.handlePaymentData(requestCode, resultCode, data)
+        AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
     }
 
     private fun showPaymentSuccess() {

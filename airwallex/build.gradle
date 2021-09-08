@@ -1,11 +1,13 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-parcelize'
-apply from: "./ktlint.gradle"
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+}
+
+apply from: "../ktlint.gradle"
 
 def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
 def DEVICE_FINGERPRINT_MERCHANT_ID = '"airwallex_cybs"'
-def API_VERSION = '"2020-04-30"'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -20,6 +22,8 @@ android {
 
         consumerProguardFiles 'proguard-rules.pro'
 
+        vectorDrawables.useSupportLibrary = true
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
@@ -27,6 +31,12 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+        }
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
         }
     }
 
@@ -45,47 +55,30 @@ android {
 
     lintOptions {
         abortOnError true
-        disable 'ParcelCreator'
+        disable 'ParcelCreator', 'VectorPath', 'IconDipSize', 'UnsafeExperimentalUsageWarning'
     }
 }
-
 
 android.buildTypes.each { type ->
     type.buildConfigField 'String', 'DEVICE_FINGERPRINT_ORG_ID', DEVICE_FINGERPRINT_ORG_ID
     type.buildConfigField 'String', 'DEVICE_FINGERPRINT_MERCHANT_ID', DEVICE_FINGERPRINT_MERCHANT_ID
-    type.buildConfigField 'String', 'API_VERSION', API_VERSION
 }
 
 dependencies {
-    implementation 'androidx.browser:browser:1.3.0'
-
-    // material
-    implementation 'com.google.android.material:material:1.4.0'
-    // cardinal
-    api 'io.github.airwallex:cardinalmobilesdk:2.2.3-2'
-    // fingerprinting
-    api 'io.github.airwallex:TrustDefender-Behavioral:6.1-67'
-    api 'io.github.airwallex:TrustDefender-Profiling:6.1-67'
-    api 'io.github.airwallex:TrustDefender-Profiling-Connections:6.1-67'
-
-    // kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlinVersion"
-    implementation "org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlinVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
+    api project(':ui-core')
 
     // test
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.robolectric:robolectric:4.5.1'
-    testImplementation 'androidx.test:core:1.4.0'
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
+    testImplementation "androidx.test:core:$testCoreVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
-}
-
-ext {
-    libraryVersion = "${android.defaultConfig.versionName}"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 }
 
 apply from: rootProject.file('publish.gradle')
 apply from: rootProject.file('deploy.gradle')
+
+ext {
+    libraryVersion = "${android.defaultConfig.versionName}"
+}

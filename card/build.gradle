@@ -1,0 +1,95 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+}
+
+apply from: "../ktlint.gradle"
+
+def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
+def DEVICE_FINGERPRINT_MERCHANT_ID = '"airwallex_cybs"'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.compileSdkVersion
+
+        multiDexEnabled true
+
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+
+        consumerProguardFiles 'proguard-rules.pro'
+
+        vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    lintOptions {
+        abortOnError true
+        disable 'ParcelCreator', 'VectorPath', 'UnsafeExperimentalUsageError', 'UnsafeExperimentalUsageWarning'
+    }
+}
+
+android.buildTypes.each { type ->
+    type.buildConfigField 'String', 'DEVICE_FINGERPRINT_ORG_ID', DEVICE_FINGERPRINT_ORG_ID
+    type.buildConfigField 'String', 'DEVICE_FINGERPRINT_MERCHANT_ID', DEVICE_FINGERPRINT_MERCHANT_ID
+}
+
+dependencies {
+    api project(':ui-core')
+
+    // cardinal
+    implementation 'io.github.airwallex:cardinalmobilesdk:2.2.3-2'
+
+    // fingerprinting
+    implementation 'io.github.airwallex:TrustDefender-Behavioral:6.1-67'
+    implementation 'io.github.airwallex:TrustDefender-Profiling:6.1-67'
+    implementation 'io.github.airwallex:TrustDefender-Profiling-Connections:6.1-67'
+
+    // test
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
+    testImplementation "androidx.test:core:$testCoreVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1'
+}
+
+apply from: rootProject.file('publish.gradle')
+apply from: rootProject.file('deploy.gradle')
+
+ext {
+    libraryVersion = "${android.defaultConfig.versionName}"
+}

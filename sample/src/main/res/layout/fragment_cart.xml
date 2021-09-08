@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/btnCheckout"
-        android:paddingTop="32dp"
         android:paddingBottom="16dp">
 
         <LinearLayout
@@ -17,148 +16,99 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <RelativeLayout
+            <TextView
+                style="@style/AirwallexPaymentHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:text="@string/my_cart" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@id/flOrderSum"
-                    android:fontFamily="@font/circularstd_bold"
-                    android:text="@string/my_cart"
-                    android:textColor="@color/airwallex_color_dark_deep"
-                    android:textSize="32sp" />
-
-                <FrameLayout
-                    android:id="@+id/flOrderSum"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:alpha="0.3"
-                        android:background="@drawable/ic_cart_count_bg" />
-
-                    <TextView
-                        android:id="@+id/tvOrderSum"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:fontFamily="@font/circularstd_bold"
-                        android:gravity="center"
-                        android:textColor="@color/airwallex_color_primary"
-                        android:textSize="14sp" />
-                </FrameLayout>
-
-
-            </RelativeLayout>
+            <TextView
+                style="@style/AirwallexPaymentSubHeaderBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:text="@string/shipping" />
 
             <com.airwallex.paymentacceptance.ShippingItemView
                 android:id="@+id/shippingItemView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="33dp" />
+                android:paddingHorizontal="24dp" />
+
+            <TextView
+                style="@style/AirwallexPaymentSubHeaderBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:text="@string/item" />
 
             <LinearLayout
                 android:id="@+id/llProducts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
                 android:background="@android:color/white"
                 android:orientation="vertical"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp" />
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="84dp"
+                android:layout_height="58dp"
                 android:background="@android:color/white"
                 android:orientation="vertical"
-                android:paddingLeft="16dp"
-                android:paddingTop="16dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="16dp">
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp">
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/tvSubtotalLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:fontFamily="@font/circularstd_medium"
-                        android:text="@string/subtotal"
-                        android:textColor="@color/airwallex_color_item_label"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvOrderSubtotalPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@id/tvSubtotalLabel"
-                        android:fontFamily="@font/circularstd_medium"
-                        android:gravity="end"
-                        android:textColor="@color/airwallex_color_dark_deep"
-                        android:textSize="14sp" />
-
-                </RelativeLayout>
-
-
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/tvSubtotalLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true">
+                    android:layout_centerVertical="true"
+                    android:text="@string/subtotal"
+                    android:textColor="@color/airwallex_color_grey_70"
+                    android:textSize="15sp" />
 
-                    <TextView
-                        android:id="@+id/tvShippingLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:fontFamily="@font/circularstd_medium"
-                        android:text="@string/airwallex_shipping"
-                        android:textColor="@color/airwallex_color_item_label"
-                        android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/tvOrderSubtotalPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/tvSubtotalLabel"
+                    android:gravity="end"
+                    android:textColor="@color/airwallex_color_grey_100"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/tvShipping"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@id/tvShippingLabel"
-                        android:fontFamily="@font/circularstd_medium"
-                        android:gravity="end"
-                        android:textColor="@color/airwallex_color_dark_deep"
-                        android:textSize="14sp" />
-
-                </RelativeLayout>
             </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="24dp"
+                android:background="@drawable/airwallex_line_divider" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="58dp"
                 android:background="@android:color/white"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp">
 
                 <TextView
                     android:id="@+id/tvTotalLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:fontFamily="@font/circularstd_medium"
-                    android:text="@string/airwallex_total"
-                    android:textColor="@color/airwallex_color_dark_deep"
-                    android:textSize="14sp" />
+                    android:text="@string/total"
+                    android:textColor="@color/airwallex_color_grey_70"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/tvOrderTotalPrice"
@@ -167,23 +117,22 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/tvTotalLabel"
-                    android:fontFamily="@font/circularstd_medium"
                     android:gravity="end"
-                    android:textColor="@color/airwallex_color_dark_deep"
-                    android:textSize="14sp" />
+                    android:textColor="@color/airwallex_color_grey_100"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnCheckout"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
+        android:layout_margin="24dp"
         android:background="@drawable/airwallex_button_solid"
-        android:fontFamily="@font/circularstd_bold"
         android:gravity="center"
         android:padding="0dp"
         android:text="@string/checkout"

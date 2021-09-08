@@ -1,52 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/payment_method_third_item"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="@dimen/payment_method_item_height"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:paddingHorizontal="24dp">
 
-    <RelativeLayout
-        android:id="@+id/payment_method_third_item"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/payment_method_item_height"
-        android:background="?android:attr/selectableItemBackground"
-        android:orientation="horizontal"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+    <ImageView
+        android:id="@+id/payment_method_icon"
+        android:layout_width="35dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:contentDescription="@null"
+        android:scaleType="centerInside" />
 
-        <ImageView
-            android:id="@+id/payment_method_icon"
-            android:layout_width="32dp"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:scaleType="centerInside"
-            android:contentDescription="@null" />
+    <TextView
+        android:id="@+id/payment_method_name"
+        style="@style/AirwallexPaymentSubHeaderRegular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginHorizontal="16dp"
+        android:layout_toEndOf="@id/payment_method_icon" />
 
-        <TextView
-            android:id="@+id/payment_method_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@id/payment_method_icon"
-            android:fontFamily="@font/circularstd_medium"
-            android:textColor="@color/airwallex_color_dark_deep"
-            android:textSize="14sp" />
-
-        <ImageView
-            android:id="@+id/payment_method_checked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:contentDescription="@null"
-            android:src="@drawable/airwallex_ic_tick"
-            android:visibility="gone" />
-    </RelativeLayout>
-
-    <FrameLayout
-        android:id="@+id/content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-</LinearLayout>
+    <ImageView
+        android:id="@+id/payment_method_checked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@null"
+        android:visibility="gone"
+        app:srcCompat="@drawable/airwallex_ic_tick" />
+</RelativeLayout>

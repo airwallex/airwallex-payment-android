@@ -9,7 +9,7 @@ import com.airwallex.android.R
  */
 internal class CardCvcTextInputLayout constructor(
     context: Context,
-    attrs: AttributeSet
+    attrs: AttributeSet?
 ) : AirwallexTextInputLayout(context, attrs, R.layout.card_cvc_input_layout) {
 
     /**

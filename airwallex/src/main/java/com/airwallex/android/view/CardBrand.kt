@@ -6,7 +6,7 @@ import com.airwallex.android.R
 /**
  * All card brands supported by Airwallex. Only support VISA & MASTERCARD
  */
-internal enum class CardBrand(
+enum class CardBrand(
     val type: String,
     @DrawableRes val icon: Int,
     private val prefixes: Set<String> = emptySet()
@@ -37,7 +37,7 @@ internal enum class CardBrand(
          *
          * @param number the credit card number
          */
-        internal fun fromCardNumber(number: String?): CardBrand {
+        fun fromCardNumber(number: String?): CardBrand {
             return values().firstOrNull { brand ->
                 brand.prefixes.takeIf { it.isNotEmpty() }?.any {
                     number?.startsWith(

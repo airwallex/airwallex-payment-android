@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="airwallex_select_your_currency">Select your currency</string>
+    <string name="airwallex_select_your_currency_title">Select the currency you would like to pay with</string>
+    <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>
+    <string name="airwallex_confirm_payment">Confirm payment</string>
+</resources>

@@ -3,7 +3,6 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -11,16 +10,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.*
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
-import com.airwallex.android.model.*
-import com.airwallex.android.view.AirwallexCheckoutViewModel.*
-import kotlin.collections.ArrayList
+import com.airwallex.android.R
 
-/**
- * Allow the customer to select one of the payment methods, or add a new one via [AddPaymentMethodActivity].
- *
- */
-internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
+class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private val viewBinding: ActivityPaymentMethodsBinding by lazy {
         viewStub.layoutResource = R.layout.activity_payment_methods
@@ -75,12 +73,10 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     paymentConsent = paymentConsent
                 )
             }
-        }
 
-        viewBinding.addPaymentMethod.container.visibility =
-            if (shouldShowCard) View.VISIBLE else View.GONE
-        viewBinding.addPaymentMethod.container.setOnSingleClickListener {
-            startAddPaymentMethod()
+            override fun onAddCardClick() {
+                startAddPaymentMethod()
+            }
         }
 
         viewBinding.rvPaymentMethods.apply {
@@ -90,8 +86,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             addItemDecoration(
                 PaymentMethodsDividerItemDecoration(
                     this@PaymentMethodsActivity,
-                    R.drawable.airwallex_line_divider,
-                    availableThirdPaymentTypeSize = availableThirdPaymentTypes.filter { it != PaymentMethodType.CARD }.size
+                    R.drawable.airwallex_line_divider
                 )
             )
         }
@@ -130,7 +125,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         textSize = resources.getDimensionPixelSize(R.dimen.swipe_size),
                         color = ContextCompat.getColor(
                             baseContext,
-                            R.color.airwallex_swipe_bg_color
+                            R.color.airwallex_color_red
                         ),
                         clickListener = object : UnderlayButtonClickListener {
                             override fun onClick(position: Int) {
@@ -212,19 +207,13 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         cvc: String? = null
     ) {
         val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
-        val observer = Observer<PaymentResult> {
+        val observer = Observer<AirwallexCheckoutViewModel.PaymentResult> {
             when (it) {
-                is PaymentResult.Success -> {
-                    finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+                is AirwallexCheckoutViewModel.PaymentResult.Success -> {
+                    finishWithPaymentIntent(paymentIntentId = it.paymentIntentId)
                 }
-                is PaymentResult.Error -> {
+                is AirwallexCheckoutViewModel.PaymentResult.Error -> {
                     finishWithPaymentIntent(exception = it.exception)
-                }
-                is PaymentResult.WeChatPay -> {
-                    finishWithPaymentIntent(weChat = it.weChat)
-                }
-                is PaymentResult.Redirect -> {
-                    finishWithPaymentIntent(redirectUrl = it.redirectUrl)
                 }
             }
         }
@@ -323,7 +312,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
                 result?.let {
                     finishWithPaymentIntent(
-                        paymentIntent = result.paymentIntent,
+                        paymentIntentId = result.paymentIntentId,
                         exception = result.exception
                     )
                 }
@@ -333,7 +322,7 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 val result = PaymentCheckoutActivityLaunch.Result.fromIntent(data)
                 result?.let {
                     finishWithPaymentIntent(
-                        paymentIntent = it.paymentIntent,
+                        paymentIntentId = it.paymentIntentId,
                         exception = it.exception
                     )
                 }
@@ -342,20 +331,16 @@ internal class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun finishWithPaymentIntent(
-        paymentIntent: PaymentIntent? = null,
-        weChat: WeChat? = null,
-        redirectUrl: String? = null,
-        exception: Exception? = null
+        paymentIntentId: String? = null,
+        exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK,
             Intent().putExtras(
                 PaymentMethodsActivityLaunch.Result(
-                    paymentIntent = paymentIntent,
-                    exception = exception,
-                    weChat = weChat,
-                    redirectUrl = redirectUrl
+                    paymentIntentId = paymentIntentId,
+                    exception = exception
                 ).toBundle()
             )
         )

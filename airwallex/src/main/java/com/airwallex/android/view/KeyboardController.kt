@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
 
-internal class KeyboardController(
+class KeyboardController(
     private val activity: Activity
 ) {
     private val inputMethodManager: InputMethodManager =
@@ -13,7 +13,7 @@ internal class KeyboardController(
     /**
      * Hide the keyboard
      */
-    internal fun hide() {
+    fun hide() {
         if (inputMethodManager.isAcceptingText) {
             inputMethodManager.hideSoftInputFromWindow(
                 activity.currentFocus?.windowToken, 0

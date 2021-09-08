@@ -1,35 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This container is used to ensure that the addPaymentMethod is displayed at the bottom and always  -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="UselessParent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        style="@style/AirwallexPaymentHeader"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:ignore="UselessParent">
+        android:paddingHorizontal="24dp"
+        android:text="@string/airwallex_payment_methods" />
 
-        <TextView
-            style="@style/AirwallexPaymentTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/airwallex_payment_methods" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPaymentMethods"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvPaymentMethods"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@android:color/white" />
-
-        <include
-            android:id="@+id/addPaymentMethod"
-            layout="@layout/payment_method_item_add_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
-
-    </LinearLayout>
-</FrameLayout>
+</LinearLayout>

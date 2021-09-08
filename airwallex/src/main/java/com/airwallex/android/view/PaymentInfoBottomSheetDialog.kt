@@ -6,11 +6,11 @@ import android.util.Patterns
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout.LayoutParams
-import com.airwallex.android.R
+import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.model.PaymentMethodRequiredField
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogPaymentInfoBinding
-import com.airwallex.android.model.PaymentMethodRequiredField
-import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.setOnSingleClickListener
+import com.airwallex.android.R
 
 class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
 
@@ -68,7 +68,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             viewBinding.content.addView(
                 nameInput,
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    topMargin = resources.getDimension(R.dimen.marginTop_20).toInt()
+                    topMargin = resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
                 }
             )
         }
@@ -81,7 +81,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             viewBinding.content.addView(
                 emailInput,
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    topMargin = resources.getDimension(R.dimen.marginTop_20).toInt()
+                    topMargin = resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
                 }
             )
         }
@@ -94,7 +94,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             viewBinding.content.addView(
                 phoneInput,
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    topMargin = resources.getDimension(R.dimen.marginTop_20).toInt()
+                    topMargin = resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
                 }
             )
         }

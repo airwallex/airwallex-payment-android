@@ -26,9 +26,9 @@ class PaymentCartActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
+        setSupportActionBar(viewBinding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        supportActionBar?.setDisplayShowTitleEnabled(true)
-        supportActionBar?.setTitle(R.string.app_name)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         if (savedInstanceState == null) {
             supportFragmentManager

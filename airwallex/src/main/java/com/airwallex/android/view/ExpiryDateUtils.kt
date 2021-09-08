@@ -3,11 +3,11 @@ package com.airwallex.android.view
 import androidx.annotation.Size
 import java.util.*
 
-internal object ExpiryDateUtils {
+object ExpiryDateUtils {
 
     private const val MAX_VALID_YEAR = 9980
 
-    internal fun isValidMonth(monthString: String?): Boolean {
+    fun isValidMonth(monthString: String?): Boolean {
         return try {
             monthString?.toInt() in 1..12
         } catch (numEx: NumberFormatException) {
@@ -15,7 +15,7 @@ internal object ExpiryDateUtils {
         }
     }
 
-    internal fun separateDateInput(@Size(max = 6) expiryInput: String): Array<String> {
+    fun separateDateInput(@Size(max = 6) expiryInput: String): Array<String> {
         return if (expiryInput.length >= 2) {
             listOf(
                 expiryInput.substring(0, 2),

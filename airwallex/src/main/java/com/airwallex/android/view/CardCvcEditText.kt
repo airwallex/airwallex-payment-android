@@ -12,7 +12,7 @@ import com.google.android.material.textfield.TextInputEditText
 /**
  * A [TextInputEditText] to format the credit card cvc
  */
-internal class CardCvcEditText @JvmOverloads constructor(
+class CardCvcEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle

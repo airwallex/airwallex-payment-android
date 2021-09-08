@@ -2,7 +2,7 @@ package com.airwallex.android.view
 
 import com.airwallex.android.view.CardBrand.Companion.fromCardNumber
 
-internal object CardUtils {
+object CardUtils {
 
     /**
      * The valid card length
@@ -12,7 +12,7 @@ internal object CardUtils {
     /**
      * Check if card number is valid
      */
-    internal fun isValidCardNumber(cardNumber: String?): Boolean {
+    fun isValidCardNumber(cardNumber: String?): Boolean {
         val normalizedNumber = removeSpacesAndHyphens(cardNumber)
         return isValidLuhnNumber(normalizedNumber) && isValidCardLength(normalizedNumber)
     }
@@ -72,7 +72,7 @@ internal object CardUtils {
      * @param cardNumber the credit card number
      * @return [CardBrand] of the card number
      */
-    internal fun getPossibleCardBrand(cardNumber: String?, shouldNormalize: Boolean): CardBrand {
+    fun getPossibleCardBrand(cardNumber: String?, shouldNormalize: Boolean): CardBrand {
         if (cardNumber.isNullOrBlank()) {
             return CardBrand.Unknown
         }
@@ -90,7 +90,7 @@ internal object CardUtils {
     /**
      * Remove all spaces and hyphens of the card number
      */
-    internal fun removeSpacesAndHyphens(cardNumberWithSpaces: String?): String? {
+    fun removeSpacesAndHyphens(cardNumberWithSpaces: String?): String? {
         return cardNumberWithSpaces
             .takeUnless { it.isNullOrBlank() }
             ?.replace("\\s|-".toRegex(), "")

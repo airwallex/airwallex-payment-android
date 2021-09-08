@@ -2,13 +2,15 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.airwallex.android.Airwallex
-import com.airwallex.android.AirwallexSession
-import com.airwallex.android.ClientSecretRepository
-import com.airwallex.android.model.Billing
-import com.airwallex.android.model.ClientSecret
-import com.airwallex.android.model.CreatePaymentMethodParams
-import com.airwallex.android.model.PaymentMethod
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.ClientSecretRepository
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.model.Billing
+import com.airwallex.android.core.model.ClientSecret
+import com.airwallex.android.core.model.CreatePaymentMethodParams
+import com.airwallex.android.core.model.PaymentMethod
 
 internal class AddPaymentMethodViewModel(
     application: Application,
@@ -34,7 +36,7 @@ internal class AddPaymentMethodViewModel(
                                 resultData.value = PaymentMethodResult.Success(response, requireNotNull(card.cvc))
                             }
 
-                            override fun onFailed(exception: Exception) {
+                            override fun onFailed(exception: AirwallexException) {
                                 resultData.value = PaymentMethodResult.Error(exception)
                             }
                         }
@@ -42,7 +44,7 @@ internal class AddPaymentMethodViewModel(
                 }
 
                 override fun onClientSecretError(errorMessage: String) {
-                    resultData.value = PaymentMethodResult.Error(Exception(errorMessage))
+                    resultData.value = PaymentMethodResult.Error(AirwallexCheckoutException(message = errorMessage))
                 }
             }
         )
@@ -51,7 +53,7 @@ internal class AddPaymentMethodViewModel(
 
     sealed class PaymentMethodResult {
         data class Success(val paymentMethod: PaymentMethod, val cvc: String) : PaymentMethodResult()
-        data class Error(val exception: Exception) : PaymentMethodResult()
+        data class Error(val exception: AirwallexException) : PaymentMethodResult()
     }
 
     internal class Factory(
