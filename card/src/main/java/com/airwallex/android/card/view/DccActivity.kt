@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.card.R
 import com.airwallex.android.card.databinding.ActivitySelectCurrencyBinding
 import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.log.Logger
 import com.airwallex.android.core.model.ContinuePaymentIntentParams
@@ -83,15 +84,15 @@ class DccActivity : AirwallexActivity() {
             viewModel.continuePaymentIntent(params)
                 .observe(
                     this,
-                    {
-                        when (it) {
-                            is DccViewModel.PaymentIntentResult.Success -> {
-                                finishWithPaymentIntent(paymentIntentId = it.paymentIntentId)
+                    { result ->
+                        result.fold(
+                            onSuccess = {
+                                finishWithPaymentIntent(paymentIntentId = it)
+                            },
+                            onFailure = {
+                                finishWithPaymentIntent(exception = it as AirwallexException)
                             }
-                            is DccViewModel.PaymentIntentResult.Error -> {
-                                finishWithPaymentIntent(exception = it.exception)
-                            }
-                        }
+                        )
                     }
                 )
         }
@@ -99,7 +100,7 @@ class DccActivity : AirwallexActivity() {
 
     private fun finishWithPaymentIntent(
         paymentIntentId: String? = null,
-        exception: Exception? = null
+        exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
         setResult(

@@ -46,7 +46,7 @@ internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
     @Parcelize
     internal data class Result internal constructor(
         val paymentIntentId: String? = null,
-        val exception: Exception? = null
+        val exception: AirwallexException? = null
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
             return Bundle().also {

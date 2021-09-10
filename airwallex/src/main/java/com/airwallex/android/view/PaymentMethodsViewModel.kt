@@ -31,8 +31,8 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    fun fetchPaymentMethodTypes(): LiveData<PaymentMethodTypeResult> {
-        val resultData = MutableLiveData<PaymentMethodTypeResult>()
+    fun fetchPaymentMethodTypes(): LiveData<Result<List<PaymentMethodType>>> {
+        val resultData = MutableLiveData<Result<List<PaymentMethodType>>>()
         when (session) {
             is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
                 retrieveAvailablePaymentMethods(
@@ -57,7 +57,7 @@ internal class PaymentMethodsViewModel(
 
                         override fun onClientSecretError(errorMessage: String) {
                             resultData.value =
-                                PaymentMethodTypeResult.Error(AirwallexCheckoutException(message = errorMessage))
+                                Result.failure(AirwallexCheckoutException(message = errorMessage))
                         }
                     }
                 )
@@ -69,7 +69,7 @@ internal class PaymentMethodsViewModel(
     private fun retrieveAvailablePaymentMethods(
         availablePaymentMethodList: MutableList<AvailablePaymentMethod>,
         availablePaymentMethodPageNum: AtomicInteger,
-        resultData: MutableLiveData<PaymentMethodTypeResult>,
+        resultData: MutableLiveData<Result<List<PaymentMethodType>>>,
         clientSecret: String
     ) {
         airwallex.retrieveAvailablePaymentMethods(
@@ -82,7 +82,7 @@ internal class PaymentMethodsViewModel(
                 .build(),
             listener = object : Airwallex.PaymentListener<AvailablePaymentMethodResponse> {
                 override fun onFailed(exception: AirwallexException) {
-                    resultData.value = PaymentMethodTypeResult.Error(exception)
+                    resultData.value = Result.failure(exception)
                 }
 
                 override fun onSuccess(response: AvailablePaymentMethodResponse) {
@@ -99,21 +99,22 @@ internal class PaymentMethodsViewModel(
                         when (session) {
                             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> {
                                 resultData.value =
-                                    PaymentMethodTypeResult.Success(
+                                    Result.success(
                                         availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.RECURRING }
                                             .mapNotNull { it.name }.distinct()
                                     )
                             }
                             is AirwallexPaymentSession -> {
                                 resultData.value =
-                                    PaymentMethodTypeResult.Success(
+                                    Result.success(
                                         availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.ONE_OFF }
                                             .mapNotNull { it.name }.distinct()
                                     )
                             }
-                            else ->
+                            else -> {
                                 resultData.value =
-                                    PaymentMethodTypeResult.Error(AirwallexCheckoutException(message = "Not support session $session"))
+                                    Result.failure(AirwallexCheckoutException(message = "Not support session $session"))
+                            }
                         }
                     }
                 }
@@ -121,8 +122,8 @@ internal class PaymentMethodsViewModel(
         )
     }
 
-    fun deletePaymentConsent(paymentConsent: PaymentConsent): LiveData<PaymentConsentResult> {
-        val resultData = MutableLiveData<PaymentConsentResult>()
+    fun deletePaymentConsent(paymentConsent: PaymentConsent): LiveData<Result<PaymentConsent>> {
+        val resultData = MutableLiveData<Result<PaymentConsent>>()
         ClientSecretRepository.getInstance().retrieveClientSecret(
             requireNotNull(session.customerId),
             object : ClientSecretRepository.ClientSecretRetrieveListener {
@@ -135,35 +136,23 @@ internal class PaymentMethodsViewModel(
                         object : Airwallex.PaymentListener<PaymentConsent> {
 
                             override fun onFailed(exception: AirwallexException) {
-                                resultData.value = PaymentConsentResult.Error(exception)
+                                resultData.value = Result.failure(exception)
                             }
 
                             override fun onSuccess(response: PaymentConsent) {
-                                resultData.value = PaymentConsentResult.Success(response)
+                                resultData.value = Result.success(response)
                             }
                         }
                     )
                 }
 
                 override fun onClientSecretError(errorMessage: String) {
-                    resultData.value = PaymentConsentResult.Error(AirwallexCheckoutException(message = errorMessage))
+                    resultData.value =
+                        Result.failure(AirwallexCheckoutException(message = errorMessage))
                 }
             }
         )
         return resultData
-    }
-
-    internal sealed class PaymentConsentResult {
-        data class Success(val paymentConsent: PaymentConsent) : PaymentConsentResult()
-
-        data class Error(val exception: AirwallexException) : PaymentConsentResult()
-    }
-
-    internal sealed class PaymentMethodTypeResult {
-        data class Success(val availableThirdPaymentTypes: List<PaymentMethodType>) :
-            PaymentMethodTypeResult()
-
-        data class Error(val exception: AirwallexException) : PaymentMethodTypeResult()
     }
 
     internal class Factory(

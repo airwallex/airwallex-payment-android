@@ -95,15 +95,15 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             paymentMethod = paymentMethod,
             paymentConsentId = paymentConsentId,
             cvc = viewBinding.atlCardCvc.value,
-            observer = {
-                when (it) {
-                    is AirwallexCheckoutViewModel.PaymentResult.Success -> {
-                        finishWithPaymentIntent(paymentIntentId = it.paymentIntentId)
+            observer = { result ->
+                result.fold(
+                    onSuccess = {
+                        finishWithPaymentIntent(paymentIntentId = it)
+                    },
+                    onFailure = {
+                        finishWithPaymentIntent(exception = it as AirwallexException)
                     }
-                    is AirwallexCheckoutViewModel.PaymentResult.Error -> {
-                        finishWithPaymentIntent(exception = it.exception)
-                    }
-                }
+                )
             }
         )
     }
