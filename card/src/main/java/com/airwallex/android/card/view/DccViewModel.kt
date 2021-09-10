@@ -13,28 +13,22 @@ internal class DccViewModel(
 
     fun continuePaymentIntent(
         params: ContinuePaymentIntentParams
-    ): LiveData<PaymentIntentResult> {
-        val resultData = MutableLiveData<PaymentIntentResult>()
+    ): LiveData<Result<String>> {
+        val resultData = MutableLiveData<Result<String>>()
 
         airwallex.continueDccPaymentIntent(
             params,
             object : Airwallex.PaymentListener<String> {
                 override fun onFailed(exception: AirwallexException) {
-                    resultData.value = PaymentIntentResult.Error(exception)
+                    resultData.value = Result.failure(exception)
                 }
 
                 override fun onSuccess(response: String) {
-                    resultData.value = PaymentIntentResult.Success(response)
+                    resultData.value = Result.success(response)
                 }
             }
         )
         return resultData
-    }
-
-    sealed class PaymentIntentResult {
-        data class Success(val paymentIntentId: String) : PaymentIntentResult()
-
-        data class Error(val exception: AirwallexException) : PaymentIntentResult()
     }
 
     internal class Factory(

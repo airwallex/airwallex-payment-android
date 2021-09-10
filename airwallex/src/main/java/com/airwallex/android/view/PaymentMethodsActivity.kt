@@ -98,17 +98,17 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             setLoadingProgress(loading = true, cancelable = false)
             viewModel.deletePaymentConsent(paymentConsent).observe(
                 this,
-                {
-                    when (it) {
-                        is PaymentMethodsViewModel.PaymentConsentResult.Success -> {
+                { result ->
+                    result.fold(
+                        onSuccess = {
                             setLoadingProgress(false)
-                            paymentMethodsAdapter.deletePaymentConsent(paymentConsent)
-                        }
-                        is PaymentMethodsViewModel.PaymentConsentResult.Error -> {
+                            paymentMethodsAdapter.deletePaymentConsent(it)
+                        },
+                        onFailure = {
                             setLoadingProgress(false)
-                            alert(message = it.exception.message ?: it.exception.toString())
+                            alert(message = it.message ?: it.toString())
                         }
-                    }
+                    )
                 }
             )
         }
@@ -148,20 +148,20 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.fetchPaymentMethodTypes().observe(
             this@PaymentMethodsActivity,
-            {
-                when (it) {
-                    is PaymentMethodsViewModel.PaymentMethodTypeResult.Success -> {
+            { result ->
+                result.fold(
+                    onSuccess = {
                         setLoadingProgress(loading = false)
                         // Complete load available payment method type
-                        this.availableThirdPaymentTypes = it.availableThirdPaymentTypes
-                        initView(it.availableThirdPaymentTypes)
+                        this.availableThirdPaymentTypes = it
+                        initView(it)
                         filterPaymentConsents()
-                    }
-                    is PaymentMethodsViewModel.PaymentMethodTypeResult.Error -> {
+                    },
+                    onFailure = {
                         setLoadingProgress(loading = false)
-                        alert(message = it.exception.message ?: it.exception.toString())
+                        alert(message = it.message ?: it.toString())
                     }
-                }
+                )
             }
         )
     }
@@ -207,15 +207,15 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         cvc: String? = null
     ) {
         val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
-        val observer = Observer<AirwallexCheckoutViewModel.PaymentResult> {
-            when (it) {
-                is AirwallexCheckoutViewModel.PaymentResult.Success -> {
-                    finishWithPaymentIntent(paymentIntentId = it.paymentIntentId)
+        val observer = Observer<Result<String>> { result ->
+            result.fold(
+                onSuccess = {
+                    finishWithPaymentIntent(paymentIntentId = it)
+                },
+                onFailure = {
+                    finishWithPaymentIntent(exception = it as AirwallexException)
                 }
-                is AirwallexCheckoutViewModel.PaymentResult.Error -> {
-                    finishWithPaymentIntent(exception = it.exception)
-                }
-            }
+            )
         }
 
         when (paymentMethod.type) {

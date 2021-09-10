@@ -74,16 +74,15 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
     private fun onSaveCard() {
         val card = viewBinding.cardWidget.paymentMethodCard ?: return
         setLoadingProgress(loading = true, cancelable = false)
-        val observer = Observer<AirwallexCheckoutViewModel.PaymentResult> {
-            when (it) {
-                is AirwallexCheckoutViewModel.PaymentResult.Success -> {
-                    finishWithPaymentIntent(paymentIntentId = it.paymentIntentId)
+        val observer = Observer<Result<String>> { result ->
+            result.fold(
+                onSuccess = {
+                    finishWithPaymentIntent(paymentIntentId = it)
+                },
+                onFailure = {
+                    finishWithPaymentIntent(exception = it as AirwallexException)
                 }
-                is AirwallexCheckoutViewModel.PaymentResult.Error -> {
-                    finishWithPaymentIntent(exception = it.exception)
-                }
-                else -> Unit
-            }
+            )
         }
 
         if (session is AirwallexPaymentSession) {
