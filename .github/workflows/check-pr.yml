@@ -25,6 +25,17 @@ jobs:
 
       - name: Gradle check
         run: ./gradlew check
+        
+      - name: Build the app
+        run: ./gradlew assemblRelease
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts
+          path: |
+            sample/**/apk/release/*
+            sample/**/mapping/release/mapping.txt
 
       - name: Run Coverage
         run: |
