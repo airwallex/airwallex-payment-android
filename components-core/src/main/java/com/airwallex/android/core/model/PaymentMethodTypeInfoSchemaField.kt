@@ -29,7 +29,7 @@ data class PaymentMethodTypeInfoSchemaField internal constructor(
     /**
      * If need to hide
      */
-    val hidden: Boolean? = null,
+    val hidden: Boolean,
 
     /**
      * Validations of schema field

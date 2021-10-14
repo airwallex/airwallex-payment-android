@@ -52,7 +52,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             ?.firstOrNull()
             ?.fields
             ?.filter {
-                it.name != BANK_NAME && it.uiType != PaymentMethodTypeInfoSchemaFieldUIType.LOGO_LIST
+                it.name != BANK_NAME && !it.hidden
             }
             ?: return
 
