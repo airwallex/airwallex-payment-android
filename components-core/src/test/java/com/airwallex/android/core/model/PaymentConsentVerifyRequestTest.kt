@@ -12,7 +12,7 @@ class PaymentConsentVerifyRequestTest {
         .setReturnUrl("https://www.airwallex.com")
         .setVerificationOptions(
             PaymentConsentVerifyRequest.VerificationOptions(
-                type = PaymentMethodType.CARD,
+                type = "card",
                 cardOptions = PaymentConsentVerifyRequest.CardVerificationOptions(
                     amount = BigDecimal.valueOf(1),
                     currency = "HKD",
@@ -27,7 +27,7 @@ class PaymentConsentVerifyRequestTest {
         .setReturnUrl("https://www.airwallex.com")
         .setVerificationOptions(
             PaymentConsentVerifyRequest.VerificationOptions(
-                type = PaymentMethodType.ALIPAY_CN,
+                type = "alipaycn",
                 thirdPartOptions = PaymentConsentVerifyRequest.ThirdPartVerificationOptions(
                     flow = AirwallexPaymentRequestFlow.IN_APP,
                     osType = "android"

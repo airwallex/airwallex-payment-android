@@ -210,27 +210,6 @@ class AirwallexApiRepositoryTest {
     }
 
     @Test
-    fun retrievePaResBaseUrlTest() {
-        val url =
-            AirwallexApiRepository.retrievePaResBaseUrl()
-        assertEquals("https://pci-api.airwallex.com/pa/webhook/cybs", url)
-    }
-
-    @Test
-    fun paResRetrieveUrlTest() {
-        val url =
-            AirwallexApiRepository.paResRetrieveUrl("abc")
-        assertEquals("https://pci-api.airwallex.com/pa/webhook/cybs//paresCache?paResId=abc", url)
-    }
-
-    @Test
-    fun paResTermUrlTest() {
-        val url =
-            AirwallexApiRepository.paResTermUrl()
-        assertEquals("https://pci-api.airwallex.com/pa/webhook/cybs/pares/callback", url)
-    }
-
-    @Test
     fun confirmPaymentIntentUrlTest() {
         val url =
             AirwallexApiRepository.confirmPaymentIntentUrl("https://api.airwallex.com", "abc")
@@ -259,13 +238,6 @@ class AirwallexApiRepositoryTest {
         val url =
             AirwallexApiRepository.createPaymentMethodUrl("https://api.airwallex.com")
         assertEquals("https://api.airwallex.com/api/v1/pa/payment_methods/create", url)
-    }
-
-    @Test
-    fun trackerUrlTest() {
-        val url =
-            AirwallexApiRepository.trackerUrl()
-        assertEquals("https://pci-api.airwallex.com/api/v1/checkout/collect", url)
     }
 
     @Test
@@ -308,7 +280,7 @@ class AirwallexApiRepositoryTest {
                 null
             )
         assertEquals(
-            "https://api.airwallex.com/api/v1/pa/config/payment_method_types?page_num=1&page_size=20&active=true&transaction_currency=CNY",
+            "https://api.airwallex.com/api/v1/pa/config/payment_method_types?__resources=true&os_type=android&lang=en&page_num=1&page_size=20&active=true&transaction_currency=CNY",
             url
         )
     }

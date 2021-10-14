@@ -11,7 +11,7 @@ class PaymentMethodTest {
 
     private val paymentMethod by lazy {
         PaymentMethod.Builder()
-            .setType(PaymentMethodType.CARD)
+            .setType("card")
             .setCard(
                 PaymentMethod.Card.Builder()
                     .setNumber("4012000300001003")
@@ -55,7 +55,7 @@ class PaymentMethodTest {
 
     @Test
     fun testParams() {
-        assertEquals(PaymentMethodType.CARD, paymentMethod.type)
+        assertEquals("card", paymentMethod.type)
         assertEquals(
             PaymentMethod.Card.Builder()
                 .setNumber("4012000300001003")
