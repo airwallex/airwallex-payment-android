@@ -1,5 +1,6 @@
 package com.airwallex.android.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -7,25 +8,22 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.core.Tracker
 import com.airwallex.android.core.extension.setOnSingleClickListener
-import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentMethod
-import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.core.model.TrackerRequest
 import com.airwallex.android.databinding.PaymentMethodItemCardBinding
 import com.airwallex.android.databinding.PaymentMethodThirdItemBinding
 import com.airwallex.android.R
+import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.PaymentMethodItemAddCardBinding
-import com.airwallex.android.dto.drawableRes
+import com.bumptech.glide.Glide
 import java.util.*
 
 internal class PaymentMethodsAdapter(
-    val availableThirdPaymentTypes: List<PaymentMethodType>,
-    val shouldShowCard: Boolean
+    val availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
+    val shouldShowCard: Boolean,
+    val listener: Listener? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var selectedPaymentConsent: PaymentConsent? = null
     private val paymentConsents = mutableListOf<PaymentConsent>()
-    internal var listener: Listener? = null
 
     internal fun isEmpty(): Boolean {
         return paymentConsents.isEmpty()
@@ -37,7 +35,7 @@ internal class PaymentMethodsAdapter(
     }
 
     override fun getItemCount(): Int {
-        return availableThirdPaymentTypes.size + // third part payment
+        return availablePaymentMethodTypes.size + // third part payment
             (if (shouldShowCard) paymentConsents.size + 1 else 0) // card
     }
 
@@ -50,11 +48,11 @@ internal class PaymentMethodsAdapter(
     }
 
     private fun isThirdPosition(position: Int): Boolean {
-        return position < availableThirdPaymentTypes.size
+        return position < availablePaymentMethodTypes.size
     }
 
     private fun isCardPosition(position: Int): Boolean {
-        return position >= availableThirdPaymentTypes.size && position < itemCount - 1
+        return position >= availablePaymentMethodTypes.size && position < itemCount - 1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -90,7 +88,7 @@ internal class PaymentMethodsAdapter(
 
     private fun getPosition(paymentConsent: PaymentConsent): Int? {
         return paymentConsents.indexOfFirst { it.id == paymentConsent.id }.takeIf { it >= 0 }?.let {
-            it + availableThirdPaymentTypes.size
+            it + availablePaymentMethodTypes.size
         }
     }
 
@@ -100,7 +98,7 @@ internal class PaymentMethodsAdapter(
     }
 
     private fun getPaymentConsentIndex(position: Int): Int {
-        return position - availableThirdPaymentTypes.size
+        return position - availablePaymentMethodTypes.size
     }
 
     inner class CardHolder(
@@ -114,9 +112,10 @@ internal class PaymentMethodsAdapter(
             )
         )
 
+        @SuppressLint("NotifyDataSetChanged")
         fun bindView(position: Int) {
             val paymentConsent =
-                paymentConsents[position - availableThirdPaymentTypes.size]
+                paymentConsents[position - availablePaymentMethodTypes.size]
             val method = paymentConsent.paymentMethod ?: return
             val card = method.card ?: return
             viewBinding.tvCardInfo.text =
@@ -166,21 +165,29 @@ internal class PaymentMethodsAdapter(
             )
         )
 
+        @SuppressLint("NotifyDataSetChanged")
         fun bindView(position: Int) {
-            val paymentMethodType = availableThirdPaymentTypes[position]
-            viewBinding.paymentMethodIcon.setImageResource(paymentMethodType.drawableRes)
-            viewBinding.paymentMethodName.text = paymentMethodType.displayName
+            val paymentMethodType = availablePaymentMethodTypes[position]
+            viewBinding.paymentMethodName.text = paymentMethodType.displayName ?: paymentMethodType.name
             viewBinding.paymentMethodChecked.visibility =
-                if (selectedPaymentConsent?.paymentMethod?.type == paymentMethodType) View.VISIBLE else View.GONE
+                if (selectedPaymentConsent?.paymentMethod?.type == paymentMethodType.name) View.VISIBLE else View.GONE
+            Glide.with(viewBinding.root.context)
+                .load(paymentMethodType.resources?.logos?.png)
+                .into(viewBinding.paymentMethodIcon)
             itemView.setOnSingleClickListener {
                 selectedPaymentConsent = PaymentConsent(
                     paymentMethod = PaymentMethod.Builder()
-                        .setType(paymentMethodType)
+                        .setType(paymentMethodType.name)
                         .build()
                 )
                 notifyDataSetChanged()
 
-                selectedPaymentConsent?.let { listener?.onPaymentConsentClick(it) }
+                selectedPaymentConsent?.let {
+                    listener?.onPaymentConsentClick(
+                        it,
+                        paymentMethodType
+                    )
+                }
             }
         }
     }
@@ -210,7 +217,10 @@ internal class PaymentMethodsAdapter(
     }
 
     internal interface Listener {
-        fun onPaymentConsentClick(paymentConsent: PaymentConsent)
+        fun onPaymentConsentClick(
+            paymentConsent: PaymentConsent,
+            paymentMethodType: AvailablePaymentMethodType? = null
+        )
 
         fun onAddCardClick()
     }

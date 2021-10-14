@@ -17,6 +17,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.R
+import com.airwallex.android.core.model.PaymentMethodTypeInfoSchemaField.Companion.BANK_NAME
 
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
@@ -51,7 +52,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         Airwallex(this)
     }
 
-    private var availableThirdPaymentTypes: List<PaymentMethodType>? = null
+    private var availablePaymentMethodTypes: List<AvailablePaymentMethodType>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,25 +60,29 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         fetchPaymentMethods()
     }
 
-    private fun initView(availableThirdPaymentTypes: List<PaymentMethodType>) {
-        val shouldShowCard = availableThirdPaymentTypes.contains(PaymentMethodType.CARD)
+    private fun initView(availablePaymentMethodTypes: List<AvailablePaymentMethodType>) {
+        val shouldShowCard =
+            availablePaymentMethodTypes.find { it.name == PaymentMethodType.CARD.value } != null
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         paymentMethodsAdapter = PaymentMethodsAdapter(
-            availableThirdPaymentTypes = availableThirdPaymentTypes.filter { it != PaymentMethodType.CARD },
-            shouldShowCard = shouldShowCard
+            availablePaymentMethodTypes = availablePaymentMethodTypes.filter { it.name != PaymentMethodType.CARD.value },
+            shouldShowCard = shouldShowCard,
+            listener = object : PaymentMethodsAdapter.Listener {
+                override fun onPaymentConsentClick(
+                    paymentConsent: PaymentConsent,
+                    paymentMethodType: AvailablePaymentMethodType?
+                ) {
+                    handleProcessPaymentMethod(
+                        paymentConsent = paymentConsent,
+                        paymentMethodType = paymentMethodType
+                    )
+                }
+
+                override fun onAddCardClick() {
+                    startAddPaymentMethod()
+                }
+            }
         )
-
-        paymentMethodsAdapter.listener = object : PaymentMethodsAdapter.Listener {
-            override fun onPaymentConsentClick(paymentConsent: PaymentConsent) {
-                handleProcessPaymentMethod(
-                    paymentConsent = paymentConsent
-                )
-            }
-
-            override fun onAddCardClick() {
-                startAddPaymentMethod()
-            }
-        }
 
         viewBinding.rvPaymentMethods.apply {
             layoutManager = viewManager
@@ -146,14 +151,14 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private fun fetchPaymentMethods() {
         setLoadingProgress(loading = true, cancelable = false)
-        viewModel.fetchPaymentMethodTypes().observe(
+        viewModel.fetchAvailablePaymentMethodTypes().observe(
             this@PaymentMethodsActivity,
             { result ->
                 result.fold(
                     onSuccess = {
                         setLoadingProgress(loading = false)
                         // Complete load available payment method type
-                        this.availableThirdPaymentTypes = it
+                        this.availablePaymentMethodTypes = it
                         initView(it)
                         filterPaymentConsents()
                     },
@@ -167,7 +172,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun filterPaymentConsents() {
-        if (availableThirdPaymentTypes?.contains(PaymentMethodType.CARD) == false) {
+        if (availablePaymentMethodTypes?.find { it.name == PaymentMethodType.CARD.value } == null) {
             return
         }
 
@@ -177,7 +182,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
         if (session is AirwallexPaymentSession) {
             val paymentConsents = customerPaymentConsents.filter {
-                it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER && it.status == PaymentConsent.PaymentConsentStatus.VERIFIED && it.paymentMethod?.type == PaymentMethodType.CARD
+                it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER && it.status == PaymentConsent.PaymentConsentStatus.VERIFIED && it.paymentMethod?.type == PaymentMethodType.CARD.value
             }
             paymentConsents.forEach { paymentConsent ->
                 paymentConsent.paymentMethod =
@@ -204,6 +209,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private fun handleProcessPaymentMethod(
         paymentConsent: PaymentConsent,
+        paymentMethodType: AvailablePaymentMethodType?,
         cvc: String? = null
     ) {
         val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
@@ -219,7 +225,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         }
 
         when (paymentMethod.type) {
-            PaymentMethodType.CARD -> {
+            PaymentMethodType.CARD.value -> {
                 setLoadingProgress(false)
                 // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
                 if (paymentConsent.requiresCvc) {
@@ -241,62 +247,85 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 }
             }
             else -> {
-                val paymentMethodType = requireNotNull(paymentConsent.paymentMethod?.type)
-                val requiredFields = paymentMethodType.requiredFields
-
-                if (requiredFields.isEmpty()) {
+                // No schema fields, start checkout
+                if (paymentMethodType?.resources?.hasSchema == false) {
                     startCheckout(
                         paymentMethod = paymentMethod,
                         paymentConsentId = paymentConsent.id,
                         observer = observer
                     )
-                } else {
-                    fun showPaymentInfoDialog(
-                        requiredFields: List<PaymentMethodRequiredField>,
-                        bank: Bank? = null
-                    ) {
-                        val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(
-                            paymentMethodType,
-                            getString(R.string.airwallex_pay_with, paymentMethodType.displayName),
-                            requiredFields
-                        )
-                        paymentInfoDialog.onCompleted = { name, email, phone ->
-                            startCheckout(
-                                paymentMethod = paymentMethod,
-                                paymentConsentId = paymentConsent.id,
-                                pproAdditionalInfo = PPROAdditionalInfo(
-                                    name = name, email = email, phone = phone, bank = bank
-                                ),
-                                observer = observer
-                            )
-                        }
-                        paymentInfoDialog.show(supportFragmentManager, paymentMethodType.value)
-                    }
-
-                    if (listOf(
-                            PaymentMethodType.BANK_TRANSFER,
-                            PaymentMethodType.ONLINE_BANKING
-                        ).any { it == paymentMethodType }
-                    ) {
-                        val bankDialog = PaymentBankBottomSheetDialog.newInstance(
-                            getString(R.string.airwallex_select_your_bank),
-                            session.currency
-                        )
-                        bankDialog.onCompleted = { bank ->
-                            val fields = if (session.currency == "IDR") {
-                                requiredFields.filter { it != PaymentMethodRequiredField.SHOPPER_PHONE }
-                            } else {
-                                requiredFields
+                    return
+                }
+                // Have required schema fields
+                // 1. Retrieve all required schema fields of the payment method
+                // 2. If the bank is needed, need to retrieve the bank list.
+                // 3. If the bank is not needed, then show the schema fields dialog.
+                paymentMethod.type?.let { type ->
+                    retrievePaymentMethodTypeInfo(type) { result ->
+                        result.fold(
+                            onSuccess = { info ->
+                                if (info.fieldSchemas?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }?.fields?.find { field -> field.name == BANK_NAME } != null) {
+                                    retrieveBanks(type) { result ->
+                                        result.fold(
+                                            onSuccess = {
+                                                setLoadingProgress(loading = false)
+                                                val bankDialog = PaymentBankBottomSheetDialog.newInstance(
+                                                    getString(R.string.airwallex_select_your_bank),
+                                                    it.items ?: mutableListOf()
+                                                )
+                                                bankDialog.onCompleted = { bank ->
+                                                    showSchemaFieldsDialog(
+                                                        info,
+                                                        paymentMethod,
+                                                        bank.name,
+                                                        observer
+                                                    )
+                                                }
+                                                bankDialog.show(supportFragmentManager, info.name)
+                                            },
+                                            onFailure = {
+                                                setLoadingProgress(loading = false)
+                                                alert(message = it.message ?: it.toString())
+                                            }
+                                        )
+                                    }
+                                } else {
+                                    showSchemaFieldsDialog(info, paymentMethod, null, observer)
+                                }
+                            },
+                            onFailure = {
+                                setLoadingProgress(loading = false)
+                                alert(message = it.message ?: it.toString())
                             }
-                            showPaymentInfoDialog(fields, bank)
-                        }
-                        bankDialog.show(supportFragmentManager, paymentMethodType.value)
-                    } else {
-                        showPaymentInfoDialog(requiredFields)
+                        )
                     }
                 }
             }
         }
+    }
+
+    private fun showSchemaFieldsDialog(
+        info: PaymentMethodTypeInfo,
+        paymentMethod: PaymentMethod,
+        bankName: String?,
+        observer: Observer<Result<String>>
+    ) {
+        val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(info)
+        paymentInfoDialog.onCompleted = { fieldMap ->
+            setLoadingProgress(loading = true)
+            bankName?.let {
+                fieldMap[BANK_NAME] = it
+            }
+            startCheckout(
+                paymentMethod = paymentMethod,
+                additionalInfo = fieldMap,
+                observer = observer
+            )
+        }
+        paymentInfoDialog.show(
+            supportFragmentManager,
+            info.name
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -1,15 +1,15 @@
 package com.airwallex.android.core.model.parser
 
-import com.airwallex.android.core.model.AvailablePaymentMethodResponse
+import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
 import com.airwallex.android.core.util.AirwallexJsonUtils
 import org.json.JSONArray
 import org.json.JSONObject
 
-class AvailablePaymentMethodResponseParser : ModelJsonParser<AvailablePaymentMethodResponse> {
+class AvailablePaymentMethodTypeResponseParser : ModelJsonParser<AvailablePaymentMethodTypeResponse> {
 
-    private val availablePaymentMethodParser = AvailablePaymentMethodParser()
+    private val availablePaymentMethodParser = AvailablePaymentMethodTypeParser()
 
-    override fun parse(json: JSONObject): AvailablePaymentMethodResponse {
+    override fun parse(json: JSONObject): AvailablePaymentMethodTypeResponse {
         val itemsJson = json.optJSONArray(FIELD_ITEMS) ?: JSONArray()
         val items = (0 until itemsJson.length())
             .map { idx -> itemsJson.optJSONObject(idx) }
@@ -17,7 +17,7 @@ class AvailablePaymentMethodResponseParser : ModelJsonParser<AvailablePaymentMet
                 availablePaymentMethodParser.parse(it)
             }
 
-        return AvailablePaymentMethodResponse(
+        return AvailablePaymentMethodTypeResponse(
             hasMore = AirwallexJsonUtils.optBoolean(json, FIELD_HAS_MORE),
             items = items
         )

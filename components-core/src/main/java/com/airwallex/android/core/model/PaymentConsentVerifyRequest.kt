@@ -55,7 +55,7 @@ data class PaymentConsentVerifyRequest internal constructor(
         /**
          * Type of the payment method
          */
-        val type: PaymentMethodType,
+        val type: String,
 
         /**
          * Card information for verifying PaymentConsent
@@ -72,12 +72,12 @@ data class PaymentConsentVerifyRequest internal constructor(
             return mapOf<String, Any>()
                 .plus(
                     cardOptions?.let {
-                        mapOf(type.value to it.toParamMap())
+                        mapOf(type to it.toParamMap())
                     }.orEmpty()
                 )
                 .plus(
                     thirdPartOptions?.let {
-                        mapOf(type.value to it.toParamMap())
+                        mapOf(type to it.toParamMap())
                     }.orEmpty()
                 )
         }

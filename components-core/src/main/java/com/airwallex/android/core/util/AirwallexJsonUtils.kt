@@ -10,6 +10,18 @@ object AirwallexJsonUtils {
     private const val NULL = "null"
 
     @JvmSynthetic
+    fun optInt(
+        jsonObject: JSONObject,
+        @Size(min = 1) fieldName: String
+    ): Int? {
+        return if (!jsonObject.has(fieldName)) {
+            null
+        } else {
+            jsonObject.optInt(fieldName)
+        }
+    }
+
+    @JvmSynthetic
     fun optBoolean(
         jsonObject: JSONObject,
         @Size(min = 1) fieldName: String

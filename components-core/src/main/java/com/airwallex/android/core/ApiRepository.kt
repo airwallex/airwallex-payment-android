@@ -97,5 +97,19 @@ interface ApiRepository {
      */
     suspend fun retrieveAvailablePaymentMethods(
         options: Options
-    ): AvailablePaymentMethodResponse?
+    ): AvailablePaymentMethodTypeResponse?
+
+    /**
+     * Retrieve payment method detail
+     */
+    suspend fun retrievePaymentMethodTypeInfo(
+        options: Options
+    ): PaymentMethodTypeInfo?
+
+    /**
+     * Retrieve banks of payment method
+     */
+    suspend fun retrieveBanks(
+        options: Options
+    ): BankResponse?
 }

@@ -168,6 +168,28 @@ class AirwallexPaymentManager(
                     )
                 }
             }
+            is AirwallexApiRepository.RetrievePaymentMethodTypeInfoOptions -> {
+                val result = runCatching {
+                    requireNotNull(repository.retrievePaymentMethodTypeInfo(options))
+                }
+                withContext(Dispatchers.Main) {
+                    result.fold(
+                        onSuccess = { listener.onSuccess(it as T) },
+                        onFailure = { listener.onFailed(handleError(it)) }
+                    )
+                }
+            }
+            is AirwallexApiRepository.RetrieveBankOptions -> {
+                val result = runCatching {
+                    requireNotNull(repository.retrieveBanks(options))
+                }
+                withContext(Dispatchers.Main) {
+                    result.fold(
+                        onSuccess = { listener.onSuccess(it as T) },
+                        onFailure = { listener.onFailed(handleError(it)) }
+                    )
+                }
+            }
         }
     }
 

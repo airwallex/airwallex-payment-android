@@ -88,7 +88,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         if (session is AirwallexPaymentSession) {
             startCheckout(
                 paymentMethod = PaymentMethod.Builder()
-                    .setType(PaymentMethodType.CARD)
+                    .setType(PaymentMethodType.CARD.value)
                     .setCard(card)
                     .setBilling(viewBinding.billingWidget.billing)
                     .build(),

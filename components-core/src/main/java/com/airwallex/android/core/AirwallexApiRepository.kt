@@ -107,7 +107,42 @@ class AirwallexApiRepository : ApiRepository {
         /**
          * The supported transaction mode. One of oneoff, recurring.
          */
-        internal val transactionMode: String?,
+        internal val transactionMode: TransactionMode?,
+    ) : Options(clientSecret = clientSecret)
+
+    @Parcelize
+    class RetrievePaymentMethodTypeInfoOptions(
+        override val clientSecret: String,
+        /**
+         * bank_transfer, online_banking etc.
+         */
+        internal val paymentMethodType: String,
+        /**
+         * webqr, mweb, jsapi, inapp, miniprog
+         */
+        internal val flow: AirwallexPaymentRequestFlow?,
+        /**
+         * recurring, oneoff
+         */
+        internal val transactionMode: TransactionMode?
+    ) : Options(clientSecret = clientSecret)
+
+    @Parcelize
+    class RetrieveBankOptions(
+        override val clientSecret: String,
+        /**
+         * bank_transfer, online_banking etc.
+         */
+        internal val paymentMethodType: String,
+        /**
+         * For payment method like online_banking that supports different bank list in different country, the country code is required.
+         * such payment method: online_banking, bank_transfer
+         */
+        internal val countryCode: String?,
+        /**
+         * if the language is not supported by us, we will return the default bank name.
+         */
+        internal val lang: String?
     ) : Options(clientSecret = clientSecret)
 
     /**
@@ -285,7 +320,7 @@ class AirwallexApiRepository : ApiRepository {
         }
     }
 
-    override suspend fun retrieveAvailablePaymentMethods(options: Options): AvailablePaymentMethodResponse? {
+    override suspend fun retrieveAvailablePaymentMethods(options: Options): AvailablePaymentMethodTypeResponse? {
         return executeApiRequest(
             AirwallexHttpRequest.createGet(
                 url = retrieveAvailablePaymentMethodsUrl(
@@ -299,7 +334,38 @@ class AirwallexApiRepository : ApiRepository {
                 options = options,
                 params = null
             ),
-            AvailablePaymentMethodResponseParser()
+            AvailablePaymentMethodTypeResponseParser()
+        )
+    }
+
+    override suspend fun retrievePaymentMethodTypeInfo(options: Options): PaymentMethodTypeInfo? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createGet(
+                url = retrievePaymentMethodTypeInfoUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as RetrievePaymentMethodTypeInfoOptions).paymentMethodType,
+                    options.flow
+                ),
+                options = options,
+                params = null
+            ),
+            PaymentMethodTypeInfoParser()
+        )
+    }
+
+    override suspend fun retrieveBanks(options: Options): BankResponse? {
+        return executeApiRequest(
+            AirwallexHttpRequest.createGet(
+                url = retrieveBanksUrl(
+                    AirwallexPlugins.environment.baseUrl(),
+                    (options as RetrieveBankOptions).paymentMethodType,
+                    options.countryCode,
+                    options.lang
+                ),
+                options = options,
+                params = null
+            ),
+            BankResponseParser()
         )
     }
 
@@ -481,15 +547,17 @@ class AirwallexApiRepository : ApiRepository {
             pageSize: Int?,
             active: Boolean?,
             transactionCurrency: String?,
-            transactionMode: String?
+            transactionMode: TransactionMode?
         ): String {
-            val stringBuilder = StringBuilder("config/payment_method_types")
             val url = getApiUrl(
                 baseUrl,
-                stringBuilder.toString()
+                "config/payment_method_types"
             )
 
             val builder = Uri.parse(url).buildUpon()
+            builder.appendQueryParameter("__resources", "true")
+            builder.appendQueryParameter("os_type", "android")
+            builder.appendQueryParameter("lang", "en")
             pageNum?.let {
                 builder.appendQueryParameter("page_num", it.toString())
             }
@@ -503,7 +571,56 @@ class AirwallexApiRepository : ApiRepository {
                 builder.appendQueryParameter("transaction_currency", it)
             }
             transactionMode?.let {
-                builder.appendQueryParameter("transaction_mode", it)
+                builder.appendQueryParameter("transaction_mode", it.value)
+            }
+            return builder.build().toString()
+        }
+
+        /**
+         * `/api/v1/pa/config/payment_method_types/{payment_method_type}?flow={flow}`
+         */
+        internal fun retrievePaymentMethodTypeInfoUrl(
+            baseUrl: String,
+            paymentMethodType: String,
+            flow: AirwallexPaymentRequestFlow?
+        ): String {
+            val url = getApiUrl(
+                baseUrl,
+                "config/payment_method_types/%s",
+                paymentMethodType
+            )
+
+            val builder = Uri.parse(url).buildUpon()
+            builder.appendQueryParameter("lang", "en")
+            builder.appendQueryParameter("os_type", "android")
+            flow?.let {
+                builder.appendQueryParameter("flow", it.value)
+            }
+            return builder.build().toString()
+        }
+
+        /**
+         * `/api/v1/pa/config/banks?payment_method_type={payment_method_type}&country_code={TH}&lang={zh}`
+         */
+        internal fun retrieveBanksUrl(
+            baseUrl: String,
+            paymentMethodType: String,
+            countryCode: String?,
+            lang: String?
+        ): String {
+            val url = getApiUrl(
+                baseUrl,
+                "config/banks"
+            )
+
+            val builder = Uri.parse(url).buildUpon()
+            builder.appendQueryParameter("payment_method_type", paymentMethodType)
+            builder.appendQueryParameter("__all_logos", "true")
+            countryCode?.let {
+                builder.appendQueryParameter("country_code", it)
+            }
+            lang?.let {
+                builder.appendQueryParameter("lang", it)
             }
             return builder.build().toString()
         }

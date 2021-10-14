@@ -123,13 +123,13 @@ class Airwallex internal constructor(
     /**
      * Retrieve available payment methods
      *
-     * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve the [AvailablePaymentMethodResponse]
-     * @param listener the callback of get [AvailablePaymentMethodResponse]
+     * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve the [AvailablePaymentMethodTypeResponse]
+     * @param listener the callback of get [AvailablePaymentMethodTypeResponse]
      */
     @UiThread
     fun retrieveAvailablePaymentMethods(
         params: RetrieveAvailablePaymentMethodParams,
-        listener: PaymentListener<AvailablePaymentMethodResponse>
+        listener: PaymentListener<AvailablePaymentMethodTypeResponse>
     ) {
         paymentManager.startOperation(
             AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions(
@@ -157,7 +157,7 @@ class Airwallex internal constructor(
     ) {
 
         val verificationOptions = when (val paymentMethodType = params.paymentMethodType) {
-            PaymentMethodType.CARD -> PaymentConsentVerifyRequest.VerificationOptions(
+            PaymentMethodType.CARD.value -> PaymentConsentVerifyRequest.VerificationOptions(
                 type = paymentMethodType,
                 cardOptions = PaymentConsentVerifyRequest.CardVerificationOptions(
                     amount = params.amount,
@@ -191,13 +191,13 @@ class Airwallex internal constructor(
                 override fun onSuccess(response: PaymentConsent) {
                     val provider = AirwallexPlugins.getProvider(response.nextAction)
                     if (provider == null) {
-                        listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
+                        listener.onFailed(AirwallexCheckoutException(message = "Missing dependency!"))
                         return
                     }
 
                     val paymentIntentId = requireNotNull(response.initialPaymentIntentId)
                     val cardNextActionModel = when (params.paymentMethodType) {
-                        PaymentMethodType.CARD -> CardNextActionModel(
+                        PaymentMethodType.CARD.value -> CardNextActionModel(
                             fragment = fragment,
                             activity = activity,
                             paymentManager = paymentManager,
@@ -245,6 +245,38 @@ class Airwallex internal constructor(
         )
     }
 
+    @UiThread
+    fun retrieveBanks(
+        params: RetrieveBankParams,
+        listener: PaymentListener<BankResponse>
+    ) {
+        paymentManager.startOperation(
+            AirwallexApiRepository.RetrieveBankOptions(
+                clientSecret = params.clientSecret,
+                paymentMethodType = params.paymentMethodType,
+                countryCode = params.countryCode,
+                lang = params.lang
+            ),
+            listener
+        )
+    }
+
+    @UiThread
+    fun retrievePaymentMethodTypeInfo(
+        params: RetrievePaymentMethodTypeInfoParams,
+        listener: PaymentListener<PaymentMethodTypeInfo>
+    ) {
+        paymentManager.startOperation(
+            AirwallexApiRepository.RetrievePaymentMethodTypeInfoOptions(
+                clientSecret = params.clientSecret,
+                paymentMethodType = params.paymentMethodType,
+                flow = params.flow,
+                transactionMode = params.transactionMode
+            ),
+            listener
+        )
+    }
+
     /**
      * Checkout the one-off payment
      *
@@ -268,7 +300,7 @@ class Airwallex internal constructor(
      * @param paymentMethod a [PaymentMethod] used to present the Checkout flow, required.
      * @param paymentConsentId the ID of the [PaymentConsent], optional. (CIT & Card will need this field for subsequent payments, paymentConsentId is not empty indicating a subsequent payment, empty indicating a recurring )
      * @param cvc the CVC of the Credit Card, optional.
-     * @param pproAdditionalInfo to support ppro payment
+     * @param additionalInfo to support ppro payment
      * @param listener The callback of checkout
      */
     @UiThread
@@ -277,7 +309,7 @@ class Airwallex internal constructor(
         paymentMethod: PaymentMethod,
         paymentConsentId: String? = null,
         cvc: String? = null,
-        pproAdditionalInfo: PPROAdditionalInfo? = null,
+        additionalInfo: Map<String, String>? = null,
         listener: PaymentListener<String>
     ) {
         when (session) {
@@ -291,7 +323,7 @@ class Airwallex internal constructor(
                     currency = session.currency,
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
-                    pproAdditionalInfo = pproAdditionalInfo,
+                    additionalInfo = additionalInfo,
                     returnUrl = session.returnUrl,
                     listener = listener
                 )
@@ -350,7 +382,7 @@ class Airwallex internal constructor(
 
                         override fun onSuccess(response: PaymentConsent) {
                             when (paymentMethod.type) {
-                                PaymentMethodType.CARD -> {
+                                PaymentMethodType.CARD.value -> {
                                     confirmPaymentIntent(
                                         paymentIntentId = paymentIntent.id,
                                         clientSecret = requireNotNull(paymentIntent.clientSecret),
@@ -387,12 +419,12 @@ class Airwallex internal constructor(
         currency: String? = null,
         customerId: String? = null,
         paymentConsentId: String? = null,
-        pproAdditionalInfo: PPROAdditionalInfo? = null,
+        additionalInfo: Map<String, String>? = null,
         returnUrl: String? = null,
         listener: PaymentListener<String>
     ) {
         val params = when (val paymentMethodType = requireNotNull(paymentMethod.type)) {
-            PaymentMethodType.CARD -> {
+            PaymentMethodType.CARD.value -> {
                 ConfirmPaymentIntentParams.createCardParams(
                     paymentIntentId = paymentIntentId,
                     clientSecret = clientSecret,
@@ -411,7 +443,7 @@ class Airwallex internal constructor(
                     customerId = customerId,
                     paymentConsentId = paymentConsentId,
                     currency = currency,
-                    pproAdditionalInfo = pproAdditionalInfo,
+                    additionalInfo = additionalInfo,
                     returnUrl = returnUrl
                 )
             }
@@ -423,11 +455,11 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams,
         listener: PaymentListener<String>
     ) {
-        if (params.paymentMethodType == PaymentMethodType.CARD) {
+        if (params.paymentMethodType == PaymentMethodType.CARD.value) {
             try {
                 val provider = AirwallexPlugins.getCardProvider()
                 if (provider == null) {
-                    listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
+                    listener.onFailed(AirwallexCheckoutException(message = "Missing ${Dependency.CARD.value} dependency!"))
                     return
                 }
                 provider.get().retrieveSecurityToken(
@@ -461,7 +493,7 @@ class Airwallex internal constructor(
         listener: PaymentListener<String>
     ) {
         val options = when (params.paymentMethodType) {
-            PaymentMethodType.CARD -> {
+            PaymentMethodType.CARD.value -> {
                 buildCardPaymentIntentOptions(params, device)
             }
             else -> {
@@ -477,7 +509,7 @@ class Airwallex internal constructor(
 
                 override fun onSuccess(response: PaymentIntent) {
                     val cardNextActionModel = when (params.paymentMethodType) {
-                        PaymentMethodType.CARD -> CardNextActionModel(
+                        PaymentMethodType.CARD.value -> CardNextActionModel(
                             fragment = fragment,
                             activity = activity,
                             paymentManager = paymentManager,
@@ -491,7 +523,7 @@ class Airwallex internal constructor(
                     }
                     val provider = AirwallexPlugins.getProvider(response.nextAction)
                     if (provider == null) {
-                        listener.onFailed(AirwallexCheckoutException(message = "Missing ${params.paymentMethodType.dependencyName} dependency!"))
+                        listener.onFailed(AirwallexCheckoutException(message = "Missing dependency!"))
                         return
                     }
                     provider.get().handlePaymentIntentResponse(
@@ -577,14 +609,11 @@ class Airwallex internal constructor(
         } else {
             paymentConsentReference = null
             val builder = PaymentMethodRequest.Builder(params.paymentMethodType)
-            val pproInfo = params.pproAdditionalInfo
-            if (pproInfo != null) {
+            val additionalInfo = params.additionalInfo
+            if (additionalInfo != null) {
                 builder.setThirdPartyPaymentMethodRequest(
-                    pproInfo.name,
-                    pproInfo.email,
-                    pproInfo.phone,
-                    if (pproInfo.bank != null) pproInfo.bank.currency else params.currency,
-                    pproInfo.bank
+                    additionalInfo = additionalInfo,
+                    params.currency,
                 )
             } else {
                 builder.setThirdPartyPaymentMethodRequest()
@@ -674,7 +703,7 @@ class Airwallex internal constructor(
     ) {
         val params: CreatePaymentConsentParams =
             when (val paymentMethodType = requireNotNull(paymentMethod.type)) {
-                PaymentMethodType.CARD -> {
+                PaymentMethodType.CARD.value -> {
                     CreatePaymentConsentParams.createCardParams(
                         clientSecret = clientSecret,
                         customerId = customerId,
@@ -712,7 +741,7 @@ class Airwallex internal constructor(
                         )
                     )
                     .setNextTriggeredBy(
-                        if (params.paymentMethodType == PaymentMethodType.CARD) {
+                        if (params.paymentMethodType == PaymentMethodType.CARD.value) {
                             params.nextTriggeredBy
                         } else {
                             PaymentConsent.NextTriggeredBy.MERCHANT
@@ -740,7 +769,7 @@ class Airwallex internal constructor(
         }
         val paymentMethodType = paymentConsent.paymentMethod?.type
         val params: VerifyPaymentConsentParams = when (requireNotNull(paymentMethodType)) {
-            PaymentMethodType.CARD -> {
+            PaymentMethodType.CARD.value -> {
                 VerifyPaymentConsentParams.createCardParams(
                     clientSecret = requireNotNull(paymentConsent.clientSecret),
                     paymentConsentId = requireNotNull(paymentConsent.id),
@@ -775,7 +804,10 @@ class Airwallex internal constructor(
         /**
          * Initialize some global configurations, better to be called on Application
          */
-        fun initialize(configuration: AirwallexConfiguration, clientSecretProvider: ClientSecretProvider? = null) {
+        fun initialize(
+            configuration: AirwallexConfiguration,
+            clientSecretProvider: ClientSecretProvider? = null
+        ) {
             AirwallexPlugins.initialize(configuration)
             clientSecretProvider?.let {
                 ClientSecretRepository.init(it)

@@ -2,34 +2,28 @@ package com.airwallex.android.view
 
 import android.os.Bundle
 import android.text.InputType
-import android.util.Patterns
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout.LayoutParams
+import android.widget.Toast
 import com.airwallex.android.core.extension.setOnSingleClickListener
-import com.airwallex.android.core.model.PaymentMethodRequiredField
-import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogPaymentInfoBinding
 import com.airwallex.android.R
+import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.PaymentMethodTypeInfoSchemaField.Companion.BANK_NAME
 
 class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
 
-    var onCompleted: ((name: String?, email: String?, phone: String?) -> Unit)? = null
+    var onCompleted: ((fieldMap: MutableMap<String, String>) -> Unit)? = null
 
     companion object {
-        private const val PAYMENT_METHOD_TYPE = "payment_method_type"
-        private const val TITLE = "title"
-        private const val REQUIRED_FIELDS = "required_fields"
+        private const val PAYMENT_METHOD_TYPE_INFO = "payment_method_type_info"
 
         fun newInstance(
-            paymentMethodType: PaymentMethodType,
-            title: String,
-            requiredFields: List<PaymentMethodRequiredField>
+            paymentMethodTypeInfo: PaymentMethodTypeInfo
         ): PaymentInfoBottomSheetDialog {
             val args = Bundle()
-            args.putParcelable(PAYMENT_METHOD_TYPE, paymentMethodType)
-            args.putString(TITLE, title)
-            args.putParcelableArrayList(REQUIRED_FIELDS, ArrayList(requiredFields))
+            args.putParcelable(PAYMENT_METHOD_TYPE_INFO, paymentMethodTypeInfo)
             val fragment = PaymentInfoBottomSheetDialog()
             fragment.arguments = args
             return fragment
@@ -51,48 +45,32 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewBinding.title.text = arguments?.getString(TITLE)
+        val paymentMethodTypeInfo =
+            arguments?.getParcelable<PaymentMethodTypeInfo>(PAYMENT_METHOD_TYPE_INFO)
+        val fields = paymentMethodTypeInfo
+            ?.fieldSchemas
+            ?.firstOrNull()
+            ?.fields
+            ?.filter {
+                it.name != BANK_NAME && it.uiType != PaymentMethodTypeInfoSchemaFieldUIType.LOGO_LIST
+            }
+            ?: return
 
-        var nameInput: AirwallexTextInputLayout? = null
-        var emailInput: AirwallexTextInputLayout? = null
-        var phoneInput: AirwallexTextInputLayout? = null
+        viewBinding.title.text = paymentMethodTypeInfo.displayName
 
-        val requiredFields =
-            arguments?.getParcelableArrayList<PaymentMethodRequiredField>(REQUIRED_FIELDS)
-        if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_NAME } == true) {
-            nameInput = AirwallexTextInputLayout(requireContext(), null)
-            nameInput.afterTextChanged { nameInput.error = null }
-            nameInput.setHint(getString(R.string.airwallex_shopper_name_hint))
-            nameInput.setInputType(InputType.TYPE_CLASS_TEXT)
+        fields.forEach { field ->
+            val input = AirwallexTextInputLayout(requireContext(), null)
+            input.tag = field.name
+            input.setHint(field.displayName)
+            when (field.uiType) {
+                PaymentMethodTypeInfoSchemaFieldUIType.TEXT -> input.setInputType(InputType.TYPE_CLASS_TEXT)
+                PaymentMethodTypeInfoSchemaFieldUIType.EMAIL -> input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+                PaymentMethodTypeInfoSchemaFieldUIType.PHONE -> input.setInputType(InputType.TYPE_CLASS_PHONE)
+                else -> Unit
+            }
 
             viewBinding.content.addView(
-                nameInput,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    topMargin = resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
-                }
-            )
-        }
-
-        if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_EMAIL } == true) {
-            emailInput = AirwallexTextInputLayout(requireContext(), null)
-            emailInput.afterTextChanged { emailInput.error = null }
-            emailInput.setHint(getString(R.string.airwallex_shopper_email_hint))
-            emailInput.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-            viewBinding.content.addView(
-                emailInput,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    topMargin = resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
-                }
-            )
-        }
-
-        if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_PHONE } == true) {
-            phoneInput = AirwallexTextInputLayout(requireContext(), null)
-            phoneInput.afterTextChanged { phoneInput.error = null }
-            phoneInput.setHint(getString(R.string.airwallex_shopper_phone_hint))
-            phoneInput.setInputType(InputType.TYPE_CLASS_PHONE)
-            viewBinding.content.addView(
-                phoneInput,
+                input,
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
                     topMargin = resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
                 }
@@ -100,69 +78,48 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
         }
 
         for (i in 0 until viewBinding.content.childCount) {
-            if (i == viewBinding.content.childCount - 1) {
-                (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout).setImeOptions(
-                    EditorInfo.IME_ACTION_DONE
+            (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout)
+                .setImeOptions(
+                    if (i == viewBinding.content.childCount - 1)
+                        EditorInfo.IME_ACTION_DONE
+                    else
+                        EditorInfo.IME_ACTION_NEXT
                 )
-            } else {
-                (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout).setImeOptions(
-                    EditorInfo.IME_ACTION_NEXT
-                )
-            }
         }
 
         viewBinding.checkout.setOnSingleClickListener {
-            // Name
-            if (nameInput != null && nameInput.value.isEmpty()) {
-                nameInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
-                return@setOnSingleClickListener
-            }
+            val fieldMap = mutableMapOf<String, String>()
+            for (i in 0 until viewBinding.content.childCount) {
+                val input = (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout)
+                val field = fields.find { it.name == input.tag }
+                val validations = field?.validations
 
-            when (arguments?.getParcelable<PaymentMethodType>(PAYMENT_METHOD_TYPE)) {
-                PaymentMethodType.SKRILL -> {
-                    if (nameInput != null && nameInput.value.split(" ").size != 2) {
-                        nameInput.error = getString(R.string.airwallex_invalid_name)
+                if (validations != null) {
+                    if (isInvalid(input.value, validations)) {
+                        Toast.makeText(
+                            context,
+                            getString(R.string.invalid_field, field.displayName),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@setOnSingleClickListener
                     }
                 }
-                else -> {
-                    if (nameInput != null && nameInput.value.length < 3) {
-                        nameInput.error = getString(R.string.airwallex_name_length_short_error)
-                        return@setOnSingleClickListener
-                    }
-                    if (nameInput != null && nameInput.value.length > 100) {
-                        nameInput.error = getString(R.string.airwallex_name_length_long_error)
-                        return@setOnSingleClickListener
-                    }
+                field?.let {
+                    fieldMap[it.name] = input.value
                 }
             }
-
-            // Email
-            if (emailInput != null && emailInput.value.isEmpty()) {
-                emailInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
-                return@setOnSingleClickListener
-            }
-            if (emailInput != null && !Patterns.EMAIL_ADDRESS.matcher(emailInput.value).matches()) {
-                emailInput.error = getString(R.string.airwallex_invalid_email_address)
-                return@setOnSingleClickListener
-            }
-
-            // Phone
-            if (phoneInput != null && phoneInput.value.isEmpty()) {
-                phoneInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
-                return@setOnSingleClickListener
-            }
-
-            when (arguments?.getParcelable<PaymentMethodType>(PAYMENT_METHOD_TYPE)) {
-                PaymentMethodType.PAY_EASY -> {
-                    if (phoneInput != null && (phoneInput.value.length < 10 || phoneInput.value.length > 11)) {
-                        phoneInput.error = getString(R.string.airwallex_phone_error)
-                        return@setOnSingleClickListener
-                    }
-                }
-                else -> Unit
-            }
-            onCompleted?.invoke(nameInput?.value, emailInput?.value, phoneInput?.value)
+            onCompleted?.invoke(fieldMap)
         }
+    }
+
+    private fun isInvalid(
+        text: String,
+        Validations: PaymentMethodTypeInfoSchemaFieldValidation
+    ): Boolean {
+        val regex = Validations.regex
+        val max = Validations.max
+
+        return regex != null && !Regex(regex).matches(text) ||
+            max != null && text.length > max
     }
 }

@@ -20,11 +20,6 @@ class AvailablePaymentMethodTest {
     @Test
     fun testParams() {
         val availablePaymentMethod = AvailablePaymentMethodFixtures.PAYMENMETHOD
-        assertEquals(PaymentMethodType.CARD, availablePaymentMethod.name)
-        assertEquals(
-            AvailablePaymentMethod.TransactionMode.ONE_OFF,
-            availablePaymentMethod.transactionMode
-        )
         assertEquals(true, availablePaymentMethod.active)
         assertEquals(listOf("dollar", "RMB"), availablePaymentMethod.transactionCurrencies)
         assertEquals(listOf(AirwallexPaymentRequestFlow.IN_APP), availablePaymentMethod.flows)

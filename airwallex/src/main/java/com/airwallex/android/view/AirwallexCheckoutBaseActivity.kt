@@ -4,8 +4,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.core.model.PPROAdditionalInfo
-import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.*
 import com.airwallex.android.ui.AirwallexActivity
 
 abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
@@ -28,12 +27,30 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         paymentMethod: PaymentMethod,
         paymentConsentId: String? = null,
         cvc: String? = null,
-        pproAdditionalInfo: PPROAdditionalInfo? = null,
+        additionalInfo: Map<String, String>? = null,
         observer: Observer<Result<String>>
     ) {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.checkout(
-            paymentMethod, paymentConsentId, cvc, pproAdditionalInfo
+            paymentMethod, paymentConsentId, cvc, additionalInfo
+        ).observe(this, observer)
+    }
+
+    fun retrieveBanks(
+        paymentMethodTypeName: String,
+        observer: Observer<Result<BankResponse>>
+    ) {
+        setLoadingProgress(loading = true, cancelable = false)
+        viewModel.retrieveBanks(paymentMethodTypeName).observe(this, observer)
+    }
+
+    fun retrievePaymentMethodTypeInfo(
+        paymentMethodTypeName: String,
+        observer: Observer<Result<PaymentMethodTypeInfo>>
+    ) {
+        setLoadingProgress(loading = true, cancelable = false)
+        viewModel.retrievePaymentMethodTypeInfo(
+            paymentMethodTypeName
         ).observe(this, observer)
     }
 }

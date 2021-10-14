@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
  * Response for retrieve available payment method types
  */
 @Parcelize
-data class AvailablePaymentMethodResponse internal constructor(
+data class BankResponse internal constructor(
     /**
      * Indicator that tells whether more data can be listed
      */
@@ -16,5 +16,5 @@ data class AvailablePaymentMethodResponse internal constructor(
     /**
      * List items
      */
-    val items: List<AvailablePaymentMethod>?
+    val items: List<Bank>?
 ) : AirwallexModel, Parcelable

@@ -1,10 +1,10 @@
 package com.airwallex.android.core.model
 
-import com.airwallex.android.core.model.parser.AvailablePaymentMethodParser
+import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
 import org.json.JSONObject
 
 internal object AvailablePaymentMethodFixtures {
-    val PAYMENMETHOD: AvailablePaymentMethod = AvailablePaymentMethodParser().parse(
+    val PAYMENMETHOD: AvailablePaymentMethodType = AvailablePaymentMethodTypeParser().parse(
         JSONObject(
             """
         {

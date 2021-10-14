@@ -1,7 +1,6 @@
 package com.airwallex.android.core.model.parser
 
 import com.airwallex.android.core.model.PaymentMethod
-import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.util.AirwallexJsonUtils
 import org.json.JSONObject
 
@@ -13,7 +12,7 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
             id = AirwallexJsonUtils.optString(json, FIELD_ID),
             requestId = AirwallexJsonUtils.optString(json, FIELD_REQUEST_ID),
             customerId = AirwallexJsonUtils.optString(json, FIELD_CUSTOMER_ID),
-            type = PaymentMethodType.fromValue(AirwallexJsonUtils.optString(json, FIELD_TYPE)),
+            type = AirwallexJsonUtils.optString(json, FIELD_TYPE),
             card = json.optJSONObject(FIELD_CARD)?.let {
                 CardParser().parse(it)
             },

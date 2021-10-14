@@ -1,0 +1,37 @@
+package com.airwallex.android.core.model
+
+/**
+ * The params that used for retrieve [PaymentMethodTypeInfo]
+ */
+data class RetrievePaymentMethodTypeInfoParams internal constructor(
+    val clientSecret: String,
+    internal val paymentMethodType: String,
+    internal val flow: AirwallexPaymentRequestFlow?,
+    internal val transactionMode: TransactionMode?
+) {
+    class Builder(
+        private val clientSecret: String,
+        private val paymentMethodType: String
+    ) : ObjectBuilder<RetrievePaymentMethodTypeInfoParams> {
+
+        private var flow: AirwallexPaymentRequestFlow? = null
+        private var transactionMode: TransactionMode? = null
+
+        fun setFlow(flow: AirwallexPaymentRequestFlow?): Builder = apply {
+            this.flow = flow
+        }
+
+        fun setTransactionMode(transactionMode: TransactionMode?): Builder = apply {
+            this.transactionMode = transactionMode
+        }
+
+        override fun build(): RetrievePaymentMethodTypeInfoParams {
+            return RetrievePaymentMethodTypeInfoParams(
+                clientSecret = clientSecret,
+                paymentMethodType = paymentMethodType,
+                flow = flow,
+                transactionMode = transactionMode
+            )
+        }
+    }
+}

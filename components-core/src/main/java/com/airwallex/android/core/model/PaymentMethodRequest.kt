@@ -16,7 +16,7 @@ class PaymentMethodRequest(
     /**
      * Type of the payment method
      */
-    val type: PaymentMethodType,
+    val type: String,
 
     /**
      * Redirect Request
@@ -43,11 +43,11 @@ class PaymentMethodRequest(
                 }.orEmpty()
             )
             .plus(
-                mapOf(PaymentMethodParser.FIELD_TYPE to type.value)
+                mapOf(PaymentMethodParser.FIELD_TYPE to type)
             )
             .plus(
                 redirectRequest?.let {
-                    mapOf(type.value to it.toParamMap())
+                    mapOf(type to it.toParamMap())
                 }.orEmpty()
             )
             .plus(
@@ -63,7 +63,7 @@ class PaymentMethodRequest(
     }
 
     class Builder(
-        val type: PaymentMethodType
+        val type: String
     ) : ObjectBuilder<PaymentMethodRequest> {
         private var redirectRequest: AirwallexPaymentRequest? = null
 
@@ -72,18 +72,12 @@ class PaymentMethodRequest(
         private var billing: Billing? = null
 
         fun setThirdPartyPaymentMethodRequest(
-            name: String? = null,
-            email: String? = null,
-            phone: String? = null,
+            additionalInfo: Map<String, String>? = null,
             currency: String? = null,
-            bank: Bank? = null
         ): Builder = apply {
-            if (type != PaymentMethodType.CARD) {
+            if (type != PaymentMethodType.CARD.value) {
                 redirectRequest = AirwallexPaymentRequest(
-                    bank = bank,
-                    name = name,
-                    email = email,
-                    phone = phone,
+                    additionalInfo,
                     countryCode = currency?.let {
                         CurrencyUtils.currencyToCountryMap[currency]
                     }

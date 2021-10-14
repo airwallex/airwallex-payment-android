@@ -11,7 +11,7 @@ import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.model.Bank
 import com.airwallex.android.databinding.DialogBankBinding
 import com.airwallex.android.databinding.DialogBankItemBinding
-import com.airwallex.android.dto.drawableRes
+import com.bumptech.glide.Glide
 
 class PaymentBankBottomSheetDialog : BottomSheetDialog() {
 
@@ -19,15 +19,15 @@ class PaymentBankBottomSheetDialog : BottomSheetDialog() {
 
     companion object {
         private const val TITLE = "title"
-        private const val CURRENCY = "currency"
+        private const val BANKS = "banks"
 
         fun newInstance(
             title: String,
-            currency: String
+            banks: List<Bank>
         ): PaymentBankBottomSheetDialog {
             val args = Bundle()
             args.putString(TITLE, title)
-            args.putString(CURRENCY, currency)
+            args.putParcelableArrayList(BANKS, ArrayList(banks))
             val fragment = PaymentBankBottomSheetDialog()
             fragment.arguments = args
             return fragment
@@ -52,7 +52,9 @@ class PaymentBankBottomSheetDialog : BottomSheetDialog() {
         viewBinding.title.text = arguments?.getString(TITLE)
         viewBinding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = BottomDialogAdapter(Bank.values().filter { it.currency == arguments?.getString(CURRENCY) }.toMutableList())
+            adapter = BottomDialogAdapter(
+                arguments?.getParcelableArrayList(BANKS) ?: mutableListOf()
+            )
         }
     }
 
@@ -88,8 +90,9 @@ class PaymentBankBottomSheetDialog : BottomSheetDialog() {
 
         fun bindView(bank: Bank) {
             viewBinding.bankName.text = bank.displayName
-            viewBinding.bankLogo.setImageResource(bank.drawableRes)
-
+            Glide.with(this@PaymentBankBottomSheetDialog)
+                .load(bank.resources?.logos?.png)
+                .into(viewBinding.bankLogo)
             viewBinding.bankItem.setOnSingleClickListener {
                 onCompleted?.invoke(bank)
                 dismiss()

@@ -31,15 +31,13 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    fun fetchPaymentMethodTypes(): LiveData<Result<List<PaymentMethodType>>> {
-        val resultData = MutableLiveData<Result<List<PaymentMethodType>>>()
+    fun fetchAvailablePaymentMethodTypes(): LiveData<Result<List<AvailablePaymentMethodType>>> {
+        val resultData = MutableLiveData<Result<List<AvailablePaymentMethodType>>>()
         when (session) {
             is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
                 retrieveAvailablePaymentMethods(
-                    mutableListOf(),
-                    AtomicInteger(0),
-                    resultData,
-                    requireNotNull(paymentIntent?.clientSecret)
+                    resultData = resultData,
+                    clientSecret = requireNotNull(paymentIntent?.clientSecret)
                 )
             }
             is AirwallexRecurringSession -> {
@@ -48,10 +46,8 @@ internal class PaymentMethodsViewModel(
                     object : ClientSecretRepository.ClientSecretRetrieveListener {
                         override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
                             retrieveAvailablePaymentMethods(
-                                mutableListOf(),
-                                AtomicInteger(0),
-                                resultData,
-                                clientSecret.value
+                                resultData = resultData,
+                                clientSecret = clientSecret.value
                             )
                         }
 
@@ -67,9 +63,9 @@ internal class PaymentMethodsViewModel(
     }
 
     private fun retrieveAvailablePaymentMethods(
-        availablePaymentMethodList: MutableList<AvailablePaymentMethod>,
-        availablePaymentMethodPageNum: AtomicInteger,
-        resultData: MutableLiveData<Result<List<PaymentMethodType>>>,
+        availablePaymentMethodList: MutableList<AvailablePaymentMethodType> = mutableListOf(),
+        availablePaymentMethodPageNum: AtomicInteger = AtomicInteger(0),
+        resultData: MutableLiveData<Result<List<AvailablePaymentMethodType>>>,
         clientSecret: String
     ) {
         airwallex.retrieveAvailablePaymentMethods(
@@ -80,12 +76,12 @@ internal class PaymentMethodsViewModel(
                 .setActive(true)
                 .setTransactionCurrency(session.currency)
                 .build(),
-            listener = object : Airwallex.PaymentListener<AvailablePaymentMethodResponse> {
+            listener = object : Airwallex.PaymentListener<AvailablePaymentMethodTypeResponse> {
                 override fun onFailed(exception: AirwallexException) {
                     resultData.value = Result.failure(exception)
                 }
 
-                override fun onSuccess(response: AvailablePaymentMethodResponse) {
+                override fun onSuccess(response: AvailablePaymentMethodTypeResponse) {
                     availablePaymentMethodPageNum.incrementAndGet()
                     availablePaymentMethodList.addAll(response.items ?: emptyList())
                     if (response.hasMore) {
@@ -100,15 +96,17 @@ internal class PaymentMethodsViewModel(
                             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> {
                                 resultData.value =
                                     Result.success(
-                                        availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.RECURRING }
-                                            .mapNotNull { it.name }.distinct()
+                                        availablePaymentMethodList.filter {
+                                            it.transactionMode == TransactionMode.RECURRING
+                                        }
                                     )
                             }
                             is AirwallexPaymentSession -> {
                                 resultData.value =
                                     Result.success(
-                                        availablePaymentMethodList.filter { it.transactionMode == AvailablePaymentMethod.TransactionMode.ONE_OFF }
-                                            .mapNotNull { it.name }.distinct()
+                                        availablePaymentMethodList.filter {
+                                            it.transactionMode == TransactionMode.ONE_OFF
+                                        }
                                     )
                             }
                             else -> {
