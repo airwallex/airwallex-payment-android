@@ -290,6 +290,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                                         )
                                     }
                                 } else {
+                                    setLoadingProgress(loading = false)
                                     showSchemaFieldsDialog(info, paymentMethod, null, observer)
                                 }
                             },
