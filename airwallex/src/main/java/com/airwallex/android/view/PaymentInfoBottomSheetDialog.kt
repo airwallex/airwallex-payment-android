@@ -10,7 +10,6 @@ import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.databinding.DialogPaymentInfoBinding
 import com.airwallex.android.R
 import com.airwallex.android.core.model.*
-import com.airwallex.android.core.model.PaymentMethodTypeInfoSchemaField.Companion.BANK_NAME
 
 class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
 
@@ -49,53 +48,83 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             arguments?.getParcelable<PaymentMethodTypeInfo>(PAYMENT_METHOD_TYPE_INFO)
         val fields = paymentMethodTypeInfo
             ?.fieldSchemas
-            ?.firstOrNull()
+            ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
             ?.fields
             ?.filter {
-                it.name != BANK_NAME && !it.hidden
+                it.type != DynamicSchemaFieldType.BANKS && !it.hidden
             }
             ?: return
 
         viewBinding.title.text = paymentMethodTypeInfo.displayName
 
         fields.forEach { field ->
-            val input = AirwallexTextInputLayout(requireContext(), null)
-            input.tag = field.name
-            input.setHint(field.displayName)
-            when (field.uiType) {
-                PaymentMethodTypeInfoSchemaFieldUIType.TEXT -> input.setInputType(InputType.TYPE_CLASS_TEXT)
-                PaymentMethodTypeInfoSchemaFieldUIType.EMAIL -> input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-                PaymentMethodTypeInfoSchemaFieldUIType.PHONE -> input.setInputType(InputType.TYPE_CLASS_PHONE)
+            when (field.type) {
+                DynamicSchemaFieldType.STRING -> {
+                    val input = AirwallexTextInputLayout(requireContext(), null)
+                    input.tag = field.name
+                    input.setHint(field.displayName)
+                    when (field.uiType) {
+                        DynamicSchemaFieldUIType.TEXT -> input.setInputType(InputType.TYPE_CLASS_TEXT)
+                        DynamicSchemaFieldUIType.EMAIL -> input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+                        DynamicSchemaFieldUIType.PHONE -> input.setInputType(InputType.TYPE_CLASS_PHONE)
+                        else -> Unit
+                    }
+
+                    viewBinding.content.addView(
+                        input,
+                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                            topMargin =
+                                resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
+                        }
+                    )
+                }
+                DynamicSchemaFieldType.ENUM -> {
+                    val dynamicFieldView = DynamicFieldCompleteView(
+                        requireContext(),
+                        null,
+                        field.candidates ?: emptyList()
+                    )
+                    dynamicFieldView.tag = field.name
+                    dynamicFieldView.setHint(field.displayName)
+
+                    viewBinding.content.addView(
+                        dynamicFieldView,
+                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                            topMargin =
+                                resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
+                        }
+                    )
+                }
                 else -> Unit
             }
-
-            viewBinding.content.addView(
-                input,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    topMargin = resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
-                }
-            )
         }
 
         for (i in 0 until viewBinding.content.childCount) {
-            (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout)
-                .setImeOptions(
-                    if (i == viewBinding.content.childCount - 1)
-                        EditorInfo.IME_ACTION_DONE
-                    else
-                        EditorInfo.IME_ACTION_NEXT
-                )
+            val childView = viewBinding.content.getChildAt(i)
+            if (i == viewBinding.content.childCount - 1) {
+                if (childView is AirwallexTextInputLayout) {
+                    childView.setImeOptions(EditorInfo.IME_ACTION_DONE)
+                } else if (childView is DynamicFieldCompleteView) {
+                    childView.setImeOptions(EditorInfo.IME_ACTION_DONE)
+                }
+            } else {
+                if (childView is AirwallexTextInputLayout) {
+                    childView.setImeOptions(EditorInfo.IME_ACTION_NEXT)
+                } else if (childView is DynamicFieldCompleteView) {
+                    childView.setImeOptions(EditorInfo.IME_ACTION_NEXT)
+                }
+            }
         }
 
         viewBinding.checkout.setOnSingleClickListener {
             val fieldMap = mutableMapOf<String, String>()
             for (i in 0 until viewBinding.content.childCount) {
-                val input = (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout)
-                val field = fields.find { it.name == input.tag }
-                val validations = field?.validations
+                val childView = viewBinding.content.getChildAt(i)
+                val field = fields.find { it.name == childView.tag }
 
-                if (validations != null) {
-                    if (isInvalid(input.value, validations)) {
+                if (childView is AirwallexTextInputLayout) {
+                    val validations = field?.validations
+                    if (validations != null && isInvalid(childView.value, validations)) {
                         Toast.makeText(
                             context,
                             getString(R.string.invalid_field, field.displayName),
@@ -103,9 +132,22 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
                         ).show()
                         return@setOnSingleClickListener
                     }
-                }
-                field?.let {
-                    fieldMap[it.name] = input.value
+                    field?.let {
+                        fieldMap[it.name] = childView.value
+                    }
+                } else if (childView is DynamicFieldCompleteView) {
+                    val value = childView.value
+                    if (value.isNullOrEmpty()) {
+                        Toast.makeText(
+                            context,
+                            getString(R.string.invalid_field, field?.displayName ?: ""),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnSingleClickListener
+                    }
+                    field?.let {
+                        fieldMap[it.name] = value
+                    }
                 }
             }
             onCompleted?.invoke(fieldMap)
@@ -114,7 +156,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
 
     private fun isInvalid(
         text: String,
-        Validations: PaymentMethodTypeInfoSchemaFieldValidation
+        Validations: DynamicSchemaFieldValidation
     ): Boolean {
         val regex = Validations.regex
         val max = Validations.max

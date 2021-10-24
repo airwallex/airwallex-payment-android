@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PaymentMethodTypeInfoSchema internal constructor(
+data class DynamicSchema internal constructor(
     /**
      * The supported transaction mode. One of oneoff, recurring.
      */
@@ -13,5 +13,5 @@ data class PaymentMethodTypeInfoSchema internal constructor(
     /**
      * Required payment method schema field
      */
-    val fields: List<PaymentMethodTypeInfoSchemaField>? = null
+    val fields: List<DynamicSchemaField>? = null
 ) : AirwallexModel, Parcelable

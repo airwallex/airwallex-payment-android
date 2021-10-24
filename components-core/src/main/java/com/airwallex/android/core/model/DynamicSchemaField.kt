@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PaymentMethodTypeInfoSchemaField internal constructor(
+data class DynamicSchemaField internal constructor(
 
     /**
      * Name of schema field
@@ -19,12 +19,12 @@ data class PaymentMethodTypeInfoSchemaField internal constructor(
     /**
      * UI type of schema field, include text, email, phone, list, logo_list
      */
-    val uiType: PaymentMethodTypeInfoSchemaFieldUIType? = null,
+    val uiType: DynamicSchemaFieldUIType?,
 
     /**
      * The type of schema field
      */
-    val type: String? = null,
+    val type: DynamicSchemaFieldType?,
 
     /**
      * If need to hide
@@ -34,10 +34,10 @@ data class PaymentMethodTypeInfoSchemaField internal constructor(
     /**
      * Validations of schema field
      */
-    val validations: PaymentMethodTypeInfoSchemaFieldValidation? = null
-) : AirwallexModel, Parcelable {
+    val candidates: List<DynamicSchemaFieldCandidate>?,
 
-    companion object {
-        const val BANK_NAME = "bank_name"
-    }
-}
+    /**
+     * Validations of schema field
+     */
+    val validations: DynamicSchemaFieldValidation?
+) : AirwallexModel, Parcelable

@@ -17,7 +17,6 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.R
-import com.airwallex.android.core.model.PaymentMethodTypeInfoSchemaField.Companion.BANK_NAME
 
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
@@ -247,7 +246,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 }
             }
             else -> {
-                // No schema fields, start checkout
+                // No schema fields, start checkout directly
                 if (paymentMethodType?.resources?.hasSchema == false) {
                     startCheckout(
                         paymentMethod = paymentMethod,
@@ -264,19 +263,38 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     retrievePaymentMethodTypeInfo(type) { result ->
                         result.fold(
                             onSuccess = { info ->
-                                if (info.fieldSchemas?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }?.fields?.find { field -> field.name == BANK_NAME } != null) {
+                                val fields = info
+                                    .fieldSchemas
+                                    ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
+                                    ?.fields
+                                    ?.filter { !it.hidden }
+                                if (fields == null || fields.isEmpty()) {
+                                    // If all fields are hidden, start checkout directly
+                                    startCheckout(
+                                        paymentMethod = paymentMethod,
+                                        paymentConsentId = paymentConsent.id,
+                                        observer = observer
+                                    )
+                                    return@fold
+                                }
+
+                                val bankField =
+                                    fields.find { field -> field.type == DynamicSchemaFieldType.BANKS }
+                                if (bankField != null) {
                                     retrieveBanks(type) { result ->
                                         result.fold(
                                             onSuccess = {
                                                 setLoadingProgress(loading = false)
-                                                val bankDialog = PaymentBankBottomSheetDialog.newInstance(
-                                                    getString(R.string.airwallex_select_your_bank),
-                                                    it.items ?: mutableListOf()
-                                                )
+                                                val bankDialog =
+                                                    PaymentBankBottomSheetDialog.newInstance(
+                                                        getString(R.string.airwallex_select_your_bank),
+                                                        it.items ?: mutableListOf()
+                                                    )
                                                 bankDialog.onCompleted = { bank ->
                                                     showSchemaFieldsDialog(
                                                         info,
                                                         paymentMethod,
+                                                        bankField,
                                                         bank.name,
                                                         observer
                                                     )
@@ -291,7 +309,13 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                                     }
                                 } else {
                                     setLoadingProgress(loading = false)
-                                    showSchemaFieldsDialog(info, paymentMethod, null, observer)
+                                    showSchemaFieldsDialog(
+                                        info,
+                                        paymentMethod,
+                                        null,
+                                        null,
+                                        observer
+                                    )
                                 }
                             },
                             onFailure = {
@@ -308,14 +332,15 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     private fun showSchemaFieldsDialog(
         info: PaymentMethodTypeInfo,
         paymentMethod: PaymentMethod,
+        bankField: DynamicSchemaField?,
         bankName: String?,
         observer: Observer<Result<String>>
     ) {
         val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(info)
         paymentInfoDialog.onCompleted = { fieldMap ->
             setLoadingProgress(loading = true)
-            bankName?.let {
-                fieldMap[BANK_NAME] = it
+            if (bankField != null && bankName != null) {
+                fieldMap[bankField.name] = bankName
             }
             startCheckout(
                 paymentMethod = paymentMethod,

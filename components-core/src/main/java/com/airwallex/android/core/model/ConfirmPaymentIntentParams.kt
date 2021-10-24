@@ -37,6 +37,11 @@ data class ConfirmPaymentIntentParams internal constructor(
     val currency: String? = null,
 
     /**
+     * Country Code
+     */
+    val countryCode: String? = null,
+
+    /**
      * PPROAdditionalInfo
      */
     val additionalInfo: Map<String, String>? = null,
@@ -59,6 +64,7 @@ data class ConfirmPaymentIntentParams internal constructor(
         private var customerId: String? = null
         private var paymentConsentId: String? = null
         private var currency: String? = null
+        private var countryCode: String? = null
         private var additionalInfo: Map<String, String>? = null
         private var returnUrl: String? = null
 
@@ -82,6 +88,10 @@ data class ConfirmPaymentIntentParams internal constructor(
             this.currency = currency
         }
 
+        fun setCountryCode(countryCode: String?): Builder = apply {
+            this.countryCode = countryCode
+        }
+
         fun setPaymentMethod(paymentMethod: PaymentMethod? = null): Builder = apply {
             this.paymentMethod = paymentMethod
         }
@@ -100,6 +110,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                 cvc = cvc,
                 paymentConsentId = paymentConsentId,
                 currency = currency,
+                countryCode = countryCode,
                 additionalInfo = additionalInfo,
                 returnUrl = returnUrl
             )
@@ -127,6 +138,7 @@ data class ConfirmPaymentIntentParams internal constructor(
             customerId: String? = null,
             paymentConsentId: String? = null,
             currency: String? = null,
+            countryCode: String? = null,
             additionalInfo: Map<String, String>? = null,
             returnUrl: String? = null
         ): ConfirmPaymentIntentParams {
@@ -138,6 +150,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setCustomerId(customerId)
                 .setPaymentConsentId(paymentConsentId)
                 .setCurrency(currency)
+                .setCountryCode(countryCode)
                 .setAdditionalInfo(additionalInfo)
                 .setReturnUrl(returnUrl)
                 .build()

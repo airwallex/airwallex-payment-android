@@ -127,6 +127,16 @@ object Settings {
             ) ?: defaultCurrency
         }
 
+    val countryCode: String
+        get() {
+            val defaultCountryCode =
+                SampleApplication.instance.getString(R.string.country_code_value)
+            return sharedPreferences.getString(
+                context.getString(R.string.country_code),
+                defaultCountryCode
+            ) ?: defaultCountryCode
+        }
+
     private fun getMetadata(key: String): String? {
         return context.packageManager
             .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)

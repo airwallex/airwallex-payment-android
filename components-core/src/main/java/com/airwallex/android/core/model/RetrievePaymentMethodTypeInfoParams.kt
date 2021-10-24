@@ -7,7 +7,9 @@ data class RetrievePaymentMethodTypeInfoParams internal constructor(
     val clientSecret: String,
     internal val paymentMethodType: String,
     internal val flow: AirwallexPaymentRequestFlow?,
-    internal val transactionMode: TransactionMode?
+    internal val transactionMode: TransactionMode?,
+    internal val countryCode: String?,
+    internal val openId: String?
 ) {
     class Builder(
         private val clientSecret: String,
@@ -16,6 +18,8 @@ data class RetrievePaymentMethodTypeInfoParams internal constructor(
 
         private var flow: AirwallexPaymentRequestFlow? = null
         private var transactionMode: TransactionMode? = null
+        private var countryCode: String? = null
+        private var openId: String? = null
 
         fun setFlow(flow: AirwallexPaymentRequestFlow?): Builder = apply {
             this.flow = flow
@@ -25,12 +29,22 @@ data class RetrievePaymentMethodTypeInfoParams internal constructor(
             this.transactionMode = transactionMode
         }
 
+        fun setCountryCode(countryCode: String?): Builder = apply {
+            this.countryCode = countryCode
+        }
+
+        fun setOpenId(openId: String?): Builder = apply {
+            this.openId = openId
+        }
+
         override fun build(): RetrievePaymentMethodTypeInfoParams {
             return RetrievePaymentMethodTypeInfoParams(
                 clientSecret = clientSecret,
                 paymentMethodType = paymentMethodType,
                 flow = flow,
-                transactionMode = transactionMode
+                transactionMode = transactionMode,
+                countryCode = countryCode,
+                openId = openId
             )
         }
     }

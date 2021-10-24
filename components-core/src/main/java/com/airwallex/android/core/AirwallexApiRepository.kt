@@ -124,7 +124,15 @@ class AirwallexApiRepository : ApiRepository {
         /**
          * recurring, oneoff
          */
-        internal val transactionMode: TransactionMode?
+        internal val transactionMode: TransactionMode?,
+        /**
+         * Country code
+         */
+        internal val countryCode: String?,
+        /**
+         * Open Id
+         */
+        internal val openId: String?
     ) : Options(clientSecret = clientSecret)
 
     @Parcelize
@@ -135,14 +143,22 @@ class AirwallexApiRepository : ApiRepository {
          */
         internal val paymentMethodType: String,
         /**
+         * webqr, mweb, jsapi, inapp, miniprog
+         */
+        internal val flow: AirwallexPaymentRequestFlow?,
+        /**
+         * recurring, oneoff
+         */
+        internal val transactionMode: TransactionMode?,
+        /**
          * For payment method like online_banking that supports different bank list in different country, the country code is required.
          * such payment method: online_banking, bank_transfer
          */
         internal val countryCode: String?,
         /**
-         * if the language is not supported by us, we will return the default bank name.
+         * Open Id
          */
-        internal val lang: String?
+        internal val openId: String?
     ) : Options(clientSecret = clientSecret)
 
     /**
@@ -344,7 +360,9 @@ class AirwallexApiRepository : ApiRepository {
                 url = retrievePaymentMethodTypeInfoUrl(
                     AirwallexPlugins.environment.baseUrl(),
                     (options as RetrievePaymentMethodTypeInfoOptions).paymentMethodType,
-                    options.flow
+                    options.countryCode,
+                    options.flow,
+                    options.openId
                 ),
                 options = options,
                 params = null
@@ -360,7 +378,8 @@ class AirwallexApiRepository : ApiRepository {
                     AirwallexPlugins.environment.baseUrl(),
                     (options as RetrieveBankOptions).paymentMethodType,
                     options.countryCode,
-                    options.lang
+                    options.flow,
+                    options.openId
                 ),
                 options = options,
                 params = null
@@ -427,7 +446,7 @@ class AirwallexApiRepository : ApiRepository {
         /**
          * paRes base url
          */
-        internal fun retrievePaResBaseUrl(): String {
+        private fun retrievePaResBaseUrl(): String {
             return AirwallexPlugins.environment.cybsUrl()
         }
 
@@ -582,7 +601,9 @@ class AirwallexApiRepository : ApiRepository {
         internal fun retrievePaymentMethodTypeInfoUrl(
             baseUrl: String,
             paymentMethodType: String,
-            flow: AirwallexPaymentRequestFlow?
+            countryCode: String?,
+            flow: AirwallexPaymentRequestFlow?,
+            openId: String?
         ): String {
             val url = getApiUrl(
                 baseUrl,
@@ -591,11 +612,17 @@ class AirwallexApiRepository : ApiRepository {
             )
 
             val builder = Uri.parse(url).buildUpon()
-            builder.appendQueryParameter("lang", "en")
-            builder.appendQueryParameter("os_type", "android")
+            countryCode?.let {
+                builder.appendQueryParameter("country_code", it)
+            }
             flow?.let {
                 builder.appendQueryParameter("flow", it.value)
             }
+            openId?.let {
+                builder.appendQueryParameter("open_id", it)
+            }
+            builder.appendQueryParameter("os_type", "android")
+            builder.appendQueryParameter("lang", "en")
             return builder.build().toString()
         }
 
@@ -606,22 +633,27 @@ class AirwallexApiRepository : ApiRepository {
             baseUrl: String,
             paymentMethodType: String,
             countryCode: String?,
-            lang: String?
+            flow: AirwallexPaymentRequestFlow?,
+            openId: String?
         ): String {
             val url = getApiUrl(
                 baseUrl,
                 "config/banks"
             )
-
             val builder = Uri.parse(url).buildUpon()
             builder.appendQueryParameter("payment_method_type", paymentMethodType)
             builder.appendQueryParameter("__all_logos", "true")
             countryCode?.let {
                 builder.appendQueryParameter("country_code", it)
             }
-            lang?.let {
-                builder.appendQueryParameter("lang", it)
+            flow?.let {
+                builder.appendQueryParameter("flow", it.value)
             }
+            openId?.let {
+                builder.appendQueryParameter("open_id", it)
+            }
+            builder.appendQueryParameter("os_type", "android")
+            builder.appendQueryParameter("lang", "en")
             return builder.build().toString()
         }
 

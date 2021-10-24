@@ -82,6 +82,9 @@ class PaymentSettingsFragment :
         (findPreference<Preference>(getString(R.string.currency)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
             editText.inputType = TYPE_TEXT_FLAG_CAP_CHARACTERS
         }
+        (findPreference<Preference>(getString(R.string.country_code)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
+            editText.inputType = TYPE_TEXT_FLAG_CAP_CHARACTERS
+        }
 
         val sdkEnvPref: ListPreference? =
             findPreference(getString(R.string.sdk_env_id)) as? ListPreference?
@@ -167,6 +170,7 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.client_id))
         onSharedPreferenceChanged(preferences, getString(R.string.price))
         onSharedPreferenceChanged(preferences, getString(R.string.currency))
+        onSharedPreferenceChanged(preferences, getString(R.string.country_code))
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_id))
         onSharedPreferenceChanged(preferences, getString(R.string.sdk_env_id))
         onSharedPreferenceChanged(preferences, getString(R.string.checkout_mode))
@@ -204,6 +208,13 @@ class PaymentSettingsFragment :
             }
             getString(R.string.currency) -> {
                 preference?.summary = Settings.currency
+                (preference as EditTextPreference).setOnBindEditTextListener { editText ->
+                    editText.inputType = TYPE_CLASS_TEXT or TYPE_TEXT_FLAG_CAP_CHARACTERS
+                    editText.setSelection(editText.length())
+                }
+            }
+            getString(R.string.country_code) -> {
+                preference?.summary = Settings.countryCode
                 (preference as EditTextPreference).setOnBindEditTextListener { editText ->
                     editText.inputType = TYPE_CLASS_TEXT or TYPE_TEXT_FLAG_CAP_CHARACTERS
                     editText.setSelection(editText.length())

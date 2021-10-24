@@ -23,6 +23,8 @@
     <string name="price_value">1</string>
     <string name="currency_value">HKD</string>
     <string name="currency">Currency</string>
+    <string name="country_code_value">HK</string>
+    <string name="country_code">Country Code</string>
     <string name="price">Price</string>
     <string name="price_currency"><![CDATA[Price & Currency]]></string>
     <string name="create_payment_intent_failed">Create PaymentIntent Failed.</string>

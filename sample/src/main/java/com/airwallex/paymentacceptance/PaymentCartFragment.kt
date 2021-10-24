@@ -31,8 +31,6 @@ import java.util.*
 
 class PaymentCartFragment : Fragment() {
 
-    private val airwallex: Airwallex by lazy { Airwallex(this) }
-
     private val viewBinding: FragmentCartBinding by lazy {
         FragmentCartBinding.inflate(layoutInflater)
     }
@@ -284,7 +282,7 @@ class PaymentCartFragment : Fragment() {
 
             viewModel.presentPaymentFlow(
                 this@PaymentCartFragment,
-                AirwallexPaymentSession.Builder(paymentIntent)
+                AirwallexPaymentSession.Builder(paymentIntent, Settings.countryCode)
                     .setReturnUrl(returnUrl)
                     .build()
             ).observe(viewLifecycleOwner) {

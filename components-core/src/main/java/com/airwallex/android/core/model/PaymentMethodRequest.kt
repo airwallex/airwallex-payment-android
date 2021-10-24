@@ -2,7 +2,6 @@ package com.airwallex.android.core.model
 
 import android.os.Parcelable
 import com.airwallex.android.core.model.parser.PaymentMethodParser
-import com.airwallex.android.core.util.CurrencyUtils
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -73,14 +72,12 @@ class PaymentMethodRequest(
 
         fun setThirdPartyPaymentMethodRequest(
             additionalInfo: Map<String, String>? = null,
-            currency: String? = null,
+            countryCode: String? = null,
         ): Builder = apply {
             if (type != PaymentMethodType.CARD.value) {
                 redirectRequest = AirwallexPaymentRequest(
                     additionalInfo,
-                    countryCode = currency?.let {
-                        CurrencyUtils.currencyToCountryMap[currency]
-                    }
+                    countryCode = countryCode
                 )
             }
         }

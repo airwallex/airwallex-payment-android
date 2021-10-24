@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PaymentMethodTypeInfoSchemaFieldValidation internal constructor(
+data class DynamicSchemaFieldValidation internal constructor(
     val regex: String? = null,
 
     val max: Int? = null

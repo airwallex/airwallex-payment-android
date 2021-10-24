@@ -30,5 +30,5 @@ data class PaymentMethodTypeInfo internal constructor(
     /**
      * The detail required schema fields
      */
-    val fieldSchemas: List<PaymentMethodTypeInfoSchema>? = null
+    val fieldSchemas: List<DynamicSchema>? = null
 ) : AirwallexModel, Parcelable

@@ -6,7 +6,6 @@ import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
-import com.airwallex.android.core.util.CurrencyUtils
 
 class AirwallexCheckoutViewModel(
     application: Application,
@@ -50,7 +49,7 @@ class AirwallexCheckoutViewModel(
                         clientSecret = requireNotNull(paymentIntent.clientSecret),
                         paymentMethodType = paymentMethodTypeName
                     )
-                        .setCountryCode(CurrencyUtils.currencyToCountryMap[session.currency])
+                        .setCountryCode(session.countryCode)
                         .build(),
                     object : Airwallex.PaymentListener<BankResponse> {
                         override fun onFailed(exception: AirwallexException) {
@@ -103,18 +102,6 @@ class AirwallexCheckoutViewModel(
         }
 
         return resultData
-    }
-
-    sealed class BanksResult {
-        data class Success(val bankResponse: BankResponse) : BanksResult()
-
-        data class Error(val exception: AirwallexException) : BanksResult()
-    }
-
-    sealed class PaymentResult {
-        data class Success(val paymentIntentId: String) : PaymentResult()
-
-        data class Error(val exception: AirwallexException) : PaymentResult()
     }
 
     internal class Factory(

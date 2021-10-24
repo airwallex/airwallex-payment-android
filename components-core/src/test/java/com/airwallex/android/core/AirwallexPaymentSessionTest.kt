@@ -13,7 +13,7 @@ class AirwallexPaymentSessionTest {
 
     @Test
     fun buildTest() {
-        val airwallexPaymentSession = AirwallexPaymentSession.Builder(PaymentIntentFixtures.PAYMENT_INTENT).build()
+        val airwallexPaymentSession = AirwallexPaymentSession.Builder(PaymentIntentFixtures.PAYMENT_INTENT, "CN").build()
 
         assertNotNull(airwallexPaymentSession)
 

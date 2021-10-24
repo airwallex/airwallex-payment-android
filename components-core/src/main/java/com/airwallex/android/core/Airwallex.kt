@@ -254,8 +254,10 @@ class Airwallex internal constructor(
             AirwallexApiRepository.RetrieveBankOptions(
                 clientSecret = params.clientSecret,
                 paymentMethodType = params.paymentMethodType,
+                flow = params.flow,
+                transactionMode = params.transactionMode,
                 countryCode = params.countryCode,
-                lang = params.lang
+                openId = params.openId
             ),
             listener
         )
@@ -271,7 +273,9 @@ class Airwallex internal constructor(
                 clientSecret = params.clientSecret,
                 paymentMethodType = params.paymentMethodType,
                 flow = params.flow,
-                transactionMode = params.transactionMode
+                transactionMode = params.transactionMode,
+                countryCode = params.countryCode,
+                openId = params.openId
             ),
             listener
         )
@@ -321,6 +325,7 @@ class Airwallex internal constructor(
                     paymentMethod = paymentMethod,
                     cvc = cvc,
                     currency = session.currency,
+                    countryCode = session.countryCode,
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
                     additionalInfo = additionalInfo,
@@ -417,6 +422,7 @@ class Airwallex internal constructor(
         paymentMethod: PaymentMethod,
         cvc: String? = null,
         currency: String? = null,
+        countryCode: String? = null,
         customerId: String? = null,
         paymentConsentId: String? = null,
         additionalInfo: Map<String, String>? = null,
@@ -443,6 +449,7 @@ class Airwallex internal constructor(
                     customerId = customerId,
                     paymentConsentId = paymentConsentId,
                     currency = currency,
+                    countryCode = countryCode,
                     additionalInfo = additionalInfo,
                     returnUrl = returnUrl
                 )
@@ -613,7 +620,7 @@ class Airwallex internal constructor(
             if (additionalInfo != null) {
                 builder.setThirdPartyPaymentMethodRequest(
                     additionalInfo = additionalInfo,
-                    params.currency,
+                    params.countryCode,
                 )
             } else {
                 builder.setThirdPartyPaymentMethodRequest()

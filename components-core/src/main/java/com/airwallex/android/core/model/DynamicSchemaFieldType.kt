@@ -4,13 +4,14 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-enum class AirwallexPaymentRequestFlow(val value: String) : Parcelable {
-
-    IN_APP("inapp"),
-    M_WEB("mweb");
+enum class DynamicSchemaFieldType(val value: String) : Parcelable {
+    STRING("string"),
+    ENUM("enum"),
+    BANKS("banks"),
+    BOOLEAN("boolean");
 
     companion object {
-        fun fromValue(value: String?): AirwallexPaymentRequestFlow? {
+        fun fromValue(value: String?): DynamicSchemaFieldType? {
             return values().firstOrNull { it.value == value }
         }
     }

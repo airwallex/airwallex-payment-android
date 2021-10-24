@@ -7,7 +7,7 @@ import org.json.JSONObject
 
 class PaymentMethodTypeInfoParser : ModelJsonParser<PaymentMethodTypeInfo> {
 
-    private val paymentMethodTypeInfoSchemaParser = PaymentMethodTypeInfoSchemaParser()
+    private val paymentMethodTypeInfoSchemaParser = DynamicSchemaParser()
 
     override fun parse(json: JSONObject): PaymentMethodTypeInfo {
         val itemsJson = json.optJSONArray(FIELD_FIELD_SCHEMAS) ?: JSONArray()
