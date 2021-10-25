@@ -92,6 +92,7 @@ class PaymentCartActivity : AppCompatActivity() {
             try {
                 dialog = Dialog(this).apply {
                     setContentView(R.layout.airwallex_loading)
+                    window?.setBackgroundDrawableResource(android.R.color.transparent)
                     setCancelable(false)
                     show()
                 }
