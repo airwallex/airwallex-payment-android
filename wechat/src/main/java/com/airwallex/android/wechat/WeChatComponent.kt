@@ -20,7 +20,7 @@ import kotlinx.coroutines.withContext
 
 class WeChatComponent : ActionComponent {
 
-    private var listener: Airwallex.PaymentListener<String>? = null
+    private var listener: Airwallex.PaymentResultListener? = null
 
     private var weChatApi: IWXAPI? = null
 
@@ -56,7 +56,7 @@ class WeChatComponent : ActionComponent {
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
-        listener: Airwallex.PaymentListener<String>
+        listener: Airwallex.PaymentResultListener
     ) {
         this.paymentIntentId = paymentIntentId
         this.listener = listener

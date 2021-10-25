@@ -277,7 +277,9 @@ class PaymentCartFragment : Fragment() {
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        showPaymentSuccess()
+                        if (!it.isRedirecting) {
+                            showPaymentSuccess()
+                        }
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.message)
@@ -350,7 +352,9 @@ class PaymentCartFragment : Fragment() {
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        showPaymentSuccess()
+                        if (!it.isRedirecting) {
+                            showPaymentSuccess()
+                        }
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.localizedMessage)
@@ -448,7 +452,9 @@ class PaymentCartFragment : Fragment() {
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        showPaymentSuccess()
+                        if (!it.isRedirecting) {
+                            showPaymentSuccess()
+                        }
                     }
                     is PaymentCartViewModel.PaymentFlowResult.Error -> {
                         showPaymentError(it.exception.message)

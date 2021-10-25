@@ -39,7 +39,7 @@ class CardComponent : ActionComponent {
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
-        listener: PaymentListener<String>
+        listener: Airwallex.PaymentResultListener
     ) {
         if (cardNextActionModel == null) {
             listener.onFailed(AirwallexCheckoutException(message = "Card payment info not found"))
@@ -136,12 +136,21 @@ class CardComponent : ActionComponent {
                 )
             }
             else -> {
+                val retrievePaymentIntentListener = object : PaymentListener<String> {
+                    override fun onSuccess(response: String) {
+                        listener.onSuccess(response)
+                    }
+
+                    override fun onFailed(exception: AirwallexException) {
+                        listener.onFailed(exception)
+                    }
+                }
                 cardNextActionModel.paymentManager.startOperation(
                     AirwallexApiRepository.RetrievePaymentIntentOptions(
                         clientSecret = cardNextActionModel.clientSecret,
                         paymentIntentId = cardNextActionModel.paymentIntentId
                     ),
-                    listener
+                    retrievePaymentIntentListener
                 )
             }
         }

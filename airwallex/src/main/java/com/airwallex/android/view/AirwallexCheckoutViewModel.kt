@@ -18,21 +18,21 @@ class AirwallexCheckoutViewModel(
         paymentConsentId: String?,
         cvc: String?,
         additionalInfo: Map<String, String>? = null
-    ): LiveData<Result<String>> {
-        val resultData = MutableLiveData<Result<String>>()
+    ): LiveData<CheckoutResult> {
+        val resultData = MutableLiveData<CheckoutResult>()
         airwallex.checkout(
             session,
             paymentMethod,
             paymentConsentId,
             cvc,
             additionalInfo,
-            object : Airwallex.PaymentListener<String> {
-                override fun onFailed(exception: AirwallexException) {
-                    resultData.value = Result.failure(exception)
+            object : Airwallex.PaymentResultListener {
+                override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
+                    resultData.value = CheckoutResult.Success(paymentIntentId, isRedirecting)
                 }
 
-                override fun onSuccess(response: String) {
-                    resultData.value = Result.success(response)
+                override fun onFailed(exception: AirwallexException) {
+                    resultData.value = CheckoutResult.Error(exception)
                 }
             }
         )
@@ -102,6 +102,13 @@ class AirwallexCheckoutViewModel(
         }
 
         return resultData
+    }
+
+    sealed class CheckoutResult {
+        data class Success(val paymentIntentId: String, val isRedirecting: Boolean) :
+            CheckoutResult()
+
+        data class Error(val exception: AirwallexException) : CheckoutResult()
     }
 
     internal class Factory(

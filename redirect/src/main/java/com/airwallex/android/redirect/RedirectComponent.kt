@@ -21,7 +21,7 @@ class RedirectComponent : ActionComponent {
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
-        listener: Airwallex.PaymentListener<String>
+        listener: Airwallex.PaymentResultListener
     ) {
         when (nextAction?.type) {
             NextAction.NextActionType.REDIRECT -> {
@@ -31,7 +31,7 @@ class RedirectComponent : ActionComponent {
                     return
                 }
                 try {
-                    listener.onSuccess(paymentIntentId)
+                    listener.onSuccess(paymentIntentId, true)
                     RedirectUtil.makeRedirect(activity = activity, redirectUrl = redirectUrl)
                 } catch (e: RedirectException) {
                     listener.onFailed(e)

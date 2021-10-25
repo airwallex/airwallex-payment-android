@@ -18,13 +18,13 @@ internal class DccViewModel(
 
         airwallex.continueDccPaymentIntent(
             params,
-            object : Airwallex.PaymentListener<String> {
-                override fun onFailed(exception: AirwallexException) {
-                    resultData.value = Result.failure(exception)
+            object : Airwallex.PaymentResultListener {
+                override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
+                    resultData.value = Result.success(paymentIntentId)
                 }
 
-                override fun onSuccess(response: String) {
-                    resultData.value = Result.success(response)
+                override fun onFailed(exception: AirwallexException) {
+                    resultData.value = Result.failure(exception)
                 }
             }
         )

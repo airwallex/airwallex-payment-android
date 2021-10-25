@@ -14,14 +14,19 @@ import com.airwallex.android.view.PaymentShippingActivityLaunch
  */
 class AirwallexStarter {
 
-    interface PaymentFlowListener<T> {
+    interface ShippingFlowListener<T> {
         fun onSuccess(response: T)
+        fun onCancelled()
+    }
+
+    interface PaymentFlowListener<T> {
+        fun onSuccess(response: T, isRedirecting: Boolean)
         fun onFailed(exception: AirwallexException)
         fun onCancelled()
     }
 
     companion object {
-        private var shippingFlowListener: PaymentFlowListener<Shipping>? = null
+        private var shippingFlowListener: ShippingFlowListener<Shipping>? = null
         private var paymentFlowListener: PaymentFlowListener<String>? = null
 
         private val VALID_REQUEST_CODES = setOf(
@@ -39,7 +44,7 @@ class AirwallexStarter {
         fun presentShippingFlow(
             fragment: Fragment,
             shipping: Shipping?,
-            shippingFlowListener: PaymentFlowListener<Shipping>
+            shippingFlowListener: ShippingFlowListener<Shipping>
         ) {
             presentShippingFlow(
                 PaymentShippingActivityLaunch(fragment),
@@ -58,7 +63,7 @@ class AirwallexStarter {
         fun presentShippingFlow(
             activity: Activity,
             shipping: Shipping?,
-            shippingFlowListener: PaymentFlowListener<Shipping>
+            shippingFlowListener: ShippingFlowListener<Shipping>
         ) {
             presentShippingFlow(
                 PaymentShippingActivityLaunch(activity),
@@ -70,7 +75,7 @@ class AirwallexStarter {
         private fun presentShippingFlow(
             launch: PaymentShippingActivityLaunch,
             shipping: Shipping?,
-            shippingFlowListener: PaymentFlowListener<Shipping>
+            shippingFlowListener: ShippingFlowListener<Shipping>
         ) {
             this.shippingFlowListener = shippingFlowListener
             launch.startForResult(
@@ -169,7 +174,7 @@ class AirwallexStarter {
                                     paymentFlowListener?.onFailed(result.exception)
                                 }
                                 result.paymentIntentId != null -> {
-                                    paymentFlowListener?.onSuccess(result.paymentIntentId)
+                                    paymentFlowListener?.onSuccess(result.paymentIntentId, result.isRedirecting)
                                 }
                             }
                             paymentFlowListener = null

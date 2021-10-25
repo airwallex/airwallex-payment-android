@@ -13,7 +13,7 @@ interface ActionComponent {
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
-        listener: Airwallex.PaymentListener<String>
+        listener: Airwallex.PaymentResultListener
     )
 
     fun handleActivityResult(

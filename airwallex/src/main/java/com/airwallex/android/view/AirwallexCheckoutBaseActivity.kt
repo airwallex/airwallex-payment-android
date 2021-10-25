@@ -28,7 +28,7 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         paymentConsentId: String? = null,
         cvc: String? = null,
         additionalInfo: Map<String, String>? = null,
-        observer: Observer<Result<String>>
+        observer: Observer<AirwallexCheckoutViewModel.CheckoutResult>
     ) {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.checkout(

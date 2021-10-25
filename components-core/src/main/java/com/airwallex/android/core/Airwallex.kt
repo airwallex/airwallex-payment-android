@@ -26,6 +26,11 @@ class Airwallex internal constructor(
         fun onFailed(exception: AirwallexException)
     }
 
+    interface PaymentResultListener {
+        fun onSuccess(paymentIntentId: String, isRedirecting: Boolean = false)
+        fun onFailed(exception: AirwallexException)
+    }
+
     /**
      * Constructor of [Airwallex]
      */
@@ -153,7 +158,7 @@ class Airwallex internal constructor(
     @UiThread
     fun verifyPaymentConsent(
         params: VerifyPaymentConsentParams,
-        listener: PaymentListener<String>
+        listener: PaymentResultListener
     ) {
 
         val verificationOptions = when (val paymentMethodType = params.paymentMethodType) {
@@ -292,7 +297,7 @@ class Airwallex internal constructor(
     internal fun checkout(
         session: AirwallexSession,
         paymentMethod: PaymentMethod,
-        listener: PaymentListener<String>
+        listener: PaymentResultListener
     ) {
         this.checkout(session, paymentMethod, null, null, null, listener)
     }
@@ -314,7 +319,7 @@ class Airwallex internal constructor(
         paymentConsentId: String? = null,
         cvc: String? = null,
         additionalInfo: Map<String, String>? = null,
-        listener: PaymentListener<String>
+        listener: PaymentResultListener
     ) {
         when (session) {
             is AirwallexPaymentSession -> {
@@ -427,7 +432,7 @@ class Airwallex internal constructor(
         paymentConsentId: String? = null,
         additionalInfo: Map<String, String>? = null,
         returnUrl: String? = null,
-        listener: PaymentListener<String>
+        listener: PaymentResultListener
     ) {
         val params = when (val paymentMethodType = requireNotNull(paymentMethod.type)) {
             PaymentMethodType.CARD.value -> {
@@ -460,7 +465,7 @@ class Airwallex internal constructor(
 
     private fun confirmPaymentIntent(
         params: ConfirmPaymentIntentParams,
-        listener: PaymentListener<String>
+        listener: PaymentResultListener
     ) {
         if (params.paymentMethodType == PaymentMethodType.CARD.value) {
             try {
@@ -497,7 +502,7 @@ class Airwallex internal constructor(
     fun confirmPaymentIntentWithDevice(
         device: Device? = null,
         params: ConfirmPaymentIntentParams,
-        listener: PaymentListener<String>
+        listener: PaymentResultListener
     ) {
         val options = when (params.paymentMethodType) {
             PaymentMethodType.CARD.value -> {
@@ -645,7 +650,7 @@ class Airwallex internal constructor(
 
     fun continueDccPaymentIntent(
         params: ContinuePaymentIntentParams,
-        listener: PaymentListener<String>
+        listener: PaymentResultListener
     ) {
         val request = PaymentIntentContinueRequest(
             requestId = UUID.randomUUID().toString(),
@@ -768,7 +773,7 @@ class Airwallex internal constructor(
         amount: BigDecimal? = null,
         cvc: String? = null,
         returnUrl: String? = null,
-        listener: PaymentListener<String>
+        listener: PaymentResultListener
     ) {
         if (paymentConsent.requiresCvc && cvc == null) {
             listener.onFailed(InvalidParamsException(message = "CVC is required!"))

@@ -17,13 +17,9 @@ internal class PaymentCartViewModel(
         AirwallexStarter.presentShippingFlow(
             fragment,
             shipping,
-            object : AirwallexStarter.PaymentFlowListener<Shipping> {
+            object : AirwallexStarter.ShippingFlowListener<Shipping> {
                 override fun onSuccess(response: Shipping) {
                     resultData.value = ShippingResult.Success(response)
-                }
-
-                override fun onFailed(exception: AirwallexException) {
-                    resultData.value = ShippingResult.Error(exception)
                 }
 
                 override fun onCancelled() {
@@ -43,8 +39,8 @@ internal class PaymentCartViewModel(
             fragment,
             session,
             object : AirwallexStarter.PaymentFlowListener<String> {
-                override fun onSuccess(response: String) {
-                    resultData.value = PaymentFlowResult.Success(response)
+                override fun onSuccess(response: String, isRedirecting: Boolean) {
+                    resultData.value = PaymentFlowResult.Success(response, isRedirecting)
                 }
 
                 override fun onFailed(exception: AirwallexException) {
@@ -62,13 +58,11 @@ internal class PaymentCartViewModel(
     sealed class ShippingResult {
         data class Success(val shipping: Shipping) : ShippingResult()
 
-        data class Error(val exception: Exception) : ShippingResult()
-
         object Cancel : ShippingResult()
     }
 
     sealed class PaymentFlowResult {
-        data class Success(val paymentIntentId: String) : PaymentFlowResult()
+        data class Success(val paymentIntentId: String, val isRedirecting: Boolean) : PaymentFlowResult()
 
         data class Error(val exception: Exception) : PaymentFlowResult()
 

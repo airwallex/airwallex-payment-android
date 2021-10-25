@@ -212,15 +212,19 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         cvc: String? = null
     ) {
         val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
-        val observer = Observer<Result<String>> { result ->
-            result.fold(
-                onSuccess = {
-                    finishWithPaymentIntent(paymentIntentId = it)
-                },
-                onFailure = {
-                    finishWithPaymentIntent(exception = it as AirwallexException)
+        val observer = Observer<AirwallexCheckoutViewModel.CheckoutResult> { result ->
+
+            when (result) {
+                is AirwallexCheckoutViewModel.CheckoutResult.Success -> {
+                    finishWithPaymentIntent(
+                        paymentIntentId = result.paymentIntentId,
+                        isRedirecting = result.isRedirecting
+                    )
                 }
-            )
+                is AirwallexCheckoutViewModel.CheckoutResult.Error -> {
+                    finishWithPaymentIntent(exception = result.exception)
+                }
+            }
         }
 
         when (paymentMethod.type) {
@@ -334,7 +338,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         paymentMethod: PaymentMethod,
         bankField: DynamicSchemaField?,
         bankName: String?,
-        observer: Observer<Result<String>>
+        observer: Observer<AirwallexCheckoutViewModel.CheckoutResult>
     ) {
         val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(info)
         paymentInfoDialog.onCompleted = { fieldMap ->
@@ -387,6 +391,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
     private fun finishWithPaymentIntent(
         paymentIntentId: String? = null,
+        isRedirecting: Boolean = false,
         exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
@@ -395,6 +400,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             Intent().putExtras(
                 PaymentMethodsActivityLaunch.Result(
                     paymentIntentId = paymentIntentId,
+                    isRedirecting = isRedirecting,
                     exception = exception
                 ).toBundle()
             )
