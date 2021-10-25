@@ -43,6 +43,13 @@
             android:title="@string/clear_customer" >
         </Preference>
 
+        <ListPreference
+            android:dialogTitle="@string/return_url"
+            android:entries="@array/array_return_url"
+            android:entryValues="@array/array_return_url"
+            android:key="@string/return_url"
+            android:title="@string/return_url" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/authorization">

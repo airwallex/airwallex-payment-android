@@ -93,6 +93,12 @@ class PaymentSettingsFragment :
             sdkEnvPref.setValueIndex(0)
         }
 
+        val returnUrlPref: ListPreference? =
+            findPreference(getString(R.string.return_url)) as? ListPreference?
+        if (returnUrlPref != null && returnUrlPref.value == null) {
+            returnUrlPref.setValueIndex(0)
+        }
+
         val checkoutModePref: ListPreference? =
             findPreference(getString(R.string.checkout_mode)) as? ListPreference?
         if (checkoutModePref != null && checkoutModePref.value == null) {
@@ -174,6 +180,7 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_id))
         onSharedPreferenceChanged(preferences, getString(R.string.sdk_env_id))
         onSharedPreferenceChanged(preferences, getString(R.string.checkout_mode))
+        onSharedPreferenceChanged(preferences, getString(R.string.return_url))
         onSharedPreferenceChanged(preferences, getString(R.string.next_trigger_by))
         onSharedPreferenceChanged(preferences, getString(R.string.requires_cvc))
         registerOnSharedPreferenceChangeListener()
@@ -223,6 +230,7 @@ class PaymentSettingsFragment :
             getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
             getString(R.string.sdk_env_id) -> preference?.summary = Settings.sdkEnv
             getString(R.string.checkout_mode) -> preference?.summary = Settings.checkoutMode
+            getString(R.string.return_url) -> preference?.summary = Settings.returnUrl
             getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy
             getString(R.string.requires_cvc) -> preference?.summary = Settings.requiresCVC
         }

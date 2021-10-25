@@ -70,6 +70,17 @@ object Settings {
                 ?: defaultCheckoutMode
         }
 
+    val returnUrl: String
+        get() {
+            val defaultReturnUrl =
+                SampleApplication.instance.resources.getStringArray(R.array.array_return_url)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.return_url),
+                defaultReturnUrl
+            )
+                ?: defaultReturnUrl
+        }
+
     val nextTriggerBy: String
         get() {
             val defaultNextTriggeredBy =

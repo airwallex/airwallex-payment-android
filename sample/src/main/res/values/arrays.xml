@@ -21,4 +21,9 @@
         <item>False</item>
         <item>True</item>
     </string-array>
+
+    <string-array name="array_return_url">
+        <item>airwallexcheckout://com.airwallex.paymentacceptance</item>
+        <item>https://demo-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y</item>
+    </string-array>
 </resources>

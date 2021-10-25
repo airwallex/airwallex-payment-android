@@ -132,17 +132,6 @@ class PaymentCartFragment : Fragment() {
             }
         }
 
-    private val returnUrl: String
-        get() {
-            return "${Airwallex.AIRWALLEX_CHECKOUT_SCHEMA}${context?.packageName}"
-//            return when (Settings.sdkEnv) {
-//                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0] -> "https://staging-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
-//                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[1] -> "https://demo-pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
-//                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[2] -> "https://pacheckoutdemo.airwallex.com/checkout-success?isTesting=Y"
-//                else -> throw Exception("Unsupported CheckoutMode: ${Settings.checkoutMode}")
-//            }
-        }
-
     private class CartItem constructor(
         order: PhysicalProduct,
         context: Context?,
@@ -267,7 +256,7 @@ class PaymentCartFragment : Fragment() {
                     "descriptor" to "Airwallex - T-sh  irt",
                     "metadata" to mapOf("id" to 1),
                     "email" to "yimadangxian@airwallex.com",
-                    "return_url" to returnUrl,
+                    "return_url" to Settings.returnUrl,
                 )
                 Settings.cachedCustomerId?.let {
                     body.put("customer_id", it)
@@ -283,7 +272,7 @@ class PaymentCartFragment : Fragment() {
             viewModel.presentPaymentFlow(
                 this@PaymentCartFragment,
                 AirwallexPaymentSession.Builder(paymentIntent, Settings.countryCode)
-                    .setReturnUrl(returnUrl)
+                    .setReturnUrl(Settings.returnUrl)
                     .build()
             ).observe(viewLifecycleOwner) {
                 when (it) {
@@ -356,7 +345,7 @@ class PaymentCartFragment : Fragment() {
                     .setShipping(shipping)
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-                    .setReturnUrl(returnUrl)
+                    .setReturnUrl(Settings.returnUrl)
                     .build()
             ).observe(viewLifecycleOwner) {
                 when (it) {
@@ -434,7 +423,7 @@ class PaymentCartFragment : Fragment() {
                     "descriptor" to "Airwallex - T-sh  irt",
                     "metadata" to mapOf("id" to 1),
                     "email" to "yimadangxian@airwallex.com",
-                    "return_url" to returnUrl,
+                    "return_url" to Settings.returnUrl,
                 )
                 api.createPaymentIntent(body)
             }
@@ -454,7 +443,7 @@ class PaymentCartFragment : Fragment() {
                 )
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-                    .setReturnUrl(returnUrl)
+                    .setReturnUrl(Settings.returnUrl)
                     .build()
             ).observe(viewLifecycleOwner) {
                 when (it) {
