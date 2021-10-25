@@ -70,14 +70,14 @@ class RedirectComponentProviderTest {
                 activity,
                 ApplicationProvider.getApplicationContext(),
                 null,
-                object : Airwallex.PaymentListener<String> {
-                    override fun onFailed(exception: AirwallexException) {
-                        success = false
+                object : Airwallex.PaymentResultListener {
+                    override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
+                        success = true
                         latch.countDown()
                     }
 
-                    override fun onSuccess(response: String) {
-                        success = true
+                    override fun onFailed(exception: AirwallexException) {
+                        success = false
                         latch.countDown()
                     }
                 }

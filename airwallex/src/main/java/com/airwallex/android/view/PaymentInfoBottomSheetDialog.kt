@@ -2,6 +2,8 @@ package com.airwallex.android.view
 
 import android.os.Bundle
 import android.text.InputType
+import android.text.method.DigitsKeyListener
+import android.util.Patterns
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout.LayoutParams
@@ -64,9 +66,15 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
                     input.tag = field.name
                     input.setHint(field.displayName)
                     when (field.uiType) {
-                        DynamicSchemaFieldUIType.TEXT -> input.setInputType(InputType.TYPE_CLASS_TEXT)
-                        DynamicSchemaFieldUIType.EMAIL -> input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-                        DynamicSchemaFieldUIType.PHONE -> input.setInputType(InputType.TYPE_CLASS_PHONE)
+                        DynamicSchemaFieldUIType.TEXT -> {
+                            input.setInputType(InputType.TYPE_CLASS_TEXT)
+                        }
+                        DynamicSchemaFieldUIType.EMAIL -> {
+                            input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+                        }
+                        DynamicSchemaFieldUIType.PHONE -> {
+                            input.setKeyListener(DigitsKeyListener.getInstance("0123456789"))
+                        }
                         else -> Unit
                     }
 
@@ -124,10 +132,13 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
 
                 if (childView is AirwallexTextInputLayout) {
                     val validations = field?.validations
-                    if (validations != null && isInvalid(childView.value, validations)) {
+                    if ((validations != null && isInvalid(childView.value, validations)) ||
+                        childView.value.isEmpty() ||
+                        (field?.uiType == DynamicSchemaFieldUIType.EMAIL && !Patterns.EMAIL_ADDRESS.matcher(childView.value).matches())
+                    ) {
                         Toast.makeText(
                             context,
-                            getString(R.string.invalid_field, field.displayName),
+                            getString(R.string.invalid_field, field?.displayName ?: ""),
                             Toast.LENGTH_SHORT
                         ).show()
                         return@setOnSingleClickListener
