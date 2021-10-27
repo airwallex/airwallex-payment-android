@@ -90,8 +90,9 @@ Airwallex Android SDK 支持Android API 19及以上版本。
                     RedirectComponent.PROVIDER
                 )
             )
-            .build()
-        )
+            .build(),
+        ExampleClientSecretProvider()
+    )
 ```
 
 #### 创建PaymentIntent
@@ -129,13 +130,9 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 使用 `presentShippingFlow` 允许用户提供送货地址以及选择送货方式. `shipping` 字段是可选的
 ```kotlin
     AirwallexStarter.presentShippingFlow(this, shipping,
-        object : Airwallex.PaymentListener<Shipping> {
+        object : Airwallex.ShippingFlowListener {
             override fun onSuccess(shipping: Shipping) {
                 Log.d(TAG, "Save the shipping success")
-            }
-
-            override fun onFailed(exception: Exception) {
-                Log.d(TAG, "Save the shipping failed")
             }
 
             override fun onCancelled() {
@@ -148,15 +145,15 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 使用 `presentPaymentFlow` 来完成整个支付流程. 需要传入一个 `AirwallexSession`对象
 ```kotlin
     AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent).build(),
-        object : Airwallex.PaymentIntentListener {
-            override fun onSuccess(paymentIntent: PaymentIntent) {
+        object : Airwallex.PaymentFlowListener {
+            override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
                 Log.d(TAG, "Confirm payment intent success")
             }
-            
-            override fun onFailed(exception: Exception) {
+
+            override fun onFailed(exception: AirwallexException) {
                 Log.d(TAG, "Confirm payment intent failed")
             }
-                
+
             override fun onCancelled() {
                 Log.d(TAG, "User cancel confirm payment intent")
             }

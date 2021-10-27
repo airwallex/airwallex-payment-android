@@ -339,41 +339,45 @@ class Airwallex internal constructor(
             }
             is AirwallexRecurringSession -> {
                 val customerId = session.customerId
-                ClientSecretRepository.getInstance().retrieveClientSecret(
-                    customerId,
-                    object : ClientSecretRepository.ClientSecretRetrieveListener {
-                        override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                            createPaymentConsent(
-                                clientSecret = clientSecret.value,
-                                customerId = customerId,
-                                paymentMethod = paymentMethod,
-                                nextTriggeredBy = session.nextTriggerBy,
-                                requiresCvc = session.requiresCVC,
-                                merchantTriggerReason = session.merchantTriggerReason,
-                                listener = object : PaymentListener<PaymentConsent> {
-                                    override fun onFailed(exception: AirwallexException) {
-                                        listener.onFailed(exception)
-                                    }
+                try {
+                    ClientSecretRepository.getInstance().retrieveClientSecret(
+                        customerId,
+                        object : ClientSecretRepository.ClientSecretRetrieveListener {
+                            override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
+                                createPaymentConsent(
+                                    clientSecret = clientSecret.value,
+                                    customerId = customerId,
+                                    paymentMethod = paymentMethod,
+                                    nextTriggeredBy = session.nextTriggerBy,
+                                    requiresCvc = session.requiresCVC,
+                                    merchantTriggerReason = session.merchantTriggerReason,
+                                    listener = object : PaymentListener<PaymentConsent> {
+                                        override fun onFailed(exception: AirwallexException) {
+                                            listener.onFailed(exception)
+                                        }
 
-                                    override fun onSuccess(response: PaymentConsent) {
-                                        verifyPaymentConsent(
-                                            paymentConsent = response,
-                                            currency = session.currency,
-                                            amount = session.amount,
-                                            cvc = cvc,
-                                            returnUrl = session.returnUrl,
-                                            listener = listener
-                                        )
+                                        override fun onSuccess(response: PaymentConsent) {
+                                            verifyPaymentConsent(
+                                                paymentConsent = response,
+                                                currency = session.currency,
+                                                amount = session.amount,
+                                                cvc = cvc,
+                                                returnUrl = session.returnUrl,
+                                                listener = listener
+                                            )
+                                        }
                                     }
-                                }
-                            )
-                        }
+                                )
+                            }
 
-                        override fun onClientSecretError(errorMessage: String) {
-                            listener.onFailed(AirwallexCheckoutException(message = errorMessage))
+                            override fun onClientSecretError(errorMessage: String) {
+                                listener.onFailed(AirwallexCheckoutException(message = errorMessage))
+                            }
                         }
-                    }
-                )
+                    )
+                } catch (e: AirwallexCheckoutException) {
+                    listener.onFailed(e)
+                }
             }
             is AirwallexRecurringWithIntentSession -> {
                 val paymentIntent = session.paymentIntent

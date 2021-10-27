@@ -14,20 +14,20 @@ import com.airwallex.android.view.PaymentShippingActivityLaunch
  */
 class AirwallexStarter {
 
-    interface ShippingFlowListener<T> {
-        fun onSuccess(response: T)
+    interface ShippingFlowListener {
+        fun onSuccess(shipping: Shipping)
         fun onCancelled()
     }
 
-    interface PaymentFlowListener<T> {
-        fun onSuccess(response: T, isRedirecting: Boolean)
+    interface PaymentFlowListener {
+        fun onSuccess(paymentIntentId: String, isRedirecting: Boolean)
         fun onFailed(exception: AirwallexException)
         fun onCancelled()
     }
 
     companion object {
-        private var shippingFlowListener: ShippingFlowListener<Shipping>? = null
-        private var paymentFlowListener: PaymentFlowListener<String>? = null
+        private var shippingFlowListener: ShippingFlowListener? = null
+        private var paymentFlowListener: PaymentFlowListener? = null
 
         private val VALID_REQUEST_CODES = setOf(
             PaymentMethodsActivityLaunch.REQUEST_CODE,
@@ -44,7 +44,7 @@ class AirwallexStarter {
         fun presentShippingFlow(
             fragment: Fragment,
             shipping: Shipping?,
-            shippingFlowListener: ShippingFlowListener<Shipping>
+            shippingFlowListener: ShippingFlowListener
         ) {
             presentShippingFlow(
                 PaymentShippingActivityLaunch(fragment),
@@ -63,7 +63,7 @@ class AirwallexStarter {
         fun presentShippingFlow(
             activity: Activity,
             shipping: Shipping?,
-            shippingFlowListener: ShippingFlowListener<Shipping>
+            shippingFlowListener: ShippingFlowListener
         ) {
             presentShippingFlow(
                 PaymentShippingActivityLaunch(activity),
@@ -75,7 +75,7 @@ class AirwallexStarter {
         private fun presentShippingFlow(
             launch: PaymentShippingActivityLaunch,
             shipping: Shipping?,
-            shippingFlowListener: ShippingFlowListener<Shipping>
+            shippingFlowListener: ShippingFlowListener
         ) {
             this.shippingFlowListener = shippingFlowListener
             launch.startForResult(
@@ -95,7 +95,7 @@ class AirwallexStarter {
         fun presentPaymentFlow(
             fragment: Fragment,
             session: AirwallexSession,
-            paymentFlowListener: PaymentFlowListener<String>
+            paymentFlowListener: PaymentFlowListener
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(fragment),
@@ -114,7 +114,7 @@ class AirwallexStarter {
         fun presentPaymentFlow(
             activity: Activity,
             session: AirwallexSession,
-            paymentFlowListener: PaymentFlowListener<String>
+            paymentFlowListener: PaymentFlowListener
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(activity),
@@ -126,7 +126,7 @@ class AirwallexStarter {
         private fun presentPaymentFlow(
             launch: PaymentMethodsActivityLaunch,
             session: AirwallexSession,
-            paymentFlowListener: PaymentFlowListener<String>
+            paymentFlowListener: PaymentFlowListener
         ) {
             this.paymentFlowListener = paymentFlowListener
             launch.startForResult(
@@ -174,7 +174,10 @@ class AirwallexStarter {
                                     paymentFlowListener?.onFailed(result.exception)
                                 }
                                 result.paymentIntentId != null -> {
-                                    paymentFlowListener?.onSuccess(result.paymentIntentId, result.isRedirecting)
+                                    paymentFlowListener?.onSuccess(
+                                        result.paymentIntentId,
+                                        result.isRedirecting
+                                    )
                                 }
                             }
                             paymentFlowListener = null

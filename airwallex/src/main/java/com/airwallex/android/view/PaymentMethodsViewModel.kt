@@ -41,22 +41,26 @@ internal class PaymentMethodsViewModel(
                 )
             }
             is AirwallexRecurringSession -> {
-                ClientSecretRepository.getInstance().retrieveClientSecret(
-                    requireNotNull(session.customerId),
-                    object : ClientSecretRepository.ClientSecretRetrieveListener {
-                        override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                            retrieveAvailablePaymentMethods(
-                                resultData = resultData,
-                                clientSecret = clientSecret.value
-                            )
-                        }
+                try {
+                    ClientSecretRepository.getInstance().retrieveClientSecret(
+                        requireNotNull(session.customerId),
+                        object : ClientSecretRepository.ClientSecretRetrieveListener {
+                            override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
+                                retrieveAvailablePaymentMethods(
+                                    resultData = resultData,
+                                    clientSecret = clientSecret.value
+                                )
+                            }
 
-                        override fun onClientSecretError(errorMessage: String) {
-                            resultData.value =
-                                Result.failure(AirwallexCheckoutException(message = errorMessage))
+                            override fun onClientSecretError(errorMessage: String) {
+                                resultData.value =
+                                    Result.failure(AirwallexCheckoutException(message = errorMessage))
+                            }
                         }
-                    }
-                )
+                    )
+                } catch (e: AirwallexCheckoutException) {
+                    resultData.value = Result.failure(e)
+                }
             }
         }
         return resultData
@@ -122,34 +126,38 @@ internal class PaymentMethodsViewModel(
 
     fun deletePaymentConsent(paymentConsent: PaymentConsent): LiveData<Result<PaymentConsent>> {
         val resultData = MutableLiveData<Result<PaymentConsent>>()
-        ClientSecretRepository.getInstance().retrieveClientSecret(
-            requireNotNull(session.customerId),
-            object : ClientSecretRepository.ClientSecretRetrieveListener {
-                override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                    airwallex.disablePaymentConsent(
-                        DisablePaymentConsentParams(
-                            clientSecret = clientSecret.value,
-                            paymentConsentId = requireNotNull(paymentConsent.id),
-                        ),
-                        object : Airwallex.PaymentListener<PaymentConsent> {
+        try {
+            ClientSecretRepository.getInstance().retrieveClientSecret(
+                requireNotNull(session.customerId),
+                object : ClientSecretRepository.ClientSecretRetrieveListener {
+                    override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
+                        airwallex.disablePaymentConsent(
+                            DisablePaymentConsentParams(
+                                clientSecret = clientSecret.value,
+                                paymentConsentId = requireNotNull(paymentConsent.id),
+                            ),
+                            object : Airwallex.PaymentListener<PaymentConsent> {
 
-                            override fun onFailed(exception: AirwallexException) {
-                                resultData.value = Result.failure(exception)
+                                override fun onFailed(exception: AirwallexException) {
+                                    resultData.value = Result.failure(exception)
+                                }
+
+                                override fun onSuccess(response: PaymentConsent) {
+                                    resultData.value = Result.success(response)
+                                }
                             }
+                        )
+                    }
 
-                            override fun onSuccess(response: PaymentConsent) {
-                                resultData.value = Result.success(response)
-                            }
-                        }
-                    )
+                    override fun onClientSecretError(errorMessage: String) {
+                        resultData.value =
+                            Result.failure(AirwallexCheckoutException(message = errorMessage))
+                    }
                 }
-
-                override fun onClientSecretError(errorMessage: String) {
-                    resultData.value =
-                        Result.failure(AirwallexCheckoutException(message = errorMessage))
-                }
-            }
-        )
+            )
+        } catch (e: AirwallexCheckoutException) {
+            resultData.value = Result.failure(e)
+        }
         return resultData
     }
 
