@@ -17,6 +17,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.R
+import com.airwallex.android.core.log.Logger
 
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
@@ -250,84 +251,87 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 }
             }
             else -> {
-                // No schema fields, start checkout directly
-                if (paymentMethodType?.resources?.hasSchema == false) {
+                if (paymentMethodType?.resources?.hasSchema == true && session is AirwallexPaymentSession) {
+                    // Have required schema fields
+                    // 1. Retrieve all required schema fields of the payment method
+                    // 2. If the bank is needed, need to retrieve the bank list.
+                    // 3. If the bank is not needed, then show the schema fields dialog.
+                    Logger.debug(TAG, "Get more payment Info fields on one-off flow.")
+                    paymentMethod.type?.let { type ->
+                        retrievePaymentMethodTypeInfo(type) { result ->
+                            result.fold(
+                                onSuccess = { info ->
+                                    val fields = info
+                                        .fieldSchemas
+                                        ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
+                                        ?.fields
+                                        ?.filter { !it.hidden }
+                                    if (fields == null || fields.isEmpty()) {
+                                        // If all fields are hidden, start checkout directly
+                                        startCheckout(
+                                            paymentMethod = paymentMethod,
+                                            paymentConsentId = paymentConsent.id,
+                                            observer = observer
+                                        )
+                                        return@fold
+                                    }
+
+                                    val bankField =
+                                        fields.find { field -> field.type == DynamicSchemaFieldType.BANKS }
+                                    if (bankField != null) {
+                                        retrieveBanks(type) { result ->
+                                            result.fold(
+                                                onSuccess = {
+                                                    setLoadingProgress(loading = false)
+                                                    val bankDialog =
+                                                        PaymentBankBottomSheetDialog.newInstance(
+                                                            getString(R.string.airwallex_select_your_bank),
+                                                            it.items ?: mutableListOf()
+                                                        )
+                                                    bankDialog.onCompleted = { bank ->
+                                                        showSchemaFieldsDialog(
+                                                            info,
+                                                            paymentMethod,
+                                                            bankField,
+                                                            bank.name,
+                                                            observer
+                                                        )
+                                                    }
+                                                    bankDialog.show(
+                                                        supportFragmentManager,
+                                                        info.name
+                                                    )
+                                                },
+                                                onFailure = {
+                                                    setLoadingProgress(loading = false)
+                                                    alert(message = it.message ?: it.toString())
+                                                }
+                                            )
+                                        }
+                                    } else {
+                                        setLoadingProgress(loading = false)
+                                        showSchemaFieldsDialog(
+                                            info,
+                                            paymentMethod,
+                                            null,
+                                            null,
+                                            observer
+                                        )
+                                    }
+                                },
+                                onFailure = {
+                                    setLoadingProgress(loading = false)
+                                    alert(message = it.message ?: it.toString())
+                                }
+                            )
+                        }
+                    }
+                } else {
                     startCheckout(
                         paymentMethod = paymentMethod,
                         paymentConsentId = paymentConsent.id,
                         observer = observer
                     )
-                    return
-                }
-                // Have required schema fields
-                // 1. Retrieve all required schema fields of the payment method
-                // 2. If the bank is needed, need to retrieve the bank list.
-                // 3. If the bank is not needed, then show the schema fields dialog.
-                paymentMethod.type?.let { type ->
-                    retrievePaymentMethodTypeInfo(type) { result ->
-                        result.fold(
-                            onSuccess = { info ->
-                                val fields = info
-                                    .fieldSchemas
-                                    ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
-                                    ?.fields
-                                    ?.filter { !it.hidden }
-                                if (fields == null || fields.isEmpty()) {
-                                    // If all fields are hidden, start checkout directly
-                                    startCheckout(
-                                        paymentMethod = paymentMethod,
-                                        paymentConsentId = paymentConsent.id,
-                                        observer = observer
-                                    )
-                                    return@fold
-                                }
-
-                                val bankField =
-                                    fields.find { field -> field.type == DynamicSchemaFieldType.BANKS }
-                                if (bankField != null) {
-                                    retrieveBanks(type) { result ->
-                                        result.fold(
-                                            onSuccess = {
-                                                setLoadingProgress(loading = false)
-                                                val bankDialog =
-                                                    PaymentBankBottomSheetDialog.newInstance(
-                                                        getString(R.string.airwallex_select_your_bank),
-                                                        it.items ?: mutableListOf()
-                                                    )
-                                                bankDialog.onCompleted = { bank ->
-                                                    showSchemaFieldsDialog(
-                                                        info,
-                                                        paymentMethod,
-                                                        bankField,
-                                                        bank.name,
-                                                        observer
-                                                    )
-                                                }
-                                                bankDialog.show(supportFragmentManager, info.name)
-                                            },
-                                            onFailure = {
-                                                setLoadingProgress(loading = false)
-                                                alert(message = it.message ?: it.toString())
-                                            }
-                                        )
-                                    }
-                                } else {
-                                    setLoadingProgress(loading = false)
-                                    showSchemaFieldsDialog(
-                                        info,
-                                        paymentMethod,
-                                        null,
-                                        null,
-                                        observer
-                                    )
-                                }
-                            },
-                            onFailure = {
-                                setLoadingProgress(loading = false)
-                                alert(message = it.message ?: it.toString())
-                            }
-                        )
-                    }
                 }
             }
         }
@@ -345,6 +349,9 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             setLoadingProgress(loading = true)
             if (bankField != null && bankName != null) {
                 fieldMap[bankField.name] = bankName
+            }
+            if (session is AirwallexPaymentSession) {
+                fieldMap["country_code"] = (session as AirwallexPaymentSession).countryCode
             }
             startCheckout(
                 paymentMethod = paymentMethod,
@@ -406,5 +413,9 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
             )
         )
         finish()
+    }
+
+    companion object {
+        private const val TAG = "PaymentMethodsActivity"
     }
 }

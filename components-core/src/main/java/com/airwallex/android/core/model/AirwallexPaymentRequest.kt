@@ -9,13 +9,11 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class AirwallexPaymentRequest constructor(
     val additionalInfo: Map<String, String>? = null,
-    val countryCode: String? = null,
     val flow: AirwallexPaymentRequestFlow? = null,
     val osType: String? = null
 ) : AirwallexModel, AirwallexRequestModel, Parcelable {
 
     private companion object {
-        private const val FIELD_COUNTRY_CODE = "country_code"
         private const val FIELD_FLOW = "flow"
         private const val FIELD_OS_TYPE = "os_type"
     }
@@ -26,11 +24,6 @@ data class AirwallexPaymentRequest constructor(
             map[it.key] = it.value
         }
         return map
-            .plus(
-                countryCode?.let {
-                    mapOf(FIELD_COUNTRY_CODE to countryCode)
-                }.orEmpty()
-            )
             .plus(
                 mapOf(FIELD_FLOW to AirwallexPaymentRequestFlow.IN_APP.value)
             )

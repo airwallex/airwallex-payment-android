@@ -330,7 +330,6 @@ class Airwallex internal constructor(
                     paymentMethod = paymentMethod,
                     cvc = cvc,
                     currency = session.currency,
-                    countryCode = session.countryCode,
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
                     additionalInfo = additionalInfo,
@@ -427,7 +426,6 @@ class Airwallex internal constructor(
         paymentMethod: PaymentMethod,
         cvc: String? = null,
         currency: String? = null,
-        countryCode: String? = null,
         customerId: String? = null,
         paymentConsentId: String? = null,
         additionalInfo: Map<String, String>? = null,
@@ -454,7 +452,6 @@ class Airwallex internal constructor(
                     customerId = customerId,
                     paymentConsentId = paymentConsentId,
                     currency = currency,
-                    countryCode = countryCode,
                     additionalInfo = additionalInfo,
                     returnUrl = returnUrl
                 )
@@ -624,8 +621,7 @@ class Airwallex internal constructor(
             val additionalInfo = params.additionalInfo
             if (additionalInfo != null) {
                 builder.setThirdPartyPaymentMethodRequest(
-                    additionalInfo = additionalInfo,
-                    params.countryCode,
+                    additionalInfo = additionalInfo
                 )
             } else {
                 builder.setThirdPartyPaymentMethodRequest()

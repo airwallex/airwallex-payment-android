@@ -71,13 +71,11 @@ class PaymentMethodRequest(
         private var billing: Billing? = null
 
         fun setThirdPartyPaymentMethodRequest(
-            additionalInfo: Map<String, String>? = null,
-            countryCode: String? = null,
+            additionalInfo: Map<String, String>? = null
         ): Builder = apply {
             if (type != PaymentMethodType.CARD.value) {
                 redirectRequest = AirwallexPaymentRequest(
-                    additionalInfo,
-                    countryCode = countryCode
+                    additionalInfo
                 )
             }
         }
