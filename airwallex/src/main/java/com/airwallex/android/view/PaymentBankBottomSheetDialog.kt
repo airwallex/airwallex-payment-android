@@ -13,7 +13,7 @@ import com.airwallex.android.databinding.DialogBankBinding
 import com.airwallex.android.databinding.DialogBankItemBinding
 import com.bumptech.glide.Glide
 
-class PaymentBankBottomSheetDialog : BottomSheetDialog() {
+class PaymentBankBottomSheetDialog : BottomSheetDialog<DialogBankBinding>() {
 
     var onCompleted: ((bank: Bank) -> Unit)? = null
 
@@ -34,23 +34,11 @@ class PaymentBankBottomSheetDialog : BottomSheetDialog() {
         }
     }
 
-    private val viewBinding: DialogBankBinding by lazy {
-        DialogBankBinding.inflate(layoutInflater)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return viewBinding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewBinding.title.text = arguments?.getString(TITLE)
-        viewBinding.recyclerView.apply {
+        binding.title.text = arguments?.getString(TITLE)
+        binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = BottomDialogAdapter(
                 arguments?.getParcelableArrayList(BANKS) ?: mutableListOf()
@@ -98,5 +86,9 @@ class PaymentBankBottomSheetDialog : BottomSheetDialog() {
                 dismiss()
             }
         }
+    }
+
+    override fun bindFragment(inflater: LayoutInflater, container: ViewGroup): DialogBankBinding {
+        return DialogBankBinding.inflate(inflater, container, true)
     }
 }

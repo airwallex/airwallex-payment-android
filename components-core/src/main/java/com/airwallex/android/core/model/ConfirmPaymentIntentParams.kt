@@ -49,7 +49,12 @@ data class ConfirmPaymentIntentParams internal constructor(
     /**
      * The URL to redirect your customer back to after they authenticate their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
      */
-    val returnUrl: String? = null
+    val returnUrl: String? = null,
+
+    /**
+     * Payment Request Flow
+     */
+    val flow: AirwallexPaymentRequestFlow? = null
 
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
 
@@ -67,6 +72,7 @@ data class ConfirmPaymentIntentParams internal constructor(
         private var countryCode: String? = null
         private var additionalInfo: Map<String, String>? = null
         private var returnUrl: String? = null
+        private var flow: AirwallexPaymentRequestFlow? = null
 
         fun setCVC(cvc: String?): Builder = apply {
             this.cvc = cvc
@@ -100,6 +106,10 @@ data class ConfirmPaymentIntentParams internal constructor(
             this.returnUrl = returnUrl
         }
 
+        fun setFlow(flow: AirwallexPaymentRequestFlow?): Builder = apply {
+            this.flow = flow
+        }
+
         override fun build(): ConfirmPaymentIntentParams {
             return ConfirmPaymentIntentParams(
                 paymentIntentId = paymentIntentId,
@@ -112,7 +122,8 @@ data class ConfirmPaymentIntentParams internal constructor(
                 currency = currency,
                 countryCode = countryCode,
                 additionalInfo = additionalInfo,
-                returnUrl = returnUrl
+                returnUrl = returnUrl,
+                flow = flow
             )
         }
     }
@@ -130,6 +141,7 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param currency amount currency
          * @param additionalInfo to support ppro payment
          * @param returnUrl optional
+         * @param flow optional
          */
         fun createThirdPartPayParams(
             paymentMethodType: String,
@@ -140,7 +152,8 @@ data class ConfirmPaymentIntentParams internal constructor(
             currency: String? = null,
             countryCode: String? = null,
             additionalInfo: Map<String, String>? = null,
-            returnUrl: String? = null
+            returnUrl: String? = null,
+            flow: AirwallexPaymentRequestFlow? = null
         ): ConfirmPaymentIntentParams {
             return Builder(
                 paymentIntentId = paymentIntentId,
@@ -153,6 +166,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setCountryCode(countryCode)
                 .setAdditionalInfo(additionalInfo)
                 .setReturnUrl(returnUrl)
+                .setFlow(flow)
                 .build()
         }
 

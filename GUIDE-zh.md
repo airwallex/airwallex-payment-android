@@ -91,7 +91,7 @@ Airwallex Android SDK 支持Android API 19及以上版本。
                 )
             )
             .build(),
-        ExampleClientSecretProvider()
+        ExampleClientSecretProvider()           // If you need to support recurring, you must to support your custom ClientSecretProvider
     )
 ```
 
@@ -142,7 +142,17 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ```
 
 ### Use the entire Native UI in one flow
-使用 `presentPaymentFlow` 来完成整个支付流程. 需要传入一个 `AirwallexSession`对象
+- 对于需要重定向的支付方式，你需要在`AndroidManifest.xml`配置scheme url
+```
+    <intent-filter>
+        ...
+        <data
+            android:host="${applicationId}"
+            android:scheme="airwallexcheckout" />
+    </intent-filter>
+```
+
+- 使用 `presentPaymentFlow` 来完成整个支付流程. 需要传入一个 `AirwallexSession`对象
 ```kotlin
     AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent).build(),
         object : Airwallex.PaymentFlowListener {

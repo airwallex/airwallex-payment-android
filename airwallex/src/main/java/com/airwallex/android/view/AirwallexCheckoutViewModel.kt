@@ -17,7 +17,8 @@ class AirwallexCheckoutViewModel(
         paymentMethod: PaymentMethod,
         paymentConsentId: String?,
         cvc: String?,
-        additionalInfo: Map<String, String>? = null
+        additionalInfo: Map<String, String>? = null,
+        flow: AirwallexPaymentRequestFlow? = null,
     ): LiveData<CheckoutResult> {
         val resultData = MutableLiveData<CheckoutResult>()
         airwallex.checkout(
@@ -26,6 +27,7 @@ class AirwallexCheckoutViewModel(
             paymentConsentId,
             cvc,
             additionalInfo,
+            flow,
             object : Airwallex.PaymentResultListener {
                 override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
                     resultData.value = CheckoutResult.Success(paymentIntentId, isRedirecting)

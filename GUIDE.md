@@ -91,7 +91,7 @@ We provide some parameters that can be used to debug the SDK, you can call it in
                 )
             )
             .build(),
-        ExampleClientSecretProvider()
+        ExampleClientSecretProvider()           // If you need to support recurring, you must to support your custom ClientSecretProvider
     )
 ```
 
@@ -144,7 +144,18 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
 ```
 
 ### Use the entire Native UI in one flow
-Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `AirwallexSession` object
+
+- For the redirect payment method. You need to configure scheme url on `AndroidManifest.xml`
+```
+    <intent-filter>
+        ...
+        <data
+            android:host="${applicationId}"
+            android:scheme="airwallexcheckout" />
+    </intent-filter>
+```
+
+- Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `AirwallexSession` object
 ```kotlin
     AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent, countryCode).build(),
         object : Airwallex.PaymentFlowListener {

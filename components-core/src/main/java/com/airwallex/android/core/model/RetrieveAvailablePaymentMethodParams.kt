@@ -25,6 +25,10 @@ data class RetrieveAvailablePaymentMethodParams internal constructor(
      * The supported transaction mode. One of oneoff, recurring.
      */
     val transactionMode: TransactionMode?,
+    /**
+     * The supported country code
+     */
+    val countryCode: String?
 ) {
 
     class Builder(
@@ -36,6 +40,7 @@ data class RetrieveAvailablePaymentMethodParams internal constructor(
         private var active: Boolean? = null
         private var transactionCurrency: String? = null
         private var transactionMode: TransactionMode? = null
+        private var countryCode: String? = null
 
         fun setPageSize(pageSize: Int): Builder = apply {
             this.pageSize = pageSize
@@ -53,6 +58,10 @@ data class RetrieveAvailablePaymentMethodParams internal constructor(
             this.transactionMode = transactionMode
         }
 
+        fun setCountryCode(countryCode: String?): Builder = apply {
+            this.countryCode = countryCode
+        }
+
         override fun build(): RetrieveAvailablePaymentMethodParams {
             return RetrieveAvailablePaymentMethodParams(
                 clientSecret = clientSecret,
@@ -60,7 +69,8 @@ data class RetrieveAvailablePaymentMethodParams internal constructor(
                 pageSize = pageSize,
                 active = active,
                 transactionCurrency = transactionCurrency,
-                transactionMode = transactionMode
+                transactionMode = transactionMode,
+                countryCode = countryCode
             )
         }
     }

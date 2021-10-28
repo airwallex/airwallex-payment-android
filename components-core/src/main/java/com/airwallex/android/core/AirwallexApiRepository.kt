@@ -108,6 +108,10 @@ class AirwallexApiRepository : ApiRepository {
          * The supported transaction mode. One of oneoff, recurring.
          */
         internal val transactionMode: TransactionMode?,
+        /**
+         * The supported country code
+         */
+        internal val countryCode: String?
     ) : Options(clientSecret = clientSecret)
 
     @Parcelize
@@ -346,6 +350,7 @@ class AirwallexApiRepository : ApiRepository {
                     options.active,
                     options.transactionCurrency,
                     options.transactionMode,
+                    options.countryCode
                 ),
                 options = options,
                 params = null
@@ -566,7 +571,8 @@ class AirwallexApiRepository : ApiRepository {
             pageSize: Int?,
             active: Boolean?,
             transactionCurrency: String?,
-            transactionMode: TransactionMode?
+            transactionMode: TransactionMode?,
+            countryCode: String?
         ): String {
             val url = getApiUrl(
                 baseUrl,
@@ -591,6 +597,9 @@ class AirwallexApiRepository : ApiRepository {
             }
             transactionMode?.let {
                 builder.appendQueryParameter("transaction_mode", it.value)
+            }
+            countryCode?.let {
+                builder.appendQueryParameter("country_code", it)
             }
             return builder.build().toString()
         }

@@ -10,11 +10,6 @@ static def getDateTime() {
     return df.format(new Date())
 }
 
-
-def getBaseUrl() {
-    return readProperty('AIRWALLEX_BASE_URL')
-}
-
 def getApiKey() {
     return readProperty('AIRWALLEX_API_KEY')
 }
@@ -25,6 +20,10 @@ def getClientId() {
 
 def getWeChatAppId() {
     return readProperty('AIRWALLEX_WECHAT_APP_ID')
+}
+
+def getReturnUrl() {
+    return readProperty('AIRWALLEX_RETURN_URL')
 }
 
 private def readProperty(name) {
@@ -59,10 +58,10 @@ android {
         testInstrumentationRunnerArguments clearPackageData: 'true'
 
         manifestPlaceholders = [
-                AIRWALLEX_BASE_URL            : getBaseUrl(),
                 AIRWALLEX_API_KEY             : getApiKey(),
                 AIRWALLEX_CLIENT_ID           : getClientId(),
-                AIRWALLEX_WECHAT_APP_ID       : getWeChatAppId()
+                AIRWALLEX_WECHAT_APP_ID       : getWeChatAppId(),
+                AIRWALLEX_RETURN_URL          : getReturnUrl()
         ]
     }
 

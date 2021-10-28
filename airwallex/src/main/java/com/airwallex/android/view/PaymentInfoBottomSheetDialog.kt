@@ -12,8 +12,9 @@ import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.databinding.DialogPaymentInfoBinding
 import com.airwallex.android.R
 import com.airwallex.android.core.model.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
-class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
+class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>() {
 
     var onCompleted: ((fieldMap: MutableMap<String, String>) -> Unit)? = null
 
@@ -31,18 +32,6 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
         }
     }
 
-    private val viewBinding: DialogPaymentInfoBinding by lazy {
-        DialogPaymentInfoBinding.inflate(layoutInflater)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return viewBinding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -57,7 +46,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             }
             ?: return
 
-        viewBinding.title.text = paymentMethodTypeInfo.displayName
+        binding.title.text = paymentMethodTypeInfo.displayName
 
         fields.forEach { field ->
             when (field.type) {
@@ -78,7 +67,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
                         else -> Unit
                     }
 
-                    viewBinding.content.addView(
+                    binding.content.addView(
                         input,
                         LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
                             topMargin =
@@ -95,7 +84,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
                     dynamicFieldView.tag = field.name
                     dynamicFieldView.setHint(field.displayName)
 
-                    viewBinding.content.addView(
+                    binding.content.addView(
                         dynamicFieldView,
                         LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
                             topMargin =
@@ -107,9 +96,9 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             }
         }
 
-        for (i in 0 until viewBinding.content.childCount) {
-            val childView = viewBinding.content.getChildAt(i)
-            if (i == viewBinding.content.childCount - 1) {
+        for (i in 0 until binding.content.childCount) {
+            val childView = binding.content.getChildAt(i)
+            if (i == binding.content.childCount - 1) {
                 if (childView is AirwallexTextInputLayout) {
                     childView.setImeOptions(EditorInfo.IME_ACTION_DONE)
                 } else if (childView is DynamicFieldCompleteView) {
@@ -124,10 +113,10 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
             }
         }
 
-        viewBinding.checkout.setOnSingleClickListener {
+        binding.checkout.setOnSingleClickListener {
             val fieldMap = mutableMapOf<String, String>()
-            for (i in 0 until viewBinding.content.childCount) {
-                val childView = viewBinding.content.getChildAt(i)
+            for (i in 0 until binding.content.childCount) {
+                val childView = binding.content.getChildAt(i)
                 val field = fields.find { it.name == childView.tag }
 
                 if (childView is AirwallexTextInputLayout) {
@@ -174,5 +163,18 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
 
         return regex != null && !Regex(regex).matches(text) ||
             max != null && text.length > max
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val behavior = BottomSheetBehavior.from(requireView().parent as View)
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+    override fun bindFragment(
+        inflater: LayoutInflater,
+        container: ViewGroup
+    ): DialogPaymentInfoBinding {
+        return DialogPaymentInfoBinding.inflate(inflater, container, true)
     }
 }

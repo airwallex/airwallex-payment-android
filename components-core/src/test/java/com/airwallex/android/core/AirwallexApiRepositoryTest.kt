@@ -18,7 +18,8 @@ class AirwallexApiRepositoryTest {
             pageSize = 20,
             active = true,
             transactionCurrency = null,
-            transactionMode = null
+            transactionMode = null,
+            countryCode = null
         )
 
         assertEquals(
@@ -277,6 +278,7 @@ class AirwallexApiRepositoryTest {
                 20,
                 true,
                 "CNY",
+                null,
                 null
             )
         assertEquals(

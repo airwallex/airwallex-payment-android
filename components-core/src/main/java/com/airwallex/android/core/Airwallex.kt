@@ -143,7 +143,8 @@ class Airwallex internal constructor(
                 pageSize = params.pageSize,
                 active = params.active,
                 transactionCurrency = params.transactionCurrency,
-                transactionMode = params.transactionMode
+                transactionMode = params.transactionMode,
+                countryCode = params.countryCode
             ),
             listener
         )
@@ -299,7 +300,7 @@ class Airwallex internal constructor(
         paymentMethod: PaymentMethod,
         listener: PaymentResultListener
     ) {
-        this.checkout(session, paymentMethod, null, null, null, listener)
+        this.checkout(session, paymentMethod, null, null, null, null, listener)
     }
 
     /**
@@ -319,6 +320,7 @@ class Airwallex internal constructor(
         paymentConsentId: String? = null,
         cvc: String? = null,
         additionalInfo: Map<String, String>? = null,
+        flow: AirwallexPaymentRequestFlow? = null,
         listener: PaymentResultListener
     ) {
         when (session) {
@@ -334,6 +336,7 @@ class Airwallex internal constructor(
                     paymentConsentId = paymentConsentId,
                     additionalInfo = additionalInfo,
                     returnUrl = session.returnUrl,
+                    flow = flow,
                     listener = listener
                 )
             }
@@ -434,6 +437,7 @@ class Airwallex internal constructor(
         paymentConsentId: String? = null,
         additionalInfo: Map<String, String>? = null,
         returnUrl: String? = null,
+        flow: AirwallexPaymentRequestFlow? = null,
         listener: PaymentResultListener
     ) {
         val params = when (val paymentMethodType = requireNotNull(paymentMethod.type)) {
@@ -457,7 +461,8 @@ class Airwallex internal constructor(
                     paymentConsentId = paymentConsentId,
                     currency = currency,
                     additionalInfo = additionalInfo,
-                    returnUrl = returnUrl
+                    returnUrl = returnUrl,
+                    flow = flow
                 )
             }
         }
@@ -625,10 +630,13 @@ class Airwallex internal constructor(
             val additionalInfo = params.additionalInfo
             if (additionalInfo != null) {
                 builder.setThirdPartyPaymentMethodRequest(
-                    additionalInfo = additionalInfo
+                    additionalInfo = additionalInfo,
+                    flow = params.flow
                 )
             } else {
-                builder.setThirdPartyPaymentMethodRequest()
+                builder.setThirdPartyPaymentMethodRequest(
+                    flow = params.flow
+                )
             }
             paymentMethodRequest = builder.build()
         }

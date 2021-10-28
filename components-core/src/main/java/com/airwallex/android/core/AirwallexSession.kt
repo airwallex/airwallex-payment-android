@@ -22,6 +22,11 @@ abstract class AirwallexSession : Parcelable {
     abstract val currency: String
 
     /**
+     * Country code
+     */
+    abstract val countryCode: String
+
+    /**
      * Payment amount. This is the order amount you would like to charge your customer
      */
     abstract val amount: BigDecimal

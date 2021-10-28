@@ -25,7 +25,7 @@ data class AirwallexPaymentRequest constructor(
         }
         return map
             .plus(
-                mapOf(FIELD_FLOW to AirwallexPaymentRequestFlow.IN_APP.value)
+                mapOf(FIELD_FLOW to (flow ?: AirwallexPaymentRequestFlow.IN_APP).value)
             )
             .plus(
                 mapOf(FIELD_OS_TYPE to "android")

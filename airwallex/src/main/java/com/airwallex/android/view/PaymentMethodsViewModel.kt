@@ -31,6 +31,36 @@ internal class PaymentMethodsViewModel(
         }
     }
 
+    fun filterRequiredFields(info: PaymentMethodTypeInfo): List<DynamicSchemaField>? {
+        return info
+            .fieldSchemas
+            ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
+            ?.fields
+            ?.filter { !it.hidden }
+    }
+
+    fun fetchPaymentFlow(info: PaymentMethodTypeInfo): AirwallexPaymentRequestFlow {
+        val flowField = info
+            .fieldSchemas
+            ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
+            ?.fields
+            ?.firstOrNull { it.name == FLOW }
+
+        val candidates = flowField?.candidates
+        return when {
+            candidates?.find { it.value == AirwallexPaymentRequestFlow.IN_APP.value } != null -> {
+                AirwallexPaymentRequestFlow.IN_APP
+            }
+            candidates != null && candidates.isNotEmpty() -> {
+                AirwallexPaymentRequestFlow.fromValue(candidates[0].value)
+                    ?: AirwallexPaymentRequestFlow.IN_APP
+            }
+            else -> {
+                AirwallexPaymentRequestFlow.IN_APP
+            }
+        }
+    }
+
     fun fetchAvailablePaymentMethodTypes(): LiveData<Result<List<AvailablePaymentMethodType>>> {
         val resultData = MutableLiveData<Result<List<AvailablePaymentMethodType>>>()
         when (session) {
@@ -79,6 +109,7 @@ internal class PaymentMethodsViewModel(
             )
                 .setActive(true)
                 .setTransactionCurrency(session.currency)
+                .setCountryCode(session.countryCode)
                 .build(),
             listener = object : Airwallex.PaymentListener<AvailablePaymentMethodTypeResponse> {
                 override fun onFailed(exception: AirwallexException) {
@@ -174,5 +205,10 @@ internal class PaymentMethodsViewModel(
                 session
             ) as T
         }
+    }
+
+    companion object {
+        const val COUNTRY_CODE = "country_code"
+        const val FLOW = "flow"
     }
 }

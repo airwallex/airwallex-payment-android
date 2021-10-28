@@ -28,11 +28,12 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         paymentConsentId: String? = null,
         cvc: String? = null,
         additionalInfo: Map<String, String>? = null,
+        flow: AirwallexPaymentRequestFlow? = null,
         observer: Observer<AirwallexCheckoutViewModel.CheckoutResult>
     ) {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.checkout(
-            paymentMethod, paymentConsentId, cvc, additionalInfo
+            paymentMethod, paymentConsentId, cvc, additionalInfo, flow
         ).observe(this, observer)
     }
 

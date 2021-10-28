@@ -18,6 +18,7 @@ import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.R
 import com.airwallex.android.core.log.Logger
+import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
@@ -261,11 +262,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         retrievePaymentMethodTypeInfo(type) { result ->
                             result.fold(
                                 onSuccess = { info ->
-                                    val fields = info
-                                        .fieldSchemas
-                                        ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
-                                        ?.fields
-                                        ?.filter { !it.hidden }
+                                    val fields = viewModel.filterRequiredFields(info)
                                     if (fields == null || fields.isEmpty()) {
                                         // If all fields are hidden, start checkout directly
                                         startCheckout(
@@ -290,11 +287,11 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                                                         )
                                                     bankDialog.onCompleted = { bank ->
                                                         showSchemaFieldsDialog(
-                                                            info,
-                                                            paymentMethod,
-                                                            bankField,
-                                                            bank.name,
-                                                            observer
+                                                            info = info,
+                                                            paymentMethod = paymentMethod,
+                                                            bankField = bankField,
+                                                            bankName = bank.name,
+                                                            observer = observer
                                                         )
                                                     }
                                                     bankDialog.show(
@@ -311,11 +308,9 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                                     } else {
                                         setLoadingProgress(loading = false)
                                         showSchemaFieldsDialog(
-                                            info,
-                                            paymentMethod,
-                                            null,
-                                            null,
-                                            observer
+                                            info = info,
+                                            paymentMethod = paymentMethod,
+                                            observer = observer
                                         )
                                     }
                                 },
@@ -340,8 +335,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     private fun showSchemaFieldsDialog(
         info: PaymentMethodTypeInfo,
         paymentMethod: PaymentMethod,
-        bankField: DynamicSchemaField?,
-        bankName: String?,
+        bankField: DynamicSchemaField? = null,
+        bankName: String? = null,
         observer: Observer<AirwallexCheckoutViewModel.CheckoutResult>
     ) {
         val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(info)
@@ -351,11 +346,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                 fieldMap[bankField.name] = bankName
             }
             if (session is AirwallexPaymentSession) {
-                fieldMap["country_code"] = (session as AirwallexPaymentSession).countryCode
+                fieldMap[COUNTRY_CODE] = (session as AirwallexPaymentSession).countryCode
             }
             startCheckout(
                 paymentMethod = paymentMethod,
                 additionalInfo = fieldMap,
+                flow = viewModel.fetchPaymentFlow(info),
                 observer = observer
             )
         }

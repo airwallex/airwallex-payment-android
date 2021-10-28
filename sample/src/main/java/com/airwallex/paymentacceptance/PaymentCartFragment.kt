@@ -341,6 +341,7 @@ class PaymentCartFragment : Fragment() {
                 AirwallexRecurringSession.Builder(
                     requireNotNull(customerId, { "CustomerId is required" }),
                     Settings.currency,
+                    Settings.countryCode,
                     BigDecimal.valueOf(Settings.price.toDouble()),
                     nextTriggerBy
                 )
@@ -443,7 +444,8 @@ class PaymentCartFragment : Fragment() {
                         paymentIntent.customerId,
                         { "CustomerId is required" }
                     ),
-                    nextTriggerBy
+                    nextTriggerBy,
+                    Settings.countryCode
                 )
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)

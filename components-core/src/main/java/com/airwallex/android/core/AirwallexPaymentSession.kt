@@ -18,14 +18,14 @@ class AirwallexPaymentSession internal constructor(
     val paymentIntent: PaymentIntent,
 
     /**
-     * Country code. Required
-     */
-    val countryCode: String,
-
-    /**
      * Amount currency. required.
      */
     override val currency: String,
+
+    /**
+     * Country code
+     */
+    override val countryCode: String,
 
     /**
      * Payment amount. This is the order amount you would like to charge your customer. required.
@@ -62,8 +62,8 @@ class AirwallexPaymentSession internal constructor(
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
                 paymentIntent = paymentIntent,
-                countryCode = countryCode,
                 currency = paymentIntent.currency,
+                countryCode = countryCode,
                 amount = paymentIntent.amount,
                 shipping = paymentIntent.order?.shipping,
                 customerId = paymentIntent.customerId,

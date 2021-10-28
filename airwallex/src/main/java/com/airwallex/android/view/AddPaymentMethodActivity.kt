@@ -85,33 +85,37 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
             }
         }
 
-        if (session is AirwallexPaymentSession) {
-            startCheckout(
-                paymentMethod = PaymentMethod.Builder()
-                    .setType(PaymentMethodType.CARD.value)
-                    .setCard(card)
-                    .setBilling(viewBinding.billingWidget.billing)
-                    .build(),
-                observer = observer
-            )
-        } else {
-            viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
-                this,
-                {
-                    when (it) {
-                        is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
-                            startCheckout(
-                                paymentMethod = it.paymentMethod,
-                                cvc = it.cvc,
-                                observer = observer
-                            )
-                        }
-                        is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
-                            finishWithPaymentIntent(exception = it.exception)
+        when (session) {
+            is AirwallexPaymentSession -> {
+                startCheckout(
+                    paymentMethod = PaymentMethod.Builder()
+                        .setType(PaymentMethodType.CARD.value)
+                        .setCard(card)
+                        .setBilling(viewBinding.billingWidget.billing)
+                        .build(),
+                    observer = observer
+                )
+            }
+            is AirwallexRecurringSession,
+            is AirwallexRecurringWithIntentSession -> {
+                viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
+                    this,
+                    {
+                        when (it) {
+                            is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
+                                startCheckout(
+                                    paymentMethod = it.paymentMethod,
+                                    cvc = it.cvc,
+                                    observer = observer
+                                )
+                            }
+                            is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
+                                finishWithPaymentIntent(exception = it.exception)
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 

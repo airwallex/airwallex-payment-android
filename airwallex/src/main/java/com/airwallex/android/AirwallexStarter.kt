@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Shipping
+import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
 
@@ -15,13 +16,39 @@ import com.airwallex.android.view.PaymentShippingActivityLaunch
 class AirwallexStarter {
 
     interface ShippingFlowListener {
+        /**
+         * Shipping success
+         *
+         * @param shipping The [Shipping] object returned
+         */
         fun onSuccess(shipping: Shipping)
+
+        /**
+         * Shipping cancelled
+         *
+         */
         fun onCancelled()
     }
 
     interface PaymentFlowListener {
+        /**
+         * Payment success
+         *
+         * @param paymentIntentId the ID of [PaymentIntent]
+         * @param isRedirecting Some payment methods require redirect to third-party apps, such as Alipay
+         */
         fun onSuccess(paymentIntentId: String, isRedirecting: Boolean)
+
+        /**
+         * Payment failed
+         *
+         * @param exception
+         */
         fun onFailed(exception: AirwallexException)
+
+        /**
+         * Payment cancelled
+         */
         fun onCancelled()
     }
 
