@@ -132,6 +132,57 @@ class PaymentCartFragment : Fragment() {
             }
         }
 
+    private fun buildSession(
+        paymentIntent: PaymentIntent? = null,
+        customerId: String? = null
+    ): AirwallexSession {
+        return when (checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> {
+                AirwallexPaymentSession.Builder(
+                    paymentIntent = requireNotNull(
+                        paymentIntent,
+                        { "PaymentIntent is required" }
+                    ),
+                    countryCode = Settings.countryCode
+                )
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
+            }
+            AirwallexCheckoutMode.RECURRING -> {
+                AirwallexRecurringSession.Builder(
+                    customerId = requireNotNull(customerId, { "CustomerId is required" }),
+                    currency = Settings.currency,
+                    amount = BigDecimal.valueOf(Settings.price.toDouble()),
+                    nextTriggerBy = nextTriggerBy,
+                    countryCode = Settings.countryCode
+                )
+                    .setShipping(shipping)
+                    .setRequireCvc(requiresCVC)
+                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
+            }
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                AirwallexRecurringWithIntentSession.Builder(
+                    paymentIntent = requireNotNull(
+                        paymentIntent,
+                        { "PaymentIntent is required" }
+                    ),
+                    customerId = requireNotNull(
+                        paymentIntent.customerId,
+                        { "CustomerId is required" }
+                    ),
+                    nextTriggerBy = nextTriggerBy,
+                    countryCode = Settings.countryCode
+                )
+                    .setRequireCvc(requiresCVC)
+                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
+            }
+        }
+    }
+
     private class CartItem constructor(
         order: PhysicalProduct,
         context: Context?,
@@ -271,9 +322,7 @@ class PaymentCartFragment : Fragment() {
 
             viewModel.presentPaymentFlow(
                 this@PaymentCartFragment,
-                AirwallexPaymentSession.Builder(paymentIntent, Settings.countryCode)
-                    .setReturnUrl(Settings.returnUrl)
-                    .build()
+                buildSession(paymentIntent = paymentIntent)
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
@@ -338,18 +387,7 @@ class PaymentCartFragment : Fragment() {
 
             viewModel.presentPaymentFlow(
                 this@PaymentCartFragment,
-                AirwallexRecurringSession.Builder(
-                    requireNotNull(customerId, { "CustomerId is required" }),
-                    Settings.currency,
-                    Settings.countryCode,
-                    BigDecimal.valueOf(Settings.price.toDouble()),
-                    nextTriggerBy
-                )
-                    .setShipping(shipping)
-                    .setRequireCvc(requiresCVC)
-                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-                    .setReturnUrl(Settings.returnUrl)
-                    .build()
+                buildSession(customerId = customerId)
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {
@@ -438,19 +476,7 @@ class PaymentCartFragment : Fragment() {
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
             viewModel.presentPaymentFlow(
                 this@PaymentCartFragment,
-                AirwallexRecurringWithIntentSession.Builder(
-                    paymentIntent,
-                    requireNotNull(
-                        paymentIntent.customerId,
-                        { "CustomerId is required" }
-                    ),
-                    nextTriggerBy,
-                    Settings.countryCode
-                )
-                    .setRequireCvc(requiresCVC)
-                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-                    .setReturnUrl(Settings.returnUrl)
-                    .build()
+                buildSession(paymentIntent = paymentIntent)
             ).observe(viewLifecycleOwner) {
                 when (it) {
                     is PaymentCartViewModel.PaymentFlowResult.Success -> {

@@ -64,12 +64,12 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment:3.0.0'
+        implementation 'io.github.airwallex:payment:3.0.0-alpha01'
         
         // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:3.0.0'
-        implementation 'io.github.airwallex:payment-redirect:3.0.0'
-        implementation 'io.github.airwallex:payment-wechat:3.0.0'
+        implementation 'io.github.airwallex:payment-card:3.0.0-alpha01'
+        implementation 'io.github.airwallex:payment-redirect:3.0.0-alpha01'
+        implementation 'io.github.airwallex:payment-wechat:3.0.0-alpha01'
     }
 ```
 
@@ -118,7 +118,7 @@ Next Step:
 ## Airwallex Native UI integration
 We provide native screens to facilitate the integration of payment functions.
 
-First, add below code in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
+At first, add below code in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
 ```kotlin
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -157,7 +157,59 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
 
 - Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `AirwallexSession` object
 ```kotlin
-    AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent, countryCode).build(),
+    private fun buildSession(
+        paymentIntent: PaymentIntent? = null,
+        customerId: String? = null
+    ): AirwallexSession {
+        return when (checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> {
+                AirwallexPaymentSession.Builder(
+                    paymentIntent = requireNotNull(
+                        paymentIntent,
+                        { "PaymentIntent is required" }
+                    ),
+                    countryCode = Settings.countryCode
+                )
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
+            }
+            AirwallexCheckoutMode.RECURRING -> {
+                AirwallexRecurringSession.Builder(
+                    customerId = requireNotNull(customerId, { "CustomerId is required" }),
+                    currency = Settings.currency,
+                    amount = BigDecimal.valueOf(Settings.price.toDouble()),
+                    nextTriggerBy = nextTriggerBy,
+                    countryCode = Settings.countryCode
+                )
+                    .setShipping(shipping)
+                    .setRequireCvc(requiresCVC)
+                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
+            }
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                AirwallexRecurringWithIntentSession.Builder(
+                    paymentIntent = requireNotNull(
+                        paymentIntent,
+                        { "PaymentIntent is required" }
+                    ),
+                    customerId = requireNotNull(
+                        paymentIntent.customerId,
+                        { "CustomerId is required" }
+                    ),
+                    nextTriggerBy = nextTriggerBy,
+                    countryCode = Settings.countryCode
+                )
+                    .setRequireCvc(requiresCVC)
+                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
+            }
+        }
+    }
+
+    val session = buildSessionWithIntent(paymentIntent, customerId)
+    AirwallexStarter.presentPaymentFlow(this, session,
         object : Airwallex.PaymentFlowListener {
             override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
                 Log.d(TAG, "Confirm payment intent success")
@@ -171,6 +223,26 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
                 Log.d(TAG, "User cancel confirm payment intent")
             }
         })
+```
+- To obtain the payment result, you can use the `retrievePaymentIntent` method and check the latest status. Then you can prompt the shopper with the result.
+```
+    airwallex.retrievePaymentIntent(
+        params = RetrievePaymentIntentParams(
+            // the ID of the `PaymentIntent`, required.
+            paymentIntentId = paymentIntentId,
+            // the clientSecret of `PaymentIntent`, required.
+            clientSecret = clientSecret
+        ),
+        listener = object : Airwallex.PaymentListener<PaymentIntent> {
+            override fun onSuccess(response: PaymentIntent) {
+                onComplete.invoke(response)
+            }
+
+            override fun onFailed(exception: AirwallexException) {
+                Log.e(TAG, "Retrieve PaymentIntent failed", exception)
+            }
+        }
+    )
 ```
 ### Custom Theme
 You can overwrite these color values in your app. https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme

@@ -63,9 +63,9 @@ class AirwallexRecurringSession internal constructor(
     class Builder(
         private var customerId: String,
         private val currency: String,
-        private val countryCode: String,
         private val amount: BigDecimal,
-        private val nextTriggerBy: PaymentConsent.NextTriggeredBy
+        private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
+        private val countryCode: String
     ) : ObjectBuilder<AirwallexRecurringSession> {
 
         private var shipping: Shipping? = null

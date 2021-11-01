@@ -64,12 +64,12 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment:3.0.0'
+        implementation 'io.github.airwallex:payment:3.0.0-alpha01'
         
         // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:3.0.0'
-        implementation 'io.github.airwallex:payment-redirect:3.0.0'
-        implementation 'io.github.airwallex:payment-wechat:3.0.0'
+        implementation 'io.github.airwallex:payment-card:3.0.0-alpha01'
+        implementation 'io.github.airwallex:payment-redirect:3.0.0-alpha01'
+        implementation 'io.github.airwallex:payment-wechat:3.0.0-alpha01'
     }
 ```
 
@@ -154,7 +154,58 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 
 - 使用 `presentPaymentFlow` 来完成整个支付流程. 需要传入一个 `AirwallexSession`对象
 ```kotlin
-    AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent).build(),
+    private fun buildSession(
+        paymentIntent: PaymentIntent? = null,
+        customerId: String? = null
+    ): AirwallexSession {
+        return when (checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> {
+                AirwallexPaymentSession.Builder(
+                    paymentIntent = requireNotNull(
+                        paymentIntent,
+                        { "PaymentIntent is required" }
+                    ),
+                    countryCode = Settings.countryCode
+                )
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
+            }
+            AirwallexCheckoutMode.RECURRING -> {
+                AirwallexRecurringSession.Builder(
+                    customerId = requireNotNull(customerId, { "CustomerId is required" }),
+                    currency = Settings.currency,
+                    amount = BigDecimal.valueOf(Settings.price.toDouble()),
+                    nextTriggerBy = nextTriggerBy,
+                    countryCode = Settings.countryCode
+                )
+                    .setShipping(shipping)
+                    .setRequireCvc(requiresCVC)
+                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
+            }
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                AirwallexRecurringWithIntentSession.Builder(
+                    paymentIntent = requireNotNull(
+                        paymentIntent,
+                        { "PaymentIntent is required" }
+                    ),
+                    customerId = requireNotNull(
+                        paymentIntent.customerId,
+                        { "CustomerId is required" }
+                    ),
+                    nextTriggerBy = nextTriggerBy,
+                    countryCode = Settings.countryCode
+                )
+                    .setRequireCvc(requiresCVC)
+                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
+            }
+        }
+    }
+    val session = buildSessionWithIntent(paymentIntent, customerId)
+    AirwallexStarter.presentPaymentFlow(this, session,
         object : Airwallex.PaymentFlowListener {
             override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
                 Log.d(TAG, "Confirm payment intent success")
@@ -168,6 +219,26 @@ Airwallex Android SDK 支持Android API 19及以上版本。
                 Log.d(TAG, "User cancel confirm payment intent")
             }
         })
+```
+- 获取支付结果, 你可以通过调用 `retrievePaymentIntent` 方法检查最新的状态，并提供用户结果
+```
+    airwallex.retrievePaymentIntent(
+        params = RetrievePaymentIntentParams(
+            // the ID of the `PaymentIntent`, required.
+            paymentIntentId = paymentIntentId,
+            // the clientSecret of `PaymentIntent`, required.
+            clientSecret = clientSecret
+        ),
+        listener = object : Airwallex.PaymentListener<PaymentIntent> {
+            override fun onSuccess(response: PaymentIntent) {
+                onComplete.invoke(response)
+            }
+
+            override fun onFailed(exception: AirwallexException) {
+                Log.e(TAG, "Retrieve PaymentIntent failed", exception)
+            }
+        }
+    )
 ```
 ### Custom Theme
 您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格。 https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
