@@ -61,6 +61,8 @@ data class NextAction(
 
         REDIRECT("redirect"),
 
+        REDIRECT_FORM("redirect_form"),
+
         DISPLAY("display"),
 
         DCC("dcc");

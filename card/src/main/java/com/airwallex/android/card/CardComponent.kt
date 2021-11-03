@@ -136,9 +136,9 @@ class CardComponent : ActionComponent {
                 )
             }
             else -> {
-                val retrievePaymentIntentListener = object : PaymentListener<String> {
-                    override fun onSuccess(response: String) {
-                        listener.onCompleted(AirwallexPaymentStatus.Success(response))
+                val retrievePaymentIntentListener = object : PaymentListener<PaymentIntent> {
+                    override fun onSuccess(response: PaymentIntent) {
+                        listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
                     }
 
                     override fun onFailed(exception: AirwallexException) {
