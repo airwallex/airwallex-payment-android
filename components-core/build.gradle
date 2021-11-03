@@ -21,6 +21,8 @@ android {
 
         consumerProguardFiles 'proguard-rules.pro'
 
+        buildConfigField "String", "VERSION_NAME", "\"${rootProject.ext.versionName}\""
+
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

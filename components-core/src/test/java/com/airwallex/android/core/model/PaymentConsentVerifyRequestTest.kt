@@ -20,6 +20,12 @@ class PaymentConsentVerifyRequestTest {
                 )
             )
         )
+        .setIntegrationData(
+            IntegrationData(
+                type = "mobile_sdk",
+                version = "10.0"
+            )
+        )
         .build()
 
     private val thirdPartRequest = PaymentConsentVerifyRequest.Builder()
@@ -32,6 +38,12 @@ class PaymentConsentVerifyRequestTest {
                     flow = AirwallexPaymentRequestFlow.IN_APP,
                     osType = "android"
                 )
+            )
+        )
+        .setIntegrationData(
+            IntegrationData(
+                type = "mobile_sdk",
+                version = "10.0"
             )
         )
         .build()
@@ -68,6 +80,10 @@ class PaymentConsentVerifyRequestTest {
                             "currency" to "HKD",
                             "cvc" to "123"
                         )
+                    ),
+                    "integration_data" to mapOf(
+                        "type" to "mobile_sdk",
+                        "version" to "10.0"
                     )
                 )
             ).toString(),
@@ -85,6 +101,10 @@ class PaymentConsentVerifyRequestTest {
                             "flow" to "inapp",
                             "os_type" to "android"
                         )
+                    ),
+                    "integration_data" to mapOf(
+                        "type" to "mobile_sdk",
+                        "version" to "10.0"
                     )
                 )
             ).toString(),

@@ -513,7 +513,7 @@ class Airwallex internal constructor(
                     object : SecurityTokenListener {
                         override fun onResponse(deviceId: String) {
                             val device =
-                                PaymentManager.buildDeviceInfo(deviceId, applicationContext)
+                                PaymentManager.buildDeviceInfo(deviceId)
                             confirmPaymentIntentWithDevice(
                                 device = device,
                                 params = params,

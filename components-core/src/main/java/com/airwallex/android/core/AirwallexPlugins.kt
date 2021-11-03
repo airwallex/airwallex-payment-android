@@ -1,6 +1,5 @@
 package com.airwallex.android.core
 
-import android.content.Context
 import com.airwallex.android.core.model.NextAction
 
 /**
@@ -12,11 +11,6 @@ object AirwallexPlugins {
 
     private var configuration: AirwallexConfiguration =
         AirwallexConfiguration(false, Environment.PRODUCTION, emptyList())
-
-    fun getSdkVersion(context: Context): String {
-        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        return packageInfo.versionName.toString()
-    }
 
     fun initialize(configuration: AirwallexConfiguration) {
         this.configuration = configuration

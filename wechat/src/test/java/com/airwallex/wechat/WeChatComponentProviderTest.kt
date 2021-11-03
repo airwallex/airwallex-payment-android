@@ -4,8 +4,8 @@ import android.app.Activity
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.SecurityTokenListener
-import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.wechat.WeChatComponentProvider
 import com.nhaarman.mockitokotlin2.mock
@@ -79,14 +79,19 @@ class WeChatComponentProviderTest {
             ApplicationProvider.getApplicationContext(),
             null,
             object : Airwallex.PaymentResultListener {
-                override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
-                    success = true
-                    latch.countDown()
-                }
-
-                override fun onFailed(exception: AirwallexException) {
-                    success = false
-                    latch.countDown()
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    when (status) {
+                        is AirwallexPaymentStatus.Success,
+                        is AirwallexPaymentStatus.InProgress -> {
+                            success = true
+                            latch.countDown()
+                        }
+                        is AirwallexPaymentStatus.Failure -> {
+                            success = false
+                            latch.countDown()
+                        }
+                        else -> Unit
+                    }
                 }
             }
         )

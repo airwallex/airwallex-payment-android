@@ -19,16 +19,11 @@ class DeviceTest {
     }
 
     @Test
-    fun builderConstructor() {
-        assertEquals(device, DeviceFixtures.DEVICE)
-    }
-
-    @Test
     fun testParams() {
         assertEquals("123456", device.deviceId)
         assertEquals("Mate30 pro", device.deviceModel)
         assertEquals("android", device.deviceOS)
-        assertEquals("10.0", device.sdkVersion)
+        assertEquals("10.0", device.version)
         assertEquals("huawei", device.platformType)
     }
 
