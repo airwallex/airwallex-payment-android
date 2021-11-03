@@ -130,15 +130,12 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 使用 `presentShippingFlow` 允许用户提供送货地址以及选择送货方式. `shipping` 字段是可选的
 ```kotlin
     AirwallexStarter.presentShippingFlow(this, shipping,
-        object : Airwallex.ShippingFlowListener {
-            override fun onSuccess(shipping: Shipping) {
-                Log.d(TAG, "Save the shipping success")
+        object : Airwallex.ShippingResultListener {
+            override fun onCompleted(status: AirwallexShippingStatus) {
+                
             }
-
-            override fun onCancelled() {
-                Log.d(TAG, "User cancel edit shipping")
-            }
-        })
+        }
+    )
 ```
 
 ### Use the entire Native UI in one flow
@@ -206,19 +203,13 @@ Airwallex Android SDK 支持Android API 19及以上版本。
     }
     val session = buildSessionWithIntent(paymentIntent, customerId)
     AirwallexStarter.presentPaymentFlow(this, session,
-        object : Airwallex.PaymentFlowListener {
-            override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
-                Log.d(TAG, "Confirm payment intent success")
+        object : Airwallex.PaymentResultListener {
+    
+            override fun onCompleted(status: AirwallexPaymentStatus) {
+    
             }
-
-            override fun onFailed(exception: AirwallexException) {
-                Log.d(TAG, "Confirm payment intent failed")
-            }
-
-            override fun onCancelled() {
-                Log.d(TAG, "User cancel confirm payment intent")
-            }
-        })
+        }
+    )
 ```
 - 获取支付结果, 你可以通过调用 `retrievePaymentIntent` 方法检查最新的状态，并提供用户结果
 ```

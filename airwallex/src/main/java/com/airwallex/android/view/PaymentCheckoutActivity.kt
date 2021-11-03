@@ -13,6 +13,7 @@ import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.core.util.CurrencyUtils.formatPrice
 import com.airwallex.android.databinding.ActivityPaymentCheckoutBinding
 import com.airwallex.android.R
+import com.airwallex.android.core.AirwallexPaymentStatus
 import java.util.*
 
 /**
@@ -97,12 +98,13 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             cvc = viewBinding.atlCardCvc.value,
             observer = { result ->
                 when (result) {
-                    is AirwallexCheckoutViewModel.CheckoutResult.Success -> {
+                    is AirwallexPaymentStatus.Success -> {
                         finishWithPaymentIntent(paymentIntentId = result.paymentIntentId)
                     }
-                    is AirwallexCheckoutViewModel.CheckoutResult.Error -> {
+                    is AirwallexPaymentStatus.Failure -> {
                         finishWithPaymentIntent(exception = result.exception)
                     }
+                    else -> Unit
                 }
             }
         )

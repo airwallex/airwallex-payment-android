@@ -4,26 +4,24 @@ import android.app.Application
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.airwallex.android.AirwallexStarter
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.model.Shipping
 
 internal class PaymentCartViewModel(
     application: Application
 ) : AndroidViewModel(application) {
 
-    fun presentShippingFlow(fragment: Fragment, shipping: Shipping?): LiveData<ShippingResult> {
-        val resultData = MutableLiveData<ShippingResult>()
+    fun presentShippingFlow(fragment: Fragment, shipping: Shipping?): LiveData<AirwallexShippingStatus> {
+        val resultData = MutableLiveData<AirwallexShippingStatus>()
         AirwallexStarter.presentShippingFlow(
             fragment,
             shipping,
-            object : AirwallexStarter.ShippingFlowListener {
-                override fun onSuccess(response: Shipping) {
-                    resultData.value = ShippingResult.Success(response)
-                }
-
-                override fun onCancelled() {
-                    resultData.value = ShippingResult.Cancel
+            object : Airwallex.ShippingResultListener {
+                override fun onCompleted(status: AirwallexShippingStatus) {
+                    resultData.value = status
                 }
             }
         )
@@ -33,40 +31,19 @@ internal class PaymentCartViewModel(
     fun presentPaymentFlow(
         fragment: Fragment,
         session: AirwallexSession,
-    ): LiveData<PaymentFlowResult> {
-        val resultData = MutableLiveData<PaymentFlowResult>()
+    ): LiveData<AirwallexPaymentStatus> {
+        val resultData = MutableLiveData<AirwallexPaymentStatus>()
         AirwallexStarter.presentPaymentFlow(
             fragment,
             session,
-            object : AirwallexStarter.PaymentFlowListener {
-                override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
-                    resultData.value = PaymentFlowResult.Success(paymentIntentId, isRedirecting)
-                }
+            object : Airwallex.PaymentResultListener {
 
-                override fun onFailed(exception: AirwallexException) {
-                    resultData.value = PaymentFlowResult.Error(exception)
-                }
-
-                override fun onCancelled() {
-                    resultData.value = PaymentFlowResult.Cancel
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    resultData.value = status
                 }
             }
         )
         return resultData
-    }
-
-    sealed class ShippingResult {
-        data class Success(val shipping: Shipping) : ShippingResult()
-
-        object Cancel : ShippingResult()
-    }
-
-    sealed class PaymentFlowResult {
-        data class Success(val paymentIntentId: String, val isRedirecting: Boolean) : PaymentFlowResult()
-
-        data class Error(val exception: Exception) : PaymentFlowResult()
-
-        object Cancel : PaymentFlowResult()
     }
 
     internal class Factory(

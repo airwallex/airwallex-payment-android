@@ -26,9 +26,23 @@ class Airwallex internal constructor(
         fun onFailed(exception: AirwallexException)
     }
 
+    interface ShippingResultListener {
+
+        /**
+         * This method is called when the user has completed the shipping flow.
+         *
+         * @param status The status of shipping result.
+         */
+        fun onCompleted(status: AirwallexShippingStatus)
+    }
+
     interface PaymentResultListener {
-        fun onSuccess(paymentIntentId: String, isRedirecting: Boolean = false)
-        fun onFailed(exception: AirwallexException)
+        /**
+         * This method is called when the user has completed the checkout.
+         *
+         * @param status The status of checkout result.
+         */
+        fun onCompleted(status: AirwallexPaymentStatus)
     }
 
     /**
@@ -191,13 +205,17 @@ class Airwallex internal constructor(
             ),
             object : PaymentListener<PaymentConsent> {
                 override fun onFailed(exception: AirwallexException) {
-                    listener.onFailed(exception)
+                    listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
                 }
 
                 override fun onSuccess(response: PaymentConsent) {
                     val provider = AirwallexPlugins.getProvider(response.nextAction)
                     if (provider == null) {
-                        listener.onFailed(AirwallexCheckoutException(message = "Missing dependency!"))
+                        listener.onCompleted(
+                            AirwallexPaymentStatus.Failure(
+                                AirwallexCheckoutException(message = "Missing dependency!")
+                            )
+                        )
                         return
                     }
 
@@ -356,7 +374,9 @@ class Airwallex internal constructor(
                                     merchantTriggerReason = session.merchantTriggerReason,
                                     listener = object : PaymentListener<PaymentConsent> {
                                         override fun onFailed(exception: AirwallexException) {
-                                            listener.onFailed(exception)
+                                            listener.onCompleted(
+                                                AirwallexPaymentStatus.Failure(exception)
+                                            )
                                         }
 
                                         override fun onSuccess(response: PaymentConsent) {
@@ -374,12 +394,18 @@ class Airwallex internal constructor(
                             }
 
                             override fun onClientSecretError(errorMessage: String) {
-                                listener.onFailed(AirwallexCheckoutException(message = errorMessage))
+                                listener.onCompleted(
+                                    AirwallexPaymentStatus.Failure(
+                                        AirwallexCheckoutException(
+                                            message = errorMessage
+                                        )
+                                    )
+                                )
                             }
                         }
                     )
                 } catch (e: AirwallexCheckoutException) {
-                    listener.onFailed(e)
+                    listener.onCompleted(AirwallexPaymentStatus.Failure(e))
                 }
             }
             is AirwallexRecurringWithIntentSession -> {
@@ -393,7 +419,7 @@ class Airwallex internal constructor(
                     merchantTriggerReason = session.merchantTriggerReason,
                     listener = object : PaymentListener<PaymentConsent> {
                         override fun onFailed(exception: AirwallexException) {
-                            listener.onFailed(exception)
+                            listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
                         }
 
                         override fun onSuccess(response: PaymentConsent) {
@@ -477,7 +503,9 @@ class Airwallex internal constructor(
             try {
                 val provider = AirwallexPlugins.getCardProvider()
                 if (provider == null) {
-                    listener.onFailed(AirwallexCheckoutException(message = "Missing ${Dependency.CARD.value} dependency!"))
+                    listener.onCompleted(
+                        AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing ${Dependency.CARD.value} dependency!"))
+                    )
                     return
                 }
                 provider.get().retrieveSecurityToken(
@@ -495,7 +523,9 @@ class Airwallex internal constructor(
                     }
                 )
             } catch (e: Exception) {
-                listener.onFailed(AirwallexCheckoutException(message = "Please add card dependency"))
+                listener.onCompleted(
+                    AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Please add card dependency"))
+                )
             }
         } else {
             confirmPaymentIntentWithDevice(device = null, params = params, listener = listener)
@@ -522,7 +552,7 @@ class Airwallex internal constructor(
             options,
             object : PaymentListener<PaymentIntent> {
                 override fun onFailed(exception: AirwallexException) {
-                    listener.onFailed(exception)
+                    listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
                 }
 
                 override fun onSuccess(response: PaymentIntent) {
@@ -541,7 +571,9 @@ class Airwallex internal constructor(
                     }
                     val provider = AirwallexPlugins.getProvider(response.nextAction)
                     if (provider == null) {
-                        listener.onFailed(AirwallexCheckoutException(message = "Missing dependency!"))
+                        listener.onCompleted(
+                            AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing dependency!"))
+                        )
                         return
                     }
                     provider.get().handlePaymentIntentResponse(
@@ -671,14 +703,16 @@ class Airwallex internal constructor(
         val paymentListener = object : PaymentListener<PaymentIntent> {
             override fun onFailed(exception: AirwallexException) {
                 // Payment failed
-                listener.onFailed(exception)
+                listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
             }
 
             override fun onSuccess(response: PaymentIntent) {
                 // Handle next action
                 val provider = AirwallexPlugins.getCardProvider()
                 if (provider == null) {
-                    listener.onFailed(AirwallexCheckoutException(message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"))
+                    listener.onCompleted(
+                        AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"))
+                    )
                     return
                 }
                 // Only card
@@ -784,7 +818,9 @@ class Airwallex internal constructor(
         listener: PaymentResultListener
     ) {
         if (paymentConsent.requiresCvc && cvc == null) {
-            listener.onFailed(InvalidParamsException(message = "CVC is required!"))
+            listener.onCompleted(
+                AirwallexPaymentStatus.Failure(InvalidParamsException(message = "CVC is required!"))
+            )
             return
         }
         val paymentMethodType = paymentConsent.paymentMethod?.type

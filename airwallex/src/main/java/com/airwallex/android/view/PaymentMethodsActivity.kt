@@ -17,6 +17,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.R
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.log.Logger
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 
@@ -214,18 +215,25 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         cvc: String? = null
     ) {
         val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
-        val observer = Observer<AirwallexCheckoutViewModel.CheckoutResult> { result ->
+        val observer = Observer<AirwallexPaymentStatus> { result ->
 
             when (result) {
-                is AirwallexCheckoutViewModel.CheckoutResult.Success -> {
+                is AirwallexPaymentStatus.Success -> {
                     finishWithPaymentIntent(
                         paymentIntentId = result.paymentIntentId,
-                        isRedirecting = result.isRedirecting
+                        isRedirecting = false
                     )
                 }
-                is AirwallexCheckoutViewModel.CheckoutResult.Error -> {
+                is AirwallexPaymentStatus.Failure -> {
                     finishWithPaymentIntent(exception = result.exception)
                 }
+                is AirwallexPaymentStatus.InProgress -> {
+                    finishWithPaymentIntent(
+                        paymentIntentId = result.paymentIntentId,
+                        isRedirecting = true
+                    )
+                }
+                else -> Unit
             }
         }
 
@@ -337,7 +345,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         paymentMethod: PaymentMethod,
         bankField: DynamicSchemaField? = null,
         bankName: String? = null,
-        observer: Observer<AirwallexCheckoutViewModel.CheckoutResult>
+        observer: Observer<AirwallexPaymentStatus>
     ) {
         val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(info)
         paymentInfoDialog.onCompleted = { fieldMap ->

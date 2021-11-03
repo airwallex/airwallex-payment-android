@@ -42,7 +42,7 @@ class CardComponent : ActionComponent {
         listener: Airwallex.PaymentResultListener
     ) {
         if (cardNextActionModel == null) {
-            listener.onFailed(AirwallexCheckoutException(message = "Card payment info not found"))
+            listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Card payment info not found")))
             return
         }
 
@@ -63,18 +63,18 @@ class CardComponent : ActionComponent {
             NextAction.NextActionType.DCC -> {
                 val dcc = nextAction.dcc
                 if (dcc == null) {
-                    listener.onFailed(AirwallexCheckoutException(message = "Dcc data not found"))
+                    listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Dcc data not found")))
                     return
                 }
                 dccCallback = object : DccCallback {
                     override fun onSuccess(paymentIntentId: String) {
                         dccCallback = null
-                        listener.onSuccess(paymentIntentId)
+                        listener.onCompleted(AirwallexPaymentStatus.Success(paymentIntentId))
                     }
 
                     override fun onFailed(exception: Exception) {
                         dccCallback = null
-                        listener.onFailed(AirwallexCheckoutException(e = exception))
+                        listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(e = exception)))
                     }
                 }
 
@@ -93,7 +93,7 @@ class CardComponent : ActionComponent {
             NextAction.NextActionType.REDIRECT -> {
                 val serverJwt = nextAction.data?.get("jwt") as? String
                 if (serverJwt == null) {
-                    listener.onFailed(AirwallexCheckoutException(message = "JWT not found"))
+                    listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "JWT not found")))
                     return
                 }
                 Logger.debug("Prepare 3DS Flow, serverJwt: $serverJwt")
@@ -121,7 +121,7 @@ class CardComponent : ActionComponent {
                                     .setError(exception.localizedMessage)
                                     .build()
                             )
-                            listener.onFailed(exception)
+                            listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
                         }
 
                         override fun onSuccess(response: PaymentIntent) {
@@ -130,7 +130,7 @@ class CardComponent : ActionComponent {
                                     .setCode(TrackerRequest.TrackerCode.ON_CHALLENGE_SUCCESS)
                                     .build()
                             )
-                            listener.onSuccess(paymentIntentId)
+                            listener.onCompleted(AirwallexPaymentStatus.Success(paymentIntentId))
                         }
                     }
                 )
@@ -138,11 +138,11 @@ class CardComponent : ActionComponent {
             else -> {
                 val retrievePaymentIntentListener = object : PaymentListener<String> {
                     override fun onSuccess(response: String) {
-                        listener.onSuccess(response)
+                        listener.onCompleted(AirwallexPaymentStatus.Success(response))
                     }
 
                     override fun onFailed(exception: AirwallexException) {
-                        listener.onFailed(exception)
+                        listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
                     }
                 }
                 cardNextActionModel.paymentManager.startOperation(

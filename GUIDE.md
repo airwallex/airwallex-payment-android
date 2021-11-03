@@ -132,15 +132,12 @@ At first, add below code in your host Activity or Fragment, implement Activity#o
 Use `presentShippingFlow` to allow users to provide a shipping address as well as select a shipping method. `shipping` parameter is optional.
 ```kotlin
     AirwallexStarter.presentShippingFlow(this, shipping,
-       object : Airwallex.ShippingFlowListener {
-            override fun onSuccess(shipping: Shipping) {
-                Log.d(TAG, "Save the shipping success")
-            }
+        object : Airwallex.ShippingResultListener {
+            override fun onCompleted(status: AirwallexShippingStatus) {
 
-            override fun onCancelled() {
-                Log.d(TAG, "User cancel edit shipping")
             }
-        })
+        }
+    )
 ```
 
 ### Use the entire Native UI in one flow
@@ -210,19 +207,13 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
 
     val session = buildSessionWithIntent(paymentIntent, customerId)
     AirwallexStarter.presentPaymentFlow(this, session,
-        object : Airwallex.PaymentFlowListener {
-            override fun onSuccess(paymentIntentId: String, isRedirecting: Boolean) {
-                Log.d(TAG, "Confirm payment intent success")
-            }
-            
-            override fun onFailed(exception: AirwallexException) {
-                Log.d(TAG, "Confirm payment intent failed")
-            }
+        object : Airwallex.PaymentResultListener {
+    
+            override fun onCompleted(status: AirwallexPaymentStatus) {
                 
-            override fun onCancelled() {
-                Log.d(TAG, "User cancel confirm payment intent")
             }
-        })
+        }
+    )
 ```
 - To obtain the payment result, you can use the `retrievePaymentIntent` method and check the latest status. Then you can prompt the shopper with the result.
 ```

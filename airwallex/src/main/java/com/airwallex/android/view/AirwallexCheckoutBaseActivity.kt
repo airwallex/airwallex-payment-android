@@ -3,6 +3,7 @@ package com.airwallex.android.view
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.model.*
 import com.airwallex.android.ui.AirwallexActivity
@@ -29,7 +30,7 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         cvc: String? = null,
         additionalInfo: Map<String, String>? = null,
         flow: AirwallexPaymentRequestFlow? = null,
-        observer: Observer<AirwallexCheckoutViewModel.CheckoutResult>
+        observer: Observer<AirwallexPaymentStatus>
     ) {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.checkout(

@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
-import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Shipping
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
 
@@ -15,46 +13,9 @@ import com.airwallex.android.view.PaymentShippingActivityLaunch
  */
 class AirwallexStarter {
 
-    interface ShippingFlowListener {
-        /**
-         * Shipping success
-         *
-         * @param shipping The [Shipping] object returned
-         */
-        fun onSuccess(shipping: Shipping)
-
-        /**
-         * Shipping cancelled
-         *
-         */
-        fun onCancelled()
-    }
-
-    interface PaymentFlowListener {
-        /**
-         * Payment success
-         *
-         * @param paymentIntentId the ID of [PaymentIntent]
-         * @param isRedirecting Some payment methods require redirect to third-party apps, such as Alipay
-         */
-        fun onSuccess(paymentIntentId: String, isRedirecting: Boolean)
-
-        /**
-         * Payment failed
-         *
-         * @param exception
-         */
-        fun onFailed(exception: AirwallexException)
-
-        /**
-         * Payment cancelled
-         */
-        fun onCancelled()
-    }
-
     companion object {
-        private var shippingFlowListener: ShippingFlowListener? = null
-        private var paymentFlowListener: PaymentFlowListener? = null
+        private var shippingResultListener: Airwallex.ShippingResultListener? = null
+        private var paymentResultListener: Airwallex.PaymentResultListener? = null
 
         private val VALID_REQUEST_CODES = setOf(
             PaymentMethodsActivityLaunch.REQUEST_CODE,
@@ -66,17 +27,17 @@ class AirwallexStarter {
          *
          * @param fragment fragment {@link Fragment}
          * @param shipping a [Shipping] used to present the shipping flow, it's optional
-         * @param shippingFlowListener The callback of present the shipping flow
+         * @param shippingResultListener The callback of present the shipping flow
          */
         fun presentShippingFlow(
             fragment: Fragment,
             shipping: Shipping?,
-            shippingFlowListener: ShippingFlowListener
+            shippingResultListener: Airwallex.ShippingResultListener
         ) {
             presentShippingFlow(
                 PaymentShippingActivityLaunch(fragment),
                 shipping,
-                shippingFlowListener
+                shippingResultListener
             )
         }
 
@@ -85,26 +46,26 @@ class AirwallexStarter {
          *
          * @param activity activity {@link Activity}
          * @param shipping a [Shipping] used to present the shipping flow, it's optional
-         * @param shippingFlowListener The callback of present the shipping flow
+         * @param shippingResultListener The callback of present the shipping flow
          */
         fun presentShippingFlow(
             activity: Activity,
             shipping: Shipping?,
-            shippingFlowListener: ShippingFlowListener
+            shippingResultListener: Airwallex.ShippingResultListener
         ) {
             presentShippingFlow(
                 PaymentShippingActivityLaunch(activity),
                 shipping,
-                shippingFlowListener
+                shippingResultListener
             )
         }
 
         private fun presentShippingFlow(
             launch: PaymentShippingActivityLaunch,
             shipping: Shipping?,
-            shippingFlowListener: ShippingFlowListener
+            shippingResultListener: Airwallex.ShippingResultListener
         ) {
-            this.shippingFlowListener = shippingFlowListener
+            this.shippingResultListener = shippingResultListener
             launch.startForResult(
                 PaymentShippingActivityLaunch.Args.Builder()
                     .setShipping(shipping)
@@ -117,17 +78,17 @@ class AirwallexStarter {
          *
          * @param fragment fragment {@link Fragment}
          * @param session a [AirwallexSession] used to present the payment flow
-         * @param paymentFlowListener The callback of present entire payment flow
+         * @param paymentResultListener The callback of present entire payment flow
          */
         fun presentPaymentFlow(
             fragment: Fragment,
             session: AirwallexSession,
-            paymentFlowListener: PaymentFlowListener
+            paymentResultListener: Airwallex.PaymentResultListener
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(fragment),
                 session,
-                paymentFlowListener
+                paymentResultListener
             )
         }
 
@@ -136,26 +97,26 @@ class AirwallexStarter {
          *
          * @param activity activity {@link Activity}
          * @param session a [AirwallexSession] used to present the payment flow
-         * @param paymentFlowListener The callback of present entire payment flow
+         * @param paymentResultListener The callback of present entire payment flow
          */
         fun presentPaymentFlow(
             activity: Activity,
             session: AirwallexSession,
-            paymentFlowListener: PaymentFlowListener
+            paymentResultListener: Airwallex.PaymentResultListener
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(activity),
                 session,
-                paymentFlowListener
+                paymentResultListener
             )
         }
 
         private fun presentPaymentFlow(
             launch: PaymentMethodsActivityLaunch,
             session: AirwallexSession,
-            paymentFlowListener: PaymentFlowListener
+            paymentResultListener: Airwallex.PaymentResultListener
         ) {
-            this.paymentFlowListener = paymentFlowListener
+            this.paymentResultListener = paymentResultListener
             launch.startForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
@@ -189,8 +150,10 @@ class AirwallexStarter {
                         PaymentShippingActivityLaunch.REQUEST_CODE -> {
                             val result =
                                 PaymentShippingActivityLaunch.Result.fromIntent(data) ?: return true
-                            shippingFlowListener?.onSuccess(result.shipping)
-                            shippingFlowListener = null
+                            shippingResultListener?.onCompleted(
+                                AirwallexShippingStatus.Success(result.shipping)
+                            )
+                            shippingResultListener = null
                             true
                         }
                         PaymentMethodsActivityLaunch.REQUEST_CODE -> {
@@ -198,16 +161,23 @@ class AirwallexStarter {
                                 PaymentMethodsActivityLaunch.Result.fromIntent(data) ?: return true
                             when {
                                 result.exception != null -> {
-                                    paymentFlowListener?.onFailed(result.exception)
-                                }
-                                result.paymentIntentId != null -> {
-                                    paymentFlowListener?.onSuccess(
-                                        result.paymentIntentId,
-                                        result.isRedirecting
+                                    paymentResultListener?.onCompleted(
+                                        AirwallexPaymentStatus.Failure(result.exception)
                                     )
                                 }
+                                result.paymentIntentId != null -> {
+                                    if (result.isRedirecting) {
+                                        paymentResultListener?.onCompleted(
+                                            AirwallexPaymentStatus.InProgress(result.paymentIntentId)
+                                        )
+                                    } else {
+                                        paymentResultListener?.onCompleted(
+                                            AirwallexPaymentStatus.Success(result.paymentIntentId)
+                                        )
+                                    }
+                                }
                             }
-                            paymentFlowListener = null
+                            paymentResultListener = null
                             true
                         }
                         else -> false
@@ -216,13 +186,13 @@ class AirwallexStarter {
                 Activity.RESULT_CANCELED -> {
                     return when (requestCode) {
                         PaymentShippingActivityLaunch.REQUEST_CODE -> {
-                            shippingFlowListener?.onCancelled()
-                            shippingFlowListener = null
+                            shippingResultListener?.onCompleted(AirwallexShippingStatus.Cancel)
+                            shippingResultListener = null
                             true
                         }
                         PaymentMethodsActivityLaunch.REQUEST_CODE -> {
-                            paymentFlowListener?.onCancelled()
-                            paymentFlowListener = null
+                            paymentResultListener?.onCompleted(AirwallexPaymentStatus.Cancel)
+                            paymentResultListener = null
                             true
                         }
                         else -> false

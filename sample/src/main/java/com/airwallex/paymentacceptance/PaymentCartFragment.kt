@@ -246,12 +246,12 @@ class PaymentCartFragment : Fragment() {
         viewBinding.shippingItemView.onClickAction = {
             viewModel.presentShippingFlow(this, shipping).observe(viewLifecycleOwner) {
                 when (it) {
-                    is PaymentCartViewModel.ShippingResult.Success -> {
+                    is AirwallexShippingStatus.Success -> {
                         Log.d(TAG, "Save the shipping success")
                         viewBinding.shippingItemView.renewalShipping(it.shipping)
                         this@PaymentCartFragment.shipping = it.shipping
                     }
-                    is PaymentCartViewModel.ShippingResult.Cancel -> {
+                    is AirwallexShippingStatus.Cancel -> {
                         Log.d(TAG, "User cancel edit shipping...")
                     }
                 }
@@ -325,15 +325,18 @@ class PaymentCartFragment : Fragment() {
                 buildSession(paymentIntent = paymentIntent)
             ).observe(viewLifecycleOwner) {
                 when (it) {
-                    is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        if (!it.isRedirecting) {
-                            showPaymentSuccess()
-                        }
+                    is AirwallexPaymentStatus.Success -> {
+                        Log.d(TAG, "Payment success ${it.paymentIntentId}")
+                        showPaymentSuccess()
                     }
-                    is PaymentCartViewModel.PaymentFlowResult.Error -> {
+                    is AirwallexPaymentStatus.InProgress -> {
+                        // redirecting
+                        Log.d(TAG, "Payment is redirecting ${it.paymentIntentId}")
+                    }
+                    is AirwallexPaymentStatus.Failure -> {
                         showPaymentError(it.exception.message)
                     }
-                    is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
+                    is AirwallexPaymentStatus.Cancel -> {
                         Log.d(TAG, "User cancel the payment")
                         showPaymentCancelled()
                     }
@@ -390,15 +393,19 @@ class PaymentCartFragment : Fragment() {
                 buildSession(customerId = customerId)
             ).observe(viewLifecycleOwner) {
                 when (it) {
-                    is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        if (!it.isRedirecting) {
-                            showPaymentSuccess()
-                        }
+                    is AirwallexPaymentStatus.Success -> {
+                        Log.d(TAG, "Payment success ${it.paymentIntentId}")
+                        showPaymentSuccess()
                     }
-                    is PaymentCartViewModel.PaymentFlowResult.Error -> {
+                    is AirwallexPaymentStatus.InProgress -> {
+                        // redirecting
+                        Log.d(TAG, "Payment is redirecting ${it.paymentIntentId}")
+                    }
+                    is AirwallexPaymentStatus.Failure -> {
                         showPaymentError(it.exception.localizedMessage)
                     }
-                    is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
+                    is AirwallexPaymentStatus.Cancel -> {
+                        Log.d(TAG, "User cancel the payment")
                         showPaymentCancelled()
                     }
                 }
@@ -479,15 +486,18 @@ class PaymentCartFragment : Fragment() {
                 buildSession(paymentIntent = paymentIntent)
             ).observe(viewLifecycleOwner) {
                 when (it) {
-                    is PaymentCartViewModel.PaymentFlowResult.Success -> {
-                        if (!it.isRedirecting) {
-                            showPaymentSuccess()
-                        }
+                    is AirwallexPaymentStatus.Success -> {
+                        Log.d(TAG, "Payment success ${it.paymentIntentId}")
+                        showPaymentSuccess()
                     }
-                    is PaymentCartViewModel.PaymentFlowResult.Error -> {
+                    is AirwallexPaymentStatus.InProgress -> {
+                        // redirecting
+                        Log.d(TAG, "Payment is redirecting ${it.paymentIntentId}")
+                    }
+                    is AirwallexPaymentStatus.Failure -> {
                         showPaymentError(it.exception.message)
                     }
-                    is PaymentCartViewModel.PaymentFlowResult.Cancel -> {
+                    is AirwallexPaymentStatus.Cancel -> {
                         Log.d(TAG, "User cancel the payment")
                         showPaymentCancelled()
                     }

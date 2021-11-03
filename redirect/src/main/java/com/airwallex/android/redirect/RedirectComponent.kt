@@ -27,18 +27,30 @@ class RedirectComponent : ActionComponent {
             NextAction.NextActionType.REDIRECT -> {
                 val redirectUrl = nextAction.url
                 if (redirectUrl.isNullOrEmpty()) {
-                    listener.onFailed(AirwallexCheckoutException(message = "Redirect url not found"))
+                    listener.onCompleted(
+                        AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(
+                                message = "Redirect url not found"
+                            )
+                        )
+                    )
                     return
                 }
                 try {
-                    listener.onSuccess(paymentIntentId, true)
+                    listener.onCompleted(AirwallexPaymentStatus.InProgress(paymentIntentId))
                     RedirectUtil.makeRedirect(activity = activity, redirectUrl = redirectUrl)
                 } catch (e: RedirectException) {
-                    listener.onFailed(e)
+                    listener.onCompleted(AirwallexPaymentStatus.Failure(e))
                 }
             }
             else -> {
-                listener.onFailed(AirwallexCheckoutException(message = "Unsupported next action ${nextAction?.type}"))
+                listener.onCompleted(
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(
+                            message = "Unsupported next action ${nextAction?.type}"
+                        )
+                    )
+                )
             }
         }
     }
