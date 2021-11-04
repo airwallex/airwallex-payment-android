@@ -63,12 +63,9 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun initView(availablePaymentMethodTypes: List<AvailablePaymentMethodType>) {
-        val shouldShowCard =
-            availablePaymentMethodTypes.find { it.name == PaymentMethodType.CARD.value } != null
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         paymentMethodsAdapter = PaymentMethodsAdapter(
-            availablePaymentMethodTypes = availablePaymentMethodTypes.filter { it.name != PaymentMethodType.CARD.value },
-            shouldShowCard = shouldShowCard,
+            availablePaymentMethodTypes = availablePaymentMethodTypes,
             listener = object : PaymentMethodsAdapter.Listener {
                 override fun onPaymentConsentClick(
                     paymentConsent: PaymentConsent,

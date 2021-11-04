@@ -53,8 +53,6 @@
     <string name="airwallex_phone_error">Invalid phone number</string>
     <string name="airwallex_payment">Payment</string>
     <string name="airwallex_enter_cvv">Enter CVC/CVV for \n%s</string>
-    <string name="airwallex_pay_with_card">Pay with card</string>
-    <string name="airwallex_pay_with_another_card">Pay with another card</string>
     <string name="invalid_field">Invalid %s</string>
 
 </resources>

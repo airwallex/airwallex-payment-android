@@ -174,7 +174,7 @@ internal class PaymentMethodsViewModel(
                                 }
 
                                 override fun onSuccess(response: PaymentConsent) {
-                                    resultData.value = Result.success(response)
+                                    resultData.value = Result.success(paymentConsent)
                                 }
                             }
                         )
