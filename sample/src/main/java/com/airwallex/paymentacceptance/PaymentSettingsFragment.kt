@@ -82,9 +82,35 @@ class PaymentSettingsFragment :
         (findPreference<Preference>(getString(R.string.currency)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
             editText.inputType = TYPE_TEXT_FLAG_CAP_CHARACTERS
         }
+        (findPreference<Preference>(getString(R.string.currency)) as? EditTextPreference)?.onPreferenceChangeListener =
+            object : Preference.OnPreferenceChangeListener {
+                override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+                    if (newValue?.toString()?.trim().isNullOrEmpty()) {
+                        Toast.makeText(
+                            context, "Currency can not be empty",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        return false
+                    }
+                    return true
+                }
+            }
         (findPreference<Preference>(getString(R.string.country_code)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
             editText.inputType = TYPE_TEXT_FLAG_CAP_CHARACTERS
         }
+        (findPreference<Preference>(getString(R.string.country_code)) as? EditTextPreference)?.onPreferenceChangeListener =
+            object : Preference.OnPreferenceChangeListener {
+                override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+                    if (newValue?.toString()?.trim().isNullOrEmpty()) {
+                        Toast.makeText(
+                            context, "Country code can not be empty",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        return false
+                    }
+                    return true
+                }
+            }
 
         val sdkEnvPref: ListPreference? =
             findPreference(getString(R.string.sdk_env_id)) as? ListPreference?
