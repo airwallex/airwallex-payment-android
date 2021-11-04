@@ -160,6 +160,7 @@ internal class PaymentMethodsAdapter(
                 if (selectedPaymentConsent?.paymentMethod?.type == paymentMethodType.name) View.VISIBLE else View.GONE
             Glide.with(viewBinding.root.context)
                 .load(paymentMethodType.resources?.logos?.png)
+                .error(if (paymentMethodType.name == PaymentMethodType.CARD.value) R.drawable.airwallex_ic_card_default else 0)
                 .into(viewBinding.paymentMethodIcon)
             itemView.setOnSingleClickListener {
                 if (paymentMethodType.name == PaymentMethodType.CARD.value) {
