@@ -37,5 +37,5 @@
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_margin="24dp"
-        android:text="@string/airwallex_pay_now" />
+        android:text="@string/airwallex_save" />
 </RelativeLayout>

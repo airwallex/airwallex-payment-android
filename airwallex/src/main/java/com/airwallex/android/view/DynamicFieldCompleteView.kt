@@ -26,11 +26,15 @@ class DynamicFieldCompleteView constructor(
         true
     )
 
-    private var error: String? = null
-
     private val adapter: DynamicFieldAdapter by lazy {
         DynamicFieldAdapter(getContext(), candidates)
     }
+
+    var error: String? = null
+        set(value) {
+            field = value
+            viewBinding.dynamicField.error = value
+        }
 
     val value: String?
         get() {
@@ -59,8 +63,9 @@ class DynamicFieldCompleteView constructor(
                         null
                     }
                 )
+
                 if (field.isBlank()) {
-                    resources.getString(R.string.airwallex_empty_country)
+                    resources.getString(R.string.airwallex_invalid_field, viewBinding.tlField.hint.toString().lowercase())
                 } else {
                     null
                 }

@@ -3,11 +3,9 @@ package com.airwallex.android.view
 import android.os.Bundle
 import android.text.InputType
 import android.text.method.DigitsKeyListener
-import android.util.Patterns
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout.LayoutParams
-import android.widget.Toast
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.databinding.DialogPaymentInfoBinding
 import com.airwallex.android.R
@@ -52,7 +50,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>
             when (field.type) {
                 DynamicSchemaFieldType.STRING -> {
                     val input = AirwallexTextInputLayout(requireContext(), null)
-                    input.tag = field.name
+                    input.tag = field
                     input.setHint(field.displayName)
                     when (field.uiType) {
                         DynamicSchemaFieldUIType.TEXT -> {
@@ -65,6 +63,18 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>
                             input.setKeyListener(DigitsKeyListener.getInstance("0123456789"))
                         }
                         else -> Unit
+                    }
+
+                    input.afterTextChanged {
+                        input.error = null
+                    }
+
+                    input.afterFocusChanged { hasFocus ->
+                        if (!hasFocus && isInvalid(input.value, field)) {
+                            input.error = getString(R.string.airwallex_invalid_field, field.displayName.lowercase())
+                        } else {
+                            input.error = null
+                        }
                     }
 
                     binding.content.addView(
@@ -81,7 +91,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>
                         null,
                         field.candidates ?: emptyList()
                     )
-                    dynamicFieldView.tag = field.name
+                    dynamicFieldView.tag = field
                     dynamicFieldView.setHint(field.displayName)
 
                     binding.content.addView(
@@ -117,35 +127,23 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>
             val fieldMap = mutableMapOf<String, String>()
             for (i in 0 until binding.content.childCount) {
                 val childView = binding.content.getChildAt(i)
-                val field = fields.find { it.name == childView.tag }
+                val field = childView.tag as DynamicSchemaField
 
                 if (childView is AirwallexTextInputLayout) {
-                    val validations = field?.validations
-                    if ((validations != null && isInvalid(childView.value, validations)) ||
-                        childView.value.isEmpty() ||
-                        (field?.uiType == DynamicSchemaFieldUIType.EMAIL && !Patterns.EMAIL_ADDRESS.matcher(childView.value).matches())
-                    ) {
-                        Toast.makeText(
-                            context,
-                            getString(R.string.invalid_field, field?.displayName ?: ""),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    if (isInvalid(childView.value, field)) {
+                        childView.error = getString(R.string.airwallex_invalid_field, field.displayName.lowercase())
                         return@setOnSingleClickListener
                     }
-                    field?.let {
+                    field.let {
                         fieldMap[it.name] = childView.value
                     }
                 } else if (childView is DynamicFieldCompleteView) {
                     val value = childView.value
-                    if (value.isNullOrEmpty()) {
-                        Toast.makeText(
-                            context,
-                            getString(R.string.invalid_field, field?.displayName ?: ""),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    if (value == null || isInvalid(value, field)) {
+                        childView.error = getString(R.string.airwallex_invalid_field, field.displayName.lowercase())
                         return@setOnSingleClickListener
                     }
-                    field?.let {
+                    field.let {
                         fieldMap[it.name] = value
                     }
                 }
@@ -154,12 +152,19 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>
         }
     }
 
+    private fun isInvalid(value: String, field: DynamicSchemaField): Boolean {
+        val validations = field.validations
+        val isNotMatchValidations = validations != null && isInvalid(value, validations)
+        val isEmpty = value.isEmpty()
+        return isNotMatchValidations || isEmpty
+    }
+
     private fun isInvalid(
         text: String,
-        Validations: DynamicSchemaFieldValidation
+        validations: DynamicSchemaFieldValidation
     ): Boolean {
-        val regex = Validations.regex
-        val max = Validations.max
+        val regex = validations.regex
+        val max = validations.max
 
         return regex != null && !Regex(regex).matches(text) ||
             max != null && text.length > max
@@ -167,8 +172,10 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>
 
     override fun onStart() {
         super.onStart()
-        val behavior = BottomSheetBehavior.from(requireView().parent as View)
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        BottomSheetBehavior.from(requireView().parent as View).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+            skipCollapsed = true
+        }
     }
 
     override fun bindFragment(

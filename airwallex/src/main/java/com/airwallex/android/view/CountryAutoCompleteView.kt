@@ -25,6 +25,10 @@ class CountryAutoCompleteView constructor(
     private var selectedCountry: Country? = null
 
     private var error: String? = null
+        set(value) {
+            field = value
+            viewBinding.actCountry.error = value
+        }
 
     private val countryAdapter: CountryAdapter by lazy {
         CountryAdapter(getContext(), CountryUtils.COUNTRIES)
@@ -55,9 +59,9 @@ class CountryAutoCompleteView constructor(
                 updatedSelectedCountryCode(countryAdapter.getItem(position))
             }
         viewBinding.actCountry.onFocusChangeListener = OnFocusChangeListener { _, focused ->
-            if (focused) {
+            error = if (focused) {
                 viewBinding.actCountry.showDropDown()
-                error = null
+                null
             } else {
                 val enteredCountry = viewBinding.actCountry.text.toString()
                 val country = CountryUtils.getCountryByName(enteredCountry)
@@ -69,7 +73,7 @@ class CountryAutoCompleteView constructor(
 
                 viewBinding.actCountry.setText(displayCountry)
 
-                error = if (displayCountry.isNullOrBlank()) {
+                if (displayCountry.isNullOrBlank()) {
                     resources.getString(R.string.airwallex_empty_country)
                 } else {
                     null

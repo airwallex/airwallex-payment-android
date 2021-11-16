@@ -15,9 +15,10 @@
         android:layout_marginBottom="4dp"
         android:textColor="@color/airwallex_color_grey_100"
         android:textSize="15sp"
+        android:textStyle="bold"
         tools:text="title" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -42,7 +43,7 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>
 

@@ -27,6 +27,7 @@ import okhttp3.*
 import org.json.JSONObject
 import retrofit2.HttpException
 import java.math.BigDecimal
+import java.text.NumberFormat
 import java.util.*
 
 class PaymentCartFragment : Fragment() {
@@ -201,8 +202,8 @@ class PaymentCartFragment : Fragment() {
         init {
             viewBinding.tvProductName.text = order.name
             viewBinding.tvProductType.text = String.format("%s x %d", order.type, order.quantity)
-            viewBinding.tvProductPrice.text =
-                String.format("$%.2f", order.unitPrice ?: 0 * (order.quantity ?: 0))
+            viewBinding.tvProductPrice.text = NumberFormat.getCurrencyInstance()
+                .format(BigDecimal.valueOf(order.unitPrice ?: 0.0 * (order.quantity ?: 0)))
             viewBinding.tvRemove.setOnSingleClickListener {
                 removeHandler.invoke()
             }
@@ -235,8 +236,10 @@ class PaymentCartFragment : Fragment() {
         val shipping = 0
         val totalPrice = subtotalPrice + shipping
 
-        viewBinding.tvOrderSubtotalPrice.text = String.format("$%.2f", subtotalPrice)
-        viewBinding.tvOrderTotalPrice.text = String.format("$%.2f", totalPrice)
+        viewBinding.tvOrderSubtotalPrice.text =
+            NumberFormat.getCurrencyInstance().format(BigDecimal.valueOf(subtotalPrice))
+        viewBinding.tvOrderTotalPrice.text =
+            NumberFormat.getCurrencyInstance().format(BigDecimal.valueOf(totalPrice))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -542,7 +545,7 @@ class PaymentCartFragment : Fragment() {
         AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
     }
 
-    private fun showPaymentSuccess() {
+    fun showPaymentSuccess() {
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.payment_successful),

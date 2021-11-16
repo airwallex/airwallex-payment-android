@@ -848,7 +848,7 @@ class Airwallex internal constructor(
     }
 
     companion object {
-        const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout://"
+        const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout"
 
         /**
          * Initialize some global configurations, better to be called on Application

@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.android.core.Airwallex.Companion.AIRWALLEX_CHECKOUT_SCHEMA
 import com.airwallex.paymentacceptance.databinding.ActivityPaymentCartBinding
 import com.airwallex.paymentacceptance.h5.H5DemoActivity
 import com.airwallex.paymentacceptance.wechat.WeChatDemoActivity
@@ -38,6 +39,17 @@ class PaymentCartActivity : AppCompatActivity() {
                     PaymentCartFragment()
                 )
                 .commit()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        if (intent?.scheme == AIRWALLEX_CHECKOUT_SCHEMA) {
+            showAlert(
+                getString(R.string.payment_successful),
+                getString(R.string.payment_successful_message)
+            )
         }
     }
 

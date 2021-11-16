@@ -111,10 +111,10 @@ dependencies {
     api project(':wechat')
     api project(':redirect')
 
-//    implementation 'io.github.airwallex:payment:3.0.0-alpha01'
-//    implementation 'io.github.airwallex:payment-card:3.0.0-alpha01'
-//    implementation 'io.github.airwallex:payment-redirect:3.0.0-alpha01'
-//    implementation 'io.github.airwallex:payment-wechat:3.0.0-alpha01'
+//    implementation 'io.github.airwallex:payment:3.0.0'
+//    implementation 'io.github.airwallex:payment-card:3.0.0'
+//    implementation 'io.github.airwallex:payment-redirect:3.0.0'
+//    implementation 'io.github.airwallex:payment-wechat:3.0.0'
 
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.preference:preference-ktx:1.1.1'
@@ -126,5 +126,5 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
 }
