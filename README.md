@@ -16,7 +16,7 @@ The Components are available through [Maven Central](https://repo1.maven.org/mav
 Add the dependency in your `build.gradle`.
 ```groovy
 dependencies {
-    implementation 'io.github.airwallex:airwallex-core:2.0.6'
+    implementation 'io.github.airwallex:payment:3.0.1'
 }
 ```
 
