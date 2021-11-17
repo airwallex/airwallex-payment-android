@@ -32,7 +32,7 @@ data class PaymentMethod internal constructor(
     /**
      * Type of the payment method.
      */
-    val type: PaymentMethodType? = null,
+    val type: String? = null,
 
     /**
      * Card information for the payment method
@@ -70,7 +70,7 @@ data class PaymentMethod internal constructor(
         private var id: String? = null
         private var requestId: String? = null
         private var customerId: String? = null
-        private var type: PaymentMethodType? = null
+        private var type: String? = null
         private var card: Card? = null
         private var billing: Billing? = null
         private var metadata: Map<String, Any?>? = null
@@ -102,7 +102,7 @@ data class PaymentMethod internal constructor(
             this.card = card
         }
 
-        fun setType(type: PaymentMethodType): Builder = apply {
+        fun setType(type: String): Builder = apply {
             this.type = type
         }
 

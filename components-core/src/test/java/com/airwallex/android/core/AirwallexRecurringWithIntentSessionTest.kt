@@ -18,6 +18,7 @@ class AirwallexRecurringWithIntentSessionTest {
             nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
             customerId = "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
             paymentIntent = PaymentIntentFixtures.PAYMENT_INTENT,
+            countryCode = "CN"
         )
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
             .setRequireCvc(true)

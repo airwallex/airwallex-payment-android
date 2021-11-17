@@ -56,6 +56,7 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
     @Parcelize
     internal data class Result internal constructor(
         val paymentIntentId: String? = null,
+        val isRedirecting: Boolean = false,
         val paymentMethodType: PaymentMethodType? = null,
         val exception: AirwallexException? = null,
         val paymentMethod: PaymentMethod? = null,
@@ -72,6 +73,7 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
             override fun create(parcel: Parcel): Result {
                 return Result(
                     paymentIntentId = parcel.readString(),
+                    isRedirecting = parcel.readInt() == 1,
                     paymentMethodType = parcel.readParcelable(PaymentMethodType::class.java.classLoader),
                     exception = parcel.readSerializable() as? AirwallexException?,
                     paymentMethod = parcel.readParcelable(PaymentMethod::class.java.classLoader),
@@ -82,6 +84,7 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
 
             override fun Result.write(parcel: Parcel, flags: Int) {
                 parcel.writeString(paymentIntentId)
+                parcel.writeInt(1.takeIf { isRedirecting } ?: 0)
                 parcel.writeParcelable(paymentMethodType, 0)
                 parcel.writeSerializable(exception)
                 parcel.writeParcelable(paymentMethod, 0)

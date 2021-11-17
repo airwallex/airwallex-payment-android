@@ -115,7 +115,7 @@ class WeChatDemoActivity : AppCompatActivity() {
             .setTitle(title)
             .setMessage(message)
             .setCancelable(false)
-            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+            .setPositiveButton(R.string.airwallex_okay) { dialogInterface, _ ->
                 dialogInterface.dismiss()
             }
             .create()

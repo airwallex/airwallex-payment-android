@@ -12,9 +12,9 @@ data class ConfirmPaymentIntentParams internal constructor(
     val customerId: String?,
 
     /**
-     * Payment method type, default is [PaymentMethodType.WECHAT]
+     * Payment method type
      */
-    val paymentMethodType: PaymentMethodType = PaymentMethodType.WECHAT,
+    val paymentMethodType: String,
 
     /**
      * Payment Method
@@ -37,37 +37,49 @@ data class ConfirmPaymentIntentParams internal constructor(
     val currency: String? = null,
 
     /**
+     * Country Code
+     */
+    val countryCode: String? = null,
+
+    /**
      * PPROAdditionalInfo
      */
-    val pproAdditionalInfo: PPROAdditionalInfo? = null,
+    val additionalInfo: Map<String, String>? = null,
 
     /**
      * The URL to redirect your customer back to after they authenticate their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
      */
-    val returnUrl: String? = null
+    val returnUrl: String? = null,
+
+    /**
+     * Payment Request Flow
+     */
+    val flow: AirwallexPaymentRequestFlow? = null
 
 ) : AbstractPaymentIntentParams(paymentIntentId = paymentIntentId, clientSecret = clientSecret) {
 
     class Builder(
         private val paymentIntentId: String,
-        private val clientSecret: String
+        private val clientSecret: String,
+        private var paymentMethodType: String
     ) : ObjectBuilder<ConfirmPaymentIntentParams> {
 
-        private var paymentMethodType: PaymentMethodType = PaymentMethodType.WECHAT
         private var paymentMethod: PaymentMethod? = null
         private var cvc: String? = null
         private var customerId: String? = null
         private var paymentConsentId: String? = null
         private var currency: String? = null
-        private var pproAdditionalInfo: PPROAdditionalInfo? = null
+        private var countryCode: String? = null
+        private var additionalInfo: Map<String, String>? = null
         private var returnUrl: String? = null
+        private var flow: AirwallexPaymentRequestFlow? = null
 
         fun setCVC(cvc: String?): Builder = apply {
             this.cvc = cvc
         }
 
-        fun setPPROAdditionalInfo(pproAdditionalInfo: PPROAdditionalInfo?): Builder = apply {
-            this.pproAdditionalInfo = pproAdditionalInfo
+        fun setAdditionalInfo(additionalInfo: Map<String, String>?): Builder = apply {
+            this.additionalInfo = additionalInfo
         }
 
         fun setCustomerId(customerId: String?): Builder = apply {
@@ -82,16 +94,20 @@ data class ConfirmPaymentIntentParams internal constructor(
             this.currency = currency
         }
 
-        fun setPaymentMethod(
-            paymentMethodType: PaymentMethodType,
-            paymentMethod: PaymentMethod? = null
-        ): Builder = apply {
-            this.paymentMethodType = paymentMethodType
+        fun setCountryCode(countryCode: String?): Builder = apply {
+            this.countryCode = countryCode
+        }
+
+        fun setPaymentMethod(paymentMethod: PaymentMethod? = null): Builder = apply {
             this.paymentMethod = paymentMethod
         }
 
         fun setReturnUrl(returnUrl: String?): Builder = apply {
             this.returnUrl = returnUrl
+        }
+
+        fun setFlow(flow: AirwallexPaymentRequestFlow?): Builder = apply {
+            this.flow = flow
         }
 
         override fun build(): ConfirmPaymentIntentParams {
@@ -104,8 +120,10 @@ data class ConfirmPaymentIntentParams internal constructor(
                 cvc = cvc,
                 paymentConsentId = paymentConsentId,
                 currency = currency,
-                pproAdditionalInfo = pproAdditionalInfo,
-                returnUrl = returnUrl
+                countryCode = countryCode,
+                additionalInfo = additionalInfo,
+                returnUrl = returnUrl,
+                flow = flow
             )
         }
     }
@@ -121,29 +139,34 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param customerId the customerId of [PaymentIntent], optional.
          * @param paymentConsentId the customerId of [PaymentConsent], optional.
          * @param currency amount currency
-         * @param pproAdditionalInfo to support ppro payment
+         * @param additionalInfo to support ppro payment
          * @param returnUrl optional
+         * @param flow optional
          */
         fun createThirdPartPayParams(
-            paymentMethodType: PaymentMethodType,
+            paymentMethodType: String,
             paymentIntentId: String,
             clientSecret: String,
             customerId: String? = null,
             paymentConsentId: String? = null,
             currency: String? = null,
-            pproAdditionalInfo: PPROAdditionalInfo? = null,
-            returnUrl: String? = null
+            countryCode: String? = null,
+            additionalInfo: Map<String, String>? = null,
+            returnUrl: String? = null,
+            flow: AirwallexPaymentRequestFlow? = null
         ): ConfirmPaymentIntentParams {
             return Builder(
                 paymentIntentId = paymentIntentId,
-                clientSecret = clientSecret
+                clientSecret = clientSecret,
+                paymentMethodType = paymentMethodType
             )
                 .setCustomerId(customerId)
-                .setPaymentMethod(paymentMethodType)
                 .setPaymentConsentId(paymentConsentId)
                 .setCurrency(currency)
-                .setPPROAdditionalInfo(pproAdditionalInfo)
+                .setCountryCode(countryCode)
+                .setAdditionalInfo(additionalInfo)
                 .setReturnUrl(returnUrl)
+                .setFlow(flow)
                 .build()
         }
 
@@ -169,10 +192,11 @@ data class ConfirmPaymentIntentParams internal constructor(
         ): ConfirmPaymentIntentParams {
             return Builder(
                 paymentIntentId = paymentIntentId,
-                clientSecret = clientSecret
+                clientSecret = clientSecret,
+                paymentMethodType = PaymentMethodType.CARD.value
             )
                 .setCustomerId(customerId)
-                .setPaymentMethod(PaymentMethodType.CARD, paymentMethod)
+                .setPaymentMethod(paymentMethod)
                 .setCVC(cvc)
                 .setPaymentConsentId(paymentConsentId)
                 .setReturnUrl(returnUrl)

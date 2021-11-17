@@ -1,7 +1,7 @@
 package com.airwallex.android.core
 
-enum class Environment {
-    STAGING, DEMO, PRODUCTION;
+enum class Environment(val value: String) {
+    STAGING("staging"), DEMO("demo"), PRODUCTION("production");
 
     fun baseUrl(): String {
         return when (this) {

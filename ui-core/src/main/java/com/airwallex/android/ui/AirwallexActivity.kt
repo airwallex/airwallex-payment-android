@@ -73,7 +73,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
                 .setTitle(title)
                 .setMessage(message)
                 .setCancelable(false)
-                .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+                .setPositiveButton(R.string.airwallex_okay) { dialogInterface, _ ->
                     dialogInterface.dismiss()
                 }
                 .create()
@@ -97,6 +97,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
             try {
                 loadingDialog = Dialog(activity).apply {
                     setContentView(R.layout.airwallex_loading)
+                    window?.setBackgroundDrawableResource(android.R.color.transparent)
                     setCancelable(cancelable)
                     show()
                 }

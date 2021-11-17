@@ -3,22 +3,24 @@ package com.airwallex.android.core.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Bank information.
+ */
 @Parcelize
-enum class Bank(val value: String, val displayName: String, val currency: String) : Parcelable {
+data class Bank internal constructor(
+    /**
+     * name of the bank
+     */
+    val name: String,
 
-    BANGKOK("bangkok", "Bangkok Bank", "THB"),
-    KRUNGSRI("krungsri", "Krungsri Bank", "THB"),
-    KRUNG_THAI("krungthai", "Krung Thai Bank", "THB"),
-    SIAM_COMMERCIAL("siam_commercial", "Siam Commercial Bank", "THB"),
-    BANK_MANDIRI("mandiri", "Bank Mandiri", "IDR"),
-    BANK_DANAMON("danamon", "Bank Danamon", "IDR"),
-    CIMB_NIAGA("cimb_niaga", "CIMB Niaga", "IDR"),
-    PERMATA("permata", "Permata", "IDR"),
-    MAY_BANK("maybank", "MayBank", "IDR");
+    /**
+     * display name of the bank
+     */
+    val displayName: String,
 
-    companion object {
-        fun fromValue(value: String?): Bank? {
-            return values().firstOrNull { it.value == value }
-        }
-    }
-}
+    /**
+     * logo of the bank
+     */
+    val resources: BankResources?
+
+) : AirwallexModel, Parcelable

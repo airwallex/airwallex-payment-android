@@ -61,7 +61,7 @@ version = '3.0.0'
 
 ext {
     buildToolsVersion = "30.0.2"
-    compileSdkVersion = 29
+    compileSdkVersion = 31
     minSdkVersion = 19
 
     ktlintVersion = '0.41.0'
@@ -70,7 +70,7 @@ ext {
     wechatPayVersion = "6.6.4"
 
     junitVersion = '4.13.2'
-    robolectricVersion = '4.6.1'
+    robolectricVersion = '4.7'
     testCoreVersion = '1.4.0'
 
     versionCode = 1

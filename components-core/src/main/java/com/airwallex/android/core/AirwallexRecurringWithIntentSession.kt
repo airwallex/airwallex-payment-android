@@ -42,6 +42,11 @@ class AirwallexRecurringWithIntentSession internal constructor(
     override val currency: String,
 
     /**
+     * Country code
+     */
+    override val countryCode: String,
+
+    /**
      * Payment amount. This is the order amount you would like to charge your customer. required.
      */
     override val amount: BigDecimal,
@@ -65,7 +70,8 @@ class AirwallexRecurringWithIntentSession internal constructor(
     class Builder(
         private val paymentIntent: PaymentIntent,
         private val customerId: String,
-        private val nextTriggerBy: PaymentConsent.NextTriggeredBy
+        private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
+        private val countryCode: String
     ) : ObjectBuilder<AirwallexRecurringWithIntentSession> {
 
         private var requiresCVC: Boolean = false
@@ -96,6 +102,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 requiresCVC = requiresCVC,
                 customerId = customerId,
                 currency = paymentIntent.currency,
+                countryCode = countryCode,
                 amount = paymentIntent.amount,
                 shipping = paymentIntent.order?.shipping,
                 returnUrl = returnUrl

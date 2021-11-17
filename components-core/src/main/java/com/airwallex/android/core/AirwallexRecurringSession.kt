@@ -35,6 +35,11 @@ class AirwallexRecurringSession internal constructor(
     override val currency: String,
 
     /**
+     * Country code
+     */
+    override val countryCode: String,
+
+    /**
      * Payment amount. This is the order amount you would like to charge your customer. required.
      */
     override val amount: BigDecimal,
@@ -59,7 +64,8 @@ class AirwallexRecurringSession internal constructor(
         private var customerId: String,
         private val currency: String,
         private val amount: BigDecimal,
-        private val nextTriggerBy: PaymentConsent.NextTriggeredBy
+        private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
+        private val countryCode: String
     ) : ObjectBuilder<AirwallexRecurringSession> {
 
         private var shipping: Shipping? = null
@@ -91,6 +97,7 @@ class AirwallexRecurringSession internal constructor(
                 requiresCVC = requiresCVC,
                 merchantTriggerReason = merchantTriggerReason,
                 currency = currency,
+                countryCode = countryCode,
                 amount = amount,
                 shipping = shipping,
                 customerId = customerId,

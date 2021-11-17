@@ -20,7 +20,7 @@ import kotlinx.coroutines.withContext
 
 class WeChatComponent : ActionComponent {
 
-    private var listener: Airwallex.PaymentListener<String>? = null
+    private var listener: Airwallex.PaymentResultListener? = null
 
     private var weChatApi: IWXAPI? = null
 
@@ -38,11 +38,19 @@ class WeChatComponent : ActionComponent {
 
                 override fun onResp(resp: BaseResp) {
                     when (resp.errCode) {
-                        BaseResp.ErrCode.ERR_OK -> listener?.onSuccess(paymentIntentId)
-                        BaseResp.ErrCode.ERR_USER_CANCEL -> listener?.onFailed(
-                            AirwallexCheckoutException(message = "WeChat Pay has been cancelled!")
+                        BaseResp.ErrCode.ERR_OK -> listener?.onCompleted(
+                            AirwallexPaymentStatus.Success(
+                                paymentIntentId
+                            )
                         )
-                        else -> listener?.onFailed(AirwallexCheckoutException(message = "Failed to process WeChat Pay, errCode ${resp.errCode}, errStr ${resp.errStr}"))
+                        BaseResp.ErrCode.ERR_USER_CANCEL -> listener?.onCompleted(
+                            AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "WeChat Pay has been cancelled!"))
+                        )
+                        else -> listener?.onCompleted(
+                            AirwallexPaymentStatus.Failure(
+                                AirwallexCheckoutException(message = "Failed to process WeChat Pay, errCode ${resp.errCode}, errStr ${resp.errStr}")
+                            )
+                        )
                     }
                     onEnd.invoke()
                 }
@@ -56,7 +64,7 @@ class WeChatComponent : ActionComponent {
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
-        listener: Airwallex.PaymentListener<String>
+        listener: Airwallex.PaymentResultListener
     ) {
         this.paymentIntentId = paymentIntentId
         this.listener = listener
@@ -64,7 +72,13 @@ class WeChatComponent : ActionComponent {
             NextAction.NextActionType.CALL_SDK -> {
                 val nextActionData = nextAction.data
                 if (nextActionData == null) {
-                    listener.onFailed(AirwallexCheckoutException(message = "WeChatPay Data not found."))
+                    listener.onCompleted(
+                        AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(
+                                message = "WeChatPay Data not found."
+                            )
+                        )
+                    )
                     return
                 }
                 val weChat = WeChat(
@@ -86,7 +100,7 @@ class WeChatComponent : ActionComponent {
                     CoroutineScope(Dispatchers.IO).launch {
                         apiRepository.executeMockWeChat(prepayId)
                         withContext(Dispatchers.Main) {
-                            listener.onSuccess(paymentIntentId)
+                            listener.onCompleted(AirwallexPaymentStatus.Success(paymentIntentId))
                         }
                     }
                 } else {
@@ -95,12 +109,22 @@ class WeChatComponent : ActionComponent {
                     }
                     val weChatInitiated = initiateWeChatPay(weChat)
                     if (!weChatInitiated) {
-                        listener.onFailed(AirwallexCheckoutException(message = "Failed to initialize WeChat app."))
+                        listener.onCompleted(
+                            AirwallexPaymentStatus.Failure(
+                                AirwallexCheckoutException(message = "Failed to initialize WeChat app.")
+                            )
+                        )
                     }
                 }
             }
             else -> {
-                listener.onFailed(AirwallexCheckoutException(message = "Unsupported next action ${nextAction?.type}"))
+                listener.onCompleted(
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(
+                            message = "Unsupported next action ${nextAction?.type}"
+                        )
+                    )
+                )
             }
         }
     }

@@ -3,7 +3,7 @@ package com.airwallex.android.card.view
 import android.app.Application
 import androidx.lifecycle.*
 import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.model.ContinuePaymentIntentParams
 
 internal class DccViewModel(
@@ -18,13 +18,18 @@ internal class DccViewModel(
 
         airwallex.continueDccPaymentIntent(
             params,
-            object : Airwallex.PaymentListener<String> {
-                override fun onFailed(exception: AirwallexException) {
-                    resultData.value = Result.failure(exception)
-                }
+            object : Airwallex.PaymentResultListener {
 
-                override fun onSuccess(response: String) {
-                    resultData.value = Result.success(response)
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    when (status) {
+                        is AirwallexPaymentStatus.Success -> {
+                            resultData.value = Result.success(status.paymentIntentId)
+                        }
+                        is AirwallexPaymentStatus.Failure -> {
+                            resultData.value = Result.failure(status.exception)
+                        }
+                        else -> Unit
+                    }
                 }
             }
         )

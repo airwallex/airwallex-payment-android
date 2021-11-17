@@ -1,5 +1,6 @@
 package com.airwallex.android.core
 
+import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.model.ClientSecret
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,10 +37,10 @@ class ClientSecretRepository(private val provider: ClientSecretProvider) {
         @Volatile
         private var instance: ClientSecretRepository? = null
 
+        @Throws(AirwallexCheckoutException::class)
         fun getInstance(): ClientSecretRepository {
-            return checkNotNull(instance) {
-                "Attempted to get instance of ClientSecretManager without initialization."
-            }
+            return this.instance
+                ?: throw AirwallexCheckoutException(message = "Attempted to get instance of ClientSecretManager without initialization.")
         }
 
         fun init(clientSecretProvider: ClientSecretProvider) {

@@ -23,10 +23,11 @@ class AvailablePaymentMethodResponseTest {
             AvailablePaymentMethodResponseFixtures.PAYMENMETHODRESPONSE
         assertEquals(
             listOf(
-                AvailablePaymentMethod(
-                    name = PaymentMethodType.CARD,
-                    transactionMode = AvailablePaymentMethod.TransactionMode.ONE_OFF,
+                AvailablePaymentMethodType(
+                    name = PaymentMethodType.CARD.value,
+                    transactionMode = TransactionMode.ONE_OFF,
                     active = true,
+                    countryCodes = emptyList(),
                     transactionCurrencies = listOf("dollar", "RMB"),
                     flows = listOf(AirwallexPaymentRequestFlow.IN_APP)
                 )

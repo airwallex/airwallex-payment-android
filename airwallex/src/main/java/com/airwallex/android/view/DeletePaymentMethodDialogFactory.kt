@@ -27,10 +27,10 @@ internal class DeletePaymentMethodDialogFactory internal constructor(
                 onDeletedPaymentMethod(paymentConsent)
             }
             .setNegativeButton(R.string.airwallex_delete_payment_method_negative) { _, _ ->
-                adapter.resetPaymentMethod(paymentConsent)
+                adapter.resetPaymentConsent(paymentConsent)
             }
             .setOnCancelListener {
-                adapter.resetPaymentMethod(paymentConsent)
+                adapter.resetPaymentConsent(paymentConsent)
             }
             .create()
     }

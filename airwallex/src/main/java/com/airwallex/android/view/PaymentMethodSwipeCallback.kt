@@ -93,7 +93,7 @@ abstract class PaymentMethodSwipeCallback(val context: Context, private val recy
     }
 
     override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
-        if (viewHolder !is PaymentMethodsAdapter.CardHolder) {
+        if (viewHolder !is PaymentMethodsAdapter.PaymentConsentHolder) {
             return
         }
         val pos = viewHolder.adapterPosition

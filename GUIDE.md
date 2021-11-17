@@ -90,8 +90,9 @@ We provide some parameters that can be used to debug the SDK, you can call it in
                     RedirectComponent.PROVIDER
                 )
             )
-            .build()
-        )
+            .build(),
+        ExampleClientSecretProvider()           // If you need to support recurring, you must to support your custom ClientSecretProvider
+    )
 ```
 
 #### Create Payment Intent (On the Merchant’s server)
@@ -117,7 +118,7 @@ Next Step:
 ## Airwallex Native UI integration
 We provide native screens to facilitate the integration of payment functions.
 
-First, add below code in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
+At first, add below code in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
 ```kotlin
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -131,38 +132,108 @@ First, add below code in your host Activity or Fragment, implement Activity#onAc
 Use `presentShippingFlow` to allow users to provide a shipping address as well as select a shipping method. `shipping` parameter is optional.
 ```kotlin
     AirwallexStarter.presentShippingFlow(this, shipping,
-       object : Airwallex.PaymentListener<Shipping> {
-            override fun onSuccess(shipping: Shipping) {
-                Log.d(TAG, "Save the shipping success")
-            }
+        object : Airwallex.ShippingResultListener {
+            override fun onCompleted(status: AirwallexShippingStatus) {
 
-            override fun onFailed(exception: Exception) {
-                Log.d(TAG, "Save the shipping failed")
             }
-
-            override fun onCancelled() {
-                Log.d(TAG, "User cancel edit shipping")
-            }
-        })
+        }
+    )
 ```
 
 ### Use the entire Native UI in one flow
-Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `AirwallexSession` object
+
+- For the redirect payment method. You need to configure scheme url on `AndroidManifest.xml`
+```
+    <intent-filter>
+        ...
+        <data
+            android:host="${applicationId}"
+            android:scheme="airwallexcheckout" />
+    </intent-filter>
+```
+
+- Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `AirwallexSession` object
 ```kotlin
-    AirwallexStarter.presentPaymentFlow(this, AirwallexPaymentSession.Builder(paymentIntent).build(),
-        object : Airwallex.PaymentListener<PaymentIntent> {
-            override fun onSuccess(paymentIntent: PaymentIntent) {
-                Log.d(TAG, "Confirm payment intent success")
+    private fun buildSession(
+        paymentIntent: PaymentIntent? = null,
+        customerId: String? = null
+    ): AirwallexSession {
+        return when (checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> {
+                AirwallexPaymentSession.Builder(
+                    paymentIntent = requireNotNull(
+                        paymentIntent,
+                        { "PaymentIntent is required" }
+                    ),
+                    countryCode = Settings.countryCode
+                )
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
             }
-            
-            override fun onFailed(exception: Exception) {
-                Log.d(TAG, "Confirm payment intent failed")
+            AirwallexCheckoutMode.RECURRING -> {
+                AirwallexRecurringSession.Builder(
+                    customerId = requireNotNull(customerId, { "CustomerId is required" }),
+                    currency = Settings.currency,
+                    amount = BigDecimal.valueOf(Settings.price.toDouble()),
+                    nextTriggerBy = nextTriggerBy,
+                    countryCode = Settings.countryCode
+                )
+                    .setShipping(shipping)
+                    .setRequireCvc(requiresCVC)
+                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
             }
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                AirwallexRecurringWithIntentSession.Builder(
+                    paymentIntent = requireNotNull(
+                        paymentIntent,
+                        { "PaymentIntent is required" }
+                    ),
+                    customerId = requireNotNull(
+                        paymentIntent.customerId,
+                        { "CustomerId is required" }
+                    ),
+                    nextTriggerBy = nextTriggerBy,
+                    countryCode = Settings.countryCode
+                )
+                    .setRequireCvc(requiresCVC)
+                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+                    .setReturnUrl(Settings.returnUrl)
+                    .build()
+            }
+        }
+    }
+
+    val session = buildSessionWithIntent(paymentIntent, customerId)
+    AirwallexStarter.presentPaymentFlow(this, session,
+        object : Airwallex.PaymentResultListener {
+    
+            override fun onCompleted(status: AirwallexPaymentStatus) {
                 
-            override fun onCancelled() {
-                Log.d(TAG, "User cancel confirm payment intent")
             }
-        })
+        }
+    )
+```
+- To obtain the payment result, you can use the `retrievePaymentIntent` method and check the latest status. Then you can prompt the shopper with the result.
+```
+    airwallex.retrievePaymentIntent(
+        params = RetrievePaymentIntentParams(
+            // the ID of the `PaymentIntent`, required.
+            paymentIntentId = paymentIntentId,
+            // the clientSecret of `PaymentIntent`, required.
+            clientSecret = clientSecret
+        ),
+        listener = object : Airwallex.PaymentListener<PaymentIntent> {
+            override fun onSuccess(response: PaymentIntent) {
+                onComplete.invoke(response)
+            }
+
+            override fun onFailed(exception: AirwallexException) {
+                Log.e(TAG, "Retrieve PaymentIntent failed", exception)
+            }
+        }
+    )
 ```
 ### Custom Theme
 You can overwrite these color values in your app. https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme

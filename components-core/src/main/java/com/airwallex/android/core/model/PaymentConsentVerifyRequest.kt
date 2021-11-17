@@ -23,12 +23,18 @@ data class PaymentConsentVerifyRequest internal constructor(
      * The URL to which your customer will be redirected after they verify PaymentConsent on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively provide an application URI scheme.
      */
     val returnUrl: String? = null,
+
+    /**
+     * Integration data
+     */
+    val integrationData: IntegrationData? = null
 ) : AirwallexRequestModel, Parcelable {
 
     private companion object {
         private const val FIELD_REQUEST_ID = "request_id"
         private const val FIELD_VERIFICATION_OPTIONS = "verification_options"
         private const val FIELD_RETURN_URL = "return_url"
+        private const val FIELD_INTEGRATION_DATA = "integration_data"
     }
 
     override fun toParamMap(): Map<String, Any> {
@@ -48,6 +54,16 @@ data class PaymentConsentVerifyRequest internal constructor(
                     mapOf(FIELD_RETURN_URL to it)
                 }.orEmpty()
             )
+            .plus(
+                mapOf(
+                    FIELD_INTEGRATION_DATA to (
+                        integrationData ?: IntegrationData(
+                            type = sdkType,
+                            version = sdkVersion
+                        )
+                        ).toParamMap()
+                )
+            )
     }
 
     @Parcelize
@@ -55,7 +71,7 @@ data class PaymentConsentVerifyRequest internal constructor(
         /**
          * Type of the payment method
          */
-        val type: PaymentMethodType,
+        val type: String,
 
         /**
          * Card information for verifying PaymentConsent
@@ -72,12 +88,12 @@ data class PaymentConsentVerifyRequest internal constructor(
             return mapOf<String, Any>()
                 .plus(
                     cardOptions?.let {
-                        mapOf(type.value to it.toParamMap())
+                        mapOf(type to it.toParamMap())
                     }.orEmpty()
                 )
                 .plus(
                     thirdPartOptions?.let {
-                        mapOf(type.value to it.toParamMap())
+                        mapOf(type to it.toParamMap())
                     }.orEmpty()
                 )
         }
@@ -162,6 +178,7 @@ data class PaymentConsentVerifyRequest internal constructor(
         private var requestId: String? = null
         private var verificationOptions: VerificationOptions? = null
         private var returnUrl: String? = null
+        private var integrationData: IntegrationData? = null
 
         fun setRequestId(requestId: String?): Builder = apply {
             this.requestId = requestId
@@ -175,11 +192,16 @@ data class PaymentConsentVerifyRequest internal constructor(
             this.returnUrl = returnUrl
         }
 
+        fun setIntegrationData(integrationData: IntegrationData?): Builder = apply {
+            this.integrationData = integrationData
+        }
+
         override fun build(): PaymentConsentVerifyRequest {
             return PaymentConsentVerifyRequest(
                 requestId = requestId,
                 verificationOptions = verificationOptions,
-                returnUrl = returnUrl
+                returnUrl = returnUrl,
+                integrationData = integrationData
             )
         }
     }

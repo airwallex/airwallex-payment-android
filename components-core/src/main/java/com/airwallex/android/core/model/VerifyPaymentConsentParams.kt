@@ -31,7 +31,7 @@ data class VerifyPaymentConsentParams constructor(
     /**
      * Type of the PaymentMethod.
      */
-    val paymentMethodType: PaymentMethodType,
+    val paymentMethodType: String,
 
     /**
      * The URL to which your customer will be redirected after they verify PaymentConsent on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively provide an application URI scheme.
@@ -41,7 +41,7 @@ data class VerifyPaymentConsentParams constructor(
     class Builder(
         private val clientSecret: String,
         private val paymentConsentId: String,
-        private val paymentMethodType: PaymentMethodType
+        private val paymentMethodType: String
     ) : ObjectBuilder<VerifyPaymentConsentParams> {
 
         private var amount: BigDecimal? = null
@@ -94,7 +94,7 @@ data class VerifyPaymentConsentParams constructor(
             return Builder(
                 clientSecret = clientSecret,
                 paymentConsentId = paymentConsentId,
-                paymentMethodType = PaymentMethodType.CARD
+                paymentMethodType = PaymentMethodType.CARD.value
             )
                 .setAmount(amount = amount)
                 .setCurrency(currency = currency)
@@ -104,7 +104,7 @@ data class VerifyPaymentConsentParams constructor(
         }
 
         fun createThirdPartParams(
-            paymentMethodType: PaymentMethodType,
+            paymentMethodType: String,
             clientSecret: String,
             paymentConsentId: String,
             returnUrl: String?

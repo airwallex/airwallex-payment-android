@@ -27,6 +27,12 @@ class PaymentIntentConfirmRequestTest {
                 .build()
         )
         .setReturnUrl("https://www.airwallex.com")
+        .setIntegrationData(
+            IntegrationData(
+                type = "mobile_sdk",
+                version = "10.0"
+            )
+        )
         .build()
 
     @Test
@@ -74,7 +80,11 @@ class PaymentIntentConfirmRequestTest {
                     "platform_type" to "huawei",
                     "device_os" to "android"
                 ),
-                "return_url" to "https://www.airwallex.com"
+                "return_url" to "https://www.airwallex.com",
+                "integration_data" to mapOf(
+                    "type" to "mobile_sdk",
+                    "version" to "10.0"
+                )
             ),
             paramMap
         )

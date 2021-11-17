@@ -32,7 +32,7 @@ class PaymentIntentTest {
             ),
             customerPaymentMethods = arrayListOf(
                 PaymentMethod.Builder()
-                    .setType(PaymentMethodType.CARD)
+                    .setType("card")
                     .setCard(
                         PaymentMethod.Card.Builder()
                             .setExpiryMonth("12")
@@ -75,7 +75,7 @@ class PaymentIntentTest {
                         .setId("mtd_4iyImkz7wglVXRad6hZWreqRJY0")
                         .setRequestId(null)
                         .setStatus(PaymentMethod.PaymentMethodStatus.VERIFIED)
-                        .setType(PaymentMethodType.CARD)
+                        .setType("card")
                         .setCard(
                             PaymentMethod.Card.Builder()
                                 .setExpiryMonth("01")
@@ -146,7 +146,7 @@ class PaymentIntentTest {
                     .setId("mtd_4iyImkz7wglVXRad6hZWreqRJY0")
                     .setRequestId(null)
                     .setStatus(PaymentMethod.PaymentMethodStatus.VERIFIED)
-                    .setType(PaymentMethodType.CARD)
+                    .setType("card")
                     .setCard(
                         PaymentMethod.Card.Builder()
                             .setExpiryMonth("01")

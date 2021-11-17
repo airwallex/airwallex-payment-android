@@ -129,78 +129,54 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
 
     private fun listenFocusChanged() {
         lastNameTextInputLayout.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                if (lastNameTextInputLayout.value.isEmpty()) {
-                    lastNameTextInputLayout.error =
-                        resources.getString(R.string.airwallex_empty_last_name)
-                } else {
-                    lastNameTextInputLayout.error = null
-                }
+            if (!hasFocus && lastNameTextInputLayout.value.isEmpty()) {
+                lastNameTextInputLayout.error =
+                    resources.getString(R.string.airwallex_empty_last_name)
             } else {
                 lastNameTextInputLayout.error = null
             }
         }
 
         firstNameTextInputLayout.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                if (firstNameTextInputLayout.value.isEmpty()) {
-                    firstNameTextInputLayout.error =
-                        resources.getString(R.string.airwallex_empty_first_name)
-                } else {
-                    firstNameTextInputLayout.error = null
-                }
+            if (!hasFocus && firstNameTextInputLayout.value.isEmpty()) {
+                firstNameTextInputLayout.error =
+                    resources.getString(R.string.airwallex_empty_first_name)
             } else {
                 firstNameTextInputLayout.error = null
             }
         }
         stateTextInputLayout.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                if (stateTextInputLayout.value.isEmpty()) {
-                    stateTextInputLayout.error = resources.getString(R.string.airwallex_empty_state)
-                } else {
-                    stateTextInputLayout.error = null
-                }
+            if (!hasFocus && stateTextInputLayout.value.isEmpty()) {
+                stateTextInputLayout.error = resources.getString(R.string.airwallex_empty_state)
             } else {
                 stateTextInputLayout.error = null
             }
         }
 
         cityTextInputLayout.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                if (cityTextInputLayout.value.isEmpty()) {
-                    cityTextInputLayout.error = resources.getString(R.string.airwallex_empty_city)
-                } else {
-                    cityTextInputLayout.error = null
-                }
+            if (!hasFocus && cityTextInputLayout.value.isEmpty()) {
+                cityTextInputLayout.error = resources.getString(R.string.airwallex_empty_city)
             } else {
                 cityTextInputLayout.error = null
             }
         }
 
         addressTextInputLayout.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                if (addressTextInputLayout.value.isEmpty()) {
-                    addressTextInputLayout.error =
-                        resources.getString(R.string.airwallex_empty_street)
-                } else {
-                    addressTextInputLayout.error = null
-                }
+            if (!hasFocus && addressTextInputLayout.value.isEmpty()) {
+                addressTextInputLayout.error =
+                    resources.getString(R.string.airwallex_empty_street)
             } else {
                 addressTextInputLayout.error = null
             }
         }
 
         emailTextInputLayout.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                if (emailTextInputLayout.value.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(
-                        emailTextInputLayout.value
-                    ).matches()
-                ) {
-                    emailTextInputLayout.error =
-                        resources.getString(R.string.airwallex_invalid_email)
-                } else {
-                    emailTextInputLayout.error = null
-                }
+            if (!hasFocus && emailTextInputLayout.value.isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(
+                    emailTextInputLayout.value
+                ).matches()
+            ) {
+                emailTextInputLayout.error =
+                    resources.getString(R.string.airwallex_invalid_email)
             } else {
                 emailTextInputLayout.error = null
             }

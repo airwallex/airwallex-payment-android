@@ -2,11 +2,7 @@ package com.airwallex.android.card
 
 import android.app.Activity
 import androidx.test.core.app.ApplicationProvider
-import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexApiRepository
-import com.airwallex.android.core.AirwallexPaymentManager
-import com.airwallex.android.core.CardNextActionModel
-import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.*
 import com.airwallex.android.core.model.NextAction
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -100,15 +96,21 @@ class CardComponentProviderTest {
                     currency = "CNY",
                     amount = BigDecimal.TEN
                 ),
-                object : Airwallex.PaymentListener<String> {
-                    override fun onFailed(exception: AirwallexException) {
-                        success = false
-                        latch.countDown()
-                    }
+                object : Airwallex.PaymentResultListener {
 
-                    override fun onSuccess(response: String) {
-                        success = true
-                        latch.countDown()
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        when (status) {
+                            is AirwallexPaymentStatus.Success,
+                            is AirwallexPaymentStatus.InProgress -> {
+                                success = true
+                                latch.countDown()
+                            }
+                            is AirwallexPaymentStatus.Failure -> {
+                                success = false
+                                latch.countDown()
+                            }
+                            else -> Unit
+                        }
                     }
                 }
             )
@@ -150,15 +152,20 @@ class CardComponentProviderTest {
                 currency = "CNY",
                 amount = BigDecimal.TEN
             ),
-            object : Airwallex.PaymentListener<String> {
-                override fun onFailed(exception: AirwallexException) {
-                    success = false
-                    latch.countDown()
-                }
-
-                override fun onSuccess(response: String) {
-                    success = true
-                    latch.countDown()
+            object : Airwallex.PaymentResultListener {
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    when (status) {
+                        is AirwallexPaymentStatus.Success,
+                        is AirwallexPaymentStatus.InProgress -> {
+                            success = true
+                            latch.countDown()
+                        }
+                        is AirwallexPaymentStatus.Failure -> {
+                            success = false
+                            latch.countDown()
+                        }
+                        else -> Unit
+                    }
                 }
             }
         )

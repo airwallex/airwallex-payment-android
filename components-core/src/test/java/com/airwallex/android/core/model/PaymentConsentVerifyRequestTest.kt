@@ -12,12 +12,18 @@ class PaymentConsentVerifyRequestTest {
         .setReturnUrl("https://www.airwallex.com")
         .setVerificationOptions(
             PaymentConsentVerifyRequest.VerificationOptions(
-                type = PaymentMethodType.CARD,
+                type = "card",
                 cardOptions = PaymentConsentVerifyRequest.CardVerificationOptions(
                     amount = BigDecimal.valueOf(1),
                     currency = "HKD",
                     cvc = "123"
                 )
+            )
+        )
+        .setIntegrationData(
+            IntegrationData(
+                type = "mobile_sdk",
+                version = "10.0"
             )
         )
         .build()
@@ -27,11 +33,17 @@ class PaymentConsentVerifyRequestTest {
         .setReturnUrl("https://www.airwallex.com")
         .setVerificationOptions(
             PaymentConsentVerifyRequest.VerificationOptions(
-                type = PaymentMethodType.ALIPAY_CN,
+                type = "alipaycn",
                 thirdPartOptions = PaymentConsentVerifyRequest.ThirdPartVerificationOptions(
                     flow = AirwallexPaymentRequestFlow.IN_APP,
                     osType = "android"
                 )
+            )
+        )
+        .setIntegrationData(
+            IntegrationData(
+                type = "mobile_sdk",
+                version = "10.0"
             )
         )
         .build()
@@ -68,6 +80,10 @@ class PaymentConsentVerifyRequestTest {
                             "currency" to "HKD",
                             "cvc" to "123"
                         )
+                    ),
+                    "integration_data" to mapOf(
+                        "type" to "mobile_sdk",
+                        "version" to "10.0"
                     )
                 )
             ).toString(),
@@ -85,6 +101,10 @@ class PaymentConsentVerifyRequestTest {
                             "flow" to "inapp",
                             "os_type" to "android"
                         )
+                    ),
+                    "integration_data" to mapOf(
+                        "type" to "mobile_sdk",
+                        "version" to "10.0"
                     )
                 )
             ).toString(),

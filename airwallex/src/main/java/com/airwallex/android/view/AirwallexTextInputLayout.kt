@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.text.method.KeyListener
 import android.util.AttributeSet
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -89,6 +90,10 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
                 recycle()
             }
         }
+    }
+
+    fun setKeyListener(input: KeyListener) {
+        teInput.keyListener = input
     }
 
     fun setInputType(type: Int) {

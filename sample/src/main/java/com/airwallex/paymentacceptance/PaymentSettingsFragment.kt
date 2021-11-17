@@ -61,7 +61,7 @@ class PaymentSettingsFragment :
             .setTitle(title)
             .setMessage(message)
             .setCancelable(false)
-            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+            .setPositiveButton(R.string.airwallex_okay) { dialogInterface, _ ->
                 dialogInterface.dismiss()
             }
             .create()
@@ -82,12 +82,47 @@ class PaymentSettingsFragment :
         (findPreference<Preference>(getString(R.string.currency)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
             editText.inputType = TYPE_TEXT_FLAG_CAP_CHARACTERS
         }
+        (findPreference<Preference>(getString(R.string.currency)) as? EditTextPreference)?.onPreferenceChangeListener =
+            object : Preference.OnPreferenceChangeListener {
+                override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+                    if (newValue?.toString()?.trim().isNullOrEmpty()) {
+                        Toast.makeText(
+                            context, "Currency can not be empty",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        return false
+                    }
+                    return true
+                }
+            }
+        (findPreference<Preference>(getString(R.string.country_code)) as? EditTextPreference)?.setOnBindEditTextListener { editText ->
+            editText.inputType = TYPE_TEXT_FLAG_CAP_CHARACTERS
+        }
+        (findPreference<Preference>(getString(R.string.country_code)) as? EditTextPreference)?.onPreferenceChangeListener =
+            object : Preference.OnPreferenceChangeListener {
+                override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+                    if (newValue?.toString()?.trim().isNullOrEmpty()) {
+                        Toast.makeText(
+                            context, "Country code can not be empty",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        return false
+                    }
+                    return true
+                }
+            }
 
         val sdkEnvPref: ListPreference? =
             findPreference(getString(R.string.sdk_env_id)) as? ListPreference?
         if (sdkEnvPref != null && sdkEnvPref.value == null) {
             // Default Staging
             sdkEnvPref.setValueIndex(0)
+        }
+
+        val returnUrlPref: ListPreference? =
+            findPreference(getString(R.string.return_url)) as? ListPreference?
+        if (returnUrlPref != null && returnUrlPref.value == null) {
+            returnUrlPref.setValueIndex(0)
         }
 
         val checkoutModePref: ListPreference? =
@@ -167,9 +202,11 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.client_id))
         onSharedPreferenceChanged(preferences, getString(R.string.price))
         onSharedPreferenceChanged(preferences, getString(R.string.currency))
+        onSharedPreferenceChanged(preferences, getString(R.string.country_code))
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_id))
         onSharedPreferenceChanged(preferences, getString(R.string.sdk_env_id))
         onSharedPreferenceChanged(preferences, getString(R.string.checkout_mode))
+        onSharedPreferenceChanged(preferences, getString(R.string.return_url))
         onSharedPreferenceChanged(preferences, getString(R.string.next_trigger_by))
         onSharedPreferenceChanged(preferences, getString(R.string.requires_cvc))
         registerOnSharedPreferenceChangeListener()
@@ -209,9 +246,17 @@ class PaymentSettingsFragment :
                     editText.setSelection(editText.length())
                 }
             }
+            getString(R.string.country_code) -> {
+                preference?.summary = Settings.countryCode
+                (preference as EditTextPreference).setOnBindEditTextListener { editText ->
+                    editText.inputType = TYPE_CLASS_TEXT or TYPE_TEXT_FLAG_CAP_CHARACTERS
+                    editText.setSelection(editText.length())
+                }
+            }
             getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
             getString(R.string.sdk_env_id) -> preference?.summary = Settings.sdkEnv
             getString(R.string.checkout_mode) -> preference?.summary = Settings.checkoutMode
+            getString(R.string.return_url) -> preference?.summary = Settings.returnUrl
             getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy
             getString(R.string.requires_cvc) -> preference?.summary = Settings.requiresCVC
         }

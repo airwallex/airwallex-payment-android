@@ -12,7 +12,6 @@ class ContinuePaymentIntentParamsTest {
         device = Device(
             deviceId = "airwallex_cybsint_hkdmr7v9rg1j58ky8re1629281144897",
             deviceModel = "mobile",
-            sdkVersion = "2.0.6",
             platformType = "Android",
             deviceOS = "10"
         ),
@@ -34,7 +33,6 @@ class ContinuePaymentIntentParamsTest {
             Device(
                 deviceId = "airwallex_cybsint_hkdmr7v9rg1j58ky8re1629281144897",
                 deviceModel = "mobile",
-                sdkVersion = "2.0.6",
                 platformType = "Android",
                 deviceOS = "10"
             ).toString(),

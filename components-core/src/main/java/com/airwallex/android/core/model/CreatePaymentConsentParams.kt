@@ -13,9 +13,9 @@ data class CreatePaymentConsentParams constructor(
     val paymentMethodId: String? = null,
 
     /**
-     * Type of the PaymentMethod. One of card, alipayhk, kakaopay, gcash, dana, tng
+     * Type of the PaymentMethod
      */
-    val paymentMethodType: PaymentMethodType,
+    val paymentMethodType: String,
 
     /**
      * The party to trigger subsequent payments. Can be one of merchant, customer. If type of payment_method is card, both merchant and customer is supported. Otherwise, only merchant is supported
@@ -38,7 +38,7 @@ data class CreatePaymentConsentParams constructor(
     class Builder(
         private val clientSecret: String,
         private val customerId: String,
-        private val paymentMethodType: PaymentMethodType,
+        private val paymentMethodType: String,
         private val nextTriggeredBy: PaymentConsent.NextTriggeredBy
     ) : ObjectBuilder<CreatePaymentConsentParams> {
 
@@ -88,7 +88,7 @@ data class CreatePaymentConsentParams constructor(
             return Builder(
                 clientSecret = clientSecret,
                 customerId = customerId,
-                paymentMethodType = PaymentMethodType.CARD,
+                paymentMethodType = PaymentMethodType.CARD.value,
                 nextTriggeredBy = nextTriggeredBy
             )
                 .setMerchantTriggerReason(merchantTriggerReason = merchantTriggerReason)
@@ -98,7 +98,7 @@ data class CreatePaymentConsentParams constructor(
         }
 
         fun createThirdPartParams(
-            paymentMethodType: PaymentMethodType,
+            paymentMethodType: String,
             clientSecret: String,
             customerId: String
         ): CreatePaymentConsentParams {

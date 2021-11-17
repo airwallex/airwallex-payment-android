@@ -10,14 +10,18 @@ class PaymentConsentCreateRequestTest {
         .setCustomerId("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu")
         .setPaymentMethodRequest(
             PaymentMethodRequest.Builder(
-                type = PaymentMethodType.ALIPAY_CN
+                type = "alipaycn"
             )
                 .setThirdPartyPaymentMethodRequest(
-                    name = "aaa",
-                    email = "aaa@dd.cc",
-                    phone = "123",
-                    currency = "CNY",
-                    bank = Bank.MAY_BANK
+                    mapOf(
+                        "bank_name" to "maybank",
+                        "country_code" to "CN",
+                        "shopper_name" to "aaa",
+                        "shopper_email" to "aaa@dd.cc",
+                        "shopper_phone" to "123",
+                        "flow" to "inapp",
+                        "os_type" to "android"
+                    )
                 )
                 .build()
         )
@@ -33,15 +37,18 @@ class PaymentConsentCreateRequestTest {
         assertEquals("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu", request.customerId)
         assertEquals(
             PaymentMethodRequest.Builder(
-                type = PaymentMethodType.ALIPAY_CN
-            )
-                .setThirdPartyPaymentMethodRequest(
-                    name = "aaa",
-                    email = "aaa@dd.cc",
-                    phone = "123",
-                    currency = "CNY",
-                    bank = Bank.MAY_BANK
+                type = "alipaycn"
+            ).setThirdPartyPaymentMethodRequest(
+                mapOf(
+                    "bank_name" to "maybank",
+                    "country_code" to "CN",
+                    "shopper_name" to "aaa",
+                    "shopper_email" to "aaa@dd.cc",
+                    "shopper_phone" to "123",
+                    "flow" to "inapp",
+                    "os_type" to "android"
                 )
+            )
                 .build().toParamMap(),
             request.paymentMethodRequest!!.toParamMap()
         )

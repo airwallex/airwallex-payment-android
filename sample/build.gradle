@@ -10,11 +10,6 @@ static def getDateTime() {
     return df.format(new Date())
 }
 
-
-def getBaseUrl() {
-    return readProperty('AIRWALLEX_BASE_URL')
-}
-
 def getApiKey() {
     return readProperty('AIRWALLEX_API_KEY')
 }
@@ -25,6 +20,10 @@ def getClientId() {
 
 def getWeChatAppId() {
     return readProperty('AIRWALLEX_WECHAT_APP_ID')
+}
+
+def getReturnUrl() {
+    return readProperty('AIRWALLEX_RETURN_URL')
 }
 
 private def readProperty(name) {
@@ -59,10 +58,10 @@ android {
         testInstrumentationRunnerArguments clearPackageData: 'true'
 
         manifestPlaceholders = [
-                AIRWALLEX_BASE_URL            : getBaseUrl(),
                 AIRWALLEX_API_KEY             : getApiKey(),
                 AIRWALLEX_CLIENT_ID           : getClientId(),
-                AIRWALLEX_WECHAT_APP_ID       : getWeChatAppId()
+                AIRWALLEX_WECHAT_APP_ID       : getWeChatAppId(),
+                AIRWALLEX_RETURN_URL          : getReturnUrl()
         ]
     }
 
@@ -106,12 +105,16 @@ android {
 }
 
 dependencies {
+
     api project(":airwallex")
     api project(':card')
     api project(':wechat')
     api project(':redirect')
 
-//    implementation 'io.github.airwallex:airwallex-core:2.0.6'
+//    implementation 'io.github.airwallex:payment:3.0.0'
+//    implementation 'io.github.airwallex:payment-card:3.0.0'
+//    implementation 'io.github.airwallex:payment-redirect:3.0.0'
+//    implementation 'io.github.airwallex:payment-wechat:3.0.0'
 
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.preference:preference-ktx:1.1.1'
@@ -123,5 +126,5 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
 }

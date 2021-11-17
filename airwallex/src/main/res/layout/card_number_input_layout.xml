@@ -1,37 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tlInput"
+    style="@style/AirwallexTextInputLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tlInput"
-        style="@style/AirwallexTextInputLayout"
+    <com.airwallex.android.view.CardNumberEditText
+        android:id="@+id/teInput"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.airwallex.android.view.CardNumberEditText
-            android:id="@+id/teInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:digits="@string/airwallex_valid_digits"
-            android:singleLine="true"
-            android:textColor="@color/airwallex_color_grey_100"
-            android:textColorHint="@color/airwallex_color_grey_50"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <ImageView
-        android:id="@+id/ivBrand"
-        app:srcCompat="@drawable/airwallex_ic_card_default"
-        tools:ignore="RtlHardcoded"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|right"
-        android:layout_marginRight="16dp"
-        android:contentDescription="@null" />
-</FrameLayout>
-
-
+        android:digits="@string/airwallex_valid_digits"
+        android:drawableEnd="@drawable/airwallex_ic_card_default"
+        android:drawablePadding="16dp"
+        android:singleLine="true"
+        android:textColor="@color/airwallex_color_grey_100"
+        android:textColorHint="@color/airwallex_color_grey_50"
+        android:textSize="16sp"
+        tools:ignore="RtlSymmetry" />
+</com.google.android.material.textfield.TextInputLayout>
