@@ -1,0 +1,92 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+}
+
+apply from: "../ktlint.gradle"
+
+def API_VERSION = '"2020-04-30"'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.compileSdkVersion
+
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+
+        consumerProguardFiles 'proguard-rules.pro'
+
+        buildConfigField "String", "VERSION_NAME", "\"${rootProject.ext.versionName}\""
+
+        vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    lintOptions {
+        abortOnError true
+        disable 'ParcelCreator'
+    }
+}
+
+android.buildTypes.each { type ->
+    type.buildConfigField 'String', 'API_VERSION', API_VERSION
+}
+
+dependencies {
+    // material
+    api 'com.google.android.material:material:1.4.0'
+
+    // kotlin
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    api "org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlinVersion"
+    api "org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlinVersion"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
+
+    // test
+    testImplementation 'org.json:json:20210307'
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
+    testImplementation "androidx.test:core:$testCoreVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
+}
+
+ext {
+    libraryVersion = "${android.defaultConfig.versionName}"
+}
+
+apply from: rootProject.file('publish.gradle')
+apply from: rootProject.file('deploy.gradle')

@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.airwallex.android.model.ObjectBuilder
-import com.airwallex.android.model.Shipping
+import com.airwallex.android.core.model.ObjectBuilder
+import com.airwallex.android.core.model.Shipping
+import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch.Args
 import kotlinx.parcelize.Parcelize
 
-internal class PaymentShippingActivityLaunch : AirwallexActivityLaunch<PaymentShippingActivity, Args> {
+class PaymentShippingActivityLaunch :
+    AirwallexActivityLaunch<PaymentShippingActivity, Args> {
 
     constructor(activity: Activity) : super(
         activity,
@@ -50,7 +52,7 @@ internal class PaymentShippingActivityLaunch : AirwallexActivityLaunch<PaymentSh
     }
 
     @Parcelize
-    internal data class Result internal constructor(
+    data class Result internal constructor(
         val shipping: Shipping
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {

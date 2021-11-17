@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlinVersion = '1.5.20'
+    ext.kotlinVersion = '1.5.30'
     repositories {
         google()
         mavenCentral()
@@ -12,6 +12,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "nl.neotech.plugin.rootcoverage" version "1.4.0"
+}
+
 allprojects {
     repositories {
         google()
@@ -19,20 +23,55 @@ allprojects {
     }
 }
 
+jacoco {
+    // https://www.jacoco.org/jacoco/trunk/doc/changes.html
+    toolVersion = "0.8.7"
+}
+
+rootCoverage {
+
+    excludes = [
+            "**/extension",
+            "**/ui",
+            "**/log",
+            "**/AirwallexStarter*.*",
+            "**/card/AirwallexSecurityConnector.class",
+            "**/card/ThreeDSecureManager.class",
+            "**/*Activity*.*",
+            "**/*ActivityLaunch*.*",
+            "**/core/Airwallex.class",
+            "**/core/AirwallexPaymentManager.class",
+            "**/core/AirwallexApiRepository.class",
+            // These will be change
+            "**/view/PaymentInfoBottomSheetDialog.class",
+            "**/view/PaymentMethods*.*"
+    ]
+
+    generateHtml true
+    generateXml true
+    generateCsv false
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
 // Update the version field when a new version is released
-version = '2.0.6'
+version = '3.0.0'
 
 ext {
     buildToolsVersion = "30.0.2"
-    compileSdkVersion = 29
+    compileSdkVersion = 31
     minSdkVersion = 19
 
-    ktlintVersion = '0.39.0'
-    kotlinCoroutinesVersion = '1.5.0'
+    ktlintVersion = '0.41.0'
+    kotlinCoroutinesVersion = '1.5.2'
+
+    wechatPayVersion = "6.6.4"
+
+    junitVersion = '4.13.2'
+    robolectricVersion = '4.7'
+    testCoreVersion = '1.4.0'
 
     versionCode = 1
     versionName = version

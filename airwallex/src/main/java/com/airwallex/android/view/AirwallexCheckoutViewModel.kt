@@ -2,11 +2,12 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.airwallex.android.Airwallex
-import com.airwallex.android.AirwallexSession
-import com.airwallex.android.model.*
+import com.airwallex.android.core.*
+import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.model.*
 
-internal class AirwallexCheckoutViewModel(
+class AirwallexCheckoutViewModel(
     application: Application,
     private val airwallex: Airwallex,
     private val session: AirwallexSession
@@ -16,44 +17,89 @@ internal class AirwallexCheckoutViewModel(
         paymentMethod: PaymentMethod,
         paymentConsentId: String?,
         cvc: String?,
-        pproAdditionalInfo: PPROAdditionalInfo? = null
-    ): LiveData<PaymentResult> {
-        val resultData = MutableLiveData<PaymentResult>()
+        additionalInfo: Map<String, String>? = null,
+        flow: AirwallexPaymentRequestFlow? = null,
+    ): LiveData<AirwallexPaymentStatus> {
+        val resultData = MutableLiveData<AirwallexPaymentStatus>()
         airwallex.checkout(
             session,
             paymentMethod,
             paymentConsentId,
             cvc,
-            pproAdditionalInfo,
-            object : Airwallex.PaymentListener<PaymentIntent> {
-                override fun onFailed(exception: Exception) {
-                    resultData.value = PaymentResult.Error(exception)
-                }
-
-                override fun onSuccess(response: PaymentIntent) {
-                    resultData.value = PaymentResult.Success(response)
-                }
-
-                override fun onNextActionWithWeChatPay(weChat: WeChat) {
-                    resultData.value = PaymentResult.WeChatPay(weChat)
-                }
-
-                override fun onNextActionWithRedirectUrl(url: String) {
-                    resultData.value = PaymentResult.Redirect(url)
+            additionalInfo,
+            flow,
+            object : Airwallex.PaymentResultListener {
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    resultData.value = status
                 }
             }
         )
         return resultData
     }
 
-    sealed class PaymentResult {
-        data class Success(val paymentIntent: PaymentIntent) : PaymentResult()
+    fun retrieveBanks(paymentMethodTypeName: String): LiveData<Result<BankResponse>> {
+        val resultData = MutableLiveData<Result<BankResponse>>()
+        when (session) {
+            is AirwallexPaymentSession -> {
+                val paymentIntent = session.paymentIntent
+                airwallex.retrieveBanks(
+                    RetrieveBankParams.Builder(
+                        clientSecret = requireNotNull(paymentIntent.clientSecret),
+                        paymentMethodType = paymentMethodTypeName
+                    )
+                        .setCountryCode(session.countryCode)
+                        .build(),
+                    object : Airwallex.PaymentListener<BankResponse> {
+                        override fun onFailed(exception: AirwallexException) {
+                            resultData.value = Result.failure(exception)
+                        }
 
-        data class Error(val exception: Exception) : PaymentResult()
+                        override fun onSuccess(response: BankResponse) {
+                            resultData.value = Result.success(response)
+                        }
+                    }
+                )
+            }
+            else -> {
+                resultData.value =
+                    Result.failure(AirwallexCheckoutException(message = "$paymentMethodTypeName just support one-off payment"))
+            }
+        }
+        return resultData
+    }
 
-        data class WeChatPay(val weChat: WeChat) : PaymentResult()
+    fun retrievePaymentMethodTypeInfo(
+        paymentMethodTypeName: String
+    ): LiveData<Result<PaymentMethodTypeInfo>> {
+        val resultData = MutableLiveData<Result<PaymentMethodTypeInfo>>()
+        when (session) {
+            is AirwallexPaymentSession -> {
+                val paymentIntent = session.paymentIntent
+                airwallex.retrievePaymentMethodTypeInfo(
+                    RetrievePaymentMethodTypeInfoParams.Builder(
+                        clientSecret = requireNotNull(paymentIntent.clientSecret),
+                        paymentMethodType = paymentMethodTypeName
+                    )
+                        .setFlow(AirwallexPaymentRequestFlow.IN_APP)
+                        .build(),
+                    object : Airwallex.PaymentListener<PaymentMethodTypeInfo> {
+                        override fun onFailed(exception: AirwallexException) {
+                            resultData.value = Result.failure(exception)
+                        }
 
-        data class Redirect(val redirectUrl: String) : PaymentResult()
+                        override fun onSuccess(response: PaymentMethodTypeInfo) {
+                            resultData.value = Result.success(response)
+                        }
+                    }
+                )
+            }
+            else -> {
+                resultData.value =
+                    Result.failure(AirwallexCheckoutException(message = "$paymentMethodTypeName just support one-off payment"))
+            }
+        }
+
+        return resultData
     }
 
     internal class Factory(

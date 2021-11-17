@@ -9,7 +9,7 @@ import com.airwallex.android.R
  */
 internal class CardExpiryTextInputLayout constructor(
     context: Context,
-    attrs: AttributeSet
+    attrs: AttributeSet?
 ) : AirwallexTextInputLayout(context, attrs, R.layout.card_expiry_input_layout) {
 
     /**

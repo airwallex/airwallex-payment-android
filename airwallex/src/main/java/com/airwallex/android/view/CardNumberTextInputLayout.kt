@@ -2,7 +2,6 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.ImageView
 import com.airwallex.android.R
 
 /**
@@ -10,7 +9,7 @@ import com.airwallex.android.R
  */
 internal class CardNumberTextInputLayout constructor(
     context: Context,
-    attrs: AttributeSet
+    attrs: AttributeSet?
 ) : AirwallexTextInputLayout(context, attrs, R.layout.card_number_input_layout) {
 
     /**
@@ -48,7 +47,12 @@ internal class CardNumberTextInputLayout constructor(
         }
 
         input.brandChangeCallback = { brand ->
-            findViewById<ImageView>(R.id.ivBrand).setImageResource(brand.icon)
+            teInput.setCompoundDrawablesWithIntrinsicBounds(
+                0,
+                0,
+                brand.icon,
+                0
+            )
         }
     }
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/payment_method_third_item"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/payment_method_item_height"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:paddingHorizontal="24dp">
+
+    <ImageView
+        android:id="@+id/payment_method_icon"
+        android:layout_width="35dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:contentDescription="@null"
+        android:scaleType="centerInside" />
+
+    <TextView
+        android:id="@+id/payment_method_name"
+        style="@style/AirwallexPaymentSubHeaderRegular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginHorizontal="16dp"
+        android:layout_toEndOf="@id/payment_method_icon" />
+
+    <ImageView
+        android:id="@+id/payment_method_checked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@null"
+        android:visibility="gone"
+        app:srcCompat="@drawable/airwallex_ic_tick" />
+</RelativeLayout>

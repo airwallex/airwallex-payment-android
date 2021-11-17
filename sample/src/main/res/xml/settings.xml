@@ -70,6 +70,15 @@
             android:key="@string/currency"
             android:title="@string/currency" />
 
+        <EditTextPreference
+            android:defaultValue="@string/country_code_value"
+            android:key="@string/country_code"
+            android:title="@string/country_code" />
+
+        <EditTextPreference
+            android:key="@string/return_url"
+            android:title="@string/return_url" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/wechat">

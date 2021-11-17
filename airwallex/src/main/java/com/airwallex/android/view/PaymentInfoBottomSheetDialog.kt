@@ -2,167 +2,186 @@ package com.airwallex.android.view
 
 import android.os.Bundle
 import android.text.InputType
-import android.util.Patterns
+import android.text.method.DigitsKeyListener
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout.LayoutParams
-import com.airwallex.android.R
+import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.databinding.DialogPaymentInfoBinding
-import com.airwallex.android.model.PaymentMethodRequiredField
-import com.airwallex.android.model.PaymentMethodType
-import com.airwallex.android.setOnSingleClickListener
+import com.airwallex.android.R
+import com.airwallex.android.core.model.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
-class PaymentInfoBottomSheetDialog : BottomSheetDialog() {
+class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>() {
 
-    var onCompleted: ((name: String?, email: String?, phone: String?) -> Unit)? = null
+    var onCompleted: ((fieldMap: MutableMap<String, String>) -> Unit)? = null
 
     companion object {
-        private const val PAYMENT_METHOD_TYPE = "payment_method_type"
-        private const val TITLE = "title"
-        private const val REQUIRED_FIELDS = "required_fields"
+        private const val PAYMENT_METHOD_TYPE_INFO = "payment_method_type_info"
 
         fun newInstance(
-            paymentMethodType: PaymentMethodType,
-            title: String,
-            requiredFields: List<PaymentMethodRequiredField>
+            paymentMethodTypeInfo: PaymentMethodTypeInfo
         ): PaymentInfoBottomSheetDialog {
             val args = Bundle()
-            args.putParcelable(PAYMENT_METHOD_TYPE, paymentMethodType)
-            args.putString(TITLE, title)
-            args.putParcelableArrayList(REQUIRED_FIELDS, ArrayList(requiredFields))
+            args.putParcelable(PAYMENT_METHOD_TYPE_INFO, paymentMethodTypeInfo)
             val fragment = PaymentInfoBottomSheetDialog()
             fragment.arguments = args
             return fragment
         }
     }
 
-    private val viewBinding: DialogPaymentInfoBinding by lazy {
-        DialogPaymentInfoBinding.inflate(layoutInflater)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return viewBinding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewBinding.title.text = arguments?.getString(TITLE)
-
-        var nameInput: AirwallexTextInputLayout? = null
-        var emailInput: AirwallexTextInputLayout? = null
-        var phoneInput: AirwallexTextInputLayout? = null
-
-        val requiredFields =
-            arguments?.getParcelableArrayList<PaymentMethodRequiredField>(REQUIRED_FIELDS)
-        if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_NAME } == true) {
-            nameInput = AirwallexTextInputLayout(requireContext(), null)
-            nameInput.afterTextChanged { nameInput.error = null }
-            nameInput.setHint(getString(R.string.airwallex_shopper_name_hint))
-            nameInput.setInputType(InputType.TYPE_CLASS_TEXT)
-
-            viewBinding.content.addView(
-                nameInput,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    topMargin = resources.getDimension(R.dimen.marginTop_20).toInt()
-                }
-            )
-        }
-
-        if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_EMAIL } == true) {
-            emailInput = AirwallexTextInputLayout(requireContext(), null)
-            emailInput.afterTextChanged { emailInput.error = null }
-            emailInput.setHint(getString(R.string.airwallex_shopper_email_hint))
-            emailInput.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-            viewBinding.content.addView(
-                emailInput,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    topMargin = resources.getDimension(R.dimen.marginTop_20).toInt()
-                }
-            )
-        }
-
-        if (requiredFields?.any { it == PaymentMethodRequiredField.SHOPPER_PHONE } == true) {
-            phoneInput = AirwallexTextInputLayout(requireContext(), null)
-            phoneInput.afterTextChanged { phoneInput.error = null }
-            phoneInput.setHint(getString(R.string.airwallex_shopper_phone_hint))
-            phoneInput.setInputType(InputType.TYPE_CLASS_PHONE)
-            viewBinding.content.addView(
-                phoneInput,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    topMargin = resources.getDimension(R.dimen.marginTop_20).toInt()
-                }
-            )
-        }
-
-        for (i in 0 until viewBinding.content.childCount) {
-            if (i == viewBinding.content.childCount - 1) {
-                (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout).setImeOptions(
-                    EditorInfo.IME_ACTION_DONE
-                )
-            } else {
-                (viewBinding.content.getChildAt(i) as AirwallexTextInputLayout).setImeOptions(
-                    EditorInfo.IME_ACTION_NEXT
-                )
+        val paymentMethodTypeInfo =
+            arguments?.getParcelable<PaymentMethodTypeInfo>(PAYMENT_METHOD_TYPE_INFO)
+        val fields = paymentMethodTypeInfo
+            ?.fieldSchemas
+            ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
+            ?.fields
+            ?.filter {
+                it.type != DynamicSchemaFieldType.BANKS && !it.hidden
             }
-        }
+            ?: return
 
-        viewBinding.checkout.setOnSingleClickListener {
-            // Name
-            if (nameInput != null && nameInput.value.isEmpty()) {
-                nameInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
-                return@setOnSingleClickListener
-            }
+        binding.title.text = paymentMethodTypeInfo.displayName
 
-            when (arguments?.getParcelable<PaymentMethodType>(PAYMENT_METHOD_TYPE)) {
-                PaymentMethodType.SKRILL -> {
-                    if (nameInput != null && nameInput.value.split(" ").size != 2) {
-                        nameInput.error = getString(R.string.airwallex_invalid_name)
-                        return@setOnSingleClickListener
+        fields.forEach { field ->
+            when (field.type) {
+                DynamicSchemaFieldType.STRING -> {
+                    val input = AirwallexTextInputLayout(requireContext(), null)
+                    input.tag = field
+                    input.setHint(field.displayName)
+                    when (field.uiType) {
+                        DynamicSchemaFieldUIType.TEXT -> {
+                            input.setInputType(InputType.TYPE_CLASS_TEXT)
+                        }
+                        DynamicSchemaFieldUIType.EMAIL -> {
+                            input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+                        }
+                        DynamicSchemaFieldUIType.PHONE -> {
+                            input.setKeyListener(DigitsKeyListener.getInstance("0123456789"))
+                        }
+                        else -> Unit
                     }
+
+                    input.afterTextChanged {
+                        input.error = null
+                    }
+
+                    input.afterFocusChanged { hasFocus ->
+                        if (!hasFocus && isInvalid(input.value, field)) {
+                            input.error = getString(R.string.airwallex_invalid_field, field.displayName.lowercase())
+                        } else {
+                            input.error = null
+                        }
+                    }
+
+                    binding.content.addView(
+                        input,
+                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                            topMargin =
+                                resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
+                        }
+                    )
                 }
-                else -> {
-                    if (nameInput != null && nameInput.value.length < 3) {
-                        nameInput.error = getString(R.string.airwallex_name_length_short_error)
-                        return@setOnSingleClickListener
-                    }
-                    if (nameInput != null && nameInput.value.length > 100) {
-                        nameInput.error = getString(R.string.airwallex_name_length_long_error)
-                        return@setOnSingleClickListener
-                    }
-                }
-            }
+                DynamicSchemaFieldType.ENUM -> {
+                    val dynamicFieldView = DynamicFieldCompleteView(
+                        requireContext(),
+                        null,
+                        field.candidates ?: emptyList()
+                    )
+                    dynamicFieldView.tag = field
+                    dynamicFieldView.setHint(field.displayName)
 
-            // Email
-            if (emailInput != null && emailInput.value.isEmpty()) {
-                emailInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
-                return@setOnSingleClickListener
-            }
-            if (emailInput != null && !Patterns.EMAIL_ADDRESS.matcher(emailInput.value).matches()) {
-                emailInput.error = getString(R.string.airwallex_invalid_email_address)
-                return@setOnSingleClickListener
-            }
-
-            // Phone
-            if (phoneInput != null && phoneInput.value.isEmpty()) {
-                phoneInput.error = getString(R.string.airwallex_payment_method_filed_empty_error)
-                return@setOnSingleClickListener
-            }
-
-            when (arguments?.getParcelable<PaymentMethodType>(PAYMENT_METHOD_TYPE)) {
-                PaymentMethodType.PAY_EASY -> {
-                    if (phoneInput != null && (phoneInput.value.length < 10 || phoneInput.value.length > 11)) {
-                        phoneInput.error = getString(R.string.airwallex_phone_error)
-                        return@setOnSingleClickListener
-                    }
+                    binding.content.addView(
+                        dynamicFieldView,
+                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                            topMargin =
+                                resources.getDimension(R.dimen.airwallex_marginTop_20).toInt()
+                        }
+                    )
                 }
                 else -> Unit
             }
-            onCompleted?.invoke(nameInput?.value, emailInput?.value, phoneInput?.value)
         }
+
+        for (i in 0 until binding.content.childCount) {
+            val childView = binding.content.getChildAt(i)
+            if (i == binding.content.childCount - 1) {
+                if (childView is AirwallexTextInputLayout) {
+                    childView.setImeOptions(EditorInfo.IME_ACTION_DONE)
+                } else if (childView is DynamicFieldCompleteView) {
+                    childView.setImeOptions(EditorInfo.IME_ACTION_DONE)
+                }
+            } else {
+                if (childView is AirwallexTextInputLayout) {
+                    childView.setImeOptions(EditorInfo.IME_ACTION_NEXT)
+                } else if (childView is DynamicFieldCompleteView) {
+                    childView.setImeOptions(EditorInfo.IME_ACTION_NEXT)
+                }
+            }
+        }
+
+        binding.checkout.setOnSingleClickListener {
+            val fieldMap = mutableMapOf<String, String>()
+            for (i in 0 until binding.content.childCount) {
+                val childView = binding.content.getChildAt(i)
+                val field = childView.tag as DynamicSchemaField
+
+                if (childView is AirwallexTextInputLayout) {
+                    if (isInvalid(childView.value, field)) {
+                        childView.error = getString(R.string.airwallex_invalid_field, field.displayName.lowercase())
+                        return@setOnSingleClickListener
+                    }
+                    field.let {
+                        fieldMap[it.name] = childView.value
+                    }
+                } else if (childView is DynamicFieldCompleteView) {
+                    val value = childView.value
+                    if (value == null || isInvalid(value, field)) {
+                        childView.error = getString(R.string.airwallex_invalid_field, field.displayName.lowercase())
+                        return@setOnSingleClickListener
+                    }
+                    field.let {
+                        fieldMap[it.name] = value
+                    }
+                }
+            }
+            onCompleted?.invoke(fieldMap)
+        }
+    }
+
+    private fun isInvalid(value: String, field: DynamicSchemaField): Boolean {
+        val validations = field.validations
+        val isNotMatchValidations = validations != null && isInvalid(value, validations)
+        val isEmpty = value.isEmpty()
+        return isNotMatchValidations || isEmpty
+    }
+
+    private fun isInvalid(
+        text: String,
+        validations: DynamicSchemaFieldValidation
+    ): Boolean {
+        val regex = validations.regex
+        val max = validations.max
+
+        return regex != null && !Regex(regex).matches(text) ||
+            max != null && text.length > max
+    }
+
+    override fun onStart() {
+        super.onStart()
+        BottomSheetBehavior.from(requireView().parent as View).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+            skipCollapsed = true
+        }
+    }
+
+    override fun bindFragment(
+        inflater: LayoutInflater,
+        container: ViewGroup
+    ): DialogPaymentInfoBinding {
+        return DialogPaymentInfoBinding.inflate(inflater, container, true)
     }
 }

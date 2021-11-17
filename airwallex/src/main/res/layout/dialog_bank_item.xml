@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bank_item"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
+    android:layout_height="60dp"
     android:background="?android:attr/selectableItemBackground"
-    android:paddingHorizontal="32dp">
+    android:paddingHorizontal="24dp">
 
     <TextView
         android:id="@+id/bank_name"
@@ -15,15 +15,14 @@
         android:layout_centerVertical="true"
         android:layout_toStartOf="@id/bank_logo"
         android:ellipsize="end"
-        android:fontFamily="@font/circularstd_medium"
         android:singleLine="true"
         android:textColor="@color/airwallex_bank_text"
-        android:textSize="14sp" />
+        android:textSize="15sp" />
 
     <ImageView
         android:id="@+id/bank_logo"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="20dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         tools:ignore="ContentDescription,RtlSymmetry" />

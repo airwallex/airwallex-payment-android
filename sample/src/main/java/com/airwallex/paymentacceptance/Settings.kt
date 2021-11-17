@@ -16,12 +16,16 @@ object Settings {
     // WeChat Pay App Id
     private const val WECHAT_APP_ID = ""
 
+    // Return url
+    private const val RETURN_URL = ""
+
     private const val CUSTOMER_ID = "customerId"
     private val context: Context by lazy { SampleApplication.instance }
 
     private const val METADATA_KEY_API_KEY = "com.airwallex.sample.metadata.api_key"
     private const val METADATA_KEY_CLIENT_ID_KEY = "com.airwallex.sample.metadata.client_id"
     private const val METADATA_KEY_WECHAT_APP_ID_KEY = "com.airwallex.sample.metadata.wechat_app_id"
+    private const val METADATA_KEY_RETURN_URL = "com.airwallex.sample.metadata.return_url"
 
     /**
      * `IMPORTANT` Token cannot appear on the merchant side, this is just for Demo purposes only
@@ -68,6 +72,12 @@ object Settings {
                 defaultCheckoutMode
             )
                 ?: defaultCheckoutMode
+        }
+
+    val returnUrl: String
+        get() {
+            return sharedPreferences.getString(context.getString(R.string.return_url), getMetadata(METADATA_KEY_RETURN_URL))
+                ?: RETURN_URL
         }
 
     val nextTriggerBy: String
@@ -125,6 +135,16 @@ object Settings {
                 context.getString(R.string.currency),
                 defaultCurrency
             ) ?: defaultCurrency
+        }
+
+    val countryCode: String
+        get() {
+            val defaultCountryCode =
+                SampleApplication.instance.getString(R.string.country_code_value)
+            return sharedPreferences.getString(
+                context.getString(R.string.country_code),
+                defaultCountryCode
+            ) ?: defaultCountryCode
         }
 
     private fun getMetadata(key: String): String? {

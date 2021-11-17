@@ -23,16 +23,6 @@
 # Rules for Airwallex
 -keep class com.airwallex.android.** { *; }
 
-# Rules for TrustDefender
--keep class com.threatmetrix.TrustDefender.** { *; }
-# Required to suppress warning messages about ThreatMetrix SDK
--dontwarn com.threatmetrix.TrustDefender.**
-
-# Rules for Cardinal
--keep class com.cardinalcommerce.** { *; }
-## Cardinal SDK
--dontwarn com.cardinalcommerce**
-
 # Rules for Kotlin Coroutines
 # https://github.com/Kotlin/kotlinx.coroutines/blob/master/ui/kotlinx-coroutines-android/example-app/app/proguard-rules.pro
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}

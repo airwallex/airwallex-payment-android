@@ -1,66 +1,50 @@
 <resources>
 
-    <string name="airwallex_valid_digits">0123456789</string>
-    <string name="airwallex_shipping_country_name_hint">Country / Region</string>
-    <string name="airwallex_card_number_hint">Card number</string>
-    <string name="airwallex_empty_card_number">Please enter your card number</string>
-    <string name="airwallex_invalid_card_number">Please enter a valid credit card number</string>
-    <string name="airwallex_empty_card_name">Please enter your card name</string>
-    <string name="airwallex_expires_hint">Expires MM / YYYY</string>
-    <string name="airwallex_empty_expiry">Please enter your card expiry date</string>
-    <string name="airwallex_invalid_expiry_date">Please enter a valid expiry date</string>
-    <string name="airwallex_cvc_hint">CVC / CVV</string>
-    <string name="airwallex_empty_cvc">Please enter your card CVC</string>
-    <string name="airwallex_invalid_cvc">Please enter a valid security code</string>
-
+    <string name="airwallex_shipping_state_name_hint">State</string>
     <string name="airwallex_shipping_first_name_hint">First name</string>
     <string name="airwallex_shipping_last_name_hint">Last name</string>
     <string name="airwallex_shipping_street_hint">Street</string>
     <string name="airwallex_shipping_zip_code_hint">Zip code (optional)</string>
     <string name="airwallex_shipping_city_name_hint">City</string>
-    <string name="airwallex_shipping_state_name_hint">State</string>
+    <string name="airwallex_shipping_email_hint">Email (optional)</string>
     <string name="airwallex_contact_email_hint">Email (optional)</string>
     <string name="airwallex_contact_phone_number_hint">Phone number (optional)</string>
-    <string name="airwallex_card_name_hint">Name on card</string>
-
-    <string name="airwallex_empty_last_name">Please enter your last name</string>
-    <string name="airwallex_empty_first_name">Please enter your first name</string>
-    <string name="airwallex_invalid_email">Please enter valid email</string>
+    <string name="airwallex_shipping_address">Shipping address</string>
+    <string name="airwallex_shipping_country_name_hint">Country / Region</string>
+    <string name="airwallex_empty_country">Please enter your country</string>
     <string name="airwallex_empty_state">Please enter your state</string>
     <string name="airwallex_empty_city">Please enter your city</string>
     <string name="airwallex_empty_street">Please enter your street</string>
-    <string name="airwallex_empty_country">Please enter your country</string>
-
-    <string name="airwallex_save">Save</string>
-    <string name="airwallex_new_card">Card</string>
-    <string name="airwallex_same_as_shipping">Same as shipping address</string>
-    <string name="airwallex_enter_new_card">Card</string>
-    <string name="airwallex_payment_methods">Payment methods</string>
-    <string name="airwallex_shipping_address">Shipping address</string>
-    <string name="airwallex_shipping">Shipping</string>
-    <string name="airwallex_contact">Contact</string>
-    <string name="airwallex_pay_now">Pay now</string>
-    <string name="airwallex_total">Total</string>
-    <string name="airwallex_payment">Payment</string>
-    <string name="airwallex_select_your_currency">Select your currency</string>
-    <string name="airwallex_select_your_currency_title">Select the currency you would like to pay with</string>
-    <string name="airwallex_confirm_payment">Confirm payment</string>
-    <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>
+    <string name="airwallex_empty_last_name">Please enter your last name</string>
+    <string name="airwallex_empty_first_name">Please enter your first name</string>
     <string name="airwallex_delete_payment_method_prompt_title">Would you like to delete this payment consent?</string>
     <string name="airwallex_delete_payment_method_positive">Delete</string>
     <string name="airwallex_delete_payment_method_negative">Cancel</string>
-
-    <string name="airwallex_shopper_name_hint">Name</string>
-    <string name="airwallex_shopper_email_hint">Email</string>
-    <string name="airwallex_shopper_phone_hint">Phone</string>
-
-    <string name="airwallex_payment_method_filed_empty_error">Required</string>
-    <string name="airwallex_name_length_short_error">Please enter at least 3 characters.</string>
-    <string name="airwallex_name_length_long_error">Please enter no more than 100 characters.</string>\
-    <string name="airwallex_invalid_name">Invalid name</string>
-    <string name="airwallex_invalid_email_address">Invalid email address</string>
+    <string name="airwallex_new_card">Card</string>
+    <string name="airwallexbilling_info">Billing info</string>
+    <string name="airwallex_shipping">Shipping</string>
+    <string name="airwallex_total">Total %s</string>
+    <string name="airwallex_pay_now">Pay now</string>
+    <string name="airwallex_payment_methods">Payment methods</string>
+    <string name="airwallex_enter_new_card">Card</string>
+    <string name="airwallex_cvc_hint">CVC/CVV</string>
+    <string name="airwallex_card_name_hint">Name on card</string>
+    <string name="airwallex_empty_card_number">Please enter your card number</string>
+    <string name="airwallex_invalid_card_number">Please enter a valid credit card number</string>
+    <string name="airwallex_same_as_shipping">Same as shipping address</string>
+    <string name="airwallex_valid_digits">0123456789</string>
+    <string name="airwallex_empty_card_name">Please enter your card name</string>
+    <string name="airwallex_empty_expiry">Please enter your card expiry date</string>
+    <string name="airwallex_invalid_expiry_date">Please enter a valid expiry date</string>
+    <string name="airwallex_empty_cvc">Please enter your card CVC/CVV</string>
+    <string name="airwallex_invalid_cvc">Please enter a valid security code</string>
+    <string name="airwallex_card_number_hint">Card number</string>
+    <string name="airwallex_expires_hint">Expires MM/YYYY</string>
+    <string name="airwallex_invalid_email">Please enter valid email</string>
     <string name="airwallex_bank">Bank</string>
     <string name="airwallex_select_your_bank">Select your bank</string>
     <string name="airwallex_pay_with">Pay with %s</string>
-    <string name="airwallex_phone_error">Invalid phone number</string>
+    <string name="airwallex_enter_cvv">Enter CVC/CVV for \n%s</string>
+    <string name="airwallex_invalid_field">Please enter your %s</string>
+
 </resources>

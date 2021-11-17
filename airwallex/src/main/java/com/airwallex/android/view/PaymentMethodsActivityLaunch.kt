@@ -5,15 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
-import com.airwallex.android.AirwallexSession
-import com.airwallex.android.exception.AirwallexException
-import com.airwallex.android.model.*
-import com.airwallex.android.model.ObjectBuilder
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.model.*
+import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch.Args
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
-internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActivity, Args> {
+class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActivity, Args> {
 
     constructor(activity: Activity) : super(
         activity,
@@ -55,14 +55,13 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
 
     @Parcelize
     internal data class Result internal constructor(
-        val paymentIntent: PaymentIntent? = null,
+        val paymentIntentId: String? = null,
+        val isRedirecting: Boolean = false,
         val paymentMethodType: PaymentMethodType? = null,
-        val exception: Exception? = null,
+        val exception: AirwallexException? = null,
         val paymentMethod: PaymentMethod? = null,
         val paymentConsentId: String? = null,
-        val cvc: String? = null,
-        val weChat: WeChat? = null,
-        val redirectUrl: String? = null
+        val cvc: String? = null
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
             return Bundle().also {
@@ -73,26 +72,24 @@ internal class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMet
         internal companion object : Parceler<Result> {
             override fun create(parcel: Parcel): Result {
                 return Result(
-                    paymentIntent = parcel.readParcelable(PaymentIntent::class.java.classLoader),
+                    paymentIntentId = parcel.readString(),
+                    isRedirecting = parcel.readInt() == 1,
                     paymentMethodType = parcel.readParcelable(PaymentMethodType::class.java.classLoader),
                     exception = parcel.readSerializable() as? AirwallexException?,
                     paymentMethod = parcel.readParcelable(PaymentMethod::class.java.classLoader),
                     paymentConsentId = parcel.readString(),
-                    cvc = parcel.readString(),
-                    weChat = parcel.readParcelable(WeChat::class.java.classLoader),
-                    redirectUrl = parcel.readString()
+                    cvc = parcel.readString()
                 )
             }
 
             override fun Result.write(parcel: Parcel, flags: Int) {
-                parcel.writeParcelable(paymentIntent, 0)
+                parcel.writeString(paymentIntentId)
+                parcel.writeInt(1.takeIf { isRedirecting } ?: 0)
                 parcel.writeParcelable(paymentMethodType, 0)
                 parcel.writeSerializable(exception)
                 parcel.writeParcelable(paymentMethod, 0)
                 parcel.writeString(paymentConsentId)
                 parcel.writeString(cvc)
-                parcel.writeParcelable(weChat, 0)
-                parcel.writeString(redirectUrl)
             }
 
             fun fromIntent(intent: Intent?): Result? {

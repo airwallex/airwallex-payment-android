@@ -3,17 +3,17 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.airwallex.android.*
-import com.airwallex.android.model.PaymentMethod
-import com.airwallex.android.model.Shipping
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.airwallex.android.Airwallex
-import com.airwallex.android.R
+import com.airwallex.android.core.*
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.databinding.ActivityAddCardBinding
-import com.airwallex.android.model.PaymentIntent
-import com.airwallex.android.model.PaymentMethodType
+import com.airwallex.android.R
+import com.airwallex.android.core.extension.setOnSingleClickListener
 
 /**
  * Activity to add new payment method
@@ -71,48 +71,52 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         )[AddPaymentMethodViewModel::class.java]
     }
 
-    override fun onActionSave() {
+    private fun onSaveCard() {
         val card = viewBinding.cardWidget.paymentMethodCard ?: return
         setLoadingProgress(loading = true, cancelable = false)
-        val observer = Observer<AirwallexCheckoutViewModel.PaymentResult> {
-            when (it) {
-                is AirwallexCheckoutViewModel.PaymentResult.Success -> {
-                    finishWithPaymentIntent(paymentIntent = it.paymentIntent)
+        val observer = Observer<AirwallexPaymentStatus> { result ->
+            when (result) {
+                is AirwallexPaymentStatus.Success -> {
+                    finishWithPaymentIntent(paymentIntentId = result.paymentIntentId)
                 }
-                is AirwallexCheckoutViewModel.PaymentResult.Error -> {
-                    finishWithPaymentIntent(exception = it.exception)
+                is AirwallexPaymentStatus.Failure -> {
+                    finishWithPaymentIntent(exception = result.exception)
                 }
                 else -> Unit
             }
         }
 
-        if (session is AirwallexPaymentSession) {
-            startCheckout(
-                paymentMethod = PaymentMethod.Builder()
-                    .setType(PaymentMethodType.CARD)
-                    .setCard(card)
-                    .setBilling(viewBinding.billingWidget.billing)
-                    .build(),
-                observer = observer
-            )
-        } else {
-            viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
-                this,
-                {
-                    when (it) {
-                        is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
-                            startCheckout(
-                                paymentMethod = it.paymentMethod,
-                                cvc = it.cvc,
-                                observer = observer
-                            )
-                        }
-                        is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
-                            finishWithPaymentIntent(exception = it.exception)
+        when (session) {
+            is AirwallexPaymentSession -> {
+                startCheckout(
+                    paymentMethod = PaymentMethod.Builder()
+                        .setType(PaymentMethodType.CARD.value)
+                        .setCard(card)
+                        .setBilling(viewBinding.billingWidget.billing)
+                        .build(),
+                    observer = observer
+                )
+            }
+            is AirwallexRecurringSession,
+            is AirwallexRecurringWithIntentSession -> {
+                viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
+                    this,
+                    {
+                        when (it) {
+                            is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
+                                startCheckout(
+                                    paymentMethod = it.paymentMethod,
+                                    cvc = it.cvc,
+                                    observer = observer
+                                )
+                            }
+                            is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
+                                finishWithPaymentIntent(exception = it.exception)
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 
@@ -123,19 +127,19 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
     }
 
     override fun homeAsUpIndicatorResId(): Int {
-        return R.drawable.airwallex_ic_back
+        return R.drawable.airwallex_ic_close
     }
 
     private fun finishWithPaymentIntent(
-        paymentIntent: PaymentIntent? = null,
-        exception: Exception? = null
+        paymentIntentId: String? = null,
+        exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
         setResult(
             Activity.RESULT_OK,
             Intent().putExtras(
                 AddPaymentMethodActivityLaunch.Result(
-                    paymentIntent = paymentIntent,
+                    paymentIntentId = paymentIntentId,
                     exception = exception
                 ).toBundle()
             )
@@ -160,6 +164,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         viewBinding.billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
 
         viewBinding.btnSaveCard.isEnabled = isValid
-        viewBinding.btnSaveCard.setOnSingleClickListener { onActionSave() }
+        viewBinding.btnSaveCard.setOnSingleClickListener { onSaveCard() }
     }
 }

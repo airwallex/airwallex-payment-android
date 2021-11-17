@@ -3,8 +3,8 @@ package com.airwallex.android.view
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
+import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.R
-import com.airwallex.android.model.PaymentConsent
 import java.util.*
 
 internal class DeletePaymentMethodDialogFactory internal constructor(
@@ -27,10 +27,10 @@ internal class DeletePaymentMethodDialogFactory internal constructor(
                 onDeletedPaymentMethod(paymentConsent)
             }
             .setNegativeButton(R.string.airwallex_delete_payment_method_negative) { _, _ ->
-                adapter.resetPaymentMethod(paymentConsent)
+                adapter.resetPaymentConsent(paymentConsent)
             }
             .setOnCancelListener {
-                adapter.resetPaymentMethod(paymentConsent)
+                adapter.resetPaymentConsent(paymentConsent)
             }
             .create()
     }
