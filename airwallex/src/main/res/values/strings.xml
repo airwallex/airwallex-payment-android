@@ -45,6 +45,6 @@
     <string name="airwallex_select_your_bank">Select your bank</string>
     <string name="airwallex_pay_with">Pay with %s</string>
     <string name="airwallex_enter_cvv">Enter CVC/CVV for \n%s</string>
-    <string name="airwallex_invalid_field">Please enter your %s</string>
+    <string name="airwallex_invalid_field">Invalid %s</string>
 
 </resources>
