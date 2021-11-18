@@ -27,9 +27,11 @@
             android:value="${AIRWALLEX_RETURN_URL}" />
 
         <activity
-            android:exported="true"
             android:name="com.airwallex.paymentacceptance.SplashActivity"
-            android:theme="@style/SplashTheme">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -37,10 +39,12 @@
         </activity>
 
         <activity
-            android:exported="true"
             android:name="com.airwallex.paymentacceptance.PaymentCartActivity"
+            android:exported="true"
             android:launchMode="singleTask"
-            android:theme="@style/AirwallexDefaultTheme">
+            android:screenOrientation="portrait"
+            android:theme="@style/AirwallexDefaultTheme"
+            tools:ignore="LockedOrientationActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -57,7 +61,9 @@
 
         <activity
             android:name="com.airwallex.paymentacceptance.PaymentSettingsActivity"
-            android:theme="@style/ActivityAnimTheme" />
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityAnimTheme"
+            tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.h5.H5WebViewActivity"
@@ -74,8 +80,8 @@
         <activity
             android:name="com.airwallex.paymentacceptance.wechat.WeChatDemoActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
             android:theme="@style/ActivityAnimTheme"
+            android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity" />
 
     </application>
