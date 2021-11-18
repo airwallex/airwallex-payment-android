@@ -14,6 +14,7 @@
         <activity
             android:name=".WeChatPayAuthActivity"
             android:exported="true"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
     </application>
 </manifest>

@@ -109,17 +109,9 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>
         for (i in 0 until binding.content.childCount) {
             val childView = binding.content.getChildAt(i)
             if (i == binding.content.childCount - 1) {
-                if (childView is AirwallexTextInputLayout) {
-                    childView.setImeOptions(EditorInfo.IME_ACTION_DONE)
-                } else if (childView is DynamicFieldCompleteView) {
-                    childView.setImeOptions(EditorInfo.IME_ACTION_DONE)
-                }
+                setImeOptions(childView, EditorInfo.IME_ACTION_DONE)
             } else {
-                if (childView is AirwallexTextInputLayout) {
-                    childView.setImeOptions(EditorInfo.IME_ACTION_NEXT)
-                } else if (childView is DynamicFieldCompleteView) {
-                    childView.setImeOptions(EditorInfo.IME_ACTION_NEXT)
-                }
+                setImeOptions(childView, EditorInfo.IME_ACTION_NEXT)
             }
         }
 
@@ -149,6 +141,14 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>
                 }
             }
             onCompleted?.invoke(fieldMap)
+        }
+    }
+
+    fun setImeOptions(view: View, imeOptions: Int) {
+        if (view is AirwallexTextInputLayout) {
+            view.setImeOptions(imeOptions)
+        } else if (view is DynamicFieldCompleteView) {
+            view.setImeOptions(imeOptions)
         }
     }
 
