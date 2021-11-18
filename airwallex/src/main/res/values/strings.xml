@@ -7,9 +7,7 @@
     <string name="airwallex_shipping_zip_code_hint">Zip code (optional)</string>
     <string name="airwallex_shipping_city_name_hint">City</string>
     <string name="airwallex_shipping_email_hint">Email (optional)</string>
-    <string name="airwallex_contact_email_hint">Email (optional)</string>
     <string name="airwallex_contact_phone_number_hint">Phone number (optional)</string>
-    <string name="airwallex_shipping_address">Shipping address</string>
     <string name="airwallex_shipping_country_name_hint">Country / Region</string>
     <string name="airwallex_empty_country">Please enter your country</string>
     <string name="airwallex_empty_state">Please enter your state</string>
@@ -26,7 +24,6 @@
     <string name="airwallex_total">Total %s</string>
     <string name="airwallex_pay_now">Pay now</string>
     <string name="airwallex_payment_methods">Payment methods</string>
-    <string name="airwallex_enter_new_card">Card</string>
     <string name="airwallex_cvc_hint">CVC/CVV</string>
     <string name="airwallex_card_name_hint">Name on card</string>
     <string name="airwallex_empty_card_number">Please enter your card number</string>
@@ -41,10 +38,8 @@
     <string name="airwallex_card_number_hint">Card number</string>
     <string name="airwallex_expires_hint">Expires MM/YYYY</string>
     <string name="airwallex_invalid_email">Please enter valid email</string>
-    <string name="airwallex_bank">Bank</string>
     <string name="airwallex_select_your_bank">Select your bank</string>
-    <string name="airwallex_pay_with">Pay with %s</string>
     <string name="airwallex_enter_cvv">Enter CVC/CVV for \n%s</string>
-    <string name="airwallex_invalid_field">Please enter your %s</string>
+    <string name="airwallex_invalid_field">Invalid %s</string>
 
 </resources>

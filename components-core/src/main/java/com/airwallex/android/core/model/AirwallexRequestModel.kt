@@ -11,13 +11,14 @@ interface AirwallexRequestModel {
     val sdkVersion: String
         get() = String.format(
             "android-%s-%s",
-            MODE,
+            mode,
             BuildConfig.VERSION_NAME
         )
 
+    private val mode: String
+        get() = if (BuildConfig.DEBUG) "debug" else "release"
+
     companion object {
         const val MOBILE_SDK = "mobile_sdk"
-        // TODO Hard code, need to find a way to set it dynamically
-        const val MODE = "debug"
     }
 }
