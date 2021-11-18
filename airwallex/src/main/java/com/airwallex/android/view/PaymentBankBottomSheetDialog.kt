@@ -1,6 +1,7 @@
 package com.airwallex.android.view
 
 import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import com.airwallex.android.core.model.Bank
 import com.airwallex.android.databinding.DialogBankBinding
 import com.airwallex.android.databinding.DialogBankItemBinding
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class PaymentBankBottomSheetDialog : BottomSheetDialog<DialogBankBinding>() {
 
@@ -43,6 +45,13 @@ class PaymentBankBottomSheetDialog : BottomSheetDialog<DialogBankBinding>() {
             adapter = BottomDialogAdapter(
                 arguments?.getParcelableArrayList(BANKS) ?: mutableListOf()
             )
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        BottomSheetBehavior.from(requireView().parent as View).apply {
+            peekHeight = Resources.getSystem().displayMetrics.heightPixels / 2
         }
     }
 
