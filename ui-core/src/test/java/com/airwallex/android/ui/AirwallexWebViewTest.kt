@@ -1,4 +1,4 @@
-package com.airwallex.android.card
+package com.airwallex.android.ui
 
 import android.content.Context
 import android.webkit.WebSettings

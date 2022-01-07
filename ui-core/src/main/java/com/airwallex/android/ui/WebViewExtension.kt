@@ -1,4 +1,4 @@
-package com.airwallex.android.card
+package com.airwallex.android.ui
 
 import android.view.ViewGroup
 import android.webkit.WebView
@@ -6,7 +6,7 @@ import android.webkit.WebView
 fun WebView.destroyWebView() {
     // Make sure you remove the WebView from its parent view before doing anything.
     val viewGroup = this.parent as ViewGroup
-    viewGroup.removeAllViews()
+    viewGroup.removeView(this)
 
     this.clearHistory()
 

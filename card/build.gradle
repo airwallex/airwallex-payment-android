@@ -69,9 +69,6 @@ android.buildTypes.each { type ->
 dependencies {
     api project(':ui-core')
 
-    // cardinal
-    implementation 'io.github.airwallex:cardinalmobilesdk:2.2.3-2'
-
     // fingerprinting
     implementation 'io.github.airwallex:TrustDefender-Behavioral:6.1-67'
     implementation 'io.github.airwallex:TrustDefender-Profiling:6.1-67'
