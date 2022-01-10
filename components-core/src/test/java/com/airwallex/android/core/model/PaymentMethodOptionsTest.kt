@@ -14,8 +14,6 @@ class PaymentMethodOptionsTest {
             .setThreeDSecure(
                 ThreeDSecure.Builder()
                     .setReturnUrl("https://www.360safe.com")
-                    .setDeviceDataCollectionRes("abc")
-                    .setTransactionId("123")
                     .build()
             )
             .build()
@@ -42,8 +40,6 @@ class PaymentMethodOptionsTest {
                 .setThreeDSecure(
                     ThreeDSecure.Builder()
                         .setReturnUrl("https://www.360safe.com")
-                        .setDeviceDataCollectionRes("abc")
-                        .setTransactionId("123")
                         .build()
                 )
                 .build(),
@@ -58,9 +54,7 @@ class PaymentMethodOptionsTest {
             mapOf(
                 "auto_capture" to true,
                 "three_ds" to mapOf(
-                    "return_url" to "https://www.360safe.com",
-                    "device_data_collection_res" to "abc",
-                    "ds_transaction_id" to "123"
+                    "return_url" to "https://www.360safe.com"
                 )
             ),
             cardParamMap
@@ -72,9 +66,7 @@ class PaymentMethodOptionsTest {
                 "card" to mapOf(
                     "auto_capture" to true,
                     "three_ds" to mapOf(
-                        "return_url" to "https://www.360safe.com",
-                        "device_data_collection_res" to "abc",
-                        "ds_transaction_id" to "123"
+                        "return_url" to "https://www.360safe.com"
                     )
                 )
             ),

@@ -13,15 +13,9 @@ data class ThreeDSecure internal constructor(
     val returnUrl: String? = null,
 
     /**
-     * Device data collection response for 3D Secure
+     * ACS response 3D Secure
      */
-    val deviceDataCollectionRes: String? = null,
-
-    /**
-     * Transaction ID for 3D Secure
-     */
-    val transactionId: String? = null
-
+    val acsResponse: String? = null
 ) : AirwallexModel, AirwallexRequestModel, Parcelable {
 
     override fun toParamMap(): Map<String, Any> {
@@ -32,13 +26,8 @@ data class ThreeDSecure internal constructor(
                 }.orEmpty()
             )
             .plus(
-                deviceDataCollectionRes?.let {
-                    mapOf(ThreeDSecureParser.FIELD_COLLECTION_RES to it)
-                }.orEmpty()
-            )
-            .plus(
-                transactionId?.let {
-                    mapOf(ThreeDSecureParser.FIELD_TRANSACTION_ID to it)
+                acsResponse?.let {
+                    mapOf(ThreeDSecureParser.FIELD_ACS_RESPONSE to it)
                 }.orEmpty()
             )
     }
@@ -46,27 +35,20 @@ data class ThreeDSecure internal constructor(
     class Builder : ObjectBuilder<ThreeDSecure> {
         private var returnUrl: String? = null
 
-        private var deviceDataCollectionRes: String? = null
-
-        private var transactionId: String? = null
+        private var acsResponse: String? = null
 
         fun setReturnUrl(returnUrl: String?): Builder = apply {
             this.returnUrl = returnUrl
         }
 
-        fun setDeviceDataCollectionRes(deviceDataCollectionRes: String?): Builder = apply {
-            this.deviceDataCollectionRes = deviceDataCollectionRes
-        }
-
-        fun setTransactionId(transactionId: String?): Builder = apply {
-            this.transactionId = transactionId
+        fun setAcsResponse(acsResponse: String?): Builder = apply {
+            this.acsResponse = acsResponse
         }
 
         override fun build(): ThreeDSecure {
             return ThreeDSecure(
                 returnUrl = returnUrl,
-                deviceDataCollectionRes = deviceDataCollectionRes,
-                transactionId = transactionId
+                acsResponse = acsResponse
             )
         }
     }

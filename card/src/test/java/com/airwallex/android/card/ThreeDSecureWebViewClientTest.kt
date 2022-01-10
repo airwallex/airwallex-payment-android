@@ -33,7 +33,7 @@ class ThreeDSecureWebViewClientTest {
     @Test
     fun threeDSecureWebViewClientTest() {
         val url =
-            "https://aaa?paRes=card"
+            "https://aaa?acsResponse=card"
 
         val callback = object : ThreeDSecureWebViewClient.Callbacks {
 

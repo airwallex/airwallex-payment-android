@@ -604,7 +604,7 @@ class Airwallex internal constructor(
             }
 
         val threeDSecure = ThreeDSecure.Builder()
-            .setReturnUrl("https://www.airwallex.com")
+            .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl())
             .build()
 
         val request = PaymentIntentConfirmRequest.Builder(

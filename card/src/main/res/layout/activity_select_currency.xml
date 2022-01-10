@@ -31,13 +31,13 @@
 
         <com.airwallex.android.card.view.CurrencyWidget
             android:id="@+id/current_currency"
-            android:layout_width="@dimen/width_0"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
         <com.airwallex.android.card.view.CurrencyWidget
             android:id="@+id/transfer_currency"
-            android:layout_width="@dimen/width_0"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 

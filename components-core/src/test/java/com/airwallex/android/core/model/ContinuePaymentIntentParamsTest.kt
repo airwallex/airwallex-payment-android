@@ -15,9 +15,6 @@ class ContinuePaymentIntentParamsTest {
             platformType = "Android",
             deviceOS = "10"
         ),
-        threeDSecure = ThreeDSecure(
-            deviceDataCollectionRes = "1_3129dc55-e19c-4eb9-8be6-d37d1686a129"
-        ),
         useDcc = false
     )
 
@@ -37,12 +34,6 @@ class ContinuePaymentIntentParamsTest {
                 deviceOS = "10"
             ).toString(),
             request.device.toString()
-        )
-        assertEquals(
-            ThreeDSecure(
-                deviceDataCollectionRes = "1_3129dc55-e19c-4eb9-8be6-d37d1686a129"
-            ).toString(),
-            request.threeDSecure.toString()
         )
         assertEquals(false, request.useDcc)
     }

@@ -1,4 +1,4 @@
-package com.airwallex.android.card
+package com.airwallex.android.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,7 +8,7 @@ import android.webkit.WebView
 import androidx.core.content.ContextCompat
 import com.airwallex.android.core.AirwallexPlugins.AIRWALLEX_USER_AGENT
 
-internal class AirwallexWebView @SuppressLint("SetJavaScriptEnabled") constructor(
+class AirwallexWebView @SuppressLint("SetJavaScriptEnabled") constructor(
     context: Context,
     attrs: AttributeSet?
 ) : WebView(context, attrs) {
