@@ -18,6 +18,8 @@ class CardCvcEditText @JvmOverloads constructor(
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
 ) : TextInputEditText(context, attrs, defStyleAttr) {
 
+    private val validCvcLengthScope = listOf(3, 4)
+
     /**
      * Return the cvc value if valid, otherwise null.
      */
@@ -36,22 +38,18 @@ class CardCvcEditText @JvmOverloads constructor(
      */
     internal val isValid: Boolean
         get() {
-            return rawCvcValue.length == VALID_CVC_LENGTH
+            return validCvcLengthScope.contains(rawCvcValue.length)
         }
 
     init {
         setHint(R.string.airwallex_cvc_hint)
         maxLines = 1
-        filters = arrayOf(InputFilter.LengthFilter(VALID_CVC_LENGTH))
+        filters = arrayOf(InputFilter.LengthFilter(validCvcLengthScope.last()))
 
         inputType = InputType.TYPE_CLASS_NUMBER
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE)
         }
-    }
-
-    companion object {
-        const val VALID_CVC_LENGTH = 3
     }
 }

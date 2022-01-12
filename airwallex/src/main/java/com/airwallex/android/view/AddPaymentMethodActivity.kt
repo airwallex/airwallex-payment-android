@@ -26,10 +26,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         ActivityAddCardBinding.bind(root)
     }
 
-    private val keyboardController: KeyboardController by lazy {
-        KeyboardController(this)
-    }
-
     private val args: AddPaymentMethodActivityLaunch.Args by lazy {
         AddPaymentMethodActivityLaunch.Args.getExtra(intent)
     }
@@ -150,7 +146,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
     private fun invalidateConfirmStatus() {
         if (isValid) {
             viewBinding.btnSaveCard.isEnabled = true
-            keyboardController.hide()
         } else {
             viewBinding.btnSaveCard.isEnabled = false
         }
