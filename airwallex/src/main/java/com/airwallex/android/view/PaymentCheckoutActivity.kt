@@ -31,10 +31,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         Airwallex(this)
     }
 
-    private val keyboardController: KeyboardController by lazy {
-        KeyboardController(this)
-    }
-
     private val args: PaymentCheckoutActivityLaunch.Args by lazy {
         PaymentCheckoutActivityLaunch.Args.getExtra(intent)
     }
@@ -73,9 +69,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             getString(R.string.airwallex_total, formatPrice(session.currency, session.amount))
 
         viewBinding.atlCardCvc.afterTextChanged {
-            if (viewBinding.atlCardCvc.isValid) {
-                keyboardController.hide()
-            }
             updateButtonStatus()
         }
 
