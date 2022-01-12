@@ -10,7 +10,6 @@ class TrackerRequestTest {
             .setComplete(false)
             .setEmpty(false)
             .setType(TrackerRequest.TrackerType.CARD)
-            .setError("aaa")
             .setIntentId("aaa")
             .setStatus("aaa")
             .setNextActionType("dcc")
@@ -62,7 +61,6 @@ class TrackerRequestTest {
                 "application" to "android",
                 "type" to "card",
                 "code" to "onPaymentMethodCreated",
-                "error" to "aaa",
                 "intent_id" to "aaa",
                 "status" to "aaa",
                 "next_action_type" to "dcc",
