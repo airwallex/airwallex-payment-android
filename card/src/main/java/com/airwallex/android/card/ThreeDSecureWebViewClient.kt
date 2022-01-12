@@ -3,6 +3,7 @@ package com.airwallex.android.card
 import android.webkit.WebView
 import com.airwallex.android.card.exception.WebViewConnectionException
 import com.airwallex.android.core.log.Logger
+import java.net.URLDecoder
 
 class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
     AirwallexWebViewClient(callbacks) {
@@ -18,7 +19,7 @@ class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
                 subUrl
             }
             if (payload.isNotEmpty()) {
-                callbacks.onWebViewConfirmation(payload)
+                callbacks.onWebViewConfirmation(URLDecoder.decode(payload, "UTF-8"))
             } else {
                 callbacks.onWebViewError(WebViewConnectionException("3DS failed. No acsResponse were obtained."))
             }
