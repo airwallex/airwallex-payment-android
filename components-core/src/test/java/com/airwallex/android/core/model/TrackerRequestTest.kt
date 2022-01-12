@@ -37,7 +37,6 @@ class TrackerRequestTest {
         assertEquals("onPaymentMethodCreated", code.value)
         assertEquals(TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED, code)
 
-        assertEquals("aaa", trackerRequest.error)
         assertEquals("aaa", trackerRequest.intentId)
         assertEquals("aaa", trackerRequest.status)
         assertEquals("dcc", trackerRequest.nextActionType)
