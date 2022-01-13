@@ -44,13 +44,6 @@ interface ApiRepository {
     ): PaymentMethod?
 
     /**
-     * Retrieve paRes with id
-     */
-    suspend fun retrieveParesWithId(
-        options: Options
-    ): ThreeDSecurePares?
-
-    /**
      * Create a PaymentConsent
      */
     suspend fun createPaymentConsent(

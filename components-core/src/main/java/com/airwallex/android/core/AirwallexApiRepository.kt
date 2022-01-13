@@ -49,12 +49,6 @@ class AirwallexApiRepository : ApiRepository {
     ) : Options(clientSecret = clientSecret)
 
     @Parcelize
-    class RetrievePaResOptions(
-        override val clientSecret: String,
-        internal val paResId: String
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
     class CreatePaymentConsentOptions(
         override val clientSecret: String,
         internal val request: PaymentConsentCreateRequest
@@ -235,17 +229,6 @@ class AirwallexApiRepository : ApiRepository {
                 params = (options as CreatePaymentMethodOptions).request.toParamMap()
             ),
             PaymentMethodParser()
-        )
-    }
-
-    override suspend fun retrieveParesWithId(options: Options): ThreeDSecurePares? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createGet(
-                url = paResRetrieveUrl((options as RetrievePaResOptions).paResId),
-                options = options,
-                params = null
-            ),
-            ThreeDSecureParesParser()
         )
     }
 
@@ -448,26 +431,6 @@ class AirwallexApiRepository : ApiRepository {
     }
 
     companion object {
-        /**
-         * paRes base url
-         */
-        private fun retrievePaResBaseUrl(): String {
-            return AirwallexPlugins.environment.cybsUrl()
-        }
-
-        /**
-         * `/paresCache?paResId=%s`
-         */
-        internal fun paResRetrieveUrl(paResId: String): String {
-            return "${retrievePaResBaseUrl()}/${String.format("/paresCache?paResId=%s", paResId)}"
-        }
-
-        /**
-         * `/pares/callback`
-         */
-        fun paResTermUrl(): String {
-            return "${retrievePaResBaseUrl()}/pares/callback"
-        }
 
         /**
          *  `/api/v1/pa/payment_intents/{id}`
