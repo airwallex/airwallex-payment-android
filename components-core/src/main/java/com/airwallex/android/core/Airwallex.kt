@@ -353,7 +353,7 @@ class Airwallex internal constructor(
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
                     additionalInfo = additionalInfo,
-                    returnUrl = session.returnUrl,
+                    returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
                     flow = flow,
                     listener = listener
                 )
