@@ -10,7 +10,7 @@ class NextActionParser : ModelJsonParser<NextAction> {
     override fun parse(json: JSONObject): NextAction {
         return NextAction(
             stage = NextAction.NextActionStage.fromValue(
-                AirwallexJsonUtils.optString(json, FIELD_TYPE)
+                AirwallexJsonUtils.optString(json, FIELD_STAGE)
             ),
             type = NextAction.NextActionType.fromValue(
                 AirwallexJsonUtils.optString(json, FIELD_TYPE)
@@ -25,6 +25,7 @@ class NextActionParser : ModelJsonParser<NextAction> {
     }
 
     private companion object {
+        private const val FIELD_STAGE = "stage"
         private const val FIELD_TYPE = "type"
         private const val FIELD_DATA = "data"
         private const val FIELD_DCC_DATA = "dcc_data"
