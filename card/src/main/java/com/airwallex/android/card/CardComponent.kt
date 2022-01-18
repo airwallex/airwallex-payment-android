@@ -199,10 +199,6 @@ class CardComponent : ActionComponent {
 
                 override fun onPageFinished(url: String?) {
                     Logger.debug("onPageFinished $url")
-                    if (url?.contains("challengeRequest") == true) {
-                        visibility = View.VISIBLE
-                        (activity as AirwallexActivity).setLoadingProgress(loading = false)
-                    }
                 }
 
                 override fun onPageStarted(url: String?) {
