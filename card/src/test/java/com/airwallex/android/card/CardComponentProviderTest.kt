@@ -28,6 +28,7 @@ class CardComponentProviderTest {
             true,
             cardComponentProvider.canHandleAction(
                 NextAction(
+                    stage = NextAction.NextActionStage.WAITING_USER_INFO_INPUT,
                     type = NextAction.NextActionType.DCC,
                     data = null,
                     dcc = null,
@@ -40,6 +41,7 @@ class CardComponentProviderTest {
             true,
             cardComponentProvider.canHandleAction(
                 NextAction(
+                    stage = NextAction.NextActionStage.WAITING_USER_INFO_INPUT,
                     type = NextAction.NextActionType.REDIRECT,
                     data = mapOf("1" to "2"),
                     dcc = null,
@@ -52,6 +54,7 @@ class CardComponentProviderTest {
             false,
             cardComponentProvider.canHandleAction(
                 NextAction(
+                    stage = NextAction.NextActionStage.WAITING_USER_INFO_INPUT,
                     type = NextAction.NextActionType.CALL_SDK,
                     data = null,
                     dcc = null,
@@ -73,6 +76,7 @@ class CardComponentProviderTest {
         cardComponentProvider.get().handlePaymentIntentResponse(
             "int_hkdmr7v9rg1j58ky8re",
             NextAction(
+                stage = NextAction.NextActionStage.WAITING_USER_INFO_INPUT,
                 type = NextAction.NextActionType.DCC,
                 data = null,
                 dcc = null,

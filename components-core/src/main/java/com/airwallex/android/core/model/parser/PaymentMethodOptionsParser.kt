@@ -21,7 +21,7 @@ class PaymentMethodOptionsParser : ModelJsonParser<PaymentMethodOptions> {
 
     internal class CardOptionsParser : ModelJsonParser<PaymentMethodOptions.CardOptions> {
 
-        override fun parse(json: JSONObject): PaymentMethodOptions.CardOptions? {
+        override fun parse(json: JSONObject): PaymentMethodOptions.CardOptions {
             val threeDSecure = json.optJSONObject(FIELD_THREE_DS)?.let {
                 ThreeDSecureParser().parse(it)
             }

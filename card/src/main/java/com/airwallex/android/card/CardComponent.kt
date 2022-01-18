@@ -140,7 +140,12 @@ class CardComponent : ActionComponent {
 
         val container = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
         val webView = AirwallexWebView(activity).apply {
-            visibility = View.INVISIBLE
+            if (nextAction.stage == NextAction.NextActionStage.WAITING_USER_INFO_INPUT) {
+                visibility = View.VISIBLE
+                (activity as AirwallexActivity).setLoadingProgress(loading = false)
+            } else {
+                visibility = View.INVISIBLE
+            }
             webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
                 override fun onWebViewConfirmation(payload: String) {
                     Logger.debug("onWebViewConfirmation $payload")
