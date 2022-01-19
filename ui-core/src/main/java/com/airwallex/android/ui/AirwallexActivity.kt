@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.ViewGroup
 import android.view.ViewStub
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
@@ -22,7 +23,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
         viewBinding.viewStub
     }
 
-    val toolbar: Toolbar by lazy {
+    private val toolbar: Toolbar by lazy {
         viewBinding.toolbar
     }
 
@@ -54,7 +55,13 @@ abstract class AirwallexActivity : AppCompatActivity() {
     protected abstract fun homeAsUpIndicatorResId(): Int
 
     override fun onBackPressed() {
-        setResult(Activity.RESULT_CANCELED)
+        val container = window.decorView.findViewById<ViewGroup>(android.R.id.content)
+        if (container.childCount > 0 && container.getChildAt(container.childCount - 1) is AirwallexWebView) {
+            (container.getChildAt(container.childCount - 1) as AirwallexWebView).destroyWebView()
+            return
+        } else {
+            setResult(Activity.RESULT_CANCELED)
+        }
         super.onBackPressed()
     }
 
@@ -81,7 +88,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
         }
     }
 
-    protected open fun setLoadingProgress(loading: Boolean, cancelable: Boolean = true) {
+    open fun setLoadingProgress(loading: Boolean, cancelable: Boolean = true) {
         if (loading) {
             startWait(this, cancelable)
         } else {

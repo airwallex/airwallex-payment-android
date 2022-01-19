@@ -10,7 +10,6 @@ class TrackerRequestTest {
             .setComplete(false)
             .setEmpty(false)
             .setType(TrackerRequest.TrackerType.CARD)
-            .setError("aaa")
             .setIntentId("aaa")
             .setStatus("aaa")
             .setNextActionType("dcc")
@@ -38,7 +37,6 @@ class TrackerRequestTest {
         assertEquals("onPaymentMethodCreated", code.value)
         assertEquals(TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED, code)
 
-        assertEquals("aaa", trackerRequest.error)
         assertEquals("aaa", trackerRequest.intentId)
         assertEquals("aaa", trackerRequest.status)
         assertEquals("dcc", trackerRequest.nextActionType)
@@ -62,7 +60,6 @@ class TrackerRequestTest {
                 "application" to "android",
                 "type" to "card",
                 "code" to "onPaymentMethodCreated",
-                "error" to "aaa",
                 "intent_id" to "aaa",
                 "status" to "aaa",
                 "next_action_type" to "dcc",

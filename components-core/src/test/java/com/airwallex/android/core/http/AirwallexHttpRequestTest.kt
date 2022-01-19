@@ -34,7 +34,7 @@ class AirwallexHttpRequestTest {
             options = options
         ).url
 
-        assertEquals("https://pci-api.airwallex.com", url)
+        assertEquals("https://api.airwallex.com", url)
     }
 
     @Test

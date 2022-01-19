@@ -5,12 +5,6 @@
 
     <application tools:targetApi="n">
         <activity
-            android:name=".view.ThreeDSecureActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/AirwallexDefaultTheme" />
-
-        <activity
             android:name=".view.DccActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"

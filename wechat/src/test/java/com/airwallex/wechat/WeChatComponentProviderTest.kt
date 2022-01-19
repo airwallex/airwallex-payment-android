@@ -69,7 +69,7 @@ class WeChatComponentProviderTest {
                     "nonceStr" to "DUY8tIYUmyKO6Lhb1jTBFKUBWNud6XXu",
                     "package" to "Sign=WXPay",
                     "partnerId" to 403011682,
-                    "prepayId" to "https://pci-api-demo.airwallex.com/pa/mock/wechat/hk/v2/qr_code_scanned?outTradeNo=2021082506294804770199020854&amount=100",
+                    "prepayId" to "https://api-demo.airwallex.com/pa/mock/wechat/hk/v2/qr_code_scanned?outTradeNo=2021082506294804770199020854&amount=100",
                     "sign" to "EDD7AFB573F30F4C131898D631AA5ED3DA8FE92289536A6BE43426E71F2A2798",
                     "timeStamp" to 1629872988
                 ),

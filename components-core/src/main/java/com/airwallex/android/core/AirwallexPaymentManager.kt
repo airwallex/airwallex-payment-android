@@ -99,22 +99,10 @@ class AirwallexPaymentManager(
                                 TrackerRequest.Builder()
                                     .setOrigin(options.request.customerId)
                                     .setCode(TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED_ERROR)
-                                    .setError(it.localizedMessage)
                                     .build()
                             )
                             listener.onFailed(handleError(it))
                         }
-                    )
-                }
-            }
-            is AirwallexApiRepository.RetrievePaResOptions -> {
-                val result = runCatching {
-                    requireNotNull(repository.retrieveParesWithId(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
                     )
                 }
             }
@@ -138,7 +126,6 @@ class AirwallexPaymentManager(
                                 TrackerRequest.Builder()
                                     .setIntentId(options.paymentIntentId)
                                     .setCode(TrackerRequest.TrackerCode.ON_INTENT_RETRIEVED_ERROR)
-                                    .setError(it.localizedMessage)
                                     .build()
                             )
                             listener.onFailed(handleError(it))

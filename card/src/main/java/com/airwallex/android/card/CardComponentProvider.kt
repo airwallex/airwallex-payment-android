@@ -10,7 +10,10 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
     }
 
     override fun canHandleAction(nextAction: NextAction?): Boolean {
-        return nextAction == null || nextAction.type == NextAction.NextActionType.DCC || (nextAction.type == NextAction.NextActionType.REDIRECT && nextAction.data != null)
+        return nextAction == null ||
+            nextAction.type == NextAction.NextActionType.DCC ||
+            nextAction.type == NextAction.NextActionType.REDIRECT && nextAction.data != null ||
+            nextAction.type == NextAction.NextActionType.REDIRECT_FORM && nextAction.data != null
     }
 
     override fun get(): CardComponent {
