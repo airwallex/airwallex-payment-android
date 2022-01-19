@@ -5,25 +5,17 @@ enum class Environment(val value: String) {
 
     fun baseUrl(): String {
         return when (this) {
-            STAGING -> "https://pci-api-staging.airwallex.com"
-            DEMO -> "https://pci-api-demo.airwallex.com"
-            PRODUCTION -> "https://pci-api.airwallex.com"
-        }
-    }
-
-    fun cybsUrl(): String {
-        return when (this) {
-            STAGING -> "https://pci-api-staging.airwallex.com/pa/webhook/cybs"
-            DEMO -> "https://pci-api-demo.airwallex.com/pa/webhook/cybs"
-            PRODUCTION -> "https://pci-api.airwallex.com/pa/webhook/cybs"
+            STAGING -> "https://api-staging.airwallex.com"
+            DEMO -> "https://api-demo.airwallex.com"
+            PRODUCTION -> "https://api.airwallex.com"
         }
     }
 
     fun trackerUrl(): String {
         return when (this) {
-            STAGING -> "https://pci-api-staging.airwallex.com/api/v1/checkout"
-            DEMO -> "https://pci-api-demo.airwallex.com/api/v1/checkout"
-            PRODUCTION -> "https://pci-api.airwallex.com/api/v1/checkout"
+            STAGING -> "https://api-staging.airwallex.com/api/v1/checkout"
+            DEMO -> "https://api-demo.airwallex.com/api/v1/checkout"
+            PRODUCTION -> "https://api.airwallex.com/api/v1/checkout"
         }
     }
 

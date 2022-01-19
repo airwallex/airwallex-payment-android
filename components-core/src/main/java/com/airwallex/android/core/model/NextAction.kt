@@ -8,6 +8,7 @@ import java.math.BigDecimal
 @Parcelize
 data class NextAction(
 
+    val stage: NextActionStage? = null,
     /**
      * Type of next action, can be one of render_qr_code, call_sdk, redirect, display
      */
@@ -27,6 +28,20 @@ data class NextAction(
 
     val method: String?
 ) : AirwallexModel, Parcelable {
+
+    @Parcelize
+    enum class NextActionStage(val value: String) : Parcelable {
+
+        WAITING_DEVICE_DATA_COLLECTION("WAITING_DEVICE_DATA_COLLECTION"),
+
+        WAITING_USER_INFO_INPUT("WAITING_USER_INFO_INPUT");
+
+        internal companion object {
+            internal fun fromValue(value: String?): NextActionStage? {
+                return values().firstOrNull { it.value == value }
+            }
+        }
+    }
 
     /**
      * The status of a [PaymentIntent]

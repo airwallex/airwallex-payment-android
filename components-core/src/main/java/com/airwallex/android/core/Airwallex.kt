@@ -353,7 +353,7 @@ class Airwallex internal constructor(
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
                     additionalInfo = additionalInfo,
-                    returnUrl = session.returnUrl,
+                    returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
                     flow = flow,
                     listener = listener
                 )
@@ -385,7 +385,7 @@ class Airwallex internal constructor(
                                                 currency = session.currency,
                                                 amount = session.amount,
                                                 cvc = cvc,
-                                                returnUrl = session.returnUrl,
+                                                returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
                                                 listener = listener
                                             )
                                         }
@@ -432,7 +432,7 @@ class Airwallex internal constructor(
                                         cvc = cvc,
                                         customerId = session.customerId,
                                         paymentConsentId = response.id,
-                                        returnUrl = session.returnUrl,
+                                        returnUrl = AirwallexPlugins.environment.threeDsReturnUrl(),
                                         listener = listener
                                     )
                                 }
@@ -607,7 +607,7 @@ class Airwallex internal constructor(
             .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl())
             .build()
 
-        val request = PaymentIntentConfirmRequest.Builder(
+        val builder = PaymentIntentConfirmRequest.Builder(
             requestId = UUID.randomUUID().toString()
         )
             .setPaymentMethodOptions(
@@ -634,12 +634,15 @@ class Airwallex internal constructor(
                         .build()
                 }
             )
-            .build()
+
+        if (params.returnUrl != null) {
+            builder.setReturnUrl(params.returnUrl)
+        }
 
         return AirwallexApiRepository.ConfirmPaymentIntentOptions(
             clientSecret = params.clientSecret,
             paymentIntentId = params.paymentIntentId,
-            request = request
+            request = builder.build()
         )
     }
 

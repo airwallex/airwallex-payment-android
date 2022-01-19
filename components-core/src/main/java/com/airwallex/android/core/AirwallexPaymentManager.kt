@@ -106,17 +106,6 @@ class AirwallexPaymentManager(
                     )
                 }
             }
-            is AirwallexApiRepository.RetrievePaResOptions -> {
-                val result = runCatching {
-                    requireNotNull(repository.retrieveParesWithId(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
-                    )
-                }
-            }
             is AirwallexApiRepository.RetrievePaymentIntentOptions -> {
                 val result = runCatching {
                     requireNotNull(repository.retrievePaymentIntent(options))

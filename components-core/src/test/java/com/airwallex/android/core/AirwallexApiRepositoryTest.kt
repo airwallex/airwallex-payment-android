@@ -113,19 +113,6 @@ class AirwallexApiRepositoryTest {
     }
 
     @Test
-    fun retrievePaResOptionsTest() {
-        val options = AirwallexApiRepository.RetrievePaResOptions(
-            clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
-            paResId = "abc"
-        )
-        assertEquals(
-            "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
-            options.clientSecret
-        )
-        assertEquals("abc", options.paResId)
-    }
-
-    @Test
     fun createPaymentConsentOptionsTest() {
         val options = AirwallexApiRepository.CreatePaymentConsentOptions(
             clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
