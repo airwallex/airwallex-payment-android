@@ -57,7 +57,7 @@ task clean(type: Delete) {
 }
 
 // Update the version field when a new version is released
-version = '3.0.3'
+version = '4.0.0'
 
 ext {
     buildToolsVersion = "30.0.2"
