@@ -2,8 +2,8 @@
 All notable changes to the SDK will be documented in this file.
 
 ## Version 4.0.0 (January 20, 2022)
-- Bug fix
-- Remove Cardinal
+- Support netcetera
+- Remove cardinal
 
 ## Version 3.0.2 (November 18, 2021)
 - Bug fix
