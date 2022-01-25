@@ -27,6 +27,12 @@ data class ConfirmPaymentIntentParams internal constructor(
     val cvc: String? = null,
 
     /**
+     * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
+     * Default: true
+     */
+    val autoCapture: Boolean = true,
+
+    /**
      * Unique identifier of this [PaymentConsent]
      */
     val paymentConsentId: String? = null,
@@ -42,7 +48,7 @@ data class ConfirmPaymentIntentParams internal constructor(
     val countryCode: String? = null,
 
     /**
-     * PPROAdditionalInfo
+     * AdditionalInfo (used by LPMs)
      */
     val additionalInfo: Map<String, String>? = null,
 
@@ -66,6 +72,7 @@ data class ConfirmPaymentIntentParams internal constructor(
 
         private var paymentMethod: PaymentMethod? = null
         private var cvc: String? = null
+        private var autoCapture: Boolean = true
         private var customerId: String? = null
         private var paymentConsentId: String? = null
         private var currency: String? = null
@@ -76,6 +83,10 @@ data class ConfirmPaymentIntentParams internal constructor(
 
         fun setCVC(cvc: String?): Builder = apply {
             this.cvc = cvc
+        }
+
+        fun setAutoCapture(autoCapture: Boolean): Builder = apply {
+            this.autoCapture = autoCapture
         }
 
         fun setAdditionalInfo(additionalInfo: Map<String, String>?): Builder = apply {
@@ -118,6 +129,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                 paymentMethodType = paymentMethodType,
                 paymentMethod = paymentMethod,
                 cvc = cvc,
+                autoCapture = autoCapture,
                 paymentConsentId = paymentConsentId,
                 currency = currency,
                 countryCode = countryCode,
@@ -139,7 +151,7 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param customerId the customerId of [PaymentIntent], optional.
          * @param paymentConsentId the customerId of [PaymentConsent], optional.
          * @param currency amount currency
-         * @param additionalInfo to support ppro payment
+         * @param additionalInfo used by LPMs
          * @param returnUrl optional
          * @param flow optional
          */
@@ -188,7 +200,8 @@ data class ConfirmPaymentIntentParams internal constructor(
             cvc: String?,
             customerId: String? = null,
             paymentConsentId: String? = null,
-            returnUrl: String? = null
+            returnUrl: String? = null,
+            autoCapture: Boolean = true
         ): ConfirmPaymentIntentParams {
             return Builder(
                 paymentIntentId = paymentIntentId,
@@ -198,6 +211,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setCustomerId(customerId)
                 .setPaymentMethod(paymentMethod)
                 .setCVC(cvc)
+                .setAutoCapture(autoCapture)
                 .setPaymentConsentId(paymentConsentId)
                 .setReturnUrl(returnUrl)
                 .build()

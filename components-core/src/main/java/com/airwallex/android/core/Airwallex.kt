@@ -328,7 +328,7 @@ class Airwallex internal constructor(
      * @param paymentMethod a [PaymentMethod] used to present the Checkout flow, required.
      * @param paymentConsentId the ID of the [PaymentConsent], optional. (CIT & Card will need this field for subsequent payments, paymentConsentId is not empty indicating a subsequent payment, empty indicating a recurring )
      * @param cvc the CVC of the Credit Card, optional.
-     * @param additionalInfo to support ppro payment
+     * @param additionalInfo used by LPMs
      * @param listener The callback of checkout
      */
     @UiThread
@@ -354,6 +354,7 @@ class Airwallex internal constructor(
                     paymentConsentId = paymentConsentId,
                     additionalInfo = additionalInfo,
                     returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
+                    autoCapture= session.autoCapture,
                     flow = flow,
                     listener = listener
                 )
@@ -433,10 +434,12 @@ class Airwallex internal constructor(
                                         customerId = session.customerId,
                                         paymentConsentId = response.id,
                                         returnUrl = AirwallexPlugins.environment.threeDsReturnUrl(),
+                                        autoCapture= session.autoCapture,
                                         listener = listener
                                     )
                                 }
                                 else -> {
+                                    // this should not happen
                                     verifyPaymentConsent(
                                         paymentConsent = response,
                                         currency = session.currency,
@@ -463,6 +466,7 @@ class Airwallex internal constructor(
         paymentConsentId: String? = null,
         additionalInfo: Map<String, String>? = null,
         returnUrl: String? = null,
+        autoCapture: Boolean = true,
         flow: AirwallexPaymentRequestFlow? = null,
         listener: PaymentResultListener
     ) {
@@ -475,7 +479,8 @@ class Airwallex internal constructor(
                     cvc = cvc,
                     customerId = customerId,
                     paymentConsentId = paymentConsentId,
-                    returnUrl = returnUrl
+                    returnUrl = returnUrl,
+                    autoCapture = autoCapture
                 )
             }
             else -> {
@@ -614,7 +619,7 @@ class Airwallex internal constructor(
                 PaymentMethodOptions.Builder()
                     .setCardOptions(
                         PaymentMethodOptions.CardOptions.Builder()
-                            .setAutoCapture(true)
+                            .setAutoCapture(params.autoCapture)
                             .setThreeDSecure(threeDSecure).build()
                     )
                     .build()

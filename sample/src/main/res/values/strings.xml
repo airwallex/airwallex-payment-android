@@ -1,10 +1,10 @@
 <resources>
 
-    <string name="authorization">Demo Authorization</string>
+    <string name="authentication">Authentication</string>
     <string name="wechat">WeChat</string>
-    <string name="api_key">Api Key</string>
-    <string name="client_id">Client Id</string>
-    <string name="wechat_app_id">App Id</string>
+    <string name="api_key">API Key</string>
+    <string name="client_id">Client ID</string>
+    <string name="wechat_app_id">App ID</string>
 
     <string name="app_name">Airwallex Sample</string>
     <string name="checkout">Checkout</string>
@@ -39,7 +39,7 @@
     <string name="sdk_env_note">If you switch the environment, you need to restart the app to take effect.</string>
 
     <string name="checkout_mode">Checkout Mode</string>
-    <string name="return_url">Return url</string>
+    <string name="return_url">Return URL</string>
     <string name="next_trigger_by">Next trigger by</string>
     <string name="clear_customer">Clear Customer</string>
     <string name="customer_cleared">Customer cleared successfully</string>
@@ -62,6 +62,7 @@
     <string name="generate_customer_failed">Generate customer failed</string>
     <string name="generate_customer_failed_message">There was an error while generate customer. Please try again.</string>
     <string name="requires_cvc">Requires CVC</string>
+    <string name="auto_capture">Auto Capture</string>
     <string name="shipping">Shipping</string>
     <string name="item">Item</string>
     <string name="total">Total</string>

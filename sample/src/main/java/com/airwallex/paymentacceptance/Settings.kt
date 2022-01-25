@@ -102,6 +102,17 @@ object Settings {
                 ?: defaultRequireCVC
         }
 
+    val autoCapture: String
+        get() {
+            val defaultAutoCapture =
+                SampleApplication.instance.resources.getStringArray(R.array.array_auto_capture)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.auto_capture),
+                defaultAutoCapture
+            )
+                ?: defaultAutoCapture
+        }
+
     val apiKey: String
         get() {
             return sharedPreferences.getString(context.getString(R.string.api_key), getMetadata(METADATA_KEY_API_KEY))
