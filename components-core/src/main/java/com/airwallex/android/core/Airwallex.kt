@@ -354,7 +354,7 @@ class Airwallex internal constructor(
                     paymentConsentId = paymentConsentId,
                     additionalInfo = additionalInfo,
                     returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
-                    autoCapture= session.autoCapture,
+                    autoCapture = session.autoCapture,
                     flow = flow,
                     listener = listener
                 )
@@ -434,7 +434,7 @@ class Airwallex internal constructor(
                                         customerId = session.customerId,
                                         paymentConsentId = response.id,
                                         returnUrl = AirwallexPlugins.environment.threeDsReturnUrl(),
-                                        autoCapture= session.autoCapture,
+                                        autoCapture = session.autoCapture,
                                         listener = listener
                                     )
                                 }

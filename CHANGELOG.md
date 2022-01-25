@@ -1,6 +1,9 @@
 # Airwallex Android SDK Changelog
 All notable changes to the SDK will be documented in this file.
 
+## Version 4.0.1 (January 25, 2022)
+- Allow Card to disable auto_capture
+
 ## Version 4.0.0 (January 20, 2022)
 - Support netcetera
 - Remove cardinal
