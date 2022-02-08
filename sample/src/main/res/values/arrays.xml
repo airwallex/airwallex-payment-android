@@ -21,4 +21,9 @@
         <item>False</item>
         <item>True</item>
     </string-array>
+
+    <string-array name="array_auto_capture">
+        <item>Enabled</item>
+        <item>Disabled</item>
+    </string-array>
 </resources>

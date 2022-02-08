@@ -133,6 +133,15 @@ class PaymentCartFragment : Fragment() {
             }
         }
 
+    private val autoCapture: Boolean
+        get() {
+            return when (Settings.autoCapture) {
+                SampleApplication.instance.resources.getStringArray(R.array.array_auto_capture)[0] -> true
+                SampleApplication.instance.resources.getStringArray(R.array.array_auto_capture)[1] -> false
+                else -> throw Exception("Unsupported autoCapture: ${Settings.autoCapture}")
+            }
+        }
+
     private fun buildSession(
         paymentIntent: PaymentIntent? = null,
         customerId: String? = null
@@ -147,6 +156,7 @@ class PaymentCartFragment : Fragment() {
                     countryCode = Settings.countryCode
                 )
                     .setReturnUrl(Settings.returnUrl)
+                    .setAutoCapture(autoCapture)
                     .build()
             }
             AirwallexCheckoutMode.RECURRING -> {
@@ -179,6 +189,7 @@ class PaymentCartFragment : Fragment() {
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .setReturnUrl(Settings.returnUrl)
+                    .setAutoCapture(autoCapture)
                     .build()
             }
         }

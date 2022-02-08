@@ -33,6 +33,17 @@
             android:key="@string/requires_cvc"
             android:title="@string/requires_cvc" />
 
+        <ListPreference
+            android:dialogTitle="@string/auto_capture"
+            android:entries="@array/array_auto_capture"
+            android:entryValues="@array/array_auto_capture"
+            android:key="@string/auto_capture"
+            android:title="@string/auto_capture" />
+
+        <EditTextPreference
+            android:key="@string/return_url"
+            android:title="@string/return_url" />
+
         <Preference
             android:key="@string/generate_customer"
             android:title="@string/generate_customer" >
@@ -45,7 +56,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/authorization">
+    <PreferenceCategory android:title="@string/authentication">
 
         <EditTextPreference
             android:key="@string/api_key"
@@ -74,10 +85,6 @@
             android:defaultValue="@string/country_code_value"
             android:key="@string/country_code"
             android:title="@string/country_code" />
-
-        <EditTextPreference
-            android:key="@string/return_url"
-            android:title="@string/return_url" />
 
     </PreferenceCategory>
 
