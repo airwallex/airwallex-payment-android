@@ -216,7 +216,11 @@ internal class PaymentMethodsViewModel(
         const val FLOW = "flow"
         private val unsupportedPaymentMethodTypes = listOf(
             "applepay",
-            "googlepay" // todo: remove once integrated
+            "googlepay",            // todo: remove once integrated
+            "ach_direct_debit",     // todo: remove once mandate is rendered properly
+            "becs_direct_debit",    // todo: remove once mandate is rendered properly
+            "sepa_direct_debit",    // todo: remove once mandate is rendered properly
+            "bacs_direct_debit"     // todo: remove once mandate is rendered properly
         )
     }
 }
