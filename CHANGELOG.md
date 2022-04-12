@@ -1,6 +1,9 @@
 # Airwallex Android SDK Changelog
 All notable changes to the SDK will be documented in this file.
 
+## Version 4.0.2 (April 12, 2022)
+- Exclude unsupported payment methods
+
 ## Version 4.0.1 (January 25, 2022)
 - Allow Card to disable auto_capture
 
