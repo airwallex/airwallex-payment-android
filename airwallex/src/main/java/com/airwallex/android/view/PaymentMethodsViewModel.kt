@@ -133,6 +133,8 @@ internal class PaymentMethodsViewModel(
                                     Result.success(
                                         availablePaymentMethodList.filter {
                                             it.transactionMode == TransactionMode.RECURRING
+                                        }.filter {
+                                            it.name !in unsupportedPaymentMethodTypes
                                         }
                                     )
                             }
@@ -141,6 +143,8 @@ internal class PaymentMethodsViewModel(
                                     Result.success(
                                         availablePaymentMethodList.filter {
                                             it.transactionMode == TransactionMode.ONE_OFF
+                                        }.filter {
+                                            it.name !in unsupportedPaymentMethodTypes
                                         }
                                     )
                             }
@@ -210,5 +214,13 @@ internal class PaymentMethodsViewModel(
     companion object {
         const val COUNTRY_CODE = "country_code"
         const val FLOW = "flow"
+        private val unsupportedPaymentMethodTypes = listOf(
+            "applepay",
+            "googlepay", // todo: remove once integrated
+            "ach_direct_debit", // todo: remove once mandate is rendered properly
+            "becs_direct_debit", // todo: remove once mandate is rendered properly
+            "sepa_direct_debit", // todo: remove once mandate is rendered properly
+            "bacs_direct_debit" // todo: remove once mandate is rendered properly
+        )
     }
 }
