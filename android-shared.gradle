@@ -1,0 +1,1 @@
+apply plugin: 'com.dicedmelon.gradle.jacoco-android'

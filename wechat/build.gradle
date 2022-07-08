@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-parcelize'
 }
 
+apply from: "$rootProject.projectDir/android-shared.gradle"
 apply from: "../ktlint.gradle"
 
 android {

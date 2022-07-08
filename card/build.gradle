@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-parcelize'
 }
 
+apply from: "$rootProject.projectDir/android-shared.gradle"
 apply from: "../ktlint.gradle"
 
 def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
