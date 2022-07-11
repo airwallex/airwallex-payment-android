@@ -5,11 +5,9 @@ plugins {
 }
 
 apply from: "$rootProject.projectDir/android-shared.gradle"
-apply from: "../ktlint.gradle"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
