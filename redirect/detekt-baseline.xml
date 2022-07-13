@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>EmptyCatchBlock:RedirectComponentProviderTest.kt$RedirectComponentProviderTest${ }</ID>
+    <ID>ImportOrdering:com.airwallex.android.redirect.RedirectComponentProviderTest.kt:3</ID>
+    <ID>MaxLineLength:RedirectComponentProviderTest.kt$RedirectComponentProviderTest$url = "https://cdn-psp.marmot-cloud.com/acwallet/alipayconnectcode?code=golcashier1629873426081sandbox&amp;golSandbox=true&amp;pspName=ALIPAY_CN"</ID>
+    <ID>MaximumLineLength:com.airwallex.android.redirect.RedirectComponentProviderTest.kt:67</ID>
+    <ID>NoWildcardImports:com.airwallex.android.redirect.RedirectComponent.kt:6</ID>
+    <ID>NoWildcardImports:com.airwallex.android.redirect.RedirectComponentProvider.kt:3</ID>
+    <ID>NoWildcardImports:com.airwallex.android.redirect.RedirectComponentProvider.kt:4</ID>
+    <ID>ReturnCount:RedirectUtil.kt$RedirectUtil$private fun determineResolveResult(context: Context, uri: Uri): ResolveResultType</ID>
+    <ID>SwallowedException:RedirectComponentProviderTest.kt$RedirectComponentProviderTest$e: Exception</ID>
+    <ID>SwallowedException:RedirectUtil.kt$RedirectUtil$e: ActivityNotFoundException</ID>
+    <ID>SwallowedException:RedirectUtil.kt$RedirectUtil$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:RedirectUtil.kt$RedirectUtil$e: Exception</ID>
+    <ID>WildcardImport:RedirectComponent.kt$import com.airwallex.android.core.*</ID>
+    <ID>WildcardImport:RedirectComponentProvider.kt$import com.airwallex.android.core.*</ID>
+    <ID>WildcardImport:RedirectComponentProvider.kt$import com.airwallex.android.core.model.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

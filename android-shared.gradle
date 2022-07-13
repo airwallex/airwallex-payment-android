@@ -2,5 +2,6 @@ apply plugin: 'com.dicedmelon.gradle.jacoco-android'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 
 dependencies {
-	detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion"
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion"
+    detektPlugins project(path: ':airwallex-detekt-rules', configuration: 'default')
 }

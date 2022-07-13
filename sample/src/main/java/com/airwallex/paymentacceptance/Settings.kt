@@ -8,16 +8,16 @@ import androidx.preference.PreferenceManager
 object Settings {
 
     // API Key
-    private const val API_KEY = "daff04c4d896cd832c2cabfaadacb02a06ca799d1acc2a2124f820c3852392b49ad4eeaa676115c749ba7fd000357382"
+    private const val API_KEY = ""
 
     // Client Id
-    private const val CLIENT_ID = "5m5RFNPJTSW8Mh2R46ghxw"
+    private const val CLIENT_ID = ""
 
     // WeChat Pay App Id
     private const val WECHAT_APP_ID = ""
 
     // Return url
-    private const val RETURN_URL = "airwallexcheckout://com.airwallex.paymentacceptance"
+    private const val RETURN_URL = ""
 
     private const val CUSTOMER_ID = "customerId"
     private val context: Context by lazy { SampleApplication.instance }

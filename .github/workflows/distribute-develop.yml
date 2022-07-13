@@ -4,21 +4,11 @@ name: Distribute Develop
 on:
   workflow_dispatch:
   push:
-    branches:
-      - 'feature/test-CI'
+    branches: [ develop ]
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up our JDK environment
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'adopt'
-          java-version: '11'
   upload:
     runs-on: ubuntu-latest
-    needs: setup
     steps:
       - uses: actions/checkout@v3
 
@@ -34,7 +24,6 @@ jobs:
             sample/**/mapping/release/mapping.txt
   publish:
     runs-on: ubuntu-latest
-    needs: setup
     steps:      
       - uses: actions/checkout@v3
 

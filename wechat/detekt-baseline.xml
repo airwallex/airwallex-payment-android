@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>EmptyFunctionBlock:WeChatComponent.kt$WeChatComponent.&lt;no name provided>${}</ID>
+    <ID>MaxLineLength:WeChatComponent.kt$WeChatComponent.&lt;no name provided>$AirwallexCheckoutException(message = "Failed to process WeChat Pay, errCode ${resp.errCode}, errStr ${resp.errStr}")</ID>
+    <ID>MaxLineLength:WeChatComponent.kt$WeChatComponent.&lt;no name provided>$AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "WeChat Pay has been cancelled!"))</ID>
+    <ID>MaxLineLength:WeChatComponentProviderTest.kt$WeChatComponentProviderTest$"prepayId" to "https://api-demo.airwallex.com/pa/mock/wechat/hk/v2/qr_code_scanned?outTradeNo=2021082506294804770199020854&amp;amount=100"</ID>
+    <ID>MaximumLineLength:com.airwallex.android.wechat.WeChatComponent.kt:47</ID>
+    <ID>MaximumLineLength:com.airwallex.android.wechat.WeChatComponent.kt:51</ID>
+    <ID>MaximumLineLength:com.airwallex.wechat.WeChatComponentProviderTest.kt:72</ID>
+    <ID>NoWildcardImports:com.airwallex.android.wechat.WeChatComponent.kt:6</ID>
+    <ID>NoWildcardImports:com.airwallex.android.wechat.WeChatComponentProvider.kt:3</ID>
+    <ID>NoWildcardImports:com.airwallex.android.wechat.WeChatComponentProvider.kt:4</ID>
+    <ID>WildcardImport:WeChatComponent.kt$import com.airwallex.android.core.*</ID>
+    <ID>WildcardImport:WeChatComponentProvider.kt$import com.airwallex.android.core.*</ID>
+    <ID>WildcardImport:WeChatComponentProvider.kt$import com.airwallex.android.core.model.*</ID>
+  </CurrentIssues>
+</SmellBaseline>
