@@ -25,6 +25,7 @@ plugins {
 }
 
 detekt {
+    buildUponDefaultConfig = true
     config = files("$projectDir/config/detekt/detekt.yml")
 }
 
