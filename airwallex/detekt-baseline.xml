@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:CardExpiryEditText.kt$CardExpiryEditText.&lt;no name provided>$month.length == 2 &amp;&amp; latestInsertionSize > 0 &amp;&amp; !inErrorState || rawDateInput.length > 2</ID>
+    <ID>ComplexMethod:AirwallexStarter.kt$AirwallexStarter.Companion$fun handlePaymentData( requestCode: Int, resultCode: Int, data: Intent? ): Boolean</ID>
+    <ID>ComplexMethod:CardWidget.kt$CardWidget$private fun listenFocusChanged()</ID>
+    <ID>ComplexMethod:PaymentInfoBottomSheetDialog.kt$PaymentInfoBottomSheetDialog$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
+    <ID>ComplexMethod:PaymentMethodsActivity.kt$PaymentMethodsActivity$private fun handleProcessPaymentMethod( paymentConsent: PaymentConsent, paymentMethodType: AvailablePaymentMethodType?, cvc: String? = null )</ID>
+    <ID>EmptyFunctionBlock:AirwallexTextInputLayout.kt$&lt;no name provided>${}</ID>
+    <ID>ForbiddenComment:PaymentMethodsViewModel.kt$PaymentMethodsViewModel.Companion$// todo: remove once integrated</ID>
+    <ID>ForbiddenComment:PaymentMethodsViewModel.kt$PaymentMethodsViewModel.Companion$// todo: remove once mandate is rendered properly</ID>
+    <ID>ImplicitDefaultLocale:DeletePaymentMethodDialogFactory.kt$DeletePaymentMethodDialogFactory$String.format("%s •••• %s", it.brand?.uppercase(Locale.ROOT), it.last4)</ID>
+    <ID>ImplicitDefaultLocale:PaymentCheckoutActivity.kt$PaymentCheckoutActivity$String.format( "%s •••• %s", paymentMethod.card?.brand?.replaceFirstChar { if (it.isLowerCase()) it.titlecase( Locale.getDefault() ) else it.toString() }, paymentMethod.card?.last4 )</ID>
+    <ID>ImplicitDefaultLocale:PaymentMethodsAdapter.kt$PaymentMethodsAdapter.PaymentConsentHolder$String.format( "%s •••• %s", card.brand?.replaceFirstChar { if (it.isLowerCase()) it.titlecase( Locale.getDefault() ) else it.toString() }, card.last4 )</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.AddPaymentMethodActivity.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.AddPaymentMethodActivityLaunch.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.AddPaymentMethodViewModel.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.CardWidget.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.DeletePaymentMethodDialogFactory.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.PaymentCheckoutActivity.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.PaymentCheckoutActivityLaunch.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.PaymentInfoBottomSheetDialog.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.PaymentMethodsActivity.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.PaymentMethodsAdapter.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.PaymentMethodsViewModel.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.PaymentShippingActivity.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.view.ShippingAddressWidget.kt:3</ID>
+    <ID>LongMethod:AirwallexStarter.kt$AirwallexStarter.Companion$fun handlePaymentData( requestCode: Int, resultCode: Int, data: Intent? ): Boolean</ID>
+    <ID>LongMethod:CardWidget.kt$CardWidget$private fun listenFocusChanged()</ID>
+    <ID>LongMethod:PaymentInfoBottomSheetDialog.kt$PaymentInfoBottomSheetDialog$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
+    <ID>LongMethod:PaymentMethodsActivity.kt$PaymentMethodsActivity$private fun handleProcessPaymentMethod( paymentConsent: PaymentConsent, paymentMethodType: AvailablePaymentMethodType?, cvc: String? = null )</ID>
+    <ID>LongParameterList:AirwallexCheckoutBaseActivity.kt$AirwallexCheckoutBaseActivity$( paymentMethod: PaymentMethod, paymentConsentId: String? = null, cvc: String? = null, additionalInfo: Map&lt;String, String>? = null, flow: AirwallexPaymentRequestFlow? = null, observer: Observer&lt;AirwallexPaymentStatus> )</ID>
+    <ID>MagicNumber:CardCvcEditText.kt$CardCvcEditText$3</ID>
+    <ID>MagicNumber:CardCvcEditText.kt$CardCvcEditText$4</ID>
+    <ID>MagicNumber:CardExpiryEditText.kt$CardExpiryEditText$3</ID>
+    <ID>MagicNumber:CardExpiryEditText.kt$CardExpiryEditText$4</ID>
+    <ID>MagicNumber:CardExpiryEditText.kt$CardExpiryEditText.&lt;no name provided>$4</ID>
+    <ID>MagicNumber:CardNumberEditText.kt$CardNumberEditText$4</ID>
+    <ID>MagicNumber:CardNumberEditText.kt$CardNumberEditText.&lt;no name provided>$16</ID>
+    <ID>MagicNumber:CardNumberEditText.kt$CardNumberEditText.&lt;no name provided>$4</ID>
+    <ID>MagicNumber:CardUtils.kt$CardUtils$10</ID>
+    <ID>MagicNumber:CardUtils.kt$CardUtils$9</ID>
+    <ID>MagicNumber:CardWidget.kt$CardWidget$10</ID>
+    <ID>MagicNumber:ExpiryDateUtils.kt$ExpiryDateUtils$12</ID>
+    <ID>MagicNumber:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback$0.1f</ID>
+    <ID>MagicNumber:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback$0.5f</ID>
+    <ID>MagicNumber:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback$5.0f</ID>
+    <ID>MaxLineLength:AddPaymentMethodViewModelTest.kt$// clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",</ID>
+    <ID>MaxLineLength:AirwallexCheckoutViewModel.kt$AirwallexCheckoutViewModel$Result.failure(AirwallexCheckoutException(message = "$paymentMethodTypeName just support one-off payment"))</ID>
+    <ID>MaxLineLength:DynamicFieldCompleteView.kt$DynamicFieldCompleteView$resources.getString(R.string.airwallex_invalid_field, viewBinding.tlField.hint.toString().lowercase())</ID>
+    <ID>MaxLineLength:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback$abstract</ID>
+    <ID>MaxLineLength:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback$abstract fun instantiateUnderlayButton(viewHolder: RecyclerView.ViewHolder?, underlayButtons: ArrayList&lt;UnderlayButton>)</ID>
+    <ID>MaxLineLength:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback$if</ID>
+    <ID>MaxLineLength:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback$override</ID>
+    <ID>MaxLineLength:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback.UnderlayButton$class</ID>
+    <ID>MaxLineLength:PaymentMethodsActivity.kt$PaymentMethodsActivity$customerPaymentMethods.find { paymentMethod -> paymentMethod.id == paymentConsent.paymentMethod?.id }</ID>
+    <ID>MaxLineLength:PaymentMethodsActivity.kt$PaymentMethodsActivity$it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER &amp;&amp; it.status == PaymentConsent.PaymentConsentStatus.VERIFIED &amp;&amp; it.paymentMethod?.type == PaymentMethodType.CARD.value</ID>
+    <ID>MaxLineLength:PaymentMethodsAdapter.kt$PaymentMethodsAdapter.DynamicPaymentHolder$.</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.AirwallexCheckoutViewModel.kt:65</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.AirwallexCheckoutViewModel.kt:98</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.DynamicFieldCompleteView.kt:68</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:156</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:18</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:194</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:48</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:65</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:95</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.PaymentMethodsActivity.kt:184</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.PaymentMethodsActivity.kt:188</ID>
+    <ID>MaximumLineLength:com.airwallex.android.view.PaymentMethodsAdapter.kt:169</ID>
+    <ID>MemberNameEqualsClassName:AirwallexTextInputLayoutTest.kt$AirwallexTextInputLayoutTest$@Test fun airwallexTextInputLayoutTest()</ID>
+    <ID>MemberNameEqualsClassName:CardBrandTest.kt$CardBrandTest$@Test fun cardBrandTest()</ID>
+    <ID>NestedBlockDepth:AirwallexStarter.kt$AirwallexStarter.Companion$fun handlePaymentData( requestCode: Int, resultCode: Int, data: Intent? ): Boolean</ID>
+    <ID>NoWildcardImports:com.airwallex.android.AirwallexStarter.kt:6</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.AddPaymentMethodActivity.kt:9</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.AddPaymentMethodViewModel.kt:4</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.AirwallexCheckoutBaseActivity.kt:8</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.AirwallexCheckoutViewModel.kt:4</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.AirwallexCheckoutViewModel.kt:5</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.AirwallexCheckoutViewModel.kt:8</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.CountryAutoCompleteView.kt:9</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.DynamicFieldCompleteView.kt:10</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.PaymentInfoBottomSheetDialog.kt:12</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.PaymentInfoBottomSheetDialog.kt:6</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:5</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.PaymentMethodsActivity.kt:12</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.PaymentMethodsActivity.kt:17</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.PaymentMethodsActivityLaunch.kt:10</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.PaymentMethodsAdapter.kt:12</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.PaymentMethodsViewModel.kt:4</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.PaymentMethodsViewModel.kt:5</ID>
+    <ID>NoWildcardImports:com.airwallex.android.view.PaymentMethodsViewModel.kt:8</ID>
+    <ID>NotNullAssertionOperatorRule:BottomSheetDialog.kt$BottomSheetDialog$_baseBinding!!</ID>
+    <ID>NotNullAssertionOperatorRule:BottomSheetDialog.kt$BottomSheetDialog$_binding!!</ID>
+    <ID>NotNullAssertionOperatorRule:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback$buttonsBuffer[pos]!!</ID>
+    <ID>NotNullAssertionOperatorRule:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback$buttonsBuffer[swipedPosition]!!</ID>
+    <ID>NotNullAssertionOperatorRule:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback.UnderlayButton$clickRegion!!</ID>
+    <ID>ParameterListWrapping:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:156</ID>
+    <ID>ParameterListWrapping:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:194</ID>
+    <ID>ParameterListWrapping:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:65</ID>
+    <ID>ParameterListWrapping:com.airwallex.android.view.PaymentMethodSwipeCallback.kt:95</ID>
+    <ID>ReturnCount:AirwallexStarter.kt$AirwallexStarter.Companion$fun handlePaymentData( requestCode: Int, resultCode: Int, data: Intent? ): Boolean</ID>
+    <ID>ReturnCount:CardNumberEditText.kt$CardNumberEditText.&lt;no name provided>$override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int)</ID>
+    <ID>ReturnCount:CardUtils.kt$CardUtils$internal fun isValidCardLength(cardNumber: String?): Boolean</ID>
+    <ID>ReturnCount:CardUtils.kt$CardUtils$internal fun isValidLuhnNumber(number: String?): Boolean</ID>
+    <ID>ReturnCount:ExpiryDateUtils.kt$ExpiryDateUtils$internal fun isExpiryDateValid(expiryMonth: Int, expiryYear: Int, calendar: Calendar): Boolean</ID>
+    <ID>ReturnCount:PaymentMethodsActivity.kt$PaymentMethodsActivity$private fun filterPaymentConsents()</ID>
+    <ID>TooGenericExceptionThrown:PaymentMethodsViewModel.kt$PaymentMethodsViewModel$throw Exception("Not supported session $session")</ID>
+    <ID>TooManyFunctions:PaymentMethodsAdapter.kt$PaymentMethodsAdapter : Adapter</ID>
+    <ID>UtilityClassWithPublicConstructor:AirwallexStarter.kt$AirwallexStarter</ID>
+    <ID>WildcardImport:AddPaymentMethodActivity.kt$import com.airwallex.android.core.*</ID>
+    <ID>WildcardImport:AddPaymentMethodViewModel.kt$import androidx.lifecycle.*</ID>
+    <ID>WildcardImport:AirwallexCheckoutBaseActivity.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:AirwallexCheckoutViewModel.kt$import androidx.lifecycle.*</ID>
+    <ID>WildcardImport:AirwallexCheckoutViewModel.kt$import com.airwallex.android.core.*</ID>
+    <ID>WildcardImport:AirwallexCheckoutViewModel.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:AirwallexStarter.kt$import com.airwallex.android.core.*</ID>
+    <ID>WildcardImport:CountryAutoCompleteView.kt$import android.widget.*</ID>
+    <ID>WildcardImport:DynamicFieldCompleteView.kt$import android.widget.*</ID>
+    <ID>WildcardImport:PaymentInfoBottomSheetDialog.kt$import android.view.*</ID>
+    <ID>WildcardImport:PaymentInfoBottomSheetDialog.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:PaymentMethodSwipeCallback.kt$import android.graphics.*</ID>
+    <ID>WildcardImport:PaymentMethodsActivity.kt$import com.airwallex.android.*</ID>
+    <ID>WildcardImport:PaymentMethodsActivity.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:PaymentMethodsActivityLaunch.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:PaymentMethodsAdapter.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:PaymentMethodsViewModel.kt$import androidx.lifecycle.*</ID>
+    <ID>WildcardImport:PaymentMethodsViewModel.kt$import com.airwallex.android.core.*</ID>
+    <ID>WildcardImport:PaymentMethodsViewModel.kt$import com.airwallex.android.core.model.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>EmptyFunctionBlock:ThreeDSecureWebViewClientTest.kt$ThreeDSecureWebViewClientTest.&lt;no name provided>${ }</ID>
+    <ID>ImplicitDefaultLocale:CurrencyWidget.kt$CurrencyWidget$String.format( "ic_flag_%s", country.lowercase(Locale.US) )</ID>
+    <ID>ImportOrdering:com.airwallex.android.card.CardComponent.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.card.CardComponentProviderTest.kt:3</ID>
+    <ID>ImportOrdering:com.airwallex.android.card.ThreeDSecureWebViewClientTest.kt:3</ID>
+    <ID>MagicNumber:AirwallexSecurityConnector.kt$AirwallexSecurityConnector$20</ID>
+    <ID>MagicNumber:AirwallexSecurityConnector.kt$AirwallexSecurityConnector$3</ID>
+    <ID>MaxLineLength:CardComponent.kt$CardComponent$listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Card payment info not found")))</ID>
+    <ID>MaxLineLength:CardComponent.kt$CardComponent$listener.onCompleted(AirwallexPaymentStatus.Failure(ThreeDSException("3DS Failed. Missing data in response.")))</ID>
+    <ID>MaxLineLength:CardComponent.kt$CardComponent.&lt;no name provided>.&lt;no name provided>$Logger.debug("3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")</ID>
+    <ID>MaxLineLength:CardComponentProviderTest.kt$CardComponentProviderTest$clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:WebViewConnectionExceptionTest.kt$WebViewConnectionExceptionTest$"com.airwallex.android.card.exception.WebViewConnectionException: message; status-code: 0, code null, source null, message message"</ID>
+    <ID>MaximumLineLength:com.airwallex.android.card.CardComponent.kt:137</ID>
+    <ID>MaximumLineLength:com.airwallex.android.card.CardComponent.kt:173</ID>
+    <ID>MaximumLineLength:com.airwallex.android.card.CardComponent.kt:43</ID>
+    <ID>MaximumLineLength:com.airwallex.android.card.CardComponentProviderTest.kt:92</ID>
+    <ID>MaximumLineLength:com.airwallex.android.card.exception.WebViewConnectionExceptionTest.kt:28</ID>
+    <ID>MemberNameEqualsClassName:ThreeDSecureWebViewClientTest.kt$ThreeDSecureWebViewClientTest$@Test fun threeDSecureWebViewClientTest()</ID>
+    <ID>NoWildcardImports:com.airwallex.android.card.AirwallexSecurityConnector.kt:7</ID>
+    <ID>NoWildcardImports:com.airwallex.android.card.AirwallexSecurityConnector.kt:8</ID>
+    <ID>NoWildcardImports:com.airwallex.android.card.AirwallexSecurityConnector.kt:9</ID>
+    <ID>NoWildcardImports:com.airwallex.android.card.CardComponent.kt:13</ID>
+    <ID>NoWildcardImports:com.airwallex.android.card.CardComponent.kt:18</ID>
+    <ID>NoWildcardImports:com.airwallex.android.card.CardComponentProvider.kt:3</ID>
+    <ID>NoWildcardImports:com.airwallex.android.card.CardComponentProvider.kt:4</ID>
+    <ID>NoWildcardImports:com.airwallex.android.card.CardComponentProviderTest.kt:5</ID>
+    <ID>NoWildcardImports:com.airwallex.android.card.view.DccViewModel.kt:4</ID>
+    <ID>SwallowedException:CurrencyWidget.kt$CurrencyWidget$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:CardComponent.kt$CardComponent$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:CurrencyWidget.kt$CurrencyWidget$e: Exception</ID>
+    <ID>WildcardImport:AirwallexSecurityConnector.kt$import com.threatmetrix.TrustDefender.RL.*</ID>
+    <ID>WildcardImport:AirwallexSecurityConnector.kt$import com.threatmetrix.TrustDefender.RL.TMXProfiling.*</ID>
+    <ID>WildcardImport:AirwallexSecurityConnector.kt$import com.threatmetrix.TrustDefender.RL.TMXProfilingConnections.*</ID>
+    <ID>WildcardImport:CardComponent.kt$import com.airwallex.android.core.*</ID>
+    <ID>WildcardImport:CardComponent.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:CardComponentProvider.kt$import com.airwallex.android.core.*</ID>
+    <ID>WildcardImport:CardComponentProvider.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:DccViewModel.kt$import androidx.lifecycle.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

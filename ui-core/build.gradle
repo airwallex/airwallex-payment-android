@@ -3,11 +3,10 @@ plugins {
     id 'kotlin-android'
 }
 
-apply from: "../ktlint.gradle"
+apply from: "$rootProject.projectDir/android-shared.gradle"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion

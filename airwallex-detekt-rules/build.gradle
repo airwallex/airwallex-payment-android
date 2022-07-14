@@ -1,0 +1,14 @@
+plugins {
+    id 'kotlin'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    compileOnly "io.gitlab.arturbosch.detekt:detekt-api:$detektVersion"
+    implementation "io.gitlab.arturbosch.detekt:detekt-cli:$detektVersion"
+
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "io.gitlab.arturbosch.detekt:detekt-test:$detektVersion"
+    // Needed because of detekt-test
+    testImplementation "org.assertj:assertj-core:3.19.0"
+}

@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply from: "../ktlint.gradle"
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -35,7 +34,6 @@ private def readProperty(name) {
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

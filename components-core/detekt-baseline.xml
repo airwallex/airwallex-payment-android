@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexMethod:PaymentMethod.kt$PaymentMethod.Card$override fun toParamMap(): Map&lt;String, Any></ID>
+    <ID>ComplexMethod:TrackerRequest.kt$TrackerRequest$override fun toParamMap(): Map&lt;String, Any></ID>
+    <ID>ConstructorParameterNaming:WeChat.kt$WeChat$val `package`: String?</ID>
+    <ID>EmptyCatchBlock:AirwallexJsonUtils.kt$AirwallexJsonUtils${ }</ID>
+    <ID>ImplicitDefaultLocale:AirwallexRequestModel.kt$AirwallexRequestModel$String.format( "android-%s-%s", mode, BuildConfig.VERSION_NAME )</ID>
+    <ID>ImportOrdering:com.airwallex.android.core.Airwallex.kt:3</ID>
+    <ID>Indentation:com.airwallex.android.core.model.PaymentIntentFixtures.kt:9</ID>
+    <ID>Indentation:com.airwallex.android.core.model.PaymentMethodFixtures.kt:9</ID>
+    <ID>Indentation:com.airwallex.android.core.model.PhysicalProductFixtures.kt:10</ID>
+    <ID>LongMethod:AirwallexPaymentManager.kt$AirwallexPaymentManager$@Suppress("UNCHECKED_CAST") private suspend fun &lt;T> execute(options: Options, listener: PaymentListener&lt;T>)</ID>
+    <ID>LongMethod:PaymentIntentParser.kt$PaymentIntentParser$override fun parse(json: JSONObject): PaymentIntent</ID>
+    <ID>LongMethod:PaymentIntentTest.kt$PaymentIntentTest$@Test fun builderConstructor()</ID>
+    <ID>LongMethod:PaymentMethod.kt$PaymentMethod.Card$override fun toParamMap(): Map&lt;String, Any></ID>
+    <ID>LongMethod:TrackerRequest.kt$TrackerRequest$override fun toParamMap(): Map&lt;String, Any></ID>
+    <ID>LongParameterList:ActionComponent.kt$ActionComponent$( paymentIntentId: String, nextAction: NextAction?, activity: Activity, applicationContext: Context, cardNextActionModel: CardNextActionModel?, listener: Airwallex.PaymentResultListener )</ID>
+    <ID>LongParameterList:Airwallex.kt$Airwallex$( clientSecret: String, customerId: String, paymentMethod: PaymentMethod, nextTriggeredBy: PaymentConsent.NextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT, requiresCvc: Boolean, merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED, listener: PaymentListener&lt;PaymentConsent> )</ID>
+    <ID>LongParameterList:Airwallex.kt$Airwallex$( paymentConsent: PaymentConsent, currency: String, amount: BigDecimal? = null, cvc: String? = null, returnUrl: String? = null, listener: PaymentResultListener )</ID>
+    <ID>LongParameterList:Airwallex.kt$Airwallex$( paymentIntentId: String, clientSecret: String, paymentMethod: PaymentMethod, cvc: String? = null, currency: String? = null, customerId: String? = null, paymentConsentId: String? = null, additionalInfo: Map&lt;String, String>? = null, returnUrl: String? = null, autoCapture: Boolean = true, flow: AirwallexPaymentRequestFlow? = null, listener: PaymentResultListener )</ID>
+    <ID>LongParameterList:Airwallex.kt$Airwallex$( session: AirwallexSession, paymentMethod: PaymentMethod, paymentConsentId: String? = null, cvc: String? = null, additionalInfo: Map&lt;String, String>? = null, flow: AirwallexPaymentRequestFlow? = null, listener: PaymentResultListener )</ID>
+    <ID>LongParameterList:AirwallexApiRepository.kt$AirwallexApiRepository.Companion$( baseUrl: String, pageNum: Int?, pageSize: Int?, active: Boolean?, transactionCurrency: String?, transactionMode: TransactionMode?, countryCode: String? )</ID>
+    <ID>LongParameterList:AirwallexApiRepository.kt$AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions$( override val clientSecret: String, /** * Page number starting from 0 */ internal val pageNum: Int, /** * Number of payment methods to be listed per page */ internal val pageSize: Int, /** * Indicate whether the payment method type is active */ internal val active: Boolean?, /** * The supported transaction currency */ internal val transactionCurrency: String?, /** * The supported transaction mode. One of oneoff, recurring. */ internal val transactionMode: TransactionMode?, /** * The supported country code */ internal val countryCode: String? )</ID>
+    <ID>LongParameterList:AirwallexPaymentSession.kt$AirwallexPaymentSession$( /** * the ID of the [PaymentIntent], required. */ val paymentIntent: PaymentIntent, /** * Amount currency. required. */ override val currency: String, /** * Country code */ override val countryCode: String, /** * Payment amount. This is the order amount you would like to charge your customer. required. */ override val amount: BigDecimal, /** * Shipping information. optional */ override val shipping: Shipping? = null, /** * The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout). */ override val customerId: String? = null, /** * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme. */ override val returnUrl: String?, /** * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card. * Default: true */ val autoCapture: Boolean = true )</ID>
+    <ID>LongParameterList:AirwallexRecurringSession.kt$AirwallexRecurringSession$( /** * The party to trigger subsequent payments. Can be one of merchant, customer. required. */ val nextTriggerBy: PaymentConsent.NextTriggeredBy, /** * Only applicable when next_triggered_by is customer and the payment_method.type is card.If true, the customer must provide cvc for the subsequent payment with this PaymentConsent. * Default: false */ val requiresCVC: Boolean = false, /** * Indicate whether the subsequent payments are scheduled. Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled. * Default: unscheduled */ val merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED, /** * Amount currency. required. */ override val currency: String, /** * Country code */ override val countryCode: String, /** * Payment amount. This is the order amount you would like to charge your customer. required. */ override val amount: BigDecimal, /** * Shipping information. optional */ override val shipping: Shipping? = null, /** * It is required if the PaymentIntent is created for recurring payment */ override val customerId: String, /** * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme. */ override val returnUrl: String? )</ID>
+    <ID>LongParameterList:AirwallexRecurringWithIntentSession.kt$AirwallexRecurringWithIntentSession$( /** * the ID of the [PaymentIntent], required. */ val paymentIntent: PaymentIntent, /** * The party to trigger subsequent payments. Can be one of merchant, customer. required. */ val nextTriggerBy: PaymentConsent.NextTriggeredBy, /** * Only applicable when next_triggered_by is customer and the payment_method.type is card.If true, the customer must provide cvc for the subsequent payment with this PaymentConsent. * Default: false */ val requiresCVC: Boolean = false, /** * Indicate whether the subsequent payments are scheduled. Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled. * Default: unscheduled */ val merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED, /** * Amount currency. required. */ override val currency: String, /** * Country code */ override val countryCode: String, /** * Payment amount. This is the order amount you would like to charge your customer. required. */ override val amount: BigDecimal, /** * Shipping information. optional */ override val shipping: Shipping? = null, /** * It is required if the PaymentIntent is created for recurring payment */ override val customerId: String, /** * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme. */ override val returnUrl: String?, /** * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card. * Default: true */ val autoCapture: Boolean = true )</ID>
+    <ID>LongParameterList:CardNextActionModel.kt$CardNextActionModel$( val fragment: Fragment?, val activity: Activity, val paymentManager: PaymentManager, val clientSecret: String, val device: Device?, val paymentIntentId: String, val currency: String, val amount: BigDecimal, )</ID>
+    <ID>LongParameterList:ConfirmPaymentIntentParams.kt$ConfirmPaymentIntentParams.Companion$( paymentIntentId: String, clientSecret: String, paymentMethod: PaymentMethod, cvc: String?, customerId: String? = null, paymentConsentId: String? = null, returnUrl: String? = null, autoCapture: Boolean = true )</ID>
+    <ID>LongParameterList:ConfirmPaymentIntentParams.kt$ConfirmPaymentIntentParams.Companion$( paymentMethodType: String, paymentIntentId: String, clientSecret: String, customerId: String? = null, paymentConsentId: String? = null, currency: String? = null, countryCode: String? = null, additionalInfo: Map&lt;String, String>? = null, returnUrl: String? = null, flow: AirwallexPaymentRequestFlow? = null )</ID>
+    <ID>LongParameterList:CreatePaymentConsentParams.kt$CreatePaymentConsentParams.Companion$( clientSecret: String, customerId: String, paymentMethodId: String, nextTriggeredBy: PaymentConsent.NextTriggeredBy, merchantTriggerReason: PaymentConsent.MerchantTriggerReason, requiresCvc: Boolean )</ID>
+    <ID>LongParameterList:VerifyPaymentConsentParams.kt$VerifyPaymentConsentParams.Companion$( clientSecret: String, paymentConsentId: String, amount: BigDecimal?, currency: String?, cvc: String?, returnUrl: String? )</ID>
+    <ID>MagicNumber:AirwallexHttpConnection.kt$AirwallexHttpConnection$200</ID>
+    <ID>MagicNumber:AirwallexHttpConnection.kt$AirwallexHttpConnection$299</ID>
+    <ID>MagicNumber:AirwallexHttpResponse.kt$AirwallexHttpResponse$200</ID>
+    <ID>MagicNumber:AirwallexHttpResponse.kt$AirwallexHttpResponse$300</ID>
+    <ID>MagicNumber:RetrieveAvailablePaymentMethodParams.kt$RetrieveAvailablePaymentMethodParams.Builder$20</ID>
+    <ID>MaxLineLength:APIConnectionException.kt$APIConnectionException.Companion$"IOException during API request to $url: ${e.message}. Please check your internet connection and try again."</ID>
+    <ID>MaxLineLength:Airwallex.kt$Airwallex$*</ID>
+    <ID>MaxLineLength:Airwallex.kt$Airwallex$AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing ${Dependency.CARD.value} dependency!"))</ID>
+    <ID>MaxLineLength:Airwallex.kt$Airwallex$returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl</ID>
+    <ID>MaxLineLength:Airwallex.kt$Airwallex.&lt;no name provided>$AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"))</ID>
+    <ID>MaxLineLength:Airwallex.kt$Airwallex.&lt;no name provided>.&lt;no name provided>$returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl</ID>
+    <ID>MaxLineLength:AirwallexApiRepository.kt$AirwallexApiRepository.RetrieveBankOptions$*</ID>
+    <ID>MaxLineLength:AirwallexApiRepositoryTest.kt$AirwallexApiRepositoryTest$"ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:AirwallexApiRepositoryTest.kt$AirwallexApiRepositoryTest$"https://api.airwallex.com/api/v1/pa/config/payment_method_types?__resources=true&amp;os_type=android&amp;lang=en&amp;page_num=1&amp;page_size=20&amp;active=true&amp;transaction_currency=CNY"</ID>
+    <ID>MaxLineLength:AirwallexApiRepositoryTest.kt$AirwallexApiRepositoryTest$clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:AirwallexConfiguration.kt$AirwallexConfiguration.Builder$fun</ID>
+    <ID>MaxLineLength:AirwallexPaymentSession.kt$AirwallexPaymentSession$* The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout).</ID>
+    <ID>MaxLineLength:AirwallexPaymentSession.kt$AirwallexPaymentSession$* The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.</ID>
+    <ID>MaxLineLength:AirwallexPaymentSessionTest.kt$AirwallexPaymentSessionTest$val airwallexPaymentSession = AirwallexPaymentSession.Builder(PaymentIntentFixtures.PAYMENT_INTENT, "CN").build()</ID>
+    <ID>MaxLineLength:AirwallexRecurringSession.kt$AirwallexRecurringSession$*</ID>
+    <ID>MaxLineLength:AirwallexRecurringSession.kt$AirwallexRecurringSession$* The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.</ID>
+    <ID>MaxLineLength:AirwallexRecurringWithIntentSession.kt$AirwallexRecurringWithIntentSession$*</ID>
+    <ID>MaxLineLength:AirwallexRecurringWithIntentSession.kt$AirwallexRecurringWithIntentSession$* The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.</ID>
+    <ID>MaxLineLength:AirwallexSession.kt$AirwallexSession$* The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout). But it is required if the PaymentIntent is created for recurring payment.</ID>
+    <ID>MaxLineLength:AirwallexSession.kt$AirwallexSession$* The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.</ID>
+    <ID>MaxLineLength:ClientSecretProvider.kt$ClientSecretProvider$*</ID>
+    <ID>MaxLineLength:ClientSecretRepository.kt$ClientSecretRepository.Companion$?:</ID>
+    <ID>MaxLineLength:ConfirmPaymentIntentParams.kt$ConfirmPaymentIntentParams$* The URL to redirect your customer back to after they authenticate their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.</ID>
+    <ID>MaxLineLength:ConfirmPaymentIntentParamsTest.kt$ConfirmPaymentIntentParamsTest$"ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:ConfirmPaymentIntentParamsTest.kt$ConfirmPaymentIntentParamsTest$clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:ContinuePaymentIntentParamsTest.kt$ContinuePaymentIntentParamsTest$"ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:ContinuePaymentIntentParamsTest.kt$ContinuePaymentIntentParamsTest$clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:CreatePaymentConsentParams.kt$CreatePaymentConsentParams$*</ID>
+    <ID>MaxLineLength:CreatePaymentConsentParams.kt$CreatePaymentConsentParams$* The party to trigger subsequent payments. Can be one of merchant, customer. If type of payment_method is card, both merchant and customer is supported. Otherwise, only merchant is supported</ID>
+    <ID>MaxLineLength:CreatePaymentConsentParamsTest.kt$CreatePaymentConsentParamsTest$"eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjkyODExOTQsImV4cCI6MTYyOTI4NDc5NCwiYWNjb3VudF9pZCI6Ijc3Yjg4NjlhLTgyZGMtNGNmYy05YzQ5LTg1YWM1MjAyN2M4YiIsImRhdGFfY2VudGVyX3JlZ2lvbiI6IkhLIiwiY29uc2VudF9pZCI6ImNzdF9oa2Rtcjd2OXJnMWo1ZzRhenk2In0.VHVT12FqDQjeOiRmmOtKVAl3XLiMJWkWDiMzr7QFQHA"</ID>
+    <ID>MaxLineLength:CreatePaymentConsentParamsTest.kt$CreatePaymentConsentParamsTest$clientSecret = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjkyODExOTQsImV4cCI6MTYyOTI4NDc5NCwiYWNjb3VudF9pZCI6Ijc3Yjg4NjlhLTgyZGMtNGNmYy05YzQ5LTg1YWM1MjAyN2M4YiIsImRhdGFfY2VudGVyX3JlZ2lvbiI6IkhLIiwiY29uc2VudF9pZCI6ImNzdF9oa2Rtcjd2OXJnMWo1ZzRhenk2In0.VHVT12FqDQjeOiRmmOtKVAl3XLiMJWkWDiMzr7QFQHA"</ID>
+    <ID>MaxLineLength:CreatePaymentMethodParamsTest.kt$CreatePaymentMethodParamsTest$"eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjkyODExOTQsImV4cCI6MTYyOTI4NDc5NCwiYWNjb3VudF9pZCI6Ijc3Yjg4NjlhLTgyZGMtNGNmYy05YzQ5LTg1YWM1MjAyN2M4YiIsImRhdGFfY2VudGVyX3JlZ2lvbiI6IkhLIiwiY29uc2VudF9pZCI6ImNzdF9oa2Rtcjd2OXJnMWo1ZzRhenk2In0.VHVT12FqDQjeOiRmmOtKVAl3XLiMJWkWDiMzr7QFQHA"</ID>
+    <ID>MaxLineLength:CreatePaymentMethodParamsTest.kt$CreatePaymentMethodParamsTest$clientSecret = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjkyODExOTQsImV4cCI6MTYyOTI4NDc5NCwiYWNjb3VudF9pZCI6Ijc3Yjg4NjlhLTgyZGMtNGNmYy05YzQ5LTg1YWM1MjAyN2M4YiIsImRhdGFfY2VudGVyX3JlZ2lvbiI6IkhLIiwiY29uc2VudF9pZCI6ImNzdF9oa2Rtcjd2OXJnMWo1ZzRhenk2In0.VHVT12FqDQjeOiRmmOtKVAl3XLiMJWkWDiMzr7QFQHA"</ID>
+    <ID>MaxLineLength:DisablePaymentConsentParamsTest.kt$DisablePaymentConsentParamsTest$"eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjkyODExOTQsImV4cCI6MTYyOTI4NDc5NCwiYWNjb3VudF9pZCI6Ijc3Yjg4NjlhLTgyZGMtNGNmYy05YzQ5LTg1YWM1MjAyN2M4YiIsImRhdGFfY2VudGVyX3JlZ2lvbiI6IkhLIiwiY29uc2VudF9pZCI6ImNzdF9oa2Rtcjd2OXJnMWo1ZzRhenk2In0.VHVT12FqDQjeOiRmmOtKVAl3XLiMJWkWDiMzr7QFQHA"</ID>
+    <ID>MaxLineLength:DisablePaymentConsentParamsTest.kt$DisablePaymentConsentParamsTest$clientSecret = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjkyODExOTQsImV4cCI6MTYyOTI4NDc5NCwiYWNjb3VudF9pZCI6Ijc3Yjg4NjlhLTgyZGMtNGNmYy05YzQ5LTg1YWM1MjAyN2M4YiIsImRhdGFfY2VudGVyX3JlZ2lvbiI6IkhLIiwiY29uc2VudF9pZCI6ImNzdF9oa2Rtcjd2OXJnMWo1ZzRhenk2In0.VHVT12FqDQjeOiRmmOtKVAl3XLiMJWkWDiMzr7QFQHA"</ID>
+    <ID>MaxLineLength:Environment.kt$Environment$DEMO -> "https://pci-api-demo.airwallex.com/api/v1/checkout/elements/3ds?origin=https://checkout-demo.airwallex.com"</ID>
+    <ID>MaxLineLength:Environment.kt$Environment$PRODUCTION -> "https://pci-api.airwallex.com/api/v1/checkout/elements/3ds?origin=https://checkout.airwallex.com"</ID>
+    <ID>MaxLineLength:Environment.kt$Environment$STAGING -> "https://pci-api-staging.airwallex.com/api/v1/checkout/elements/3ds?origin=https://checkout-staging.airwallex.com"</ID>
+    <ID>MaxLineLength:PaymentConsent.kt$PaymentConsent$* Only applicable when next_triggered_by is customer. If false, the customer must provide cvc for subsequent payments with this PaymentConsent.</ID>
+    <ID>MaxLineLength:PaymentConsentCreateRequest.kt$PaymentConsentCreateRequest$*</ID>
+    <ID>MaxLineLength:PaymentConsentCreateRequest.kt$PaymentConsentCreateRequest$* The party to trigger subsequent payments. Can be one of merchant, customer. If type of payment_method is card, both merchant and customer is supported. Otherwise, only merchant is supported</ID>
+    <ID>MaxLineLength:PaymentConsentCreateRequest.kt$PaymentConsentCreateRequest.Builder$fun</ID>
+    <ID>MaxLineLength:PaymentConsentVerifyRequest.kt$PaymentConsentVerifyRequest$* The URL to which your customer will be redirected after they verify PaymentConsent on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively provide an application URI scheme.</ID>
+    <ID>MaxLineLength:PaymentConsentVerifyRequest.kt$PaymentConsentVerifyRequest.CardVerificationOptions$* Currency of the initial PaymentIntent to verify the PaymentConsent. Three-letter ISO currency code. Must be a supported currency</ID>
+    <ID>MaxLineLength:PaymentConsentVerifyRequest.kt$PaymentConsentVerifyRequest.CardVerificationOptions$* The alternative amount of verification if zero amount is not acceptable for the provider. The transaction of this amount should be reverted once the verification process finished. Must be greater than 0.</ID>
+    <ID>MaxLineLength:PaymentConsentVerifyRequest.kt$PaymentConsentVerifyRequest.CardVerificationOptions$* When requires_cvc for the PaymentConsent is true, this attribute must be provided in order to confirm successfully</ID>
+    <ID>MaxLineLength:PaymentIntent.kt$PaymentIntent$* Last time at which this payment intent was cancelled. Only present when the payment intent was successfully cancelled, i.e. status is CANCELLED</ID>
+    <ID>MaxLineLength:PaymentIntent.kt$PaymentIntent$* Reason for cancelling the payment intent. Only present when the payment intent was successfully cancelled, i.e. status is CANCELLED</ID>
+    <ID>MaxLineLength:PaymentIntentConfirmRequest.kt$PaymentIntentConfirmRequest$* The URL to redirect your customer back to after they authenticate their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.</ID>
+    <ID>MaxLineLength:PaymentIntentFixtures.kt$PaymentIntentFixtures$client_secret</ID>
+    <ID>MaxLineLength:PaymentIntentFixtures.kt$PaymentIntentFixtures$jwt</ID>
+    <ID>MaxLineLength:PaymentIntentStatus.kt$PaymentIntentStatus.REQUIRES_CUSTOMER_ACTION$* Pending customer action, see `next_action` for details. Possible causes are pending 3DS authentication, QR code scan.</ID>
+    <ID>MaxLineLength:PaymentIntentStatus.kt$PaymentIntentStatus.REQUIRES_PAYMENT_METHOD$*</ID>
+    <ID>MaxLineLength:PaymentIntentTest.kt$PaymentIntentTest$clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:PaymentMethodCreateRequest.kt$PaymentMethodCreateRequest$* The customer this payment method belongs to. If set, this payment method is automatically added to the customer as one of the available payment methods.</ID>
+    <ID>MaxLineLength:PaymentMethodOptions.kt$PaymentMethodOptions.CardOptions$* Should capture automatically when confirm. Default to false. The payment intent will be captured automatically if it is true, and authorized only if it is false</ID>
+    <ID>MaxLineLength:RetrieveAvailablePaymentMethodParamsTest.kt$RetrieveAvailablePaymentMethodParamsTest$"ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:RetrieveAvailablePaymentMethodParamsTest.kt$RetrieveAvailablePaymentMethodParamsTest$clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:RetrievePaymentIntentParamsTest.kt$RetrievePaymentIntentParamsTest$"ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:RetrievePaymentIntentParamsTest.kt$RetrievePaymentIntentParamsTest$clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
+    <ID>MaxLineLength:ThreeDSecureLookupTest.kt$ThreeDSecureLookupTest$"eyJtZXNzYWdlVHlwZSI6IkNSZXMiLCJtZXNzYWdlVmVyc2lvbiI6IjIuMS4wIiwidGhyZWVEU1NlcnZlclRyYW5zSUQiOiJhMjI3ZTQxMS1iMjM2LTQ5ODItOGM0OC1kOGViNDQ2NmZjOGIiLCJhY3NUcmFuc0lEIjoiNjI5Y2FiOTEtMzFjMC00YmE3LWI3NTAtNGU3OWZjYTY4MGE3IiwiYWNzVWlUeXBlIjoiMDEiLCJjaGFsbGVuZ2VDb21wbGV0aW9uSW5kIjoiTiIsImNoYWxsZW5nZUluZm9IZWFkZXIiOiJQdXJjaGFzZSBBdXRoZW50aWNhdGlvbiIsImNoYWxsZW5nZUluZm9MYWJlbCI6IkVudGVyIHlvdXIgY29kZSBiZWxvdyIsImNoYWxsZW5nZUluZm9UZXh0IjoiV2UgaGF2ZSBzZW50IHlvdSBhIHRleHQgbWVzc2FnZSB3aXRoIGEgY29kZSB0byB5b3VyIHJlZ2lzdGVyZWQgbW9iaWxlIG51bWJlciBlbmRpbmcgaW4gNTMyOS5cblxuWW91IGFyZSBwYXlpbmcgZGVmYXVsdCBhd3ggdGVzdGluZyh1aykgdGhlIGFtb3VudCBvZiAxLjAwIHVzaW5nIGNhcmQgKioqKioqKioqKioqMTA5MS5cblxuKE9UUDogMTIzNCkiLCJpc3N1ZXJJbWFnZSI6eyJtZWRpdW0iOiJodHRwczovL21lcmNoYW50YWNzc3RhZy5jYXJkaW5hbGNvbW1lcmNlLmNvbS9NZXJjaGFudEFDU1dlYi9zY3JlZW5zL2ltYWdlcy9BbnlCYW5rXzUxMi5wbmciLCJoaWdoIjoiaHR0cHM6Ly9tZXJjaGFudGFjc3N0YWcuY2FyZGluYWxjb21tZXJjZS5jb20vTWVyY2hhbnRBQ1NXZWIvc2NyZWVucy9pbWFnZXMvQW55QmFua181MTIucG5nIiwiZXh0cmFIaWdoIjoiaHR0cHM6Ly9tZXJjaGFudGFjc3N0YWcuY2FyZGluYWxjb21tZXJjZS5jb20vTWVyY2hhbnRBQ1NXZWIvc2NyZWVucy9pbWFnZXMvQW55QmFua181MTIucG5nIn0sInBzSW1hZ2UiOnsibWVkaXVtIjoiaHR0cHM6Ly9tZXJjaGFudGFjc3N0YWcuY2FyZGluYWxjb21tZXJjZS5jb20vTWVyY2hhbnRBQ1NXZWIvc2NyZWVucy9pbWFnZXMvQ2FyZF9OZXR3b3JrLnBuZyIsImhpZ2giOiJodHRwczovL21lcmNoYW50YWNzc3RhZy5jYXJkaW5hbGNvbW1lcmNlLmNvbS9NZXJjaGFudEFDU1dlYi9zY3JlZW5zL2ltYWdlcy9DYXJkX05ldHdvcmsucG5nIiwiZXh0cmFIaWdoIjoiaHR0cHM6Ly9tZXJjaGFudGFjc3N0YWcuY2FyZGluYWxjb21tZXJjZS5jb20vTWVyY2hhbnRBQ1NXZWIvc2NyZWVucy9pbWFnZXMvQ2FyZF9OZXR3b3JrLnBuZyJ9LCJyZXNlbmRJbmZvcm1hdGlvbkxhYmVsIjoiUkVTRU5EIENPREUiLCJzZGtUcmFuc0lEIjoiYjA0NTNmOWEtMjNiYS00NmUxLWI1ZjQtMmI2MjM5NDhjOTMxIiwic3VibWl0QXV0aGVudGljYXRpb25MYWJlbCI6IlNVQk1JVCIsImFjc0NvdW50ZXJBdG9TIjoiMDAwIiwiZXhwYW5kSW5mb0xhYmVsIjoiTW9yZSBJbmZvcm1hdGlvbiIsImV4cGFuZEluZm9UZXh0IjoiSGVyZSBpcyB0aGUgYWRkaXRpb25hbCBpbmZvcm1hdGlvbiB0aGF0IHdlIHByb3ZpZGUuIiwid2h5SW5mb0xhYmVsIjoiTmVlZCBzb21lIGhlbHA"</ID>
+    <ID>MaxLineLength:ThreeDSecureLookupTest.kt$ThreeDSecureLookupTest$payload = "eyJtZXNzYWdlVHlwZSI6IkNSZXMiLCJtZXNzYWdlVmVyc2lvbiI6IjIuMS4wIiwidGhyZWVEU1NlcnZlclRyYW5zSUQiOiJhMjI3ZTQxMS1iMjM2LTQ5ODItOGM0OC1kOGViNDQ2NmZjOGIiLCJhY3NUcmFuc0lEIjoiNjI5Y2FiOTEtMzFjMC00YmE3LWI3NTAtNGU3OWZjYTY4MGE3IiwiYWNzVWlUeXBlIjoiMDEiLCJjaGFsbGVuZ2VDb21wbGV0aW9uSW5kIjoiTiIsImNoYWxsZW5nZUluZm9IZWFkZXIiOiJQdXJjaGFzZSBBdXRoZW50aWNhdGlvbiIsImNoYWxsZW5nZUluZm9MYWJlbCI6IkVudGVyIHlvdXIgY29kZSBiZWxvdyIsImNoYWxsZW5nZUluZm9UZXh0IjoiV2UgaGF2ZSBzZW50IHlvdSBhIHRleHQgbWVzc2FnZSB3aXRoIGEgY29kZSB0byB5b3VyIHJlZ2lzdGVyZWQgbW9iaWxlIG51bWJlciBlbmRpbmcgaW4gNTMyOS5cblxuWW91IGFyZSBwYXlpbmcgZGVmYXVsdCBhd3ggdGVzdGluZyh1aykgdGhlIGFtb3VudCBvZiAxLjAwIHVzaW5nIGNhcmQgKioqKioqKioqKioqMTA5MS5cblxuKE9UUDogMTIzNCkiLCJpc3N1ZXJJbWFnZSI6eyJtZWRpdW0iOiJodHRwczovL21lcmNoYW50YWNzc3RhZy5jYXJkaW5hbGNvbW1lcmNlLmNvbS9NZXJjaGFudEFDU1dlYi9zY3JlZW5zL2ltYWdlcy9BbnlCYW5rXzUxMi5wbmciLCJoaWdoIjoiaHR0cHM6Ly9tZXJjaGFudGFjc3N0YWcuY2FyZGluYWxjb21tZXJjZS5jb20vTWVyY2hhbnRBQ1NXZWIvc2NyZWVucy9pbWFnZXMvQW55QmFua181MTIucG5nIiwiZXh0cmFIaWdoIjoiaHR0cHM6Ly9tZXJjaGFudGFjc3N0YWcuY2FyZGluYWxjb21tZXJjZS5jb20vTWVyY2hhbnRBQ1NXZWIvc2NyZWVucy9pbWFnZXMvQW55QmFua181MTIucG5nIn0sInBzSW1hZ2UiOnsibWVkaXVtIjoiaHR0cHM6Ly9tZXJjaGFudGFjc3N0YWcuY2FyZGluYWxjb21tZXJjZS5jb20vTWVyY2hhbnRBQ1NXZWIvc2NyZWVucy9pbWFnZXMvQ2FyZF9OZXR3b3JrLnBuZyIsImhpZ2giOiJodHRwczovL21lcmNoYW50YWNzc3RhZy5jYXJkaW5hbGNvbW1lcmNlLmNvbS9NZXJjaGFudEFDU1dlYi9zY3JlZW5zL2ltYWdlcy9DYXJkX05ldHdvcmsucG5nIiwiZXh0cmFIaWdoIjoiaHR0cHM6Ly9tZXJjaGFudGFjc3N0YWcuY2FyZGluYWxjb21tZXJjZS5jb20vTWVyY2hhbnRBQ1NXZWIvc2NyZWVucy9pbWFnZXMvQ2FyZF9OZXR3b3JrLnBuZyJ9LCJyZXNlbmRJbmZvcm1hdGlvbkxhYmVsIjoiUkVTRU5EIENPREUiLCJzZGtUcmFuc0lEIjoiYjA0NTNmOWEtMjNiYS00NmUxLWI1ZjQtMmI2MjM5NDhjOTMxIiwic3VibWl0QXV0aGVudGljYXRpb25MYWJlbCI6IlNVQk1JVCIsImFjc0NvdW50ZXJBdG9TIjoiMDAwIiwiZXhwYW5kSW5mb0xhYmVsIjoiTW9yZSBJbmZvcm1hdGlvbiIsImV4cGFuZEluZm9UZXh0IjoiSGVyZSBpcyB0aGUgYWRkaXRpb25hbCBpbmZvcm1hdGlvbiB0aGF0IHdlIHByb3ZpZGUuIiwid2h5SW5mb0xhYmVsIjoiTmVlZCBzb21lIGhlbHA"</ID>
+    <ID>MaxLineLength:VerifyPaymentConsentParams.kt$VerifyPaymentConsentParams$* Currency of the initial PaymentIntent to verify the PaymentConsent. Three-letter ISO currency code. Must be a supported currency</ID>
+    <ID>MaxLineLength:VerifyPaymentConsentParams.kt$VerifyPaymentConsentParams$* The URL to which your customer will be redirected after they verify PaymentConsent on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively provide an application URI scheme.</ID>
+    <ID>MaxLineLength:VerifyPaymentConsentParams.kt$VerifyPaymentConsentParams$* The alternative amount of verification if zero amount is not acceptable for the provider. The transaction of this amount should be reverted once the verification process finished. Must be greater than 0.</ID>
+    <ID>MaxLineLength:VerifyPaymentConsentParams.kt$VerifyPaymentConsentParams$* When requires_cvc for the PaymentConsent is true, this attribute must be provided in order to confirm successfully</ID>
+    <ID>MaxLineLength:VerifyPaymentConsentParamsTest.kt$VerifyPaymentConsentParamsTest$"eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjkyODExOTQsImV4cCI6MTYyOTI4NDc5NCwiYWNjb3VudF9pZCI6Ijc3Yjg4NjlhLTgyZGMtNGNmYy05YzQ5LTg1YWM1MjAyN2M4YiIsImRhdGFfY2VudGVyX3JlZ2lvbiI6IkhLIiwiY29uc2VudF9pZCI6ImNzdF9oa2Rtcjd2OXJnMWo1ZzRhenk2In0.VHVT12FqDQjeOiRmmOtKVAl3XLiMJWkWDiMzr7QFQHA"</ID>
+    <ID>MaxLineLength:VerifyPaymentConsentParamsTest.kt$VerifyPaymentConsentParamsTest$clientSecret = "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjkyODExOTQsImV4cCI6MTYyOTI4NDc5NCwiYWNjb3VudF9pZCI6Ijc3Yjg4NjlhLTgyZGMtNGNmYy05YzQ5LTg1YWM1MjAyN2M4YiIsImRhdGFfY2VudGVyX3JlZ2lvbiI6IkhLIiwiY29uc2VudF9pZCI6ImNzdF9oa2Rtcjd2OXJnMWo1ZzRhenk2In0.VHVT12FqDQjeOiRmmOtKVAl3XLiMJWkWDiMzr7QFQHA"</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.Airwallex.kt:356</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.Airwallex.kt:389</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.Airwallex.kt:512</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.Airwallex.kt:722</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:104</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:118</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:124</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:138</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:145</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:16</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:160</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:167</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:182</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:186</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:26</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:272</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:39</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:47</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:63</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:67</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:76</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:83</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:98</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexConfiguration.kt:34</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.AirwallexPaymentSessionTest.kt:16</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.ClientSecretRepository.kt:43</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.Environment.kt:24</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.Environment.kt:25</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.Environment.kt:26</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.exception.APIConnectionException.kt:19</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.ConfirmPaymentIntentParamsTest.kt:10</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.ConfirmPaymentIntentParamsTest.kt:24</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.ContinuePaymentIntentParamsTest.kt:10</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.ContinuePaymentIntentParamsTest.kt:25</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.CreatePaymentConsentParamsTest.kt:22</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.CreatePaymentConsentParamsTest.kt:9</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.CreatePaymentMethodParamsTest.kt:10</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.CreatePaymentMethodParamsTest.kt:18</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.DisablePaymentConsentParamsTest.kt:10</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.DisablePaymentConsentParamsTest.kt:16</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.PaymentConsentCreateRequest.kt:123</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.PaymentIntentTest.kt:139</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParamsTest.kt:10</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParamsTest.kt:23</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.RetrievePaymentIntentParamsTest.kt:10</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.RetrievePaymentIntentParamsTest.kt:18</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.ThreeDSecureLookupTest.kt:11</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.ThreeDSecureLookupTest.kt:21</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.VerifyPaymentConsentParamsTest.kt:10</ID>
+    <ID>MaximumLineLength:com.airwallex.android.core.model.VerifyPaymentConsentParamsTest.kt:23</ID>
+    <ID>NestedBlockDepth:AirwallexJsonUtils.kt$AirwallexJsonUtils$internal fun mapToJsonObject(mapObject: Map&lt;String, *>?): JSONObject?</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.Airwallex.kt:13</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.AirwallexApiRepository.kt:10</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.AirwallexApiRepository.kt:4</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.AirwallexApiRepository.kt:9</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.AirwallexApiRepositoryTest.kt:4</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.AirwallexPaymentManager.kt:6</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.ApiRepository.kt:3</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.PaymentManager.kt:5</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.model.parser.DynamicSchemaFieldCandidateParser.kt:3</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.model.parser.DynamicSchemaFieldParser.kt:3</ID>
+    <ID>NoWildcardImports:com.airwallex.android.core.model.parser.DynamicSchemaFieldValidationParser.kt:3</ID>
+    <ID>NotNullAssertionOperatorRule:NextActionTest.kt$NextActionTest$NextActionFixtures.NEXTACTION!!</ID>
+    <ID>NotNullAssertionOperatorRule:PaymentConsentCreateRequestTest.kt$PaymentConsentCreateRequestTest$request.paymentMethodRequest!!</ID>
+    <ID>NotNullAssertionOperatorRule:PaymentConsentVerifyRequestTest.kt$PaymentConsentVerifyRequestTest$cardRequest.verificationOptions!!</ID>
+    <ID>NotNullAssertionOperatorRule:PaymentIntentConfirmRequestTest.kt$PaymentIntentConfirmRequestTest$request.device!!</ID>
+    <ID>NotNullAssertionOperatorRule:PaymentMethodCreateRequestTest.kt$PaymentMethodCreateRequestTest$request.card!!</ID>
+    <ID>NotNullAssertionOperatorRule:PaymentMethodReferenceTest.kt$PaymentMethodReferenceTest$PaymentMethodReferenceFixtures.PAYMENTMETHODREFERRENCE!!</ID>
+    <ID>NotNullAssertionOperatorRule:ThreeDSecureTest.kt$ThreeDSecureTest$ThreeDSecureFixtures.THREEDSECURE!!</ID>
+    <ID>NotNullAssertionOperatorRule:TrackerRequestTest.kt$TrackerRequestTest$trackerRequest.code!!</ID>
+    <ID>ParameterListWrapping:com.airwallex.android.core.model.PaymentConsentCreateRequest.kt:123</ID>
+    <ID>ReturnCount:Airwallex.kt$Airwallex$fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?): Boolean</ID>
+    <ID>SerialVersionUIDInSerializableClass:AirwallexError.kt$AirwallexError : AirwallexModelParcelableSerializable</ID>
+    <ID>SwallowedException:Airwallex.kt$Airwallex$e: Exception</ID>
+    <ID>SwallowedException:AirwallexHttpRequest.kt$AirwallexHttpRequest$e: UnsupportedEncodingException</ID>
+    <ID>SwallowedException:AirwallexJsonUtils.kt$AirwallexJsonUtils$classCastException: ClassCastException</ID>
+    <ID>SwallowedException:AirwallexJsonUtils.kt$AirwallexJsonUtils$jsonException: JSONException</ID>
+    <ID>ThrowsCount:AirwallexApiRepository.kt$AirwallexApiRepository$@Throws( AuthenticationException::class, InvalidRequestException::class, PermissionException::class, APIException::class ) private fun handleApiError(response: AirwallexHttpResponse)</ID>
+    <ID>TooGenericExceptionCaught:Airwallex.kt$Airwallex$e: Exception</ID>
+    <ID>TooGenericExceptionThrown:AirwallexRecurringWithIntentSession.kt$AirwallexRecurringWithIntentSession.Builder$throw Exception("Customer id is required if the PaymentIntent is created for recurring payment.")</ID>
+    <ID>TooManyFunctions:Airwallex.kt$Airwallex</ID>
+    <ID>TooManyFunctions:AirwallexApiRepository.kt$AirwallexApiRepository : ApiRepository</ID>
+    <ID>TooManyFunctions:AirwallexApiRepository.kt$AirwallexApiRepository$Companion</ID>
+    <ID>TooManyFunctions:ApiRepository.kt$ApiRepository</ID>
+    <ID>TooManyFunctions:ConfirmPaymentIntentParams.kt$ConfirmPaymentIntentParams$Builder : ObjectBuilder</ID>
+    <ID>TooManyFunctions:PaymentMethod.kt$PaymentMethod$Builder : ObjectBuilder</ID>
+    <ID>TooManyFunctions:PaymentMethod.kt$PaymentMethod.Card$Builder : ObjectBuilder</ID>
+    <ID>TooManyFunctions:TrackerRequest.kt$TrackerRequest$Builder : ObjectBuilder</ID>
+    <ID>UnnecessaryAbstractClass:AbstractPaymentIntentParams.kt$AbstractPaymentIntentParams$AbstractPaymentIntentParams</ID>
+    <ID>UnnecessaryAbstractClass:AbstractPaymentMethodParams.kt$AbstractPaymentMethodParams$AbstractPaymentMethodParams</ID>
+    <ID>WildcardImport:Airwallex.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:AirwallexApiRepository.kt$import com.airwallex.android.core.exception.*</ID>
+    <ID>WildcardImport:AirwallexApiRepository.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:AirwallexApiRepository.kt$import com.airwallex.android.core.model.parser.*</ID>
+    <ID>WildcardImport:AirwallexPaymentManager.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:ApiRepository.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:DynamicSchemaFieldCandidateParser.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:DynamicSchemaFieldParser.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:DynamicSchemaFieldValidationParser.kt$import com.airwallex.android.core.model.*</ID>
+    <ID>WildcardImport:PaymentManager.kt$import com.airwallex.android.core.model.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

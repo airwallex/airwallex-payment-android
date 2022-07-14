@@ -26,6 +26,18 @@
             android:name="com.airwallex.sample.metadata.return_url"
             android:value="${AIRWALLEX_RETURN_URL}" />
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="@string/file_provider_authorities"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+
+        </provider>
+
         <activity
             android:name="com.airwallex.paymentacceptance.SplashActivity"
             android:exported="true"

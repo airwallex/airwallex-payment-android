@@ -4,14 +4,13 @@ plugins {
     id 'kotlin-parcelize'
 }
 
-apply from: "../ktlint.gradle"
+apply from: "$rootProject.projectDir/android-shared.gradle"
 
 def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
 def DEVICE_FINGERPRINT_MERCHANT_ID = '"airwallex_cybs"'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion

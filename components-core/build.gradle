@@ -4,13 +4,12 @@ plugins {
     id 'kotlin-parcelize'
 }
 
-apply from: "../ktlint.gradle"
+apply from: "$rootProject.projectDir/android-shared.gradle"
 
 def API_VERSION = '"2021-11-25"'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
