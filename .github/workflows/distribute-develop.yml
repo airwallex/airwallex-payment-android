@@ -37,4 +37,3 @@ jobs:
           packageName: com.airwallex.paymentacceptance
           releaseFiles: sample/build/outputs/bundle/release/*.aab
           track: internal
-          status: draft
