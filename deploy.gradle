@@ -82,6 +82,9 @@ project.afterEvaluate {
                                     case 'redirect':
                                         dependencyNode.appendNode('artifactId', 'payment-redirect')
                                         break
+                                    case 'googlepay':
+                                        dependencyNode.appendNode('artifactId', 'payment-googlepay')
+                                        break
                                     case 'ui-core':
                                         dependencyNode.appendNode('artifactId', "payment-ui-core")
                                         break

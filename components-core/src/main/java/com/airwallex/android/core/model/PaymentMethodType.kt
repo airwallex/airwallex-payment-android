@@ -13,6 +13,7 @@ enum class PaymentMethodType(
 
     CARD("card"),
     WECHAT("wechatpay"),
+    GOOGLEPAY("googlepay"),
     REDIRECT("redirect");
 
     val dependencyName: String
@@ -20,6 +21,7 @@ enum class PaymentMethodType(
             return when (this) {
                 CARD -> "payment-card"
                 WECHAT -> "payment-wechat"
+                GOOGLEPAY -> "payment-googlepay"
                 else -> "payment-redirect"
             }
         }
