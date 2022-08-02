@@ -1,5 +1,6 @@
 package com.airwallex.android.core
 
+import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 
 /**
@@ -32,6 +33,16 @@ object AirwallexPlugins {
             return configuration.environment
         }
 
+    fun getProvider(paymentMethodType: AvailablePaymentMethodType): ActionComponentProvider<out ActionComponent>? {
+        return when (paymentMethodType.name) {
+            "card" -> getProvider(ActionComponentProviderType.CARD)
+            "googlepay" -> getProvider(ActionComponentProviderType.GOOGLEPAY)
+            "redirect" -> getProvider(ActionComponentProviderType.REDIRECT)
+            "wechat" -> getProvider(ActionComponentProviderType.WECHAT)
+            else -> return null
+        }
+    }
+
     fun getProvider(nextAction: NextAction?): ActionComponentProvider<out ActionComponent>? {
         return configuration.supportComponentProviders.firstOrNull {
             it.canHandleAction(nextAction)
@@ -41,6 +52,12 @@ object AirwallexPlugins {
     fun getCardProvider(): ActionComponentProvider<out ActionComponent>? {
         return configuration.supportComponentProviders.firstOrNull {
             it.getType() == ActionComponentProviderType.CARD
+        }
+    }
+
+    private fun getProvider(type: ActionComponentProviderType): ActionComponentProvider<out ActionComponent>? {
+        return configuration.supportComponentProviders.firstOrNull {
+            it.getType() == type
         }
     }
 }

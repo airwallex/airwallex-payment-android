@@ -48,6 +48,11 @@ class AirwallexPaymentSession internal constructor(
     override val returnUrl: String?,
 
     /**
+     * Google Pay options
+     */
+    override val googlePayOptions: GooglePayOptions? = null,
+
+    /**
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */
@@ -56,7 +61,8 @@ class AirwallexPaymentSession internal constructor(
 
     class Builder(
         private val paymentIntent: PaymentIntent,
-        private val countryCode: String
+        private val countryCode: String,
+        private val googlePayOptions: GooglePayOptions? = null
     ) : ObjectBuilder<AirwallexPaymentSession> {
 
         private var returnUrl: String? = null
@@ -79,6 +85,7 @@ class AirwallexPaymentSession internal constructor(
                 shipping = paymentIntent.order?.shipping,
                 customerId = paymentIntent.customerId,
                 returnUrl = returnUrl,
+                googlePayOptions = googlePayOptions,
                 autoCapture = autoCapture
             )
         }

@@ -153,7 +153,10 @@ class PaymentCartFragment : Fragment() {
                         paymentIntent,
                         { "PaymentIntent is required" }
                     ),
-                    countryCode = Settings.countryCode
+                    countryCode = Settings.countryCode,
+                    googlePayOptions = GooglePayOptions(
+                        merchantId = "merchant.com.airwallex.paymentacceptance"
+                    )
                 )
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)

@@ -103,6 +103,7 @@ internal class PaymentMethodsViewModel(
         clientSecret: String
     ) {
         airwallex.retrieveAvailablePaymentMethods(
+            session = session,
             params = RetrieveAvailablePaymentMethodParams.Builder(
                 clientSecret = clientSecret,
                 pageNum = availablePaymentMethodPageNum.get()
@@ -127,36 +128,40 @@ internal class PaymentMethodsViewModel(
                             clientSecret
                         )
                     } else {
-                        when (session) {
-                            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> {
-                                resultData.value =
-                                    Result.success(
-                                        availablePaymentMethodList.filter {
-                                            it.transactionMode == TransactionMode.RECURRING
-                                        }.filter {
-                                            it.name !in unsupportedPaymentMethodTypes
-                                        }
-                                    )
-                            }
-                            is AirwallexPaymentSession -> {
-                                resultData.value =
-                                    Result.success(
-                                        availablePaymentMethodList.filter {
-                                            it.transactionMode == TransactionMode.ONE_OFF
-                                        }.filter {
-                                            it.name !in unsupportedPaymentMethodTypes
-                                        }
-                                    )
-                            }
-                            else -> {
-                                resultData.value =
-                                    Result.failure(AirwallexCheckoutException(message = "Not support session $session"))
-                            }
-                        }
+                        resultData.value =
+                            getFilteredPaymentMethodsResult(availablePaymentMethodList)
                     }
                 }
             }
         )
+    }
+
+    private fun getFilteredPaymentMethodsResult(
+        paymentMethods: MutableList<AvailablePaymentMethodType>
+    ) : Result<List<AvailablePaymentMethodType>> {
+        when (session) {
+            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> {
+                return Result.success(
+                        paymentMethods.filter {
+                            it.transactionMode == TransactionMode.RECURRING
+                        }.filter {
+                            it.name !in unsupportedPaymentMethodTypes
+                        }
+                    )
+            }
+            is AirwallexPaymentSession -> {
+                return Result.success(
+                        paymentMethods.filter {
+                            it.transactionMode == TransactionMode.ONE_OFF
+                        }.filter {
+                            it.name !in unsupportedPaymentMethodTypes
+                        }
+                    )
+            }
+            else -> {
+                return Result.failure(AirwallexCheckoutException(message = "Not support session $session"))
+            }
+        }
     }
 
     fun deletePaymentConsent(paymentConsent: PaymentConsent): LiveData<Result<PaymentConsent>> {
@@ -216,7 +221,6 @@ internal class PaymentMethodsViewModel(
         const val FLOW = "flow"
         private val unsupportedPaymentMethodTypes = listOf(
             "applepay",
-            "googlepay", // todo: remove once integrated
             "ach_direct_debit", // todo: remove once mandate is rendered properly
             "becs_direct_debit", // todo: remove once mandate is rendered properly
             "sepa_direct_debit", // todo: remove once mandate is rendered properly

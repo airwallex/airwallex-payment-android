@@ -3,13 +3,14 @@ package com.airwallex.android.googlepay
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import com.airwallex.android.core.ActionComponent
-import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.CardNextActionModel
-import com.airwallex.android.core.SecurityTokenListener
+import com.airwallex.android.core.*
 import com.airwallex.android.core.model.NextAction
 
 class GooglePayComponent : ActionComponent {
+    companion object {
+        val PROVIDER: ActionComponentProvider<GooglePayComponent> = GooglePayComponentProvider()
+    }
+
     override fun handlePaymentIntentResponse(
         paymentIntentId: String,
         nextAction: NextAction?,

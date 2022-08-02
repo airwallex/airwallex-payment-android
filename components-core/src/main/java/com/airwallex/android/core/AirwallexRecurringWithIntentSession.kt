@@ -67,6 +67,11 @@ class AirwallexRecurringWithIntentSession internal constructor(
     override val returnUrl: String?,
 
     /**
+     * Google Pay options
+     */
+    override val googlePayOptions: GooglePayOptions? = null,
+
+    /**
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */

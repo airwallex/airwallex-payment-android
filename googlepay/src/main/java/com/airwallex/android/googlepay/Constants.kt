@@ -1,0 +1,17 @@
+package com.airwallex.android.googlepay
+
+import com.google.android.gms.wallet.WalletConstants
+
+object Constants {
+    val DEFAULT_SUPPORTED_METHODS = listOf(
+        "PAN_ONLY",
+        "CRYPTOGRAM_3DS"
+    )
+
+    val DEFAULT_SUPPORTED_CARD_NETWORKS = listOf(
+        "mastercard",
+        "visa"
+    )
+
+    const val PAYMENTS_ENVIRONMENT = WalletConstants.ENVIRONMENT_TEST
+}

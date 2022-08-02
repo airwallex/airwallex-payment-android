@@ -11,6 +11,9 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.log.Logger
 import com.airwallex.android.core.model.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 import java.util.*
 
@@ -147,6 +150,7 @@ class Airwallex internal constructor(
      */
     @UiThread
     fun retrieveAvailablePaymentMethods(
+        session: AirwallexSession,
         params: RetrieveAvailablePaymentMethodParams,
         listener: PaymentListener<AvailablePaymentMethodTypeResponse>
     ) {
@@ -160,7 +164,26 @@ class Airwallex internal constructor(
                 transactionMode = params.transactionMode,
                 countryCode = params.countryCode
             ),
-            listener
+            object: PaymentListener<AvailablePaymentMethodTypeResponse> {
+                override fun onSuccess(response: AvailablePaymentMethodTypeResponse) {
+                    val filteredItems = response.items?.let { items ->
+                        items.filter { paymentMethod ->
+                            AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
+                                runBlocking {
+                                    provider.canHandleSessionAndPaymentMethod(session, paymentMethod, activity)
+                                }
+                            } ?: false
+                        }
+                    }
+                    val filteredResponse = AvailablePaymentMethodTypeResponse(response.hasMore, filteredItems)
+                    listener.onSuccess(filteredResponse)
+                }
+
+                override fun onFailed(exception: AirwallexException) {
+                    listener.onFailed(exception)
+                }
+
+            }
         )
     }
 
