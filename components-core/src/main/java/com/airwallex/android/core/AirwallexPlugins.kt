@@ -33,13 +33,12 @@ object AirwallexPlugins {
             return configuration.environment
         }
 
+    @Suppress("SwallowedException")
     fun getProvider(paymentMethodType: AvailablePaymentMethodType): ActionComponentProvider<out ActionComponent>? {
-        return when (paymentMethodType.name) {
-            "card" -> getProvider(ActionComponentProviderType.CARD)
-            "googlepay" -> getProvider(ActionComponentProviderType.GOOGLEPAY)
-            "redirect" -> getProvider(ActionComponentProviderType.REDIRECT)
-            "wechat" -> getProvider(ActionComponentProviderType.WECHAT)
-            else -> return null
+        return try {
+            getProvider(ActionComponentProviderType.valueOf(paymentMethodType.name.uppercase()))
+        } catch (e: IllegalArgumentException) {
+            null
         }
     }
 

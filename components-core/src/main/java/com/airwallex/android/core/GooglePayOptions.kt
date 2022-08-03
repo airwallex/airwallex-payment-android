@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class GooglePayOptions (
+data class GooglePayOptions(
     /**
      * The Google Pay API may return cards on file on Google.com (PAN_ONLY) and/or a device token on
      * an Android device authenticated with a 3-D Secure cryptogram (CRYPTOGRAM_3DS).
@@ -38,13 +38,13 @@ data class GooglePayOptions (
      * The expected fields returned if billingAddressRequired is set to true.
      */
     val billingAddressParameters: BillingAddressParameters? = null
-): Parcelable
+) : Parcelable
 
 @Parcelize
-data class BillingAddressParameters (
+data class BillingAddressParameters(
     val format: Format? = Format.MIN,
     val phoneNumberRequired: Boolean? = false
-): Parcelable {
+) : Parcelable {
     enum class Format {
         MIN,
         FULL

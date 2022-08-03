@@ -26,7 +26,7 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
     }
 
     override fun canHandleAction(nextAction: NextAction?): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
     override suspend fun canHandleSessionAndPaymentMethod(
@@ -47,7 +47,7 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
             PaymentsUtil.isReadyToPayRequest(
                 options,
                 paymentMethodType.cardSchemes?.let { cardSchemes ->
-                    cardSchemes.map { it.name }
+                    cardSchemes.map { it.name.uppercase() }
                 }
             )?.let { isReadyToPayJson ->
                 val request = IsReadyToPayRequest.fromJson(isReadyToPayJson.toString())

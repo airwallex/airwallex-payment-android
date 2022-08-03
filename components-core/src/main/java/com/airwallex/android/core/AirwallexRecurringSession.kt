@@ -10,6 +10,7 @@ import java.math.BigDecimal
 /**
  * For recurring payment (without create payment intent)
  */
+@Suppress("LongParameterList")
 @Parcelize
 class AirwallexRecurringSession internal constructor(
     /**

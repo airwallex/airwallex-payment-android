@@ -32,26 +32,39 @@ object PaymentsUtil {
      * @see [PaymentMethod](https://developers.google.com/pay/api/android/reference/object.PaymentMethod)
      */
     // Optionally, you can add billing address/phone number associated with a CARD payment method.
-    private fun baseCardPaymentMethod(googlePayOptions: GooglePayOptions, supportedCardSchemes: List<String>?): JSONObject {
+    private fun baseCardPaymentMethod(
+        googlePayOptions: GooglePayOptions,
+        supportedCardSchemes: List<String>?
+    ): JSONObject {
         return JSONObject().apply {
 
             val parameters = JSONObject().apply {
-                put("allowedAuthMethods",
-                    googlePayOptions.allowedCardAuthMethods ?: Constants.DEFAULT_SUPPORTED_METHODS)
-                put("allowedCardNetworks",
-                    supportedCardSchemes ?: Constants.DEFAULT_SUPPORTED_CARD_NETWORKS)
+                put(
+                    "allowedAuthMethods",
+                    JSONArray(
+                        googlePayOptions.allowedCardAuthMethods
+                            ?: Constants.DEFAULT_SUPPORTED_METHODS
+                    )
+                )
+                put(
+                    "allowedCardNetworks",
+                    JSONArray(supportedCardSchemes ?: Constants.DEFAULT_SUPPORTED_CARD_NETWORKS)
+                )
                 googlePayOptions.billingAddressRequired?.let {
                     put("billingAddressRequired", it)
                 }
                 googlePayOptions.billingAddressParameters?.let { billingParams ->
-                    put("billingAddressParameters", JSONObject().apply {
-                        billingParams.format?.let {
-                            put("format", it.name)
+                    put(
+                        "billingAddressParameters",
+                        JSONObject().apply {
+                            billingParams.format?.let {
+                                put("format", it.name)
+                            }
+                            billingParams.phoneNumberRequired?.let {
+                                put("phoneNumberRequired", it)
+                            }
                         }
-                        billingParams.phoneNumberRequired?.let {
-                            put("phoneNumberRequired", it)
-                        }
-                    })
+                    )
                 }
             }
 
@@ -75,13 +88,18 @@ object PaymentsUtil {
      * @return API version and payment methods supported by the app.
      * @see [IsReadyToPayRequest](https://developers.google.com/pay/api/android/reference/object.IsReadyToPayRequest)
      */
-    fun isReadyToPayRequest(googlePayOptions: GooglePayOptions, supportedCardSchemes: List<String>?): JSONObject? {
+    fun isReadyToPayRequest(
+        googlePayOptions: GooglePayOptions,
+        supportedCardSchemes: List<String>?
+    ): JSONObject? {
+        @Suppress("SwallowedException")
         return try {
             baseRequest.apply {
-                put("allowedPaymentMethods",
-                    JSONArray().put(baseCardPaymentMethod(googlePayOptions, supportedCardSchemes)))
+                put(
+                    "allowedPaymentMethods",
+                    JSONArray().put(baseCardPaymentMethod(googlePayOptions, supportedCardSchemes))
+                )
             }
-
         } catch (e: JSONException) {
             null
         }

@@ -163,7 +163,6 @@ internal object PaymentIntentFixtures {
                 "created_at": "2020-03-30T03:04:00+0000",
                 "updated_at": "2020-03-30T03:04:00+0000",
                 "cancelled_at": "2020-03-30T03:04:00+0000",
-                "amount": 0.1,
                 "authentication_data": {
                     "ds_data": {
 				        "version": "2.1.0",

@@ -9,8 +9,8 @@ object Constants {
     )
 
     val DEFAULT_SUPPORTED_CARD_NETWORKS = listOf(
-        "mastercard",
-        "visa"
+        "MASTERCARD",
+        "VISA"
     )
 
     const val PAYMENTS_ENVIRONMENT = WalletConstants.ENVIRONMENT_TEST

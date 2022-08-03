@@ -9,17 +9,25 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airwallex.android.*
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.R
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.log.Logger
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.DynamicSchemaField
+import com.airwallex.android.core.model.DynamicSchemaFieldType
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
@@ -149,25 +157,27 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun fetchPaymentMethods() {
-        setLoadingProgress(loading = true, cancelable = false)
-        viewModel.fetchAvailablePaymentMethodTypes().observe(
-            this@PaymentMethodsActivity,
-            { result ->
-                result.fold(
-                    onSuccess = {
-                        setLoadingProgress(loading = false)
-                        // Complete load available payment method type
-                        this.availablePaymentMethodTypes = it
-                        initView(it)
-                        filterPaymentConsents()
-                    },
-                    onFailure = {
-                        setLoadingProgress(loading = false)
-                        alert(message = it.message ?: it.toString())
-                    }
-                )
-            }
-        )
+        CoroutineScope(Dispatchers.Main).launch {
+            setLoadingProgress(loading = true, cancelable = false)
+            viewModel.fetchAvailablePaymentMethodTypes().observe(
+                this@PaymentMethodsActivity,
+                { result ->
+                    result.fold(
+                        onSuccess = {
+                            setLoadingProgress(loading = false)
+                            // Complete load available payment method type
+                            this@PaymentMethodsActivity.availablePaymentMethodTypes = it
+                            initView(it)
+                            filterPaymentConsents()
+                        },
+                        onFailure = {
+                            setLoadingProgress(loading = false)
+                            alert(message = it.message ?: it.toString())
+                        }
+                    )
+                }
+            )
+        }
     }
 
     private fun filterPaymentConsents() {
@@ -181,11 +191,15 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
 
         if (session is AirwallexPaymentSession) {
             val paymentConsents = customerPaymentConsents.filter {
-                it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER && it.status == PaymentConsent.PaymentConsentStatus.VERIFIED && it.paymentMethod?.type == PaymentMethodType.CARD.value
+                it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER &&
+                    it.status == PaymentConsent.PaymentConsentStatus.VERIFIED &&
+                    it.paymentMethod?.type == PaymentMethodType.CARD.value
             }
             paymentConsents.forEach { paymentConsent ->
                 paymentConsent.paymentMethod =
-                    customerPaymentMethods.find { paymentMethod -> paymentMethod.id == paymentConsent.paymentMethod?.id }
+                    customerPaymentMethods.find { paymentMethod ->
+                        paymentMethod.id == paymentConsent.paymentMethod?.id
+                    }
             }
             paymentConsents.let {
                 paymentMethodsAdapter.setPaymentConsents(it)

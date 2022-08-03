@@ -10,6 +10,7 @@ import java.math.BigDecimal
 /**
  * For one-off payment
  */
+@Suppress("LongParameterList")
 @Parcelize
 class AirwallexPaymentSession internal constructor(
     /**

@@ -11,9 +11,6 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.log.Logger
 import com.airwallex.android.core.model.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 import java.util.*
 
@@ -149,12 +146,11 @@ class Airwallex internal constructor(
      * @param listener the callback of get [AvailablePaymentMethodTypeResponse]
      */
     @UiThread
-    fun retrieveAvailablePaymentMethods(
+    suspend fun retrieveAvailablePaymentMethods(
         session: AirwallexSession,
-        params: RetrieveAvailablePaymentMethodParams,
-        listener: PaymentListener<AvailablePaymentMethodTypeResponse>
-    ) {
-        paymentManager.startOperation(
+        params: RetrieveAvailablePaymentMethodParams
+    ): AvailablePaymentMethodTypeResponse {
+        val response = paymentManager.startOperation<AvailablePaymentMethodTypeResponse>(
             AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions(
                 clientSecret = params.clientSecret,
                 pageNum = params.pageNum,
@@ -163,27 +159,22 @@ class Airwallex internal constructor(
                 transactionCurrency = params.transactionCurrency,
                 transactionMode = params.transactionMode,
                 countryCode = params.countryCode
-            ),
-            object: PaymentListener<AvailablePaymentMethodTypeResponse> {
-                override fun onSuccess(response: AvailablePaymentMethodTypeResponse) {
-                    val filteredItems = response.items?.let { items ->
-                        items.filter { paymentMethod ->
-                            AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
-                                runBlocking {
-                                    provider.canHandleSessionAndPaymentMethod(session, paymentMethod, activity)
-                                }
-                            } ?: false
-                        }
-                    }
-                    val filteredResponse = AvailablePaymentMethodTypeResponse(response.hasMore, filteredItems)
-                    listener.onSuccess(filteredResponse)
-                }
-
-                override fun onFailed(exception: AirwallexException) {
-                    listener.onFailed(exception)
-                }
-
+            )
+        )
+        val filteredItems = response?.items?.let { items ->
+            items.filter { paymentMethod ->
+                AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
+                    provider.canHandleSessionAndPaymentMethod(
+                        session,
+                        paymentMethod,
+                        activity
+                    )
+                } ?: false
             }
+        }
+        return AvailablePaymentMethodTypeResponse(
+            response?.hasMore ?: false,
+            filteredItems
         )
     }
 
@@ -376,7 +367,9 @@ class Airwallex internal constructor(
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
                     additionalInfo = additionalInfo,
-                    returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
+                    returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value)
+                        AirwallexPlugins.environment.threeDsReturnUrl()
+                    else session.returnUrl,
                     autoCapture = session.autoCapture,
                     flow = flow,
                     listener = listener
@@ -409,7 +402,10 @@ class Airwallex internal constructor(
                                                 currency = session.currency,
                                                 amount = session.amount,
                                                 cvc = cvc,
-                                                returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
+                                                returnUrl = if (paymentMethod.type
+                                                    == PaymentMethodType.CARD.value
+                                                ) AirwallexPlugins.environment.threeDsReturnUrl()
+                                                else session.returnUrl,
                                                 listener = listener
                                             )
                                         }
@@ -532,7 +528,11 @@ class Airwallex internal constructor(
                 val provider = AirwallexPlugins.getCardProvider()
                 if (provider == null) {
                     listener.onCompleted(
-                        AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing ${Dependency.CARD.value} dependency!"))
+                        AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(
+                                message = "Missing ${Dependency.CARD.value} dependency!"
+                            )
+                        )
                     )
                     return
                 }
@@ -742,7 +742,11 @@ class Airwallex internal constructor(
                 val provider = AirwallexPlugins.getCardProvider()
                 if (provider == null) {
                     listener.onCompleted(
-                        AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"))
+                        AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(
+                                message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"
+                            )
+                        )
                     )
                     return
                 }
