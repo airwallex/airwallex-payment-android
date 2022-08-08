@@ -21,19 +21,15 @@ class AirwallexPaymentManager(
         }
     }
 
-    override suspend fun <T> startOperation(options: Options): T? {
-        when (options) {
-            is AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions -> {
-                val result = runCatching {
-                    requireNotNull(repository.retrieveAvailablePaymentMethods(options))
-                }
-                result.fold(
-                    onSuccess = { return it as T },
-                    onFailure = { throw handleError(it) }
-                )
-            }
-            else -> return null
+    override suspend fun startRetrieveAvailablePaymentMethodsOperation(options: Options):
+        AvailablePaymentMethodTypeResponse {
+        val result = runCatching {
+            requireNotNull(repository.retrieveAvailablePaymentMethods(options))
         }
+        result.fold(
+            onSuccess = { return it },
+            onFailure = { throw handleError(it) }
+        )
     }
 
     @Suppress("UNCHECKED_CAST")

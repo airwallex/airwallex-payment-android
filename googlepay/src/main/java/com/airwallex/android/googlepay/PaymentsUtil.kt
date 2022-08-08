@@ -24,9 +24,8 @@ object PaymentsUtil {
      * Describe your app's support for the CARD payment method.
      *
      *
-     * The provided properties are applicable to both an IsReadyToPayRequest and a
-     * PaymentDataRequest.
-     *
+     * @param googlePayOptions is the merchant provided value when integrates SDK
+     * @param supportedCardScheme is the merchant's supported card types
      * @return A CARD PaymentMethod object describing accepted cards.
      * @throws JSONException
      * @see [PaymentMethod](https://developers.google.com/pay/api/android/reference/object.PaymentMethod)
@@ -50,6 +49,15 @@ object PaymentsUtil {
                     "allowedCardNetworks",
                     JSONArray(supportedCardSchemes ?: Constants.DEFAULT_SUPPORTED_CARD_NETWORKS)
                 )
+                googlePayOptions.allowPrepaidCards?.let {
+                    put("allowPrepaidCards", it)
+                }
+                googlePayOptions.allowCreditCards?.let {
+                    put("allowCreditCards", it)
+                }
+                googlePayOptions.assuranceDetailsRequired?.let {
+                    put("assuranceDetailsRequired", it)
+                }
                 googlePayOptions.billingAddressRequired?.let {
                     put("billingAddressRequired", it)
                 }
@@ -73,6 +81,12 @@ object PaymentsUtil {
         }
     }
 
+    /**
+     * Creates an instance of [PaymentsClient] for use in an [Activity] using the
+     * environment and theme set in [Constants].
+     *
+     * @param activity is the caller's activity.
+     */
     fun createPaymentsClient(activity: Activity): PaymentsClient {
         val walletOptions = Wallet.WalletOptions.Builder()
             .setEnvironment(Constants.PAYMENTS_ENVIRONMENT)

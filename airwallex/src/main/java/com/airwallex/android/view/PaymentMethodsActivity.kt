@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.core.Airwallex
@@ -25,8 +26,6 @@ import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
@@ -109,20 +108,19 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         ) { paymentConsent ->
             setLoadingProgress(loading = true, cancelable = false)
             viewModel.deletePaymentConsent(paymentConsent).observe(
-                this,
-                { result ->
-                    result.fold(
-                        onSuccess = {
-                            setLoadingProgress(false)
-                            paymentMethodsAdapter.deletePaymentConsent(it)
-                        },
-                        onFailure = {
-                            setLoadingProgress(false)
-                            alert(message = it.message ?: it.toString())
-                        }
-                    )
-                }
-            )
+                this
+            ) { result ->
+                result.fold(
+                    onSuccess = {
+                        setLoadingProgress(false)
+                        paymentMethodsAdapter.deletePaymentConsent(it)
+                    },
+                    onFailure = {
+                        setLoadingProgress(false)
+                        alert(message = it.message ?: it.toString())
+                    }
+                )
+            }
         }
 
         object :
@@ -157,29 +155,29 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun fetchPaymentMethods() {
-        CoroutineScope(Dispatchers.Main).launch {
+        lifecycleScope.launch {
             setLoadingProgress(loading = true, cancelable = false)
             viewModel.fetchAvailablePaymentMethodTypes().observe(
-                this@PaymentMethodsActivity,
-                { result ->
-                    result.fold(
-                        onSuccess = {
-                            setLoadingProgress(loading = false)
-                            // Complete load available payment method type
-                            this@PaymentMethodsActivity.availablePaymentMethodTypes = it
-                            initView(it)
-                            filterPaymentConsents()
-                        },
-                        onFailure = {
-                            setLoadingProgress(loading = false)
-                            alert(message = it.message ?: it.toString())
-                        }
-                    )
-                }
-            )
+                this@PaymentMethodsActivity
+            ) { result ->
+                result.fold(
+                    onSuccess = {
+                        setLoadingProgress(loading = false)
+                        // Complete load available payment method type
+                        this@PaymentMethodsActivity.availablePaymentMethodTypes = it
+                        initView(it)
+                        filterPaymentConsents()
+                    },
+                    onFailure = {
+                        setLoadingProgress(loading = false)
+                        alert(message = it.message ?: it.toString())
+                    }
+                )
+            }
         }
     }
 
+    // To be extracted to view model so that it can be tested
     private fun filterPaymentConsents() {
         if (availablePaymentMethodTypes?.find { it.name == PaymentMethodType.CARD.value } == null) {
             return

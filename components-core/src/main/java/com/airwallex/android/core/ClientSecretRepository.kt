@@ -23,13 +23,15 @@ class ClientSecretRepository(private val provider: ClientSecretProvider) {
         }
     }
 
-    @Suppress("SwallowedException", "TooGenericExceptionThrown", "TooGenericExceptionCaught")
+    @Suppress("TooGenericExceptionCaught")
     suspend fun retrieveClientSecret(customerId: String): ClientSecret {
         return withContext(Dispatchers.IO) {
             try {
                 provider.provideClientSecret(customerId)
-            } catch (e: Exception) {
-                throw Exception("Could not retrieve client secret from the given provider")
+            } catch (throwable: Throwable) {
+                throw AirwallexCheckoutException(
+                    message = "Could not retrieve client secret from the given provider", e = throwable
+                )
             }
         }
     }

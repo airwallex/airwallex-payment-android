@@ -1,6 +1,5 @@
 package com.airwallex.android.core
 
-import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -11,7 +10,7 @@ import kotlin.test.assertEquals
 
 class AirwallexPaymentManagerTest {
     @Test
-    fun `test suspend startOperation when option is RetrieveAvailablePaymentMethods`() = runTest {
+    fun `test start RetrieveAvailablePaymentMethods operation`() = runTest {
         val mockResponse = AvailablePaymentMethodTypeResponseParser().parse(
             JSONObject(
                 """
@@ -34,7 +33,7 @@ class AirwallexPaymentManagerTest {
         val options = mockk<AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions>()
         coEvery { apiRepository.retrieveAvailablePaymentMethods(any()) } returns mockResponse
         val paymentManager = AirwallexPaymentManager(apiRepository)
-        val response = paymentManager.startOperation<AvailablePaymentMethodTypeResponse>(options)
+        val response = paymentManager.startRetrieveAvailablePaymentMethodsOperation(options)
         assertEquals(response?.items?.first()?.name, "card")
     }
 }

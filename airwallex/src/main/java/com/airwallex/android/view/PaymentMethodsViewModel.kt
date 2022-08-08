@@ -71,16 +71,9 @@ internal class PaymentMethodsViewModel(
                 )
             }
             is AirwallexRecurringSession -> {
-                @Suppress("TooGenericExceptionCaught")
                 try {
-                    val clientSecret = try {
-                        ClientSecretRepository.getInstance()
-                            .retrieveClientSecret(requireNotNull(session.customerId))
-                    } catch (e: Exception) {
-                        resultData.value =
-                            Result.failure(AirwallexCheckoutException(message = e.message))
-                        return resultData
-                    }
+                    val clientSecret = ClientSecretRepository.getInstance()
+                        .retrieveClientSecret(requireNotNull(session.customerId))
                     retrieveAvailablePaymentMethods(
                         resultData = resultData,
                         clientSecret = clientSecret.value
@@ -215,6 +208,7 @@ internal class PaymentMethodsViewModel(
         const val FLOW = "flow"
         private val unsupportedPaymentMethodTypes = listOf(
             "applepay",
+            "googlepay", // todo: remove once mandate is rendered properly
             "ach_direct_debit", // todo: remove once mandate is rendered properly
             "becs_direct_debit", // todo: remove once mandate is rendered properly
             "sepa_direct_debit", // todo: remove once mandate is rendered properly

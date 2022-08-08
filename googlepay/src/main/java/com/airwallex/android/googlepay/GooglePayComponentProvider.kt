@@ -37,33 +37,34 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
         return requestIsReadyToPay(session, paymentMethodType, activity)
     }
 
+    @Suppress("ReturnCount")
     private suspend fun requestIsReadyToPay(
         session: AirwallexSession,
         paymentMethodType: AvailablePaymentMethodType,
         activity: Activity
-    ): Boolean = suspendCoroutine { cont ->
-        session.googlePayOptions?.let { options ->
-            val paymentsClient = PaymentsUtil.createPaymentsClient(activity)
-            PaymentsUtil.isReadyToPayRequest(
-                options,
-                paymentMethodType.cardSchemes?.let { cardSchemes ->
-                    cardSchemes.map { it.name.uppercase() }
+    ): Boolean {
+        val options = session.googlePayOptions ?: return false
+        val paymentsClient = PaymentsUtil.createPaymentsClient(activity)
+        val isReadyToPayJson = PaymentsUtil.isReadyToPayRequest(
+            options,
+            paymentMethodType.cardSchemes?.let { cardSchemes ->
+                cardSchemes.map { it.name.uppercase() }
+            }
+        ) ?: return false
+        val request = IsReadyToPayRequest.fromJson(isReadyToPayJson.toString())
+        val task = paymentsClient.isReadyToPay(request)
+        return suspendCoroutine { cont ->
+            task.addOnCompleteListener { completedTask ->
+                try {
+                    completedTask.getResult(ApiException::class.java)?.let {
+                        cont.resume(it)
+                    } ?: cont.resume(false)
+                } catch (exception: ApiException) {
+                    // Process error
+                    Logger.error("isReadyToPay failed", exception)
+                    cont.resume(false)
                 }
-            )?.let { isReadyToPayJson ->
-                val request = IsReadyToPayRequest.fromJson(isReadyToPayJson.toString())
-                val task = paymentsClient.isReadyToPay(request)
-                task.addOnCompleteListener { completedTask ->
-                    try {
-                        completedTask.getResult(ApiException::class.java)?.let {
-                            cont.resume(it)
-                        } ?: cont.resume(false)
-                    } catch (exception: ApiException) {
-                        // Process error
-                        Logger.error("isReadyToPay failed", exception)
-                        cont.resume(false)
-                    }
-                }
-            } ?: cont.resume(false)
-        } ?: cont.resume(false)
+            }
+        }
     }
 }

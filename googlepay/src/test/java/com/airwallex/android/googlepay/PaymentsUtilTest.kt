@@ -39,10 +39,13 @@ class PaymentsUtilTest {
     }
 
     @Test
-    fun `test isReadyToPayRequest with billing address params`() {
+    fun `test isReadyToPayRequest with billing address params and other requirements`() {
         val request = PaymentsUtil.isReadyToPayRequest(
             GooglePayOptions(
                 merchantId = "merchantId",
+                allowPrepaidCards = false,
+                allowCreditCards = false,
+                assuranceDetailsRequired = true,
                 billingAddressRequired = true,
                 billingAddressParameters = BillingAddressParameters(
                     BillingAddressParameters.Format.FULL, true
@@ -53,10 +56,11 @@ class PaymentsUtilTest {
         assertEquals(
             request.toString(),
             "{\"apiVersionMinor\":0,\"apiVersion\":2,\"allowedPaymentMethods\":" +
-                "[{\"type\":\"CARD\",\"parameters\":{\"allowedAuthMethods\":" +
-                "[\"PAN_ONLY\",\"CRYPTOGRAM_3DS\"],\"billingAddressRequired\":true," +
-                "\"billingAddressParameters\":{\"format\":\"FULL\",\"phoneNumberRequired\":" +
-                "true},\"allowedCardNetworks\":[\"MASTERCARD\",\"VISA\"]}}]}"
+                "[{\"type\":\"CARD\",\"parameters\":{\"assuranceDetailsRequired\":true," +
+                "\"allowedAuthMethods\":[\"PAN_ONLY\",\"CRYPTOGRAM_3DS\"],\"billingAddressRequired\":true," +
+                "\"billingAddressParameters\":{\"format\":\"FULL\",\"phoneNumberRequired\":true}," +
+                "\"allowedCardNetworks\":[\"MASTERCARD\",\"VISA\"],\"allowCreditCards\":false," +
+                "\"allowPrepaidCards\":false}}]}"
         )
     }
 }

@@ -48,13 +48,7 @@ object AirwallexPlugins {
         }
     }
 
-    fun getCardProvider(): ActionComponentProvider<out ActionComponent>? {
-        return configuration.supportComponentProviders.firstOrNull {
-            it.getType() == ActionComponentProviderType.CARD
-        }
-    }
-
-    private fun getProvider(type: ActionComponentProviderType): ActionComponentProvider<out ActionComponent>? {
+    fun getProvider(type: ActionComponentProviderType): ActionComponentProvider<out ActionComponent>? {
         return configuration.supportComponentProviders.firstOrNull {
             it.getType() == type
         }

@@ -7,6 +7,7 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.ClientSecretRepository
 import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.model.ClientSecret
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
@@ -16,6 +17,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.Rule
@@ -23,6 +25,7 @@ import org.junit.Test
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 
+@ExperimentalCoroutinesApi
 class PaymentMethodsViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -77,7 +80,7 @@ class PaymentMethodsViewModelTest {
         if (hasClientSecret) {
             coEvery { clientSecretRepository.retrieveClientSecret(any()) } returns clientSecret
         } else {
-            coEvery { clientSecretRepository.retrieveClientSecret(any()) } throws Exception()
+            coEvery { clientSecretRepository.retrieveClientSecret(any()) } throws AirwallexCheckoutException()
         }
 
         every { ClientSecretRepository.getInstance() } returns clientSecretRepository

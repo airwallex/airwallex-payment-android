@@ -82,7 +82,7 @@ class Airwallex internal constructor(
      * otherwise `false`
      */
     fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        val provider = AirwallexPlugins.getCardProvider()
+        val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
         if (provider == null) {
             Logger.error("Missing ${PaymentMethodType.CARD.dependencyName} dependency!")
             return false
@@ -143,14 +143,12 @@ class Airwallex internal constructor(
      * Retrieve available payment methods
      *
      * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve the [AvailablePaymentMethodTypeResponse]
-     * @param listener the callback of get [AvailablePaymentMethodTypeResponse]
      */
-    @UiThread
     suspend fun retrieveAvailablePaymentMethods(
         session: AirwallexSession,
         params: RetrieveAvailablePaymentMethodParams
     ): AvailablePaymentMethodTypeResponse {
-        val response = paymentManager.startOperation<AvailablePaymentMethodTypeResponse>(
+        val response = paymentManager.startRetrieveAvailablePaymentMethodsOperation(
             AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions(
                 clientSecret = params.clientSecret,
                 pageNum = params.pageNum,
@@ -525,7 +523,7 @@ class Airwallex internal constructor(
     ) {
         if (params.paymentMethodType == PaymentMethodType.CARD.value) {
             try {
-                val provider = AirwallexPlugins.getCardProvider()
+                val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
                 if (provider == null) {
                     listener.onCompleted(
                         AirwallexPaymentStatus.Failure(
@@ -739,7 +737,7 @@ class Airwallex internal constructor(
 
             override fun onSuccess(response: PaymentIntent) {
                 // Handle next action
-                val provider = AirwallexPlugins.getCardProvider()
+                val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
                 if (provider == null) {
                     listener.onCompleted(
                         AirwallexPaymentStatus.Failure(
