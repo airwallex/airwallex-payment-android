@@ -148,6 +148,12 @@ class Airwallex internal constructor(
         session: AirwallexSession,
         params: RetrieveAvailablePaymentMethodParams
     ): AvailablePaymentMethodTypeResponse {
+        val transactionMode = when (session) {
+            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
+            is AirwallexPaymentSession -> TransactionMode.ONE_OFF
+            else -> throw AirwallexCheckoutException(message = "Not support session $session")
+        }
+
         val response = paymentManager.startRetrieveAvailablePaymentMethodsOperation(
             AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions(
                 clientSecret = params.clientSecret,
@@ -159,8 +165,9 @@ class Airwallex internal constructor(
                 countryCode = params.countryCode
             )
         )
-        val filteredItems = response?.items?.let { items ->
-            items.filter { paymentMethod ->
+        val filteredItems = response.items?.filter { paymentMethod ->
+            paymentMethod.transactionMode == transactionMode &&
+                paymentMethod.name !in unsupportedPaymentMethodTypes &&
                 AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
                     provider.canHandleSessionAndPaymentMethod(
                         session,
@@ -168,12 +175,9 @@ class Airwallex internal constructor(
                         activity
                     )
                 } ?: false
-            }
         }
-        return AvailablePaymentMethodTypeResponse(
-            response?.hasMore ?: false,
-            filteredItems
-        )
+
+        return AvailablePaymentMethodTypeResponse(response.hasMore, filteredItems)
     }
 
     /**
@@ -882,6 +886,14 @@ class Airwallex internal constructor(
 
     companion object {
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout"
+        private val unsupportedPaymentMethodTypes = listOf(
+            "applepay",
+            "googlepay", // todo: remove once integrated
+            "ach_direct_debit", // todo: remove once mandate is rendered properly
+            "becs_direct_debit", // todo: remove once mandate is rendered properly
+            "sepa_direct_debit", // todo: remove once mandate is rendered properly
+            "bacs_direct_debit" // todo: remove once mandate is rendered properly
+        )
 
         /**
          * Initialize some global configurations, better to be called on Application

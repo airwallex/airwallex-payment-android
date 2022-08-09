@@ -34,6 +34,6 @@ class AirwallexPaymentManagerTest {
         coEvery { apiRepository.retrieveAvailablePaymentMethods(any()) } returns mockResponse
         val paymentManager = AirwallexPaymentManager(apiRepository)
         val response = paymentManager.startRetrieveAvailablePaymentMethodsOperation(options)
-        assertEquals(response?.items?.first()?.name, "card")
+        assertEquals(response.items?.first()?.name, "card")
     }
 }

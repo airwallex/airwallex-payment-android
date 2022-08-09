@@ -118,36 +118,7 @@ internal class PaymentMethodsViewModel(
                 clientSecret
             )
         } else {
-            resultData.value =
-                getFilteredPaymentMethodsResult(availablePaymentMethodList)
-        }
-    }
-
-    private fun getFilteredPaymentMethodsResult(
-        paymentMethods: MutableList<AvailablePaymentMethodType>
-    ): Result<List<AvailablePaymentMethodType>> {
-        return when (session) {
-            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> {
-                Result.success(
-                    paymentMethods.filter {
-                        it.transactionMode == TransactionMode.RECURRING
-                    }.filter {
-                        it.name !in unsupportedPaymentMethodTypes
-                    }
-                )
-            }
-            is AirwallexPaymentSession -> {
-                Result.success(
-                    paymentMethods.filter {
-                        it.transactionMode == TransactionMode.ONE_OFF
-                    }.filter {
-                        it.name !in unsupportedPaymentMethodTypes
-                    }
-                )
-            }
-            else -> {
-                Result.failure(AirwallexCheckoutException(message = "Not support session $session"))
-            }
+            resultData.value = Result.success(availablePaymentMethodList)
         }
     }
 
@@ -206,13 +177,5 @@ internal class PaymentMethodsViewModel(
     companion object {
         const val COUNTRY_CODE = "country_code"
         const val FLOW = "flow"
-        private val unsupportedPaymentMethodTypes = listOf(
-            "applepay",
-            "googlepay", // todo: remove once mandate is rendered properly
-            "ach_direct_debit", // todo: remove once mandate is rendered properly
-            "becs_direct_debit", // todo: remove once mandate is rendered properly
-            "sepa_direct_debit", // todo: remove once mandate is rendered properly
-            "bacs_direct_debit" // todo: remove once mandate is rendered properly
-        )
     }
 }
