@@ -2,18 +2,17 @@ package com.airwallex.android.core
 
 import com.airwallex.android.core.model.PaymentIntentFixtures
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@RunWith(RobolectricTestRunner::class)
 class AirwallexPaymentSessionTest {
 
     @Test
     fun buildTest() {
-        val airwallexPaymentSession = AirwallexPaymentSession.Builder(PaymentIntentFixtures.PAYMENT_INTENT, "CN").build()
+        val airwallexPaymentSession = AirwallexPaymentSession.Builder(
+            PaymentIntentFixtures.PAYMENT_INTENT, "CN"
+        ).build()
 
         assertNotNull(airwallexPaymentSession)
 

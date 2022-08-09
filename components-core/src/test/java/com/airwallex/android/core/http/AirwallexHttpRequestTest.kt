@@ -29,12 +29,13 @@ class AirwallexHttpRequestTest {
 
     @Test
     fun urlTest() {
+        val baseUrl = AirwallexPlugins.environment.baseUrl()
         val url = AirwallexHttpRequest.createGet(
-            url = AirwallexPlugins.environment.baseUrl(),
+            url = baseUrl,
             options = options
         ).url
 
-        assertEquals("https://api.airwallex.com", url)
+        assertEquals(baseUrl, url)
     }
 
     @Test

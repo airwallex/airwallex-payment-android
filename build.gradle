@@ -26,7 +26,7 @@ plugins {
 
 detekt {
     buildUponDefaultConfig = true
-    config = files("$projectDir/config/detekt/detekt.yml")
+    config = files("$projectDir/config/detekt.yml")
 }
 
 tasks.withType(io.gitlab.arturbosch.detekt.Detekt).configureEach {

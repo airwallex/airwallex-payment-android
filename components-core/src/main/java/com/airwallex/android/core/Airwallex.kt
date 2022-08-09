@@ -82,7 +82,7 @@ class Airwallex internal constructor(
      * otherwise `false`
      */
     fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        val provider = AirwallexPlugins.getCardProvider()
+        val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
         if (provider == null) {
             Logger.error("Missing ${PaymentMethodType.CARD.dependencyName} dependency!")
             return false
@@ -143,14 +143,18 @@ class Airwallex internal constructor(
      * Retrieve available payment methods
      *
      * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve the [AvailablePaymentMethodTypeResponse]
-     * @param listener the callback of get [AvailablePaymentMethodTypeResponse]
      */
-    @UiThread
-    fun retrieveAvailablePaymentMethods(
-        params: RetrieveAvailablePaymentMethodParams,
-        listener: PaymentListener<AvailablePaymentMethodTypeResponse>
-    ) {
-        paymentManager.startOperation(
+    suspend fun retrieveAvailablePaymentMethods(
+        session: AirwallexSession,
+        params: RetrieveAvailablePaymentMethodParams
+    ): AvailablePaymentMethodTypeResponse {
+        val transactionMode = when (session) {
+            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
+            is AirwallexPaymentSession -> TransactionMode.ONE_OFF
+            else -> throw AirwallexCheckoutException(message = "Not support session $session")
+        }
+
+        val response = paymentManager.startRetrieveAvailablePaymentMethodsOperation(
             AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions(
                 clientSecret = params.clientSecret,
                 pageNum = params.pageNum,
@@ -159,9 +163,21 @@ class Airwallex internal constructor(
                 transactionCurrency = params.transactionCurrency,
                 transactionMode = params.transactionMode,
                 countryCode = params.countryCode
-            ),
-            listener
+            )
         )
+        val filteredItems = response.items?.filter { paymentMethod ->
+            paymentMethod.transactionMode == transactionMode &&
+                paymentMethod.name !in unsupportedPaymentMethodTypes &&
+                AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
+                    provider.canHandleSessionAndPaymentMethod(
+                        session,
+                        paymentMethod,
+                        activity
+                    )
+                } ?: false
+        }
+
+        return AvailablePaymentMethodTypeResponse(response.hasMore, filteredItems)
     }
 
     /**
@@ -353,7 +369,9 @@ class Airwallex internal constructor(
                     customerId = paymentIntent.customerId,
                     paymentConsentId = paymentConsentId,
                     additionalInfo = additionalInfo,
-                    returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
+                    returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value)
+                        AirwallexPlugins.environment.threeDsReturnUrl()
+                    else session.returnUrl,
                     autoCapture = session.autoCapture,
                     flow = flow,
                     listener = listener
@@ -386,7 +404,10 @@ class Airwallex internal constructor(
                                                 currency = session.currency,
                                                 amount = session.amount,
                                                 cvc = cvc,
-                                                returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
+                                                returnUrl = if (paymentMethod.type
+                                                    == PaymentMethodType.CARD.value
+                                                ) AirwallexPlugins.environment.threeDsReturnUrl()
+                                                else session.returnUrl,
                                                 listener = listener
                                             )
                                         }
@@ -506,10 +527,14 @@ class Airwallex internal constructor(
     ) {
         if (params.paymentMethodType == PaymentMethodType.CARD.value) {
             try {
-                val provider = AirwallexPlugins.getCardProvider()
+                val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
                 if (provider == null) {
                     listener.onCompleted(
-                        AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing ${Dependency.CARD.value} dependency!"))
+                        AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(
+                                message = "Missing ${Dependency.CARD.value} dependency!"
+                            )
+                        )
                     )
                     return
                 }
@@ -716,10 +741,14 @@ class Airwallex internal constructor(
 
             override fun onSuccess(response: PaymentIntent) {
                 // Handle next action
-                val provider = AirwallexPlugins.getCardProvider()
+                val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
                 if (provider == null) {
                     listener.onCompleted(
-                        AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"))
+                        AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(
+                                message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"
+                            )
+                        )
                     )
                     return
                 }
@@ -857,6 +886,14 @@ class Airwallex internal constructor(
 
     companion object {
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout"
+        private val unsupportedPaymentMethodTypes = listOf(
+            "applepay",
+            "googlepay", // todo: remove once integrated
+            "ach_direct_debit", // todo: remove once mandate is rendered properly
+            "becs_direct_debit", // todo: remove once mandate is rendered properly
+            "sepa_direct_debit", // todo: remove once mandate is rendered properly
+            "bacs_direct_debit" // todo: remove once mandate is rendered properly
+        )
 
         /**
          * Initialize some global configurations, better to be called on Application

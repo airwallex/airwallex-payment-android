@@ -81,6 +81,8 @@ dependencies {
     testImplementation "androidx.test:core:$testCoreVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
+    testImplementation 'io.mockk:mockk:1.12.2'
 }
 
 ext {

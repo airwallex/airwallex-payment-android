@@ -3,6 +3,7 @@ package com.airwallex.android.card
 import android.app.Activity
 import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.core.*
+import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -11,6 +12,9 @@ import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
 import com.nhaarman.mockitokotlin2.mock
+import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class CardComponentProviderTest {
@@ -89,7 +93,7 @@ class CardComponentProviderTest {
                 fragment = null,
                 activity = activity,
                 paymentManager = AirwallexPaymentManager(AirwallexApiRepository()),
-                clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
+                clientSecret = "tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
                 device = null,
                 paymentIntentId = "int_hkdmr7v9rg1j58ky8re",
                 currency = "CNY",
@@ -115,5 +119,20 @@ class CardComponentProviderTest {
 
         latch.await()
         assertEquals(false, success)
+    }
+
+    @Test
+    fun canHandleSessionAndPaymentMethod() = runTest {
+        val activity = mockk<Activity>()
+        val session = mockk<AirwallexSession>()
+        val paymentMethodType = mockk<AvailablePaymentMethodType>()
+        val cardComponentProvider = CardComponentProvider()
+        assertTrue(
+            cardComponentProvider.canHandleSessionAndPaymentMethod(
+                session,
+                paymentMethodType,
+                activity
+            )
+        )
     }
 }

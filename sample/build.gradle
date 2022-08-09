@@ -108,6 +108,7 @@ dependencies {
     api project(':card')
     api project(':wechat')
     api project(':redirect')
+    api project(':googlepay')
 
 //    implementation 'io.github.airwallex:payment:4.0.2'
 //    implementation 'io.github.airwallex:payment-card:4.0.2'

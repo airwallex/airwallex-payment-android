@@ -44,6 +44,11 @@ data class AvailablePaymentMethodType internal constructor(
     /**
      * The resources of payment method
      */
-    val resources: AvailablePaymentMethodTypeResource? = null
+    val resources: AvailablePaymentMethodTypeResource? = null,
+
+    /**
+     * Supported card schemes.
+     */
+    val cardSchemes: List<CardScheme>? = null
 
 ) : AirwallexModel, Parcelable

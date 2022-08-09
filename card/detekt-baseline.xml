@@ -12,12 +12,10 @@
     <ID>MaxLineLength:CardComponent.kt$CardComponent$listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Card payment info not found")))</ID>
     <ID>MaxLineLength:CardComponent.kt$CardComponent$listener.onCompleted(AirwallexPaymentStatus.Failure(ThreeDSException("3DS Failed. Missing data in response.")))</ID>
     <ID>MaxLineLength:CardComponent.kt$CardComponent.&lt;no name provided>.&lt;no name provided>$Logger.debug("3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")</ID>
-    <ID>MaxLineLength:CardComponentProviderTest.kt$CardComponentProviderTest$clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ=="</ID>
     <ID>MaxLineLength:WebViewConnectionExceptionTest.kt$WebViewConnectionExceptionTest$"com.airwallex.android.card.exception.WebViewConnectionException: message; status-code: 0, code null, source null, message message"</ID>
     <ID>MaximumLineLength:com.airwallex.android.card.CardComponent.kt:137</ID>
     <ID>MaximumLineLength:com.airwallex.android.card.CardComponent.kt:173</ID>
     <ID>MaximumLineLength:com.airwallex.android.card.CardComponent.kt:43</ID>
-    <ID>MaximumLineLength:com.airwallex.android.card.CardComponentProviderTest.kt:92</ID>
     <ID>MaximumLineLength:com.airwallex.android.card.exception.WebViewConnectionExceptionTest.kt:28</ID>
     <ID>MemberNameEqualsClassName:ThreeDSecureWebViewClientTest.kt$ThreeDSecureWebViewClientTest$@Test fun threeDSecureWebViewClientTest()</ID>
     <ID>NoWildcardImports:com.airwallex.android.card.AirwallexSecurityConnector.kt:7</ID>

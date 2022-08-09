@@ -23,6 +23,19 @@ class ClientSecretRepository(private val provider: ClientSecretProvider) {
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
+    suspend fun retrieveClientSecret(customerId: String): ClientSecret {
+        return withContext(Dispatchers.IO) {
+            try {
+                provider.provideClientSecret(customerId)
+            } catch (throwable: Throwable) {
+                throw AirwallexCheckoutException(
+                    message = "Could not retrieve client secret from the given provider", e = throwable
+                )
+            }
+        }
+    }
+
     interface ClientSecretRetrieveListener {
         fun onClientSecretRetrieve(
             clientSecret: ClientSecret
@@ -40,7 +53,9 @@ class ClientSecretRepository(private val provider: ClientSecretProvider) {
         @Throws(AirwallexCheckoutException::class)
         fun getInstance(): ClientSecretRepository {
             return this.instance
-                ?: throw AirwallexCheckoutException(message = "Attempted to get instance of ClientSecretManager without initialization.")
+                ?: throw AirwallexCheckoutException(
+                    message = "Attempted to get instance of ClientSecretManager without initialization."
+                )
         }
 
         fun init(clientSecretProvider: ClientSecretProvider) {

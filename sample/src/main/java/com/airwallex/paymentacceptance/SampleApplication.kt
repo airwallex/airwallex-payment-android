@@ -5,6 +5,7 @@ import com.airwallex.android.card.CardComponent
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexConfiguration
 import com.airwallex.android.core.Environment
+import com.airwallex.android.googlepay.GooglePayComponent
 import com.airwallex.android.redirect.RedirectComponent
 import com.airwallex.android.wechat.WeChatComponent
 
@@ -36,7 +37,8 @@ class SampleApplication : Application() {
                     listOf(
                         CardComponent.PROVIDER,
                         WeChatComponent.PROVIDER,
-                        RedirectComponent.PROVIDER
+                        RedirectComponent.PROVIDER,
+                        GooglePayComponent.PROVIDER
                     )
                 )
                 .build(),

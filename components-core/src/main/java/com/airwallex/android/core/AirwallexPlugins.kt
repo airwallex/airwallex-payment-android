@@ -1,5 +1,6 @@
 package com.airwallex.android.core
 
+import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 
 /**
@@ -32,15 +33,24 @@ object AirwallexPlugins {
             return configuration.environment
         }
 
+    @Suppress("SwallowedException")
+    fun getProvider(paymentMethodType: AvailablePaymentMethodType): ActionComponentProvider<out ActionComponent>? {
+        return try {
+            getProvider(ActionComponentProviderType.valueOf(paymentMethodType.name.uppercase()))
+        } catch (e: IllegalArgumentException) {
+            null
+        }
+    }
+
     fun getProvider(nextAction: NextAction?): ActionComponentProvider<out ActionComponent>? {
         return configuration.supportComponentProviders.firstOrNull {
             it.canHandleAction(nextAction)
         }
     }
 
-    fun getCardProvider(): ActionComponentProvider<out ActionComponent>? {
+    fun getProvider(type: ActionComponentProviderType): ActionComponentProvider<out ActionComponent>? {
         return configuration.supportComponentProviders.firstOrNull {
-            it.getType() == ActionComponentProviderType.CARD
+            it.getType() == type
         }
     }
 }
