@@ -34,6 +34,10 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
         paymentMethodType: AvailablePaymentMethodType,
         activity: Activity
     ): Boolean {
+        get().apply {
+            this.session = session
+            this.paymentMethodType = paymentMethodType
+        }
         return requestIsReadyToPay(session, paymentMethodType, activity)
     }
 

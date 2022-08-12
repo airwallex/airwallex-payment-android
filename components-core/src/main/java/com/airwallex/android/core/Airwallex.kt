@@ -359,23 +359,40 @@ class Airwallex internal constructor(
     ) {
         when (session) {
             is AirwallexPaymentSession -> {
-                val paymentIntent = session.paymentIntent
-                confirmPaymentIntent(
-                    paymentIntentId = paymentIntent.id,
-                    clientSecret = requireNotNull(paymentIntent.clientSecret),
-                    paymentMethod = paymentMethod,
-                    cvc = cvc,
-                    currency = session.currency,
-                    customerId = paymentIntent.customerId,
-                    paymentConsentId = paymentConsentId,
-                    additionalInfo = additionalInfo,
-                    returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value)
-                        AirwallexPlugins.environment.threeDsReturnUrl()
-                    else session.returnUrl,
-                    autoCapture = session.autoCapture,
-                    flow = flow,
-                    listener = listener
-                )
+                if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
+                    AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)?.let {
+                        it.get().handlePaymentIntentResponse(
+                            paymentIntentId = session.paymentIntent.id,
+                            nextAction = null,
+                            activity = activity,
+                            applicationContext = applicationContext,
+                            cardNextActionModel = null,
+                            listener = object: PaymentResultListener {
+                                override fun onCompleted(status: AirwallexPaymentStatus) {
+                                    TODO("Not yet implemented")
+                                }
+                            }
+                        )
+                    }
+                } else {
+                    val paymentIntent = session.paymentIntent
+                    confirmPaymentIntent(
+                        paymentIntentId = paymentIntent.id,
+                        clientSecret = requireNotNull(paymentIntent.clientSecret),
+                        paymentMethod = paymentMethod,
+                        cvc = cvc,
+                        currency = session.currency,
+                        customerId = paymentIntent.customerId,
+                        paymentConsentId = paymentConsentId,
+                        additionalInfo = additionalInfo,
+                        returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value)
+                            AirwallexPlugins.environment.threeDsReturnUrl()
+                        else session.returnUrl,
+                        autoCapture = session.autoCapture,
+                        flow = flow,
+                        listener = listener
+                    )
+                }
             }
             is AirwallexRecurringSession -> {
                 val customerId = session.customerId
@@ -888,7 +905,6 @@ class Airwallex internal constructor(
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout"
         private val unsupportedPaymentMethodTypes = listOf(
             "applepay",
-            "googlepay", // todo: remove once integrated
             "ach_direct_debit", // todo: remove once mandate is rendered properly
             "becs_direct_debit", // todo: remove once mandate is rendered properly
             "sepa_direct_debit", // todo: remove once mandate is rendered properly

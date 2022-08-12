@@ -268,6 +268,14 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     )
                 }
             }
+            PaymentMethodType.GOOGLEPAY.value -> {
+                setLoadingProgress(false)
+                startCheckout(
+                    paymentMethod = paymentMethod,
+                    paymentConsentId = paymentConsent.id,
+                    observer = observer
+                )
+            }
             else -> {
                 if (paymentMethodType?.resources?.hasSchema == true && session is AirwallexPaymentSession) {
                     // Have required schema fields

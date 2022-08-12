@@ -13,5 +13,7 @@ object Constants {
         "VISA"
     )
 
+    const val PAYMENT_GATEWAY_TOKENIZATION_NAME = "airwallex"
+
     const val PAYMENTS_ENVIRONMENT = WalletConstants.ENVIRONMENT_TEST
 }
