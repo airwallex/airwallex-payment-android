@@ -2,6 +2,8 @@ package com.airwallex.android.googlepay
 
 import android.app.Activity
 import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.model.Address
+import com.airwallex.android.core.model.Billing
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
 import org.json.JSONArray
@@ -42,7 +44,7 @@ object PaymentsUtil {
             put(
                 "parameters", JSONObject(
                     mapOf(
-                        "gateway" to "airwallex",
+                        "gateway" to Constants.PAYMENT_GATEWAY_TOKENIZATION_NAME,
                         "gatewayMerchantId" to merchantId
                     )
                 )
@@ -256,6 +258,38 @@ object PaymentsUtil {
             }
         } catch (e: JSONException) {
             null
+        }
+    }
+
+    fun getBilling(payload: JSONObject): Billing? {
+        val name = payload.optString("name")
+        val locality = payload.optString("locality")
+        val countryCode = payload.optString("countryCode")
+        if (name.isNotEmpty() && locality.isNotEmpty() && countryCode.isNotEmpty()) {
+            return Billing.Builder()
+                .setAddress(
+                    Address.Builder()
+                        .setCity(locality)
+                        .setCountryCode(countryCode)
+                        .setPostcode(payload.optString("postalCode"))
+                        .setState("administrativeArea")
+                        .setStreet(
+                            "${payload.optString("address1")} ${
+                                payload.optString("address2")
+                            } ${
+                                payload.optString(
+                                    "address3"
+                                )
+                            }"
+                        )
+                        .build()
+                )
+                .setFirstName(name.split(" ")[0])
+                .setLastName(name.split(" ")[1])
+                .setEmail(payload.optString("email"))
+                .build()
+        } else {
+            return null
         }
     }
 }

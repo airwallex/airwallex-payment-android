@@ -242,6 +242,9 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         isRedirecting = true
                     )
                 }
+                is AirwallexPaymentStatus.Cancel -> {
+                    setLoadingProgress(false)
+                }
                 else -> Unit
             }
         }
