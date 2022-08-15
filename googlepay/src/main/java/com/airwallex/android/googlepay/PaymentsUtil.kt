@@ -192,9 +192,7 @@ object PaymentsUtil {
             googlePayOptions.transactionId?.let {
                 put("transactionId", it)
             }
-            googlePayOptions.totalPriceLabel?.let {
-                put("totalPriceLabel", it)
-            }
+            put("totalPriceLabel", googlePayOptions.totalPriceLabel ?: "order.total")
             googlePayOptions.checkoutOption?.let {
                 put("checkoutOption", it)
             }

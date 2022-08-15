@@ -5,7 +5,6 @@ import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.airwallex.android.core.ActionComponent
 import com.airwallex.android.core.ActionComponentProvider
 import com.airwallex.android.core.Airwallex

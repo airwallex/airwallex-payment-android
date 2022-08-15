@@ -66,6 +66,10 @@
             android:key="@string/client_id"
             android:title="@string/client_id" />
 
+        <EditTextPreference
+            android:key="@string/account_id"
+            android:title="@string/account_id"/>
+
     </PreferenceCategory>
 
 
