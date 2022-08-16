@@ -1,6 +1,7 @@
 package com.airwallex.android.googlepay
 
 import android.app.Activity
+import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Billing
@@ -42,7 +43,8 @@ object PaymentsUtil {
         return JSONObject().apply {
             put("type", "PAYMENT_GATEWAY")
             put(
-                "parameters", JSONObject(
+                "parameters",
+                JSONObject(
                     mapOf(
                         "gateway" to Constants.PAYMENT_GATEWAY_TOKENIZATION_NAME,
                         "gatewayMerchantId" to merchantId
@@ -141,7 +143,7 @@ object PaymentsUtil {
      */
     fun createPaymentsClient(activity: Activity): PaymentsClient {
         val walletOptions = Wallet.WalletOptions.Builder()
-            .setEnvironment(Constants.PAYMENTS_ENVIRONMENT)
+            .setEnvironment(AirwallexPlugins.environment.googlePayEnvironment())
             .build()
 
         return Wallet.getPaymentsClient(activity, walletOptions)
@@ -215,9 +217,12 @@ object PaymentsUtil {
         return try {
             baseRequest.apply {
                 googlePayOptions.merchantName?.let {
-                    put("merchantInfo", JSONObject().apply {
-                        put("merchantName", it)
-                    })
+                    put(
+                        "merchantInfo",
+                        JSONObject().apply {
+                            put("merchantName", it)
+                        }
+                    )
                 }
                 put(
                     "allowedPaymentMethods",

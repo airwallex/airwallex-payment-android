@@ -168,14 +168,14 @@ class Airwallex internal constructor(
         )
         val filteredItems = response.items?.filter { paymentMethod ->
             paymentMethod.transactionMode == transactionMode &&
-                    paymentMethod.name !in unsupportedPaymentMethodTypes &&
-                    AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
-                        provider.canHandleSessionAndPaymentMethod(
-                            session,
-                            paymentMethod,
-                            activity
-                        )
-                    } ?: false
+                paymentMethod.name !in unsupportedPaymentMethodTypes &&
+                AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
+                    provider.canHandleSessionAndPaymentMethod(
+                        session,
+                        paymentMethod,
+                        activity
+                    )
+                } ?: false
         }
 
         return AvailablePaymentMethodTypeResponse(response.hasMore, filteredItems)

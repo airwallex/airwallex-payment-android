@@ -25,10 +25,9 @@ import org.json.JSONObject
 class GooglePayComponent : ActionComponent {
     companion object {
         val PROVIDER: ActionComponentProvider<GooglePayComponent> = GooglePayComponentProvider()
+        private const val loadPaymentDataRequestCode = 991
+        private const val errorTag = "Google Pay loadPaymentData failed"
     }
-
-    private val LOAD_PAYMENT_DATA_REQUEST_CODE = 991
-    private val ERROR_TAG = "Google Pay loadPaymentData failed"
 
     private var listener: Airwallex.PaymentResultListener? = null
     private var paymentIntentId: String? = null
@@ -69,18 +68,18 @@ class GooglePayComponent : ActionComponent {
         AutoResolveHelper.resolveTask(
             paymentClient.loadPaymentData(request),
             activity,
-            LOAD_PAYMENT_DATA_REQUEST_CODE
+            loadPaymentDataRequestCode
         )
     }
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
+        if (requestCode == loadPaymentDataRequestCode) {
             when (resultCode) {
                 RESULT_OK -> {
                     val id = paymentIntentId ?: run {
                         Logger.error(
-                            ERROR_TAG,
-                            String.format(ERROR_TAG, "Invalid payment intent ID")
+                            errorTag,
+                            "Invalid payment intent ID"
                         )
                         listener?.onCompleted(AirwallexPaymentStatus.Cancel)
                         return false
@@ -106,7 +105,7 @@ class GooglePayComponent : ActionComponent {
                  */
                 AutoResolveHelper.RESULT_ERROR -> {
                     AutoResolveHelper.getStatusFromIntent(data)?.let {
-                        Logger.error(ERROR_TAG, String.format("Error code: %d", it.statusCode))
+                        Logger.error(errorTag, String.format("Error code: %d", it.statusCode))
                     }
                     listener?.onCompleted(AirwallexPaymentStatus.Cancel)
                 }
@@ -143,7 +142,7 @@ class GooglePayComponent : ActionComponent {
                     }
                 }
             } catch (e: JSONException) {
-                Logger.error(ERROR_TAG, "Error: ${e.message}")
+                Logger.error(errorTag, "Error: ${e.message}")
                 return null
             }
         }

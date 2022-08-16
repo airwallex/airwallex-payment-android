@@ -156,7 +156,7 @@ class PaymentCartFragment : Fragment() {
                     countryCode = Settings.countryCode,
                     googlePayOptions = GooglePayOptions(
                         billingAddressRequired = true,
-                        billingAddressParameters = BillingAddressParameters(),
+                        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
                         merchantId = Settings.accountId
                     )
                 )

@@ -24,11 +24,6 @@ plugins {
     id "org.sonarqube" version "3.3"
 }
 
-detekt {
-    buildUponDefaultConfig = true
-    config = files("$projectDir/config/detekt.yml")
-}
-
 tasks.withType(io.gitlab.arturbosch.detekt.Detekt).configureEach {
     reports {
         html.required.set(true)
