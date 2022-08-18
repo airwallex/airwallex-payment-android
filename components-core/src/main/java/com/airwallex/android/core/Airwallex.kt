@@ -168,14 +168,14 @@ class Airwallex internal constructor(
         )
         val filteredItems = response.items?.filter { paymentMethod ->
             paymentMethod.transactionMode == transactionMode &&
-                paymentMethod.name !in unsupportedPaymentMethodTypes &&
-                AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
-                    provider.canHandleSessionAndPaymentMethod(
-                        session,
-                        paymentMethod,
-                        activity
-                    )
-                } ?: false
+                    paymentMethod.name !in unsupportedPaymentMethodTypes &&
+                    AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
+                        provider.canHandleSessionAndPaymentMethod(
+                            session,
+                            paymentMethod,
+                            activity
+                        )
+                    } ?: false
         }
 
         return AvailablePaymentMethodTypeResponse(response.hasMore, filteredItems)
@@ -361,50 +361,7 @@ class Airwallex internal constructor(
         when (session) {
             is AirwallexPaymentSession -> {
                 if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
-                    AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)?.let {
-                        it.get().handlePaymentIntentResponse(
-                            paymentIntentId = session.paymentIntent.id,
-                            nextAction = null,
-                            activity = activity,
-                            applicationContext = applicationContext,
-                            cardNextActionModel = null,
-                            listener = object : PaymentResultListener {
-                                override fun onCompleted(status: AirwallexPaymentStatus) {
-                                    when (status) {
-                                        is AirwallexPaymentStatus.Success -> {
-                                            val additionalInfo =
-                                                status.additionalInfo?.toMutableMap() ?: run {
-                                                    listener.onCompleted(
-                                                        AirwallexPaymentStatus.Failure(
-                                                            AirwallexCheckoutException(message = "Missing Google Pay token response")
-                                                        )
-                                                    )
-                                                    return
-                                                }
-                                            val paymentIntent = session.paymentIntent
-                                            val billing = additionalInfo["billing"] as? Billing
-                                            additionalInfo.remove("billing")
-                                            confirmGooglePayPaymentIntent(
-                                                paymentIntentId = paymentIntent.id,
-                                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                                additionalInfo = additionalInfo as Map<String, String>,
-                                                billing = billing,
-                                                autoCapture = session.autoCapture,
-                                                listener = listener
-                                            )
-                                        }
-                                        else -> {
-                                            listener.onCompleted(status)
-                                        }
-                                    }
-                                }
-                            }
-                        )
-                    } ?: listener.onCompleted(
-                        AirwallexPaymentStatus.Failure(
-                            AirwallexCheckoutException(message = "Missing ${PaymentMethodType.GOOGLEPAY.dependencyName} dependency")
-                        )
-                    )
+                    checkoutGooglePay(session, listener)
                 } else {
                     val paymentIntent = session.paymentIntent
                     confirmPaymentIntent(
@@ -416,9 +373,9 @@ class Airwallex internal constructor(
                         customerId = paymentIntent.customerId,
                         paymentConsentId = paymentConsentId,
                         additionalInfo = additionalInfo,
-                        returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value)
+                        returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) {
                             AirwallexPlugins.environment.threeDsReturnUrl()
-                        else session.returnUrl,
+                        } else session.returnUrl,
                         autoCapture = session.autoCapture,
                         flow = flow,
                         listener = listener
@@ -522,6 +479,59 @@ class Airwallex internal constructor(
                     }
                 )
             }
+        }
+    }
+
+    private fun checkoutGooglePay(
+        session: AirwallexPaymentSession,
+        listener: PaymentResultListener
+    ) {
+        val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
+        if (googlePayProvider != null) {
+            googlePayProvider.get().handlePaymentIntentResponse(
+                paymentIntentId = session.paymentIntent.id,
+                nextAction = null,
+                activity = activity,
+                applicationContext = applicationContext,
+                cardNextActionModel = null,
+                listener = object : PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        when (status) {
+                            is AirwallexPaymentStatus.Success -> {
+                                val mutableInfo = status.additionalInfo?.toMutableMap()
+                                if (mutableInfo != null) {
+                                    val paymentIntent = session.paymentIntent
+                                    val billing = mutableInfo["billing"] as? Billing
+                                    mutableInfo.remove("billing")
+                                    confirmGooglePayPaymentIntent(
+                                        paymentIntentId = paymentIntent.id,
+                                        clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                        additionalInfo = mutableInfo as Map<String, String>,
+                                        billing = billing,
+                                        autoCapture = session.autoCapture,
+                                        listener = listener
+                                    )
+                                } else {
+                                    listener.onCompleted(
+                                        AirwallexPaymentStatus.Failure(
+                                            AirwallexCheckoutException(message = "Missing Google Pay token response")
+                                        )
+                                    )
+                                }
+                            }
+                            else -> {
+                                listener.onCompleted(status)
+                            }
+                        }
+                    }
+                }
+            )
+        } else {
+            listener.onCompleted(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexCheckoutException(message = "Missing ${PaymentMethodType.GOOGLEPAY.dependencyName} dependency")
+                )
+            )
         }
     }
 

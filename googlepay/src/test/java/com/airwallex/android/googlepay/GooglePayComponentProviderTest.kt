@@ -105,6 +105,8 @@ class GooglePayComponentProviderTest {
                 "AU"
             ).build()
             assertFalse(canHandleSessionAndPaymentMethod(session))
+            assertEquals(componentProvider.get().session, session)
+            assertEquals(componentProvider.get().paymentMethodType, mockResponse.items?.first())
         }
 
     @Test

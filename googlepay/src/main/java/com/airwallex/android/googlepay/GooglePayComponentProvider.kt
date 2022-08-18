@@ -51,9 +51,7 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
         val paymentsClient = PaymentsUtil.createPaymentsClient(activity)
         val isReadyToPayJson = PaymentsUtil.isReadyToPayRequest(
             options,
-            paymentMethodType.cardSchemes?.let { cardSchemes ->
-                cardSchemes.map { it.name.uppercase() }
-            }
+            paymentMethodType.cardSchemes
         ) ?: return false
         val request = IsReadyToPayRequest.fromJson(isReadyToPayJson.toString())
         val task = paymentsClient.isReadyToPay(request)

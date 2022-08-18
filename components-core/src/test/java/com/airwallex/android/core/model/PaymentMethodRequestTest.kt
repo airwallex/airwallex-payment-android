@@ -45,4 +45,23 @@ class PaymentMethodRequestTest {
             paramMap
         )
     }
+
+    @Test
+    fun testSetGooglePayPaymentMethodRequest() {
+        val request = PaymentMethodRequest.Builder("googlepay")
+            .setGooglePayPaymentMethodRequest(
+                mapOf("payment_data_type" to "encrypted_payment_token"),
+                Billing(
+                    firstName = "John",
+                    lastName = "Citizen"
+                )
+            )
+            .build()
+        assertEquals(request.billing?.firstName, "John")
+        assertEquals(request.billing?.lastName, "Citizen")
+        assertEquals(
+            request.paymentRequest?.additionalInfo,
+            mapOf("payment_data_type" to "encrypted_payment_token")
+        )
+    }
 }

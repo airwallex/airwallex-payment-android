@@ -16,6 +16,7 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.Logger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
+import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.PaymentDataRequest
@@ -28,6 +29,9 @@ class GooglePayComponent : ActionComponent {
         private const val loadPaymentDataRequestCode = 991
         private const val errorTag = "Google Pay loadPaymentData failed"
     }
+
+    var resolvePaymentRequest: (task: Task<PaymentData>, activity: Activity, requestCode: Int) -> Unit =
+        AutoResolveHelper::resolveTask
 
     private var listener: Airwallex.PaymentResultListener? = null
     private var paymentIntentId: String? = null
@@ -46,13 +50,11 @@ class GooglePayComponent : ActionComponent {
         this.listener = listener
         val googlePayOptions = session.googlePayOptions ?: return
         val paymentDataRequestJson = PaymentsUtil.getPaymentDataRequest(
-            priceCemts = session.amount.toLong(),
+            price = session.amount,
             countryCode = session.countryCode,
             currency = session.currency,
             googlePayOptions = googlePayOptions,
-            supportedCardSchemes = paymentMethodType.cardSchemes?.let { cardSchemes ->
-                cardSchemes.map { it.name.uppercase() }
-            }
+            supportedCardSchemes = paymentMethodType.cardSchemes
         ) ?: run {
             listener.onCompleted(
                 AirwallexPaymentStatus.Failure(
@@ -65,7 +67,7 @@ class GooglePayComponent : ActionComponent {
         }
         val request = PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
         val paymentClient = PaymentsUtil.createPaymentsClient(activity)
-        AutoResolveHelper.resolveTask(
+        resolvePaymentRequest(
             paymentClient.loadPaymentData(request),
             activity,
             loadPaymentDataRequestCode
@@ -82,12 +84,20 @@ class GooglePayComponent : ActionComponent {
                             "Invalid payment intent ID"
                         )
                         listener?.onCompleted(AirwallexPaymentStatus.Cancel)
-                        return false
+                        return true
                     }
                     data?.let { intent ->
-                        PaymentData.getFromIntent(intent)?.let(::createPaymentSuccessInfo)?.let {
-                            listener?.onCompleted(AirwallexPaymentStatus.Success(id, it))
-                        } ?: listener?.onCompleted(AirwallexPaymentStatus.Cancel)
+                        val paymentData = PaymentData.getFromIntent(intent)
+                        if (paymentData != null) {
+                            val successInfo = createPaymentSuccessInfo(paymentData)
+                            if (successInfo != null) {
+                                listener?.onCompleted(AirwallexPaymentStatus.Success(id, successInfo))
+                            } else {
+                                listener?.onCompleted(AirwallexPaymentStatus.Cancel)
+                            }
+                        } else {
+                            listener?.onCompleted(AirwallexPaymentStatus.Cancel)
+                        }
                     } ?: listener?.onCompleted(AirwallexPaymentStatus.Cancel)
                 }
 
@@ -136,11 +146,12 @@ class GooglePayComponent : ActionComponent {
                     "encrypted_payment_token",
                     paymentMethodData.getJSONObject("tokenizationData").getString("token")
                 )
-                paymentMethodData.optJSONObject("info").optJSONObject("billingAddress")?.let { billingAddress ->
-                    PaymentsUtil.getBilling(billingAddress)?.let {
-                        put("billing", it)
+                paymentMethodData.optJSONObject("info").optJSONObject("billingAddress")
+                    ?.let { billingAddress ->
+                        PaymentsUtil.getBilling(billingAddress)?.let {
+                            put("billing", it)
+                        }
                     }
-                }
             } catch (e: JSONException) {
                 Logger.error(errorTag, "Error: ${e.message}")
                 return null

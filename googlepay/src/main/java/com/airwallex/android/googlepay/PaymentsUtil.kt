@@ -5,26 +5,28 @@ import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Billing
+import com.airwallex.android.core.model.CardScheme
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 object PaymentsUtil {
-    val CENTS = BigDecimal(100)
-
     /**
      * Create a Google Pay API base request object with properties used in all requests.
      *
      * @return Google Pay API base request object.
      * @throws JSONException
      */
-    private val baseRequest = JSONObject().apply {
-        put("apiVersion", 2)
-        put("apiVersionMinor", 0)
+    private fun baseRequest(): JSONObject {
+        return JSONObject().apply {
+            apply {
+                put("apiVersion", 2)
+                put("apiVersionMinor", 0)
+            }
+        }
     }
 
     /**
@@ -67,10 +69,9 @@ object PaymentsUtil {
     // Optionally, you can add billing address/phone number associated with a CARD payment method.
     private fun baseCardPaymentMethod(
         googlePayOptions: GooglePayOptions,
-        supportedCardSchemes: List<String>?
+        cardList: List<String>?
     ): JSONObject {
         return JSONObject().apply {
-
             val parameters = JSONObject().apply {
                 put(
                     "allowedAuthMethods",
@@ -81,7 +82,7 @@ object PaymentsUtil {
                 )
                 put(
                     "allowedCardNetworks",
-                    JSONArray(supportedCardSchemes ?: Constants.DEFAULT_SUPPORTED_CARD_NETWORKS)
+                    JSONArray(cardList ?: Constants.DEFAULT_SUPPORTED_CARD_NETWORKS)
                 )
                 googlePayOptions.allowPrepaidCards?.let {
                     put("allowPrepaidCards", it)
@@ -124,9 +125,9 @@ object PaymentsUtil {
      */
     private fun cardPaymentMethod(
         googlePayOptions: GooglePayOptions,
-        supportedCardSchemes: List<String>?
+        cardList: List<String>?
     ): JSONObject {
-        val cardPaymentMethod = baseCardPaymentMethod(googlePayOptions, supportedCardSchemes)
+        val cardPaymentMethod = baseCardPaymentMethod(googlePayOptions, cardList)
         cardPaymentMethod.put(
             "tokenizationSpecification",
             gatewayTokenizationSpecification(googlePayOptions.merchantId)
@@ -158,14 +159,18 @@ object PaymentsUtil {
      */
     fun isReadyToPayRequest(
         googlePayOptions: GooglePayOptions,
-        supportedCardSchemes: List<String>?
+        supportedCardSchemes: List<CardScheme>?
     ): JSONObject? {
-        @Suppress("SwallowedException")
         return try {
-            baseRequest.apply {
+            baseRequest().apply {
                 put(
                     "allowedPaymentMethods",
-                    JSONArray().put(baseCardPaymentMethod(googlePayOptions, supportedCardSchemes))
+                    JSONArray().put(
+                        baseCardPaymentMethod(
+                            googlePayOptions,
+                            supportedCardSchemes?.map { it.name.uppercase() }
+                        )
+                    )
                 )
             }
         } catch (e: JSONException) {
@@ -208,14 +213,14 @@ object PaymentsUtil {
      * @see [PaymentDataRequest](https://developers.google.com/pay/api/android/reference/object.PaymentDataRequest)
      */
     fun getPaymentDataRequest(
-        priceCemts: Long,
+        price: BigDecimal,
         countryCode: String,
         currency: String,
         googlePayOptions: GooglePayOptions,
-        supportedCardSchemes: List<String>?
+        supportedCardSchemes: List<CardScheme>?
     ): JSONObject? {
         return try {
-            baseRequest.apply {
+            baseRequest().apply {
                 googlePayOptions.merchantName?.let {
                     put(
                         "merchantInfo",
@@ -226,12 +231,17 @@ object PaymentsUtil {
                 }
                 put(
                     "allowedPaymentMethods",
-                    JSONArray().put(cardPaymentMethod(googlePayOptions, supportedCardSchemes))
+                    JSONArray().put(
+                        cardPaymentMethod(
+                            googlePayOptions,
+                            supportedCardSchemes?.map { it.name.uppercase() }
+                        )
+                    )
                 )
                 put(
                     "transactionInfo",
                     getTransactionInfo(
-                        priceCemts.centsToString(),
+                        price.toString(),
                         countryCode,
                         currency,
                         googlePayOptions
@@ -269,40 +279,27 @@ object PaymentsUtil {
         val locality = payload.optString("locality")
         val countryCode = payload.optString("countryCode")
         if (name.isNotEmpty() && locality.isNotEmpty() && countryCode.isNotEmpty()) {
+            val street = listOf(
+                payload.optString("address1"),
+                payload.optString("address2"),
+                payload.optString("address3")
+            ).filterNot { it.isEmpty() }.joinToString(" ")
             return Billing.Builder()
                 .setAddress(
                     Address.Builder()
                         .setCity(locality)
                         .setCountryCode(countryCode)
-                        .setPostcode(payload.optString("postalCode"))
-                        .setState("administrativeArea")
-                        .setStreet(
-                            "${payload.optString("address1")} ${
-                                payload.optString("address2")
-                            } ${
-                                payload.optString(
-                                    "address3"
-                                )
-                            }"
-                        )
+                        .setPostcode(payload.optString("postalCode", null))
+                        .setState(payload.optString("administrativeArea", null))
+                        .setStreet(street)
                         .build()
                 )
-                .setFirstName(name.split(" ")[0])
-                .setLastName(name.split(" ")[1])
-                .setEmail(payload.optString("email"))
+                .setFirstName(name.split(" ").firstOrNull())
+                .setLastName(name.split(" ").getOrNull(1))
+                .setEmail(payload.optString("email", null))
                 .build()
         } else {
             return null
         }
     }
 }
-
-/**
- * Converts cents to a string format accepted by [PaymentsUtil.getPaymentDataRequest].
- *
- * @param cents value of the price.
- */
-fun Long.centsToString() = BigDecimal(this)
-    .divide(PaymentsUtil.CENTS)
-    .setScale(2, RoundingMode.HALF_EVEN)
-    .toString()
