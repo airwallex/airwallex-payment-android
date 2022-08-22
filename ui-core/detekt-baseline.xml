@@ -3,7 +3,6 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>MemberNameEqualsClassName:AirwallexWebViewTest.kt$AirwallexWebViewTest$@Test fun airwallexWebViewTest()</ID>
-    <ID>TooGenericExceptionCaught:AirwallexActivity.kt$AirwallexActivity$e: Exception</ID>
     <ID>UnnecessaryAbstractClass:AirwallexActivityLaunch.kt$AirwallexActivityLaunch$AirwallexActivityLaunch</ID>
   </CurrentIssues>
 </SmellBaseline>

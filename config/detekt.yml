@@ -217,6 +217,8 @@ potential-bugs:
     active: false
   IgnoredReturnValue:
     active: false
+  ImplicitDefaultLocale:
+    active: false
   UnreachableCatchBlock:
     active: false
   UnusedUnaryOperator:

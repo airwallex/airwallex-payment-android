@@ -155,7 +155,9 @@ class PaymentCartFragment : Fragment() {
                     ),
                     countryCode = Settings.countryCode,
                     googlePayOptions = GooglePayOptions(
-                        merchantId = "merchant.com.airwallex.paymentacceptance"
+                        billingAddressRequired = true,
+                        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+                        merchantId = Settings.accountId
                     )
                 )
                     .setReturnUrl(Settings.returnUrl)

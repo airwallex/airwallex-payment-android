@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.InvalidParamsException
-import com.airwallex.android.core.log.Logger
 import com.airwallex.android.core.model.*
 import java.math.BigDecimal
 import java.util.*
@@ -82,13 +81,15 @@ class Airwallex internal constructor(
      * otherwise `false`
      */
     fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
-        if (provider == null) {
-            Logger.error("Missing ${PaymentMethodType.CARD.dependencyName} dependency!")
-            return false
-        }
-        if (provider.get().handleActivityResult(requestCode, resultCode, data)) {
-            return true
+        val providers = listOf(
+            AirwallexPlugins.getProvider(ActionComponentProviderType.CARD),
+            AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
+        )
+
+        for (provider in providers) {
+            if (provider?.get()?.handleActivityResult(requestCode, resultCode, data) == true) {
+                return true
+            }
         }
         return false
     }
@@ -167,14 +168,14 @@ class Airwallex internal constructor(
         )
         val filteredItems = response.items?.filter { paymentMethod ->
             paymentMethod.transactionMode == transactionMode &&
-                paymentMethod.name !in unsupportedPaymentMethodTypes &&
-                AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
-                    provider.canHandleSessionAndPaymentMethod(
-                        session,
-                        paymentMethod,
-                        activity
-                    )
-                } ?: false
+                    paymentMethod.name !in unsupportedPaymentMethodTypes &&
+                    AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
+                        provider.canHandleSessionAndPaymentMethod(
+                            session,
+                            paymentMethod,
+                            activity
+                        )
+                    } ?: false
         }
 
         return AvailablePaymentMethodTypeResponse(response.hasMore, filteredItems)
@@ -359,23 +360,27 @@ class Airwallex internal constructor(
     ) {
         when (session) {
             is AirwallexPaymentSession -> {
-                val paymentIntent = session.paymentIntent
-                confirmPaymentIntent(
-                    paymentIntentId = paymentIntent.id,
-                    clientSecret = requireNotNull(paymentIntent.clientSecret),
-                    paymentMethod = paymentMethod,
-                    cvc = cvc,
-                    currency = session.currency,
-                    customerId = paymentIntent.customerId,
-                    paymentConsentId = paymentConsentId,
-                    additionalInfo = additionalInfo,
-                    returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value)
-                        AirwallexPlugins.environment.threeDsReturnUrl()
-                    else session.returnUrl,
-                    autoCapture = session.autoCapture,
-                    flow = flow,
-                    listener = listener
-                )
+                if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
+                    checkoutGooglePay(session, listener)
+                } else {
+                    val paymentIntent = session.paymentIntent
+                    confirmPaymentIntent(
+                        paymentIntentId = paymentIntent.id,
+                        clientSecret = requireNotNull(paymentIntent.clientSecret),
+                        paymentMethod = paymentMethod,
+                        cvc = cvc,
+                        currency = session.currency,
+                        customerId = paymentIntent.customerId,
+                        paymentConsentId = paymentConsentId,
+                        additionalInfo = additionalInfo,
+                        returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) {
+                            AirwallexPlugins.environment.threeDsReturnUrl()
+                        } else session.returnUrl,
+                        autoCapture = session.autoCapture,
+                        flow = flow,
+                        listener = listener
+                    )
+                }
             }
             is AirwallexRecurringSession -> {
                 val customerId = session.customerId
@@ -477,6 +482,59 @@ class Airwallex internal constructor(
         }
     }
 
+    private fun checkoutGooglePay(
+        session: AirwallexPaymentSession,
+        listener: PaymentResultListener
+    ) {
+        val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
+        if (googlePayProvider != null) {
+            googlePayProvider.get().handlePaymentIntentResponse(
+                paymentIntentId = session.paymentIntent.id,
+                nextAction = null,
+                activity = activity,
+                applicationContext = applicationContext,
+                cardNextActionModel = null,
+                listener = object : PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        when (status) {
+                            is AirwallexPaymentStatus.Success -> {
+                                val mutableInfo = status.additionalInfo?.toMutableMap()
+                                if (mutableInfo != null) {
+                                    val paymentIntent = session.paymentIntent
+                                    val billing = mutableInfo["billing"] as? Billing
+                                    mutableInfo.remove("billing")
+                                    confirmGooglePayPaymentIntent(
+                                        paymentIntentId = paymentIntent.id,
+                                        clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                        additionalInfo = mutableInfo as Map<String, String>,
+                                        billing = billing,
+                                        autoCapture = session.autoCapture,
+                                        listener = listener
+                                    )
+                                } else {
+                                    listener.onCompleted(
+                                        AirwallexPaymentStatus.Failure(
+                                            AirwallexCheckoutException(message = "Missing Google Pay token response")
+                                        )
+                                    )
+                                }
+                            }
+                            else -> {
+                                listener.onCompleted(status)
+                            }
+                        }
+                    }
+                }
+            )
+        } else {
+            listener.onCompleted(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexCheckoutException(message = "Missing ${PaymentMethodType.GOOGLEPAY.dependencyName} dependency")
+                )
+            )
+        }
+    }
+
     private fun confirmPaymentIntent(
         paymentIntentId: String,
         clientSecret: String,
@@ -560,6 +618,54 @@ class Airwallex internal constructor(
         } else {
             confirmPaymentIntentWithDevice(device = null, params = params, listener = listener)
         }
+    }
+
+    private fun confirmGooglePayPaymentIntent(
+        paymentIntentId: String,
+        clientSecret: String,
+        additionalInfo: Map<String, String>,
+        billing: Billing?,
+        autoCapture: Boolean,
+        listener: PaymentResultListener
+    ) {
+        val threeDSecure = ThreeDSecure.Builder()
+            .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl())
+            .build()
+        val request = PaymentIntentConfirmRequest.Builder(
+            requestId = UUID.randomUUID().toString()
+        )
+            .setPaymentMethodOptions(
+                PaymentMethodOptions.Builder()
+                    .setCardOptions(
+                        PaymentMethodOptions.CardOptions.Builder()
+                            .setAutoCapture(autoCapture)
+                            .setThreeDSecure(threeDSecure).build()
+                    )
+                    .build()
+            )
+            .setPaymentMethodRequest(
+                PaymentMethodRequest.Builder(PaymentMethodType.GOOGLEPAY.value)
+                    .setGooglePayPaymentMethodRequest(additionalInfo, billing)
+                    .build()
+            )
+            .build()
+        val options = AirwallexApiRepository.ConfirmPaymentIntentOptions(
+            clientSecret = clientSecret,
+            paymentIntentId = paymentIntentId,
+            request = request
+        )
+        paymentManager.startOperation(
+            options,
+            object : PaymentListener<PaymentIntent> {
+                override fun onSuccess(response: PaymentIntent) {
+                    listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
+                }
+
+                override fun onFailed(exception: AirwallexException) {
+                    listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
+                }
+            }
+        )
     }
 
     /**
@@ -888,7 +994,6 @@ class Airwallex internal constructor(
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout"
         private val unsupportedPaymentMethodTypes = listOf(
             "applepay",
-            "googlepay", // todo: remove once integrated
             "ach_direct_debit", // todo: remove once mandate is rendered properly
             "becs_direct_debit", // todo: remove once mandate is rendered properly
             "sepa_direct_debit", // todo: remove once mandate is rendered properly

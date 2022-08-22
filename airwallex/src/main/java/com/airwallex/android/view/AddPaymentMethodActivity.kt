@@ -95,9 +95,8 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
             }
             is AirwallexRecurringSession,
             is AirwallexRecurringWithIntentSession -> {
-                viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
-                    this,
-                    {
+                viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing)
+                    .observe(this) {
                         when (it) {
                             is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
                                 startCheckout(
@@ -111,7 +110,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
                             }
                         }
                     }
-                )
             }
         }
     }

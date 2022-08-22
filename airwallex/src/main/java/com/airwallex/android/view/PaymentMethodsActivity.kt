@@ -242,6 +242,9 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         isRedirecting = true
                     )
                 }
+                is AirwallexPaymentStatus.Cancel -> {
+                    setLoadingProgress(false)
+                }
                 else -> Unit
             }
         }
@@ -267,6 +270,14 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                         observer = observer
                     )
                 }
+            }
+            PaymentMethodType.GOOGLEPAY.value -> {
+                setLoadingProgress(false)
+                startCheckout(
+                    paymentMethod = paymentMethod,
+                    paymentConsentId = paymentConsent.id,
+                    observer = observer
+                )
             }
             else -> {
                 if (paymentMethodType?.resources?.hasSchema == true && session is AirwallexPaymentSession) {

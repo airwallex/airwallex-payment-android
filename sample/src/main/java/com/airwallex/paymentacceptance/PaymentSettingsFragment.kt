@@ -200,6 +200,7 @@ class PaymentSettingsFragment :
 
         onSharedPreferenceChanged(preferences, getString(R.string.api_key))
         onSharedPreferenceChanged(preferences, getString(R.string.client_id))
+        onSharedPreferenceChanged(preferences, getString(R.string.account_id))
         onSharedPreferenceChanged(preferences, getString(R.string.price))
         onSharedPreferenceChanged(preferences, getString(R.string.currency))
         onSharedPreferenceChanged(preferences, getString(R.string.country_code))
@@ -232,6 +233,7 @@ class PaymentSettingsFragment :
         when (key) {
             getString(R.string.api_key) -> preference?.summary = Settings.apiKey
             getString(R.string.client_id) -> preference?.summary = Settings.clientId
+            getString(R.string.account_id) -> preference?.summary = Settings.accountId
             getString(R.string.price) -> {
                 preference?.summary = Settings.price
                 (preference as EditTextPreference).setOnBindEditTextListener { editText ->

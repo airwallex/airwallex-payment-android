@@ -34,6 +34,10 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
         paymentMethodType: AvailablePaymentMethodType,
         activity: Activity
     ): Boolean {
+        get().apply {
+            this.session = session
+            this.paymentMethodType = paymentMethodType
+        }
         return requestIsReadyToPay(session, paymentMethodType, activity)
     }
 
@@ -47,9 +51,7 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
         val paymentsClient = PaymentsUtil.createPaymentsClient(activity)
         val isReadyToPayJson = PaymentsUtil.isReadyToPayRequest(
             options,
-            paymentMethodType.cardSchemes?.let { cardSchemes ->
-                cardSchemes.map { it.name.uppercase() }
-            }
+            paymentMethodType.cardSchemes
         ) ?: return false
         val request = IsReadyToPayRequest.fromJson(isReadyToPayJson.toString())
         val task = paymentsClient.isReadyToPay(request)

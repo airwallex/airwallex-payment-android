@@ -90,6 +90,14 @@ class PaymentMethodRequest(
             this.billing = billing
         }
 
+        fun setGooglePayPaymentMethodRequest(
+            additionalInfo: Map<String, String>?,
+            billing: Billing?
+        ): Builder = apply {
+            this.billing = billing
+            paymentRequest = AirwallexPaymentRequest(additionalInfo = additionalInfo)
+        }
+
         override fun build(): PaymentMethodRequest {
             return PaymentMethodRequest(
                 type = type,
