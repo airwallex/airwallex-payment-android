@@ -188,20 +188,24 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         val customerPaymentMethods = paymentIntent.customerPaymentMethods ?: return
 
         if (session is AirwallexPaymentSession) {
-            val paymentConsents = customerPaymentConsents.filter {
+            val filteredConsents = customerPaymentConsents.filter {
                 it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER &&
                     it.status == PaymentConsent.PaymentConsentStatus.VERIFIED &&
                     it.paymentMethod?.type == PaymentMethodType.CARD.value
             }
-            paymentConsents.forEach { paymentConsent ->
-                paymentConsent.paymentMethod =
-                    customerPaymentMethods.find { paymentMethod ->
-                        paymentMethod.id == paymentConsent.paymentMethod?.id
+            val paymentConsents = mutableListOf<PaymentConsent>()
+            val cardsFingerprint = mutableListOf<String>()
+            for (consent in filteredConsents) {
+                val fingerprint = consent.paymentMethod?.card?.fingerprint
+                if (!cardsFingerprint.contains(fingerprint)) {
+                    fingerprint?.let { cardsFingerprint.add(it) }
+                    consent.paymentMethod = customerPaymentMethods.find { paymentMethod ->
+                        paymentMethod.id == consent.paymentMethod?.id
                     }
+                    paymentConsents.add(consent)
+                }
             }
-            paymentConsents.let {
-                paymentMethodsAdapter.setPaymentConsents(it)
-            }
+            paymentMethodsAdapter.setPaymentConsents(paymentConsents)
         }
     }
 

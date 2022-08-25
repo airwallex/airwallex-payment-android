@@ -13,27 +13,40 @@ class AirwallexCheckoutViewModel(
     private val session: AirwallexSession
 ) : AndroidViewModel(application) {
 
+    @Suppress("LongParameterList")
     fun checkout(
         paymentMethod: PaymentMethod,
         paymentConsentId: String?,
         cvc: String?,
         additionalInfo: Map<String, String>? = null,
         flow: AirwallexPaymentRequestFlow? = null,
+        saveCard: Boolean = false
     ): LiveData<AirwallexPaymentStatus> {
         val resultData = MutableLiveData<AirwallexPaymentStatus>()
-        airwallex.checkout(
-            session,
-            paymentMethod,
-            paymentConsentId,
-            cvc,
-            additionalInfo,
-            flow,
-            object : Airwallex.PaymentResultListener {
-                override fun onCompleted(status: AirwallexPaymentStatus) {
-                    resultData.value = status
-                }
+        val listener = object : Airwallex.PaymentResultListener {
+            override fun onCompleted(status: AirwallexPaymentStatus) {
+                resultData.value = status
             }
-        )
+        }
+        if (saveCard) {
+            airwallex.createPaymentConsentAndConfirmIntent(
+                session,
+                paymentMethod,
+                cvc,
+                listener
+            )
+        } else {
+            airwallex.checkout(
+                session,
+                paymentMethod,
+                paymentConsentId,
+                cvc,
+                additionalInfo,
+                flow,
+                listener
+            )
+        }
+
         return resultData
     }
 
