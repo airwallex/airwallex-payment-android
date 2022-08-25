@@ -26,7 +26,7 @@ data class CreatePaymentConsentParams constructor(
      * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled.
      * Default: unscheduled
      */
-    val merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
+    val merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
 
     /**
      * Only applicable when next_triggered_by is customer. If false, the customer must provide cvc for subsequent payments with this PaymentConsent.
@@ -44,7 +44,7 @@ data class CreatePaymentConsentParams constructor(
 
         private var paymentMethodId: String? = null
 
-        private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason =
+        private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason? =
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
 
         private var requiresCvc: Boolean? = null
@@ -53,7 +53,7 @@ data class CreatePaymentConsentParams constructor(
             this.paymentMethodId = paymentMethodId
         }
 
-        fun setMerchantTriggerReason(merchantTriggerReason: PaymentConsent.MerchantTriggerReason): Builder =
+        fun setMerchantTriggerReason(merchantTriggerReason: PaymentConsent.MerchantTriggerReason?): Builder =
             apply {
                 this.merchantTriggerReason = merchantTriggerReason
             }
@@ -76,13 +76,12 @@ data class CreatePaymentConsentParams constructor(
     }
 
     companion object {
-
         fun createCardParams(
             clientSecret: String,
             customerId: String,
             paymentMethodId: String,
             nextTriggeredBy: PaymentConsent.NextTriggeredBy,
-            merchantTriggerReason: PaymentConsent.MerchantTriggerReason,
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason?,
             requiresCvc: Boolean
         ): CreatePaymentConsentParams {
             return Builder(

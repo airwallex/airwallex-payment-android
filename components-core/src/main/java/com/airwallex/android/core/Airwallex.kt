@@ -382,6 +382,50 @@ class Airwallex internal constructor(
                     )
                 }
             }
+            else -> createPaymentConsentAndConfirmIntent(session, paymentMethod, cvc, listener)
+        }
+    }
+
+    @UiThread
+    fun createPaymentConsentAndConfirmIntent(
+        session: AirwallexSession,
+        paymentMethod: PaymentMethod,
+        cvc: String? = null,
+        listener: PaymentResultListener
+    ) {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                val paymentIntent = session.paymentIntent
+                createPaymentConsent(
+                    clientSecret = requireNotNull(paymentIntent.clientSecret),
+                    customerId = requireNotNull(session.customerId),
+                    paymentMethod = paymentMethod,
+                    nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+                    requiresCvc = true,
+                    merchantTriggerReason = null,
+                    listener = object : PaymentListener<PaymentConsent> {
+                        override fun onFailed(exception: AirwallexException) {
+                            // ignore the consent creation error and proceed the payment
+                        }
+
+                        override fun onSuccess(response: PaymentConsent) {
+                            confirmPaymentIntent(
+                                paymentIntentId = paymentIntent.id,
+                                clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                paymentMethod = paymentMethod,
+                                cvc = cvc,
+                                customerId = session.customerId,
+                                paymentConsentId = response.id,
+                                returnUrl = if (paymentMethod.type
+                                    == PaymentMethodType.CARD.value
+                                ) { AirwallexPlugins.environment.threeDsReturnUrl() } else session.returnUrl,
+                                autoCapture = session.autoCapture,
+                                listener = listener
+                            )
+                        }
+                    }
+                )
+            }
             is AirwallexRecurringSession -> {
                 val customerId = session.customerId
                 try {
@@ -895,7 +939,7 @@ class Airwallex internal constructor(
         paymentMethod: PaymentMethod,
         nextTriggeredBy: PaymentConsent.NextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
         requiresCvc: Boolean,
-        merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
+        merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
         listener: PaymentListener<PaymentConsent>
     ) {
         val params: CreatePaymentConsentParams =

@@ -33,7 +33,7 @@ data class PaymentConsentCreateRequest internal constructor(
      * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled.
      * Default: unscheduled
      */
-    val merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
+    val merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
 
     /**
      * Only applicable when next_triggered_by is customer. If false, the customer must provide cvc for the subsequent payment with this PaymentConsent.
@@ -80,7 +80,9 @@ data class PaymentConsentCreateRequest internal constructor(
                 }.orEmpty()
             )
             .plus(
-                mapOf(FIELD_MERCHANT_TRIGGER_REASON to merchantTriggerReason.value)
+                merchantTriggerReason?.let {
+                    mapOf(FIELD_MERCHANT_TRIGGER_REASON to it.value)
+                }.orEmpty()
             )
             .plus(
                 requiresCvc?.let {
@@ -99,7 +101,7 @@ data class PaymentConsentCreateRequest internal constructor(
         private var customerId: String? = null
         private var paymentMethodRequest: PaymentMethodRequest? = null
         private var nextTriggeredBy: PaymentConsent.NextTriggeredBy? = null
-        private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason =
+        private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason? =
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
         private var requiresCvc: Boolean? = null
         private var metadata: @RawValue Map<String, Any>? = null
@@ -120,7 +122,9 @@ data class PaymentConsentCreateRequest internal constructor(
             this.nextTriggeredBy = nextTriggeredBy
         }
 
-        fun setMerchantTriggerReason(merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED): Builder =
+        fun setMerchantTriggerReason(
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+        ): Builder =
             apply {
                 this.merchantTriggerReason = merchantTriggerReason
             }
