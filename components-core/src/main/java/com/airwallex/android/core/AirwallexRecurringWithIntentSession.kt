@@ -11,6 +11,7 @@ import java.math.BigDecimal
 /**
  * For recurring payment (need create payment intent)
  */
+@Suppress("LongParameterList")
 @Parcelize
 class AirwallexRecurringWithIntentSession internal constructor(
 
@@ -65,6 +66,11 @@ class AirwallexRecurringWithIntentSession internal constructor(
      * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
      */
     override val returnUrl: String?,
+
+    /**
+     * Google Pay options
+     */
+    override val googlePayOptions: GooglePayOptions? = null,
 
     /**
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.

@@ -4,13 +4,12 @@ plugins {
     id 'kotlin-parcelize'
 }
 
-apply from: "../ktlint.gradle"
+apply from: "$rootProject.projectDir/android-shared.gradle"
 
 def API_VERSION = '"2021-11-25"'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -82,6 +81,8 @@ dependencies {
     testImplementation "androidx.test:core:$testCoreVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
+    testImplementation 'io.mockk:mockk:1.12.2'
 }
 
 ext {

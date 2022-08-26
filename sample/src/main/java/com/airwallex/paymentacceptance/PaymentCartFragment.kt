@@ -153,7 +153,12 @@ class PaymentCartFragment : Fragment() {
                         paymentIntent,
                         { "PaymentIntent is required" }
                     ),
-                    countryCode = Settings.countryCode
+                    countryCode = Settings.countryCode,
+                    googlePayOptions = GooglePayOptions(
+                        billingAddressRequired = true,
+                        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+                        merchantId = Settings.accountId
+                    )
                 )
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)

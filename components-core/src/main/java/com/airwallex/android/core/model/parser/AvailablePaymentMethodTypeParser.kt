@@ -2,6 +2,7 @@ package com.airwallex.android.core.model.parser
 
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.core.util.AirwallexJsonUtils
 import org.json.JSONObject
@@ -28,6 +29,14 @@ class AvailablePaymentMethodTypeParser : ModelJsonParser<AvailablePaymentMethodT
             active = AirwallexJsonUtils.optBoolean(json, FIELD_ACTIVE),
             resources = json.optJSONObject(FIELD_RESOURCES)?.let {
                 availablePaymentMethodResourceParser.parse(it)
+            },
+            cardSchemes = json.optJSONArray(FIELD_CARD_SCHEMES)?.let { cardsJson ->
+                (0 until cardsJson.length())
+                    .mapNotNull { index ->
+                        cardsJson.optJSONObject(index)?.optString("name")?.let { name ->
+                            CardScheme(name)
+                        }
+                    }
             }
         )
     }
@@ -40,6 +49,7 @@ class AvailablePaymentMethodTypeParser : ModelJsonParser<AvailablePaymentMethodT
         const val FIELD_TRANSACTION_CURRENCIES = "transaction_currencies"
         const val FIELD_COUNTRY_CODES = "country_codes"
         const val FIELD_ACTIVE = "active"
+        const val FIELD_CARD_SCHEMES = "card_schemes"
         const val FIELD_RESOURCES = "resources"
     }
 }

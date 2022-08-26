@@ -61,7 +61,7 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    fun fetchAvailablePaymentMethodTypes(): LiveData<Result<List<AvailablePaymentMethodType>>> {
+    suspend fun fetchAvailablePaymentMethodTypes(): LiveData<Result<List<AvailablePaymentMethodType>>> {
         val resultData = MutableLiveData<Result<List<AvailablePaymentMethodType>>>()
         when (session) {
             is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
@@ -72,21 +72,11 @@ internal class PaymentMethodsViewModel(
             }
             is AirwallexRecurringSession -> {
                 try {
-                    ClientSecretRepository.getInstance().retrieveClientSecret(
-                        requireNotNull(session.customerId),
-                        object : ClientSecretRepository.ClientSecretRetrieveListener {
-                            override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                                retrieveAvailablePaymentMethods(
-                                    resultData = resultData,
-                                    clientSecret = clientSecret.value
-                                )
-                            }
-
-                            override fun onClientSecretError(errorMessage: String) {
-                                resultData.value =
-                                    Result.failure(AirwallexCheckoutException(message = errorMessage))
-                            }
-                        }
+                    val clientSecret = ClientSecretRepository.getInstance()
+                        .retrieveClientSecret(requireNotNull(session.customerId))
+                    retrieveAvailablePaymentMethods(
+                        resultData = resultData,
+                        clientSecret = clientSecret.value
                     )
                 } catch (e: AirwallexCheckoutException) {
                     resultData.value = Result.failure(e)
@@ -96,67 +86,40 @@ internal class PaymentMethodsViewModel(
         return resultData
     }
 
-    private fun retrieveAvailablePaymentMethods(
+    private suspend fun retrieveAvailablePaymentMethods(
         availablePaymentMethodList: MutableList<AvailablePaymentMethodType> = mutableListOf(),
         availablePaymentMethodPageNum: AtomicInteger = AtomicInteger(0),
         resultData: MutableLiveData<Result<List<AvailablePaymentMethodType>>>,
         clientSecret: String
     ) {
-        airwallex.retrieveAvailablePaymentMethods(
-            params = RetrieveAvailablePaymentMethodParams.Builder(
-                clientSecret = clientSecret,
-                pageNum = availablePaymentMethodPageNum.get()
+        val response = try {
+            airwallex.retrieveAvailablePaymentMethods(
+                session = session,
+                params = RetrieveAvailablePaymentMethodParams.Builder(
+                    clientSecret = clientSecret,
+                    pageNum = availablePaymentMethodPageNum.get()
+                )
+                    .setActive(true)
+                    .setTransactionCurrency(session.currency)
+                    .setCountryCode(session.countryCode)
+                    .build()
             )
-                .setActive(true)
-                .setTransactionCurrency(session.currency)
-                .setCountryCode(session.countryCode)
-                .build(),
-            listener = object : Airwallex.PaymentListener<AvailablePaymentMethodTypeResponse> {
-                override fun onFailed(exception: AirwallexException) {
-                    resultData.value = Result.failure(exception)
-                }
-
-                override fun onSuccess(response: AvailablePaymentMethodTypeResponse) {
-                    availablePaymentMethodPageNum.incrementAndGet()
-                    availablePaymentMethodList.addAll(response.items ?: emptyList())
-                    if (response.hasMore) {
-                        retrieveAvailablePaymentMethods(
-                            availablePaymentMethodList,
-                            availablePaymentMethodPageNum,
-                            resultData,
-                            clientSecret
-                        )
-                    } else {
-                        when (session) {
-                            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> {
-                                resultData.value =
-                                    Result.success(
-                                        availablePaymentMethodList.filter {
-                                            it.transactionMode == TransactionMode.RECURRING
-                                        }.filter {
-                                            it.name !in unsupportedPaymentMethodTypes
-                                        }
-                                    )
-                            }
-                            is AirwallexPaymentSession -> {
-                                resultData.value =
-                                    Result.success(
-                                        availablePaymentMethodList.filter {
-                                            it.transactionMode == TransactionMode.ONE_OFF
-                                        }.filter {
-                                            it.name !in unsupportedPaymentMethodTypes
-                                        }
-                                    )
-                            }
-                            else -> {
-                                resultData.value =
-                                    Result.failure(AirwallexCheckoutException(message = "Not support session $session"))
-                            }
-                        }
-                    }
-                }
-            }
-        )
+        } catch (exception: AirwallexException) {
+            resultData.value = Result.failure(exception)
+            return
+        }
+        availablePaymentMethodPageNum.incrementAndGet()
+        availablePaymentMethodList.addAll(response.items ?: emptyList())
+        if (response.hasMore) {
+            retrieveAvailablePaymentMethods(
+                availablePaymentMethodList,
+                availablePaymentMethodPageNum,
+                resultData,
+                clientSecret
+            )
+        } else {
+            resultData.value = Result.success(availablePaymentMethodList)
+        }
     }
 
     fun deletePaymentConsent(paymentConsent: PaymentConsent): LiveData<Result<PaymentConsent>> {
@@ -214,13 +177,5 @@ internal class PaymentMethodsViewModel(
     companion object {
         const val COUNTRY_CODE = "country_code"
         const val FLOW = "flow"
-        private val unsupportedPaymentMethodTypes = listOf(
-            "applepay",
-            "googlepay", // todo: remove once integrated
-            "ach_direct_debit", // todo: remove once mandate is rendered properly
-            "becs_direct_debit", // todo: remove once mandate is rendered properly
-            "sepa_direct_debit", // todo: remove once mandate is rendered properly
-            "bacs_direct_debit" // todo: remove once mandate is rendered properly
-        )
     }
 }

@@ -2,10 +2,11 @@ package com.airwallex.android.core.model
 
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class PaymentConsentCreateRequestTest {
 
-    private val request = PaymentConsentCreateRequest.Builder()
+    private val requestBuilder = PaymentConsentCreateRequest.Builder()
         .setRequestId("3d702b7b-ac7a-46b5-bf62-9fee0dd713bf")
         .setCustomerId("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu")
         .setPaymentMethodRequest(
@@ -26,13 +27,13 @@ class PaymentConsentCreateRequestTest {
                 .build()
         )
         .setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
+        .setMerchantTriggerReason()
         .setRequiresCvc(false)
         .setMetadata(null)
-        .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-        .build()
 
     @Test
     fun testParams() {
+        val request = requestBuilder.build()
         assertEquals("3d702b7b-ac7a-46b5-bf62-9fee0dd713bf", request.requestId)
         assertEquals("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu", request.customerId)
         assertEquals(
@@ -67,7 +68,7 @@ class PaymentConsentCreateRequestTest {
 
     @Test
     fun testToParamsMap() {
-        val paramMap = request.toParamMap()
+        val paramMap = requestBuilder.build().toParamMap()
         assertEquals(
             mapOf(
                 "request_id" to "3d702b7b-ac7a-46b5-bf62-9fee0dd713bf",
@@ -90,5 +91,14 @@ class PaymentConsentCreateRequestTest {
             ),
             paramMap
         )
+    }
+
+    @Test
+    fun testToParamsMapWhenMerchantTriggerReasonIsNull() {
+        val paramMap = requestBuilder
+            .setMerchantTriggerReason(null)
+            .build()
+            .toParamMap()
+        assertNull(paramMap["merchant_trigger_reason"])
     }
 }

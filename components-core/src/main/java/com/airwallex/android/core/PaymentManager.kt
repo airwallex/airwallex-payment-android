@@ -8,6 +8,9 @@ interface PaymentManager {
 
     fun <T> startOperation(options: Options, listener: PaymentListener<T>)
 
+    suspend fun startRetrieveAvailablePaymentMethodsOperation(options: Options):
+        AvailablePaymentMethodTypeResponse
+
     companion object {
         private const val PLATFORM = "Android"
         private const val DEVICE_MODEL = "mobile"

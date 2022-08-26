@@ -13,6 +13,9 @@ object Settings {
     // Client Id
     private const val CLIENT_ID = ""
 
+    // Account Id
+    private const val ACCOUNT_ID = ""
+
     // WeChat Pay App Id
     private const val WECHAT_APP_ID = ""
 
@@ -24,6 +27,7 @@ object Settings {
 
     private const val METADATA_KEY_API_KEY = "com.airwallex.sample.metadata.api_key"
     private const val METADATA_KEY_CLIENT_ID_KEY = "com.airwallex.sample.metadata.client_id"
+    private const val METADATA_KEY_ACCOUNT_ID_KEY = "com.airwallex.sample.metadata.account_id"
     private const val METADATA_KEY_WECHAT_APP_ID_KEY = "com.airwallex.sample.metadata.wechat_app_id"
     private const val METADATA_KEY_RETURN_URL = "com.airwallex.sample.metadata.return_url"
 
@@ -123,6 +127,12 @@ object Settings {
         get() {
             return sharedPreferences.getString(context.getString(R.string.client_id), getMetadata(METADATA_KEY_CLIENT_ID_KEY))
                 ?: CLIENT_ID
+        }
+
+    val accountId: String
+        get() {
+            return sharedPreferences.getString(context.getString(R.string.account_id), getMetadata(METADATA_KEY_ACCOUNT_ID_KEY))
+                ?: ACCOUNT_ID
         }
 
     val weChatAppId: String

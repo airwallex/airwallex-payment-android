@@ -108,9 +108,11 @@ internal class PaymentMethodsAdapter(
                 String.format(
                     "%s •••• %s",
                     card.brand?.replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase(
-                            Locale.getDefault()
-                        ) else it.toString()
+                        if (it.isLowerCase()) {
+                            it.titlecase(
+                                Locale.getDefault()
+                            )
+                        } else it.toString()
                     },
                     card.last4
                 )

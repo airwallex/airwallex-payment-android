@@ -4,14 +4,13 @@ plugins {
     id 'kotlin-parcelize'
 }
 
-apply from: "../ktlint.gradle"
+apply from: "$rootProject.projectDir/android-shared.gradle"
 
 def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
 def DEVICE_FINGERPRINT_MERCHANT_ID = '"airwallex_cybs"'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -69,15 +68,20 @@ dependencies {
 
     // glide
     api 'com.github.bumptech.glide:glide:4.12.0'
+    api 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
     // test
     testImplementation "junit:junit:$junitVersion"
+    testImplementation 'org.json:json:20210307'
     testImplementation "org.robolectric:robolectric:$robolectricVersion"
     testImplementation "androidx.test:core:$testCoreVersion"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation 'io.mockk:mockk:1.12.2'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
 }
 
 apply from: rootProject.file('publish.gradle')

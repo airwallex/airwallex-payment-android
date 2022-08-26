@@ -58,9 +58,11 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             String.format(
                 "%s •••• %s",
                 paymentMethod.card?.brand?.replaceFirstChar {
-                    if (it.isLowerCase()) it.titlecase(
-                        Locale.getDefault()
-                    ) else it.toString()
+                    if (it.isLowerCase()) {
+                        it.titlecase(
+                            Locale.getDefault()
+                        )
+                    } else it.toString()
                 },
                 paymentMethod.card?.last4
             )

@@ -187,7 +187,7 @@ class PaymentIntentTest {
                 refundedAmount = BigDecimal.valueOf(0.1),
                 createdAt = Date(1585537440000),
                 updatedAt = Date(1585537440000),
-                amount = BigDecimal.valueOf(0.1),
+                amount = BigDecimal.valueOf(100.01),
                 authenticationData = PaymentIntent.PaymentAttemptAuthData(
                     PaymentIntent.PaymentAttemptAuthDSData(
                         version = "2.1.0",

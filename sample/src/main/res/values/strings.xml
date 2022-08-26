@@ -1,9 +1,11 @@
 <resources>
 
+    <string name="file_provider_authorities">com.airwallex.paymentSdk.fileProvider</string>
     <string name="authentication">Authentication</string>
     <string name="wechat">WeChat</string>
     <string name="api_key">API Key</string>
     <string name="client_id">Client ID</string>
+    <string name="account_id">Account ID</string>
     <string name="wechat_app_id">App ID</string>
 
     <string name="app_name">Airwallex Sample</string>

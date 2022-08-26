@@ -28,6 +28,7 @@
     <string name="airwallex_card_name_hint">Name on card</string>
     <string name="airwallex_empty_card_number">Please enter your card number</string>
     <string name="airwallex_invalid_card_number">Please enter a valid credit card number</string>
+    <string name="airwallex_save_card">Save this card for future payments</string>
     <string name="airwallex_same_as_shipping">Same as shipping address</string>
     <string name="airwallex_valid_digits">0123456789</string>
     <string name="airwallex_empty_card_name">Please enter your card name</string>

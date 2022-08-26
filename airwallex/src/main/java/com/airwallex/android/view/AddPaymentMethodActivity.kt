@@ -3,6 +3,7 @@ package com.airwallex.android.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -82,37 +83,32 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
             }
         }
 
-        when (session) {
-            is AirwallexPaymentSession -> {
-                startCheckout(
-                    paymentMethod = PaymentMethod.Builder()
-                        .setType(PaymentMethodType.CARD.value)
-                        .setCard(card)
-                        .setBilling(viewBinding.billingWidget.billing)
-                        .build(),
-                    observer = observer
-                )
-            }
-            is AirwallexRecurringSession,
-            is AirwallexRecurringWithIntentSession -> {
-                viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing).observe(
-                    this,
-                    {
-                        when (it) {
-                            is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
-                                startCheckout(
-                                    paymentMethod = it.paymentMethod,
-                                    cvc = it.cvc,
-                                    observer = observer
-                                )
-                            }
-                            is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
-                                finishWithPaymentIntent(exception = it.exception)
-                            }
+        if (session is AirwallexPaymentSession && !viewBinding.swSaveCard.isChecked) {
+            startCheckout(
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.CARD.value)
+                    .setCard(card)
+                    .setBilling(viewBinding.billingWidget.billing)
+                    .build(),
+                observer = observer
+            )
+        } else {
+            viewModel.createPaymentMethod(card, viewBinding.billingWidget.billing)
+                .observe(this) {
+                    when (it) {
+                        is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
+                            startCheckout(
+                                paymentMethod = it.paymentMethod,
+                                cvc = it.cvc,
+                                observer = observer,
+                                saveCard = true
+                            )
+                        }
+                        is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
+                            finishWithPaymentIntent(exception = it.exception)
                         }
                     }
-                )
-            }
+                }
         }
     }
 
@@ -155,6 +151,11 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         super.onCreate(savedInstanceState)
 
         viewBinding.cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
+        if (session is AirwallexPaymentSession && session.customerId != null) {
+            viewBinding.saveCardWidget.visibility = View.VISIBLE
+        } else {
+            viewBinding.saveCardWidget.visibility = View.GONE
+        }
         viewBinding.billingWidget.shipping = shipping
         viewBinding.billingWidget.billingChangeCallback = { invalidateConfirmStatus() }
 

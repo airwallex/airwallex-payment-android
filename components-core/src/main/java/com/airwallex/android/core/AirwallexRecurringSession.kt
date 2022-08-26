@@ -10,6 +10,7 @@ import java.math.BigDecimal
 /**
  * For recurring payment (without create payment intent)
  */
+@Suppress("LongParameterList")
 @Parcelize
 class AirwallexRecurringSession internal constructor(
     /**
@@ -57,7 +58,12 @@ class AirwallexRecurringSession internal constructor(
     /**
      * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
      */
-    override val returnUrl: String?
+    override val returnUrl: String?,
+
+    /**
+     * Google Pay options
+     */
+    override val googlePayOptions: GooglePayOptions? = null
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
