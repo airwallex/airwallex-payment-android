@@ -16,7 +16,7 @@ class ExpiryDateUtilsTest {
         calendar.set(Calendar.YEAR, 2018)
         calendar.set(Calendar.MONTH, Calendar.JANUARY)
 
-        assertTrue(ExpiryDateUtils.isExpiryDateValid(1, 2019, calendar))
+        assertTrue(ExpiryDateUtils.isExpiryDateValid(1, 19, calendar))
     }
 
     @Test

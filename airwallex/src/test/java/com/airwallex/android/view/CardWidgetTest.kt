@@ -43,32 +43,32 @@ class CardWidgetTest {
         cardNameTextInputLayout.value = "aaa"
         cardNumberTextInputLayout.value = "4242424242424242"
         cvcTextInputLayout.value = "123"
-        expiryTextInputLayout.value = "102023"
+        expiryTextInputLayout.value = "1023"
         assertEquals(true, cardWidget.isValid)
 
         cardNameTextInputLayout.value = "aaa"
         cardNumberTextInputLayout.value = "4242424242424242"
         cvcTextInputLayout.value = "123"
-        expiryTextInputLayout.value = "102019"
+        expiryTextInputLayout.value = "1019"
         assertEquals(false, cardWidget.isValid)
 
         cardNameTextInputLayout.value = "aaa"
         cardNumberTextInputLayout.value = "4242424242424243"
         cvcTextInputLayout.value = "123"
-        expiryTextInputLayout.value = "102022"
+        expiryTextInputLayout.value = "1022"
         assertEquals(false, cardWidget.isValid)
 
         cardNameTextInputLayout.value = "aaa"
         cardNumberTextInputLayout.value = "4242424242424242"
         cvcTextInputLayout.value = "123"
-        expiryTextInputLayout.value = "102023"
+        expiryTextInputLayout.value = "1023"
         assertEquals(
             PaymentMethod.Card.Builder()
                 .setName("aaa")
                 .setNumber("4242424242424242")
                 .setCvc("123")
                 .setExpiryMonth("10")
-                .setExpiryYear("2023")
+                .setExpiryYear("23")
                 .build(),
             cardWidget.paymentMethodCard
         )
