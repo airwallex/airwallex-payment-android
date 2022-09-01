@@ -5,7 +5,7 @@ import java.util.*
 
 object ExpiryDateUtils {
 
-    private const val MAX_VALID_YEAR = 9980
+    private const val MAX_VALID_YEAR = 99
 
     fun isValidMonth(monthString: String?): Boolean {
         return try {
@@ -15,7 +15,7 @@ object ExpiryDateUtils {
         }
     }
 
-    fun separateDateInput(@Size(max = 6) expiryInput: String): Array<String> {
+    fun separateDateInput(@Size(max = 4) expiryInput: String): Array<String> {
         return if (expiryInput.length >= 2) {
             listOf(
                 expiryInput.substring(0, 2),
@@ -39,7 +39,7 @@ object ExpiryDateUtils {
             return false
         }
 
-        val currentYear = calendar.get(Calendar.YEAR)
+        val currentYear = calendar.get(Calendar.YEAR) % 100
         return when {
             expiryYear < currentYear -> false
             expiryYear > currentYear -> true

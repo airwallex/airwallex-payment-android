@@ -21,7 +21,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
 
     private companion object {
         private const val INVALID_INPUT = -1
-        private const val VALID_INPUT_LENGTH = 7
+        private const val VALID_INPUT_LENGTH = 5
     }
 
     internal var errorCallback: (showError: Boolean) -> Unit = {}
@@ -72,7 +72,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                     return dateParts[0]
                 }
 
-            // four-digit year
+            // two-digit year
             val year: String
                 get() {
                     return dateParts[1]
@@ -139,7 +139,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
                 }
                 ignoreChanges = false
                 var showError = month.length == 2 && !ExpiryDateUtils.isValidMonth(month)
-                if (month.length == 2 && year.length == 4) {
+                if (month.length == 2 && year.length == 2) {
                     val wasComplete = isDateValid
                     checkDateValid(month, year)
                     showError = !isDateValid
@@ -190,7 +190,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
             }
         }
 
-        val inputYear: Int = if (year.length != 4) {
+        val inputYear: Int = if (year.length != 2) {
             INVALID_INPUT
         } else {
             try {

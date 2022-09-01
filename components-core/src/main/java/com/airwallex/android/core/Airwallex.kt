@@ -547,10 +547,13 @@ class Airwallex internal constructor(
                                     val paymentIntent = session.paymentIntent
                                     val billing = mutableInfo["billing"] as? Billing
                                     mutableInfo.remove("billing")
+
+                                    @Suppress("UNCHECKED_CAST")
                                     confirmGooglePayPaymentIntent(
                                         paymentIntentId = paymentIntent.id,
                                         clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                        additionalInfo = mutableInfo as Map<String, String>,
+                                        additionalInfo = mutableInfo as? Map<String, String>
+                                            ?: mapOf(),
                                         billing = billing,
                                         autoCapture = session.autoCapture,
                                         listener = listener
