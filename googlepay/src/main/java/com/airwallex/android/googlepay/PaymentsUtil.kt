@@ -294,8 +294,8 @@ object PaymentsUtil {
                         .setStreet(street)
                         .build()
                 )
-                .setFirstName(name.split(" ").firstOrNull())
-                .setLastName(name.split(" ").getOrNull(1))
+                .setFirstName(name.split(" ").firstOrNull() ?: "")
+                .setLastName(name.split(" ").getOrNull(1) ?: "")
                 .setEmail(payload.optString("email", null))
                 .build()
         } else {

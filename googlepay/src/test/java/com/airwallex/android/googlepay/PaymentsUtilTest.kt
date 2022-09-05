@@ -8,6 +8,7 @@ import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CardScheme
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Test
 import java.math.BigDecimal
 
@@ -135,5 +136,22 @@ class PaymentsUtilTest {
             .setLastName("Citizen")
             .build()
         )
+    }
+
+    @Test
+    fun `test getBilling when name does not have space`() {
+        val json = JSONObject(
+            """
+                {
+                "address2":"Unit 4214",
+                "administrativeArea":"VIC",
+                "countryCode":"AU",
+                "locality":"Melbourne",
+                "name":"John"
+                }
+            """.trimIndent()
+        )
+        assertEquals(PaymentsUtil.getBilling(json)?.firstName, "John")
+        assertEquals(PaymentsUtil.getBilling(json)?.lastName, "")
     }
 }
