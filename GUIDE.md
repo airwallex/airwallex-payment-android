@@ -70,6 +70,7 @@ To install the SDK, in your app-level `build.gradle`, add the following:
         implementation 'io.github.airwallex:payment-card:4.0.4'
         implementation 'io.github.airwallex:payment-redirect:4.0.4'
         implementation 'io.github.airwallex:payment-wechat:4.0.4'
+        implementation 'io.github.airwallex:payment-googlepay:4.0.4'
     }
 ```
 
@@ -87,7 +88,8 @@ We provide some parameters that can be used to debug the SDK, you can call it in
                 listOf(
                     CardComponent.PROVIDER,
                     WeChatComponent.PROVIDER,
-                    RedirectComponent.PROVIDER
+                    RedirectComponent.PROVIDER,
+                    GooglePayComponent.PROVIDER
                 )
             )
             .build(),
@@ -165,7 +167,12 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
                         paymentIntent,
                         { "PaymentIntent is required" }
                     ),
-                    countryCode = Settings.countryCode
+                    countryCode = Settings.countryCode,
+                    googlePayOptions = GooglePayOptions(
+                        billingAddressRequired = true,
+                        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+                        merchantId = "12345678"
+                    )
                 )
                     .setReturnUrl(Settings.returnUrl)
                     .build()
@@ -235,6 +242,29 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
         }
     )
 ```
+
+### Set up Google Pay
+The Airwallex Android SDK allows merchants to provide Google Pay as a payment method to their customers by the following steps:
+- Make sure Google Pay is enabled on your Airwallex account.
+- Include the Google Pay module when installing the SDK as per [Step1](#step1-set-up-sdk).
+- [Create a payments profile](https://support.google.com/paymentscenter/answer/7161426) and get the [Merchant ID](https://support.google.com/googleplay/android-developer/answer/7163092), and use it to configure `googlePayOptions` on the payment session object. 
+- You can customize the Google Pay options to restrict as well as provide extra context. For more information, please refer to `GooglePayOptions` class.
+```
+val googlePayOptions = GooglePayOptions(
+        allowedCardAuthMethods = listOf("3DS"),
+        merchantId = "12345678",
+        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+        shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
+    )
+val paymentSession = AirwallexPaymentSession.Builder(
+        paymentIntent = ...,
+        countryCode = ...,
+        googlePayOptions = googlePayOptions
+    )
+```
+- We currently only support Visa and MasterCard for Google Pay, customers will only be able to select the cards of these payment networks during Google Pay.
+> Please note that our Google Pay module only supports `AirwallexPaymentSession` at the moment. We'll add support for recurring payment sessions in the future.
+
 ### Custom Theme
 You can overwrite these color values in your app. https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
 ```
@@ -251,7 +281,7 @@ To run the example project, you should follow these steps.
 
 2. Open Android Studio and import the project by selecting the `build.gradle` file from the cloned repository
 
-3. Goto [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and` API key` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
+3. Go to [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and` API key` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
 ```
     private const val BASE_URL = "put your base url here"
     private const val API_KEY = "put your api key here"

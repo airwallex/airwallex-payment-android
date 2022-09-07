@@ -39,7 +39,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
             return try {
                 Pair(
                     dateFields[0].toInt(),
-                    dateFields[1].toInt()
+                    "20${dateFields[1]}".toInt()
                 )
             } catch (numEx: NumberFormatException) {
                 null

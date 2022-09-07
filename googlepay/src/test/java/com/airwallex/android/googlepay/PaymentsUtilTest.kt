@@ -8,7 +8,6 @@ import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CardScheme
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Test
 import java.math.BigDecimal
 
