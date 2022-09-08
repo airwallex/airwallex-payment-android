@@ -35,6 +35,9 @@ object AirwallexPlugins {
 
     @Suppress("SwallowedException")
     fun getProvider(paymentMethodType: AvailablePaymentMethodType): ActionComponentProvider<out ActionComponent>? {
+        if (paymentMethodType.resources?.hasSchema == true) {
+            return getProvider(ActionComponentProviderType.REDIRECT)
+        }
         return try {
             getProvider(ActionComponentProviderType.valueOf(paymentMethodType.name.uppercase()))
         } catch (e: IllegalArgumentException) {

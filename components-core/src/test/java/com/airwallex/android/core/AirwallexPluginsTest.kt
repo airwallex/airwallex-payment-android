@@ -4,19 +4,20 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.AvailablePaymentMethodTypeResource
 import com.airwallex.android.core.model.NextAction
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class AirwallexPluginsTest {
-    private class TestComponentProvider : ActionComponentProvider<TestComponnent> {
+    private class TestComponentProvider(val providerType: ActionComponentProviderType) : ActionComponentProvider<TestComponnent> {
         override fun get(): TestComponnent {
             return TestComponnent()
         }
 
         override fun getType(): ActionComponentProviderType {
-            return ActionComponentProviderType.GOOGLEPAY
+            return providerType
         }
 
         override fun canHandleAction(nextAction: NextAction?): Boolean {
@@ -66,12 +67,12 @@ class AirwallexPluginsTest {
     }
 
     @Test
-    fun `test get action component provider`() {
+    fun `test get Google Pay action component provider`() {
         AirwallexPlugins.initialize(
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
-                        TestComponentProvider()
+                        TestComponentProvider(ActionComponentProviderType.GOOGLEPAY)
                     )
                 )
                 .build()
@@ -83,6 +84,28 @@ class AirwallexPluginsTest {
                 )
             )?.getType(),
             ActionComponentProviderType.GOOGLEPAY
+        )
+    }
+
+    @Test
+    fun `test get redirect action component provider`() {
+        AirwallexPlugins.initialize(
+            AirwallexConfiguration.Builder()
+                .setSupportComponentProviders(
+                    listOf(
+                        TestComponentProvider(ActionComponentProviderType.REDIRECT)
+                    )
+                )
+                .build()
+        )
+        assertEquals(
+            AirwallexPlugins.getProvider(
+                AvailablePaymentMethodType(
+                    name = "alipaycn",
+                    resources = AvailablePaymentMethodTypeResource(true)
+                )
+            )?.getType(),
+            ActionComponentProviderType.REDIRECT
         )
     }
 

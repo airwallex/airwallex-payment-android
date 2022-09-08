@@ -1,6 +1,9 @@
 # Airwallex Android SDK Changelog
 All notable changes to the SDK will be documented in this file.
 
+## Version 4.0.4 (Sep 8, 2022)
+- Fix missing payment methods
+
 ## Version 4.0.3 (Aug 26, 2022)
 - Support card saving in payment session
 - Remove duplicate cards
