@@ -276,18 +276,18 @@ object PaymentsUtil {
 
     fun getBilling(payload: JSONObject): Billing? {
         val name = payload.optString("name")
-        val locality = payload.optString("locality")
         val countryCode = payload.optString("countryCode")
-        if (name.isNotEmpty() && locality.isNotEmpty() && countryCode.isNotEmpty()) {
+        if (name.isNotEmpty() && countryCode.isNotEmpty()) {
             val street = listOf(
                 payload.optString("address1"),
                 payload.optString("address2"),
                 payload.optString("address3")
             ).filterNot { it.isEmpty() }.joinToString(" ")
+            val locality = payload.optString("locality").takeIf { it.isNotEmpty() }
             return Billing.Builder()
                 .setAddress(
                     Address.Builder()
-                        .setCity(locality)
+                        .setCity(locality ?: countryCode)
                         .setCountryCode(countryCode)
                         .setPostcode(payload.optString("postalCode", null))
                         .setState(payload.optString("administrativeArea", null))

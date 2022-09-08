@@ -153,4 +153,18 @@ class PaymentsUtilTest {
         assertEquals(PaymentsUtil.getBilling(json)?.firstName, "John")
         assertEquals(PaymentsUtil.getBilling(json)?.lastName, "")
     }
+
+    @Test
+    fun `test getBilling city when locality is empty`() {
+        val json = JSONObject(
+            """
+                {
+                "countryCode":"HK",
+                "locality":"",
+                "name":"John"
+                }
+            """.trimIndent()
+        )
+        assertEquals(PaymentsUtil.getBilling(json)?.address?.city, "HK")
+    }
 }
