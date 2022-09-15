@@ -25,6 +25,7 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
 * [UI集成](#UI集成)
     * [Edit Shipping Info](#edit-shipping-info)
     * [Use the entire Native UI in one flow](#use-the-entire-native-ui-in-one-flow)
+    * [Set up Google Pay](#set-up-google-pay)
     * [Custom Theme](#custom-theme)
 * [SDK Example](#sdk-example)
 * [测试卡号](#测试卡号)
@@ -64,12 +65,13 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment:4.0.4'
+        implementation 'io.github.airwallex:payment:4.1.0'
         
         // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:4.0.4'
-        implementation 'io.github.airwallex:payment-redirect:4.0.4'
-        implementation 'io.github.airwallex:payment-wechat:4.0.4'
+        implementation 'io.github.airwallex:payment-card:4.1.0'
+        implementation 'io.github.airwallex:payment-redirect:4.1.0'
+        implementation 'io.github.airwallex:payment-wechat:4.1.0'
+        implementation 'io.github.airwallex:payment-googlepay:4.1.0'
     }
 ```
 
@@ -87,7 +89,8 @@ Airwallex Android SDK 支持Android API 19及以上版本。
                 listOf(
                     CardComponent.PROVIDER,
                     WeChatComponent.PROVIDER,
-                    RedirectComponent.PROVIDER
+                    RedirectComponent.PROVIDER,
+                    GooglePayComponent.PROVIDER
                 )
             )
             .build(),
@@ -162,7 +165,12 @@ Airwallex Android SDK 支持Android API 19及以上版本。
                         paymentIntent,
                         { "PaymentIntent is required" }
                     ),
-                    countryCode = Settings.countryCode
+                    countryCode = Settings.countryCode,
+                    googlePayOptions = GooglePayOptions(
+                        billingAddressRequired = true,
+                        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+                        merchantId = {PUBLIC_MERCHANT_ID}
+                    )
                 )
                     .setReturnUrl(Settings.returnUrl)
                     .build()
@@ -231,6 +239,29 @@ Airwallex Android SDK 支持Android API 19及以上版本。
         }
     )
 ```
+
+### Set up Google Pay
+Airwallex Android SDK可以通过以下步骤允许商户给顾客提供Google Pay作为支付方式：
+- 确认Google Pay在您的Airwallex账号上已开通
+- 根据[添加依赖](#添加依赖)在安装SDK时添加Google Pay模块
+- [创建付款资料](https://support.google.com/paymentscenter/answer/7161426?hl=zh-Hans)并获取[商户ID](https://support.google.com/googleplay/android-developer/answer/7163092?hl=zh-Hans)，然后用该ID去配置payment session object的`googlePayOptions`
+- 您可以自定义Google Pay选项来限制或提供额外的付款参数。请参考`GooglePayOptions`类中的更多信息。
+```
+val googlePayOptions = GooglePayOptions(
+        allowedCardAuthMethods = listOf("3DS"),
+        merchantId = {PUBLIC_MERCHANT_ID},
+        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+        shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
+    )
+val paymentSession = AirwallexPaymentSession.Builder(
+        paymentIntent = ...,
+        countryCode = ...,
+        googlePayOptions = googlePayOptions
+    )
+```
+- 我们现在暂时只支持Visa和MasterCard来进行Google Pay支付，用户在通过Google Pay付款时只能选择这两种卡。
+> 请注意我们的Google Pay模块目前只支持`AirwallexPaymentSession`。我们会在以后添加对recurring payment sessions的支持。
+
 ### Custom Theme
 您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格。 https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
 ```

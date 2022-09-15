@@ -1,6 +1,9 @@
 # Airwallex Android SDK Changelog
 All notable changes to the SDK will be documented in this file.
 
+## Version 4.1.0 (Sep 15, 2022)
+- Support Google Pay payment session
+
 ## Version 4.0.4 (Sep 8, 2022)
 - Fix missing payment methods
 
