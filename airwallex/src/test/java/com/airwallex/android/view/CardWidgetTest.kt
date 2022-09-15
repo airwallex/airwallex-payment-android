@@ -68,7 +68,7 @@ class CardWidgetTest {
                 .setNumber("4242424242424242")
                 .setCvc("123")
                 .setExpiryMonth("10")
-                .setExpiryYear("23")
+                .setExpiryYear("2023")
                 .build(),
             cardWidget.paymentMethodCard
         )

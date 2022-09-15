@@ -72,4 +72,10 @@ class CardExpiryEditTextTest {
         cardExpiryEditText.setText("12/2023")
         assertTrue(hasError)
     }
+
+    @Test
+    fun testValidDateFields() {
+        cardExpiryEditText.setText("12/23")
+        assertEquals(cardExpiryEditText.validDateFields, Pair(12, 2023))
+    }
 }

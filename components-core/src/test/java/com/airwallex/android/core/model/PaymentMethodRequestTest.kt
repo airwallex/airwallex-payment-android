@@ -47,7 +47,7 @@ class PaymentMethodRequestTest {
     }
 
     @Test
-    fun testSetGooglePayPaymentMethodRequest() {
+    fun testGooglePayPaymentMethodRequest() {
         val request = PaymentMethodRequest.Builder("googlepay")
             .setGooglePayPaymentMethodRequest(
                 mapOf("payment_data_type" to "encrypted_payment_token"),
@@ -57,11 +57,55 @@ class PaymentMethodRequestTest {
                 )
             )
             .build()
+        val paramMap = request.toParamMap()
         assertEquals(request.billing?.firstName, "John")
         assertEquals(request.billing?.lastName, "Citizen")
         assertEquals(
             request.paymentRequest?.additionalInfo,
             mapOf("payment_data_type" to "encrypted_payment_token")
+        )
+        assertEquals(
+            mapOf(
+                "type" to "googlepay",
+                "googlepay" to mapOf(
+                    "billing" to mapOf(
+                        "first_name" to "John",
+                        "last_name" to "Citizen"
+                    ),
+                    "payment_data_type" to "encrypted_payment_token",
+                    "flow" to "inapp",
+                    "os_type" to "android"
+                )
+            ),
+            paramMap
+        )
+    }
+
+    @Test
+    fun testCardPaymentMethodRequest() {
+        val paramMap = PaymentMethodRequest.Builder("card")
+            .setCardPaymentMethodRequest(
+                PaymentMethod.Card(cvc = "686"),
+                Billing(
+                    firstName = "John",
+                    lastName = "Citizen"
+                )
+            )
+            .build()
+            .toParamMap()
+
+        assertEquals(
+            mapOf(
+                "type" to "card",
+                "card" to mapOf(
+                    "billing" to mapOf(
+                        "first_name" to "John",
+                        "last_name" to "Citizen"
+                    ),
+                    "cvc" to "686"
+                )
+            ),
+            paramMap
         )
     }
 }

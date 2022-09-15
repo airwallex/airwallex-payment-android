@@ -45,18 +45,25 @@ class PaymentMethodRequest(
                 mapOf(PaymentMethodParser.FIELD_TYPE to type)
             )
             .plus(
-                paymentRequest?.let {
-                    mapOf(type to it.toParamMap())
+                paymentRequest?.let { request ->
+                    mapOf(
+                        type to request.toParamMap().plus(
+                            billing?.let {
+                                mapOf(PaymentMethodParser.FIELD_BILLING to it.toParamMap())
+                            }.orEmpty()
+                        )
+                    )
                 }.orEmpty()
             )
             .plus(
-                card?.let {
-                    mapOf(PaymentMethodParser.FIELD_CARD to it.toParamMap())
-                }.orEmpty()
-            )
-            .plus(
-                billing?.let {
-                    mapOf(PaymentMethodParser.FIELD_BILLING to it.toParamMap())
+                card?.let { card ->
+                    mapOf(
+                        PaymentMethodParser.FIELD_CARD to card.toParamMap().plus(
+                            billing?.let {
+                                mapOf(PaymentMethodParser.FIELD_BILLING to it.toParamMap())
+                            }.orEmpty()
+                        )
+                    )
                 }.orEmpty()
             )
     }

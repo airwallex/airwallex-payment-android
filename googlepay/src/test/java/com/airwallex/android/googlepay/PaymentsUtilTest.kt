@@ -136,4 +136,35 @@ class PaymentsUtilTest {
             .build()
         )
     }
+
+    @Test
+    fun `test getBilling when name does not have space`() {
+        val json = JSONObject(
+            """
+                {
+                "address2":"Unit 4214",
+                "administrativeArea":"VIC",
+                "countryCode":"AU",
+                "locality":"Melbourne",
+                "name":"John"
+                }
+            """.trimIndent()
+        )
+        assertEquals(PaymentsUtil.getBilling(json)?.firstName, "John")
+        assertEquals(PaymentsUtil.getBilling(json)?.lastName, "")
+    }
+
+    @Test
+    fun `test getBilling city when locality is empty`() {
+        val json = JSONObject(
+            """
+                {
+                "countryCode":"HK",
+                "locality":"",
+                "name":"John"
+                }
+            """.trimIndent()
+        )
+        assertEquals(PaymentsUtil.getBilling(json)?.address?.city, "HK")
+    }
 }
