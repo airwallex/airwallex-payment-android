@@ -14,7 +14,7 @@ internal object AvailablePaymentMethodResponseFixtures {
                    "transaction_mode":"oneoff",
                    "active":true,
                    "transaction_currencies":["dollar","RMB"],
-                   "flows":["IN_APP"]
+                   "flows":["inapp"]
                   }   
             ],
             "has_more":false

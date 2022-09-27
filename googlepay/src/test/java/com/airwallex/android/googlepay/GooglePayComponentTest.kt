@@ -40,7 +40,7 @@ class GooglePayComponentTest {
                    "transaction_mode":"oneoff",
                    "active":true,
                    "transaction_currencies":["dollar","RMB"],
-                   "flows":["IN_APP"],
+                   "flows":["inapp"],
                    "card_schemes":[{ "name": "mastercard" }]
                     }   
                     ],

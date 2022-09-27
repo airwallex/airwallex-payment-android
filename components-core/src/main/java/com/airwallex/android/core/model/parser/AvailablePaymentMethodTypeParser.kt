@@ -21,7 +21,7 @@ class AvailablePaymentMethodTypeParser : ModelJsonParser<AvailablePaymentMethodT
             ),
             flows = AirwallexJsonUtils.jsonArrayToList(json.optJSONArray(FIELD_FLOWS))
                 .orEmpty()
-                .map { AirwallexPaymentRequestFlow.valueOf(it.toString()) },
+                .mapNotNull { AirwallexPaymentRequestFlow.fromValue(it.toString()) },
             transactionCurrencies = ModelJsonParser.jsonArrayToList(
                 json.optJSONArray(FIELD_TRANSACTION_CURRENCIES)
             ),

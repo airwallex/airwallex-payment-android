@@ -18,7 +18,7 @@ class AvailablePaymentMethodTypeParserTest {
         "active":true,
         "transaction_currencies":["dollar","RMB"],
         "country_codes":["CN","AU"],
-        "flows":["IN_APP"],
+        "flows":["inapp", "mweb"],
         "resources": {
         "has_schema": false,
         "logos": {
@@ -49,7 +49,10 @@ class AvailablePaymentMethodTypeParserTest {
         assertEquals(availablePaymentMethodType.active, true)
         assertEquals(availablePaymentMethodType.transactionCurrencies, listOf("dollar", "RMB"))
         assertEquals(availablePaymentMethodType.countryCodes, listOf("CN", "AU"))
-        assertEquals(availablePaymentMethodType.flows, listOf(AirwallexPaymentRequestFlow.IN_APP))
+        assertEquals(
+            availablePaymentMethodType.flows,
+            listOf(AirwallexPaymentRequestFlow.IN_APP, AirwallexPaymentRequestFlow.M_WEB)
+        )
         assertEquals(availablePaymentMethodType.resources?.hasSchema, false)
         assertEquals(
             availablePaymentMethodType.resources?.logos?.png,

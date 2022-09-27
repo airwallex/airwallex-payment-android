@@ -65,7 +65,7 @@ class PaymentMethodsViewModelTest {
                    "transaction_mode":${transactionMode.value},
                    "active":true,
                    "transaction_currencies":["dollar","RMB"],
-                   "flows":["IN_APP"]
+                   "flows":["inapp"]
                   }   
             ],
             "has_more":false
