@@ -351,6 +351,7 @@ class PaymentCartFragment : Fragment() {
                     is AirwallexPaymentStatus.InProgress -> {
                         // redirecting
                         Log.d(TAG, "Payment is redirecting ${it.paymentIntentId}")
+                        showPaymentInProgress()
                     }
                     is AirwallexPaymentStatus.Failure -> {
                         showPaymentError(it.exception.message)
@@ -599,6 +600,10 @@ class PaymentCartFragment : Fragment() {
             getString(R.string.payment_cancelled),
             error ?: getString(R.string.payment_cancelled_message)
         )
+    }
+
+    private fun showPaymentInProgress() {
+        (activity as? PaymentCartActivity)?.setLoadingProgress(false)
     }
 
     companion object {

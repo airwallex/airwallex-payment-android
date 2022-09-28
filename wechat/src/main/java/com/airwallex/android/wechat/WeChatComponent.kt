@@ -70,8 +70,8 @@ class WeChatComponent : ActionComponent {
         this.listener = listener
         when (nextAction?.type) {
             NextAction.NextActionType.CALL_SDK -> {
-                val nextActionData = nextAction.data
-                if (nextActionData == null) {
+                val weChat = nextAction.getWechatData()
+                if (weChat == null) {
                     listener.onCompleted(
                         AirwallexPaymentStatus.Failure(
                             AirwallexCheckoutException(
@@ -81,15 +81,6 @@ class WeChatComponent : ActionComponent {
                     )
                     return
                 }
-                val weChat = WeChat(
-                    appId = nextActionData["appId"] as? String,
-                    partnerId = nextActionData["partnerId"] as? String,
-                    prepayId = nextActionData["prepayId"] as? String,
-                    `package` = nextActionData["package"] as? String,
-                    nonceStr = nextActionData["nonceStr"] as? String,
-                    timestamp = nextActionData["timeStamp"] as? String,
-                    sign = nextActionData["sign"] as? String
-                )
 
                 val prepayId = weChat.prepayId
 
@@ -114,6 +105,8 @@ class WeChatComponent : ActionComponent {
                                 AirwallexCheckoutException(message = "Failed to initialize WeChat app.")
                             )
                         )
+                    } else {
+                        listener.onCompleted(AirwallexPaymentStatus.InProgress(paymentIntentId))
                     }
                 }
             }
@@ -163,5 +156,19 @@ class WeChatComponent : ActionComponent {
         weChatReq.options.callbackClassName = WeChatPayAuthActivity::class.java.name
 
         return weChatReq
+    }
+
+    private fun NextAction.getWechatData(): WeChat? {
+        return data?.let {
+            WeChat(
+                appId = it["appId"] as? String,
+                partnerId = it["partnerId"] as? String,
+                prepayId = it["prepayId"] as? String,
+                `package` = it["package"] as? String,
+                nonceStr = it["nonceStr"] as? String,
+                timestamp = it["timeStamp"] as? String,
+                sign = it["sign"] as? String
+            )
+        }
     }
 }
