@@ -17,6 +17,11 @@ abstract class AirwallexSession : Parcelable {
     abstract val shipping: Shipping?
 
     /**
+     * Whether or not billing information is required for payments.
+     */
+    abstract val isBillingInformationRequired: Boolean
+
+    /**
      * Amount currency
      */
     abstract val currency: String

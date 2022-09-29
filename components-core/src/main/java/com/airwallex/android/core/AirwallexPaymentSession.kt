@@ -39,6 +39,11 @@ class AirwallexPaymentSession internal constructor(
     override val shipping: Shipping? = null,
 
     /**
+     * Whether or not billing information is required for payments. When set to `false`, any billing information will be ignored.
+     */
+    override val isBillingInformationRequired: Boolean = true,
+
+    /**
      * The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout).
      */
     override val customerId: String? = null,

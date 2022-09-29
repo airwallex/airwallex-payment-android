@@ -51,6 +51,11 @@ class AirwallexRecurringSession internal constructor(
     override val shipping: Shipping? = null,
 
     /**
+     * Whether or not billing information is required for payments. When set to `false`, any billing information will be ignored.
+     */
+    override val isBillingInformationRequired: Boolean = true,
+
+    /**
      * It is required if the PaymentIntent is created for recurring payment
      */
     override val customerId: String,
