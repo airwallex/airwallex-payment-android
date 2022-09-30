@@ -170,8 +170,7 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
                     countryCode = Settings.countryCode,
                     googlePayOptions = GooglePayOptions(
                         billingAddressRequired = true,
-                        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
-                        merchantId = {PUBLIC_MERCHANT_ID}
+                        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
                     )
                 )
                     .setReturnUrl(Settings.returnUrl)
@@ -247,12 +246,10 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
 The Airwallex Android SDK allows merchants to provide Google Pay as a payment method to their customers by the following steps:
 - Make sure Google Pay is enabled on your Airwallex account.
 - Include the Google Pay module when installing the SDK as per [Step1](#step1-set-up-sdk).
-- [Create a payments profile](https://support.google.com/paymentscenter/answer/7161426) and get the [Merchant ID](https://support.google.com/googleplay/android-developer/answer/7163092), and use it to configure `googlePayOptions` on the payment session object. 
 - You can customize the Google Pay options to restrict as well as provide extra context. For more information, please refer to `GooglePayOptions` class.
 ```
 val googlePayOptions = GooglePayOptions(
         allowedCardAuthMethods = listOf("3DS"),
-        merchantId = {PUBLIC_MERCHANT_ID},
         billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
         shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
     )
