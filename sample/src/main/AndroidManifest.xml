@@ -20,9 +20,6 @@
             android:name="com.airwallex.sample.metadata.client_id"
             android:value="${AIRWALLEX_CLIENT_ID}" />
         <meta-data
-            android:name="com.airwallex.sample.metadata.account_id"
-            android:value="${AIRWALLEX_ACCOUNT_ID}" />
-        <meta-data
             android:name="com.airwallex.sample.metadata.wechat_app_id"
             android:value="${AIRWALLEX_WECHAT_APP_ID}" />
         <meta-data

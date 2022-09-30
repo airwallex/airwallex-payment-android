@@ -2,21 +2,14 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexPaymentSession
-import com.airwallex.android.core.AirwallexRecurringSession
-import com.airwallex.android.core.ClientSecretRepository
-import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.model.ClientSecret
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
+import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
@@ -36,6 +29,7 @@ class PaymentMethodsViewModelTest {
             val viewModel = mockViewModel(transactionMode = TransactionMode.RECURRING)
             val result = viewModel.fetchAvailablePaymentMethodTypes()
             assertEquals(result.value?.getOrNull()?.first()?.name, "card")
+            verify(exactly = 1) { TokenManager.updateClientSecret(any()) }
         }
 
     @Test
@@ -51,10 +45,12 @@ class PaymentMethodsViewModelTest {
         val viewModel = mockViewModel(transactionMode = TransactionMode.ONE_OFF)
         val result = viewModel.fetchAvailablePaymentMethodTypes()
         assertEquals(result.value?.getOrNull()?.first()?.name, "card")
+        verify(exactly = 1) { TokenManager.updateClientSecret(any()) }
     }
 
     private fun mockViewModel(hasClientSecret: Boolean = true, transactionMode: TransactionMode):
         PaymentMethodsViewModel {
+        mockkObject(TokenManager)
         val mockResponse = AvailablePaymentMethodTypeResponseParser().parse(
             JSONObject(
                 """
@@ -104,7 +100,7 @@ class PaymentMethodsViewModelTest {
                 clientSecret = "qadf"
             ),
             "AU",
-            GooglePayOptions(merchantId = "merchantId")
+            GooglePayOptions()
         ).build()
         val session = when (transactionMode) {
             TransactionMode.ONE_OFF -> oneOffSession

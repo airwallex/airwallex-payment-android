@@ -37,7 +37,7 @@ class GooglePayComponentProviderTest {
             currency = "AUD"
         ),
         "AU",
-        GooglePayOptions(merchantId = "merchantId")
+        GooglePayOptions()
     ).build()
 
     private val componentProvider: GooglePayComponentProvider by lazy {

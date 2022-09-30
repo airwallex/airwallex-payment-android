@@ -20,7 +20,7 @@ class PaymentsUtilTest {
     @Test
     fun `test isReadyToPayRequest without supported card schemes`() {
         val request = PaymentsUtil.isReadyToPayRequest(
-            GooglePayOptions(merchantId = "merchantId"), null
+            GooglePayOptions(), null
         )
         assertEquals(
             request.toString(),
@@ -33,7 +33,7 @@ class PaymentsUtilTest {
     @Test
     fun `test isReadyToPayRequest with supported card schemes`() {
         val request = PaymentsUtil.isReadyToPayRequest(
-            GooglePayOptions(merchantId = "merchantId"),
+            GooglePayOptions(),
             listOf(CardScheme("mastercard"))
         )
         assertEquals(
@@ -48,7 +48,6 @@ class PaymentsUtilTest {
     fun `test isReadyToPayRequest with billing address params and other requirements`() {
         val request = PaymentsUtil.isReadyToPayRequest(
             GooglePayOptions(
-                merchantId = "merchantId",
                 allowPrepaidCards = false,
                 allowCreditCards = false,
                 assuranceDetailsRequired = true,
@@ -77,7 +76,6 @@ class PaymentsUtilTest {
             countryCode = "AU",
             currency = "AUD",
             googlePayOptions = GooglePayOptions(
-                merchantId = "merchantId",
                 merchantName = "Some Merchant",
                 transactionId = "zcvrwf14r1",
                 checkoutOption = "COMPLETE_IMMEDIATE_PURCHASE",
@@ -95,7 +93,7 @@ class PaymentsUtilTest {
                     "\"Some Merchant\"},\"allowedPaymentMethods\":[{\"type\":\"CARD\",\"parameters\":" +
                     "{\"allowedAuthMethods\":[\"PAN_ONLY\",\"CRYPTOGRAM_3DS\"],\"allowedCardNetworks\":" +
                     "[\"MASTERCARD\",\"VISA\"]},\"tokenizationSpecification\":{\"type\":\"PAYMENT_GATEWAY\"," +
-                    "\"parameters\":{\"gatewayMerchantId\":\"merchantId\",\"gateway\":\"airwallex\"}}}]," +
+                    "\"parameters\":{\"gatewayMerchantId\":\"\",\"gateway\":\"airwallex\"}}}]," +
                     "\"shippingAddressParameters\":{\"allowedCountryCodes\":[\"US\",\"CN\"]," +
                     "\"phoneNumberRequired\":true},\"emailRequired\":true,\"transactionInfo\":" +
                     "{\"totalPrice\":\"100.01\",\"countryCode\":\"AU\",\"totalPriceLabel\":\"order.total\"," +

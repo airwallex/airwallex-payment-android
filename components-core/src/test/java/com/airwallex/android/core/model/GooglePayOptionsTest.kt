@@ -11,7 +11,6 @@ class GooglePayOptionsTest {
     private val googlePayOptions by lazy {
         GooglePayOptions(
             allowedCardAuthMethods = listOf("3DS"),
-            merchantId = "id",
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
             shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
         )
@@ -20,7 +19,6 @@ class GooglePayOptionsTest {
     @Test
     fun testParams() {
         assertEquals(googlePayOptions.allowedCardAuthMethods?.first(), "3DS")
-        assertEquals(googlePayOptions.merchantId, "id")
         assertNull(googlePayOptions.allowCreditCards)
         assertNull(googlePayOptions.allowPrepaidCards)
         assertNull(googlePayOptions.assuranceDetailsRequired)

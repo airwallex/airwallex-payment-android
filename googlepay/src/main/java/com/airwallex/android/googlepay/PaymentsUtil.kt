@@ -3,6 +3,7 @@ package com.airwallex.android.googlepay
 import android.app.Activity
 import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CardScheme
@@ -41,7 +42,7 @@ object PaymentsUtil {
      * @throws JSONException
      * @see [PaymentMethodTokenizationSpecification](https://developers.google.com/pay/api/android/reference/object.PaymentMethodTokenizationSpecification)
      */
-    private fun gatewayTokenizationSpecification(merchantId: String): JSONObject {
+    private fun gatewayTokenizationSpecification(): JSONObject {
         return JSONObject().apply {
             put("type", "PAYMENT_GATEWAY")
             put(
@@ -49,7 +50,7 @@ object PaymentsUtil {
                 JSONObject(
                     mapOf(
                         "gateway" to Constants.PAYMENT_GATEWAY_TOKENIZATION_NAME,
-                        "gatewayMerchantId" to merchantId
+                        "gatewayMerchantId" to (TokenManager.accountId ?: "")
                     )
                 )
             )
@@ -130,7 +131,7 @@ object PaymentsUtil {
         val cardPaymentMethod = baseCardPaymentMethod(googlePayOptions, cardList)
         cardPaymentMethod.put(
             "tokenizationSpecification",
-            gatewayTokenizationSpecification(googlePayOptions.merchantId)
+            gatewayTokenizationSpecification()
         )
 
         return cardPaymentMethod

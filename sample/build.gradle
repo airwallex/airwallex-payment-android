@@ -17,10 +17,6 @@ def getClientId() {
     return readProperty('AIRWALLEX_CLIENT_ID')
 }
 
-def getAccountId() {
-    return readProperty('AIRWALLEX_ACCOUNT_ID')
-}
-
 def getWeChatAppId() {
     return readProperty('AIRWALLEX_WECHAT_APP_ID')
 }
@@ -62,7 +58,6 @@ android {
         manifestPlaceholders = [
                 AIRWALLEX_API_KEY             : getApiKey(),
                 AIRWALLEX_CLIENT_ID           : getClientId(),
-                AIRWALLEX_ACCOUNT_ID          : getAccountId(),
                 AIRWALLEX_WECHAT_APP_ID       : getWeChatAppId(),
                 AIRWALLEX_RETURN_URL          : getReturnUrl()
         ]
