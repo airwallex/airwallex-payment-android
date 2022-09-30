@@ -65,23 +65,25 @@ internal class PaymentMethodsViewModel(
         val resultData = MutableLiveData<Result<List<AvailablePaymentMethodType>>>()
         when (session) {
             is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
-                retrieveAvailablePaymentMethods(
-                    resultData = resultData,
-                    clientSecret = requireNotNull(paymentIntent?.clientSecret)
-                )
+                paymentIntent?.clientSecret
             }
             is AirwallexRecurringSession -> {
                 try {
-                    val clientSecret = ClientSecretRepository.getInstance()
+                    ClientSecretRepository.getInstance()
                         .retrieveClientSecret(requireNotNull(session.customerId))
-                    retrieveAvailablePaymentMethods(
-                        resultData = resultData,
-                        clientSecret = clientSecret.value
-                    )
+                        .value
                 } catch (e: AirwallexCheckoutException) {
                     resultData.value = Result.failure(e)
+                    null
                 }
             }
+            else -> null
+        }?.let { clientSecret ->
+            TokenManager.updateClientSecret(clientSecret)
+            retrieveAvailablePaymentMethods(
+                resultData = resultData,
+                clientSecret = clientSecret
+            )
         }
         return resultData
     }

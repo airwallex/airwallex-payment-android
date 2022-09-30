@@ -11,10 +11,6 @@ data class GooglePayOptions(
      */
     val allowedCardAuthMethods: List<String>? = null,
     /**
-     * Google Pay merchant identifier
-     */
-    val merchantId: String,
-    /**
      * Merchant name encoded as UTF-8.
      */
     val merchantName: String? = null,
