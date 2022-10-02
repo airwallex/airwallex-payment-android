@@ -1,189 +1,167 @@
-// package com.airwallex.android.view
-//
-// import android.app.Activity
-// import android.app.Application
-// import android.content.Context
-// import androidx.test.core.app.ApplicationProvider
-// import com.airwallex.android.core.*
-// import com.airwallex.android.core.model.*
-// import com.airwallex.android.view.AddPaymentMethodViewModel.PaymentMethodResult.Error
-// import org.junit.Test
-// import java.math.BigDecimal
-// import java.util.*
-// import kotlin.test.assertEquals
-// import com.nhaarman.mockitokotlin2.mock
-// import org.junit.runner.RunWith
-// import org.robolectric.RobolectricTestRunner
-// import java.util.concurrent.CountDownLatch
-// import kotlin.test.BeforeTest
-//
-// @RunWith(RobolectricTestRunner::class)
-// class AddPaymentMethodViewModelTest {
-//
-//    private val application = ApplicationProvider.getApplicationContext<Application>()
-//
-//    private val context = ApplicationProvider.getApplicationContext<Context>()
-//
-//    private val paymentIntent = PaymentIntent(
-//        id = "int_6hJ72Y7zich939UCz8j6BLkonH",
-//        requestId = "a750e597-c30e-4d2b-ad41-cac601a15b25",
-//        amount = BigDecimal.valueOf(100.01),
-//        currency = "AUD",
-//        merchantOrderId = "cc9bfc13-ba30-483b-a62c-ee9250c9bfev",
-//        order = PurchaseOrder(
-//            type = "physical_goods"
-//        ),
-//        customerId = "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
-//        descriptor = "Airwallex - T-shirt",
-//        status = PaymentIntentStatus.REQUIRES_PAYMENT_METHOD,
-//        capturedAmount = BigDecimal.valueOf(0.1),
-//        availablePaymentMethodTypes = arrayListOf(PaymentMethodType.CARD, PaymentMethodType.WECHAT),
-//        customerPaymentMethods = arrayListOf(
-//            PaymentMethod.Builder()
-//                .setType(PaymentMethodType.CARD)
-//                .setCard(
-//                    PaymentMethod.Card.Builder()
-//                        .setExpiryMonth("12")
-//                        .setExpiryYear("2030")
-//                        .setName("John Doe")
-//                        .setBin("411111")
-//                        .setLast4("1111")
-//                        .setBrand("visa")
-//                        .setIssuerCountryCode("US")
-//                        .setCardType("credit")
-//                        .setFingerprint("7e9cceb282d05675fed72f67e0a4a5ae4e82ff5a96a1b0e55bc45cf63609a055")
-//                        .build()
-//                )
-//                .setBilling(
-//                    Billing.Builder()
-//                        .setFirstName("John")
-//                        .setLastName("Doe")
-//                        .setPhone("13800000000")
-//                        .setEmail("john.doe@airwallex.com")
-//                        .setAddress(
-//                            Address.Builder()
-//                                .setCountryCode("CN")
-//                                .setState("Shanghai")
-//                                .setCity("Shanghai")
-//                                .setStreet("Pudong District")
-//                                .setPostcode("100000")
-//                                .build()
-//                        )
-//                        .build()
-//                )
-//                .build()
-//
-//        ),
-//        clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
-//        createdAt = Date(1585537417000),
-//        updatedAt = Date(1585537442000),
-//        latestPaymentAttempt = PaymentIntent.PaymentAttempt(
-//            id = "att_7P9rxcJzs06b3Bt7zLWArVk3xi",
-//            currency = null,
-//            paymentMethod = PaymentMethod.Builder()
-//                .setId("mtd_4iyImkz7wglVXRad6hZWreqRJY0")
-//                .setRequestId(null)
-//                .setStatus(PaymentMethod.PaymentMethodStatus.VERIFIED)
-//                .setType(PaymentMethodType.CARD)
-//                .setCard(
-//                    PaymentMethod.Card.Builder()
-//                        .setExpiryMonth("01")
-//                        .setExpiryYear("2023")
-//                        .setName("Adam")
-//                        .setBin("520000")
-//                        .setLast4("1005")
-//                        .setBrand("mastercard")
-//                        .setIssuerCountryCode("MY")
-//                        .setCardType("credit")
-//                        .setFingerprint("290a1f394301fa8bd83be3f081a5d308d7f9fd89dd72c7c4108029dec75f72ae")
-//                        .setCvcCheck("unknown")
-//                        .setAvsCheck("unknown")
-//                        .build()
-//                )
-//                .setBilling(
-//                    Billing.Builder()
-//                        .setFirstName("Jim")
-//                        .setLastName("passlist")
-//                        .setDateOfBirth("2011-10-12")
-//                        .setEmail("jim631@sina.com")
-//                        .setPhone("1367875788")
-//                        .setAddress(
-//                            Address.Builder()
-//                                .setCountryCode("CN")
-//                                .setState("Beijing")
-//                                .setCity("Shanghai")
-//                                .setStreet("Pudong District")
-//                                .setPostcode("33333")
-//                                .build()
-//                        )
-//                        .build()
-//                )
-//                .setCreatedAt(Date(1585537440000))
-//                .setUpdatedAt(Date(1585537440000))
-//                .build(),
-//            capturedAmount = BigDecimal.valueOf(0.1),
-//            refundedAmount = BigDecimal.valueOf(0.1),
-//            createdAt = Date(1585537440000),
-//            updatedAt = Date(1585537440000),
-//            amount = BigDecimal.valueOf(0.1),
-//            authenticationData = PaymentIntent.PaymentAttemptAuthData(null, null, null, null)
-//        )
-//    )
-//
-//    private val addPaymentMethodViewModel by lazy {
-//        val activity: Activity = mock()
-//        AddPaymentMethodViewModel(
-//            application, Airwallex(activity, context),
-//            AirwallexPaymentSession.Builder(paymentIntent)
-//                .setReturnUrl("airwallexcheckout://com.airwallex.android")
-//                .build()
-//        )
-//    }
-//
-//    @BeforeTest
-//    fun setup() {
-//        Airwallex.initialize(
-//            AirwallexConfiguration.Builder()
-//                .enableLogging(true)
-//                .build()
-//        )
-//
-//        ClientSecretRepository.init(object : ClientSecretProvider {
-//            override fun createClientSecret(
-//                customerId: String,
-//                updateListener: ClientSecretUpdateListener
-//            ) {
-//                updateListener.onClientSecretUpdateFailure("111")
-//            }
-//        })
-//    }
-//
-//    @Test
-//    fun createPaymentMethodTest() {
-//        val countDownLatch = CountDownLatch(1)
-//        var throwable: Throwable? = null
-//        addPaymentMethodViewModel.createPaymentMethod(
-//            PaymentMethod.Card.Builder()
-//                .setExpiryMonth("12")
-//                .setExpiryYear("2030")
-//                .setName("John Doe")
-//                .setBin("411111")
-//                .setLast4("1111")
-//                .setBrand("visa")
-//                .setIssuerCountryCode("US")
-//                .setCardType("credit")
-//                .setFingerprint("7e9cceb282d05675fed72f67e0a4a5ae4e82ff5a96a1b0e55bc45cf63609a055")
-//                .build(),
-//            null
-//        ).observeForever {
-//            when (it) {
-//                is Error -> throwable = it.exception
-//                else -> Unit
-//            }
-//            countDownLatch.countDown()
-//        }
-//
-//        countDownLatch.await()
-//        assertEquals("111", throwable?.message)
-//    }
-// }
+ package com.airwallex.android.view
+
+ import android.app.Application
+ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+ import com.airwallex.android.core.Airwallex
+ import com.airwallex.android.core.AirwallexPaymentSession
+ import com.airwallex.android.core.AirwallexSession
+ import com.airwallex.android.core.ClientSecretRepository
+ import com.airwallex.android.core.exception.AirwallexCheckoutException
+ import com.airwallex.android.core.model.Billing
+ import com.airwallex.android.core.model.ClientSecret
+ import com.airwallex.android.core.model.CreatePaymentMethodParams
+ import com.airwallex.android.core.model.PaymentMethod
+ import com.nhaarman.mockitokotlin2.mock
+ import io.mockk.*
+ import org.junit.Rule
+ import org.junit.Test
+ import kotlin.test.assertEquals
+ import kotlin.test.assertNotEquals
+ import kotlin.test.assertNull
+ import kotlin.test.assertTrue
+
+ class AddPaymentMethodViewModelTest {
+     @get:Rule
+     val instantExecutorRule = InstantTaskExecutorRule()
+
+     private val application = mockk<Application>()
+     private val airwallex: Airwallex = mockk()
+     private val paymentMethod: PaymentMethod = mockk()
+
+     @Test
+     fun `one off payment method includes provided billing when information is required by session`() {
+         val card: PaymentMethod.Card = mockk()
+         val billing: Billing = mockk()
+         val session: AirwallexPaymentSession = mockk()
+
+         every { session.isBillingInformationRequired } returns true
+         every { card.cvc } returns "123"
+
+         val viewModel = createViewModel(session)
+         val payment = viewModel.createPaymentMethod(card, false, billing)
+         val result = requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
+         val resultBilling = requireNotNull(result.paymentMethod.billing)
+
+         assertEquals(resultBilling, billing)
+     }
+
+     @Test
+     fun `one off payment method does not include provided billing when information is not required by session`() {
+         val card: PaymentMethod.Card = mockk()
+         val billing: Billing = mockk()
+         val session: AirwallexPaymentSession = mockk()
+
+         every { session.isBillingInformationRequired } returns false
+         every { card.cvc } returns "123"
+
+         val viewModel = createViewModel(session)
+         val payment = viewModel.createPaymentMethod(card, false, billing)
+         val result = requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
+         val resultBilling = result.paymentMethod.billing
+
+         assertNull(resultBilling)
+         assertNotEquals(resultBilling, billing)
+     }
+
+     @Test
+     fun `one off payment card missing cvc error`() {
+         val card: PaymentMethod.Card = mockk()
+         val billing: Billing = mockk()
+         val session: AirwallexPaymentSession = mockk()
+
+         every { session.isBillingInformationRequired } returns true
+         every { card.cvc } returns null
+
+         val viewModel = createViewModel(session)
+         val payment = viewModel.createPaymentMethod(card, false, billing)
+         val result = requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Error)
+
+         val errorMessage = requireNotNull(result.exception.message)
+         assertTrue { errorMessage.contains("CVC missing") }
+     }
+
+     @Test
+     fun `stored payment method includes provided billing when information is required by session`() {
+         val clientSecret = mockk<ClientSecret>(relaxed = true)
+         val paymentMethod = mockk<PaymentMethod>()
+         val clientSecretRepository = mockk<ClientSecretRepository>()
+         val clientSecretListener = slot<ClientSecretRepository.ClientSecretRetrieveListener>()
+         val paymentListener = slot<Airwallex.PaymentListener<PaymentMethod>>()
+
+         mockkObject(ClientSecretRepository)
+         every { ClientSecretRepository.getInstance() } returns clientSecretRepository
+         every { clientSecretRepository.retrieveClientSecret(any(), capture(clientSecretListener)) } answers {
+             clientSecretListener.captured.onClientSecretRetrieve(clientSecret)
+         }
+         every { airwallex.createPaymentMethod(any(), capture(paymentListener)) } answers {
+             paymentListener.captured.onSuccess(paymentMethod)
+         }
+
+         val customerID = "Test_ID"
+         val card: PaymentMethod.Card = mockk()
+         val billing: Billing = mockk()
+         val session: AirwallexPaymentSession = mockk()
+
+         every { session.customerId } returns customerID
+         every { session.isBillingInformationRequired } returns true
+         every { card.cvc } returns "123"
+
+         val viewModel = createViewModel(session)
+         val payment = viewModel.createPaymentMethod(card, true, billing)
+         val result = requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
+
+         assertEquals(result.paymentMethod, paymentMethod)
+
+         val params = CreatePaymentMethodParams(
+             clientSecret.value,
+             customerID,
+             card,
+             billing
+         )
+         verify { airwallex.createPaymentMethod(params, any()) }
+     }
+
+     @Test
+     fun `stored payment method does not include provided billing when information is not required by session`() {
+         val clientSecret = mockk<ClientSecret>(relaxed = true)
+         val paymentMethod = mockk<PaymentMethod>()
+         val clientSecretRepository = mockk<ClientSecretRepository>()
+         val clientSecretListener = slot<ClientSecretRepository.ClientSecretRetrieveListener>()
+         val paymentListener = slot<Airwallex.PaymentListener<PaymentMethod>>()
+
+         mockkObject(ClientSecretRepository)
+         every { ClientSecretRepository.getInstance() } returns clientSecretRepository
+         every { clientSecretRepository.retrieveClientSecret(any(), capture(clientSecretListener)) } answers {
+             clientSecretListener.captured.onClientSecretRetrieve(clientSecret)
+         }
+         every { airwallex.createPaymentMethod(any(), capture(paymentListener)) } answers {
+             paymentListener.captured.onSuccess(paymentMethod)
+         }
+
+         val customerID = "Test_ID"
+         val card: PaymentMethod.Card = mockk()
+         val billing: Billing = mockk()
+         val session: AirwallexPaymentSession = mockk()
+
+         every { session.customerId } returns customerID
+         every { session.isBillingInformationRequired } returns false
+         every { card.cvc } returns "123"
+
+         val viewModel = createViewModel(session)
+         val payment = viewModel.createPaymentMethod(card, true, billing)
+         val result = requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
+
+         assertEquals(result.paymentMethod, paymentMethod)
+
+         val params = CreatePaymentMethodParams(
+             clientSecret.value,
+             customerID,
+             card,
+             null
+         )
+         verify { airwallex.createPaymentMethod(params, any()) }
+     }
+
+     private fun createViewModel(session: AirwallexSession): AddPaymentMethodViewModel =
+         AddPaymentMethodViewModel(application, airwallex, session)
+ }
