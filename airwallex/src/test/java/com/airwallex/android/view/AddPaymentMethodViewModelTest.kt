@@ -6,12 +6,10 @@
  import com.airwallex.android.core.AirwallexPaymentSession
  import com.airwallex.android.core.AirwallexSession
  import com.airwallex.android.core.ClientSecretRepository
- import com.airwallex.android.core.exception.AirwallexCheckoutException
  import com.airwallex.android.core.model.Billing
  import com.airwallex.android.core.model.ClientSecret
  import com.airwallex.android.core.model.CreatePaymentMethodParams
  import com.airwallex.android.core.model.PaymentMethod
- import com.nhaarman.mockitokotlin2.mock
  import io.mockk.*
  import org.junit.Rule
  import org.junit.Test
