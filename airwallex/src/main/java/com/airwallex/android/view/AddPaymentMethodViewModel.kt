@@ -8,6 +8,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.ClientSecretRepository
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.model.*
 
 internal class AddPaymentMethodViewModel(
@@ -46,6 +47,9 @@ internal class AddPaymentMethodViewModel(
             )
         } catch (e: AirwallexCheckoutException) {
             resultData.value = PaymentMethodResult.Error(e)
+        } catch (e: IllegalArgumentException) {
+            val exception = InvalidParamsException("Card CVC missing")
+            resultData.value = PaymentMethodResult.Error(exception)
         }
 
         return resultData
