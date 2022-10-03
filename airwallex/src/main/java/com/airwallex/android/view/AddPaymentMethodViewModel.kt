@@ -45,8 +45,6 @@ internal class AddPaymentMethodViewModel(
                     .build(),
                 requireNotNull(card.cvc)
             )
-        } catch (e: AirwallexCheckoutException) {
-            resultData.value = PaymentMethodResult.Error(e)
         } catch (e: IllegalArgumentException) {
             val exception = InvalidParamsException("Card CVC missing")
             resultData.value = PaymentMethodResult.Error(exception)
