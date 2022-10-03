@@ -118,7 +118,7 @@ object Settings {
             val value = sharedPreferences.getString(context.getString(R.string.api_key), getMetadata(METADATA_KEY_API_KEY))
                 ?: API_KEY
 
-            return value.trimmedOfQuotes()
+            return value.cleaned()
         }
 
     val clientId: String
@@ -126,7 +126,7 @@ object Settings {
             val value = sharedPreferences.getString(context.getString(R.string.client_id), getMetadata(METADATA_KEY_CLIENT_ID_KEY))
                 ?: CLIENT_ID
 
-            return value.trimmedOfQuotes()
+            return value.cleaned()
         }
 
     val weChatAppId: String
@@ -134,7 +134,7 @@ object Settings {
             val value = sharedPreferences.getString(context.getString(R.string.wechat_app_id), getMetadata(METADATA_KEY_WECHAT_APP_ID_KEY))
                 ?: WECHAT_APP_ID
 
-            return value.trimmedOfQuotes()
+            return value.cleaned()
         }
 
     val price: String
@@ -173,6 +173,9 @@ object Settings {
     }
 }
 
-private fun String.trimmedOfQuotes() =
-    this.removePrefix("\"").removeSuffix("\"")
+private fun String.cleaned() =
+    this
+        .trim()
+        .removePrefix("\"")
+        .removeSuffix("\"")
 
