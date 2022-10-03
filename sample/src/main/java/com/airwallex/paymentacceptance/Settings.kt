@@ -115,20 +115,26 @@ object Settings {
 
     val apiKey: String
         get() {
-            return sharedPreferences.getString(context.getString(R.string.api_key), getMetadata(METADATA_KEY_API_KEY))
+            val value = sharedPreferences.getString(context.getString(R.string.api_key), getMetadata(METADATA_KEY_API_KEY))
                 ?: API_KEY
+
+            return value.cleaned()
         }
 
     val clientId: String
         get() {
-            return sharedPreferences.getString(context.getString(R.string.client_id), getMetadata(METADATA_KEY_CLIENT_ID_KEY))
+            val value = sharedPreferences.getString(context.getString(R.string.client_id), getMetadata(METADATA_KEY_CLIENT_ID_KEY))
                 ?: CLIENT_ID
+
+            return value.cleaned()
         }
 
     val weChatAppId: String
         get() {
-            return sharedPreferences.getString(context.getString(R.string.wechat_app_id), getMetadata(METADATA_KEY_WECHAT_APP_ID_KEY))
+            val value = sharedPreferences.getString(context.getString(R.string.wechat_app_id), getMetadata(METADATA_KEY_WECHAT_APP_ID_KEY))
                 ?: WECHAT_APP_ID
+
+            return value.cleaned()
         }
 
     val price: String
@@ -166,3 +172,10 @@ object Settings {
             .takeIf { it?.isNotBlank() == true }
     }
 }
+
+private fun String.cleaned() =
+    this
+        .trim()
+        .removePrefix("\"")
+        .removeSuffix("\"")
+

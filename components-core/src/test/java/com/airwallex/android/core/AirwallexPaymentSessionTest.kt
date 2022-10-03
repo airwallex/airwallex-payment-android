@@ -12,7 +12,9 @@ class AirwallexPaymentSessionTest {
     fun buildTest() {
         val airwallexPaymentSession = AirwallexPaymentSession.Builder(
             PaymentIntentFixtures.PAYMENT_INTENT, "CN"
-        ).build()
+        )
+            .setRequireBillingInformation(false)
+            .build()
 
         assertNotNull(airwallexPaymentSession)
 
@@ -21,6 +23,9 @@ class AirwallexPaymentSessionTest {
 
         assertNotNull(airwallexPaymentSession.amount)
         assertEquals(BigDecimal.valueOf(100.01), airwallexPaymentSession.amount)
+
+        assertNotNull(airwallexPaymentSession.isBillingInformationRequired)
+        assertEquals(false, airwallexPaymentSession.isBillingInformationRequired)
 
         assertEquals(null, airwallexPaymentSession.shipping)
 

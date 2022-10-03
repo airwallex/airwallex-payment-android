@@ -39,6 +39,11 @@ class AirwallexPaymentSession internal constructor(
     override val shipping: Shipping? = null,
 
     /**
+     * Whether or not billing information is required for payments. When set to `false`, any billing information will be ignored.
+     */
+    override val isBillingInformationRequired: Boolean = true,
+
+    /**
      * The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout).
      */
     override val customerId: String? = null,
@@ -66,8 +71,13 @@ class AirwallexPaymentSession internal constructor(
         private val googlePayOptions: GooglePayOptions? = null
     ) : ObjectBuilder<AirwallexPaymentSession> {
 
+        private var isBillingInformationRequired: Boolean = true
         private var returnUrl: String? = null
         private var autoCapture: Boolean = true
+
+        fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
+            this.isBillingInformationRequired = requiresBillingInformation
+        }
 
         fun setReturnUrl(returnUrl: String?): Builder = apply {
             this.returnUrl = returnUrl
@@ -84,6 +94,7 @@ class AirwallexPaymentSession internal constructor(
                 countryCode = countryCode,
                 amount = paymentIntent.amount,
                 shipping = paymentIntent.order?.shipping,
+                isBillingInformationRequired = isBillingInformationRequired,
                 customerId = paymentIntent.customerId,
                 returnUrl = returnUrl,
                 googlePayOptions = googlePayOptions,

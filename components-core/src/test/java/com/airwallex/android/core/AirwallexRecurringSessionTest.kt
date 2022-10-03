@@ -21,6 +21,7 @@ class AirwallexRecurringSessionTest {
             countryCode = "CN"
         )
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
+            .setRequireBillingInformation(false)
             .setRequireCvc(true)
             .build()
 
@@ -37,6 +38,9 @@ class AirwallexRecurringSessionTest {
 
         assertNotNull(airwallexRecurringSession.requiresCVC)
         assertEquals(true, airwallexRecurringSession.requiresCVC)
+
+        assertNotNull(airwallexRecurringSession.isBillingInformationRequired)
+        assertEquals(false, airwallexRecurringSession.isBillingInformationRequired)
 
         assertEquals(null, airwallexRecurringSession.shipping)
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -57,18 +57,25 @@
                     app:layout_constraintTop_toTopOf="@id/saveCardLabel" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                style="@style/AirwallexPaymentSubHeaderBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/airwallexbilling_info"
-                tools:ignore="RtlSymmetry" />
-
-            <com.airwallex.android.view.BillingWidget
-                android:id="@+id/billingWidget"
+            <LinearLayout
+                android:id="@+id/billingGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp" />
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/AirwallexPaymentSubHeaderBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/airwallexbilling_info"
+                    tools:ignore="RtlSymmetry" />
+
+                <com.airwallex.android.view.BillingWidget
+                    android:id="@+id/billingWidget"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

@@ -280,9 +280,9 @@ To run the example project, you should follow these steps.
 
 3. Go to [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and` API key` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
 ```
-    private const val BASE_URL = "put your base url here"
-    private const val API_KEY = "put your api key here"
-    private const val CLIENT_ID = "put your client id here"
+    private const val BASE_URL = replace_with_base_url
+    private const val API_KEY = replace_with_api_key
+    private const val CLIENT_ID = replace_with_client_id
 ```
 
 4. Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then copy `App ID` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)

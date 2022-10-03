@@ -51,6 +51,11 @@ class AirwallexRecurringSession internal constructor(
     override val shipping: Shipping? = null,
 
     /**
+     * Whether or not billing information is required for payments. When set to `false`, any billing information will be ignored.
+     */
+    override val isBillingInformationRequired: Boolean = true,
+
+    /**
      * It is required if the PaymentIntent is created for recurring payment
      */
     override val customerId: String,
@@ -75,6 +80,7 @@ class AirwallexRecurringSession internal constructor(
     ) : ObjectBuilder<AirwallexRecurringSession> {
 
         private var shipping: Shipping? = null
+        private var isBillingInformationRequired: Boolean = true
         private var requiresCVC: Boolean = false
         private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason =
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
@@ -82,6 +88,10 @@ class AirwallexRecurringSession internal constructor(
 
         fun setShipping(shipping: Shipping?): Builder = apply {
             this.shipping = shipping
+        }
+
+        fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
+            this.isBillingInformationRequired = requiresBillingInformation
         }
 
         fun setRequireCvc(requiresCVC: Boolean): Builder = apply {
@@ -106,6 +116,7 @@ class AirwallexRecurringSession internal constructor(
                 countryCode = countryCode,
                 amount = amount,
                 shipping = shipping,
+                isBillingInformationRequired = isBillingInformationRequired,
                 customerId = customerId,
                 returnUrl = returnUrl
             )

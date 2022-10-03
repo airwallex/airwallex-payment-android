@@ -3,14 +3,13 @@ package com.airwallex.android.view
 import android.app.Application
 import androidx.lifecycle.*
 import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.ClientSecretRepository
-import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
-import com.airwallex.android.core.model.Billing
-import com.airwallex.android.core.model.ClientSecret
-import com.airwallex.android.core.model.CreatePaymentMethodParams
-import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.exception.InvalidParamsException
+import com.airwallex.android.core.model.*
 
 internal class AddPaymentMethodViewModel(
     application: Application,
@@ -20,9 +19,46 @@ internal class AddPaymentMethodViewModel(
 
     fun createPaymentMethod(
         card: PaymentMethod.Card,
+        shouldStoreCard: Boolean,
+        billing: Billing?
+    ): LiveData<PaymentMethodResult> {
+        val resolvedBilling = if (session.isBillingInformationRequired) billing else null
+        return if (session is AirwallexPaymentSession && !shouldStoreCard) {
+            createOneOffCardPaymentMethod(card, resolvedBilling)
+        } else {
+            createStoredCardPaymentMethod(card, resolvedBilling)
+        }
+    }
+
+    private fun createOneOffCardPaymentMethod(
+        card: PaymentMethod.Card,
         billing: Billing?
     ): LiveData<PaymentMethodResult> {
         val resultData = MutableLiveData<PaymentMethodResult>()
+
+        try {
+            resultData.value = PaymentMethodResult.Success(
+                PaymentMethod.Builder()
+                    .setType(PaymentMethodType.CARD.value)
+                    .setCard(card)
+                    .setBilling(billing)
+                    .build(),
+                requireNotNull(card.cvc)
+            )
+        } catch (e: IllegalArgumentException) {
+            val exception = InvalidParamsException("Card CVC missing")
+            resultData.value = PaymentMethodResult.Error(exception)
+        }
+
+        return resultData
+    }
+
+    private fun createStoredCardPaymentMethod(
+        card: PaymentMethod.Card,
+        billing: Billing?,
+    ): LiveData<PaymentMethodResult> {
+        val resultData = MutableLiveData<PaymentMethodResult>()
+
         try {
             ClientSecretRepository.getInstance().retrieveClientSecret(
                 requireNotNull(session.customerId),
@@ -37,10 +73,7 @@ internal class AddPaymentMethodViewModel(
                             ),
                             object : Airwallex.PaymentListener<PaymentMethod> {
                                 override fun onSuccess(response: PaymentMethod) {
-                                    resultData.value = PaymentMethodResult.Success(
-                                        response,
-                                        requireNotNull(card.cvc)
-                                    )
+                                    resultData.value = PaymentMethodResult.Success(response, requireNotNull(card.cvc))
                                 }
 
                                 override fun onFailed(exception: AirwallexException) {
@@ -59,6 +92,7 @@ internal class AddPaymentMethodViewModel(
         } catch (e: AirwallexCheckoutException) {
             resultData.value = PaymentMethodResult.Error(e)
         }
+
         return resultData
     }
 
