@@ -125,6 +125,8 @@ object Settings {
         get() {
             val value = sharedPreferences.getString(context.getString(R.string.client_id), getMetadata(METADATA_KEY_CLIENT_ID_KEY))
                 ?: CLIENT_ID
+
+            return value.trimmedOfQuotes()
         }
 
     val weChatAppId: String
