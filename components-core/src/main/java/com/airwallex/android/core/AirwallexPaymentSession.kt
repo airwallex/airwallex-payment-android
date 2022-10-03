@@ -71,8 +71,13 @@ class AirwallexPaymentSession internal constructor(
         private val googlePayOptions: GooglePayOptions? = null
     ) : ObjectBuilder<AirwallexPaymentSession> {
 
+        private var isBillingInformationRequired: Boolean = true
         private var returnUrl: String? = null
         private var autoCapture: Boolean = true
+
+        fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
+            this.isBillingInformationRequired = requiresBillingInformation
+        }
 
         fun setReturnUrl(returnUrl: String?): Builder = apply {
             this.returnUrl = returnUrl
@@ -89,6 +94,7 @@ class AirwallexPaymentSession internal constructor(
                 countryCode = countryCode,
                 amount = paymentIntent.amount,
                 shipping = paymentIntent.order?.shipping,
+                isBillingInformationRequired = isBillingInformationRequired,
                 customerId = paymentIntent.customerId,
                 returnUrl = returnUrl,
                 googlePayOptions = googlePayOptions,

@@ -92,10 +92,15 @@ class AirwallexRecurringWithIntentSession internal constructor(
     ) : ObjectBuilder<AirwallexRecurringWithIntentSession> {
 
         private var requiresCVC: Boolean = false
+        private var isBillingInformationRequired: Boolean = true
         private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason =
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
         private var returnUrl: String? = null
         private var autoCapture: Boolean = true
+
+        fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
+            this.isBillingInformationRequired = requiresBillingInformation
+        }
 
         fun setRequireCvc(requiresCVC: Boolean): Builder = apply {
             this.requiresCVC = requiresCVC
@@ -127,6 +132,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 countryCode = countryCode,
                 amount = paymentIntent.amount,
                 shipping = paymentIntent.order?.shipping,
+                isBillingInformationRequired = isBillingInformationRequired,
                 returnUrl = returnUrl,
                 autoCapture = autoCapture
             )
