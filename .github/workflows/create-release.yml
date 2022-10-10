@@ -1,0 +1,54 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Next release version. If empty then use semantic release.
+        required: false
+        type: string
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          # Bypass protected branch setting by using a service account PAT
+          # see more at: https://github.com/community/community/discussions/13836
+          token: ${{ secrets.SERVICE_ACCOUNT_PAT }}
+
+      - name: Work out the new version via Semantic Release
+        if: ${{ inputs.version == '' }}
+        uses: cycjimmy/semantic-release-action@v3
+        id: semantic
+        with:
+          branch: ${{ github.ref_name }}
+          dry_run: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply new version to environment
+        run: |
+          echo "VERSION=${{ inputs.version || steps.semantic.outputs.new_release_version }}" >> $GITHUB_ENV
+
+      - name: Update versions
+        run: ./.github/scripts/update-versions.sh
+        shell: bash
+
+      - name: Commit version changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        id: commit
+        with:
+          commit_message: "chore: bumped versions to ${{ env.VERSION }}"
+
+      - name: Publish GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          body: ${{ steps.semantic.outputs.new_release_notes }}
+          generateReleaseNotes: ${{ steps.semantic.outcome != 'success' }}
+          commit: ${{ steps.commit.outputs.commit_hash }}
+          tag: ${{ env.VERSION }}

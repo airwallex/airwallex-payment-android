@@ -1,3 +1,5 @@
+rootProject.name = 'airwallex-android'
+
 include ':sample'
 include ':airwallex'
 include ':card'
@@ -7,4 +9,26 @@ include ':googlepay'
 include ':ui-core'
 include ':components-core'
 include ':airwallex-detekt-rules'
-rootProject.name = 'airwallex-android'
+
+// Substitute remote binary dependencies with local project/module dependency
+includeBuild('fingerprinting') {
+    dependencySubstitution {
+        substitute module(
+                'io.github.airwallex:TrustDefender-Behavioral'
+        ) using project(
+                ':airwallex-fingerprinting-behavioral'
+        )
+
+        substitute module(
+                'io.github.airwallex:TrustDefender-Profiling'
+        ) using project(
+                ':airwallex-fingerprinting-profiling'
+        )
+
+        substitute module(
+                'io.github.airwallex:TrustDefender-Profiling-Connections'
+        ) using project(
+                ':airwallex-fingerprinting-profiling-connections'
+        )
+    }
+}

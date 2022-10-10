@@ -1,10 +1,10 @@
-name: Distribute Develop
+name: Distribute demo
 
-# Every time we merge to develop branch we publish a release.
+# Every time we merge to main branch we publish the demo app to Play store internal track.
 on:
   workflow_dispatch:
   push:
-    branches: [ develop ]
+    branches: [ main ]
 
 jobs:
   upload:
