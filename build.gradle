@@ -67,7 +67,7 @@ ext {
     robolectricVersion = '4.7'
     testCoreVersion = '1.4.0'
 
-    versionCode = System.getenv("GITHUB_RUN_NUMBER") as Integer ?: 1
+    versionCode = System.getenv("AIRWALLEX_VERSION_CODE") as Integer ?: 1
     versionName = version
 }
 

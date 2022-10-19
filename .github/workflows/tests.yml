@@ -4,19 +4,17 @@ on:
   pull_request:
     types: [ opened, synchronize ]
   push:
-    branches: [ develop, master ]
+    branches: [ main ]
   
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout develop for Sonar
-        uses: actions/checkout@v3
-        with:
-          ref: develop
-
       - name: Checkout the code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - uses: actions/cache@v2
         with:
           path: |
@@ -33,7 +31,7 @@ jobs:
           java-version: '11'
 
       - name: Cache SonarCloud packages
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -44,12 +42,6 @@ jobs:
       
       - name: SonarQube with Pull Request Decoration
         if: github.event.number != null
-        run: ./gradlew sonarqube -Dsonar.qualitygate.wait=true -Dsonar.pullrequest.key=${{ github.event.number }} -Dsonar.pullrequest.branch=${{ github.ref }} -Dsonar.pullrequest.base=${{ github.base_ref }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      
-      - name: SonarQube without Pull Request Decoration
-        if: github.event.number == null
         run: ./gradlew sonarqube -Dsonar.qualitygate.wait=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -65,15 +65,6 @@ android {
         ]
     }
 
-    signingConfigs {
-        release {
-            storeFile file('airwallex.jks')
-            storePassword 'airwallex'
-            keyAlias 'airwallex'
-            keyPassword 'airwallex'
-        }
-    }
-
     buildTypes {
         debug {
             debuggable true
