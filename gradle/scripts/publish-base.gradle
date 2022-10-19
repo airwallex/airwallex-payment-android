@@ -1,0 +1,17 @@
+ext {
+    airwallexGroupId = "io.github.airwallex"
+    airwallexArtifactId = MAVEN_ARTIFACT_ID
+
+    airwallexName = MAVEN_ARTIFACT_NAME
+    airwallexDescription = MAVEN_ARTIFACT_DESCRIPTION
+    airwallexUrl = "https://github.com/airwallex/airwallex-payment-android"
+
+    airwallexLicenseName = "MIT License"
+    airwallexLicenseUrl = "https://opensource.org/licenses/MIT"
+
+    airwallexOrganizationName = "Airwallex"
+    airwallexOrganizationUrl = "https://www.airwallex.com/"
+
+    airwallexScmConnection = "https://github.com/airwallex/airwallex-payment-android.git"
+    airwallexScmUrl = "https://github.com/airwallex/airwallex-payment-android"
+}

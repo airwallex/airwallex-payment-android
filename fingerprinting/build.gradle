@@ -1,0 +1,17 @@
+plugins {
+    id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
+}
+
+// This should match the version of the aars.
+version = '6.1-67'
+
+apply from: "../gradle/scripts/publish-root.gradle"
+
+// By default, an aggregated publish task is not being created for
+// included builds. We wrote this ourselves so that we can run one task
+// and get all 3 fingerprinting aars to maven.
+task publishReleasePublicationToSonatypeRepository {
+    dependsOn ':airwallex-fingerprinting-behavioral:publishReleasePublicationToSonatypeRepository'
+    dependsOn ':airwallex-fingerprinting-profiling:publishReleasePublicationToSonatypeRepository'
+    dependsOn ':airwallex-fingerprinting-profiling-connections:publishReleasePublicationToSonatypeRepository'
+}

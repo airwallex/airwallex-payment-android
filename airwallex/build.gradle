@@ -1,66 +1,13 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'kotlin-parcelize'
+    id 'com.android.library' apply false
+    id 'kotlin-android' apply false
+    id 'kotlin-parcelize' apply false
 }
 
-apply from: "$rootProject.projectDir/android-shared.gradle"
-
-def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
-def DEVICE_FINGERPRINT_MERCHANT_ID = '"airwallex_cybs"'
+apply from: "$rootProject.projectDir/android-module.gradle"
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-
-    defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.compileSdkVersion
-
-        versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.versionName
-
-        consumerProguardFiles 'proguard-rules.pro'
-
-        vectorDrawables.useSupportLibrary = true
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunnerArguments clearPackageData: 'true'
-    }
-
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
-    }
-
-    buildTypes {
-        debug {
-            testCoverageEnabled true
-        }
-    }
-
-    buildFeatures {
-        viewBinding true
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
-    lintOptions {
-        abortOnError true
-        disable 'ParcelCreator', 'VectorPath', 'IconDipSize', 'UnsafeExperimentalUsageWarning'
-    }
-}
-
-android.buildTypes.each { type ->
-    type.buildConfigField 'String', 'DEVICE_FINGERPRINT_ORG_ID', DEVICE_FINGERPRINT_ORG_ID
-    type.buildConfigField 'String', 'DEVICE_FINGERPRINT_MERCHANT_ID', DEVICE_FINGERPRINT_MERCHANT_ID
+    namespace 'com.airwallex.android'
 }
 
 dependencies {
@@ -84,9 +31,4 @@ dependencies {
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
 }
 
-apply from: rootProject.file('publish.gradle')
-apply from: rootProject.file('deploy.gradle')
-
-ext {
-    libraryVersion = "${android.defaultConfig.versionName}"
-}
+apply from: rootProject.file("publish-module.gradle")
