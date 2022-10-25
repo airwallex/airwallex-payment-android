@@ -52,3 +52,4 @@ jobs:
           generateReleaseNotes: ${{ steps.semantic.outcome != 'success' }}
           commit: ${{ steps.commit.outputs.commit_hash }}
           tag: ${{ env.VERSION }}
+          token: ${{ secrets.SERVICE_ACCOUNT_PAT }}
