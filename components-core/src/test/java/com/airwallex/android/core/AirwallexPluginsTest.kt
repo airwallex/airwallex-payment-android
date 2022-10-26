@@ -11,7 +11,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class AirwallexPluginsTest {
-    private class TestComponentProvider(val providerType: ActionComponentProviderType) : ActionComponentProvider<TestComponnent> {
+    private class TestComponentProvider(val providerType: ActionComponentProviderType) :
+        ActionComponentProvider<TestComponnent> {
         override fun get(): TestComponnent {
             return TestComponnent()
         }
@@ -88,7 +89,7 @@ class AirwallexPluginsTest {
     }
 
     @Test
-    fun `test get redirect action component provider`() {
+    fun `test get redirect action component provider when hasSchema is true`() {
         AirwallexPlugins.initialize(
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
@@ -110,7 +111,28 @@ class AirwallexPluginsTest {
     }
 
     @Test
-    fun `test can't get action component provider`() {
+    fun `test get redirect action component provider when hasSchema is false`() {
+        AirwallexPlugins.initialize(
+            AirwallexConfiguration.Builder()
+                .setSupportComponentProviders(
+                    listOf(
+                        TestComponentProvider(ActionComponentProviderType.REDIRECT)
+                    )
+                )
+                .build()
+        )
+        assertNull(
+            AirwallexPlugins.getProvider(
+                AvailablePaymentMethodType(
+                    name = "alipaycn",
+                    resources = AvailablePaymentMethodTypeResource(false)
+                )
+            )?.getType()
+        )
+    }
+
+    @Test
+    fun `test can't get action component provider when no providers are registered`() {
         val provider = AirwallexPlugins.getProvider(
             AvailablePaymentMethodType(
                 "card"

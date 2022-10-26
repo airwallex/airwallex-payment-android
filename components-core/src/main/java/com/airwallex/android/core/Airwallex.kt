@@ -168,7 +168,6 @@ class Airwallex internal constructor(
         )
         val filteredItems = response.items?.filter { paymentMethod ->
             paymentMethod.transactionMode == transactionMode &&
-                    paymentMethod.name !in unsupportedPaymentMethodTypes &&
                     AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
                         provider.canHandleSessionAndPaymentMethod(
                             session,
@@ -1039,13 +1038,6 @@ class Airwallex internal constructor(
 
     companion object {
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout"
-        private val unsupportedPaymentMethodTypes = listOf(
-            "applepay",
-            "ach_direct_debit", // todo: remove once mandate is rendered properly
-            "becs_direct_debit", // todo: remove once mandate is rendered properly
-            "sepa_direct_debit", // todo: remove once mandate is rendered properly
-            "bacs_direct_debit" // todo: remove once mandate is rendered properly
-        )
 
         /**
          * Initialize some global configurations, better to be called on Application
