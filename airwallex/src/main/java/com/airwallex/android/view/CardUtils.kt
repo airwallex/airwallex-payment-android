@@ -3,11 +3,11 @@ package com.airwallex.android.view
 import com.airwallex.android.view.CardBrand.Companion.fromCardNumber
 
 object CardUtils {
-
     /**
      * The valid card length
      */
-    private const val VALID_CARD_LENGTH = 16
+    const val VALID_NORMAL_CARD_LENGTH = 16
+    private const val VALID_AMEX_CARD_LENGTH = 15
 
     /**
      * Check if card number is valid
@@ -53,17 +53,23 @@ object CardUtils {
     /**
      * Check if card length is valid
      */
-    internal fun isValidCardLength(cardNumber: String?): Boolean {
+    internal fun isValidCardLength(cardNumber: String?, shouldNormalize: Boolean = false): Boolean {
         if (cardNumber == null) {
             return false
         }
 
-        val possibleCardBrand = getPossibleCardBrand(cardNumber, false)
-        if (possibleCardBrand == CardBrand.Unknown) {
-            return false
-        }
+        val normalizeCardNumber =
+            if (shouldNormalize) {
+                removeSpacesAndHyphens(cardNumber)
+            } else {
+                cardNumber
+            }
 
-        return cardNumber.length == VALID_CARD_LENGTH
+        return when (getPossibleCardBrand(normalizeCardNumber, false)) {
+            CardBrand.Amex -> normalizeCardNumber?.length == VALID_AMEX_CARD_LENGTH
+            CardBrand.Unknown -> false
+            else -> normalizeCardNumber?.length == VALID_NORMAL_CARD_LENGTH
+        }
     }
 
     /**

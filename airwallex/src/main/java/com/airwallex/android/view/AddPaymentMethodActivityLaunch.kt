@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch.Args
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import kotlinx.parcelize.Parceler
@@ -30,19 +31,26 @@ internal class AddPaymentMethodActivityLaunch :
 
     @Parcelize
     data class Args internal constructor(
-        val session: AirwallexSession
+        val session: AirwallexSession,
+        val supportedCardSchemes: List<CardScheme>
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var session: AirwallexSession
+            private lateinit var supportedCardSchemes: List<CardScheme>
 
             fun setAirwallexSession(session: AirwallexSession): Builder = apply {
                 this.session = session
             }
 
+            fun setSupportedCardSchemes(supportedCardSchemes: List<CardScheme>): Builder = apply {
+                this.supportedCardSchemes = supportedCardSchemes
+            }
+
             override fun build(): Args {
                 return Args(
-                    session = session
+                    session = session,
+                    supportedCardSchemes = supportedCardSchemes
                 )
             }
         }

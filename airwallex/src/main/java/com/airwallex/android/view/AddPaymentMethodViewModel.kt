@@ -1,6 +1,7 @@
 package com.airwallex.android.view
 
 import android.app.Application
+import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -10,12 +11,29 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.model.*
+import com.airwallex.android.R
 
 internal class AddPaymentMethodViewModel(
     application: Application,
     private val airwallex: Airwallex,
-    private val session: AirwallexSession
+    private val session: AirwallexSession,
+    private val supportedCardSchemes: List<CardScheme>
 ) : AndroidViewModel(application) {
+
+    fun getValidationResult(cardNumber: String): ValidationResult {
+        if (cardNumber.isEmpty()) {
+            return ValidationResult.Error(R.string.airwallex_empty_card_number)
+        }
+        if (CardUtils.isValidCardNumber(cardNumber)) {
+            val cardBrand = CardUtils.getPossibleCardBrand(cardNumber, true)
+            return if (supportedCardSchemes.map { CardBrand.fromType(it.name) }.contains(cardBrand)) {
+                return ValidationResult.Success
+            } else {
+                return ValidationResult.Error(R.string.airwallex_unsupported_card_number)
+            }
+        }
+        return ValidationResult.Error(R.string.airwallex_invalid_card_number)
+    }
 
     fun createPaymentMethod(
         card: PaymentMethod.Card,
@@ -106,13 +124,19 @@ internal class AddPaymentMethodViewModel(
     internal class Factory(
         private val application: Application,
         private val airwallex: Airwallex,
-        private val session: AirwallexSession
+        private val session: AirwallexSession,
+        private val supportedCardSchemes: List<CardScheme>
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return AddPaymentMethodViewModel(
-                application, airwallex, session
+                application, airwallex, session, supportedCardSchemes
             ) as T
         }
+    }
+
+    sealed class ValidationResult {
+        object Success : ValidationResult()
+        data class Error(@StringRes val message: Int) : ValidationResult()
     }
 }

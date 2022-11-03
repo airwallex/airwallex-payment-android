@@ -24,6 +24,12 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
     private val cvcTextInputLayout = viewBinding.atlCardCvc
     private val expiryTextInputLayout = viewBinding.atlCardExpiry
 
+    var validationMessageCallback: (String) -> String? = { null }
+        set(value) {
+            cardNumberTextInputLayout.validationMessageCallback = value
+            field = value
+        }
+
     var cardChangeCallback: () -> Unit = {}
 
     val paymentMethodCard: PaymentMethod.Card?
@@ -69,23 +75,6 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
     }
 
     private fun listenFocusChanged() {
-        cardNumberTextInputLayout.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                when {
-                    cardNumberTextInputLayout.value.isEmpty() -> {
-                        cardNumberTextInputLayout.error = resources.getString(R.string.airwallex_empty_card_number)
-                    }
-                    !cardNumberTextInputLayout.isValid -> {
-                        cardNumberTextInputLayout.error = resources.getString(R.string.airwallex_invalid_card_number)
-                    }
-                    else -> {
-                        cardNumberTextInputLayout.error = null
-                    }
-                }
-            } else {
-                cardNumberTextInputLayout.error = null
-            }
-        }
         cardNameTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus) {
                 when {

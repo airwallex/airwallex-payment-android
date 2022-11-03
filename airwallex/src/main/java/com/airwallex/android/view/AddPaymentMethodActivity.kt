@@ -11,6 +11,7 @@ import com.airwallex.android.R
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.databinding.ActivityAddCardBinding
 
@@ -31,6 +32,10 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
 
     override val session: AirwallexSession by lazy {
         args.session
+    }
+
+    private val supportedCardSchemes: List<CardScheme> by lazy {
+        args.supportedCardSchemes
     }
 
     private val shipping: Shipping? by lazy {
@@ -61,7 +66,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         ViewModelProvider(
             this,
             AddPaymentMethodViewModel.Factory(
-                application, airwallex, session
+                application, airwallex, session, supportedCardSchemes
             )
         )[AddPaymentMethodViewModel::class.java]
     }
@@ -139,16 +144,22 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun invalidateConfirmStatus() {
-        if (isValid) {
-            viewBinding.btnSaveCard.isEnabled = true
-        } else {
-            viewBinding.btnSaveCard.isEnabled = false
-        }
+        viewBinding.btnSaveCard.isEnabled = isValid
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        viewBinding.cardWidget.validationMessageCallback = { cardNumber ->
+            when (val result = viewModel.getValidationResult(cardNumber)) {
+                is AddPaymentMethodViewModel.ValidationResult.Success -> {
+                    null
+                }
+                is AddPaymentMethodViewModel.ValidationResult.Error -> {
+                    resources.getString(result.message)
+                }
+            }
+        }
         viewBinding.cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
         if (session is AirwallexPaymentSession && session.customerId != null) {
             viewBinding.saveCardWidget.visibility = View.VISIBLE
