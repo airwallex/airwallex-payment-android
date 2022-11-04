@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.databinding.WidgetCardBinding
-import com.airwallex.android.R
 
 /**
  * A widget used to collect the card info
@@ -23,6 +22,8 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
     private val cardNumberTextInputLayout = viewBinding.atlCardNumber
     private val cvcTextInputLayout = viewBinding.atlCardCvc
     private val expiryTextInputLayout = viewBinding.atlCardExpiry
+    private val validatedTextInputs =
+        listOf<ValidatedInput>(cardNameTextInputLayout, cvcTextInputLayout, expiryTextInputLayout)
 
     var validationMessageCallback: (String) -> String? = { null }
         set(value) {
@@ -54,11 +55,7 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
      */
     val isValid: Boolean
         get() {
-            val cardNumberIsValid = CardUtils.isValidCardNumber(cardNumberTextInputLayout.cardNumber)
-            val cardNameIsValid = cardNameTextInputLayout.value.isNotEmpty()
-            val expiryIsValid = expiryTextInputLayout.validDateFields != null
-            val cvcIsValid = cvcTextInputLayout.isValid
-            return cardNumberIsValid && cardNameIsValid && expiryIsValid && cvcIsValid
+            return cardNumberTextInputLayout.isValid && validatedTextInputs.all { it.isValid }
         }
 
     init {
@@ -68,65 +65,36 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
     }
 
     private fun listenTextChanged() {
-        cardNumberTextInputLayout.afterTextChanged { cardChangeCallback.invoke() }
-        cardNameTextInputLayout.afterTextChanged { cardChangeCallback.invoke() }
-        expiryTextInputLayout.afterTextChanged { cardChangeCallback.invoke() }
-        cvcTextInputLayout.afterTextChanged { cardChangeCallback.invoke() }
+        cardNumberTextInputLayout.afterTextChanged { cardChangeCallback() }
+        validatedTextInputs.forEach { input ->
+            if (input is AirwallexTextInputLayout) {
+                input.afterTextChanged { cardChangeCallback() }
+            }
+        }
+
     }
 
     private fun listenFocusChanged() {
-        cardNameTextInputLayout.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                when {
-                    cardNameTextInputLayout.value.isEmpty() -> {
-                        cardNameTextInputLayout.error = resources.getString(R.string.airwallex_empty_card_name)
-                    }
-                    else -> {
-                        cardNameTextInputLayout.error = null
-                    }
-                }
-            } else {
-                cardNameTextInputLayout.error = null
-            }
-        }
-        expiryTextInputLayout.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                when {
-                    expiryTextInputLayout.value.isEmpty() -> {
-                        expiryTextInputLayout.error = resources.getString(R.string.airwallex_empty_expiry)
-                    }
-                    !expiryTextInputLayout.isValid -> {
-                        expiryTextInputLayout.error = resources.getString(R.string.airwallex_invalid_expiry_date)
-                    }
-                    else -> {
-                        expiryTextInputLayout.error = null
+        for (input in validatedTextInputs) {
+            if (input is AirwallexTextInputLayout) {
+                input.afterFocusChanged { hasFocus ->
+                    input.error = if (!hasFocus) {
+                        when {
+                            input.value.isEmpty() -> input.emptyErrorMessage
+                            !input.isValid -> input.invalidErrorMessage
+                            else -> null
+                        }
+                    } else {
+                        null
                     }
                 }
-            } else {
-                expiryTextInputLayout.error = null
-            }
-        }
-        cvcTextInputLayout.afterFocusChanged { hasFocus ->
-            if (!hasFocus) {
-                when {
-                    cvcTextInputLayout.value.isEmpty() -> {
-                        cvcTextInputLayout.error = resources.getString(R.string.airwallex_empty_cvc)
-                    }
-                    !cvcTextInputLayout.isValid -> {
-                        cvcTextInputLayout.error = resources.getString(R.string.airwallex_invalid_cvc)
-                    }
-                    else -> {
-                        cvcTextInputLayout.error = null
-                    }
-                }
-            } else {
-                cvcTextInputLayout.error = null
             }
         }
     }
 
     private fun listenCompletionCallback() {
-        cardNumberTextInputLayout.completionCallback = { cardNameTextInputLayout.requestInputFocus() }
+        cardNumberTextInputLayout.completionCallback =
+            { cardNameTextInputLayout.requestInputFocus() }
         expiryTextInputLayout.completionCallback = { cvcTextInputLayout.requestInputFocus() }
     }
 }

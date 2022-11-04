@@ -7,7 +7,6 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import com.airwallex.android.R
-import com.airwallex.android.core.model.PaymentMethod
 import com.google.android.material.textfield.TextInputEditText
 
 /**
@@ -74,7 +73,6 @@ internal class CardNumberEditText @JvmOverloads constructor(
     private var ignoreTextChanges = false
 
     init {
-        setHint(R.string.airwallex_card_number_label)
         maxLines = 1
         filters = arrayOf<InputFilter>(InputFilter.LengthFilter(INPUT_MAX_LENGTH))
         inputType = InputType.TYPE_CLASS_NUMBER

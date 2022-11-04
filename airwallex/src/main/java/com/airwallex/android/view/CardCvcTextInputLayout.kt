@@ -10,13 +10,19 @@ import com.airwallex.android.R
 internal class CardCvcTextInputLayout constructor(
     context: Context,
     attrs: AttributeSet?
-) : AirwallexTextInputLayout(context, attrs, R.layout.card_cvc_input_layout) {
+) : AirwallexTextInputLayout(context, attrs, R.layout.card_cvc_input_layout), ValidatedInput {
 
     /**
      * Check if cvc is valid
      */
-    internal val isValid: Boolean
+    override val isValid: Boolean
         get() = (teInput as CardCvcEditText).isValid
+
+    override val emptyErrorMessage: String
+        get() = resources.getString(R.string.airwallex_empty_cvc)
+
+    override val invalidErrorMessage: String
+        get() = resources.getString(R.string.airwallex_invalid_cvc)
 
     /**
      * Return the cvc value based on user input

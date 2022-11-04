@@ -40,6 +40,7 @@ internal class CardNumberTextInputLayout constructor(
         get() = (teInput as CardNumberEditText).cardNumber
 
     init {
+        setPlaceHolder(resources.getString(R.string.airwallex_card_number_placeholder))
         val input = teInput as CardNumberEditText
         tlInput.errorIconDrawable = null
         input.errorCallback = { errorMessage ->
@@ -63,10 +64,12 @@ internal class CardNumberTextInputLayout constructor(
         afterFocusChanged { hasFocus ->
             if (hasFocus) {
                 error = null
-                teInput.setHint(R.string.airwallex_card_number_placeholder)
+                setHint(resources.getString(R.string.airwallex_card_number_label))
             } else {
                 error = validationMessageCallback(value)
-                teInput.hint = null
+                if (value.isEmpty()) {
+                    setHint(null)
+                }
             }
         }
     }
