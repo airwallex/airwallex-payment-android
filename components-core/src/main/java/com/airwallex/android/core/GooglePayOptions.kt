@@ -7,7 +7,8 @@ import kotlinx.parcelize.Parcelize
 data class GooglePayOptions(
     /**
      * The Google Pay API may return cards on file on Google.com (PAN_ONLY) and/or a device token on
-     * an Android device authenticated with a 3-D Secure cryptogram (CRYPTOGRAM_3DS).
+     * an Android device authenticated with a 3-D Secure cryptogram (CRYPTOGRAM_3DS). Default: Both
+     * authentication methods are allowed.
      */
     val allowedCardAuthMethods: List<String>? = null,
     /**
