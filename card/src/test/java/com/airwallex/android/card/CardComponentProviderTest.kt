@@ -3,8 +3,9 @@ package com.airwallex.android.card
 import android.app.Activity
 import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.core.*
-import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
 import com.airwallex.android.core.model.NextAction
+import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -13,11 +14,31 @@ import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
 import com.nhaarman.mockitokotlin2.mock
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.json.JSONObject
 import kotlin.test.assertTrue
 
+@Suppress("NotNullAssertionOperatorRule")
 @RunWith(RobolectricTestRunner::class)
+@ExperimentalCoroutinesApi
 class CardComponentProviderTest {
+    private val mockResponse: AvailablePaymentMethodTypeResponse =
+        AvailablePaymentMethodTypeResponseParser().parse(
+            JSONObject(
+                """
+                    {
+                    "items":[
+                    {
+                   "name":"card",
+                   "card_schemes":[{ "name": "mastercard" }]
+                    }   
+                    ],
+                    "has_more":false
+                    }
+                """.trimIndent()
+            )
+        )
 
     @Test
     fun onActivityResultTest() {
@@ -122,15 +143,15 @@ class CardComponentProviderTest {
     }
 
     @Test
-    fun canHandleSessionAndPaymentMethod() = runTest {
+    fun canHandleSessionAndPaymentMethodTest() = runTest {
         val activity = mockk<Activity>()
         val session = mockk<AirwallexSession>()
-        val paymentMethodType = mockk<AvailablePaymentMethodType>()
+        val paymentMethodType = mockResponse.items?.first()
         val cardComponentProvider = CardComponentProvider()
         assertTrue(
             cardComponentProvider.canHandleSessionAndPaymentMethod(
                 session,
-                paymentMethodType,
+                paymentMethodType!!,
                 activity
             )
         )

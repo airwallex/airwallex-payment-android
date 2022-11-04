@@ -117,11 +117,11 @@ internal class PaymentMethodsAdapter(
                     card.last4
                 )
 
-            val cardImage = card.brand?.let {
+            val cardBrand = card.brand?.let {
                 CardBrand.fromType(it)
             }
-            if (cardImage != null) {
-                viewBinding.ivCardIcon.setImageResource(cardImage.icon)
+            if (cardBrand != null) {
+                viewBinding.ivCardIcon.setImageResource(cardBrand.icon)
             }
             viewBinding.rlCard.setOnSingleClickListener {
                 if (selectedPaymentConsent?.id != paymentConsent.id) {

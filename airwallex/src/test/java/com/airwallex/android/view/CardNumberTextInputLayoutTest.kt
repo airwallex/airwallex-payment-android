@@ -8,7 +8,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class CardNumberTextInputLayoutTest {
@@ -27,10 +27,10 @@ class CardNumberTextInputLayoutTest {
         val cardNumberEditText = cardNumberTextInputLayout.findViewById<CardNumberEditText>(R.id.teInput)
         cardNumberEditText.setText("")
         cardNumberEditText.setText("4242 4242 4242 4242")
-        assertTrue(cardNumberEditText.isCardNumberValid)
+        assertNull(cardNumberEditText.validationMessage)
 
         cardNumberEditText.setText("4242424242424242")
-        assertTrue(cardNumberEditText.isCardNumberValid)
+        assertNull(cardNumberEditText.validationMessage)
     }
 
     @Test

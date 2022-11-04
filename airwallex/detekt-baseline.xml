@@ -4,16 +4,13 @@
   <CurrentIssues>
     <ID>ComplexCondition:CardExpiryEditText.kt$CardExpiryEditText.&lt;no name provided>$month.length == 2 &amp;&amp; latestInsertionSize > 0 &amp;&amp; !inErrorState || rawDateInput.length > 2</ID>
     <ID>ComplexMethod:AirwallexStarter.kt$AirwallexStarter.Companion$fun handlePaymentData( requestCode: Int, resultCode: Int, data: Intent? ): Boolean</ID>
-    <ID>ComplexMethod:CardWidget.kt$CardWidget$private fun listenFocusChanged()</ID>
     <ID>ComplexMethod:PaymentInfoBottomSheetDialog.kt$PaymentInfoBottomSheetDialog$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
     <ID>ComplexMethod:PaymentMethodsActivity.kt$PaymentMethodsActivity$private fun handleProcessPaymentMethod( paymentConsent: PaymentConsent, paymentMethodType: AvailablePaymentMethodType?, cvc: String? = null )</ID>
     <ID>LongMethod:AirwallexStarter.kt$AirwallexStarter.Companion$fun handlePaymentData( requestCode: Int, resultCode: Int, data: Intent? ): Boolean</ID>
-    <ID>LongMethod:CardWidget.kt$CardWidget$private fun listenFocusChanged()</ID>
     <ID>LongMethod:PaymentInfoBottomSheetDialog.kt$PaymentInfoBottomSheetDialog$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
     <ID>LongMethod:PaymentMethodsActivity.kt$PaymentMethodsActivity$private fun handleProcessPaymentMethod( paymentConsent: PaymentConsent, paymentMethodType: AvailablePaymentMethodType?, cvc: String? = null )</ID>
     <ID>LongParameterList:AirwallexCheckoutBaseActivity.kt$AirwallexCheckoutBaseActivity$( paymentMethod: PaymentMethod, paymentConsentId: String? = null, cvc: String? = null, additionalInfo: Map&lt;String, String>? = null, flow: AirwallexPaymentRequestFlow? = null, saveCard: Boolean = false, observer: Observer&lt;AirwallexPaymentStatus> )</ID>
     <ID>MemberNameEqualsClassName:AirwallexTextInputLayoutTest.kt$AirwallexTextInputLayoutTest$@Test fun airwallexTextInputLayoutTest()</ID>
-    <ID>MemberNameEqualsClassName:CardBrandTest.kt$CardBrandTest$@Test fun cardBrandTest()</ID>
     <ID>NotNullAssertionOperatorRule:BottomSheetDialog.kt$BottomSheetDialog$_baseBinding!!</ID>
     <ID>NotNullAssertionOperatorRule:BottomSheetDialog.kt$BottomSheetDialog$_binding!!</ID>
     <ID>NotNullAssertionOperatorRule:PaymentMethodSwipeCallback.kt$PaymentMethodSwipeCallback$buttonsBuffer[pos]!!</ID>

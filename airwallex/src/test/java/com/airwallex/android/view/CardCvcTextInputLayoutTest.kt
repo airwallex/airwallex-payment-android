@@ -6,6 +6,7 @@ import com.airwallex.android.R
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -35,5 +36,11 @@ class CardCvcTextInputLayoutTest {
 
         cardCvcEditText.setText("1")
         assertFalse(cardCvcEditText.isValid)
+    }
+
+    @Test
+    fun errorMessagesTest() {
+        assertEquals(cardCvcTextInputLayout.emptyErrorMessage, context.getString(R.string.airwallex_empty_cvc))
+        assertEquals(cardCvcTextInputLayout.invalidErrorMessage, context.getString(R.string.airwallex_invalid_cvc))
     }
 }

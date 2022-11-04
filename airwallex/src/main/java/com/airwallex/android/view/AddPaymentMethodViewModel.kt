@@ -26,10 +26,11 @@ internal class AddPaymentMethodViewModel(
         }
         if (CardUtils.isValidCardNumber(cardNumber)) {
             val cardBrand = CardUtils.getPossibleCardBrand(cardNumber, true)
-            return if (supportedCardSchemes.map { CardBrand.fromType(it.name) }.contains(cardBrand)) {
-                return ValidationResult.Success
+            val supportedCardBrands = supportedCardSchemes.map { CardBrand.fromType(it.name) }
+            return if (supportedCardBrands.contains(cardBrand)) {
+                ValidationResult.Success
             } else {
-                return ValidationResult.Error(R.string.airwallex_unsupported_card_number)
+                ValidationResult.Error(R.string.airwallex_unsupported_card_number)
             }
         }
         return ValidationResult.Error(R.string.airwallex_invalid_card_number)

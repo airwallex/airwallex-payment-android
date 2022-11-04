@@ -7,6 +7,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class CardExpiryTextInputLayoutTest {
@@ -21,7 +22,7 @@ class CardExpiryTextInputLayoutTest {
     }
 
     @Test
-    fun expiryDateValueTest() {
+    fun `test expiry date value`() {
         val cardExpiryEditText =
             cardExpiryTextInputLayout.findViewById<CardExpiryEditText>(R.id.teInput)
         cardExpiryEditText.setText("")
@@ -43,5 +44,23 @@ class CardExpiryTextInputLayoutTest {
         cardExpiryEditText.append("2")
         cardExpiryEditText.append("3")
         assertEquals("12/3", cardExpiryEditText.text.toString())
+    }
+
+    @Test
+    fun `test error messages`() {
+        assertEquals(
+            cardExpiryTextInputLayout.emptyErrorMessage,
+            context.getString(R.string.airwallex_empty_expiry)
+        )
+        assertEquals(
+            cardExpiryTextInputLayout.invalidErrorMessage,
+            context.getString(R.string.airwallex_invalid_expiry_date)
+        )
+    }
+
+    @Test
+    fun `test isValid`() {
+        cardExpiryTextInputLayout.teInput.setText("12/35")
+        assertTrue(cardExpiryTextInputLayout.isValid)
     }
 }
