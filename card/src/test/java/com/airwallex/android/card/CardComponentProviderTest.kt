@@ -1,18 +1,15 @@
 package com.airwallex.android.card
 
 import android.app.Activity
-import androidx.test.core.app.ApplicationProvider
+import android.content.Context
 import com.airwallex.android.core.*
 import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
-import com.nhaarman.mockitokotlin2.mock
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -20,7 +17,6 @@ import org.json.JSONObject
 import kotlin.test.assertTrue
 
 @Suppress("NotNullAssertionOperatorRule")
-@RunWith(RobolectricTestRunner::class)
 @ExperimentalCoroutinesApi
 class CardComponentProviderTest {
     private val mockResponse: AvailablePaymentMethodTypeResponse =
@@ -97,7 +93,8 @@ class CardComponentProviderTest {
         var success = false
 
         val latch = CountDownLatch(1)
-        val activity: Activity = mock()
+        val activity: Activity = mockk()
+        val context: Context = mockk()
         cardComponentProvider.get().handlePaymentIntentResponse(
             "int_hkdmr7v9rg1j58ky8re",
             NextAction(
@@ -109,7 +106,7 @@ class CardComponentProviderTest {
                 method = "POST"
             ),
             activity,
-            ApplicationProvider.getApplicationContext(),
+            context,
             CardNextActionModel(
                 fragment = null,
                 activity = activity,
