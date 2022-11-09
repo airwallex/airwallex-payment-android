@@ -116,9 +116,12 @@ internal class PaymentMethodsAdapter(
                     },
                     card.last4
                 )
-            when (card.brand) {
-                CardBrand.Visa.type -> viewBinding.ivCardIcon.setImageResource(R.drawable.airwallex_ic_visa)
-                CardBrand.MasterCard.type -> viewBinding.ivCardIcon.setImageResource(R.drawable.airwallex_ic_mastercard)
+
+            val cardBrand = card.brand?.let {
+                CardBrand.fromType(it)
+            }
+            if (cardBrand != null) {
+                viewBinding.ivCardIcon.setImageResource(cardBrand.icon)
             }
             viewBinding.rlCard.setOnSingleClickListener {
                 if (selectedPaymentConsent?.id != paymentConsent.id) {
@@ -172,7 +175,10 @@ internal class PaymentMethodsAdapter(
                 .into(viewBinding.paymentMethodIcon)
             itemView.setOnSingleClickListener {
                 if (paymentMethodType.name == PaymentMethodType.CARD.value) {
-                    listener?.onAddCardClick()
+                    val supportedCardSchemes = paymentMethodType.cardSchemes
+                    if (supportedCardSchemes != null) {
+                        listener?.onAddCardClick(supportedCardSchemes)
+                    }
                 } else {
                     selectedPaymentConsent = PaymentConsent(
                         paymentMethod = PaymentMethod.Builder()
@@ -198,7 +204,7 @@ internal class PaymentMethodsAdapter(
             paymentMethodType: AvailablePaymentMethodType? = null
         )
 
-        fun onAddCardClick()
+        fun onAddCardClick(supportedCardSchemes: List<CardScheme>)
     }
 
     internal enum class ItemViewType {

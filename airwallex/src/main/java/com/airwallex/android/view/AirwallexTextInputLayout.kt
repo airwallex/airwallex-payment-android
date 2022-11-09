@@ -100,7 +100,11 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
         teInput.inputType = type
     }
 
-    fun setHint(hint: CharSequence) {
+    fun setPlaceHolder(hint: CharSequence?) {
+        teInput.hint = hint
+    }
+
+    fun setHint(hint: CharSequence?) {
         tlInput.hint = hint
     }
 

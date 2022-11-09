@@ -246,7 +246,7 @@ Airwallex Android SDK可以通过以下步骤允许商户给顾客提供Google P
 - 您可以自定义Google Pay选项来限制或提供额外的付款参数。请参考`GooglePayOptions`类中的更多信息。
 ```
 val googlePayOptions = GooglePayOptions(
-        allowedCardAuthMethods = listOf("3DS"),
+        allowedCardAuthMethods = listOf("CRYPTOGRAM_3DS"),
         billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
         shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
     )

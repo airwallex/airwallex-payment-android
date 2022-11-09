@@ -21,25 +21,31 @@ internal class CardNumberTextInputLayout constructor(
             field = value
         }
 
+    internal var validationMessageCallback: (String) -> String? = { null }
+        set(value) {
+            (teInput as CardNumberEditText).validationMessageCallback = value
+            field = value
+        }
+
     /**
      * Check if credit card number is valid
      */
     internal val isValid: Boolean
-        get() = (teInput as CardNumberEditText).isCardNumberValid
+        get() = (teInput as CardNumberEditText).validationMessage == null
 
     /**
-     * Return the credit card number
+     * Return the card number
      */
     internal val cardNumber: String?
         get() = (teInput as CardNumberEditText).cardNumber
 
     init {
+        setPlaceHolder(resources.getString(R.string.airwallex_card_number_placeholder))
         val input = teInput as CardNumberEditText
         tlInput.errorIconDrawable = null
-        input.errorCallback = { showError ->
-            if (showError) {
-                error = resources.getString(R.string.airwallex_invalid_card_number)
-                tlInput.error = " "
+        input.errorCallback = { errorMessage ->
+            if (errorMessage != null) {
+                error = errorMessage
             } else {
                 error = null
                 tlInput.error = null
@@ -53,6 +59,18 @@ internal class CardNumberTextInputLayout constructor(
                 brand.icon,
                 0
             )
+        }
+
+        afterFocusChanged { hasFocus ->
+            if (hasFocus) {
+                error = null
+                setHint(resources.getString(R.string.airwallex_card_number_label))
+            } else {
+                error = validationMessageCallback(value)
+                if (value.isEmpty()) {
+                    setHint(null)
+                }
+            }
         }
     }
 }

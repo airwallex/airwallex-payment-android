@@ -114,7 +114,10 @@ sonarqube {
                 '**/*ScreenEvent.*',
                 '**/core/Airwallex.kt',
                 '**/card/AirwallexSecurityConnector.kt',
-                '**/AirwallexStarter.kt'
+                '**/AirwallexStarter.kt',
+                '**/*InputLayout.kt',
+                '**/*EditText.kt',
+                '**/view/CardWidget.kt'
         ].join(",")
     }
 }

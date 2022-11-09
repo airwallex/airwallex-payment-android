@@ -10,7 +10,7 @@ import com.airwallex.android.R
 internal class CardExpiryTextInputLayout constructor(
     context: Context,
     attrs: AttributeSet?
-) : AirwallexTextInputLayout(context, attrs, R.layout.card_expiry_input_layout) {
+) : AirwallexTextInputLayout(context, attrs, R.layout.card_expiry_input_layout), ValidatedInput {
 
     /**
      * Callback of complete input expiry date
@@ -24,8 +24,14 @@ internal class CardExpiryTextInputLayout constructor(
     /**
      * Check if expiry date is valid
      */
-    internal val isValid: Boolean
+    override val isValid: Boolean
         get() = (teInput as CardExpiryEditText).isDateValid
+
+    override val emptyErrorMessage: String
+        get() = resources.getString(R.string.airwallex_empty_expiry)
+
+    override val invalidErrorMessage: String
+        get() = resources.getString(R.string.airwallex_invalid_expiry_date)
 
     /**
      * Return the valid date fields, include month & year, object of [Pair]

@@ -1,5 +1,6 @@
 package com.airwallex.android.card
 
+import android.app.Activity
 import com.airwallex.android.core.*
 import com.airwallex.android.core.model.*
 
@@ -22,5 +23,13 @@ class CardComponentProvider : ActionComponentProvider<CardComponent> {
 
     override fun getType(): ActionComponentProviderType {
         return ActionComponentProviderType.CARD
+    }
+
+    override suspend fun canHandleSessionAndPaymentMethod(
+        session: AirwallexSession,
+        paymentMethodType: AvailablePaymentMethodType,
+        activity: Activity
+    ): Boolean {
+        return !paymentMethodType.cardSchemes.isNullOrEmpty()
     }
 }

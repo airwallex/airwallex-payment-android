@@ -13,14 +13,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.CardNameTextInputLayout
         android:id="@+id/atlCardName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:imeOptions="actionNext"
-        android:inputType="text"
-        app:hint="@string/airwallex_card_name_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/atlCardNumber" />

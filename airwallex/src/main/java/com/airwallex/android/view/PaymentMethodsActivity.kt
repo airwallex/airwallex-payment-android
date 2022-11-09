@@ -18,13 +18,7 @@ import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.R
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.log.Logger
-import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.model.DynamicSchemaField
-import com.airwallex.android.core.model.DynamicSchemaFieldType
-import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentMethod
-import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.core.model.PaymentMethodTypeInfo
+import com.airwallex.android.core.model.*
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import kotlinx.coroutines.launch
 
@@ -84,8 +78,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
                     )
                 }
 
-                override fun onAddCardClick() {
-                    startAddPaymentMethod()
+                override fun onAddCardClick(supportedCardSchemes: List<CardScheme>) {
+                    startAddPaymentMethod(supportedCardSchemes)
                 }
             }
         )
@@ -213,11 +207,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity() {
         return R.drawable.airwallex_ic_close
     }
 
-    private fun startAddPaymentMethod() {
+    private fun startAddPaymentMethod(cardSchemes: List<CardScheme>) {
         AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity)
             .startForResult(
                 AddPaymentMethodActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
+                    .setSupportedCardSchemes(cardSchemes)
                     .build()
             )
     }

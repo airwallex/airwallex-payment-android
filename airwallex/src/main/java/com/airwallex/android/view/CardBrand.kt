@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import com.airwallex.android.R
 
 /**
- * All card brands supported by Airwallex. Only support VISA & MASTERCARD
+ * All card brands supported by Airwallex. Only support Visa, Mastercard & American Express
  */
 enum class CardBrand(
     val type: String,
@@ -24,6 +24,11 @@ enum class CardBrand(
             "225", "226", "227", "228", "229", "23", "24", "25", "26", "270", "271", "2720",
             "50", "51", "52", "53", "54", "55", "67"
         )
+    ),
+    Amex(
+        "amex",
+        R.drawable.airwallex_ic_amex,
+        prefixes = setOf("34", "37")
     ),
     Unknown(
         "unknown",
@@ -46,5 +51,8 @@ enum class CardBrand(
                 } == true
             } ?: Unknown
         }
+
+        private val map = values().associateBy(CardBrand::type)
+        fun fromType(type: String) = map[type]
     }
 }

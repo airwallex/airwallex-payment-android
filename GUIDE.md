@@ -249,7 +249,7 @@ The Airwallex Android SDK allows merchants to provide Google Pay as a payment me
 - You can customize the Google Pay options to restrict as well as provide extra context. For more information, please refer to `GooglePayOptions` class.
 ```
 val googlePayOptions = GooglePayOptions(
-        allowedCardAuthMethods = listOf("3DS"),
+        allowedCardAuthMethods = listOf("CRYPTOGRAM_3DS"),
         billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
         shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
     )
