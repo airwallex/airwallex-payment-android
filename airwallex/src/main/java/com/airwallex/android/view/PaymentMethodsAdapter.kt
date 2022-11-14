@@ -118,7 +118,7 @@ internal class PaymentMethodsAdapter(
                 )
 
             val cardBrand = card.brand?.let {
-                CardBrand.fromType(it)
+                CardBrand.fromName(it)
             }
             if (cardBrand != null) {
                 viewBinding.ivCardIcon.setImageResource(cardBrand.icon)

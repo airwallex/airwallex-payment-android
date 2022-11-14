@@ -39,4 +39,10 @@ class CardUtilsTest {
         assertFalse(CardUtils.isValidLuhnNumber("4242424242424244"))
         assertFalse(CardUtils.isValidLuhnNumber(null))
     }
+
+    @Test
+    fun `test getSpacePositions`() {
+        assertEquals(CardUtils.getSpacePositions(CardBrand.MasterCard), setOf(4, 9, 14))
+        assertEquals(CardUtils.getSpacePositions(CardBrand.Amex), setOf(4, 11))
+    }
 }

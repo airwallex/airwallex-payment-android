@@ -101,4 +101,23 @@ object CardUtils {
             .takeUnless { it.isNullOrBlank() }
             ?.replace("\\s|-".toRegex(), "")
     }
+
+    /**
+     * Get space position by spacing pattern of the card brand
+     * e.g. spacing pattern 4-4-4-4 is correlated to space position 4-9-14
+     */
+    fun getSpacePositions(cardBrand: CardBrand): Set<Int> {
+        val spacePostions = mutableSetOf<Int>()
+        var spaceIndex = 0
+        var lastPosition = 0
+        while (spaceIndex < cardBrand.spacingPattern.size - 1) {
+            lastPosition += cardBrand.spacingPattern[spaceIndex]
+            if (spaceIndex > 0) {
+                lastPosition++
+            }
+            spacePostions.add(lastPosition)
+            spaceIndex++
+        }
+        return spacePostions
+    }
 }
