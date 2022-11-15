@@ -9,7 +9,9 @@ import com.airwallex.android.R
 enum class CardBrand(
     val type: String,
     @DrawableRes val icon: Int,
-    private val prefixes: Set<String> = emptySet()
+    private val prefixes: Set<String> = emptySet(),
+    private val fullName: String = type,
+    val spacingPattern: List<Int> = listOf(4, 4, 4, 4)
 ) {
     Visa(
         "visa",
@@ -28,7 +30,9 @@ enum class CardBrand(
     Amex(
         "amex",
         R.drawable.airwallex_ic_amex,
-        prefixes = setOf("34", "37")
+        prefixes = setOf("34", "37"),
+        fullName = "american express",
+        spacingPattern = listOf(4, 6, 5)
     ),
     Unknown(
         "unknown",
@@ -52,7 +56,7 @@ enum class CardBrand(
             } ?: Unknown
         }
 
-        private val map = values().associateBy(CardBrand::type)
-        fun fromType(type: String) = map[type]
+        fun fromType(type: String) = values().associateBy(CardBrand::type)[type]
+        fun fromName(name: String) = values().associateBy(CardBrand::fullName)[name]
     }
 }

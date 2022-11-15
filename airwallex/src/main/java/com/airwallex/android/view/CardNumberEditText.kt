@@ -19,17 +19,11 @@ internal class CardNumberEditText @JvmOverloads constructor(
 ) : TextInputEditText(context, attrs, defStyleAttr) {
 
     internal companion object {
-        // Space index
-        private val SPACE_CARD_SET = setOf(4, 9, 14)
-        private val INPUT_MAX_LENGTH = SPACE_CARD_SET.count() + CardUtils.VALID_NORMAL_CARD_LENGTH
-        /**
-         * Use spaces to format credit card number
-         */
-        internal fun createFormattedNumber(cardParts: Array<String?>): String {
-            return cardParts
-                .takeWhile { it != null }
-                .joinToString(" ")
-        }
+        // Prefix that identifies card brand
+        private const val BRAND_PREFIX_LENGTH = 4
+
+        private val INPUT_MAX_LENGTH =
+            CardBrand.Unknown.spacingPattern.size - 1 + CardUtils.VALID_NORMAL_CARD_LENGTH
     }
 
     /**
@@ -81,13 +75,14 @@ internal class CardNumberEditText @JvmOverloads constructor(
     }
 
     internal fun updateSelectionIndex(
+        cardBrand: CardBrand,
         newLength: Int,
         editActionStart: Int,
         editActionAddition: Int
     ): Int {
         var gapsJumped = 0
         var skipBack = false
-        SPACE_CARD_SET.forEach { gap ->
+        CardUtils.getSpacePositions(cardBrand).forEach { gap ->
             if (editActionStart <= gap && editActionStart + editActionAddition > gap) {
                 gapsJumped++
             }
@@ -115,7 +110,9 @@ internal class CardNumberEditText @JvmOverloads constructor(
             private var latestInsertionSize: Int = 0
 
             private var cursorPosition: Int? = null
-            private var formatNumber: String? = null
+            private var formattedNumber: String? = null
+
+            private var currentBrand: CardBrand = CardBrand.Unknown
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 if (!ignoreTextChanges) {
@@ -130,25 +127,29 @@ internal class CardNumberEditText @JvmOverloads constructor(
                 }
 
                 val inputText = s?.toString().orEmpty()
-                if (start < 4) {
-                    updateCardBrandFromNumber(inputText)
-                }
 
-                if (start > 16) {
+                if (start > CardUtils.VALID_NORMAL_CARD_LENGTH) {
                     // no need to do formatting if we're past all of the spaces.
                     return
                 }
 
+                if (start < BRAND_PREFIX_LENGTH) {
+                    val brand =
+                        CardUtils.getPossibleCardBrand(cardNumber = inputText, shouldNormalize = true)
+                    currentBrand = brand
+                    brandChangeCallback.invoke(brand)
+                }
+
                 val spaceLessNumber = CardUtils.removeSpacesAndHyphens(inputText) ?: return
-                val formatNumber =
-                    createFormattedNumber(separateCardNumberGroups(spaceLessNumber))
+                val formatNumber = createFormattedNumber(spaceLessNumber, currentBrand)
 
                 this.cursorPosition = updateSelectionIndex(
+                    cardBrand = currentBrand,
                     newLength = formatNumber.length,
                     editActionStart = latestChangeStart,
                     editActionAddition = latestInsertionSize
                 )
-                this.formatNumber = formatNumber
+                this.formattedNumber = formatNumber
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -157,13 +158,13 @@ internal class CardNumberEditText @JvmOverloads constructor(
                 }
 
                 ignoreTextChanges = true
-                if (formatNumber != null) {
-                    setText(formatNumber)
+                if (formattedNumber != null) {
+                    setText(formattedNumber)
                     cursorPosition?.let {
                         setSelection(it)
                     }
                 }
-                formatNumber = null
+                formattedNumber = null
                 cursorPosition = null
                 ignoreTextChanges = false
 
@@ -183,24 +184,18 @@ internal class CardNumberEditText @JvmOverloads constructor(
         })
     }
 
-    private fun updateCardBrandFromNumber(partialNumber: String) {
-        val brand =
-            CardUtils.getPossibleCardBrand(cardNumber = partialNumber, shouldNormalize = true)
-        brandChangeCallback.invoke(brand)
-    }
-
-    private fun separateCardNumberGroups(cardNumber: String): Array<String?> {
-        val numberGroups = arrayOfNulls<String?>(4)
-        var i = 0
-        var previousStart = 0
-        while ((i + 1) * 4 < cardNumber.length) {
-            val group = cardNumber.substring(previousStart, (i + 1) * 4)
-            numberGroups[i] = group
-            previousStart = (i + 1) * 4
-            i++
+    /**
+     * Format card number by following the spacing pattern of its card brand
+     */
+    private fun createFormattedNumber(cardNumber: String, cardBrand: CardBrand): String {
+        var formattedNumber = cardNumber
+        val spacePositions = CardUtils.getSpacePositions(cardBrand)
+        spacePositions.forEach { index ->
+            if (formattedNumber.length > index) {
+                formattedNumber = formattedNumber.replaceRange(index, index, " ")
+            }
         }
-        numberGroups[i] = cardNumber.substring(previousStart)
 
-        return numberGroups
+        return formattedNumber
     }
 }

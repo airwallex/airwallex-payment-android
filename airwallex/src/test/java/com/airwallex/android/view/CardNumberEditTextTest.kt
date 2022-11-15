@@ -67,4 +67,16 @@ class CardNumberEditTextTest {
         assertNull(error)
         assertEquals(cardBrand, CardBrand.Visa)
     }
+
+    @Test
+    fun `test amex card number auto formatt`() {
+        cardNumberEditText.setText("378282246310005")
+        assertEquals(cardNumberEditText.text.toString(), "3782 822463 10005")
+    }
+
+    @Test
+    fun `test visa card number auto format`() {
+        cardNumberEditText.setText("4242424242424244")
+        assertEquals(cardNumberEditText.text.toString(), "4242 4242 4242 4244")
+    }
 }

@@ -118,7 +118,7 @@ internal class PaymentMethodsAdapter(
                 )
 
             val cardBrand = card.brand?.let {
-                CardBrand.fromType(it)
+                CardBrand.fromName(it)
             }
             if (cardBrand != null) {
                 viewBinding.ivCardIcon.setImageResource(cardBrand.icon)
@@ -172,6 +172,7 @@ internal class PaymentMethodsAdapter(
             Glide.with(viewBinding.root.context)
                 .load(paymentMethodType.resources?.logos?.png)
                 .error(if (paymentMethodType.name == PaymentMethodType.CARD.value) R.drawable.airwallex_ic_card_default else 0)
+                .fitCenter()
                 .into(viewBinding.paymentMethodIcon)
             itemView.setOnSingleClickListener {
                 if (paymentMethodType.name == PaymentMethodType.CARD.value) {
