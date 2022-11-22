@@ -704,7 +704,45 @@ class Airwallex internal constructor(
             options,
             object : PaymentListener<PaymentIntent> {
                 override fun onSuccess(response: PaymentIntent) {
-                    listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
+                    if (response.nextAction != null) {
+                        val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
+                        if (provider == null) {
+                            listener.onCompleted(
+                                AirwallexPaymentStatus.Failure(
+                                    AirwallexCheckoutException(message = "Missing ${PaymentMethodType.GOOGLEPAY.dependencyName} dependency")
+                                )
+                            )
+                            return
+                        }
+                        provider.get().retrieveSecurityToken(
+                            response.id, applicationContext,
+                            object : SecurityTokenListener {
+                                override fun onResponse(deviceId: String) {
+                                    val device = PaymentManager.buildDeviceInfo(deviceId)
+                                    val cardNextActionModel = CardNextActionModel(
+                                        fragment = fragment,
+                                        activity = activity,
+                                        paymentManager = paymentManager,
+                                        clientSecret = clientSecret,
+                                        device = device,
+                                        paymentIntentId = response.id,
+                                        currency = response.currency,
+                                        amount = response.amount
+                                    )
+                                    provider.get().handlePaymentIntentResponse(
+                                        response.id,
+                                        response.nextAction,
+                                        activity,
+                                        applicationContext,
+                                        cardNextActionModel,
+                                        listener
+                                    )
+                                }
+                            }
+                        )
+                    } else {
+                        listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
+                    }
                 }
 
                 override fun onFailed(exception: AirwallexException) {

@@ -133,6 +133,15 @@ class PaymentCartFragment : Fragment() {
             }
         }
 
+    private val force3DS: Boolean
+        get() {
+            return when (Settings.force3DS) {
+                SampleApplication.instance.resources.getStringArray(R.array.array_force_3ds)[0] -> false
+                SampleApplication.instance.resources.getStringArray(R.array.array_force_3ds)[1] -> true
+                else -> throw Exception("Unsupported requiresCVC: ${Settings.force3DS}")
+            }
+        }
+
     private val autoCapture: Boolean
         get() {
             return when (Settings.autoCapture) {
@@ -325,8 +334,11 @@ class PaymentCartFragment : Fragment() {
                     "descriptor" to "Airwallex - T-sh  irt",
                     "metadata" to mapOf("id" to 1),
                     "email" to "yimadangxian@airwallex.com",
-                    "return_url" to Settings.returnUrl,
+                    "return_url" to Settings.returnUrl
                 )
+                if (force3DS) {
+                    body["payment_method_options"] = mapOf("card" to mapOf("three_ds_action" to "FORCE_3DS"))
+                }
                 Settings.cachedCustomerId?.let {
                     body.put("customer_id", it)
                 }

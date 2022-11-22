@@ -16,6 +16,8 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.Logger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
+import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
+import com.airwallex.android.threedsecurity.ThreeDSecurityManager
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
@@ -46,32 +48,50 @@ class GooglePayComponent : ActionComponent {
         cardNextActionModel: CardNextActionModel?,
         listener: Airwallex.PaymentResultListener
     ) {
-        this.paymentIntentId = paymentIntentId
-        this.listener = listener
-        val googlePayOptions = session.googlePayOptions ?: return
-        val paymentDataRequestJson = PaymentsUtil.getPaymentDataRequest(
-            price = session.amount,
-            countryCode = session.countryCode,
-            currency = session.currency,
-            googlePayOptions = googlePayOptions,
-            supportedCardSchemes = paymentMethodType.cardSchemes
-        ) ?: run {
-            listener.onCompleted(
-                AirwallexPaymentStatus.Failure(
-                    AirwallexCheckoutException(
-                        message = "Can't serialize Google Pay payment data request"
+        if (nextAction?.type == NextAction.NextActionType.REDIRECT_FORM) {
+            if (cardNextActionModel == null) {
+                listener.onCompleted(
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(message = "Card payment info not found")
                     )
                 )
+                return
+            }
+            ThreeDSecurityManager.handleThreeDSFlow(
+                paymentIntentId = paymentIntentId,
+                activity = activity,
+                nextAction = nextAction,
+                cardNextActionModel = cardNextActionModel,
+                listener = listener
             )
-            return
+        } else {
+            this.paymentIntentId = paymentIntentId
+            this.listener = listener
+            val googlePayOptions = session.googlePayOptions ?: return
+            val paymentDataRequestJson = PaymentsUtil.getPaymentDataRequest(
+                price = session.amount,
+                countryCode = session.countryCode,
+                currency = session.currency,
+                googlePayOptions = googlePayOptions,
+                supportedCardSchemes = paymentMethodType.cardSchemes
+            ) ?: run {
+                listener.onCompleted(
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(
+                            message = "Can't serialize Google Pay payment data request"
+                        )
+                    )
+                )
+                return
+            }
+            val request = PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
+            val paymentClient = PaymentsUtil.createPaymentsClient(activity)
+            resolvePaymentRequest(
+                paymentClient.loadPaymentData(request),
+                activity,
+                loadPaymentDataRequestCode
+            )
         }
-        val request = PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
-        val paymentClient = PaymentsUtil.createPaymentsClient(activity)
-        resolvePaymentRequest(
-            paymentClient.loadPaymentData(request),
-            activity,
-            loadPaymentDataRequestCode
-        )
     }
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
@@ -130,8 +150,11 @@ class GooglePayComponent : ActionComponent {
         applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
-        // Since only card payments require a device ID, this will not be executed
-        securityTokenListener.onResponse("")
+        AirwallexSecurityConnector().retrieveSecurityToken(
+            paymentIntentId,
+            applicationContext,
+            securityTokenListener
+        )
     }
 
     private fun createPaymentSuccessInfo(paymentData: PaymentData): Map<String, Any>? {

@@ -8,6 +8,7 @@ include ':wechat'
 include ':googlepay'
 include ':ui-core'
 include ':components-core'
+include ':3ds'
 include ':airwallex-detekt-rules'
 
 // Substitute remote binary dependencies with local project/module dependency

@@ -1,5 +1,6 @@
-package com.airwallex.android.card.exception
+package com.airwallex.android.threedsecurity
 
+import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

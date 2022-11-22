@@ -6,9 +6,6 @@ plugins {
 
 apply from: "$rootProject.projectDir/android-module.gradle"
 
-def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
-def DEVICE_FINGERPRINT_MERCHANT_ID = '"airwallex_cybs"'
-
 android {
     namespace 'com.airwallex.android.card'
     defaultConfig {
@@ -16,18 +13,9 @@ android {
     }
 }
 
-android.buildTypes.each { type ->
-    type.buildConfigField 'String', 'DEVICE_FINGERPRINT_ORG_ID', DEVICE_FINGERPRINT_ORG_ID
-    type.buildConfigField 'String', 'DEVICE_FINGERPRINT_MERCHANT_ID', DEVICE_FINGERPRINT_MERCHANT_ID
-}
-
 dependencies {
     api project(':ui-core')
-
-    // fingerprinting
-    implementation 'io.github.airwallex:TrustDefender-Behavioral:6.1-67'
-    implementation 'io.github.airwallex:TrustDefender-Profiling:6.1-67'
-    implementation 'io.github.airwallex:TrustDefender-Profiling-Connections:6.1-67'
+    api project(':3ds')
 
     // test
     testImplementation 'org.json:json:20210307'

@@ -1,37 +1,20 @@
-package com.airwallex.android.card
+package com.airwallex.android.threedsecurity
 
 import android.webkit.WebView
 import androidx.test.core.app.ApplicationProvider
-import com.airwallex.android.card.exception.WebViewConnectionException
-import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexConfiguration
+import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
-import kotlin.test.BeforeTest
 
 @RunWith(RobolectricTestRunner::class)
 class ThreeDSecureWebViewClientTest {
 
     private val webView = WebView(ApplicationProvider.getApplicationContext())
 
-    @BeforeTest
-    fun setup() {
-        Airwallex.initialize(
-            AirwallexConfiguration.Builder()
-                .enableLogging(true)
-                .setSupportComponentProviders(
-                    listOf(
-                        CardComponent.PROVIDER
-                    )
-                )
-                .build()
-        )
-    }
-
     @Test
-    fun threeDSecureWebViewClientTest() {
+    fun testThreeDSecureWebViewClientTest() {
         val url =
             "https://aaa?acsResponse=card"
 
@@ -49,17 +32,6 @@ class ThreeDSecureWebViewClientTest {
             override fun onPageStarted(url: String?) {
             }
         }
-
-        Airwallex.initialize(
-            AirwallexConfiguration.Builder()
-                .enableLogging(true)
-                .setSupportComponentProviders(
-                    listOf(
-                        CardComponent.PROVIDER
-                    )
-                )
-                .build()
-        )
 
         val webViewClient = ThreeDSecureWebViewClient(callback)
         val hasCallbackUrl = webViewClient.hasCallbackUrl(

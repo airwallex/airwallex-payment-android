@@ -1,4 +1,4 @@
-package com.airwallex.android.card
+package com.airwallex.android.threedsecurity
 
 import android.content.Context
 import com.airwallex.android.core.SecurityConnector
