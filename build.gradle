@@ -117,7 +117,8 @@ sonarqube {
                 '**/AirwallexStarter.kt',
                 '**/*InputLayout.kt',
                 '**/*EditText.kt',
-                '**/view/CardWidget.kt'
+                '**/view/CardWidget.kt',
+                '**/paymentacceptance/**'
         ].join(",")
     }
 }
