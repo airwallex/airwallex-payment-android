@@ -23,11 +23,11 @@ import org.junit.Test
 import java.math.BigDecimal
 
 class GooglePayComponentTest {
-    lateinit var component: GooglePayComponent
-    lateinit var activity: Activity
-    lateinit var context: Context
-    lateinit var listener: Airwallex.PaymentResultListener
-    lateinit var mockTask: Task<PaymentData>
+    private lateinit var component: GooglePayComponent
+    private lateinit var activity: Activity
+    private lateinit var context: Context
+    private lateinit var listener: Airwallex.PaymentResultListener
+    private lateinit var mockTask: Task<PaymentData>
 
     private val mockResponse: AvailablePaymentMethodTypeResponse =
         AvailablePaymentMethodTypeResponseParser().parse(

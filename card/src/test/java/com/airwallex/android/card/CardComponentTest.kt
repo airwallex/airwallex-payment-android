@@ -19,10 +19,10 @@ import java.math.BigDecimal
 import kotlin.test.assertNotNull
 
 class CardComponentTest {
-    lateinit var component: CardComponent
-    lateinit var activity: Activity
-    lateinit var context: Context
-    lateinit var listener: Airwallex.PaymentResultListener
+    private lateinit var component: CardComponent
+    private lateinit var activity: Activity
+    private lateinit var context: Context
+    private lateinit var listener: Airwallex.PaymentResultListener
 
     @Before
     fun setUp() {

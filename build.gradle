@@ -118,7 +118,8 @@ sonarqube {
                 '**/*InputLayout.kt',
                 '**/*EditText.kt',
                 '**/view/CardWidget.kt',
-                '**/paymentacceptance/**'
+                '**/paymentacceptance/**',
+                '3ds/**'
         ].join(",")
     }
 }

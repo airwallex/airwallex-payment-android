@@ -126,20 +126,12 @@ class PaymentCartFragment : Fragment() {
 
     private val requiresCVC: Boolean
         get() {
-            return when (Settings.requiresCVC) {
-                SampleApplication.instance.resources.getStringArray(R.array.array_requires_cvc)[0] -> false
-                SampleApplication.instance.resources.getStringArray(R.array.array_requires_cvc)[1] -> true
-                else -> throw Exception("Unsupported requiresCVC: ${Settings.requiresCVC}")
-            }
+            return Settings.requiresCVC.toBoolean()
         }
 
     private val force3DS: Boolean
         get() {
-            return when (Settings.force3DS) {
-                SampleApplication.instance.resources.getStringArray(R.array.array_force_3ds)[0] -> false
-                SampleApplication.instance.resources.getStringArray(R.array.array_force_3ds)[1] -> true
-                else -> throw Exception("Unsupported requiresCVC: ${Settings.force3DS}")
-            }
+            return Settings.force3DS.toBoolean()
         }
 
     private val autoCapture: Boolean
