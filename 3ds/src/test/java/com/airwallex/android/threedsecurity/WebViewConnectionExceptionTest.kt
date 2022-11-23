@@ -26,7 +26,7 @@ class WebViewConnectionExceptionTest {
         )
 
         assertEquals(
-            "com.airwallex.android.card.exception.WebViewConnectionException: message; status-code: 0, code null, source null, message message",
+            "com.airwallex.android.threedsecurity.exception.WebViewConnectionException: message; status-code: 0, code null, source null, message message",
             webViewConnectionException.toString()
         )
     }

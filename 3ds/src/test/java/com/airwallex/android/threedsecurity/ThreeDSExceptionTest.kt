@@ -24,7 +24,7 @@ class ThreeDSExceptionTest {
         )
 
         assertEquals(
-            "com.airwallex.android.card.exception.ThreeDSException: message; status-code: 0, null",
+            "com.airwallex.android.threedsecurity.exception.ThreeDSException: message; status-code: 0, null",
             threeDSException.toString()
         )
     }

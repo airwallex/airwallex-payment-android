@@ -7,11 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import com.airwallex.android.core.*
-import com.airwallex.android.core.model.Address
-import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
-import com.airwallex.android.core.model.Billing
+import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
+import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
+import com.airwallex.android.threedsecurity.ThreeDSecurityManager
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.*
@@ -21,6 +20,7 @@ import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
+import java.math.BigDecimal
 
 class GooglePayComponentTest {
     lateinit var component: GooglePayComponent
@@ -59,6 +59,8 @@ class GooglePayComponentTest {
         mockkStatic(SystemClock::class)
         mockkStatic(PaymentData::class)
         mockkStatic(AutoResolveHelper::class)
+        mockkObject(ThreeDSecurityManager)
+        mockkConstructor(AirwallexSecurityConnector::class)
         component = GooglePayComponent()
 
         val session = mockk<AirwallexSession>(relaxed = true)
@@ -88,12 +90,52 @@ class GooglePayComponentTest {
         unmockkStatic(SystemClock::class)
         unmockkStatic(PaymentData::class)
         unmockkStatic(AutoResolveHelper::class)
+        unmockkObject(ThreeDSecurityManager)
+        unmockkConstructor(AirwallexSecurityConnector::class)
     }
 
     @Test
     fun `test handlePaymentIntentResponse when payment data request is valid`() {
         handlePaymentIntentResponse()
         verify(exactly = 1) { component.resolvePaymentRequest(mockTask, activity, 991) }
+    }
+
+    @Test
+    fun `test handlePaymentIntentResponse when next action is redirect without card model`() {
+        val redirectAction = NextAction(
+            type = NextAction.NextActionType.REDIRECT_FORM,
+            data = null,
+            dcc = null,
+            url = null,
+            method = null
+        )
+        handlePaymentIntentResponse(action = redirectAction)
+        verify(exactly = 1) { listener.onCompleted(any<AirwallexPaymentStatus.Failure>()) }
+    }
+
+    @Test
+    fun `test handlePaymentIntentResponse when next action is redirect with card model`() {
+        val redirectAction = NextAction(
+            type = NextAction.NextActionType.REDIRECT_FORM,
+            data = null,
+            dcc = null,
+            url = null,
+            method = null
+        )
+        val cardModel = CardNextActionModel(
+            fragment = null,
+            activity = activity,
+            paymentManager = AirwallexPaymentManager(AirwallexApiRepository()),
+            clientSecret = "tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
+            device = null,
+            paymentIntentId = "int_hkdmr7v9rg1j58ky8re",
+            currency = "CNY",
+            amount = BigDecimal.TEN
+        )
+        handlePaymentIntentResponse(redirectAction, cardModel)
+        verify(exactly = 1) {
+            ThreeDSecurityManager.handleThreeDSFlow("id", activity, redirectAction, cardModel, listener)
+        }
     }
 
     @Test
@@ -178,13 +220,22 @@ class GooglePayComponentTest {
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Cancel) }
     }
 
-    private fun handlePaymentIntentResponse() {
+    @Test
+    fun `test retrieveSecurityToken`() {
+        val securityListener = mockk<SecurityTokenListener>()
+        val connector = MockKGateway.implementation().constructorMockFactory.mockPlaceholder(AirwallexSecurityConnector::class)
+        every { connector.retrieveSecurityToken(any(), context, securityListener) } just runs
+        component.retrieveSecurityToken("id", context, securityListener)
+        verify(exactly = 1) { connector.retrieveSecurityToken(any(), context, securityListener) }
+    }
+
+    private fun handlePaymentIntentResponse(action: NextAction? = null, model: CardNextActionModel? = null) {
         component.handlePaymentIntentResponse(
             paymentIntentId = "id",
-            nextAction = null,
+            nextAction = action,
             activity = activity,
             applicationContext = context,
-            cardNextActionModel = null,
+            cardNextActionModel = model,
             listener = listener
         )
     }
