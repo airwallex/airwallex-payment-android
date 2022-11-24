@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-parcelize'
 }
 
 apply from: "$rootProject.projectDir/android-module.gradle"
@@ -12,6 +11,7 @@ android {
 
 dependencies {
     api project(':ui-core')
+    api project(':3ds')
 
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
 

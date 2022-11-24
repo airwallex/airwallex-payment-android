@@ -34,6 +34,13 @@
             android:title="@string/requires_cvc" />
 
         <ListPreference
+            android:dialogTitle="@string/force_3ds"
+            android:entries="@array/array_force_3ds"
+            android:entryValues="@array/array_force_3ds"
+            android:key="@string/force_3ds"
+            android:title="@string/force_3ds" />
+
+        <ListPreference
             android:dialogTitle="@string/auto_capture"
             android:entries="@array/array_auto_capture"
             android:entryValues="@array/array_auto_capture"

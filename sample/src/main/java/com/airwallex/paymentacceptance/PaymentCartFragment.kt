@@ -126,11 +126,12 @@ class PaymentCartFragment : Fragment() {
 
     private val requiresCVC: Boolean
         get() {
-            return when (Settings.requiresCVC) {
-                SampleApplication.instance.resources.getStringArray(R.array.array_requires_cvc)[0] -> false
-                SampleApplication.instance.resources.getStringArray(R.array.array_requires_cvc)[1] -> true
-                else -> throw Exception("Unsupported requiresCVC: ${Settings.requiresCVC}")
-            }
+            return Settings.requiresCVC.toBoolean()
+        }
+
+    private val force3DS: Boolean
+        get() {
+            return Settings.force3DS.toBoolean()
         }
 
     private val autoCapture: Boolean
@@ -325,8 +326,11 @@ class PaymentCartFragment : Fragment() {
                     "descriptor" to "Airwallex - T-sh  irt",
                     "metadata" to mapOf("id" to 1),
                     "email" to "yimadangxian@airwallex.com",
-                    "return_url" to Settings.returnUrl,
+                    "return_url" to Settings.returnUrl
                 )
+                if (force3DS) {
+                    body["payment_method_options"] = mapOf("card" to mapOf("three_ds_action" to "FORCE_3DS"))
+                }
                 Settings.cachedCustomerId?.let {
                     body.put("customer_id", it)
                 }

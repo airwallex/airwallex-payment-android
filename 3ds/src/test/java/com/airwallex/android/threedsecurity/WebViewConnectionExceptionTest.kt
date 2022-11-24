@@ -1,5 +1,6 @@
-package com.airwallex.android.card.exception
+package com.airwallex.android.threedsecurity
 
+import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -25,7 +26,7 @@ class WebViewConnectionExceptionTest {
         )
 
         assertEquals(
-            "com.airwallex.android.card.exception.WebViewConnectionException: message; status-code: 0, code null, source null, message message",
+            "com.airwallex.android.threedsecurity.exception.WebViewConnectionException: message; status-code: 0, code null, source null, message message",
             webViewConnectionException.toString()
         )
     }

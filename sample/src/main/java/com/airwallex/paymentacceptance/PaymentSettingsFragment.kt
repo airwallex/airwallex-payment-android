@@ -147,6 +147,12 @@ class PaymentSettingsFragment :
         requireCVCPref?.isEnabled =
             !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && requireCVCPref != null)
 
+        val force3DSPref: ListPreference? =
+            findPreference(getString(R.string.force_3ds)) as? ListPreference?
+        if (force3DSPref != null && force3DSPref.value == null) {
+            force3DSPref.setValueIndex(0)
+        }
+
         val generateCustomerPref: Preference? =
             findPreference(getString(R.string.generate_customer)) as? Preference?
         generateCustomerPref?.summary = Settings.cachedCustomerId
@@ -209,6 +215,7 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.return_url))
         onSharedPreferenceChanged(preferences, getString(R.string.next_trigger_by))
         onSharedPreferenceChanged(preferences, getString(R.string.requires_cvc))
+        onSharedPreferenceChanged(preferences, getString(R.string.force_3ds))
         registerOnSharedPreferenceChangeListener()
     }
 
@@ -259,6 +266,7 @@ class PaymentSettingsFragment :
             getString(R.string.return_url) -> preference?.summary = Settings.returnUrl
             getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy
             getString(R.string.requires_cvc) -> preference?.summary = Settings.requiresCVC
+            getString(R.string.force_3ds) -> preference?.summary = Settings.force3DS
         }
         toggleNextTriggerByStatus()
     }

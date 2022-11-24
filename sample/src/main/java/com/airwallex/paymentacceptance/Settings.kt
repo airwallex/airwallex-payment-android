@@ -102,6 +102,17 @@ object Settings {
                 ?: defaultRequireCVC
         }
 
+    val force3DS: String
+        get() {
+            val defaultForce3DS =
+                SampleApplication.instance.resources.getStringArray(R.array.array_force_3ds)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.force_3ds),
+                defaultForce3DS
+            )
+                ?: defaultForce3DS
+        }
+
     val autoCapture: String
         get() {
             val defaultAutoCapture =

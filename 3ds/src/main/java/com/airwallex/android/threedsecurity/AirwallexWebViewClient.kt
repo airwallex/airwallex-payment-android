@@ -1,4 +1,4 @@
-package com.airwallex.android.card
+package com.airwallex.android.threedsecurity
 
 import android.annotation.TargetApi
 import android.graphics.Bitmap
@@ -7,8 +7,8 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.airwallex.android.card.exception.WebViewConnectionException
 import com.airwallex.android.core.log.Logger
+import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
 
 abstract class AirwallexWebViewClient(private val callbacks: WebViewClientCallbacks) :
     WebViewClient() {

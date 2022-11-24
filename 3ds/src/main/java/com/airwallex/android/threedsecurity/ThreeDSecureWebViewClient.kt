@@ -1,8 +1,8 @@
-package com.airwallex.android.card
+package com.airwallex.android.threedsecurity
 
 import android.webkit.WebView
-import com.airwallex.android.card.exception.WebViewConnectionException
 import com.airwallex.android.core.log.Logger
+import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
 import java.net.URLDecoder
 
 class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :

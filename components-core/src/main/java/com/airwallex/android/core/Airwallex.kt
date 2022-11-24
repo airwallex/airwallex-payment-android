@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.InvalidParamsException
+import com.airwallex.android.core.extension.confirmGooglePayIntent
 import com.airwallex.android.core.model.*
 import java.math.BigDecimal
 import java.util.*
@@ -548,7 +549,11 @@ class Airwallex internal constructor(
                                     mutableInfo.remove("billing")
 
                                     @Suppress("UNCHECKED_CAST")
-                                    confirmGooglePayPaymentIntent(
+                                    googlePayProvider.get().confirmGooglePayIntent(
+                                        fragment = fragment,
+                                        activity = activity,
+                                        paymentManager = paymentManager,
+                                        applicationContext = applicationContext,
                                         paymentIntentId = paymentIntent.id,
                                         clientSecret = requireNotNull(paymentIntent.clientSecret),
                                         additionalInfo = mutableInfo as? Map<String, String>
@@ -664,54 +669,6 @@ class Airwallex internal constructor(
         } else {
             confirmPaymentIntentWithDevice(device = null, params = params, listener = listener)
         }
-    }
-
-    private fun confirmGooglePayPaymentIntent(
-        paymentIntentId: String,
-        clientSecret: String,
-        additionalInfo: Map<String, String>,
-        billing: Billing?,
-        autoCapture: Boolean,
-        listener: PaymentResultListener
-    ) {
-        val threeDSecure = ThreeDSecure.Builder()
-            .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl())
-            .build()
-        val request = PaymentIntentConfirmRequest.Builder(
-            requestId = UUID.randomUUID().toString()
-        )
-            .setPaymentMethodOptions(
-                PaymentMethodOptions.Builder()
-                    .setCardOptions(
-                        PaymentMethodOptions.CardOptions.Builder()
-                            .setAutoCapture(autoCapture)
-                            .setThreeDSecure(threeDSecure).build()
-                    )
-                    .build()
-            )
-            .setPaymentMethodRequest(
-                PaymentMethodRequest.Builder(PaymentMethodType.GOOGLEPAY.value)
-                    .setGooglePayPaymentMethodRequest(additionalInfo, billing)
-                    .build()
-            )
-            .build()
-        val options = AirwallexApiRepository.ConfirmPaymentIntentOptions(
-            clientSecret = clientSecret,
-            paymentIntentId = paymentIntentId,
-            request = request
-        )
-        paymentManager.startOperation(
-            options,
-            object : PaymentListener<PaymentIntent> {
-                override fun onSuccess(response: PaymentIntent) {
-                    listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
-                }
-
-                override fun onFailed(exception: AirwallexException) {
-                    listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
-                }
-            }
-        )
     }
 
     /**
