@@ -1,4 +1,4 @@
-package com.airwallex.android.view
+package com.airwallex.android.view.inputs
 
 import android.content.Context
 import android.text.Editable

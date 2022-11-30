@@ -1,5 +1,6 @@
-package com.airwallex.android.view
+package com.airwallex.android.view.util
 
+import com.airwallex.android.view.CardBrand
 import com.airwallex.android.view.CardBrand.Companion.fromCardNumber
 
 object CardUtils {

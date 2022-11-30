@@ -1,4 +1,4 @@
-package com.airwallex.android.view
+package com.airwallex.android.view.util
 
 import androidx.annotation.Size
 import java.util.*

@@ -12,6 +12,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.R
+import com.airwallex.android.view.util.CardUtils
 
 internal class AddPaymentMethodViewModel(
     application: Application,

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import com.airwallex.android.R
 import com.airwallex.android.databinding.CountryAutocompleteViewBinding
+import com.airwallex.android.view.util.CountryUtils
 import java.util.*
 
 class CountryAutoCompleteView constructor(

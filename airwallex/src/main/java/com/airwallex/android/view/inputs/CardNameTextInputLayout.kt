@@ -1,9 +1,8 @@
-package com.airwallex.android.view
+package com.airwallex.android.view.inputs
 
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
-import android.view.inputmethod.EditorInfo
 import com.airwallex.android.R
 
 internal class CardNameTextInputLayout constructor(

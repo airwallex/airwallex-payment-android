@@ -1,5 +1,6 @@
 package com.airwallex.android.view
 
+import com.airwallex.android.view.util.CountryUtils
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

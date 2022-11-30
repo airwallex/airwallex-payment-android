@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.airwallex.android.view.CardNumberEditText
+    <com.airwallex.android.view.inputs.CardNumberEditText
         android:id="@+id/teInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

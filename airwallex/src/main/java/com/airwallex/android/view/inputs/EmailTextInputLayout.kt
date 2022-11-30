@@ -1,9 +1,10 @@
-package com.airwallex.android.view
+package com.airwallex.android.view.inputs
 
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Patterns
 import com.airwallex.android.R
+import com.airwallex.android.view.inputs.ValidatedInput
 
 internal class EmailTextInputLayout constructor(
     context: Context,

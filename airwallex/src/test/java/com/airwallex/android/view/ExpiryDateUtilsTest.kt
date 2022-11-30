@@ -1,5 +1,6 @@
 package com.airwallex.android.view
 
+import com.airwallex.android.view.util.ExpiryDateUtils
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.util.*

@@ -3,6 +3,8 @@ package com.airwallex.android.view
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.ui.R
+import com.airwallex.android.view.inputs.CardExpiryEditText
+import com.airwallex.android.view.util.ExpiryDateUtils
 import io.mockk.*
 import org.junit.After
 import org.junit.Before

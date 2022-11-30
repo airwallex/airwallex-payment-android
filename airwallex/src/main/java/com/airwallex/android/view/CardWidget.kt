@@ -7,6 +7,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.databinding.WidgetCardBinding
+import com.airwallex.android.view.inputs.AirwallexTextInputLayout
+import com.airwallex.android.view.inputs.ValidatedInput
 
 /**
  * A widget used to collect the card info
@@ -106,5 +108,21 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
     private fun listenCompletionCallback() {
         cardNumberTextInputLayout.completionCallback = { cardNameTextInputLayout.requestInputFocus() }
         expiryTextInputLayout.completionCallback = { cvcTextInputLayout.requestInputFocus() }
+    }
+
+    private fun ValidatedInput.listenFocusChanged() {
+        if (this is AirwallexTextInputLayout) {
+            afterFocusChanged { hasFocus ->
+                error = if (!hasFocus) {
+                    when {
+                        value.isEmpty() -> emptyErrorMessage
+                        !isValid -> invalidErrorMessage
+                        else -> null
+                    }
+                } else {
+                    null
+                }
+            }
+        }
     }
 }

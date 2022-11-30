@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.inputs.AirwallexTextInputLayout
         android:id="@+id/atlFirstName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,7 +13,7 @@
         android:inputType="textCapWords"
         app:hint="@string/airwallex_shipping_first_name_hint" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.inputs.AirwallexTextInputLayout
         android:id="@+id/atlLastName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.inputs.AirwallexTextInputLayout
         android:id="@+id/atlState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
         android:inputType="textCapWords"
         app:hint="@string/airwallex_shipping_state_name_hint" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.inputs.AirwallexTextInputLayout
         android:id="@+id/atlCity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
         android:inputType="textCapWords"
         app:hint="@string/airwallex_shipping_city_name_hint" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.inputs.AirwallexTextInputLayout
         android:id="@+id/atlStreetAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
         android:inputType="textCapWords"
         app:hint="@string/airwallex_shipping_street_hint" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.inputs.AirwallexTextInputLayout
         android:id="@+id/atlZipCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
         android:inputType="text"
         app:hint="@string/airwallex_shipping_zip_code_hint" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.inputs.AirwallexTextInputLayout
         android:id="@+id/atlEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
         android:inputType="text"
         app:hint="@string/airwallex_shipping_email_hint" />
 
-    <com.airwallex.android.view.AirwallexTextInputLayout
+    <com.airwallex.android.view.inputs.AirwallexTextInputLayout
         android:id="@+id/atlPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
