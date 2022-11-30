@@ -129,6 +129,11 @@ class PaymentCartFragment : Fragment() {
             return Settings.requiresCVC.toBoolean()
         }
 
+    private val requiresEmail: Boolean
+        get() {
+            return Settings.requiresEmail.toBoolean()
+        }
+
     private val force3DS: Boolean
         get() {
             return Settings.force3DS.toBoolean()
@@ -160,6 +165,7 @@ class PaymentCartFragment : Fragment() {
                         billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
                     )
                 )
+                    .setRequireEmail(requiresEmail)
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)
                     .build()
@@ -172,6 +178,7 @@ class PaymentCartFragment : Fragment() {
                     nextTriggerBy = nextTriggerBy,
                     countryCode = Settings.countryCode
                 )
+                    .setRequireEmail(requiresEmail)
                     .setShipping(shipping)
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
@@ -191,6 +198,7 @@ class PaymentCartFragment : Fragment() {
                     nextTriggerBy = nextTriggerBy,
                     countryCode = Settings.countryCode
                 )
+                    .setRequireEmail(requiresEmail)
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .setReturnUrl(Settings.returnUrl)

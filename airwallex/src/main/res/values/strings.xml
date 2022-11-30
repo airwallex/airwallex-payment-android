@@ -26,6 +26,7 @@
     <string name="airwallex_payment_methods">Payment methods</string>
     <string name="airwallex_cvc_hint">CVC/CVV</string>
     <string name="airwallex_card_name_hint">Name on card</string>
+    <string name="airwallex_email_hint">Email</string>
     <string name="airwallex_empty_card_number">Please enter your card number</string>
     <string name="airwallex_invalid_card_number">Card number is invalid</string>
     <string name="airwallex_unsupported_card_number">Card not supported for payment</string>
@@ -37,6 +38,7 @@
     <string name="airwallex_invalid_expiry_date">Please enter a valid expiry date</string>
     <string name="airwallex_empty_cvc">Please enter your card CVC/CVV</string>
     <string name="airwallex_invalid_cvc">Please enter a valid security code</string>
+    <string name="airwallex_empty_email">Please enter your email address</string>
     <string name="airwallex_card_number_label">Card number</string>
     <string name="airwallex_card_number_placeholder">1234 1234 1234 1234</string>
     <string name="airwallex_expires_hint">Expires MM/YY</string>

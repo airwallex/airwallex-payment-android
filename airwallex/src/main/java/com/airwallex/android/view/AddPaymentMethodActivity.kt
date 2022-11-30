@@ -150,6 +150,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        viewBinding.cardWidget.showEmail = session.isEmailRequired
         viewBinding.cardWidget.validationMessageCallback = { cardNumber ->
             when (val result = viewModel.getValidationResult(cardNumber)) {
                 is AddPaymentMethodViewModel.ValidationResult.Success -> {

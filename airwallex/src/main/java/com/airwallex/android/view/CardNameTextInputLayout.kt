@@ -22,6 +22,5 @@ internal class CardNameTextInputLayout constructor(
     init {
         setHint(resources.getString(R.string.airwallex_card_name_hint))
         teInput.inputType = InputType.TYPE_CLASS_TEXT
-        teInput.imeOptions = EditorInfo.IME_ACTION_NEXT
     }
 }

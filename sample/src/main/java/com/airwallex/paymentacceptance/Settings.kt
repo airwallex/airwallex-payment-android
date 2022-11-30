@@ -102,6 +102,17 @@ object Settings {
                 ?: defaultRequireCVC
         }
 
+    val requiresEmail: String
+        get() {
+            val defaultRequiresEmail =
+                SampleApplication.instance.resources.getStringArray(R.array.array_requires_email)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.requires_email),
+                defaultRequiresEmail
+            )
+                ?: defaultRequiresEmail
+        }
+
     val force3DS: String
         get() {
             val defaultForce3DS =
