@@ -1,14 +1,11 @@
 package com.airwallex.android.view
 
 import com.airwallex.android.view.util.ExpiryDateUtils
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@RunWith(RobolectricTestRunner::class)
 class ExpiryDateUtilsTest {
 
     @Test

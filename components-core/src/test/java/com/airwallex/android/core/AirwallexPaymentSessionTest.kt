@@ -5,6 +5,7 @@ import org.junit.Test
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class AirwallexPaymentSessionTest {
 
@@ -14,6 +15,7 @@ class AirwallexPaymentSessionTest {
             PaymentIntentFixtures.PAYMENT_INTENT, "CN"
         )
             .setRequireBillingInformation(false)
+            .setRequireEmail(true)
             .build()
 
         assertNotNull(airwallexPaymentSession)
@@ -26,6 +28,8 @@ class AirwallexPaymentSessionTest {
 
         assertNotNull(airwallexPaymentSession.isBillingInformationRequired)
         assertEquals(false, airwallexPaymentSession.isBillingInformationRequired)
+
+        assertTrue(airwallexPaymentSession.isEmailRequired)
 
         assertEquals(null, airwallexPaymentSession.shipping)
 
