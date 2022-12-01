@@ -34,6 +34,13 @@
             android:title="@string/requires_cvc" />
 
         <ListPreference
+            android:dialogTitle="@string/requires_email"
+            android:entries="@array/array_requires_email"
+            android:entryValues="@array/array_requires_email"
+            android:key="@string/requires_email"
+            android:title="@string/requires_email" />
+
+        <ListPreference
             android:dialogTitle="@string/force_3ds"
             android:entries="@array/array_force_3ds"
             android:entryValues="@array/array_force_3ds"

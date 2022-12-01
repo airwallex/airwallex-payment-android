@@ -3,6 +3,8 @@ package com.airwallex.android.view
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.R
+import com.airwallex.android.view.inputs.CardNumberEditText
+import com.airwallex.android.view.inputs.CardNumberTextInputLayout
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

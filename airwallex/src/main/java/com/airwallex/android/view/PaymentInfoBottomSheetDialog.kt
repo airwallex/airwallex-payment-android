@@ -10,6 +10,7 @@ import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.databinding.DialogPaymentInfoBinding
 import com.airwallex.android.R
 import com.airwallex.android.core.model.*
+import com.airwallex.android.view.inputs.AirwallexTextInputLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>() {

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.airwallex.android.view.CardExpiryEditText
+    <com.airwallex.android.view.inputs.CardExpiryEditText
         android:id="@+id/teInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

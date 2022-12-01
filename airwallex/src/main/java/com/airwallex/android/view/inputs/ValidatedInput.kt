@@ -1,4 +1,4 @@
-package com.airwallex.android.view
+package com.airwallex.android.view.inputs
 
 internal interface ValidatedInput {
     val isValid: Boolean

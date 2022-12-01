@@ -63,6 +63,11 @@ class AirwallexRecurringWithIntentSession internal constructor(
     override val isBillingInformationRequired: Boolean = true,
 
     /**
+     * Whether or not email is required for card payments. Set to 'true' if you'd like to collect customers' email
+     */
+    override val isEmailRequired: Boolean = false,
+
+    /**
      * It is required if the PaymentIntent is created for recurring payment
      */
     override val customerId: String,
@@ -93,6 +98,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
 
         private var requiresCVC: Boolean = false
         private var isBillingInformationRequired: Boolean = true
+        private var isEmailRequired: Boolean = false
         private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason =
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
         private var returnUrl: String? = null
@@ -100,6 +106,10 @@ class AirwallexRecurringWithIntentSession internal constructor(
 
         fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requiresBillingInformation
+        }
+
+        fun setRequireEmail(requiresEmail: Boolean): Builder = apply {
+            this.isEmailRequired = requiresEmail
         }
 
         fun setRequireCvc(requiresCVC: Boolean): Builder = apply {
@@ -133,6 +143,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 amount = paymentIntent.amount,
                 shipping = paymentIntent.order?.shipping,
                 isBillingInformationRequired = isBillingInformationRequired,
+                isEmailRequired = isEmailRequired,
                 returnUrl = returnUrl,
                 autoCapture = autoCapture
             )

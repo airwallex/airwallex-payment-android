@@ -1,4 +1,4 @@
-package com.airwallex.android.view
+package com.airwallex.android.view.inputs
 
 import android.content.Context
 import android.text.Editable
@@ -7,6 +7,8 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import com.airwallex.android.R
+import com.airwallex.android.view.CardBrand
+import com.airwallex.android.view.util.CardUtils
 import com.google.android.material.textfield.TextInputEditText
 
 /**

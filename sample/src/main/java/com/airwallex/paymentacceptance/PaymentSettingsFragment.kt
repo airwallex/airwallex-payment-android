@@ -112,49 +112,47 @@ class PaymentSettingsFragment :
                 }
             }
 
-        val sdkEnvPref: ListPreference? =
-            findPreference(getString(R.string.sdk_env_id)) as? ListPreference?
+        val sdkEnvPref: ListPreference? = findPreference(getString(R.string.sdk_env_id))
         if (sdkEnvPref != null && sdkEnvPref.value == null) {
             // Default Staging
             sdkEnvPref.setValueIndex(0)
         }
 
-        val returnUrlPref: ListPreference? =
-            findPreference(getString(R.string.return_url)) as? ListPreference?
-        if (returnUrlPref != null && returnUrlPref.value == null) {
-            returnUrlPref.setValueIndex(0)
-        }
-
-        val checkoutModePref: ListPreference? =
-            findPreference(getString(R.string.checkout_mode)) as? ListPreference?
+        val checkoutModePref: ListPreference? = findPreference(getString(R.string.checkout_mode))
         if (checkoutModePref != null && checkoutModePref.value == null) {
             checkoutModePref.setValueIndex(0)
         }
 
-        val nextTriggerByPref: ListPreference? =
-            findPreference(getString(R.string.next_trigger_by)) as? ListPreference?
+        val nextTriggerByPref: ListPreference? = findPreference(getString(R.string.next_trigger_by))
         if (nextTriggerByPref != null && nextTriggerByPref.value == null) {
             nextTriggerByPref.setValueIndex(0)
         }
         nextTriggerByPref?.isEnabled =
             !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
 
-        val requireCVCPref: ListPreference? =
-            findPreference(getString(R.string.requires_cvc)) as? ListPreference?
+        val requireCVCPref: ListPreference? = findPreference(getString(R.string.requires_cvc))
         if (requireCVCPref != null && requireCVCPref.value == null) {
             requireCVCPref.setValueIndex(0)
         }
         requireCVCPref?.isEnabled =
             !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && requireCVCPref != null)
 
-        val force3DSPref: ListPreference? =
-            findPreference(getString(R.string.force_3ds)) as? ListPreference?
+        val requireEmailPref: ListPreference? = findPreference(getString(R.string.requires_email))
+        if (requireEmailPref != null && requireEmailPref.value == null) {
+            requireEmailPref.setValueIndex(0)
+        }
+
+        val force3DSPref: ListPreference? = findPreference(getString(R.string.force_3ds))
         if (force3DSPref != null && force3DSPref.value == null) {
             force3DSPref.setValueIndex(0)
         }
 
-        val generateCustomerPref: Preference? =
-            findPreference(getString(R.string.generate_customer)) as? Preference?
+        val autoCapturePref: ListPreference? = findPreference(getString(R.string.auto_capture))
+        if (autoCapturePref != null && autoCapturePref.value == null) {
+            autoCapturePref.setValueIndex(0)
+        }
+
+        val generateCustomerPref: Preference? = findPreference(getString(R.string.generate_customer))
         generateCustomerPref?.summary = Settings.cachedCustomerId
         generateCustomerPref?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             viewLifecycleOwner.lifecycleScope.safeLaunch(
@@ -215,7 +213,9 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.return_url))
         onSharedPreferenceChanged(preferences, getString(R.string.next_trigger_by))
         onSharedPreferenceChanged(preferences, getString(R.string.requires_cvc))
+        onSharedPreferenceChanged(preferences, getString(R.string.requires_email))
         onSharedPreferenceChanged(preferences, getString(R.string.force_3ds))
+        onSharedPreferenceChanged(preferences, getString(R.string.auto_capture))
         registerOnSharedPreferenceChangeListener()
     }
 
@@ -267,6 +267,8 @@ class PaymentSettingsFragment :
             getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy
             getString(R.string.requires_cvc) -> preference?.summary = Settings.requiresCVC
             getString(R.string.force_3ds) -> preference?.summary = Settings.force3DS
+            getString(R.string.auto_capture) -> preference?.summary = Settings.autoCapture
+            getString(R.string.requires_email) -> preference?.summary = Settings.requiresEmail
         }
         toggleNextTriggerByStatus()
     }

@@ -3,9 +3,12 @@ package com.airwallex.android.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.databinding.WidgetCardBinding
+import com.airwallex.android.view.inputs.AirwallexTextInputLayout
+import com.airwallex.android.view.inputs.ValidatedInput
 
 /**
  * A widget used to collect the card info
@@ -22,8 +25,16 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
     private val cardNumberTextInputLayout = viewBinding.atlCardNumber
     private val cvcTextInputLayout = viewBinding.atlCardCvc
     private val expiryTextInputLayout = viewBinding.atlCardExpiry
-    private val validatedTextInputs =
-        listOf<ValidatedInput>(cardNameTextInputLayout, cvcTextInputLayout, expiryTextInputLayout)
+    private val emailTextInputLayout = viewBinding.atlCardEmail
+    private val validatedTextInputs: List<ValidatedInput>
+        get() {
+            return mutableListOf<ValidatedInput>(cardNameTextInputLayout, cvcTextInputLayout, expiryTextInputLayout)
+                .apply {
+                    if (showEmail) {
+                        add(emailTextInputLayout)
+                    }
+                }
+        }
 
     var validationMessageCallback: (String) -> String? = { null }
         set(value) {
@@ -58,6 +69,23 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
             return cardNumberTextInputLayout.isValid && validatedTextInputs.all { it.isValid }
         }
 
+    /**
+     * Decide if the email input field is shown
+     */
+    var showEmail = false
+        set(value) {
+            if (value) {
+                emailTextInputLayout.visibility = VISIBLE
+                emailTextInputLayout.afterTextChanged { cardChangeCallback() }
+                emailTextInputLayout.listenFocusChanged()
+                cvcTextInputLayout.setImeOptions(EditorInfo.IME_ACTION_NEXT)
+            } else {
+                emailTextInputLayout.visibility = GONE
+                cvcTextInputLayout.setImeOptions(EditorInfo.IME_ACTION_DONE)
+            }
+            field = value
+        }
+
     init {
         listenTextChanged()
         listenFocusChanged()
@@ -71,30 +99,30 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
                 input.afterTextChanged { cardChangeCallback() }
             }
         }
-
     }
 
     private fun listenFocusChanged() {
-        for (input in validatedTextInputs) {
-            if (input is AirwallexTextInputLayout) {
-                input.afterFocusChanged { hasFocus ->
-                    input.error = if (!hasFocus) {
-                        when {
-                            input.value.isEmpty() -> input.emptyErrorMessage
-                            !input.isValid -> input.invalidErrorMessage
-                            else -> null
-                        }
-                    } else {
-                        null
-                    }
-                }
-            }
-        }
+        validatedTextInputs.forEach { it.listenFocusChanged() }
     }
 
     private fun listenCompletionCallback() {
-        cardNumberTextInputLayout.completionCallback =
-            { cardNameTextInputLayout.requestInputFocus() }
+        cardNumberTextInputLayout.completionCallback = { cardNameTextInputLayout.requestInputFocus() }
         expiryTextInputLayout.completionCallback = { cvcTextInputLayout.requestInputFocus() }
+    }
+
+    private fun ValidatedInput.listenFocusChanged() {
+        if (this is AirwallexTextInputLayout) {
+            afterFocusChanged { hasFocus ->
+                error = if (!hasFocus) {
+                    when {
+                        value.isEmpty() -> emptyErrorMessage
+                        !isValid -> invalidErrorMessage
+                        else -> null
+                    }
+                } else {
+                    null
+                }
+            }
+        }
     }
 }

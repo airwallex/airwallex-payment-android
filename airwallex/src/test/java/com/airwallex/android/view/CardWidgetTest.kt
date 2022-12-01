@@ -4,6 +4,10 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.R
 import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.view.inputs.AirwallexTextInputLayout
+import com.airwallex.android.view.inputs.CardCvcTextInputLayout
+import com.airwallex.android.view.inputs.CardExpiryTextInputLayout
+import com.airwallex.android.view.inputs.CardNumberTextInputLayout
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

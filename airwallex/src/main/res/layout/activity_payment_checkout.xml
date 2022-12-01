@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/header" />
 
-    <com.airwallex.android.view.CardCvcTextInputLayout
+    <com.airwallex.android.view.inputs.CardCvcTextInputLayout
         android:id="@+id/atlCardCvc"
         android:layout_width="124dp"
         android:layout_height="wrap_content"

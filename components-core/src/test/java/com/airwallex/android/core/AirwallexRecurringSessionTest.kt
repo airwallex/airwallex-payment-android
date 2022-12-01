@@ -2,13 +2,11 @@ package com.airwallex.android.core
 
 import com.airwallex.android.core.model.PaymentConsent
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
-@RunWith(RobolectricTestRunner::class)
 class AirwallexRecurringSessionTest {
 
     @Test
@@ -23,6 +21,7 @@ class AirwallexRecurringSessionTest {
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
             .setRequireBillingInformation(false)
             .setRequireCvc(true)
+            .setRequireEmail(true)
             .build()
 
         assertNotNull(airwallexRecurringSession)
@@ -41,6 +40,8 @@ class AirwallexRecurringSessionTest {
 
         assertNotNull(airwallexRecurringSession.isBillingInformationRequired)
         assertEquals(false, airwallexRecurringSession.isBillingInformationRequired)
+
+        assertTrue(airwallexRecurringSession.isEmailRequired)
 
         assertEquals(null, airwallexRecurringSession.shipping)
 
