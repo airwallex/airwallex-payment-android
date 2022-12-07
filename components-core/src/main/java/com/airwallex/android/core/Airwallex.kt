@@ -169,13 +169,11 @@ class Airwallex internal constructor(
         )
         val filteredItems = response.items?.filter { paymentMethod ->
             paymentMethod.transactionMode == transactionMode &&
-                    AirwallexPlugins.getProvider(paymentMethod)?.let { provider ->
-                        provider.canHandleSessionAndPaymentMethod(
-                            session,
-                            paymentMethod,
-                            activity
-                        )
-                    } ?: false
+                    AirwallexPlugins.getProvider(paymentMethod)?.canHandleSessionAndPaymentMethod(
+                        session,
+                        paymentMethod,
+                        activity
+                    ) ?: false
         }
 
         return AvailablePaymentMethodTypeResponse(response.hasMore, filteredItems)
@@ -651,8 +649,7 @@ class Airwallex internal constructor(
                     params.paymentIntentId, applicationContext,
                     object : SecurityTokenListener {
                         override fun onResponse(deviceId: String) {
-                            val device =
-                                PaymentManager.buildDeviceInfo(deviceId)
+                            val device = paymentManager.buildDeviceInfo(deviceId)
                             confirmPaymentIntentWithDevice(
                                 device = device,
                                 params = params,

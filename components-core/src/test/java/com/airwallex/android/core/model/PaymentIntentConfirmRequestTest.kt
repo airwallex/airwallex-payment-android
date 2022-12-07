@@ -12,10 +12,6 @@ class PaymentIntentConfirmRequestTest {
         .setDevice(
             Device.Builder()
                 .setDeviceId("123456")
-                .setDeviceModel("Mate30 pro")
-                .setDeviceOS("android")
-                .setSdkVersion("10.0")
-                .setPlatformType("huawei")
                 .build()
         )
         .setPaymentMethodRequest(null)
@@ -52,10 +48,6 @@ class PaymentIntentConfirmRequestTest {
         assertEquals(
             Device.Builder()
                 .setDeviceId("123456")
-                .setDeviceModel("Mate30 pro")
-                .setDeviceOS("android")
-                .setSdkVersion("10.0")
-                .setPlatformType("huawei")
                 .build().toParamMap(),
             request.device!!.toParamMap()
         )

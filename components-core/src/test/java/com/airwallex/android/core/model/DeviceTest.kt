@@ -1,20 +1,18 @@
 package com.airwallex.android.core.model
 
+import android.os.Build
+import io.mockk.mockkStatic
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
-@RunWith(RobolectricTestRunner::class)
 class DeviceTest {
 
     private val device by lazy {
         Device.Builder()
             .setDeviceId("123456")
             .setDeviceModel("Mate30 pro")
-            .setDeviceOS("android")
-            .setSdkVersion("10.0")
-            .setPlatformType("huawei")
+            .setOsType("android")
+            .setOsVersion("10.0")
             .build()
     }
 
@@ -22,21 +20,22 @@ class DeviceTest {
     fun testParams() {
         assertEquals("123456", device.deviceId)
         assertEquals("Mate30 pro", device.deviceModel)
-        assertEquals("android", device.deviceOS)
+        assertEquals("android", device.osType)
         assertEquals("10.0", device.version)
-        assertEquals("huawei", device.platformType)
     }
 
     @Test
     fun testToParamsMap() {
+        mockkStatic(Build::class)
         val cardParamMap = device.toParamMap()
         assertEquals(
             mapOf(
                 "device_id" to "123456",
-                "device_model" to "Mate30 pro",
-                "sdk_version" to "10.0",
-                "platform_type" to "huawei",
-                "device_os" to "android"
+                "mobile" to mapOf(
+                    "device_model" to "Mate30 pro",
+                    "os_type" to "android",
+                    "os_version" to "10.0"
+                )
             ),
             cardParamMap
         )

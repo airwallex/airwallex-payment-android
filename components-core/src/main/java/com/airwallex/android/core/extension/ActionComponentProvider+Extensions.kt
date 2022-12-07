@@ -25,7 +25,7 @@ internal fun ActionComponent.confirmGooglePayIntent(
         paymentIntentId, applicationContext,
         object : SecurityTokenListener {
             override fun onResponse(deviceId: String) {
-                val device = PaymentManager.buildDeviceInfo(deviceId)
+                val device = paymentManager.buildDeviceInfo(deviceId)
                 val threeDSecure = ThreeDSecure.Builder()
                     .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl()).build()
                 val request = PaymentIntentConfirmRequest.Builder(UUID.randomUUID().toString())

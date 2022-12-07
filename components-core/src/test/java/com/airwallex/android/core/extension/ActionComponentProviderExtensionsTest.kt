@@ -17,7 +17,7 @@ class ActionComponentProviderExtensionsTest {
     private val actionComponent = spyk<ActionComponent>()
     private val fragment = mockk<Fragment>()
     private val activity = mockk<Activity>()
-    private val paymentManager = mockk<PaymentManager>()
+    private val paymentManager = mockk<PaymentManager>(relaxed = true)
     private val context = mockk<Context>()
     private val billing = Billing(
         firstName = "John",

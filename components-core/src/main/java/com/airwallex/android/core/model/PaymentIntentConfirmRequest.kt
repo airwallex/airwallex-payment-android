@@ -57,7 +57,7 @@ data class PaymentIntentConfirmRequest internal constructor(
         private const val FIELD_PAYMENT_METHOD = "payment_method"
         private const val FIELD_PAYMENT_METHOD_OPTIONS = "payment_method_options"
         private const val FIELD_PAYMENT_CONSENT_REFERENCE = "payment_consent_reference"
-        private const val FIELD_DEVICE = "device"
+        private const val FIELD_DEVICE = "device_data"
         private const val FIELD_RETURN_URL = "return_url"
         private const val FIELD_INTEGRATION_DATA = "integration_data"
     }

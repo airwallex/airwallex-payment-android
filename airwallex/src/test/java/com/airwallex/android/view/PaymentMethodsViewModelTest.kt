@@ -10,7 +10,6 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
 import io.mockk.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.Rule
@@ -18,7 +17,6 @@ import org.junit.Test
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 
-@ExperimentalCoroutinesApi
 class PaymentMethodsViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()

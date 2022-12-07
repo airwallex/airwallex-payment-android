@@ -11,51 +11,47 @@ data class Device internal constructor(
     val deviceId: String? = null,
     val deviceModel: String? = null,
     val version: String? = null,
-    val platformType: String? = null,
-    val deviceOS: String? = null
+    val osType: String? = null
 ) : AirwallexModel, AirwallexRequestModel, Parcelable {
 
     companion object {
-        const val FIELD_DEVICE_ID = "device_id"
-        const val FIELD_DEVICE_MODEL = "device_model"
-        const val FIELD_SDK_VERSION = "sdk_version"
-        const val FIELD_PLATFORM_TYPE = "platform_type"
-        const val FIELD_DEVICE_OS = "device_os"
+        private const val FIELD_DEVICE_ID = "device_id"
+        private const val FIELD_MOBILE = "mobile"
+        private const val FIELD_DEVICE_MODEL = "device_model"
+        private const val FIELD_OS_TYPE = "os_type"
+        private const val FIELD_OS_VERSION = "os_version"
     }
 
     override fun toParamMap(): Map<String, Any> {
-        return mapOf<String, Any>()
-            .plus(
-                mapOf(FIELD_SDK_VERSION to (version ?: sdkVersion))
-            )
-            .plus(
-                deviceId?.let {
-                    mapOf(FIELD_DEVICE_ID to it)
-                }.orEmpty()
-            )
-            .plus(
-                deviceModel?.let {
-                    mapOf(FIELD_DEVICE_MODEL to it)
-                }.orEmpty()
-            )
-            .plus(
-                platformType?.let {
-                    mapOf(FIELD_PLATFORM_TYPE to it)
-                }.orEmpty()
-            )
-            .plus(
-                deviceOS?.let {
-                    mapOf(FIELD_DEVICE_OS to it)
-                }.orEmpty()
-            )
+        return mutableMapOf<String, Any>().apply {
+            deviceId?.let {
+                put(FIELD_DEVICE_ID, it)
+            }
+            getMobileMap()?.let {
+                put(FIELD_MOBILE, it)
+            }
+        }
+    }
+
+    private fun getMobileMap(): Map<String, String>? {
+        return mutableMapOf<String, String>().apply {
+            deviceModel?.let {
+                put(FIELD_DEVICE_MODEL, it)
+            }
+            version?.let {
+                put(FIELD_OS_VERSION, it)
+            }
+            osType?.let {
+                put(FIELD_OS_TYPE, it)
+            }
+        }.ifEmpty { null }
     }
 
     class Builder : ObjectBuilder<Device> {
         private var deviceId: String? = null
         private var deviceModel: String? = null
-        private var sdkVersion: String? = null
-        private var platformType: String? = null
-        private var deviceOS: String? = null
+        private var version: String? = null
+        private var osType: String? = null
 
         fun setDeviceId(deviceId: String?): Builder = apply {
             this.deviceId = deviceId
@@ -65,25 +61,20 @@ data class Device internal constructor(
             this.deviceModel = deviceModel
         }
 
-        fun setSdkVersion(sdkVersion: String?): Builder = apply {
-            this.sdkVersion = sdkVersion
+        fun setOsVersion(osVersion: String?): Builder = apply {
+            this.version = osVersion
         }
 
-        fun setPlatformType(platformType: String?): Builder = apply {
-            this.platformType = platformType
-        }
-
-        fun setDeviceOS(deviceOS: String?): Builder = apply {
-            this.deviceOS = deviceOS
+        fun setOsType(osType: String?): Builder = apply {
+            this.osType = osType
         }
 
         override fun build(): Device {
             return Device(
                 deviceId = deviceId,
                 deviceModel = deviceModel,
-                version = sdkVersion,
-                platformType = platformType,
-                deviceOS = deviceOS
+                version = version,
+                osType = osType
             )
         }
     }

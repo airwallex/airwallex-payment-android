@@ -9,12 +9,7 @@ class ContinuePaymentIntentParamsTest {
         paymentIntentId = "int_hkdmr7v9rg1j58ky8re",
         clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
         type = PaymentIntentContinueType.ENROLLMENT,
-        device = Device(
-            deviceId = "airwallex_cybsint_hkdmr7v9rg1j58ky8re1629281144897",
-            deviceModel = "mobile",
-            platformType = "Android",
-            deviceOS = "10"
-        ),
+        device = Device("airwallex_cybsint_hkdmr7v9rg1j58ky8re1629281144897"),
         useDcc = false
     )
 
@@ -27,12 +22,7 @@ class ContinuePaymentIntentParamsTest {
         )
         assertEquals(PaymentIntentContinueType.ENROLLMENT, request.type)
         assertEquals(
-            Device(
-                deviceId = "airwallex_cybsint_hkdmr7v9rg1j58ky8re1629281144897",
-                deviceModel = "mobile",
-                platformType = "Android",
-                deviceOS = "10"
-            ).toString(),
+            Device("airwallex_cybsint_hkdmr7v9rg1j58ky8re1629281144897").toString(),
             request.device.toString()
         )
         assertEquals(false, request.useDcc)
