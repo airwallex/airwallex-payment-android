@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -49,7 +50,11 @@ class H5WebViewActivity : AppCompatActivity() {
             settings.userAgentString = AIRWALLEX_USER_AGENT
 
             webViewClient = object : WebViewClient() {
-                override fun shouldOverrideUrlLoading(view: WebView?, url: String): Boolean {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
+                    val url = request?.url.toString()
                     if (url.startsWith("weixin://wap/pay?") ||
                         url.startsWith("http://weixin/wap/pay") ||
                         url.startsWith("alipays") ||

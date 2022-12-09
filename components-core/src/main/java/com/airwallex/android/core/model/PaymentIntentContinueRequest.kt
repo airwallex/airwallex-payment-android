@@ -33,7 +33,7 @@ data class PaymentIntentContinueRequest(
         private const val FIELD_REQUEST_ID = "request_id"
         private const val FIELD_TYPE = "type"
         private const val FIELD_THREE_DS = "three_ds"
-        private const val FIELD_DEVICE = "device"
+        private const val FIELD_DEVICE = "device_data"
         private const val FIELD_USE_DCC = "use_dcc"
     }
 

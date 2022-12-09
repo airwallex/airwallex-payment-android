@@ -11,13 +11,11 @@ import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import kotlin.test.assertTrue
 
 @Suppress("NotNullAssertionOperatorRule")
-@ExperimentalCoroutinesApi
 class CardComponentProviderTest {
     private val mockResponse: AvailablePaymentMethodTypeResponse =
         AvailablePaymentMethodTypeResponseParser().parse(

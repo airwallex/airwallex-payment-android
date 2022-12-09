@@ -13,9 +13,8 @@ class PaymentIntentConfirmRequestTest {
             Device.Builder()
                 .setDeviceId("123456")
                 .setDeviceModel("Mate30 pro")
-                .setDeviceOS("android")
-                .setSdkVersion("10.0")
-                .setPlatformType("huawei")
+                .setOsType("android")
+                .setOsVersion("10.0")
                 .build()
         )
         .setPaymentMethodRequest(null)
@@ -53,9 +52,8 @@ class PaymentIntentConfirmRequestTest {
             Device.Builder()
                 .setDeviceId("123456")
                 .setDeviceModel("Mate30 pro")
-                .setDeviceOS("android")
-                .setSdkVersion("10.0")
-                .setPlatformType("huawei")
+                .setOsType("android")
+                .setOsVersion("10.0")
                 .build().toParamMap(),
             request.device!!.toParamMap()
         )
@@ -73,12 +71,13 @@ class PaymentIntentConfirmRequestTest {
                     "id" to "cst_hkdmr7v9rg1j5g4azy6",
                     "cvc" to "123",
                 ),
-                "device" to mapOf(
+                "device_data" to mapOf(
                     "device_id" to "123456",
-                    "device_model" to "Mate30 pro",
-                    "sdk_version" to "10.0",
-                    "platform_type" to "huawei",
-                    "device_os" to "android"
+                    "mobile" to mapOf(
+                        "device_model" to "Mate30 pro",
+                        "os_type" to "android",
+                        "os_version" to "10.0"
+                    )
                 ),
                 "return_url" to "https://www.airwallex.com",
                 "integration_data" to mapOf(

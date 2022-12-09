@@ -1,8 +1,10 @@
 package com.airwallex.android.core
 
+import android.os.Build
 import com.airwallex.android.core.Airwallex.PaymentListener
 import com.airwallex.android.core.exception.APIException
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.extension.capitalized
 import com.airwallex.android.core.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +32,22 @@ class AirwallexPaymentManager(
             onSuccess = { return it },
             onFailure = { throw handleError(it) }
         )
+    }
+
+    override fun buildDeviceInfo(deviceId: String): Device {
+        val manufacturer = Build.MANUFACTURER
+        val model = Build.MODEL
+        val deviceName = if (model.startsWith(manufacturer)) {
+            model.capitalized()
+        } else {
+            "${manufacturer.capitalized()} ${model.capitalized()}"
+        }
+        return Device.Builder()
+            .setDeviceId(deviceId)
+            .setDeviceModel(deviceName)
+            .setOsType("Android")
+            .setOsVersion(Build.VERSION.RELEASE)
+            .build()
     }
 
     @Suppress("UNCHECKED_CAST")

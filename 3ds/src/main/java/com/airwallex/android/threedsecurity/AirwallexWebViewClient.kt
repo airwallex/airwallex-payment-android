@@ -15,18 +15,14 @@ abstract class AirwallexWebViewClient(private val callbacks: WebViewClientCallba
 
     abstract fun hasCallbackUrl(view: WebView?, url: String?): Boolean
 
-    override fun shouldOverrideUrlLoading(
-        view: WebView,
-        url: String
-    ): Boolean {
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        val url = request?.url.toString()
         return if (hasCallbackUrl(view, url)) {
             true
         } else !url.startsWith(HTTP)
     }
 
-    /**
-     * This method was deprecated in API level 23
-     */
+    @Deprecated("Deprecated in API level 23")
     override fun onReceivedError(
         view: WebView,
         errorCode: Int,

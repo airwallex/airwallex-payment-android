@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.5.30'
+        kotlinVersion = '1.7.20'
         jacocoVersion = '0.8.8'
         detektVersion = '1.21.0-RC2'
     }
@@ -10,7 +10,7 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0'
+        classpath 'com.android.tools.build:gradle:7.3.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.7.10"
         classpath 'com.dicedmelon.gradle:jacoco-android:0.1.5'
@@ -57,7 +57,7 @@ version = '4.1.2'
 
 ext {
     compileSdkVersion = 31
-    minSdkVersion = 19
+    minSdkVersion = 21
 
     kotlinCoroutinesVersion = '1.5.2'
 
