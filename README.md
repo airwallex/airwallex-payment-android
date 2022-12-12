@@ -1,6 +1,6 @@
 # Airwallex Android SDK
 [![Platform](https://img.shields.io/badge/platform-android-green.svg)](http://developer.android.com/index.html)
-[![API](https://img.shields.io/badge/API-19%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=19)
+[![API](https://img.shields.io/badge/API-19%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![GitHub release](https://img.shields.io/github/release/airwallex/airwallex-payment-android.svg)](https://github.com/airwallex/airwallex-payment-android/releases)
 [![license](https://img.shields.io/badge/license-MIT%20License-00AAAA.svg)](https://github.com/airwallex/airwallex-payment-android/blob/develop/LICENSE)
 
@@ -8,7 +8,7 @@ EN | [中文](./README-zh.md)
 
 This library makes it quick and easy to build an excellent payment experience in your Android app.
 
-Airwallex's Android SDK is available for Android SDK >= 19.
+Airwallex's Android SDK is available for Android SDK >= 21.
 
 ## Installation
 The Components are available through [Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), you only need to add the Gradle dependency.
