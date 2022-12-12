@@ -1,12 +1,12 @@
 # Airwallex Android SDK
 [![Platform](https://img.shields.io/badge/platform-android-green.svg)](http://developer.android.com/index.html)
-[![API](https://img.shields.io/badge/API-19%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=19)
+[![API](https://img.shields.io/badge/API-19%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![GitHub release](https://img.shields.io/github/release/airwallex/airwallex-payment-android.svg)](https://github.com/airwallex/airwallex-payment-android/releases)
 [![license](https://img.shields.io/badge/license-MIT%20License-00AAAA.svg)](https://github.com/airwallex/airwallex-payment-android/blob/develop/LICENSE)
 
 [EN](./README.md) | 中文
 
-Airwallx Android SDK 可以很方便得在你的Android用用中添加支付功能，支持Android 19及以上版本。
+Airwallx Android SDK 可以很方便得在你的Android用用中添加支付功能，支持Android 21及以上版本。
 
 ## 添加依赖
 已经上传到[Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), 你只需要添加Gradle依赖项。
