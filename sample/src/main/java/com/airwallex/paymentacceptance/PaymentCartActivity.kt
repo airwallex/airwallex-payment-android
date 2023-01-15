@@ -42,10 +42,10 @@ class PaymentCartActivity : AppCompatActivity() {
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
-        if (intent?.scheme == AIRWALLEX_CHECKOUT_SCHEMA) {
+        if (intent.scheme == AIRWALLEX_CHECKOUT_SCHEMA) {
             showAlert(
                 getString(R.string.payment_successful),
                 getString(R.string.payment_successful_message)
@@ -53,7 +53,7 @@ class PaymentCartActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_cart, menu)
         return true
     }
