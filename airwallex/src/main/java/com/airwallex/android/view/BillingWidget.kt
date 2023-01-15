@@ -46,7 +46,10 @@ class BillingWidget(context: Context, attrs: AttributeSet?) : LinearLayout(conte
     var shipping: Shipping? = null
         set(value) {
             field = value
+
             if (value != null) {
+                shippingWidget.initializeView(value)
+
                 sameAsShippingLabel.visibility = View.VISIBLE
                 sameAsShippingSwitch.visibility = View.VISIBLE
                 sameAsShippingSwitch.isChecked = true
