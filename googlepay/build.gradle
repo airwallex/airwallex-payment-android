@@ -11,7 +11,7 @@ android {
 
 dependencies {
     api project(':ui-core')
-    api project(':3ds')
+    api project(':security-3ds')
 
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
 
