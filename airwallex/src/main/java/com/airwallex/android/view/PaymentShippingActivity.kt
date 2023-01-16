@@ -24,6 +24,11 @@ class PaymentShippingActivity : AirwallexActivity() {
         PaymentShippingActivityLaunch.Args.getExtra(intent)
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        setResult(RESULT_CANCELED)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

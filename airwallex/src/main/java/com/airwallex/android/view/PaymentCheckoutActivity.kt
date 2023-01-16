@@ -80,6 +80,11 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         updateButtonStatus()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        setResult(RESULT_CANCELED)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 

@@ -12,14 +12,14 @@ class AvailablePaymentMethodTest {
     @Test
     fun testParcelable() {
         assertEquals(
-            AvailablePaymentMethodFixtures.PAYMENMETHOD,
-            ParcelUtils.create(AvailablePaymentMethodFixtures.PAYMENMETHOD)
+            AvailablePaymentMethodFixtures.PAYMENT_METHOD,
+            ParcelUtils.create(AvailablePaymentMethodFixtures.PAYMENT_METHOD)
         )
     }
 
     @Test
     fun testParams() {
-        val availablePaymentMethod = AvailablePaymentMethodFixtures.PAYMENMETHOD
+        val availablePaymentMethod = AvailablePaymentMethodFixtures.PAYMENT_METHOD
         assertEquals(true, availablePaymentMethod.active)
         assertEquals(listOf("dollar", "RMB"), availablePaymentMethod.transactionCurrencies)
         assertEquals(listOf(AirwallexPaymentRequestFlow.IN_APP), availablePaymentMethod.flows)

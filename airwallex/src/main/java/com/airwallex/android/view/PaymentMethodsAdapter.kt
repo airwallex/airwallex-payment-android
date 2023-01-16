@@ -17,19 +17,20 @@ import java.util.*
 
 internal class PaymentMethodsAdapter(
     val availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
+    availablePaymentConsents: List<PaymentConsent>,
     val listener: Listener? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var selectedPaymentConsent: PaymentConsent? = null
-    private val paymentConsents = mutableListOf<PaymentConsent>()
+    val paymentConsents = mutableListOf<PaymentConsent>()
+
+    init {
+        this.paymentConsents.addAll(availablePaymentConsents)
+        notifyItemRangeInserted(0, availablePaymentConsents.size)
+    }
 
     internal fun isEmpty(): Boolean {
         return paymentConsents.isEmpty()
-    }
-
-    internal fun setPaymentConsents(paymentConsents: List<PaymentConsent>) {
-        this.paymentConsents.addAll(paymentConsents)
-        notifyItemRangeInserted(0, paymentConsents.size)
     }
 
     override fun getItemCount(): Int {

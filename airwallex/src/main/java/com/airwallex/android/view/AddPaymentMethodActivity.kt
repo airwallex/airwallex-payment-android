@@ -38,6 +38,10 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         args.supportedCardSchemes
     }
 
+    private val isSinglePaymentMethod: Boolean by lazy {
+        args.isSinglePaymentMethod
+    }
+
     private val shipping: Shipping? by lazy {
         when (session) {
             is AirwallexPaymentSession -> {
@@ -69,6 +73,18 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
                 application, airwallex, session, supportedCardSchemes
             )
         )[AddPaymentMethodViewModel::class.java]
+    }
+
+    override fun onBackPressed() {
+        setResult(
+            Activity.RESULT_CANCELED,
+            Intent().putExtras(
+                AddPaymentMethodActivityLaunch.CancellationResult(
+                    isSinglePaymentMethod = isSinglePaymentMethod
+                ).toBundle()
+            )
+        )
+        super.onBackPressed()
     }
 
     private fun onSaveCard() {
