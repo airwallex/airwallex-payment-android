@@ -20,9 +20,9 @@
     </style>
 
     <style name="WindowAnimation" parent="@android:style/Animation.Activity">
-        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
-        <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
-        <item name="android:activityCloseEnterAnimation">@anim/slide_in_left</item>
-        <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
+        <item name="android:activityOpenEnterAnimation">@anim/fragment_fade_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/fragment_fade_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/fragment_fade_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/fragment_fade_exit</item>
     </style>
 </resources>

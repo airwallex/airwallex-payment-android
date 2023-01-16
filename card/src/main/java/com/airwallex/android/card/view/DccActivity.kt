@@ -39,6 +39,11 @@ class DccActivity : AirwallexActivity() {
         )[DccViewModel::class.java]
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        setResult(RESULT_CANCELED)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

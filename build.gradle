@@ -119,7 +119,7 @@ sonarqube {
                 '**/*EditText.kt',
                 '**/view/CardWidget.kt',
                 '**/paymentacceptance/**',
-                '3ds/**'
+                'security-3ds/**'
         ].join(",")
     }
 }

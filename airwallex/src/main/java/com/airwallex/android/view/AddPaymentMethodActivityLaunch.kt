@@ -32,12 +32,14 @@ internal class AddPaymentMethodActivityLaunch :
     @Parcelize
     data class Args internal constructor(
         val session: AirwallexSession,
-        val supportedCardSchemes: List<CardScheme>
+        val supportedCardSchemes: List<CardScheme>,
+        val isSinglePaymentMethod: Boolean
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var session: AirwallexSession
             private lateinit var supportedCardSchemes: List<CardScheme>
+            private var isSinglePaymentMethod: Boolean = false
 
             fun setAirwallexSession(session: AirwallexSession): Builder = apply {
                 this.session = session
@@ -47,10 +49,15 @@ internal class AddPaymentMethodActivityLaunch :
                 this.supportedCardSchemes = supportedCardSchemes
             }
 
+            fun setSinglePaymentMethod(isSinglePaymentMethod: Boolean): Builder = apply {
+                this.isSinglePaymentMethod = isSinglePaymentMethod
+            }
+
             override fun build(): Args {
                 return Args(
                     session = session,
-                    supportedCardSchemes = supportedCardSchemes
+                    supportedCardSchemes = supportedCardSchemes,
+                    isSinglePaymentMethod = isSinglePaymentMethod
                 )
             }
         }
@@ -88,6 +95,24 @@ internal class AddPaymentMethodActivityLaunch :
             }
 
             fun fromIntent(intent: Intent?): Result? {
+                return intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
+            }
+        }
+    }
+
+    @Parcelize
+    internal data class CancellationResult internal constructor(
+        val isSinglePaymentMethod: Boolean
+    ) : AirwallexActivityLaunch.Result {
+        override fun toBundle(): Bundle {
+            return Bundle().also {
+                it.putParcelable(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA, this)
+            }
+        }
+
+        internal companion object {
+
+            fun fromIntent(intent: Intent?): CancellationResult? {
                 return intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
             }
         }

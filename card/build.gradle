@@ -15,7 +15,7 @@ android {
 
 dependencies {
     api project(':ui-core')
-    api project(':3ds')
+    api project(':security-3ds')
 
     // test
     testImplementation 'org.json:json:20210307'

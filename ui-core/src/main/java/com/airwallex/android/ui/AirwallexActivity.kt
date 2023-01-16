@@ -59,8 +59,6 @@ abstract class AirwallexActivity : AppCompatActivity() {
         if (container.childCount > 0 && container.getChildAt(container.childCount - 1) is AirwallexWebView) {
             (container.getChildAt(container.childCount - 1) as AirwallexWebView).destroyWebView()
             return
-        } else {
-            setResult(Activity.RESULT_CANCELED)
         }
         super.onBackPressed()
     }

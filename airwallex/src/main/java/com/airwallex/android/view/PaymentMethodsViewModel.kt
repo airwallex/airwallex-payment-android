@@ -161,6 +161,19 @@ internal class PaymentMethodsViewModel(
         return resultData
     }
 
+    fun hasSinglePaymentMethod(
+        desiredPaymentMethodType: AvailablePaymentMethodType?,
+        paymentMethods: List<AvailablePaymentMethodType>,
+        consents: List<PaymentConsent>
+    ): Boolean {
+        if (desiredPaymentMethodType == null) return false
+
+        val hasPaymentConsents = consents.isNotEmpty()
+        val availablePaymentMethodsSize = paymentMethods.size
+
+        return !hasPaymentConsents && availablePaymentMethodsSize == 1
+    }
+
     internal class Factory(
         private val application: Application,
         private val airwallex: Airwallex,
