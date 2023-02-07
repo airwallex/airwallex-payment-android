@@ -52,7 +52,7 @@ class CardNumberEditTextTest {
 
     @Test
     fun `test amex brand and completion when there is error first`() {
-        cardNumberEditText.setText("5782 8224 6310 0055")
+        cardNumberEditText.setText("5782 8224 6310 0055000")
         assertEquals(error, errorMessage)
         cardNumberEditText.setText("3782 8224 6310 005")
         assertNull(cardNumberEditText.validationMessage)

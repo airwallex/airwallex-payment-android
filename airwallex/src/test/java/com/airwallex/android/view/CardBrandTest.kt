@@ -20,6 +20,10 @@ class CardBrandTest {
         assertEquals(R.drawable.airwallex_ic_amex, CardBrand.Amex.icon)
         assertEquals(listOf(4, 6, 5), CardBrand.Amex.spacingPattern)
 
+        assertEquals("unionpay", CardBrand.UnionPay.type)
+        assertEquals(R.drawable.airwallex_ic_unionpay, CardBrand.UnionPay.icon)
+        assertEquals(listOf(4, 4, 4, 4), CardBrand.UnionPay.spacingPattern)
+
         assertEquals("unknown", CardBrand.Unknown.type)
         assertEquals(R.drawable.airwallex_ic_card_default, CardBrand.Unknown.icon)
         assertEquals(listOf(4, 4, 4, 4), CardBrand.Unknown.spacingPattern)
