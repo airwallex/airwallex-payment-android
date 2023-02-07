@@ -13,6 +13,7 @@ class CardUtilsTest {
         assertEquals(CardBrand.Visa, CardUtils.getPossibleCardBrand("4242424242424242", false))
         assertEquals(CardBrand.MasterCard, CardUtils.getPossibleCardBrand("5555555555554444", false))
         assertEquals(CardBrand.Amex, CardUtils.getPossibleCardBrand("3782 8224 6310 005", true))
+        assertEquals(CardBrand.UnionPay, CardUtils.getPossibleCardBrand("6212 3188 8888 8888 888", true))
         assertEquals(CardBrand.Unknown, CardUtils.getPossibleCardBrand("12345", false))
     }
 
@@ -27,6 +28,12 @@ class CardUtilsTest {
     fun `test isValidCardLength when Amex card number`() {
         assertTrue(CardUtils.isValidCardLength("3782 8224 6310 005", true))
         assertFalse(CardUtils.isValidCardLength("3782822463100055"))
+    }
+
+    @Test
+    fun `test isValidCardLength when UnionPay card number`() {
+        assertTrue(CardUtils.isValidCardLength("6212 3188 8888 8888 88", true))
+        assertFalse(CardUtils.isValidCardLength("621231888888888"))
     }
 
     @Test

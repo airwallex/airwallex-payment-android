@@ -34,5 +34,6 @@ class CardBrandTest {
     fun `test fromName`() {
         assertEquals(CardBrand.fromName("mastercard"), CardBrand.MasterCard)
         assertEquals(CardBrand.fromName("american express"), CardBrand.Amex)
+        assertEquals(CardBrand.fromName("union pay"), CardBrand.UnionPay)
     }
 }

@@ -403,7 +403,9 @@ class Airwallex internal constructor(
                     merchantTriggerReason = null,
                     listener = object : PaymentListener<PaymentConsent> {
                         override fun onFailed(exception: AirwallexException) {
-                            // ignore the consent creation error and proceed the payment
+                            listener.onCompleted(
+                                AirwallexPaymentStatus.Failure(exception)
+                            )
                         }
 
                         override fun onSuccess(response: PaymentConsent) {
