@@ -43,6 +43,11 @@ enum class CardBrand(
         prefixes = setOf("62"),
         lengthRange = 16..19
     ),
+    JCB(
+        "jcb",
+        R.drawable.airwallex_ic_jcb,
+        prefixes = setOf("3528", "3529", "353", "354", "355", "356", "357", "358")
+    ),
     Unknown(
         "unknown",
         R.drawable.airwallex_ic_card_default
