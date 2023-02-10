@@ -11,7 +11,8 @@ enum class CardBrand(
     @DrawableRes val icon: Int,
     private val prefixes: Set<String> = emptySet(),
     private val fullName: String = type,
-    val spacingPattern: List<Int> = listOf(4, 4, 4, 4)
+    val spacingPattern: List<Int> = listOf(4, 4, 4, 4),
+    val lengthRange: IntRange = 16..16
 ) {
     Visa(
         "visa",
@@ -32,7 +33,20 @@ enum class CardBrand(
         R.drawable.airwallex_ic_amex,
         prefixes = setOf("34", "37"),
         fullName = "american express",
-        spacingPattern = listOf(4, 6, 5)
+        spacingPattern = listOf(4, 6, 5),
+        lengthRange = 15..15
+    ),
+    UnionPay(
+        "unionpay",
+        R.drawable.airwallex_ic_unionpay,
+        fullName = "union pay",
+        prefixes = setOf("62"),
+        lengthRange = 16..19
+    ),
+    JCB(
+        "jcb",
+        R.drawable.airwallex_ic_jcb,
+        prefixes = setOf("3528", "3529", "353", "354", "355", "356", "357", "358")
     ),
     Unknown(
         "unknown",

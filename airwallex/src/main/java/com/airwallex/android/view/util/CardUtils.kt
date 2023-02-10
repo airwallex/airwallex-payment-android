@@ -5,10 +5,9 @@ import com.airwallex.android.view.CardBrand.Companion.fromCardNumber
 
 object CardUtils {
     /**
-     * The valid card length
+     * The maximum length of a possible card number
      */
-    const val VALID_NORMAL_CARD_LENGTH = 16
-    private const val VALID_AMEX_CARD_LENGTH = 15
+    val maxCardNumberLength = CardBrand.values().maxOf { it.lengthRange.last }
 
     /**
      * Check if card number is valid
@@ -66,10 +65,9 @@ object CardUtils {
                 cardNumber
             }
 
-        return when (getPossibleCardBrand(normalizeCardNumber, false)) {
-            CardBrand.Amex -> normalizeCardNumber?.length == VALID_AMEX_CARD_LENGTH
+        return when (val brand = getPossibleCardBrand(normalizeCardNumber, false)) {
             CardBrand.Unknown -> false
-            else -> normalizeCardNumber?.length == VALID_NORMAL_CARD_LENGTH
+            else -> normalizeCardNumber?.length in brand.lengthRange
         }
     }
 

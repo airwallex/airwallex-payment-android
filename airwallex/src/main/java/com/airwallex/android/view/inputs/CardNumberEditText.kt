@@ -25,7 +25,7 @@ internal class CardNumberEditText @JvmOverloads constructor(
         private const val BRAND_PREFIX_LENGTH = 4
 
         private val INPUT_MAX_LENGTH =
-            CardBrand.Unknown.spacingPattern.size - 1 + CardUtils.VALID_NORMAL_CARD_LENGTH
+            CardBrand.Unknown.spacingPattern.size - 1 + CardUtils.maxCardNumberLength
     }
 
     /**
@@ -130,7 +130,7 @@ internal class CardNumberEditText @JvmOverloads constructor(
 
                 val inputText = s?.toString().orEmpty()
 
-                if (start > CardUtils.VALID_NORMAL_CARD_LENGTH) {
+                if (start > CardUtils.maxCardNumberLength) {
                     // no need to do formatting if we're past all of the spaces.
                     return
                 }
