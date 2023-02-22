@@ -94,7 +94,7 @@ project.afterEvaluate {
                                     case 'components-core':
                                         dependencyNode.appendNode('artifactId', 'payment-components-core')
                                         break
-                                    case '3ds':
+                                    case 'security-3ds':
                                         dependencyNode.appendNode('artifactId', 'payment-3ds')
                                         break
                                     default:
