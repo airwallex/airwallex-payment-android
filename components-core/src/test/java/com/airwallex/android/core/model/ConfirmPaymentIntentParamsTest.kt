@@ -15,6 +15,7 @@ class ConfirmPaymentIntentParamsTest {
         .setPaymentConsentId("222")
         .setCurrency("CNY")
         .setReturnUrl("http://www.airwallex.com")
+        .setPaymentMethod(null)
         .build()
 
     @Test

@@ -75,6 +75,8 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         )[AddPaymentMethodViewModel::class.java]
     }
 
+    private var currentBrand: CardBrand? = null
+
     override fun onBackPressed() {
         setResult(
             Activity.RESULT_CANCELED,
@@ -163,6 +165,11 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
         viewBinding.btnSaveCard.isEnabled = isValid
     }
 
+    private fun showUnionPayWarning() {
+        viewBinding.warningView.message = getString(R.string.airwallex_save_union_pay_card)
+        viewBinding.warningView.visibility = View.VISIBLE
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -177,9 +184,24 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity() {
                 }
             }
         }
+        viewBinding.cardWidget.brandChangeCallback = { cardBrand ->
+            currentBrand = cardBrand
+            if (cardBrand == CardBrand.UnionPay && viewBinding.swSaveCard.isChecked) {
+                showUnionPayWarning()
+            } else {
+                viewBinding.warningView.visibility = View.GONE
+            }
+        }
         viewBinding.cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
         if (session is AirwallexPaymentSession && session.customerId != null) {
             viewBinding.saveCardWidget.visibility = View.VISIBLE
+            viewBinding.swSaveCard.setOnCheckedChangeListener { _, isChecked ->
+                if (currentBrand == CardBrand.UnionPay && isChecked) {
+                    showUnionPayWarning()
+                } else {
+                    viewBinding.warningView.visibility = View.GONE
+                }
+            }
         } else {
             viewBinding.saveCardWidget.visibility = View.GONE
         }

@@ -3,6 +3,7 @@ package com.airwallex.android.view.inputs
 import android.content.Context
 import android.util.AttributeSet
 import com.airwallex.android.R
+import com.airwallex.android.view.CardBrand
 
 /**
  * A [AirwallexTextInputLayout] to format the credit card number, display errors and support callback interface
@@ -26,6 +27,8 @@ internal class CardNumberTextInputLayout constructor(
             (teInput as CardNumberEditText).validationMessageCallback = value
             field = value
         }
+
+    internal var brandChangeCallback: (CardBrand) -> Unit = {}
 
     /**
      * Check if credit card number is valid
@@ -59,6 +62,7 @@ internal class CardNumberTextInputLayout constructor(
                 brand.icon,
                 0
             )
+            brandChangeCallback(brand)
         }
 
         afterFocusChanged { hasFocus ->

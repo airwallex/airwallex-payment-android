@@ -19,10 +19,10 @@
     <string name="airwallex_delete_payment_method_positive">Delete</string>
     <string name="airwallex_delete_payment_method_negative">Cancel</string>
     <string name="airwallex_new_card">Card</string>
-    <string name="airwallexbilling_info">Billing info</string>
+    <string name="airwallex_billing_info">Billing info</string>
     <string name="airwallex_shipping">Shipping</string>
     <string name="airwallex_total">Total %s</string>
-    <string name="airwallex_pay_now">Pay now</string>
+    <string name="airwallex_pay_now">Pay</string>
     <string name="airwallex_payment_methods">Payment methods</string>
     <string name="airwallex_cvc_hint">CVC/CVV</string>
     <string name="airwallex_card_name_hint">Name on card</string>
@@ -31,6 +31,7 @@
     <string name="airwallex_invalid_card_number">Card number is invalid</string>
     <string name="airwallex_unsupported_card_number">Card not supported for payment</string>
     <string name="airwallex_save_card">Save this card for future payments</string>
+    <string name="airwallex_save_union_pay_card">For UnionPay, only credit cards can be saved. Click “Pay” to proceed with a one time payment or use another card if you would like to save it for future use.</string>
     <string name="airwallex_same_as_shipping">Same as shipping address</string>
     <string name="airwallex_valid_digits">0123456789</string>
     <string name="airwallex_empty_card_name">Please enter your card name</string>
