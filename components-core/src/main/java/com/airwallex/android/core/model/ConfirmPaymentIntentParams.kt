@@ -109,7 +109,7 @@ data class ConfirmPaymentIntentParams internal constructor(
             this.countryCode = countryCode
         }
 
-        fun setPaymentMethod(paymentMethod: PaymentMethod? = null): Builder = apply {
+        fun setPaymentMethod(paymentMethod: PaymentMethod?): Builder = apply {
             this.paymentMethod = paymentMethod
         }
 

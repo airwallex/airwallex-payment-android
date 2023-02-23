@@ -391,6 +391,22 @@ class Airwallex internal constructor(
         cvc: String? = null,
         listener: PaymentResultListener
     ) {
+        fun confirmPaymentIntent(session: AirwallexPaymentSession, consent: PaymentConsent? = null) {
+            confirmPaymentIntent(
+                paymentIntentId = session.paymentIntent.id,
+                clientSecret = requireNotNull(session.paymentIntent.clientSecret),
+                paymentMethod = paymentMethod,
+                cvc = cvc,
+                customerId = session.customerId,
+                paymentConsentId = consent?.id,
+                returnUrl = if (paymentMethod.type
+                    == PaymentMethodType.CARD.value
+                ) { AirwallexPlugins.environment.threeDsReturnUrl() } else session.returnUrl,
+                autoCapture = session.autoCapture,
+                listener = listener
+            )
+        }
+
         when (session) {
             is AirwallexPaymentSession -> {
                 val paymentIntent = session.paymentIntent
@@ -403,25 +419,11 @@ class Airwallex internal constructor(
                     merchantTriggerReason = null,
                     listener = object : PaymentListener<PaymentConsent> {
                         override fun onFailed(exception: AirwallexException) {
-                            listener.onCompleted(
-                                AirwallexPaymentStatus.Failure(exception)
-                            )
+                            confirmPaymentIntent(session)
                         }
 
                         override fun onSuccess(response: PaymentConsent) {
-                            confirmPaymentIntent(
-                                paymentIntentId = paymentIntent.id,
-                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                paymentMethod = paymentMethod,
-                                cvc = cvc,
-                                customerId = session.customerId,
-                                paymentConsentId = response.id,
-                                returnUrl = if (paymentMethod.type
-                                    == PaymentMethodType.CARD.value
-                                ) { AirwallexPlugins.environment.threeDsReturnUrl() } else session.returnUrl,
-                                autoCapture = session.autoCapture,
-                                listener = listener
-                            )
+                            confirmPaymentIntent(session, response)
                         }
                     }
                 )
