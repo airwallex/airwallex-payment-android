@@ -107,18 +107,13 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentMethod>
     ) {
         paymentManager.startOperation(
-            AirwallexApiRepository.CreatePaymentMethodOptions(
-                clientSecret = params.clientSecret,
-                request = PaymentMethodCreateRequest.Builder()
-                    .setCustomerId(params.customerId)
-                    .setRequestId(UUID.randomUUID().toString())
-                    .setType(PaymentMethodType.CARD)
-                    .setCard(params.card)
-                    .setBilling(params.billing)
-                    .build()
-            ),
+            buildCreatePaymentMethodOptions(params),
             listener
         )
+    }
+
+    suspend fun createPaymentMethod(params: CreatePaymentMethodParams): PaymentMethod {
+        return paymentManager.createPaymentMethod(buildCreatePaymentMethodOptions(params))
     }
 
     /**
@@ -156,7 +151,7 @@ class Airwallex internal constructor(
             else -> throw AirwallexCheckoutException(message = "Not support session $session")
         }
 
-        val response = paymentManager.startRetrieveAvailablePaymentMethodsOperation(
+        val response = paymentManager.retrieveAvailablePaymentMethods(
             AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions(
                 clientSecret = params.clientSecret,
                 pageNum = params.pageNum,
@@ -385,12 +380,28 @@ class Airwallex internal constructor(
     }
 
     @UiThread
-    fun createPaymentConsentAndConfirmIntent(
+    private fun createPaymentConsentAndConfirmIntent(
         session: AirwallexSession,
         paymentMethod: PaymentMethod,
         cvc: String? = null,
         listener: PaymentResultListener
     ) {
+        fun confirmPaymentIntent(session: AirwallexPaymentSession, consent: PaymentConsent? = null) {
+            confirmPaymentIntent(
+                paymentIntentId = session.paymentIntent.id,
+                clientSecret = requireNotNull(session.paymentIntent.clientSecret),
+                paymentMethod = paymentMethod,
+                cvc = cvc,
+                customerId = session.customerId,
+                paymentConsentId = consent?.id,
+                returnUrl = if (paymentMethod.type
+                    == PaymentMethodType.CARD.value
+                ) { AirwallexPlugins.environment.threeDsReturnUrl() } else session.returnUrl,
+                autoCapture = session.autoCapture,
+                listener = listener
+            )
+        }
+
         when (session) {
             is AirwallexPaymentSession -> {
                 val paymentIntent = session.paymentIntent
@@ -403,25 +414,11 @@ class Airwallex internal constructor(
                     merchantTriggerReason = null,
                     listener = object : PaymentListener<PaymentConsent> {
                         override fun onFailed(exception: AirwallexException) {
-                            listener.onCompleted(
-                                AirwallexPaymentStatus.Failure(exception)
-                            )
+                            confirmPaymentIntent(session)
                         }
 
                         override fun onSuccess(response: PaymentConsent) {
-                            confirmPaymentIntent(
-                                paymentIntentId = paymentIntent.id,
-                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                paymentMethod = paymentMethod,
-                                cvc = cvc,
-                                customerId = session.customerId,
-                                paymentConsentId = response.id,
-                                returnUrl = if (paymentMethod.type
-                                    == PaymentMethodType.CARD.value
-                                ) { AirwallexPlugins.environment.threeDsReturnUrl() } else session.returnUrl,
-                                autoCapture = session.autoCapture,
-                                listener = listener
-                            )
+                            confirmPaymentIntent(session, response)
                         }
                     }
                 )
@@ -727,6 +724,44 @@ class Airwallex internal constructor(
         )
     }
 
+    private fun buildCreatePaymentMethodOptions(params: CreatePaymentMethodParams): AirwallexApiRepository.CreatePaymentMethodOptions {
+        return AirwallexApiRepository.CreatePaymentMethodOptions(
+            clientSecret = params.clientSecret,
+            request = PaymentMethodCreateRequest.Builder()
+                .setCustomerId(params.customerId)
+                .setRequestId(UUID.randomUUID().toString())
+                .setType(PaymentMethodType.CARD)
+                .setCard(params.card)
+                .setBilling(params.billing)
+                .build()
+        )
+    }
+
+    private fun buildCreatePaymentConsentOptions(params: CreatePaymentConsentParams): AirwallexApiRepository.CreatePaymentConsentOptions {
+        return AirwallexApiRepository.CreatePaymentConsentOptions(
+            clientSecret = params.clientSecret,
+            request = PaymentConsentCreateRequest.Builder()
+                .setRequestId(UUID.randomUUID().toString())
+                .setCustomerId(params.customerId)
+                .setPaymentMethodRequest(
+                    PaymentMethodRequest(
+                        id = params.paymentMethodId,
+                        type = params.paymentMethodType
+                    )
+                )
+                .setNextTriggeredBy(
+                    if (params.paymentMethodType == PaymentMethodType.CARD.value) {
+                        params.nextTriggeredBy
+                    } else {
+                        PaymentConsent.NextTriggeredBy.MERCHANT
+                    }
+                )
+                .setMerchantTriggerReason(params.merchantTriggerReason)
+                .setRequiresCvc(params.requiresCvc)
+                .build()
+        )
+    }
+
     private fun buildCardPaymentIntentOptions(
         params: ConfirmPaymentIntentParams,
         device: Device?
@@ -891,6 +926,10 @@ class Airwallex internal constructor(
         )
     }
 
+    suspend fun createPaymentConsent(params: CreatePaymentConsentParams): PaymentConsent {
+        return paymentManager.createPaymentConsent(buildCreatePaymentConsentOptions(params))
+    }
+
     private fun createPaymentConsent(
         clientSecret: String,
         customerId: String,
@@ -928,28 +967,7 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentConsent>
     ) {
         paymentManager.startOperation(
-            AirwallexApiRepository.CreatePaymentConsentOptions(
-                clientSecret = params.clientSecret,
-                request = PaymentConsentCreateRequest.Builder()
-                    .setRequestId(UUID.randomUUID().toString())
-                    .setCustomerId(params.customerId)
-                    .setPaymentMethodRequest(
-                        PaymentMethodRequest(
-                            id = params.paymentMethodId,
-                            type = params.paymentMethodType
-                        )
-                    )
-                    .setNextTriggeredBy(
-                        if (params.paymentMethodType == PaymentMethodType.CARD.value) {
-                            params.nextTriggeredBy
-                        } else {
-                            PaymentConsent.NextTriggeredBy.MERCHANT
-                        }
-                    )
-                    .setMerchantTriggerReason(params.merchantTriggerReason)
-                    .setRequiresCvc(params.requiresCvc)
-                    .build()
-            ),
+            buildCreatePaymentConsentOptions(params),
             listener
         )
     }

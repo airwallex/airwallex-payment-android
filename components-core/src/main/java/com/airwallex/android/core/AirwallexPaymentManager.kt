@@ -23,10 +23,35 @@ class AirwallexPaymentManager(
         }
     }
 
-    override suspend fun startRetrieveAvailablePaymentMethodsOperation(options: Options):
-        AvailablePaymentMethodTypeResponse {
+    override suspend fun retrieveAvailablePaymentMethods(
+        options: AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions
+    ): AvailablePaymentMethodTypeResponse {
         val result = runCatching {
             requireNotNull(repository.retrieveAvailablePaymentMethods(options))
+        }
+        result.fold(
+            onSuccess = { return it },
+            onFailure = { throw handleError(it) }
+        )
+    }
+
+    override suspend fun createPaymentMethod(
+        options: AirwallexApiRepository.CreatePaymentMethodOptions
+    ): PaymentMethod {
+        val result = runCatching {
+            requireNotNull(repository.createPaymentMethod(options))
+        }
+        result.fold(
+            onSuccess = { return it },
+            onFailure = { throw handleError(it) }
+        )
+    }
+
+    override suspend fun createPaymentConsent(
+        options: AirwallexApiRepository.CreatePaymentConsentOptions
+    ): PaymentConsent {
+        val result = runCatching {
+            requireNotNull(repository.createPaymentConsent(options))
         }
         result.fold(
             onSuccess = { return it },

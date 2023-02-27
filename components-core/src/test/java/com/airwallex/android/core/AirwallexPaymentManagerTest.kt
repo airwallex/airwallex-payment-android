@@ -1,6 +1,8 @@
 package com.airwallex.android.core
 
 import android.os.Build
+import com.airwallex.android.core.model.PaymentConsentFixtures
+import com.airwallex.android.core.model.PaymentMethodFixtures
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -34,16 +36,34 @@ class AirwallexPaymentManagerTest {
                 """.trimIndent()
             )
         )
+        val mockMethod = PaymentMethodFixtures.PAYMENT_METHOD
+        val mockConsent = PaymentConsentFixtures.PAYMENTCONSENT
         val apiRepository = mockk<ApiRepository>()
         coEvery { apiRepository.retrieveAvailablePaymentMethods(any()) } returns mockResponse
+        coEvery { apiRepository.createPaymentMethod(any()) } returns mockMethod
+        coEvery { apiRepository.createPaymentConsent(any()) } returns mockConsent
         paymentManager = AirwallexPaymentManager(apiRepository)
     }
 
     @Test
-    fun `test start RetrieveAvailablePaymentMethods operation`() = runTest {
+    fun `test retrieveAvailablePaymentMethods`() = runTest {
         val options = mockk<AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions>()
-        val response = paymentManager.startRetrieveAvailablePaymentMethodsOperation(options)
+        val response = paymentManager.retrieveAvailablePaymentMethods(options)
         assertEquals(response.items?.first()?.name, "card")
+    }
+
+    @Test
+    fun `test createPaymentMethod`() = runTest {
+        val options = mockk<AirwallexApiRepository.CreatePaymentMethodOptions>()
+        val paymentMethod = paymentManager.createPaymentMethod(options)
+        assertEquals(paymentMethod.card?.number, "4012000300001003")
+    }
+
+    @Test
+    fun `test createPaymentConsent`() = runTest {
+        val options = mockk<AirwallexApiRepository.CreatePaymentConsentOptions>()
+        val paymentConsent = paymentManager.createPaymentConsent(options)
+        assertEquals(paymentConsent.paymentMethod?.card?.name, "Adam")
     }
 
     @Test

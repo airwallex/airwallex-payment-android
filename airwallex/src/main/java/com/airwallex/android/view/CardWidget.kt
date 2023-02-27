@@ -42,6 +42,12 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
             field = value
         }
 
+    var brandChangeCallback: (CardBrand) -> Unit = {}
+        set(value) {
+            cardNumberTextInputLayout.brandChangeCallback = value
+            field = value
+        }
+
     var cardChangeCallback: () -> Unit = {}
 
     val paymentMethodCard: PaymentMethod.Card?
