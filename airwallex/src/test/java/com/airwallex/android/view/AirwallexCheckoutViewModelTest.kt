@@ -18,14 +18,6 @@ class AirwallexCheckoutViewModelTest {
     fun setUp() {
         val application = mockk<Application>()
         every {
-            airwallex.createPaymentConsentAndConfirmIntent(
-                session,
-                paymentMethod,
-                null,
-                any()
-            )
-        } just runs
-        every {
             airwallex.checkout(
                 session,
                 paymentMethod,
@@ -37,24 +29,6 @@ class AirwallexCheckoutViewModelTest {
             )
         } just runs
         viewModel = AirwallexCheckoutViewModel(application, airwallex, session)
-    }
-
-    @Test
-    fun `test checkout when saveCard is true`() {
-        viewModel.checkout(
-            paymentMethod = paymentMethod,
-            paymentConsentId = null,
-            cvc = null,
-            saveCard = true
-        )
-        verify(exactly = 1) {
-            airwallex.createPaymentConsentAndConfirmIntent(
-                session,
-                paymentMethod,
-                null,
-                any()
-            )
-        }
     }
 
     @Test

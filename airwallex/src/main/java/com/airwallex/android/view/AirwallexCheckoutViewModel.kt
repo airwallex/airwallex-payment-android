@@ -19,8 +19,7 @@ class AirwallexCheckoutViewModel(
         paymentConsentId: String?,
         cvc: String?,
         additionalInfo: Map<String, String>? = null,
-        flow: AirwallexPaymentRequestFlow? = null,
-        saveCard: Boolean = false
+        flow: AirwallexPaymentRequestFlow? = null
     ): LiveData<AirwallexPaymentStatus> {
         val resultData = MutableLiveData<AirwallexPaymentStatus>()
         val listener = object : Airwallex.PaymentResultListener {
@@ -28,24 +27,15 @@ class AirwallexCheckoutViewModel(
                 resultData.value = status
             }
         }
-        if (saveCard) {
-            airwallex.createPaymentConsentAndConfirmIntent(
-                session,
-                paymentMethod,
-                cvc,
-                listener
-            )
-        } else {
-            airwallex.checkout(
-                session,
-                paymentMethod,
-                paymentConsentId,
-                cvc,
-                additionalInfo,
-                flow,
-                listener
-            )
-        }
+        airwallex.checkout(
+            session,
+            paymentMethod,
+            paymentConsentId,
+            cvc,
+            additionalInfo,
+            flow,
+            listener
+        )
 
         return resultData
     }

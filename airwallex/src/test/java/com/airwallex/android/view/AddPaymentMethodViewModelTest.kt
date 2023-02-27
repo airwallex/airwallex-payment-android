@@ -2,11 +2,8 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexPaymentSession
-import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.core.ClientSecretRepository
 import com.airwallex.android.R
+import com.airwallex.android.core.*
 import com.airwallex.android.core.model.*
 import io.mockk.*
 import org.junit.Rule
@@ -34,7 +31,7 @@ class AddPaymentMethodViewModelTest {
         every { card.cvc } returns "123"
 
         val viewModel = createViewModel(session)
-        val payment = viewModel.createPaymentMethod(card, false, billing)
+        val payment = viewModel.createPaymentMethod(card, billing)
         val result =
             requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
         val resultBilling = requireNotNull(result.paymentMethod.billing)
@@ -52,7 +49,7 @@ class AddPaymentMethodViewModelTest {
         every { card.cvc } returns "123"
 
         val viewModel = createViewModel(session)
-        val payment = viewModel.createPaymentMethod(card, false, billing)
+        val payment = viewModel.createPaymentMethod(card, billing)
         val result =
             requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
         val resultBilling = result.paymentMethod.billing
@@ -71,7 +68,7 @@ class AddPaymentMethodViewModelTest {
         every { card.cvc } returns null
 
         val viewModel = createViewModel(session)
-        val payment = viewModel.createPaymentMethod(card, false, billing)
+        val payment = viewModel.createPaymentMethod(card, billing)
         val result =
             requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Error)
 
@@ -104,14 +101,14 @@ class AddPaymentMethodViewModelTest {
         val customerID = "Test_ID"
         val card: PaymentMethod.Card = mockk()
         val billing: Billing = mockk()
-        val session: AirwallexPaymentSession = mockk()
+        val session: AirwallexRecurringSession = mockk()
 
         every { session.customerId } returns customerID
         every { session.isBillingInformationRequired } returns true
         every { card.cvc } returns "123"
 
         val viewModel = createViewModel(session)
-        val payment = viewModel.createPaymentMethod(card, true, billing)
+        val payment = viewModel.createPaymentMethod(card, billing)
         val result =
             requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
 
@@ -151,14 +148,14 @@ class AddPaymentMethodViewModelTest {
         val customerID = "Test_ID"
         val card: PaymentMethod.Card = mockk()
         val billing: Billing = mockk()
-        val session: AirwallexPaymentSession = mockk()
+        val session: AirwallexRecurringWithIntentSession = mockk()
 
         every { session.customerId } returns customerID
         every { session.isBillingInformationRequired } returns false
         every { card.cvc } returns "123"
 
         val viewModel = createViewModel(session)
-        val payment = viewModel.createPaymentMethod(card, true, billing)
+        val payment = viewModel.createPaymentMethod(card, billing)
         val result =
             requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
 

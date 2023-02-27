@@ -3,16 +3,15 @@ package com.airwallex.android.view
 import android.app.Application
 import androidx.annotation.StringRes
 import androidx.lifecycle.*
-import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexPaymentSession
-import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.core.ClientSecretRepository
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.R
+import com.airwallex.android.core.*
 import com.airwallex.android.view.util.CardUtils
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 internal class AddPaymentMethodViewModel(
     application: Application,
@@ -39,14 +38,81 @@ internal class AddPaymentMethodViewModel(
 
     fun createPaymentMethod(
         card: PaymentMethod.Card,
-        shouldStoreCard: Boolean,
         billing: Billing?
     ): LiveData<PaymentMethodResult> {
         val resolvedBilling = if (session.isBillingInformationRequired) billing else null
-        return if (session is AirwallexPaymentSession && !shouldStoreCard) {
+        return if (session is AirwallexPaymentSession) {
             createOneOffCardPaymentMethod(card, resolvedBilling)
         } else {
             createStoredCardPaymentMethod(card, resolvedBilling)
+        }
+    }
+
+    suspend fun checkoutWithSavedCard(
+        card: PaymentMethod.Card,
+        billing: Billing?
+    ): AirwallexPaymentStatus {
+        val billingOrNull = if (session.isBillingInformationRequired) billing else null
+        val oneOffPaymentMethod = PaymentMethod.Builder()
+            .setType(PaymentMethodType.CARD.value)
+            .setCard(card)
+            .setBilling(billingOrNull)
+            .build()
+        val customerId = requireNotNull(session.customerId)
+        val clientSecret = try {
+            ClientSecretRepository.getInstance().retrieveClientSecret(customerId)
+        } catch (e: AirwallexCheckoutException) {
+            return AirwallexPaymentStatus.Failure(e)
+        }
+        val paymentMethod = try {
+            airwallex.createPaymentMethod(
+                CreatePaymentMethodParams(
+                    clientSecret = clientSecret.value,
+                    customerId = customerId,
+                    card = card,
+                    billing = billingOrNull
+                )
+            )
+        } catch (_: Throwable) {
+            oneOffPaymentMethod
+        }
+        try {
+            val consent = airwallex.createPaymentConsent(
+                CreatePaymentConsentParams.createCardParams(
+                    clientSecret = clientSecret.value,
+                    customerId = customerId,
+                    paymentMethodId = requireNotNull(paymentMethod.id),
+                    nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+                    requiresCvc = true,
+                    merchantTriggerReason = null
+                )
+            )
+            return suspendCoroutine { cont ->
+                airwallex.checkout(
+                    session = session,
+                    paymentMethod = paymentMethod,
+                    paymentConsentId = consent.id,
+                    cvc = card.cvc,
+                    listener = object : Airwallex.PaymentResultListener {
+                        override fun onCompleted(status: AirwallexPaymentStatus) {
+                            cont.resume(status)
+                        }
+                    }
+                )
+            }
+        } catch (_: Throwable) {
+            return suspendCoroutine { cont ->
+                airwallex.checkout(
+                    session = session,
+                    paymentMethod = oneOffPaymentMethod,
+                    cvc = card.cvc,
+                    listener = object : Airwallex.PaymentResultListener {
+                        override fun onCompleted(status: AirwallexPaymentStatus) {
+                            cont.resume(status)
+                        }
+                    }
+                )
+            }
         }
     }
 
