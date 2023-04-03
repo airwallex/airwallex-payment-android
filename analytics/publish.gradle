@@ -1,0 +1,50 @@
+apply plugin: "maven-publish"
+apply plugin: "signing"
+
+apply from: "../gradle/scripts/publish-base.gradle"
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId airwallexGroupId
+            artifactId airwallexArtifactId
+            version version
+            artifact file(LOCAL_AAR_FILE_NAME)
+
+            pom {
+                name = airwallexName
+                description = airwallexDescription
+                url = airwallexUrl
+                licenses {
+                    license {
+                        name = airwallexLicenseName
+                        url = airwallexLicenseUrl
+                    }
+                }
+                organization {
+                    name = airwallexOrganizationName
+                    url = airwallexOrganizationUrl
+                }
+                developers {
+                    developer {
+                        organization = airwallexOrganizationName
+                        organizationUrl = airwallexOrganizationUrl
+                    }
+                }
+                scm {
+                    connection = airwallexScmConnection
+                    developerConnection = airwallexScmConnection
+                    url = airwallexScmUrl
+                }
+            }
+        }
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(
+            rootProject.ext["signing.key"],
+            rootProject.ext["signing.password"]
+    )
+    sign publishing.publications
+}
