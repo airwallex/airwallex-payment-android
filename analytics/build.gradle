@@ -1,0 +1,52 @@
+plugins {
+    id "io.github.gradle-nexus.publish-plugin" version "1.3.0"
+}
+
+// This should match the version of the aars.
+version = '1.0'
+
+apply plugin: "maven-publish"
+apply plugin: "signing"
+
+apply from: "../gradle/scripts/publish-root.gradle"
+apply from: "../gradle/scripts/publish-base.gradle"
+
+configurations.maybeCreate("default")
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId airwallexGroupId
+            artifactId airwallexArtifactId
+            version version
+            artifact file(LOCAL_AAR_FILE_NAME)
+
+            pom {
+                name = airwallexName
+                description = airwallexDescription
+                url = airwallexUrl
+                licenses {
+                    license {
+                        name = airwallexLicenseName
+                        url = airwallexLicenseUrl
+                    }
+                }
+                organization {
+                    name = airwallexOrganizationName
+                    url = airwallexOrganizationUrl
+                }
+                developers {
+                    developer {
+                        organization = airwallexOrganizationName
+                        organizationUrl = airwallexOrganizationUrl
+                    }
+                }
+                scm {
+                    connection = airwallexScmConnection
+                    developerConnection = airwallexScmConnection
+                    url = airwallexScmUrl
+                }
+            }
+        }
+    }
+}

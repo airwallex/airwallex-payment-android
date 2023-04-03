@@ -33,3 +33,5 @@ includeBuild('fingerprinting') {
         )
     }
 }
+
+includeBuild('analytics')
