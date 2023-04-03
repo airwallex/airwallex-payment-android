@@ -1,4 +1,4 @@
-name: Push release to Maven
+name: Push AirTracker release to Maven
 
 on:
   workflow_dispatch:
