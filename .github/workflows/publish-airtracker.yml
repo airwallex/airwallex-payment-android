@@ -28,7 +28,7 @@ jobs:
         run: |
           ./gradlew --stacktrace \
           :analytics:publishReleasePublicationToSonatypeRepository --max-workers 1 \
-          closeAndReleaseSonatypeStagingRepository
+          :analytics:closeAndReleaseSonatypeStagingRepository
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
