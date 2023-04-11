@@ -13,7 +13,7 @@ interface ApiRepository {
      * @return a [PaymentIntent] from Airwallex server
      */
     suspend fun continuePaymentIntent(
-        options: Options
+        options: Options.ContinuePaymentIntentOptions
     ): PaymentIntent?
 
     /**
@@ -22,7 +22,7 @@ interface ApiRepository {
      * @return a [PaymentIntent] from Airwallex server
      */
     suspend fun confirmPaymentIntent(
-        options: Options
+        options: Options.ConfirmPaymentIntentOptions
     ): PaymentIntent?
 
     /**
@@ -31,7 +31,7 @@ interface ApiRepository {
      * @return a [PaymentIntent] from Airwallex server
      */
     suspend fun retrievePaymentIntent(
-        options: Options
+        options: Options.RetrievePaymentIntentOptions
     ): PaymentIntent?
 
     /**
@@ -40,42 +40,42 @@ interface ApiRepository {
      * @return a [PaymentMethod] from Airwallex server
      */
     suspend fun createPaymentMethod(
-        options: Options
+        options: Options.CreatePaymentMethodOptions
     ): PaymentMethod?
 
     /**
      * Create a PaymentConsent
      */
     suspend fun createPaymentConsent(
-        options: Options
+        options: Options.CreatePaymentConsentOptions
     ): PaymentConsent?
 
     /**
      * Verify a PaymentConsent
      */
     suspend fun verifyPaymentConsent(
-        options: Options
+        options: Options.VerifyPaymentConsentOptions
     ): PaymentConsent?
 
     /**
      * Disable a PaymentConsent
      */
     suspend fun disablePaymentConsent(
-        options: Options
+        options: Options.DisablePaymentConsentOptions
     ): PaymentConsent?
 
     /**
      * Retrieve a PaymentConsent
      */
     suspend fun retrievePaymentConsent(
-        options: Options
+        options: Options.RetrievePaymentConsentOptions
     ): PaymentConsent?
 
     /**
      * Tracker
      */
     suspend fun tracker(
-        options: Options
+        options: Options.TrackerOptions
     )
 
     /**
@@ -89,20 +89,20 @@ interface ApiRepository {
      * Retrieve available payment method types
      */
     suspend fun retrieveAvailablePaymentMethods(
-        options: Options
+        options: Options.RetrieveAvailablePaymentMethodsOptions
     ): AvailablePaymentMethodTypeResponse?
 
     /**
      * Retrieve payment method detail
      */
     suspend fun retrievePaymentMethodTypeInfo(
-        options: Options
+        options: Options.RetrievePaymentMethodTypeInfoOptions
     ): PaymentMethodTypeInfo?
 
     /**
      * Retrieve banks of payment method
      */
     suspend fun retrieveBanks(
-        options: Options
+        options: Options.RetrieveBankOptions
     ): BankResponse?
 }

@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.log.Logger
+import com.airwallex.android.core.log.ConsoleLogger
 import com.airwallex.android.core.model.*
 import com.airwallex.android.threedsecurity.exception.ThreeDSException
 import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
@@ -42,7 +42,7 @@ object ThreeDSecurityManager {
             }
             webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
                 override fun onWebViewConfirmation(payload: String) {
-                    Logger.debug("onWebViewConfirmation $payload")
+                    ConsoleLogger.debug("onWebViewConfirmation $payload")
                     visibility = View.INVISIBLE
                     (activity as AirwallexActivity).setLoadingProgress(
                         loading = true,
@@ -60,11 +60,11 @@ object ThreeDSecurityManager {
                         ),
                         object : Airwallex.PaymentListener<PaymentIntent> {
                             override fun onSuccess(response: PaymentIntent) {
-                                Logger.debug("onSuccess $response")
+                                ConsoleLogger.debug("onSuccess $response")
                                 destroyWebView()
                                 val continueNextAction = response.nextAction
                                 if (continueNextAction == null) {
-                                    Logger.debug("3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
+                                    ConsoleLogger.debug("3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
                                     listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
                                     return
                                 }
@@ -86,17 +86,17 @@ object ThreeDSecurityManager {
                 }
 
                 override fun onWebViewError(error: WebViewConnectionException) {
-                    Logger.error("onWebViewError", error)
+                    ConsoleLogger.error("onWebViewError", error)
                     destroyWebView()
                     listener.onCompleted(AirwallexPaymentStatus.Failure(error))
                 }
 
                 override fun onPageFinished(url: String?) {
-                    Logger.debug("onPageFinished $url")
+                    ConsoleLogger.debug("onPageFinished $url")
                 }
 
                 override fun onPageStarted(url: String?) {
-                    Logger.debug("onPageStarted $url")
+                    ConsoleLogger.debug("onPageStarted $url")
                 }
             })
 
@@ -119,14 +119,14 @@ object ThreeDSecurityManager {
         paymentIntentId: String,
         clientSecret: String,
         threeDSecure: ThreeDSecure
-    ): AirwallexApiRepository.ContinuePaymentIntentOptions {
+    ): Options.ContinuePaymentIntentOptions {
         val request = PaymentIntentContinueRequest(
             requestId = UUID.randomUUID().toString(),
             type = PaymentIntentContinueType.THREE_DS_CONTINUE,
             threeDSecure = threeDSecure,
             device = device
         )
-        return AirwallexApiRepository.ContinuePaymentIntentOptions(
+        return Options.ContinuePaymentIntentOptions(
             clientSecret = clientSecret,
             paymentIntentId = paymentIntentId,
             request = request

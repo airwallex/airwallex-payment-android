@@ -7,13 +7,13 @@ interface PaymentManager {
 
     fun <T> startOperation(options: Options, listener: PaymentListener<T>)
 
-    suspend fun retrieveAvailablePaymentMethods(options: AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions):
+    suspend fun retrieveAvailablePaymentMethods(options: Options.RetrieveAvailablePaymentMethodsOptions):
             AvailablePaymentMethodTypeResponse
 
-    suspend fun createPaymentMethod(options: AirwallexApiRepository.CreatePaymentMethodOptions):
+    suspend fun createPaymentMethod(options: Options.CreatePaymentMethodOptions):
             PaymentMethod
 
-    suspend fun createPaymentConsent(options: AirwallexApiRepository.CreatePaymentConsentOptions):
+    suspend fun createPaymentConsent(options: Options.CreatePaymentConsentOptions):
             PaymentConsent
 
     fun buildDeviceInfo(deviceId: String): Device

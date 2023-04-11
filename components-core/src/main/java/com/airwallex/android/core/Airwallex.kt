@@ -10,6 +10,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.extension.confirmGooglePayIntent
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import java.math.BigDecimal
 import java.util.*
@@ -43,6 +44,10 @@ class Airwallex internal constructor(
          * @param status The status of checkout result.
          */
         fun onCompleted(status: AirwallexPaymentStatus)
+    }
+
+    init {
+        AnalyticsLogger.init(applicationContext)
     }
 
     /**
@@ -128,7 +133,7 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentIntent>
     ) {
         paymentManager.startOperation(
-            AirwallexApiRepository.RetrievePaymentIntentOptions(
+            Options.RetrievePaymentIntentOptions(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId
             ),
@@ -152,7 +157,7 @@ class Airwallex internal constructor(
         }
 
         val response = paymentManager.retrieveAvailablePaymentMethods(
-            AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions(
+            Options.RetrieveAvailablePaymentMethodsOptions(
                 clientSecret = params.clientSecret,
                 pageNum = params.pageNum,
                 pageSize = params.pageSize,
@@ -204,7 +209,7 @@ class Airwallex internal constructor(
         }
 
         paymentManager.startOperation(
-            AirwallexApiRepository.VerifyPaymentConsentOptions(
+            Options.VerifyPaymentConsentOptions(
                 clientSecret = params.clientSecret,
                 paymentConsentId = params.paymentConsentId,
                 request = PaymentConsentVerifyRequest.Builder()
@@ -268,7 +273,7 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentConsent>
     ) {
         paymentManager.startOperation(
-            AirwallexApiRepository.DisablePaymentConsentOptions(
+            Options.DisablePaymentConsentOptions(
                 clientSecret = params.clientSecret,
                 paymentConsentId = params.paymentConsentId,
                 request = PaymentConsentDisableRequest.Builder()
@@ -285,7 +290,7 @@ class Airwallex internal constructor(
         listener: PaymentListener<BankResponse>
     ) {
         paymentManager.startOperation(
-            AirwallexApiRepository.RetrieveBankOptions(
+            Options.RetrieveBankOptions(
                 clientSecret = params.clientSecret,
                 paymentMethodType = params.paymentMethodType,
                 flow = params.flow,
@@ -303,7 +308,7 @@ class Airwallex internal constructor(
         listener: PaymentListener<PaymentMethodTypeInfo>
     ) {
         paymentManager.startOperation(
-            AirwallexApiRepository.RetrievePaymentMethodTypeInfoOptions(
+            Options.RetrievePaymentMethodTypeInfoOptions(
                 clientSecret = params.clientSecret,
                 paymentMethodType = params.paymentMethodType,
                 flow = params.flow,
@@ -724,8 +729,8 @@ class Airwallex internal constructor(
         )
     }
 
-    private fun buildCreatePaymentMethodOptions(params: CreatePaymentMethodParams): AirwallexApiRepository.CreatePaymentMethodOptions {
-        return AirwallexApiRepository.CreatePaymentMethodOptions(
+    private fun buildCreatePaymentMethodOptions(params: CreatePaymentMethodParams): Options.CreatePaymentMethodOptions {
+        return Options.CreatePaymentMethodOptions(
             clientSecret = params.clientSecret,
             request = PaymentMethodCreateRequest.Builder()
                 .setCustomerId(params.customerId)
@@ -737,8 +742,8 @@ class Airwallex internal constructor(
         )
     }
 
-    private fun buildCreatePaymentConsentOptions(params: CreatePaymentConsentParams): AirwallexApiRepository.CreatePaymentConsentOptions {
-        return AirwallexApiRepository.CreatePaymentConsentOptions(
+    private fun buildCreatePaymentConsentOptions(params: CreatePaymentConsentParams): Options.CreatePaymentConsentOptions {
+        return Options.CreatePaymentConsentOptions(
             clientSecret = params.clientSecret,
             request = PaymentConsentCreateRequest.Builder()
                 .setRequestId(UUID.randomUUID().toString())
@@ -765,7 +770,7 @@ class Airwallex internal constructor(
     private fun buildCardPaymentIntentOptions(
         params: ConfirmPaymentIntentParams,
         device: Device?
-    ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+    ): Options.ConfirmPaymentIntentOptions {
         val paymentConsentReference: PaymentConsentReference? =
             if (params.paymentConsentId != null) {
                 PaymentConsentReference.Builder()
@@ -812,7 +817,7 @@ class Airwallex internal constructor(
             builder.setReturnUrl(params.returnUrl)
         }
 
-        return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+        return Options.ConfirmPaymentIntentOptions(
             clientSecret = params.clientSecret,
             paymentIntentId = params.paymentIntentId,
             request = builder.build()
@@ -822,7 +827,7 @@ class Airwallex internal constructor(
     private fun buildThirdPartPaymentIntentOptions(
         params: ConfirmPaymentIntentParams,
         device: Device?
-    ): AirwallexApiRepository.ConfirmPaymentIntentOptions {
+    ): Options.ConfirmPaymentIntentOptions {
 
         val paymentConsentReference: PaymentConsentReference?
         val paymentMethodRequest: PaymentMethodRequest?
@@ -857,7 +862,7 @@ class Airwallex internal constructor(
             .setPaymentConsentReference(paymentConsentReference)
             .build()
 
-        return AirwallexApiRepository.ConfirmPaymentIntentOptions(
+        return Options.ConfirmPaymentIntentOptions(
             clientSecret = params.clientSecret,
             paymentIntentId = params.paymentIntentId,
             request = request
@@ -917,7 +922,7 @@ class Airwallex internal constructor(
         }
 
         paymentManager.startOperation(
-            AirwallexApiRepository.ContinuePaymentIntentOptions(
+            Options.ContinuePaymentIntentOptions(
                 clientSecret = params.clientSecret,
                 paymentIntentId = params.paymentIntentId,
                 request = request

@@ -45,7 +45,7 @@ internal fun ActionComponent.confirmGooglePayIntent(
                             .build()
                     )
                     .build()
-                val options = AirwallexApiRepository.ConfirmPaymentIntentOptions(
+                val options = Options.ConfirmPaymentIntentOptions(
                     clientSecret = clientSecret,
                     paymentIntentId = paymentIntentId,
                     request = request

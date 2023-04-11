@@ -13,7 +13,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardNextActionModel
 import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.exception.AirwallexCheckoutException
-import com.airwallex.android.core.log.Logger
+import com.airwallex.android.core.log.ConsoleLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
@@ -99,7 +99,7 @@ class GooglePayComponent : ActionComponent {
             when (resultCode) {
                 RESULT_OK -> {
                     val id = paymentIntentId ?: run {
-                        Logger.error(
+                        ConsoleLogger.error(
                             errorTag,
                             "Invalid payment intent ID"
                         )
@@ -135,7 +135,7 @@ class GooglePayComponent : ActionComponent {
                  */
                 AutoResolveHelper.RESULT_ERROR -> {
                     AutoResolveHelper.getStatusFromIntent(data)?.let {
-                        Logger.error(errorTag, String.format("Error code: %d", it.statusCode))
+                        ConsoleLogger.error(errorTag, String.format("Error code: %d", it.statusCode))
                     }
                     listener?.onCompleted(AirwallexPaymentStatus.Cancel)
                 }
@@ -176,7 +176,7 @@ class GooglePayComponent : ActionComponent {
                         }
                     }
             } catch (e: JSONException) {
-                Logger.error(errorTag, "Error: ${e.message}")
+                ConsoleLogger.error(errorTag, "Error: ${e.message}")
                 return null
             }
         }

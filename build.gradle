@@ -56,7 +56,7 @@ task clean(type: Delete) {
 version = '4.2.2'
 
 ext {
-    compileSdkVersion = 31
+    compileSdkVersion = 33
     minSdkVersion = 21
 
     kotlinCoroutinesVersion = '1.5.2'

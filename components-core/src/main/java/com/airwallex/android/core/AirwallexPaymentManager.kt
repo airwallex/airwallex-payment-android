@@ -24,7 +24,7 @@ class AirwallexPaymentManager(
     }
 
     override suspend fun retrieveAvailablePaymentMethods(
-        options: AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions
+        options: Options.RetrieveAvailablePaymentMethodsOptions
     ): AvailablePaymentMethodTypeResponse {
         val result = runCatching {
             requireNotNull(repository.retrieveAvailablePaymentMethods(options))
@@ -36,7 +36,7 @@ class AirwallexPaymentManager(
     }
 
     override suspend fun createPaymentMethod(
-        options: AirwallexApiRepository.CreatePaymentMethodOptions
+        options: Options.CreatePaymentMethodOptions
     ): PaymentMethod {
         val result = runCatching {
             requireNotNull(repository.createPaymentMethod(options))
@@ -48,7 +48,7 @@ class AirwallexPaymentManager(
     }
 
     override suspend fun createPaymentConsent(
-        options: AirwallexApiRepository.CreatePaymentConsentOptions
+        options: Options.CreatePaymentConsentOptions
     ): PaymentConsent {
         val result = runCatching {
             requireNotNull(repository.createPaymentConsent(options))
@@ -75,162 +75,80 @@ class AirwallexPaymentManager(
             .build()
     }
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "ComplexMethod", "LongMethod")
     private suspend fun <T> execute(options: Options, listener: PaymentListener<T>) {
-        when (options) {
-            is AirwallexApiRepository.RetrievePaymentConsentOptions -> {
-                val result = runCatching {
+        val result = runCatching {
+            when (options) {
+                is Options.RetrievePaymentConsentOptions ->
                     requireNotNull(repository.retrievePaymentConsent(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
-                    )
-                }
-            }
-            is AirwallexApiRepository.DisablePaymentConsentOptions -> {
-                val result = runCatching {
+                is Options.DisablePaymentConsentOptions ->
                     requireNotNull(repository.disablePaymentConsent(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
-                    )
-                }
-            }
-            is AirwallexApiRepository.VerifyPaymentConsentOptions -> {
-                val result = runCatching {
+                is Options.VerifyPaymentConsentOptions ->
                     requireNotNull(repository.verifyPaymentConsent(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
-                    )
-                }
-            }
-            is AirwallexApiRepository.CreatePaymentConsentOptions -> {
-                val result = runCatching {
+                is Options.CreatePaymentConsentOptions ->
                     requireNotNull(repository.createPaymentConsent(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
-                    )
-                }
-            }
-            is AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions -> {
-                val result = runCatching {
+                is Options.RetrieveAvailablePaymentMethodsOptions ->
                     requireNotNull(repository.retrieveAvailablePaymentMethods(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
-                    )
-                }
-            }
-            is AirwallexApiRepository.CreatePaymentMethodOptions -> {
-                val result = runCatching {
+                is Options.CreatePaymentMethodOptions ->
                     requireNotNull(repository.createPaymentMethod(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = {
-                            Tracker.track(
-                                TrackerRequest.Builder()
-                                    .setOrigin(options.request.customerId)
-                                    .setCode(TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED)
-                                    .build()
-                            )
-                            listener.onSuccess(it as T)
-                        },
-                        onFailure = {
-                            Tracker.track(
-                                TrackerRequest.Builder()
-                                    .setOrigin(options.request.customerId)
-                                    .setCode(TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED_ERROR)
-                                    .build()
-                            )
-                            listener.onFailed(handleError(it))
-                        }
-                    )
-                }
-            }
-            is AirwallexApiRepository.RetrievePaymentIntentOptions -> {
-                val result = runCatching {
+                is Options.RetrievePaymentIntentOptions ->
                     requireNotNull(repository.retrievePaymentIntent(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = {
-                            Tracker.track(
-                                TrackerRequest.Builder()
-                                    .setIntentId(options.paymentIntentId)
-                                    .setCode(TrackerRequest.TrackerCode.ON_INTENT_RETRIEVED)
-                                    .build()
-                            )
-                            listener.onSuccess(it as T)
-                        },
-                        onFailure = {
-                            Tracker.track(
-                                TrackerRequest.Builder()
-                                    .setIntentId(options.paymentIntentId)
-                                    .setCode(TrackerRequest.TrackerCode.ON_INTENT_RETRIEVED_ERROR)
-                                    .build()
-                            )
-                            listener.onFailed(handleError(it))
-                        }
-                    )
-                }
-            }
-            is AirwallexApiRepository.ConfirmPaymentIntentOptions -> {
-                val result = runCatching {
+                is Options.ConfirmPaymentIntentOptions ->
                     requireNotNull(repository.confirmPaymentIntent(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
-                    )
-                }
-            }
-            is AirwallexApiRepository.ContinuePaymentIntentOptions -> {
-                val result = runCatching {
+                is Options.ContinuePaymentIntentOptions ->
                     requireNotNull(repository.continuePaymentIntent(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
-                    )
-                }
-            }
-            is AirwallexApiRepository.RetrievePaymentMethodTypeInfoOptions -> {
-                val result = runCatching {
+                is Options.RetrievePaymentMethodTypeInfoOptions ->
                     requireNotNull(repository.retrievePaymentMethodTypeInfo(options))
-                }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
-                    )
-                }
-            }
-            is AirwallexApiRepository.RetrieveBankOptions -> {
-                val result = runCatching {
+                is Options.RetrieveBankOptions ->
                     requireNotNull(repository.retrieveBanks(options))
+                is Options.TrackerOptions -> throw java.lang.IllegalArgumentException("Invalid Options type")
+            }
+        }
+
+        withContext(Dispatchers.Main) {
+            var trackerCode: TrackerRequest.TrackerCode? = null
+            var origin: String? = null
+            var intentId: String? = null
+            when (options) {
+                is Options.CreatePaymentMethodOptions -> {
+                    trackerCode = if (result.isSuccess) {
+                        TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED
+                    } else {
+                        TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED_ERROR
+                    }
+                    origin = options.request.customerId
                 }
-                withContext(Dispatchers.Main) {
-                    result.fold(
-                        onSuccess = { listener.onSuccess(it as T) },
-                        onFailure = { listener.onFailed(handleError(it)) }
-                    )
+                is Options.RetrievePaymentIntentOptions -> {
+                    trackerCode = if (result.isSuccess) {
+                        TrackerRequest.TrackerCode.ON_INTENT_RETRIEVED
+                    } else {
+                        TrackerRequest.TrackerCode.ON_INTENT_RETRIEVED_ERROR
+                    }
+                    intentId = options.paymentIntentId
+                }
+                else -> {
+                    // no op
                 }
             }
+            trackerCode?.let { code ->
+                Tracker.track(
+                    TrackerRequest.Builder()
+                        .setOrigin(origin)
+                        .setIntentId(intentId)
+                        .setCode(code)
+                        .build()
+                )
+            }
+            result.fold(
+                onSuccess = {
+                    listener.onSuccess(it as T)
+                },
+                onFailure = {
+                    val exception = handleError(it)
+
+                    listener.onFailed(exception)
+                }
+            )
         }
     }
 

@@ -11,7 +11,7 @@ object AirwallexPlugins {
     const val AIRWALLEX_USER_AGENT = "Airwallex-Android-SDK"
 
     private var configuration: AirwallexConfiguration =
-        AirwallexConfiguration(false, Environment.PRODUCTION, emptyList())
+        AirwallexConfiguration(false, Environment.PRODUCTION, emptyList(), true)
 
     fun initialize(configuration: AirwallexConfiguration) {
         this.configuration = configuration
@@ -31,6 +31,11 @@ object AirwallexPlugins {
     val environment: Environment
         get() {
             return configuration.environment
+        }
+
+    internal val enableAnalytics: Boolean
+        get() {
+            return configuration.enableAnalytics
         }
 
     @Suppress("SwallowedException")
