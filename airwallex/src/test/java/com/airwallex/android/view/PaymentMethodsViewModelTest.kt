@@ -108,6 +108,12 @@ class PaymentMethodsViewModelTest {
         verify(exactly = 1) { TokenManager.updateClientSecret(any()) }
     }
 
+    @Test
+    fun `test page view tracking`() {
+        val viewModel = mockViewModel(transactionMode = TransactionMode.ONE_OFF)
+        assertEquals(viewModel.pageName, "payment_method_list")
+    }
+
     private fun mockViewModel(hasClientSecret: Boolean = true, transactionMode: TransactionMode):
         PaymentMethodsViewModel {
         mockkObject(TokenManager)

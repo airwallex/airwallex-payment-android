@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.ConsoleLogger
 import com.airwallex.android.core.model.*
 import com.airwallex.android.threedsecurity.exception.ThreeDSException
@@ -37,6 +39,13 @@ object ThreeDSecurityManager {
             if (nextAction.stage == NextAction.NextActionStage.WAITING_USER_INFO_INPUT) {
                 visibility = View.VISIBLE
                 (activity as AirwallexActivity).setLoadingProgress(loading = false)
+
+                AnalyticsLogger.logPageView(
+                    "webview_redirect",
+                    mutableMapOf<String, Any>().apply {
+                        putIfNotNull("stage", nextAction.stage?.value)
+                    }
+                )
             } else {
                 visibility = View.INVISIBLE
             }
@@ -86,6 +95,7 @@ object ThreeDSecurityManager {
                 }
 
                 override fun onWebViewError(error: WebViewConnectionException) {
+                    AnalyticsLogger.logError(error, "webview_redirect")
                     ConsoleLogger.error("onWebViewError", error)
                     destroyWebView()
                     listener.onCompleted(AirwallexPaymentStatus.Failure(error))

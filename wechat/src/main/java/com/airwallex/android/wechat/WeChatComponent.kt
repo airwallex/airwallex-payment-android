@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.core.model.WeChat
 import com.tencent.mm.opensdk.modelbase.BaseReq
@@ -28,6 +29,7 @@ class WeChatComponent : ActionComponent {
 
     companion object {
         val PROVIDER: ActionComponentProvider<WeChatComponent> = WeChatComponentProvider()
+        private const val EVENT_NAME = "wechat_redirect"
     }
 
     internal fun handleIntent(intent: Intent, onEnd: () -> Unit) {
@@ -46,11 +48,12 @@ class WeChatComponent : ActionComponent {
                         BaseResp.ErrCode.ERR_USER_CANCEL -> listener?.onCompleted(
                             AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "WeChat Pay has been cancelled!"))
                         )
-                        else -> listener?.onCompleted(
-                            AirwallexPaymentStatus.Failure(
+                        else -> {
+                            val exception =
                                 AirwallexCheckoutException(message = "Failed to process WeChat Pay, errCode ${resp.errCode}, errStr ${resp.errStr}")
-                            )
-                        )
+                            listener?.onCompleted(AirwallexPaymentStatus.Failure(exception))
+                            AnalyticsLogger.logError(exception, EVENT_NAME)
+                        }
                     }
                     onEnd.invoke()
                 }
@@ -100,13 +103,19 @@ class WeChatComponent : ActionComponent {
                     }
                     val weChatInitiated = initiateWeChatPay(weChat)
                     if (!weChatInitiated) {
+                        val errorMsg = "Failed to initialize WeChat app."
                         listener.onCompleted(
                             AirwallexPaymentStatus.Failure(
-                                AirwallexCheckoutException(message = "Failed to initialize WeChat app.")
+                                AirwallexCheckoutException(message = errorMsg)
                             )
+                        )
+                        AnalyticsLogger.logError(
+                            EVENT_NAME,
+                            mapOf("message" to errorMsg)
                         )
                     } else {
                         listener.onCompleted(AirwallexPaymentStatus.InProgress(paymentIntentId))
+                        AnalyticsLogger.logPageView(EVENT_NAME)
                     }
                 }
             }

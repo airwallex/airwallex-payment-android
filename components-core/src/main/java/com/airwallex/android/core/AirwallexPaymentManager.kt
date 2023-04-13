@@ -5,6 +5,8 @@ import com.airwallex.android.core.Airwallex.PaymentListener
 import com.airwallex.android.core.exception.APIException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.capitalized
+import com.airwallex.android.core.extension.splitByUppercaseWithSeparator
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -145,7 +147,11 @@ class AirwallexPaymentManager(
                 },
                 onFailure = {
                     val exception = handleError(it)
-
+                    AnalyticsLogger.logError(
+                        eventName = options.getEventName(),
+                        url = options.getUrl(),
+                        exception = exception
+                    )
                     listener.onFailed(exception)
                 }
             )
@@ -158,5 +164,10 @@ class AirwallexPaymentManager(
         } else {
             APIException(message = throwable.message)
         }
+    }
+
+    private fun Options.getEventName(): String {
+        return this::class.java.simpleName.replace("Options", "")
+            .splitByUppercaseWithSeparator("_").lowercase()
     }
 }

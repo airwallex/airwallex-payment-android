@@ -17,8 +17,8 @@ private typealias AirwallexEnviornment = com.airwallex.android.core.Environment
 object AnalyticsLogger {
     private var tracker: Tracker? = null
 
-    fun init(context: Context) {
-        if (AirwallexPlugins.enableAnalytics) {
+    fun initialize(context: Context) {
+        if (AirwallexPlugins.enableAnalytics && tracker == null) {
             tracker = Tracker(
                 Config(
                     appName = "pa_mobile_sdk",
@@ -31,11 +31,7 @@ object AnalyticsLogger {
         }
     }
 
-    fun logPageViewWithName(pageName: String) {
-        tracker?.info(pageName, mapOf("eventType" to "page_view"))
-    }
-
-    fun logPageView(pageName: String, additionalInfo: Map<String, Any>?) {
+    fun logPageView(pageName: String, additionalInfo: Map<String, Any>? = null) {
         val extraInfo = additionalInfo?.toMutableMap() ?: mutableMapOf()
         extraInfo["eventType"] = "page_view"
         tracker?.info(pageName, extraInfo)
@@ -53,7 +49,7 @@ object AnalyticsLogger {
         tracker?.error(eventName, extraInfo)
     }
 
-    fun logException(exception: AirwallexException, eventName: String) {
+    fun logError(exception: AirwallexException, eventName: String) {
         logError(eventName, null, exception)
     }
 
@@ -82,12 +78,12 @@ object AnalyticsLogger {
             putIfNotNull("accountId", TokenManager.accountId)
         }
     }
+}
 
-    private fun AirwallexException.getAirwallexCodeOrStatusCode(): String {
-        return error?.code ?: statusCode.toString()
-    }
+private fun AirwallexException.getAirwallexCodeOrStatusCode(): String {
+    return error?.code ?: statusCode.toString()
+}
 
-    private fun AirwallexException.getAirwallexMessageOrMessage(): String? {
-        return error?.message ?: message
-    }
+private fun AirwallexException.getAirwallexMessageOrMessage(): String? {
+    return error?.message ?: message
 }

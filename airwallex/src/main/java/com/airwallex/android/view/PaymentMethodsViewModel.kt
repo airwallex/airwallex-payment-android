@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -13,6 +14,8 @@ internal class PaymentMethodsViewModel(
     private val airwallex: Airwallex,
     private val session: AirwallexSession
 ) : AndroidViewModel(application) {
+
+    val pageName: String = "payment_method_list"
 
     val paymentIntent: PaymentIntent? by lazy {
         when (session) {
@@ -28,6 +31,19 @@ internal class PaymentMethodsViewModel(
             else -> {
                 throw Exception("Not supported session $session")
             }
+        }
+    }
+
+    fun trackCardPaymentSelection() {
+        AnalyticsLogger.logAction(
+            "select_payment",
+            mapOf("paymentMethod" to PaymentMethodType.CARD.value)
+        )
+    }
+
+    fun trackPaymentSelection(paymentMethod: PaymentMethod) {
+        paymentMethod.type?.takeIf { it.isNotEmpty() }?.let { type ->
+            AnalyticsLogger.logAction("select_payment", mapOf("paymentMethod" to type))
         }
     }
 

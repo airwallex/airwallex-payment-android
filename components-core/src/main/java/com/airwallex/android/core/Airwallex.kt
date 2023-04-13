@@ -47,7 +47,7 @@ class Airwallex internal constructor(
     }
 
     init {
-        AnalyticsLogger.init(applicationContext)
+        AnalyticsLogger.initialize(applicationContext)
     }
 
     /**
