@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.wechat.WeChatComponent
@@ -40,11 +41,13 @@ class WeChatComponentTest {
         val mockAPI = mockk<IWXAPI>()
         mockkStatic(WXAPIFactory::class)
         every { WXAPIFactory.createWXAPI(context, null, true) } returns mockAPI
+        mockkObject(AnalyticsLogger)
     }
 
     @After
     fun unmockStatics() {
         unmockkStatic(WXAPIFactory::class)
+        unmockkObject(AnalyticsLogger)
     }
 
     @Test
@@ -58,6 +61,19 @@ class WeChatComponentTest {
         handlePaymentIntentResponse(actionData)
 
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.InProgress("id")) }
+        verify(exactly = 1) { AnalyticsLogger.logPageView("wechat_redirect") }
+    }
+
+    @Test
+    fun `test tracking when WeChat Pay fails to initiate`() {
+        every { component["initiateWeChatPay"](any<WeChat>()) } returns false
+        handlePaymentIntentResponse(actionData)
+        verify(exactly = 1) {
+            AnalyticsLogger.logError(
+                "wechat_redirect",
+                mapOf("message" to "Failed to initialize WeChat app.")
+            )
+        }
     }
 
     @Test

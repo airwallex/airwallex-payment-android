@@ -88,7 +88,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     paymentConsent: PaymentConsent,
                     paymentMethodType: AvailablePaymentMethodType?
                 ) {
-                    paymentConsent.paymentMethod?.let { viewModel.trackPaymentSelection(it) }
+                    viewModel.trackPaymentSelection(paymentConsent)
 
                     handleProcessPaymentMethod(
                         paymentConsent = paymentConsent,
@@ -276,6 +276,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
             when (result) {
                 is AirwallexPaymentStatus.Success -> {
+                    viewModel.trackPaymentSuccess(paymentConsent)
                     finishWithPaymentIntent(
                         paymentIntentId = result.paymentIntentId,
                         isRedirecting = false
@@ -454,6 +455,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 if (resultCode == Activity.RESULT_OK) {
                     val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
                     result?.let {
+                        viewModel.trackCardPaymentSuccess()
                         finishWithPaymentIntent(
                             paymentIntentId = result.paymentIntentId,
                             exception = result.exception

@@ -4,6 +4,7 @@ import android.app.Activity
 import com.airwallex.android.core.ActionComponentProviderType
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
@@ -13,11 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
-import io.mockk.slot
-import io.mockk.unmockkStatic
+import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.After
@@ -70,12 +67,14 @@ class GooglePayComponentProviderTest {
     @Before
     fun setUp() {
         task = mockGooglePayTask()
+        mockkObject(AnalyticsLogger)
     }
 
     @After
     fun unmockStatics() {
         unmockkStatic(PaymentsUtil::class)
         unmockkStatic(Wallet::class)
+        unmockkObject(AnalyticsLogger)
     }
 
     @Test
@@ -121,6 +120,7 @@ class GooglePayComponentProviderTest {
             Status.RESULT_INTERNAL_ERROR
         )
         assertFalse(canHandleSessionAndPaymentMethod())
+        verify(exactly = 1) { AnalyticsLogger.logError(any(), "googlepay_is_ready") }
     }
 
     @Test

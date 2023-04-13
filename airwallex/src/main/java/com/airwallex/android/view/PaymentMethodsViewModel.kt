@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -34,16 +35,32 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    fun trackCardPaymentSelection() {
+    fun trackCardPaymentSuccess() {
         AnalyticsLogger.logAction(
-            "select_payment",
-            mapOf("paymentMethod" to PaymentMethodType.CARD.value)
+            PAYMENT_SUCCESS,
+            mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
         )
     }
 
-    fun trackPaymentSelection(paymentMethod: PaymentMethod) {
-        paymentMethod.type?.takeIf { it.isNotEmpty() }?.let { type ->
-            AnalyticsLogger.logAction("select_payment", mapOf("paymentMethod" to type))
+    fun trackPaymentSuccess(paymentConsent: PaymentConsent) {
+        AnalyticsLogger.logAction(
+            PAYMENT_SUCCESS,
+            mutableMapOf<String, String>().apply {
+                putIfNotNull(PAYMENT_METHOD, paymentConsent.paymentMethod?.type)
+            }
+        )
+    }
+
+    fun trackCardPaymentSelection() {
+        AnalyticsLogger.logAction(
+            PAYMENT_SELECT,
+            mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
+        )
+    }
+
+    fun trackPaymentSelection(paymentConsent: PaymentConsent) {
+        paymentConsent.paymentMethod?.type?.takeIf { it.isNotEmpty() }?.let { type ->
+            AnalyticsLogger.logAction(PAYMENT_SELECT, mapOf(PAYMENT_METHOD to type))
         }
     }
 
@@ -208,5 +225,8 @@ internal class PaymentMethodsViewModel(
     companion object {
         const val COUNTRY_CODE = "country_code"
         const val FLOW = "flow"
+        private const val PAYMENT_METHOD = "payment_method"
+        private const val PAYMENT_SUCCESS = "payment_success"
+        private const val PAYMENT_SELECT = "select_payment"
     }
 }
