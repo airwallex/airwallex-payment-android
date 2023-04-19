@@ -103,7 +103,7 @@ class AirwallexPaymentManager(
                     requireNotNull(repository.retrievePaymentMethodTypeInfo(options))
                 is Options.RetrieveBankOptions ->
                     requireNotNull(repository.retrieveBanks(options))
-                is Options.TrackerOptions -> throw java.lang.IllegalArgumentException("Invalid Options type")
+                is Options.TrackerOptions -> throw IllegalArgumentException("Invalid Options type")
             }
         }
 

@@ -29,7 +29,7 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlinVersion"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
-    implementation "io.github.airwallex:AirTracker:1.0.1"
+    implementation "io.github.airwallex:AirTracker:1.0.2"
 
     // test
     testImplementation 'org.json:json:20210307'

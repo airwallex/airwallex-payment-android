@@ -89,5 +89,14 @@ class AnalyticsLoggerTest {
                 mapOf("eventType" to "action", "key" to "value")
             )
         }
+
+        AnalyticsLogger.updateAccountId("aid")
+        verify(exactly = 1) {
+            anyConstructed<Tracker>() setProperty "extraCommonData" value mapOf(
+                "merchantAppName" to "test_app",
+                "merchantAppVersion" to "1.0.1",
+                "accountId" to "aid"
+            )
+        }
     }
 }

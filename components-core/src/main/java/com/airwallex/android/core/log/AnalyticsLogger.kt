@@ -31,6 +31,14 @@ object AnalyticsLogger {
         }
     }
 
+    fun updateAccountId(accountId: String?) {
+        tracker?.let {
+            it.extraCommonData = it.extraCommonData.toMutableMap().apply {
+                putIfNotNull("accountId", accountId)
+            }
+        }
+    }
+
     fun logPageView(pageName: String, additionalInfo: Map<String, Any>? = null) {
         val extraInfo = additionalInfo?.toMutableMap() ?: mutableMapOf()
         extraInfo["eventType"] = "page_view"
