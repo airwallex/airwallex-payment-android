@@ -66,7 +66,7 @@ class AnalyticsLoggerTest {
         every { exception.error } returns AirwallexError("code")
         every { exception.message } returns "message"
 
-        AnalyticsLogger.logError(exception, "error_name")
+        AnalyticsLogger.logError("error_name", exception = exception)
 
         verify(exactly = 1) {
             anyConstructed<Tracker>().error(

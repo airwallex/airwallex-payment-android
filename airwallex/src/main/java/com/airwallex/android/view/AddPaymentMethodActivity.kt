@@ -218,6 +218,8 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                     AnalyticsLogger.logAction("save_card")
                     if (currentBrand == CardBrand.UnionPay) {
                         showUnionPayWarning()
+                    } else {
+                        viewBinding.warningView.visibility = View.GONE
                     }
                 } else {
                     viewBinding.warningView.visibility = View.GONE

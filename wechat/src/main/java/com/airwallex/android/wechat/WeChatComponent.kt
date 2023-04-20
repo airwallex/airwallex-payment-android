@@ -52,7 +52,7 @@ class WeChatComponent : ActionComponent {
                             val exception =
                                 AirwallexCheckoutException(message = "Failed to process WeChat Pay, errCode ${resp.errCode}, errStr ${resp.errStr}")
                             listener?.onCompleted(AirwallexPaymentStatus.Failure(exception))
-                            AnalyticsLogger.logError(exception, EVENT_NAME)
+                            AnalyticsLogger.logError(EVENT_NAME, exception = exception)
                         }
                     }
                     onEnd.invoke()

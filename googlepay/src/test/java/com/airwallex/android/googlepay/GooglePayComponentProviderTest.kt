@@ -120,7 +120,7 @@ class GooglePayComponentProviderTest {
             Status.RESULT_INTERNAL_ERROR
         )
         assertFalse(canHandleSessionAndPaymentMethod())
-        verify(exactly = 1) { AnalyticsLogger.logError(any(), "googlepay_is_ready") }
+        verify(exactly = 1) { AnalyticsLogger.logError("googlepay_is_ready", exception = any()) }
     }
 
     @Test

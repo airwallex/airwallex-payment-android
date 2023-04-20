@@ -49,7 +49,7 @@ object AnalyticsLogger {
         tracker?.error(eventName, additionalInfo)
     }
 
-    fun logError(eventName: String, url: String?, exception: AirwallexException) {
+    fun logError(eventName: String, url: String? = null, exception: AirwallexException) {
         val extraInfo = mutableMapOf<String, Any>("eventType" to "pa_api_request")
         url?.takeIf { it.isNotEmpty() }?.let { extraInfo["url"] = it }
         exception.getAirwallexCodeOrStatusCode().takeIf { it.isNotEmpty() }?.let { extraInfo["code"] = it }
@@ -57,16 +57,8 @@ object AnalyticsLogger {
         tracker?.error(eventName, extraInfo)
     }
 
-    fun logError(exception: AirwallexException, eventName: String) {
-        logError(eventName, null, exception)
-    }
-
-    fun logAction(actionName: String) {
-        tracker?.info(actionName, mapOf("eventType" to "action"))
-    }
-
-    fun logAction(actionName: String, additionalInfo: Map<String, Any>) {
-        val extraInfo = additionalInfo.toMutableMap()
+    fun logAction(actionName: String, additionalInfo: Map<String, Any>? = null) {
+        val extraInfo = additionalInfo?.toMutableMap() ?: mutableMapOf()
         extraInfo["eventType"] = "action"
         tracker?.info(actionName, extraInfo)
     }

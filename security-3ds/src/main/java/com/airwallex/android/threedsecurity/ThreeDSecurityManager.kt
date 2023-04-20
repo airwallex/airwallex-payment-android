@@ -95,7 +95,7 @@ object ThreeDSecurityManager {
                 }
 
                 override fun onWebViewError(error: WebViewConnectionException) {
-                    AnalyticsLogger.logError(error, "webview_redirect")
+                    AnalyticsLogger.logError("webview_redirect", exception = error)
                     ConsoleLogger.error("onWebViewError", error)
                     destroyWebView()
                     listener.onCompleted(AirwallexPaymentStatus.Failure(error))

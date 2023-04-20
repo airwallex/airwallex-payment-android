@@ -66,13 +66,13 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
                 } catch (exception: ApiException) {
                     // Process error
                     AnalyticsLogger.logError(
-                        object : AirwallexException(
+                        "googlepay_is_ready",
+                        exception = object : AirwallexException(
                             null,
                             null,
                             exception.statusCode,
                             exception.message
-                        ) {},
-                        "googlepay_is_ready"
+                        ) {}
                     )
                     ConsoleLogger.error("isReadyToPay failed", exception)
                     cont.resume(false)
