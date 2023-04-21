@@ -4,13 +4,16 @@ import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
+import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.math.BigDecimal
@@ -19,6 +22,16 @@ import kotlin.test.assertEquals
 class PaymentMethodsViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
+
+    @Before
+    fun setUp() {
+        mockkObject(AnalyticsLogger)
+    }
+
+    @After
+    fun unmock() {
+        unmockkObject(AnalyticsLogger)
+    }
 
     @Test
     fun `test fetchAvailablePaymentMethodTypes when session is recurring and has client secret`() =
@@ -51,54 +64,57 @@ class PaymentMethodsViewModelTest {
     }
 
     @Test
-    fun `test does not have single payment method - has consents, only one payment method`() = runTest {
-        val viewModel = mockViewModel(false, TransactionMode.RECURRING)
-        val cardPaymentMethod = mockk<AvailablePaymentMethodType>()
-        every { cardPaymentMethod.name } returns PaymentMethodType.CARD.name
+    fun `test does not have single payment method - has consents, only one payment method`() =
+        runTest {
+            val viewModel = mockViewModel(false, TransactionMode.RECURRING)
+            val cardPaymentMethod = mockk<AvailablePaymentMethodType>()
+            every { cardPaymentMethod.name } returns PaymentMethodType.CARD.name
 
-        val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
-            desiredPaymentMethodType = cardPaymentMethod,
-            paymentMethods = listOf(cardPaymentMethod),
-            consents = listOf(PaymentConsent())
-        )
-        assertFalse(hasSinglePaymentMethod)
-    }
-
-    @Test
-    fun `test does not have single payment method - no consents, multiple payment method`() = runTest {
-        val viewModel = mockViewModel(false, TransactionMode.RECURRING)
-
-        val cardPaymentMethod = mockk<AvailablePaymentMethodType>()
-        every { cardPaymentMethod.name } returns PaymentMethodType.CARD.name
-
-        val redirectPaymentMethod = mockk<AvailablePaymentMethodType>()
-        every { redirectPaymentMethod.name } returns PaymentMethodType.REDIRECT.name
-
-        val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
-            desiredPaymentMethodType = cardPaymentMethod,
-            paymentMethods = listOf(cardPaymentMethod, redirectPaymentMethod),
-            consents = emptyList()
-        )
-        assertFalse(hasSinglePaymentMethod)
-    }
+            val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
+                desiredPaymentMethodType = cardPaymentMethod,
+                paymentMethods = listOf(cardPaymentMethod),
+                consents = listOf(PaymentConsent())
+            )
+            assertFalse(hasSinglePaymentMethod)
+        }
 
     @Test
-    fun `test does not have single payment method - has consents, multiple payment method`() = runTest {
-        val viewModel = mockViewModel(false, TransactionMode.RECURRING)
+    fun `test does not have single payment method - no consents, multiple payment method`() =
+        runTest {
+            val viewModel = mockViewModel(false, TransactionMode.RECURRING)
 
-        val cardPaymentMethod = mockk<AvailablePaymentMethodType>()
-        every { cardPaymentMethod.name } returns PaymentMethodType.CARD.name
+            val cardPaymentMethod = mockk<AvailablePaymentMethodType>()
+            every { cardPaymentMethod.name } returns PaymentMethodType.CARD.name
 
-        val redirectPaymentMethod = mockk<AvailablePaymentMethodType>()
-        every { redirectPaymentMethod.name } returns PaymentMethodType.REDIRECT.name
+            val redirectPaymentMethod = mockk<AvailablePaymentMethodType>()
+            every { redirectPaymentMethod.name } returns PaymentMethodType.REDIRECT.name
 
-        val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
-            desiredPaymentMethodType = cardPaymentMethod,
-            paymentMethods = listOf(cardPaymentMethod, redirectPaymentMethod),
-            consents = listOf(PaymentConsent())
-        )
-        assertFalse(hasSinglePaymentMethod)
-    }
+            val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
+                desiredPaymentMethodType = cardPaymentMethod,
+                paymentMethods = listOf(cardPaymentMethod, redirectPaymentMethod),
+                consents = emptyList()
+            )
+            assertFalse(hasSinglePaymentMethod)
+        }
+
+    @Test
+    fun `test does not have single payment method - has consents, multiple payment method`() =
+        runTest {
+            val viewModel = mockViewModel(false, TransactionMode.RECURRING)
+
+            val cardPaymentMethod = mockk<AvailablePaymentMethodType>()
+            every { cardPaymentMethod.name } returns PaymentMethodType.CARD.name
+
+            val redirectPaymentMethod = mockk<AvailablePaymentMethodType>()
+            every { redirectPaymentMethod.name } returns PaymentMethodType.REDIRECT.name
+
+            val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
+                desiredPaymentMethodType = cardPaymentMethod,
+                paymentMethods = listOf(cardPaymentMethod, redirectPaymentMethod),
+                consents = listOf(PaymentConsent())
+            )
+            assertFalse(hasSinglePaymentMethod)
+        }
 
     @Test
     fun `test fetchAvailablePaymentMethodTypes when session is oneoff`() = runTest {
@@ -108,8 +124,27 @@ class PaymentMethodsViewModelTest {
         verify(exactly = 1) { TokenManager.updateClientSecret(any()) }
     }
 
+    @Test
+    fun `test analytics logging`() {
+        val viewModel = mockViewModel(transactionMode = TransactionMode.ONE_OFF)
+        assertEquals(viewModel.pageName, "payment_method_list")
+
+        val paymentConsent = PaymentConsent(
+            paymentMethod = PaymentMethod.Builder().setType(PaymentMethodType.REDIRECT.value)
+                .build()
+        )
+        viewModel.trackPaymentSelection(paymentConsent)
+        verify(exactly = 1) { AnalyticsLogger.logAction("select_payment", mapOf("payment_method" to "redirect")) }
+        viewModel.trackCardPaymentSelection()
+        verify(exactly = 1) { AnalyticsLogger.logAction("select_payment", mapOf("payment_method" to "card")) }
+        viewModel.trackPaymentSuccess(paymentConsent)
+        verify(exactly = 1) { AnalyticsLogger.logAction("payment_success", mapOf("payment_method" to "redirect")) }
+        viewModel.trackCardPaymentSuccess()
+        verify(exactly = 1) { AnalyticsLogger.logAction("payment_success", mapOf("payment_method" to "card")) }
+    }
+
     private fun mockViewModel(hasClientSecret: Boolean = true, transactionMode: TransactionMode):
-        PaymentMethodsViewModel {
+            PaymentMethodsViewModel {
         mockkObject(TokenManager)
         val mockResponse = AvailablePaymentMethodTypeResponseParser().parse(
             JSONObject(

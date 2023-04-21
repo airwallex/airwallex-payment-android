@@ -8,26 +8,48 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airwallex.android.core.extension.parcelable
+import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.Bank
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.databinding.DialogBankBinding
 import com.airwallex.android.databinding.DialogBankItemBinding
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
-class PaymentBankBottomSheetDialog : BottomSheetDialog<DialogBankBinding>() {
+class PaymentBankBottomSheetDialog : BottomSheetDialog<DialogBankBinding>(), TrackablePage {
+
+    override val pageName: String
+        get() = "payment_info_sheet"
+
+    override val additionalInfo: Map<String, String>
+        get() {
+            val info = mutableMapOf<String, String>()
+            arguments?.parcelable<PaymentMethod>(PAYMENT_METHOD)?.let {
+                info.putIfNotNull("paymentMethod", it.type)
+            }
+            arguments?.getString(TITLE)?.let {
+                info.putIfNotNull("title", it)
+            }
+            return info
+        }
 
     var onCompleted: ((bank: Bank) -> Unit)? = null
 
     companion object {
         private const val TITLE = "title"
         private const val BANKS = "banks"
+        private const val PAYMENT_METHOD = "payment_method"
 
         fun newInstance(
+            paymentMethod: PaymentMethod,
             title: String,
             banks: List<Bank>
         ): PaymentBankBottomSheetDialog {
             val args = Bundle()
+            args.putParcelable(PAYMENT_METHOD, paymentMethod)
             args.putString(TITLE, title)
             args.putParcelableArrayList(BANKS, ArrayList(banks))
             val fragment = PaymentBankBottomSheetDialog()

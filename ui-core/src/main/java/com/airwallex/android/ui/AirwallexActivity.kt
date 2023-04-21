@@ -10,7 +10,9 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.airwallex.android.core.log.Logger
+import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.ConsoleLogger
+import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.ui.databinding.ActivityAirwallexBinding
 
 abstract class AirwallexActivity : AppCompatActivity() {
@@ -43,11 +45,14 @@ abstract class AirwallexActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        Logger.debug("$localClassName#onCreate()")
+        ConsoleLogger.debug("$localClassName#onCreate()")
+        if (this is TrackablePage) {
+            AnalyticsLogger.logPageView(pageName, additionalInfo)
+        }
     }
 
     override fun onDestroy() {
-        Logger.debug("$localClassName#onDestroy()")
+        ConsoleLogger.debug("$localClassName#onDestroy()")
         super.onDestroy()
     }
 
@@ -64,7 +69,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Logger.debug("$localClassName#onCreateOptionsMenu()")
+        ConsoleLogger.debug("$localClassName#onCreateOptionsMenu()")
         val handled = super.onOptionsItemSelected(item)
         if (!handled) {
             onBackPressed()
@@ -107,7 +112,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
                     show()
                 }
             } catch (e: Exception) {
-                Logger.debug("Failed to show loading dialog", e)
+                ConsoleLogger.debug("Failed to show loading dialog", e)
             }
         } else {
             loadingDialog = null

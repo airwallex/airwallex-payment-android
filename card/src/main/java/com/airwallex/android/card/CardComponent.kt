@@ -104,7 +104,7 @@ class CardComponent : ActionComponent {
                     }
                 }
                 cardNextActionModel.paymentManager.startOperation(
-                    AirwallexApiRepository.RetrievePaymentIntentOptions(
+                    Options.RetrievePaymentIntentOptions(
                         clientSecret = cardNextActionModel.clientSecret,
                         paymentIntentId = cardNextActionModel.paymentIntentId
                     ),

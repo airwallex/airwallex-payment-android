@@ -9,21 +9,42 @@ import android.widget.LinearLayout.LayoutParams
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.databinding.DialogPaymentInfoBinding
 import com.airwallex.android.R
+import com.airwallex.android.core.extension.parcelable
+import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.*
 import com.airwallex.android.view.inputs.AirwallexTextInputLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
-class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>() {
+class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>(), TrackablePage {
+
+    override val pageName: String
+        get() = "payment_info_sheet"
+
+    override val additionalInfo: Map<String, String>
+        get() {
+            val info = mutableMapOf<String, String>()
+            arguments?.parcelable<PaymentMethod>(PAYMENT_METHOD)?.let {
+                info.putIfNotNull("paymentMethod", it.type)
+            }
+            arguments?.parcelable<PaymentMethodTypeInfo>(PAYMENT_METHOD_TYPE_INFO)?.let {
+                info.putIfNotNull("formTitle", it.displayName)
+            }
+            return info
+        }
 
     var onCompleted: ((fieldMap: MutableMap<String, String>) -> Unit)? = null
 
     companion object {
         private const val PAYMENT_METHOD_TYPE_INFO = "payment_method_type_info"
+        private const val PAYMENT_METHOD = "payment_method"
 
         fun newInstance(
+            paymentMethod: PaymentMethod,
             paymentMethodTypeInfo: PaymentMethodTypeInfo
         ): PaymentInfoBottomSheetDialog {
             val args = Bundle()
+            args.putParcelable(PAYMENT_METHOD, paymentMethod)
             args.putParcelable(PAYMENT_METHOD_TYPE_INFO, paymentMethodTypeInfo)
             val fragment = PaymentInfoBottomSheetDialog()
             fragment.arguments = args
@@ -35,7 +56,7 @@ class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>
         super.onViewCreated(view, savedInstanceState)
 
         val paymentMethodTypeInfo =
-            arguments?.getParcelable<PaymentMethodTypeInfo>(PAYMENT_METHOD_TYPE_INFO)
+            arguments?.parcelable<PaymentMethodTypeInfo>(PAYMENT_METHOD_TYPE_INFO)
         val fields = paymentMethodTypeInfo
             ?.fieldSchemas
             ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }

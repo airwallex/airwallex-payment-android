@@ -271,6 +271,13 @@ class AddPaymentMethodViewModelTest {
         )
     }
 
+    @Test
+    fun `test page view tracking`() {
+        val viewModel = createViewModel(mockk(), listOf(CardScheme("mastercard"), CardScheme("visa")))
+        assertEquals(viewModel.pageName, "card_payment_view")
+        assertEquals(viewModel.additionalInfo, mapOf("supportedSchemes" to listOf("mastercard", "visa")))
+    }
+
     private fun createViewModel(
         session: AirwallexSession,
         cardSchemes: List<CardScheme> = listOf()

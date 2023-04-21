@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.redirect.exception.RedirectException
 import com.airwallex.android.redirect.util.RedirectUtil
@@ -39,8 +41,16 @@ class RedirectComponent : ActionComponent {
                 try {
                     listener.onCompleted(AirwallexPaymentStatus.InProgress(paymentIntentId))
                     RedirectUtil.makeRedirect(activity = activity, redirectUrl = redirectUrl)
+                    AnalyticsLogger.logPageView("payment_redirect", mapOf("url" to redirectUrl))
                 } catch (e: RedirectException) {
                     listener.onCompleted(AirwallexPaymentStatus.Failure(e))
+                    AnalyticsLogger.logError(
+                        "payment_redirect",
+                        mutableMapOf<String, Any>().apply {
+                            putIfNotNull("url", redirectUrl)
+                            putIfNotNull("message", e.message)
+                        }
+                    )
                 }
             }
             else -> {

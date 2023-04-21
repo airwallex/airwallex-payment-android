@@ -13,7 +13,9 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardNextActionModel
 import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.exception.AirwallexCheckoutException
-import com.airwallex.android.core.log.Logger
+import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.ConsoleLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
@@ -96,10 +98,11 @@ class GooglePayComponent : ActionComponent {
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (requestCode == loadPaymentDataRequestCode) {
+            AnalyticsLogger.logPageView("google_pay_sheet", mapOf("code" to resultCode))
             when (resultCode) {
                 RESULT_OK -> {
                     val id = paymentIntentId ?: run {
-                        Logger.error(
+                        ConsoleLogger.error(
                             errorTag,
                             "Invalid payment intent ID"
                         )
@@ -135,7 +138,13 @@ class GooglePayComponent : ActionComponent {
                  */
                 AutoResolveHelper.RESULT_ERROR -> {
                     AutoResolveHelper.getStatusFromIntent(data)?.let {
-                        Logger.error(errorTag, String.format("Error code: %d", it.statusCode))
+                        AnalyticsLogger.logError(
+                            "googlepay_payment_data_retrieve",
+                            mutableMapOf("code" to it.statusCode.toString()).apply {
+                                putIfNotNull("message", it.statusMessage)
+                            }
+                        )
+                        ConsoleLogger.error(errorTag, String.format("Error code: %d", it.statusCode))
                     }
                     listener?.onCompleted(AirwallexPaymentStatus.Cancel)
                 }
@@ -176,7 +185,7 @@ class GooglePayComponent : ActionComponent {
                         }
                     }
             } catch (e: JSONException) {
-                Logger.error(errorTag, "Error: ${e.message}")
+                ConsoleLogger.error(errorTag, "Error: ${e.message}")
                 return null
             }
         }

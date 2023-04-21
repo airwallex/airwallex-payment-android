@@ -4,7 +4,9 @@ import android.app.Activity
 import com.airwallex.android.core.ActionComponentProvider
 import com.airwallex.android.core.ActionComponentProviderType
 import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.core.log.Logger
+import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.ConsoleLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 import com.google.android.gms.common.api.ApiException
@@ -63,7 +65,16 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
                     } ?: cont.resume(false)
                 } catch (exception: ApiException) {
                     // Process error
-                    Logger.error("isReadyToPay failed", exception)
+                    AnalyticsLogger.logError(
+                        "googlepay_is_ready",
+                        exception = object : AirwallexException(
+                            null,
+                            null,
+                            exception.statusCode,
+                            exception.message
+                        ) {}
+                    )
+                    ConsoleLogger.error("isReadyToPay failed", exception)
                     cont.resume(false)
                 }
             }

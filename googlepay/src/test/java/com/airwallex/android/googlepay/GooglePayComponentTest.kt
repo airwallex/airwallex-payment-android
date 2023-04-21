@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import com.airwallex.android.core.*
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
@@ -52,6 +53,7 @@ class GooglePayComponentTest {
 
     @Before
     fun setUp() {
+        mockkObject(AnalyticsLogger)
         mockkStatic(PaymentDataRequest::class)
         mockkStatic(PaymentsUtil::class)
         mockkStatic(Wallet::class)
@@ -83,6 +85,7 @@ class GooglePayComponentTest {
 
     @After
     fun unmockStatics() {
+        unmockkObject(AnalyticsLogger)
         unmockkStatic(PaymentDataRequest::class)
         unmockkStatic(PaymentsUtil::class)
         unmockkStatic(Wallet::class)
@@ -134,7 +137,13 @@ class GooglePayComponentTest {
         )
         handlePaymentIntentResponse(redirectAction, cardModel)
         verify(exactly = 1) {
-            ThreeDSecurityManager.handleThreeDSFlow("id", activity, redirectAction, cardModel, listener)
+            ThreeDSecurityManager.handleThreeDSFlow(
+                "id",
+                activity,
+                redirectAction,
+                cardModel,
+                listener
+            )
         }
     }
 
@@ -148,6 +157,7 @@ class GooglePayComponentTest {
         handlePaymentIntentResponse()
         component.handleActivityResult(991, RESULT_CANCELED, null)
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Cancel) }
+        verify(exactly = 1) { AnalyticsLogger.logPageView("google_pay_sheet", mapOf("code" to RESULT_CANCELED)) }
     }
 
     @Test
@@ -158,6 +168,12 @@ class GooglePayComponentTest {
         handlePaymentIntentResponse()
         component.handleActivityResult(991, AutoResolveHelper.RESULT_ERROR, intentData)
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Cancel) }
+        verify(exactly = 1) {
+            AnalyticsLogger.logError(
+                "googlepay_payment_data_retrieve",
+                mapOf("code" to Status.RESULT_INTERNAL_ERROR.statusCode.toString())
+            )
+        }
     }
 
     @Test
@@ -223,13 +239,18 @@ class GooglePayComponentTest {
     @Test
     fun `test retrieveSecurityToken`() {
         val securityListener = mockk<SecurityTokenListener>()
-        val connector = MockKGateway.implementation().constructorMockFactory.mockPlaceholder(AirwallexSecurityConnector::class)
+        val connector = MockKGateway.implementation().constructorMockFactory.mockPlaceholder(
+            AirwallexSecurityConnector::class
+        )
         every { connector.retrieveSecurityToken(any(), context, securityListener) } just runs
         component.retrieveSecurityToken("id", context, securityListener)
         verify(exactly = 1) { connector.retrieveSecurityToken(any(), context, securityListener) }
     }
 
-    private fun handlePaymentIntentResponse(action: NextAction? = null, model: CardNextActionModel? = null) {
+    private fun handlePaymentIntentResponse(
+        action: NextAction? = null,
+        model: CardNextActionModel? = null
+    ) {
         component.handlePaymentIntentResponse(
             paymentIntentId = "id",
             nextAction = action,

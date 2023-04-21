@@ -3,7 +3,8 @@ package com.airwallex.android.core
 data class AirwallexConfiguration internal constructor(
     val enableLogging: Boolean,
     val environment: Environment,
-    val supportComponentProviders: List<ActionComponentProvider<out ActionComponent>>
+    val supportComponentProviders: List<ActionComponentProvider<out ActionComponent>>,
+    val enableAnalytics: Boolean
 ) {
     class Builder {
 
@@ -23,6 +24,11 @@ data class AirwallexConfiguration internal constructor(
         private var supportComponentProviders: List<ActionComponentProvider<out ActionComponent>> =
             listOf()
 
+        /**
+         * You can set to false if you don't want to send any analytics data
+         */
+        private var enableAnalytics: Boolean = true
+
         fun enableLogging(enable: Boolean): Builder = apply {
             this.enableLogging = enable
         }
@@ -36,11 +42,16 @@ data class AirwallexConfiguration internal constructor(
                 this.supportComponentProviders = supportComponentProviders
             }
 
+        fun disableAnalytics(): Builder = apply {
+            this.enableAnalytics = false
+        }
+
         fun build(): AirwallexConfiguration {
             return AirwallexConfiguration(
                 enableLogging = enableLogging,
                 environment = environment,
-                supportComponentProviders = supportComponentProviders
+                supportComponentProviders = supportComponentProviders,
+                enableAnalytics = enableAnalytics
             )
         }
     }

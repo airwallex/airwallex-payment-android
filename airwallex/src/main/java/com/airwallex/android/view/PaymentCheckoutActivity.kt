@@ -14,6 +14,8 @@ import com.airwallex.android.core.util.CurrencyUtils.formatPrice
 import com.airwallex.android.databinding.ActivityPaymentCheckoutBinding
 import com.airwallex.android.R
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.log.AnalyticsLogger
 import java.util.*
 
 /**
@@ -99,6 +101,13 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             observer = { result ->
                 when (result) {
                     is AirwallexPaymentStatus.Success -> {
+                        AnalyticsLogger.logAction(
+                            "payment_success",
+                            mutableMapOf<String, String>().apply {
+                                putIfNotNull("paymentMethod", paymentMethod.type)
+                            }
+                        )
+
                         finishWithPaymentIntent(paymentIntentId = result.paymentIntentId)
                     }
                     is AirwallexPaymentStatus.Failure -> {

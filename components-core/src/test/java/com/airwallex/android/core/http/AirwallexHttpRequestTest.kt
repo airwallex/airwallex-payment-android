@@ -1,19 +1,16 @@
 package com.airwallex.android.core.http
 
 import com.airwallex.android.core.AirwallexPlugins
-import com.airwallex.android.core.model.Options
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class AirwallexHttpRequestTest {
 
-    private val options = Options(clientSecret = "")
-
     @Test
     fun contentTypeTest() {
         val contentType = AirwallexHttpRequest.createGet(
             AirwallexPlugins.environment.baseUrl(),
-            options
+            null
         ).contentType
         assertEquals("application/json; charset=UTF-8", contentType)
     }
@@ -22,7 +19,7 @@ class AirwallexHttpRequestTest {
     fun headersTest() {
         val headers = AirwallexHttpRequest.createGet(
             AirwallexPlugins.environment.baseUrl(),
-            options
+            null
         ).headers
         assertEquals("Airwallex-Android-SDK", headers["User-Agent"])
     }
@@ -32,7 +29,7 @@ class AirwallexHttpRequestTest {
         val baseUrl = AirwallexPlugins.environment.baseUrl()
         val url = AirwallexHttpRequest.createGet(
             url = baseUrl,
-            options = options
+            options = null
         ).url
 
         assertEquals(baseUrl, url)
@@ -45,12 +42,12 @@ class AirwallexHttpRequestTest {
         assertEquals(
             AirwallexHttpRequest.createPost(
                 AirwallexPlugins.environment.baseUrl(),
-                options,
+                null,
                 params
             ).toString(),
             AirwallexHttpRequest.createPost(
                 AirwallexPlugins.environment.baseUrl(),
-                options,
+                null,
                 params
             ).toString()
         )

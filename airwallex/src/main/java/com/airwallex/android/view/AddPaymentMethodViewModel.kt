@@ -19,6 +19,9 @@ internal class AddPaymentMethodViewModel(
     private val session: AirwallexSession,
     private val supportedCardSchemes: List<CardScheme>
 ) : AndroidViewModel(application) {
+    val pageName: String = "card_payment_view"
+    val additionalInfo: Map<String, List<String>> =
+        mapOf("supportedSchemes" to supportedCardSchemes.map { it.name })
 
     fun getValidationResult(cardNumber: String): ValidationResult {
         if (cardNumber.isEmpty()) {

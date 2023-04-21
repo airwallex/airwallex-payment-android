@@ -3,7 +3,7 @@ package com.airwallex.android.threedsecurity
 import android.content.Context
 import com.airwallex.android.core.SecurityConnector
 import com.airwallex.android.core.SecurityTokenListener
-import com.airwallex.android.core.log.Logger
+import com.airwallex.android.core.log.ConsoleLogger
 import com.threatmetrix.TrustDefender.RL.*
 import com.threatmetrix.TrustDefender.RL.TMXProfiling.*
 import com.threatmetrix.TrustDefender.RL.TMXProfilingConnections.*
@@ -28,7 +28,7 @@ class AirwallexSecurityConnector : SecurityConnector {
         applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
-        Logger.debug(TAG, "Start init TrustDefender")
+        ConsoleLogger.debug(TAG, "Start init TrustDefender")
         val profilingConnections: TMXProfilingConnectionsInterface = TMXProfilingConnections()
             .setConnectionTimeout(20, TimeUnit.SECONDS)
             .setRetryTimes(3)
@@ -37,7 +37,7 @@ class AirwallexSecurityConnector : SecurityConnector {
         config.setProfilingConnections(profilingConnections)
         getInstance().init(config)
 
-        Logger.debug(TAG, "Successfully init init-ed")
+        ConsoleLogger.debug(TAG, "Successfully init init-ed")
         doProfile(paymentIntentId, securityTokenListener)
     }
 
@@ -50,14 +50,14 @@ class AirwallexSecurityConnector : SecurityConnector {
         val options = TMXProfilingOptions().setSessionID(sessionID)
         // Fire off the profiling request.
         profilingHandle = getInstance().profile(options) { result ->
-            Logger.debug(
+            ConsoleLogger.debug(
                 TAG,
                 "Session id: ${result.sessionID}, Session status: ${result.status}"
             )
             profilingHandle?.cancel()
             profilingHandle = null
         }
-        Logger.debug(TAG, "Response sessionID $sessionID")
+        ConsoleLogger.debug(TAG, "Response sessionID $sessionID")
         securityTokenListener.onResponse(sessionID)
     }
 

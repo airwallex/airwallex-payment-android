@@ -6,7 +6,7 @@ import com.airwallex.android.core.AirwallexPlugins
 /**
  * Formatted log for Airwallex
  */
-object Logger {
+object ConsoleLogger {
 
     private val loggingEnabled: Boolean
         get() {
@@ -42,15 +42,19 @@ object Logger {
         error("ERROR", message, throwable)
 
     fun error(tag: String, message: String?, throwable: Throwable? = null) {
-        if (loggingEnabled) logWorker.log(
-            Level.ERROR, tag, message, throwable
-        )
+        if (loggingEnabled) {
+            logWorker.log(
+                Level.ERROR, tag, message, throwable
+            )
+        }
     }
 
     fun warn(tag: String, message: String?, throwable: Throwable? = null) {
-        if (loggingEnabled) logWorker.log(
-            Level.WARNING, tag, message, throwable
-        )
+        if (loggingEnabled) {
+            logWorker.log(
+                Level.WARNING, tag, message, throwable
+            )
+        }
     }
 
     fun warn(message: String?, throwable: Throwable? = null) =
@@ -60,26 +64,32 @@ object Logger {
         info("INFO", message, throwable)
 
     fun info(tag: String, message: String?, throwable: Throwable? = null) {
-        if (loggingEnabled) logWorker.log(
-            Level.INFO, tag, message, throwable
-        )
+        if (loggingEnabled) {
+            logWorker.log(
+                Level.INFO, tag, message, throwable
+            )
+        }
     }
 
     fun debug(message: String?, throwable: Throwable? = null) =
         debug("DEBUG", message, throwable)
 
     fun debug(tag: String, message: String?, throwable: Throwable? = null) {
-        if (loggingEnabled) logWorker.log(
-            Level.DEBUG, tag, message, throwable
-        )
+        if (loggingEnabled) {
+            logWorker.log(
+                Level.DEBUG, tag, message, throwable
+            )
+        }
     }
 
     fun verbose(message: String?, throwable: Throwable? = null) =
         verbose("VERBOSE", message, throwable)
 
     fun verbose(tag: String, message: String?, throwable: Throwable? = null) {
-        if (loggingEnabled) logWorker.log(
-            Level.VERBOSE, tag, message, throwable
-        )
+        if (loggingEnabled) {
+            logWorker.log(
+                Level.VERBOSE, tag, message, throwable
+            )
+        }
     }
 }

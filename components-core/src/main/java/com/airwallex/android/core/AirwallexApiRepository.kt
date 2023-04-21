@@ -5,12 +5,11 @@ import com.airwallex.android.core.exception.*
 import com.airwallex.android.core.http.AirwallexHttpClient
 import com.airwallex.android.core.http.AirwallexHttpRequest
 import com.airwallex.android.core.http.AirwallexHttpResponse
-import com.airwallex.android.core.log.Logger
+import com.airwallex.android.core.log.ConsoleLogger
 import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.parser.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.parcelize.Parcelize
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.util.*
@@ -22,161 +21,14 @@ class AirwallexApiRepository : ApiRepository {
 
     private val httpClient: AirwallexHttpClient = AirwallexHttpClient()
 
-    @Parcelize
-    class RetrievePaymentIntentOptions(
-        override val clientSecret: String,
-        val paymentIntentId: String
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
-    class ConfirmPaymentIntentOptions(
-        override val clientSecret: String,
-        internal val paymentIntentId: String,
-        internal val request: PaymentIntentConfirmRequest
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
-    class ContinuePaymentIntentOptions(
-        override val clientSecret: String,
-        internal val paymentIntentId: String,
-        val request: PaymentIntentContinueRequest
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
-    data class CreatePaymentMethodOptions(
-        override val clientSecret: String,
-        val request: PaymentMethodCreateRequest
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
-    class CreatePaymentConsentOptions(
-        override val clientSecret: String,
-        internal val request: PaymentConsentCreateRequest
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
-    class VerifyPaymentConsentOptions(
-        override val clientSecret: String,
-        internal val paymentConsentId: String,
-        internal val request: PaymentConsentVerifyRequest
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
-    class DisablePaymentConsentOptions constructor(
-        override val clientSecret: String,
-        internal val paymentConsentId: String,
-        internal val request: PaymentConsentDisableRequest
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
-    class RetrievePaymentConsentOptions constructor(
-        override val clientSecret: String,
-        internal val paymentConsentId: String
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
-    class TrackerOptions(
-        internal val request: TrackerRequest
-    ) : Options(clientSecret = "")
-
-    @Parcelize
-    class RetrieveAvailablePaymentMethodsOptions(
-        override val clientSecret: String,
-        /**
-         * Page number starting from 0
-         */
-        internal val pageNum: Int,
-        /**
-         * Number of payment methods to be listed per page
-         */
-        internal val pageSize: Int,
-        /**
-         * Indicate whether the payment method type is active
-         */
-        internal val active: Boolean?,
-        /**
-         * The supported transaction currency
-         */
-        internal val transactionCurrency: String?,
-        /**
-         * The supported transaction mode. One of oneoff, recurring.
-         */
-        internal val transactionMode: TransactionMode?,
-        /**
-         * The supported country code
-         */
-        internal val countryCode: String?
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
-    class RetrievePaymentMethodTypeInfoOptions(
-        override val clientSecret: String,
-        /**
-         * bank_transfer, online_banking etc.
-         */
-        internal val paymentMethodType: String,
-        /**
-         * webqr, mweb, jsapi, inapp, miniprog
-         */
-        internal val flow: AirwallexPaymentRequestFlow?,
-        /**
-         * recurring, oneoff
-         */
-        internal val transactionMode: TransactionMode?,
-        /**
-         * Country code
-         */
-        internal val countryCode: String?,
-        /**
-         * Open Id
-         */
-        internal val openId: String?
-    ) : Options(clientSecret = clientSecret)
-
-    @Parcelize
-    class RetrieveBankOptions(
-        override val clientSecret: String,
-        /**
-         * bank_transfer, online_banking etc.
-         */
-        internal val paymentMethodType: String,
-        /**
-         * webqr, mweb, jsapi, inapp, miniprog
-         */
-        internal val flow: AirwallexPaymentRequestFlow?,
-        /**
-         * recurring, oneoff
-         */
-        internal val transactionMode: TransactionMode?,
-        /**
-         * For payment method like online_banking that supports different bank list in different country, the country code is required.
-         * such payment method: online_banking, bank_transfer
-         */
-        internal val countryCode: String?,
-        /**
-         * Open Id
-         */
-        internal val openId: String?
-    ) : Options(clientSecret = clientSecret)
-
     /**
      * Continue a PaymentIntent using the provided [Options]
      *
      * @param options contains the confirm params
      * @return a [PaymentIntent] from Airwallex server
      */
-    override suspend fun continuePaymentIntent(options: Options): PaymentIntent? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createPost(
-                url = continuePaymentIntentUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as ContinuePaymentIntentOptions).paymentIntentId
-                ),
-                options = options,
-                params = options.request.toParamMap()
-            ),
-            PaymentIntentParser()
-        )
+    override suspend fun continuePaymentIntent(options: Options.ContinuePaymentIntentOptions): PaymentIntent? {
+        return options.executeApiRequest(PaymentIntentParser())
     }
 
     /**
@@ -185,18 +37,8 @@ class AirwallexApiRepository : ApiRepository {
      * @param options contains the confirm params
      * @return a [PaymentIntent] from Airwallex server
      */
-    override suspend fun confirmPaymentIntent(options: Options): PaymentIntent? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createPost(
-                url = confirmPaymentIntentUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as ConfirmPaymentIntentOptions).paymentIntentId
-                ),
-                options = options,
-                params = options.request.toParamMap()
-            ),
-            PaymentIntentParser()
-        )
+    override suspend fun confirmPaymentIntent(options: Options.ConfirmPaymentIntentOptions): PaymentIntent? {
+        return options.executeApiRequest(PaymentIntentParser())
     }
 
     /**
@@ -205,106 +47,35 @@ class AirwallexApiRepository : ApiRepository {
      * @param options contains the retrieve params
      * @return a [PaymentIntent] from Airwallex server
      */
-    override suspend fun retrievePaymentIntent(options: Options): PaymentIntent? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createGet(
-                url = retrievePaymentIntentUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as RetrievePaymentIntentOptions).paymentIntentId
-                ),
-                options = options,
-                params = null
-            ),
-            PaymentIntentParser()
-        )
+    override suspend fun retrievePaymentIntent(options: Options.RetrievePaymentIntentOptions): PaymentIntent? {
+        return options.executeApiRequest(PaymentIntentParser())
     }
 
-    override suspend fun createPaymentMethod(options: Options): PaymentMethod? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createPost(
-                url = createPaymentMethodUrl(
-                    AirwallexPlugins.environment.baseUrl()
-                ),
-                options = options,
-                params = (options as CreatePaymentMethodOptions).request.toParamMap()
-            ),
-            PaymentMethodParser()
-        )
+    override suspend fun createPaymentMethod(options: Options.CreatePaymentMethodOptions): PaymentMethod? {
+        return options.executeApiRequest(PaymentMethodParser())
     }
 
-    override suspend fun createPaymentConsent(options: Options): PaymentConsent? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createPost(
-                url = createPaymentConsentUrl(
-                    AirwallexPlugins.environment.baseUrl()
-                ),
-                options = options,
-                params = (options as CreatePaymentConsentOptions).request.toParamMap()
-            ),
-            PaymentConsentParser()
-        )
+    override suspend fun createPaymentConsent(options: Options.CreatePaymentConsentOptions): PaymentConsent? {
+        return options.executeApiRequest(PaymentConsentParser())
     }
 
-    override suspend fun verifyPaymentConsent(options: Options): PaymentConsent? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createPost(
-                url = verifyPaymentConsentUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as VerifyPaymentConsentOptions).paymentConsentId,
-                ),
-                options = options,
-                params = options.request.toParamMap()
-            ),
-            PaymentConsentParser()
-        )
+    override suspend fun verifyPaymentConsent(options: Options.VerifyPaymentConsentOptions): PaymentConsent? {
+        return options.executeApiRequest(PaymentConsentParser())
     }
 
-    override suspend fun disablePaymentConsent(options: Options): PaymentConsent? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createPost(
-                url = disablePaymentConsentUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as DisablePaymentConsentOptions).paymentConsentId
-                ),
-                options = options,
-                params = options.request.toParamMap()
-            ),
-            PaymentConsentParser()
-        )
+    override suspend fun disablePaymentConsent(options: Options.DisablePaymentConsentOptions): PaymentConsent? {
+        return options.executeApiRequest(PaymentConsentParser())
     }
 
-    override suspend fun retrievePaymentConsent(options: Options): PaymentConsent? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createGet(
-                url = retrievePaymentConsentUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as RetrievePaymentConsentOptions).paymentConsentId
-                ),
-                options = options,
-                params = null,
-                awxTracker = UUID.randomUUID().toString()
-            ),
-            PaymentConsentParser()
-        )
+    override suspend fun retrievePaymentConsent(options: Options.RetrievePaymentConsentOptions): PaymentConsent? {
+        return options.executeApiRequest(PaymentConsentParser())
     }
 
-    override suspend fun tracker(options: Options) {
+    override suspend fun tracker(options: Options.TrackerOptions) {
         runCatching {
-            val params = (options as TrackerOptions).request.toParamMap()
-            val builder = Uri.parse(trackerUrl()).buildUpon()
-            params.forEach {
-                builder.appendQueryParameter(it.key, it.value.toString())
-            }
-            val uri = builder.build()
-            httpClient.execute(
-                AirwallexHttpRequest.createGet(
-                    url = uri.toString(),
-                    options = options,
-                    params = null
-                )
-            )
+            httpClient.execute(options.toAirwallexHttpRequest())
         }.getOrElse {
-            Logger.debug("Tracker failed.")
+            ConsoleLogger.debug("Tracker failed.")
         }
     }
 
@@ -313,67 +84,26 @@ class AirwallexApiRepository : ApiRepository {
             httpClient.execute(
                 AirwallexHttpRequest.createGet(
                     url = mockWeChatUrl,
-                    options = Options(""),
+                    options = null,
                     params = null,
                     accept = "*/*;q=0.8"
                 )
             )
         }.getOrElse {
-            Logger.debug("Execute Mock WeChat failed.")
+            ConsoleLogger.debug("Execute Mock WeChat failed.")
         }
     }
 
-    override suspend fun retrieveAvailablePaymentMethods(options: Options): AvailablePaymentMethodTypeResponse? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createGet(
-                url = retrieveAvailablePaymentMethodsUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as RetrieveAvailablePaymentMethodsOptions).pageNum,
-                    options.pageSize,
-                    options.active,
-                    options.transactionCurrency,
-                    options.transactionMode,
-                    options.countryCode
-                ),
-                options = options,
-                params = null
-            ),
-            AvailablePaymentMethodTypeResponseParser()
-        )
+    override suspend fun retrieveAvailablePaymentMethods(options: Options.RetrieveAvailablePaymentMethodsOptions): AvailablePaymentMethodTypeResponse? {
+        return options.executeApiRequest(AvailablePaymentMethodTypeResponseParser())
     }
 
-    override suspend fun retrievePaymentMethodTypeInfo(options: Options): PaymentMethodTypeInfo? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createGet(
-                url = retrievePaymentMethodTypeInfoUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as RetrievePaymentMethodTypeInfoOptions).paymentMethodType,
-                    options.countryCode,
-                    options.flow,
-                    options.openId
-                ),
-                options = options,
-                params = null
-            ),
-            PaymentMethodTypeInfoParser()
-        )
+    override suspend fun retrievePaymentMethodTypeInfo(options: Options.RetrievePaymentMethodTypeInfoOptions): PaymentMethodTypeInfo? {
+        return options.executeApiRequest(PaymentMethodTypeInfoParser())
     }
 
-    override suspend fun retrieveBanks(options: Options): BankResponse? {
-        return executeApiRequest(
-            AirwallexHttpRequest.createGet(
-                url = retrieveBanksUrl(
-                    AirwallexPlugins.environment.baseUrl(),
-                    (options as RetrieveBankOptions).paymentMethodType,
-                    options.countryCode,
-                    options.flow,
-                    options.openId
-                ),
-                options = options,
-                params = null
-            ),
-            BankResponseParser()
-        )
+    override suspend fun retrieveBanks(options: Options.RetrieveBankOptions): BankResponse? {
+        return options.executeApiRequest(BankResponseParser())
     }
 
     @Throws(
@@ -384,15 +114,14 @@ class AirwallexApiRepository : ApiRepository {
         APIConnectionException::class
     )
 
-    private suspend fun <ModelType : AirwallexModel> executeApiRequest(
-        request: AirwallexHttpRequest,
+    private suspend fun <ModelType : AirwallexModel> Options.executeApiRequest(
         jsonParser: ModelJsonParser<ModelType>
     ): ModelType? = withContext(Dispatchers.IO) {
         val response = runCatching {
-            httpClient.execute(request)
+            httpClient.execute(toAirwallexHttpRequest())
         }.getOrElse {
             throw when (it) {
-                is IOException -> APIConnectionException.create(it, request.url)
+                is IOException -> APIConnectionException.create(it, toAirwallexHttpRequest().url)
                 else -> it
             }
         }

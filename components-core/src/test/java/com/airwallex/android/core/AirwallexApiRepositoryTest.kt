@@ -1,6 +1,6 @@
 package com.airwallex.android.core
 
-import com.airwallex.android.core.AirwallexApiRepository.RetrieveAvailablePaymentMethodsOptions
+import com.airwallex.android.core.model.Options.RetrieveAvailablePaymentMethodsOptions
 import com.airwallex.android.core.model.*
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -35,7 +35,7 @@ class AirwallexApiRepositoryTest {
 
     @Test
     fun confirmPaymentIntentOptionsTest() {
-        val options = AirwallexApiRepository.ConfirmPaymentIntentOptions(
+        val options = Options.ConfirmPaymentIntentOptions(
             clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             paymentIntentId = "int_hkdmr7v9rg1j58ky8re",
             request = PaymentIntentConfirmRequest.Builder(
@@ -59,7 +59,7 @@ class AirwallexApiRepositoryTest {
 
     @Test
     fun retrievePaymentIntentOptionsTest() {
-        val options = AirwallexApiRepository.RetrievePaymentIntentOptions(
+        val options = Options.RetrievePaymentIntentOptions(
             clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             paymentIntentId = "int_hkdmr7v9rg1j58ky8re"
         )
@@ -72,7 +72,7 @@ class AirwallexApiRepositoryTest {
 
     @Test
     fun continuePaymentIntentOptionsTest() {
-        val options = AirwallexApiRepository.ContinuePaymentIntentOptions(
+        val options = Options.ContinuePaymentIntentOptions(
             clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             paymentIntentId = "int_hkdmr7v9rg1j58ky8re",
             request = PaymentIntentContinueRequest(
@@ -94,7 +94,7 @@ class AirwallexApiRepositoryTest {
 
     @Test
     fun createPaymentMethodOptionsTest() {
-        val options = AirwallexApiRepository.CreatePaymentMethodOptions(
+        val options = Options.CreatePaymentMethodOptions(
             clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             request = PaymentMethodCreateRequest(
                 requestId = "3d702b7b-ac7a-46b5-bf62-9fee0dd713bf"
@@ -114,7 +114,7 @@ class AirwallexApiRepositoryTest {
 
     @Test
     fun createPaymentConsentOptionsTest() {
-        val options = AirwallexApiRepository.CreatePaymentConsentOptions(
+        val options = Options.CreatePaymentConsentOptions(
             clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             request = PaymentConsentCreateRequest(
                 requestId = "3d702b7b-ac7a-46b5-bf62-9fee0dd713bf"
@@ -134,7 +134,7 @@ class AirwallexApiRepositoryTest {
 
     @Test
     fun verifyPaymentConsentOptionsTest() {
-        val options = AirwallexApiRepository.VerifyPaymentConsentOptions(
+        val options = Options.VerifyPaymentConsentOptions(
             clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             paymentConsentId = "cst_hkdmr7v9rg1j5g4azy6",
             request = PaymentConsentVerifyRequest(
@@ -156,7 +156,7 @@ class AirwallexApiRepositoryTest {
 
     @Test
     fun disablePaymentConsentOptionsTest() {
-        val options = AirwallexApiRepository.DisablePaymentConsentOptions(
+        val options = Options.DisablePaymentConsentOptions(
             clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             paymentConsentId = "cst_hkdmr7v9rg1j5g4azy6",
             request = PaymentConsentDisableRequest(
@@ -178,7 +178,7 @@ class AirwallexApiRepositoryTest {
 
     @Test
     fun retrievePaymentConsentOptionsTest() {
-        val options = AirwallexApiRepository.RetrievePaymentConsentOptions(
+        val options = Options.RetrievePaymentConsentOptions(
             clientSecret = "ap4Uep2dv31m0UKP4-UkPsdTlvxUR2ecjRLdqaPNYpdGUPjBOuGysGc_AtbfuNn1lnLCU5mNDhZWgNvm0l-tuBvO8EeCuC90RVHzG_vQXhDafnDiySTFW-cMlK-tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             paymentConsentId = "cst_hkdmr7v9rg1j5g4azy6"
         )
@@ -191,7 +191,7 @@ class AirwallexApiRepositoryTest {
 
     @Test
     fun trackerOptionsTest() {
-        val options = AirwallexApiRepository.TrackerOptions(
+        val options = Options.TrackerOptions(
             request = TrackerRequest()
         )
         assertEquals(TrackerRequest(), options.request)

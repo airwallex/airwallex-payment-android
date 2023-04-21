@@ -2,7 +2,7 @@ package com.airwallex.android.core.http
 
 import com.airwallex.android.core.exception.APIConnectionException
 import com.airwallex.android.core.exception.InvalidRequestException
-import com.airwallex.android.core.log.Logger
+import com.airwallex.android.core.log.ConsoleLogger
 import java.io.IOException
 import java.net.URL
 import java.util.concurrent.TimeUnit
@@ -12,7 +12,7 @@ class AirwallexHttpClient {
 
     @Throws(IOException::class, InvalidRequestException::class)
     fun execute(request: AirwallexHttpRequest): AirwallexHttpResponse {
-        Logger.info(request.toString())
+        ConsoleLogger.info(request.toString())
         AirwallexHttpConnection(
             (URL(request.url).openConnection() as HttpsURLConnection).apply {
                 connectTimeout = CONNECT_TIMEOUT
@@ -33,7 +33,7 @@ class AirwallexHttpClient {
         ).use {
             try {
                 val response = it.response
-                Logger.info(response.toString())
+                ConsoleLogger.info(response.toString())
                 return response
             } catch (e: IOException) {
                 throw APIConnectionException.create(e, request.url)

@@ -12,7 +12,7 @@ open class AirwallexHttpRequest internal constructor(
     val method: Method,
     val url: String,
     val params: Map<String, *>? = null,
-    val options: Options,
+    val options: Options?,
     private val awxTracker: String? = null,
     private val accept: String? = null
 ) {
@@ -32,11 +32,11 @@ open class AirwallexHttpRequest internal constructor(
                 API_VERSION to BuildConfig.API_VERSION
             )
                 .plus(
-                    if (options.clientSecret.isEmpty()) {
-                        emptyMap()
-                    } else {
-                        mapOf(CLIENT_SECRET to options.clientSecret)
-                    }
+                    options?.clientSecret?.let {
+                        it.takeIf { it.isNotEmpty() }?.let { secret ->
+                            mapOf(CLIENT_SECRET to secret)
+                        }
+                    }.orEmpty()
                 )
                 .plus(
                     awxTracker?.let {
@@ -95,7 +95,7 @@ open class AirwallexHttpRequest internal constructor(
 
         fun createGet(
             url: String,
-            options: Options,
+            options: Options?,
             params: Map<String, *>? = null,
             awxTracker: String? = null,
             accept: String? = null
@@ -105,7 +105,7 @@ open class AirwallexHttpRequest internal constructor(
 
         fun createPost(
             url: String,
-            options: Options,
+            options: Options?,
             params: Map<String, *>? = null
         ): AirwallexHttpRequest {
             return AirwallexHttpRequest(Method.POST, url, params, options)
