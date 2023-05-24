@@ -25,11 +25,11 @@ class CurrencyWidgetTest {
     fun currencyTest() {
         currencyWidget.updateCurrency("CNY", BigDecimal.ONE)
         assertEquals("CNY", currencyWidget.currency)
-        assertEquals("￥1.00", currencyWidget.price)
+        assertEquals("¥1.00", currencyWidget.price)
 
         currencyWidget.updateCurrency("CNY", BigDecimal.TEN)
         assertEquals("CNY", currencyWidget.currency)
-        assertEquals("￥10.00", currencyWidget.price)
+        assertEquals("¥10.00", currencyWidget.price)
 
         currencyWidget.updateCurrency("USD", BigDecimal.TEN)
         assertEquals("USD", currencyWidget.currency)

@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'io.gitlab.arturbosch.detekt'
-apply plugin: 'com.dicedmelon.gradle.jacoco-android'
+apply from: "$rootProject.projectDir/jacoco.gradle"
 
 dependencies {
     detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion"

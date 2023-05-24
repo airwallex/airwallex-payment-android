@@ -5,12 +5,12 @@ import com.airwallex.airtracker.Config
 import com.airwallex.airtracker.Environment
 import com.airwallex.airtracker.Tracker
 import com.airwallex.android.core.AirwallexPlugins
-import com.airwallex.android.core.BuildConfig
 import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.getAppName
 import com.airwallex.android.core.extension.getAppVersion
 import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.util.BuildConfigHelper
 
 private typealias AirwallexEnviornment = com.airwallex.android.core.Environment
 
@@ -22,7 +22,7 @@ object AnalyticsLogger {
             tracker = Tracker(
                 Config(
                     appName = "pa_mobile_sdk",
-                    appVersion = BuildConfig.VERSION_NAME,
+                    appVersion = BuildConfigHelper.versionName,
                     environment = AirwallexPlugins.environment.toTrackerEnvironment()
                 ),
                 context

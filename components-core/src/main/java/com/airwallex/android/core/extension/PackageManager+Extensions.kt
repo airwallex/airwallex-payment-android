@@ -1,9 +1,9 @@
 package com.airwallex.android.core.extension
 
 import android.content.pm.PackageManager
-import android.os.Build
 import android.util.AndroidException
 import androidx.core.content.pm.PackageInfoCompat
+import com.airwallex.android.core.util.BuildHelper
 
 fun PackageManager.getAppName(packageName: String): String? {
     val applicationInfo = try {
@@ -16,7 +16,7 @@ fun PackageManager.getAppName(packageName: String): String? {
 
 fun PackageManager.getAppVersion(packageName: String): String? {
     val packageInfo = try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (BuildHelper.isVersionAtLeastTiramisu()) {
             getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
         } else {
             getPackageInfo(packageName, 0)

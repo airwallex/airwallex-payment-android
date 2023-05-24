@@ -1,14 +1,35 @@
 package com.airwallex.android.core
 
 import android.net.Uri
-import android.os.Build
 import com.airwallex.android.core.exception.APIException
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
+import com.airwallex.android.core.model.BankResponse
+import com.airwallex.android.core.model.Options
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentConsentCreateRequest
+import com.airwallex.android.core.model.PaymentConsentDisableRequest
 import com.airwallex.android.core.model.PaymentConsentFixtures
+import com.airwallex.android.core.model.PaymentConsentVerifyRequest
+import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.model.PaymentIntentConfirmRequest
+import com.airwallex.android.core.model.PaymentIntentContinueRequest
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodCreateRequest
 import com.airwallex.android.core.model.PaymentMethodFixtures
+import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.core.model.PaymentMethodTypeInfo
+import com.airwallex.android.core.model.TrackerRequest
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
-import io.mockk.*
+import com.airwallex.android.core.util.BuildHelper
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -32,6 +53,9 @@ class AirwallexPaymentManagerTest {
 
     @Before
     fun setUp() {
+        MockKAnnotations.init(this)
+        mockkObject(BuildHelper)
+
         val testDispatcher = UnconfinedTestDispatcher()
         Dispatchers.setMain(testDispatcher)
 
@@ -92,10 +116,9 @@ class AirwallexPaymentManagerTest {
 
     @Test
     fun `test buildDeviceInfo`() {
-        mockkStatic(Build::class)
-        Build::class.java.getField("MANUFACTURER").setFinalStatic("huawei")
-        Build::class.java.getField("MODEL").setFinalStatic("mate30 pro")
-        Build.VERSION::class.java.getField("RELEASE").setFinalStatic("10.0")
+        every { BuildHelper.manufacturer } returns "huawei"
+        every { BuildHelper.model } returns "mate30 pro"
+        every { BuildHelper.versionRelease } returns "10.0"
         assertEquals(
             mapOf(
                 "device_id" to "123456",
