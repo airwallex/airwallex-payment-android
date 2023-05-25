@@ -1,13 +1,19 @@
 package com.airwallex.android.core
 
-import android.os.Build
 import com.airwallex.android.core.Airwallex.PaymentListener
 import com.airwallex.android.core.exception.APIException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.capitalized
 import com.airwallex.android.core.extension.splitByUppercaseWithSeparator
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
+import com.airwallex.android.core.model.Device
+import com.airwallex.android.core.model.Options
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.TrackerRequest
+import com.airwallex.android.core.model.getUrl
+import com.airwallex.android.core.util.BuildHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,8 +68,8 @@ class AirwallexPaymentManager(
     }
 
     override fun buildDeviceInfo(deviceId: String): Device {
-        val manufacturer = Build.MANUFACTURER
-        val model = Build.MODEL
+        val manufacturer = BuildHelper.manufacturer
+        val model = BuildHelper.model
         val deviceName = if (model.startsWith(manufacturer)) {
             model.capitalized()
         } else {
@@ -73,7 +79,7 @@ class AirwallexPaymentManager(
             .setDeviceId(deviceId)
             .setDeviceModel(deviceName)
             .setOsType("Android")
-            .setOsVersion(Build.VERSION.RELEASE)
+            .setOsVersion(BuildHelper.versionRelease)
             .build()
     }
 

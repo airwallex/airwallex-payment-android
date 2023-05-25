@@ -8,6 +8,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.airwallex.android.core.log.ConsoleLogger
+import com.airwallex.android.core.util.BuildHelper
 import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
 
 abstract class AirwallexWebViewClient(private val callbacks: WebViewClientCallbacks) :
@@ -29,7 +30,7 @@ abstract class AirwallexWebViewClient(private val callbacks: WebViewClientCallba
         description: String,
         failingUrl: String
     ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (BuildHelper.isVersionAtLeastM()) {
             return
         }
         callbacks.onWebViewError(WebViewConnectionException("$errorCode, $description"))

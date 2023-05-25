@@ -1,12 +1,12 @@
 package com.airwallex.android.view.inputs
 
 import android.content.Context
-import android.os.Build
 import android.text.InputFilter
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.View
 import com.airwallex.android.R
+import com.airwallex.android.core.util.BuildHelper
 import com.google.android.material.textfield.TextInputEditText
 
 /**
@@ -48,7 +48,7 @@ class CardCvcEditText @JvmOverloads constructor(
 
         inputType = InputType.TYPE_CLASS_NUMBER
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (BuildHelper.isVersionAtLeastO()) {
             setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE)
         }
     }

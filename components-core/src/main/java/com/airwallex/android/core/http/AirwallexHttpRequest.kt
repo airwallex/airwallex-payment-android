@@ -1,10 +1,10 @@
 package com.airwallex.android.core.http
 
 import com.airwallex.android.core.AirwallexPlugins.AIRWALLEX_USER_AGENT
-import com.airwallex.android.core.BuildConfig
 import com.airwallex.android.core.exception.InvalidRequestException
 import com.airwallex.android.core.model.Options
 import com.airwallex.android.core.util.AirwallexJsonUtils
+import com.airwallex.android.core.util.BuildConfigHelper
 import java.io.OutputStream
 import java.io.UnsupportedEncodingException
 
@@ -29,7 +29,7 @@ open class AirwallexHttpRequest internal constructor(
                 ACCEPT_HEADER_KEY to (accept ?: ACCEPT_HEADER_VALUE),
                 CONTENT_TYPE_HEADER_KEY to CONTENT_TYPE_HEADER_VALUE,
                 USER_AGENT_KEY to USER_AGENT_VALUE,
-                API_VERSION to BuildConfig.API_VERSION
+                API_VERSION to BuildConfigHelper.apiVersion
             )
                 .plus(
                     options?.clientSecret?.let {

@@ -32,7 +32,7 @@ class AirwallexSecurityConnector : SecurityConnector {
         val profilingConnections: TMXProfilingConnectionsInterface = TMXProfilingConnections()
             .setConnectionTimeout(20, TimeUnit.SECONDS)
             .setRetryTimes(3)
-        val config = TMXConfig().setOrgId(BuildConfig.DEVICE_FINGERPRINT_ORG_ID)
+        val config = TMXConfig().setOrgId(BuildConfigHelper.deviceFingerprintOrgId)
             .setContext(applicationContext)
         config.setProfilingConnections(profilingConnections)
         getInstance().init(config)
