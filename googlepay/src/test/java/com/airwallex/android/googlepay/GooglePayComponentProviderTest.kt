@@ -116,11 +116,18 @@ class GooglePayComponentProviderTest {
 
     @Test
     fun `test canHandleSessionAndPaymentMethod when Google Pay API returns exception`() = runTest {
-        every { task.getResult(ApiException::class.java) } throws ApiException(
-            Status.RESULT_INTERNAL_ERROR
-        )
+        val exception = ApiException(Status.RESULT_INTERNAL_ERROR)
+        every { task.getResult(ApiException::class.java) } throws exception
         assertFalse(canHandleSessionAndPaymentMethod())
-        verify(exactly = 1) { AnalyticsLogger.logError("googlepay_is_ready", exception = any()) }
+        verify(exactly = 1) {
+            AnalyticsLogger.logError(
+                "googlepay_is_ready",
+                mapOf(
+                    "code" to Status.RESULT_INTERNAL_ERROR.statusCode,
+                    "message" to (exception.message ?: "")
+                )
+            )
+        }
     }
 
     @Test
@@ -152,7 +159,7 @@ class GooglePayComponentProviderTest {
     }
 
     private suspend fun canHandleSessionAndPaymentMethod(session: AirwallexPaymentSession? = null):
-        Boolean {
+            Boolean {
         val paymentMethodType = mockResponse.items?.first() ?: return false
         return componentProvider.canHandleSessionAndPaymentMethod(
             session = session ?: defaultSession,

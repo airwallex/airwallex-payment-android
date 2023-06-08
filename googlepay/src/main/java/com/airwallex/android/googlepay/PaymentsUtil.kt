@@ -110,6 +110,7 @@ object PaymentsUtil {
                         }
                     )
                 }
+                put("cvcRequired", true)
             }
 
             put("type", "CARD")

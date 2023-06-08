@@ -25,7 +25,7 @@ class PaymentsUtilTest {
         assertEquals(
             request.toString(),
             "{\"apiVersionMinor\":0,\"apiVersion\":2,\"allowedPaymentMethods\":" +
-                    "[{\"type\":\"CARD\",\"parameters\":{\"allowedAuthMethods\":[\"PAN_ONLY\"," +
+                    "[{\"type\":\"CARD\",\"parameters\":{\"cvcRequired\":true,\"allowedAuthMethods\":[\"PAN_ONLY\"," +
                     "\"CRYPTOGRAM_3DS\"],\"allowedCardNetworks\":[\"MASTERCARD\",\"VISA\"]}}]}"
         )
     }
@@ -39,7 +39,7 @@ class PaymentsUtilTest {
         assertEquals(
             request.toString(),
             "{\"apiVersionMinor\":0,\"apiVersion\":2,\"allowedPaymentMethods\":" +
-                    "[{\"type\":\"CARD\",\"parameters\":{\"allowedAuthMethods\":[\"PAN_ONLY\"," +
+                    "[{\"type\":\"CARD\",\"parameters\":{\"cvcRequired\":true,\"allowedAuthMethods\":[\"PAN_ONLY\"," +
                     "\"CRYPTOGRAM_3DS\"],\"allowedCardNetworks\":[\"MASTERCARD\"]}}]}"
         )
     }
@@ -61,7 +61,7 @@ class PaymentsUtilTest {
         assertEquals(
             request.toString(),
             "{\"apiVersionMinor\":0,\"apiVersion\":2,\"allowedPaymentMethods\":" +
-                    "[{\"type\":\"CARD\",\"parameters\":{\"assuranceDetailsRequired\":true," +
+                    "[{\"type\":\"CARD\",\"parameters\":{\"cvcRequired\":true,\"assuranceDetailsRequired\":true," +
                     "\"allowedAuthMethods\":[\"PAN_ONLY\",\"CRYPTOGRAM_3DS\"],\"billingAddressRequired\":true," +
                     "\"billingAddressParameters\":{\"format\":\"FULL\",\"phoneNumberRequired\":true}," +
                     "\"allowedCardNetworks\":[\"MASTERCARD\",\"VISA\"],\"allowCreditCards\":false," +
@@ -89,9 +89,9 @@ class PaymentsUtilTest {
         )
         assertEquals(
             request.toString(),
-            "{\"apiVersionMinor\":0,\"apiVersion\":2,\"merchantInfo\":{\"merchantName\":" +
-                    "\"Some Merchant\"},\"allowedPaymentMethods\":[{\"type\":\"CARD\",\"parameters\":" +
-                    "{\"allowedAuthMethods\":[\"PAN_ONLY\",\"CRYPTOGRAM_3DS\"],\"allowedCardNetworks\":" +
+            "{\"apiVersionMinor\":0,\"apiVersion\":2,\"merchantInfo\":{\"merchantName\":\"Some Merchant\"}," +
+                    "\"allowedPaymentMethods\":[{\"type\":\"CARD\",\"parameters\":{\"cvcRequired\":true," +
+                    "\"allowedAuthMethods\":[\"PAN_ONLY\",\"CRYPTOGRAM_3DS\"],\"allowedCardNetworks\":" +
                     "[\"MASTERCARD\",\"VISA\"]},\"tokenizationSpecification\":{\"type\":\"PAYMENT_GATEWAY\"," +
                     "\"parameters\":{\"gatewayMerchantId\":\"\",\"gateway\":\"airwallex\"}}}]," +
                     "\"shippingAddressParameters\":{\"allowedCountryCodes\":[\"US\",\"CN\"]," +
