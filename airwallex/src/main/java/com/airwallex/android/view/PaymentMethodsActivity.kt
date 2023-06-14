@@ -333,7 +333,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     // Have required schema fields
                     // 1. Retrieve all required schema fields of the payment method
                     // 2. If the bank is needed, need to retrieve the bank list.
-                    // 3. If the bank is not needed, then show the schema fields dialog.
+                    // 3. If the bank is not needed or bank list is empty, then show the schema fields dialog.
                     ConsoleLogger.debug(TAG, "Get more payment Info fields on one-off flow.")
                     paymentMethod.type?.let { type ->
                         retrievePaymentMethodTypeInfo(type) { result ->
@@ -357,31 +357,36 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                             result.fold(
                                                 onSuccess = {
                                                     setLoadingProgress(loading = false)
-                                                    val bankDialog =
-                                                        PaymentBankBottomSheetDialog.newInstance(
-                                                            paymentMethod,
-                                                            getString(R.string.airwallex_select_your_bank),
-                                                            it.items ?: mutableListOf()
-                                                        )
-                                                    bankDialog.onCompleted = { bank ->
-                                                        AnalyticsLogger.logAction(
-                                                            "select_bank",
-                                                            mapOf(
-                                                                "bankName" to bank.name
+                                                    val banks = it.items
+                                                    if (!banks.isNullOrEmpty()) {
+                                                        val bankDialog =
+                                                            PaymentBankBottomSheetDialog.newInstance(
+                                                                paymentMethod,
+                                                                getString(R.string.airwallex_select_your_bank),
+                                                                banks
                                                             )
+                                                        bankDialog.onCompleted = { bank ->
+                                                            AnalyticsLogger.logAction(
+                                                                "select_bank",
+                                                                mapOf(
+                                                                    "bankName" to bank.name
+                                                                )
+                                                            )
+                                                            showSchemaFieldsDialog(
+                                                                info = info,
+                                                                paymentMethod = paymentMethod,
+                                                                bankField = bankField,
+                                                                bankName = bank.name,
+                                                                observer = observer
+                                                            )
+                                                        }
+                                                        bankDialog.show(
+                                                            supportFragmentManager,
+                                                            info.name
                                                         )
-                                                        showSchemaFieldsDialog(
-                                                            info = info,
-                                                            paymentMethod = paymentMethod,
-                                                            bankField = bankField,
-                                                            bankName = bank.name,
-                                                            observer = observer
-                                                        )
+                                                    } else {
+                                                        showSchemaFieldsDialog(info, paymentMethod, observer = observer)
                                                     }
-                                                    bankDialog.show(
-                                                        supportFragmentManager,
-                                                        info.name
-                                                    )
                                                 },
                                                 onFailure = {
                                                     setLoadingProgress(loading = false)
