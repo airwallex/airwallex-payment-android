@@ -52,7 +52,7 @@ task clean(type: Delete) {
 }
 
 // Update the version field when a new version is released
-version = '4.2.2'
+version = '4.3.0'
 
 ext {
     compileSdkVersion = 33
