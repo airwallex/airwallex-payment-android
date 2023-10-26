@@ -12,7 +12,7 @@ enum class CardBrand(
     private val prefixes: Set<String> = emptySet(),
     private val fullName: String = type,
     val spacingPattern: List<Int> = listOf(4, 4, 4, 4),
-    val lengthRange: IntRange = 16..16
+    val lengths: Set<Int> = setOf(16)
 ) {
     Visa(
         "visa",
@@ -34,19 +34,33 @@ enum class CardBrand(
         prefixes = setOf("34", "37"),
         fullName = "american express",
         spacingPattern = listOf(4, 6, 5),
-        lengthRange = 15..15
+        lengths = setOf(15)
     ),
     UnionPay(
         "unionpay",
         R.drawable.airwallex_ic_unionpay,
         fullName = "union pay",
         prefixes = setOf("62"),
-        lengthRange = 16..19
+        lengths = setOf(16, 17, 18, 19)
     ),
     JCB(
         "jcb",
         R.drawable.airwallex_ic_jcb,
         prefixes = setOf("3528", "3529", "353", "354", "355", "356", "357", "358")
+    ),
+    DISCOVER(
+        "discover",
+        R.drawable.airwallex_ic_discover,
+        prefixes = setOf("6011", "644", "645", "646", "647", "648", "649", "65"),
+        lengths = setOf(16, 19)
+    ),
+    DINERS(
+        "diners",
+        R.drawable.airwallex_ic_diners,
+        fullName = "diners club international",
+        prefixes = setOf("300", "301", "302", "303", "304", "305", "36", "38", "39"),
+        spacingPattern = listOf(4, 6, 9),
+        lengths = setOf(14, 16, 19)
     ),
     Unknown(
         "unknown",
