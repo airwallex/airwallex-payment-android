@@ -7,7 +7,7 @@ object CardUtils {
     /**
      * The maximum length of a possible card number
      */
-    val maxCardNumberLength = CardBrand.values().maxOf { it.lengthRange.last }
+    val maxCardNumberLength = CardBrand.values().maxOf { it.lengths.max() }
 
     /**
      * Check if card number is valid
@@ -67,7 +67,7 @@ object CardUtils {
 
         return when (val brand = getPossibleCardBrand(normalizeCardNumber, false)) {
             CardBrand.Unknown -> false
-            else -> normalizeCardNumber?.length in brand.lengthRange
+            else -> normalizeCardNumber?.length in brand.lengths
         }
     }
 

@@ -15,6 +15,8 @@ class CardUtilsTest {
         assertEquals(CardBrand.Amex, CardUtils.getPossibleCardBrand("3782 8224 6310 005", true))
         assertEquals(CardBrand.UnionPay, CardUtils.getPossibleCardBrand("6212 3188 8888 8888 888", true))
         assertEquals(CardBrand.JCB, CardUtils.getPossibleCardBrand("3540 1234 5678 9012", true))
+        assertEquals(CardBrand.DISCOVER, CardUtils.getPossibleCardBrand("6011016011016011", false))
+        assertEquals(CardBrand.DINERS, CardUtils.getPossibleCardBrand("36438936438936", false))
         assertEquals(CardBrand.Unknown, CardUtils.getPossibleCardBrand("12345", false))
     }
 
@@ -53,5 +55,10 @@ class CardUtilsTest {
     fun `test getSpacePositions`() {
         assertEquals(CardUtils.getSpacePositions(CardBrand.MasterCard), setOf(4, 9, 14))
         assertEquals(CardUtils.getSpacePositions(CardBrand.Amex), setOf(4, 11))
+    }
+
+    @Test
+    fun `test maxCardNumberLength`() {
+        assertEquals(CardUtils.maxCardNumberLength, 19)
     }
 }

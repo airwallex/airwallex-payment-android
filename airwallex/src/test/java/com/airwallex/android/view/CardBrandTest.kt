@@ -28,6 +28,14 @@ class CardBrandTest {
         assertEquals(R.drawable.airwallex_ic_jcb, CardBrand.JCB.icon)
         assertEquals(listOf(4, 4, 4, 4), CardBrand.JCB.spacingPattern)
 
+        assertEquals("discover", CardBrand.DISCOVER.type)
+        assertEquals(R.drawable.airwallex_ic_discover, CardBrand.DISCOVER.icon)
+        assertEquals(listOf(4, 4, 4, 4), CardBrand.DISCOVER.spacingPattern)
+
+        assertEquals("diners", CardBrand.DINERS.type)
+        assertEquals(R.drawable.airwallex_ic_diners, CardBrand.DINERS.icon)
+        assertEquals(listOf(4, 6, 9), CardBrand.DINERS.spacingPattern)
+
         assertEquals("unknown", CardBrand.Unknown.type)
         assertEquals(R.drawable.airwallex_ic_card_default, CardBrand.Unknown.icon)
         assertEquals(listOf(4, 4, 4, 4), CardBrand.Unknown.spacingPattern)
@@ -43,5 +51,6 @@ class CardBrandTest {
         assertEquals(CardBrand.fromName("mastercard"), CardBrand.MasterCard)
         assertEquals(CardBrand.fromName("american express"), CardBrand.Amex)
         assertEquals(CardBrand.fromName("union pay"), CardBrand.UnionPay)
+        assertEquals(CardBrand.fromName("diners club international"), CardBrand.DINERS)
     }
 }
