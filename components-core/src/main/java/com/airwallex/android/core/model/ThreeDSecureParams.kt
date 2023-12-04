@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class ThreeDSecurePares internal constructor(
+data class ThreeDSecureParams internal constructor(
 
     val paresId: String,
 

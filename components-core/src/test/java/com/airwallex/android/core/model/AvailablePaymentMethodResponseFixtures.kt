@@ -1,10 +1,13 @@
 package com.airwallex.android.core.model
 
-import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
+import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
+import com.airwallex.android.core.model.parser.PageParser
 import org.json.JSONObject
 
 internal object AvailablePaymentMethodResponseFixtures {
-    val PAYMENMETHODRESPONSE: AvailablePaymentMethodTypeResponse = AvailablePaymentMethodTypeResponseParser().parse(
+    val PAYMENMETHODRESPONSE: AvailablePaymentMethodTypeResponse = PageParser(
+        AvailablePaymentMethodTypeParser()
+    ).parse(
         JSONObject(
             """
         {
@@ -21,5 +24,10 @@ internal object AvailablePaymentMethodResponseFixtures {
         }
             """.trimIndent()
         )
-    )
+    ).let {
+        AvailablePaymentMethodTypeResponse(
+            hasMore = it.hasMore,
+            items = it.items
+        )
+    }
 }

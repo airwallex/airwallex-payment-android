@@ -72,6 +72,13 @@ interface ApiRepository {
     ): PaymentConsent?
 
     /**
+     * Retrieve available payment consents
+     */
+    suspend fun retrieveAvailablePaymentConsents(
+        options: Options.RetrieveAvailablePaymentConsentsOptions
+    ): Page<PaymentConsent>?
+
+    /**
      * Tracker
      */
     suspend fun tracker(
@@ -90,7 +97,7 @@ interface ApiRepository {
      */
     suspend fun retrieveAvailablePaymentMethods(
         options: Options.RetrieveAvailablePaymentMethodsOptions
-    ): AvailablePaymentMethodTypeResponse?
+    ): Page<AvailablePaymentMethodType>?
 
     /**
      * Retrieve payment method detail

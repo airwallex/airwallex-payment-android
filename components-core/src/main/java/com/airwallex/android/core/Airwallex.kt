@@ -167,7 +167,7 @@ class Airwallex internal constructor(
                 countryCode = params.countryCode
             )
         )
-        val filteredItems = response.items?.filter { paymentMethod ->
+        val filteredItems = response.items.filter { paymentMethod ->
             paymentMethod.transactionMode == transactionMode &&
                     AirwallexPlugins.getProvider(paymentMethod)?.canHandleSessionAndPaymentMethod(
                         session,

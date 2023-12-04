@@ -6,9 +6,10 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.capitalized
 import com.airwallex.android.core.extension.splitByUppercaseWithSeparator
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
+import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.Device
 import com.airwallex.android.core.model.Options
+import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.TrackerRequest
@@ -33,7 +34,7 @@ class AirwallexPaymentManager(
 
     override suspend fun retrieveAvailablePaymentMethods(
         options: Options.RetrieveAvailablePaymentMethodsOptions
-    ): AvailablePaymentMethodTypeResponse {
+    ): Page<AvailablePaymentMethodType> {
         val result = runCatching {
             requireNotNull(repository.retrieveAvailablePaymentMethods(options))
         }
@@ -95,6 +96,8 @@ class AirwallexPaymentManager(
                     requireNotNull(repository.verifyPaymentConsent(options))
                 is Options.CreatePaymentConsentOptions ->
                     requireNotNull(repository.createPaymentConsent(options))
+                is Options.RetrieveAvailablePaymentConsentsOptions ->
+                    requireNotNull(repository.retrieveAvailablePaymentConsents(options))
                 is Options.RetrieveAvailablePaymentMethodsOptions ->
                     requireNotNull(repository.retrieveAvailablePaymentMethods(options))
                 is Options.CreatePaymentMethodOptions ->

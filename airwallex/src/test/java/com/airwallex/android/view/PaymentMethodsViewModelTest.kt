@@ -6,7 +6,8 @@ import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
-import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
+import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
+import com.airwallex.android.core.model.parser.PageParser
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
@@ -146,7 +147,7 @@ class PaymentMethodsViewModelTest {
     private fun mockViewModel(hasClientSecret: Boolean = true, transactionMode: TransactionMode):
             PaymentMethodsViewModel {
         mockkObject(TokenManager)
-        val mockResponse = AvailablePaymentMethodTypeResponseParser().parse(
+        val mockResponse = PageParser(AvailablePaymentMethodTypeParser()).parse(
             JSONObject(
                 """
         {

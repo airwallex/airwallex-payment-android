@@ -71,6 +71,10 @@ class AirwallexApiRepository : ApiRepository {
         return options.executeApiRequest(PaymentConsentParser())
     }
 
+    override suspend fun retrieveAvailablePaymentConsents(options: Options.RetrieveAvailablePaymentConsentsOptions): Page<PaymentConsent>? {
+        return options.executeApiRequest(PageParser(PaymentConsentParser()))
+    }
+
     override suspend fun tracker(options: Options.TrackerOptions) {
         runCatching {
             httpClient.execute(options.toAirwallexHttpRequest())
@@ -94,8 +98,8 @@ class AirwallexApiRepository : ApiRepository {
         }
     }
 
-    override suspend fun retrieveAvailablePaymentMethods(options: Options.RetrieveAvailablePaymentMethodsOptions): AvailablePaymentMethodTypeResponse? {
-        return options.executeApiRequest(AvailablePaymentMethodTypeResponseParser())
+    override suspend fun retrieveAvailablePaymentMethods(options: Options.RetrieveAvailablePaymentMethodsOptions): Page<AvailablePaymentMethodType>? {
+        return options.executeApiRequest(PageParser(AvailablePaymentMethodTypeParser()))
     }
 
     override suspend fun retrievePaymentMethodTypeInfo(options: Options.RetrievePaymentMethodTypeInfoOptions): PaymentMethodTypeInfo? {
@@ -252,6 +256,37 @@ class AirwallexApiRepository : ApiRepository {
                 "payment_consents/%s",
                 paymentConsentId
             )
+        }
+
+        /**
+         *  `/api/v1/pa/payment_consents`
+         */
+        internal fun retrieveAvailablePaymentConsentsUrl(
+            baseUrl: String,
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason?,
+            nextTriggeredBy: PaymentConsent.NextTriggeredBy?,
+            pageNum: Int?,
+            pageSize: Int?
+        ): String {
+            val url = getApiUrl(
+                baseUrl,
+                "payment_consents"
+            )
+
+            val builder = Uri.parse(url).buildUpon()
+            merchantTriggerReason?.let {
+                builder.appendQueryParameter("merchant_trigger_reason", it.value)
+            }
+            nextTriggeredBy?.let {
+                builder.appendQueryParameter("next_triggered_by", it.value)
+            }
+            pageNum?.let {
+                builder.appendQueryParameter("page_num", it.toString())
+            }
+            pageSize?.let {
+                builder.appendQueryParameter("page_size", it.toString())
+            }
+            return builder.build().toString()
         }
 
         /**

@@ -9,7 +9,8 @@ import android.os.SystemClock
 import com.airwallex.android.core.*
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
-import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
+import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
+import com.airwallex.android.core.model.parser.PageParser
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
 import com.google.android.gms.common.api.Status
@@ -30,8 +31,8 @@ class GooglePayComponentTest {
     private lateinit var listener: Airwallex.PaymentResultListener
     private lateinit var mockTask: Task<PaymentData>
 
-    private val mockResponse: AvailablePaymentMethodTypeResponse =
-        AvailablePaymentMethodTypeResponseParser().parse(
+    private val mockResponse: Page<AvailablePaymentMethodType> =
+        PageParser(AvailablePaymentMethodTypeParser()).parse(
             JSONObject(
                 """
                     {

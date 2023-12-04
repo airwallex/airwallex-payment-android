@@ -11,10 +11,10 @@ data class AvailablePaymentMethodTypeResponse internal constructor(
     /**
      * Indicator that tells whether more data can be listed
      */
-    val hasMore: Boolean,
+    override val hasMore: Boolean,
 
     /**
      * List items
      */
-    val items: List<AvailablePaymentMethodType>?
-) : AirwallexModel, Parcelable
+    override val items: List<AvailablePaymentMethodType>
+) : Page<AvailablePaymentMethodType>, AirwallexModel, Parcelable

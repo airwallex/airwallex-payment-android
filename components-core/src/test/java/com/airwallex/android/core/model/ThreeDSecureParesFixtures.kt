@@ -4,7 +4,7 @@ import com.airwallex.android.core.model.parser.ThreeDSecureParesParser
 import org.json.JSONObject
 
 internal object ThreeDSecureParesFixtures {
-    val THREEDSECUREPARES: ThreeDSecurePares = ThreeDSecureParesParser().parse(
+    val THREEDSECUREPARES: ThreeDSecureParams = ThreeDSecureParesParser().parse(
         JSONObject(
             """
         {

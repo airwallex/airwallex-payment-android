@@ -3,9 +3,10 @@ package com.airwallex.android.core
 import android.net.Uri
 import com.airwallex.android.core.exception.APIException
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
+import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.BankResponse
 import com.airwallex.android.core.model.Options
+import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentConsentCreateRequest
 import com.airwallex.android.core.model.PaymentConsentDisableRequest
@@ -20,7 +21,8 @@ import com.airwallex.android.core.model.PaymentMethodFixtures
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TrackerRequest
-import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
+import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
+import com.airwallex.android.core.model.parser.PageParser
 import com.airwallex.android.core.util.BuildHelper
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -49,7 +51,7 @@ class AirwallexPaymentManagerTest {
     private val mockIntent: PaymentIntent = mockk()
     private val mockInfo: PaymentMethodTypeInfo = mockk()
     private val mockBank: BankResponse = mockk()
-    private lateinit var mockResponse: AvailablePaymentMethodTypeResponse
+    private lateinit var mockResponse: Page<AvailablePaymentMethodType>
 
     @Before
     fun setUp() {
@@ -59,7 +61,7 @@ class AirwallexPaymentManagerTest {
         val testDispatcher = UnconfinedTestDispatcher()
         Dispatchers.setMain(testDispatcher)
 
-        mockResponse = AvailablePaymentMethodTypeResponseParser().parse(
+        mockResponse = PageParser(AvailablePaymentMethodTypeParser()).parse(
             JSONObject(
                 """
         {
@@ -97,7 +99,7 @@ class AirwallexPaymentManagerTest {
     fun `test retrieveAvailablePaymentMethods`() = runTest {
         val options = mockk<Options.RetrieveAvailablePaymentMethodsOptions>()
         val response = paymentManager.retrieveAvailablePaymentMethods(options)
-        assertEquals(response.items?.first()?.name, "card")
+        assertEquals(response.items.first().name, "card")
     }
 
     @Test
@@ -188,7 +190,7 @@ class AirwallexPaymentManagerTest {
 
     @Test
     fun `test start RetrieveAvailablePaymentMethodsOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<AvailablePaymentMethodTypeResponse>>()
+        val listener = mockk<Airwallex.PaymentListener<Page<AvailablePaymentMethodType>>>()
         paymentManager.startOperation(
             Options.RetrieveAvailablePaymentMethodsOptions(
                 clientSecret,

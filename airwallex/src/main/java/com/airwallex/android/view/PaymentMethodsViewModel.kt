@@ -121,6 +121,15 @@ internal class PaymentMethodsViewModel(
         return resultData
     }
 
+//    suspend fun <T> loadingPagedItems(
+//        loadItems: () -> ,
+//        items: MutableList<T>,
+//        pageNum: AtomicInteger = AtomicInteger(0),
+//        resultData: MutableLiveData<Result<List<T>>>
+//    ) {
+//
+//    }
+
     private suspend fun retrieveAvailablePaymentMethods(
         availablePaymentMethodList: MutableList<AvailablePaymentMethodType> = mutableListOf(),
         availablePaymentMethodPageNum: AtomicInteger = AtomicInteger(0),
@@ -144,7 +153,7 @@ internal class PaymentMethodsViewModel(
             return
         }
         availablePaymentMethodPageNum.incrementAndGet()
-        availablePaymentMethodList.addAll(response.items ?: emptyList())
+        availablePaymentMethodList.addAll(response.items)
         if (response.hasMore) {
             retrieveAvailablePaymentMethods(
                 availablePaymentMethodList,
