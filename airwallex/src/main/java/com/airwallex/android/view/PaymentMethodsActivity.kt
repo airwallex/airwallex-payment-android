@@ -67,7 +67,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        fetchPaymentMethods()
+        fetchPaymentMethodsAndConsents()
     }
 
     override fun onBackPressed() {
@@ -168,50 +168,47 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         }
     }
 
-    private fun fetchPaymentMethods() {
+    private fun fetchPaymentMethodsAndConsents() {
         lifecycleScope.launch {
             setLoadingProgress(loading = true, cancelable = false)
-            viewModel.fetchAvailablePaymentMethodTypes().observe(
-                this@PaymentMethodsActivity
-            ) { result ->
-                result.fold(
-                    onSuccess = {
-                        setLoadingProgress(loading = false)
-                        // Complete load available payment method type
-                        val availableMethodTypes = it
-                        val cardPaymentMethod = it.findWithType(PaymentMethodType.CARD)
+            val result = viewModel.fetchAvailablePaymentMethodsAndConsents()
+            result?.fold(
+                onSuccess = { methodsAndConsents ->
+                    setLoadingProgress(loading = false)
+                    // Complete load available payment method type
+                    val availableMethodTypes = methodsAndConsents.first
+                    this@PaymentMethodsActivity.availablePaymentMethodTypes = availableMethodTypes
 
-                        val availablePaymentConsents = filterPaymentConsents(cardPaymentMethod)
+                    val cardPaymentMethod = availablePaymentMethodTypes?.findWithType(PaymentMethodType.CARD)
+                    val availablePaymentConsents =
+                        if (cardPaymentMethod != null && session is AirwallexPaymentSession)
+                            methodsAndConsents.second.filter { it.paymentMethod?.type == PaymentMethodType.CARD.value }
+                        else emptyList()
+                    this@PaymentMethodsActivity.availablePaymentConsents = availablePaymentConsents
 
-                        this@PaymentMethodsActivity.availablePaymentMethodTypes =
-                            availableMethodTypes
-                        this@PaymentMethodsActivity.availablePaymentConsents =
-                            availablePaymentConsents
+                    // skip straight to the individual card screen?
+                    val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
+                        desiredPaymentMethodType = cardPaymentMethod,
+                        paymentMethods = availableMethodTypes,
+                        consents = availablePaymentConsents
+                    )
 
-                        // skip straight to the individual card screen?
-                        val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
-                            desiredPaymentMethodType = cardPaymentMethod,
-                            paymentMethods = availableMethodTypes,
-                            consents = availablePaymentConsents
+                    if (hasSinglePaymentMethod && cardPaymentMethod != null) {
+                        // only one payment method and it's Card.
+                        val cardSchemes = cardPaymentMethod.cardSchemes ?: emptyList()
+                        startAddPaymentMethod(cardSchemes, isSinglePaymentMethod = true)
+                    } else {
+                        initView(
+                            availablePaymentMethodTypes = availableMethodTypes,
+                            availablePaymentConsents = availablePaymentConsents
                         )
-
-                        if (hasSinglePaymentMethod && cardPaymentMethod != null) {
-                            // only one payment method and it's Card.
-                            val cardSchemes = cardPaymentMethod.cardSchemes ?: emptyList()
-                            startAddPaymentMethod(cardSchemes, isSinglePaymentMethod = true)
-                        } else {
-                            initView(
-                                availablePaymentMethodTypes = availableMethodTypes,
-                                availablePaymentConsents = availablePaymentConsents
-                            )
-                        }
-                    },
-                    onFailure = {
-                        setLoadingProgress(loading = false)
-                        alert(message = it.message ?: it.toString())
                     }
-                )
-            }
+                },
+                onFailure = {
+                    setLoadingProgress(loading = false)
+                    alert(message = it.message ?: it.toString())
+                }
+            )
         }
     }
 

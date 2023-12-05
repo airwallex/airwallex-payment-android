@@ -3,7 +3,8 @@ package com.airwallex.android.core.model
 data class RetrieveAvailablePaymentConsentsParams internal constructor(
     val clientSecret: String,
     val merchantTriggerReason: PaymentConsent.MerchantTriggerReason?,
-    val nextTriggerBy: PaymentConsent.NextTriggeredBy?,
+    val nextTriggeredBy: PaymentConsent.NextTriggeredBy?,
+    val status: PaymentConsent.PaymentConsentStatus?,
     val pageNum: Int,
     val pageSize: Int
 ) {
@@ -14,13 +15,23 @@ data class RetrieveAvailablePaymentConsentsParams internal constructor(
 
         private var pageSize: Int = 20
         private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = null
-        private var nextTriggerBy: PaymentConsent.NextTriggeredBy? = null
+        private var nextTriggeredBy: PaymentConsent.NextTriggeredBy? = null
+        private var status: PaymentConsent.PaymentConsentStatus? = null
+
+        fun setNextTriggeredBy(nextTriggeredBy: PaymentConsent.NextTriggeredBy?): Builder = apply {
+            this.nextTriggeredBy = nextTriggeredBy
+        }
+
+        fun setStatus(status: PaymentConsent.PaymentConsentStatus?): Builder = apply {
+            this.status = status
+        }
 
         override fun build(): RetrieveAvailablePaymentConsentsParams {
             return RetrieveAvailablePaymentConsentsParams(
                 clientSecret = clientSecret,
                 merchantTriggerReason = merchantTriggerReason,
-                nextTriggerBy = nextTriggerBy,
+                nextTriggeredBy = nextTriggeredBy,
+                status = status,
                 pageNum = pageNum,
                 pageSize = pageSize
             )

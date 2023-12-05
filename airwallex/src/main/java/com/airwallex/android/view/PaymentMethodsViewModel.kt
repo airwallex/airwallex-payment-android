@@ -8,6 +8,11 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
+import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class PaymentMethodsViewModel(
@@ -94,9 +99,8 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    suspend fun fetchAvailablePaymentMethodTypes(): LiveData<Result<List<AvailablePaymentMethodType>>> {
-        val resultData = MutableLiveData<Result<List<AvailablePaymentMethodType>>>()
-        when (session) {
+    suspend fun fetchAvailablePaymentMethodsAndConsents(): Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>? {
+        return when (session) {
             is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
                 paymentIntent?.clientSecret
             }
@@ -106,43 +110,43 @@ internal class PaymentMethodsViewModel(
                         .retrieveClientSecret(requireNotNull(session.customerId))
                         .value
                 } catch (e: AirwallexCheckoutException) {
-                    resultData.value = Result.failure(e)
-                    null
+                    return Result.failure(e)
                 }
             }
             else -> null
         }?.let { clientSecret ->
             TokenManager.updateClientSecret(clientSecret)
-            retrieveAvailablePaymentMethods(
-                resultData = resultData,
-                clientSecret = clientSecret
-            )
+            supervisorScope {
+                val retrieveConsents = async { retrieveAvailablePaymentConsents(clientSecret) }
+                val retrieveMethods = async { retrieveAvailablePaymentMethods(clientSecret) }
+                try {
+                    Result.success(Pair(retrieveMethods.await(), retrieveConsents.await()))
+                } catch (exception: AirwallexException) {
+                    Result.failure(exception)
+                }
+            }
         }
-        return resultData
     }
 
     private suspend fun retrieveAvailablePaymentConsents(
-        resultData: MutableLiveData<Result<List<PaymentConsent>>>,
         clientSecret: String
-    ) {
-        loadPagedItems(
+    ) = loadPagedItems(
             loadPage = { pageNum ->
                 airwallex.retrieveAvailablePaymentConsents(
                     RetrieveAvailablePaymentConsentsParams.Builder(
                         clientSecret = clientSecret,
                         pageNum = pageNum
-                    ).build()
+                    )
+                        .setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
+                        .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED)
+                        .build()
                 )
-            },
-            resultData = resultData
+            }
         )
-    }
 
     private suspend fun retrieveAvailablePaymentMethods(
-        resultData: MutableLiveData<Result<List<AvailablePaymentMethodType>>>,
         clientSecret: String
-    ) {
-        loadPagedItems(
+    ) = loadPagedItems(
             loadPage = { pageNum ->
                 airwallex.retrieveAvailablePaymentMethods(
                     session = session,
@@ -155,34 +159,25 @@ internal class PaymentMethodsViewModel(
                         .setCountryCode(session.countryCode)
                         .build()
                 )
-            },
-            resultData = resultData
+            }
         )
-    }
 
     private suspend fun <T> loadPagedItems(
         loadPage: suspend (Int) -> Page<T>,
-        items: MutableList<T> = mutableListOf(),
-        pageNum: AtomicInteger = AtomicInteger(0),
-        resultData: MutableLiveData<Result<List<T>>>
-    ) {
-        val response = try {
-            loadPage(pageNum.get())
-        } catch (exception: AirwallexException) {
-            resultData.value = Result.failure(exception)
-            return
-        }
+        items: MutableList<T> = Collections.synchronizedList(mutableListOf()),
+        pageNum: AtomicInteger = AtomicInteger(0)
+    ): List<T> {
+        val response = loadPage(pageNum.get())
         pageNum.incrementAndGet()
         items.addAll(response.items)
-        if (response.hasMore) {
+        return if (response.hasMore) {
             loadPagedItems(
                 loadPage,
                 items,
-                pageNum,
-                resultData
+                pageNum
             )
         } else {
-            resultData.value = Result.success(items)
+            items
         }
     }
 

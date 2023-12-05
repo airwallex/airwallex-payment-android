@@ -265,6 +265,7 @@ class AirwallexApiRepository : ApiRepository {
             baseUrl: String,
             merchantTriggerReason: PaymentConsent.MerchantTriggerReason?,
             nextTriggeredBy: PaymentConsent.NextTriggeredBy?,
+            status: PaymentConsent.PaymentConsentStatus?,
             pageNum: Int?,
             pageSize: Int?
         ): String {
@@ -279,6 +280,9 @@ class AirwallexApiRepository : ApiRepository {
             }
             nextTriggeredBy?.let {
                 builder.appendQueryParameter("next_triggered_by", it.value)
+            }
+            status?.let {
+                builder.appendQueryParameter("status", it.value)
             }
             pageNum?.let {
                 builder.appendQueryParameter("page_num", it.toString())

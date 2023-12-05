@@ -141,6 +141,11 @@ class Airwallex internal constructor(
         )
     }
 
+    /**
+     * Retrieve available payment consents
+     *
+     * @param params [RetrieveAvailablePaymentConsentsParams] used to retrieve all [PaymentConsent]
+     */
     suspend fun retrieveAvailablePaymentConsents(
         params: RetrieveAvailablePaymentConsentsParams
     ): Page<PaymentConsent> {
@@ -148,7 +153,8 @@ class Airwallex internal constructor(
             Options.RetrieveAvailablePaymentConsentsOptions(
                 clientSecret = params.clientSecret,
                 merchantTriggerReason = params.merchantTriggerReason,
-                nextTriggerBy = params.nextTriggerBy,
+                nextTriggeredBy = params.nextTriggeredBy,
+                status = params.status,
                 pageNum = params.pageNum,
                 pageSize = params.pageSize
             )
