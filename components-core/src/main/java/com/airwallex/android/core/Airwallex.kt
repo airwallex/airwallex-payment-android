@@ -141,6 +141,20 @@ class Airwallex internal constructor(
         )
     }
 
+    suspend fun retrieveAvailablePaymentConsents(
+        params: RetrieveAvailablePaymentConsentsParams
+    ): Page<PaymentConsent> {
+        return paymentManager.retrieveAvailablePaymentConsents(
+            Options.RetrieveAvailablePaymentConsentsOptions(
+                clientSecret = params.clientSecret,
+                merchantTriggerReason = params.merchantTriggerReason,
+                nextTriggerBy = params.nextTriggerBy,
+                pageNum = params.pageNum,
+                pageSize = params.pageSize
+            )
+        )
+    }
+
     /**
      * Retrieve available payment methods
      *
@@ -149,7 +163,7 @@ class Airwallex internal constructor(
     suspend fun retrieveAvailablePaymentMethods(
         session: AirwallexSession,
         params: RetrieveAvailablePaymentMethodParams
-    ): AvailablePaymentMethodTypeResponse {
+    ): Page<AvailablePaymentMethodType> {
         val transactionMode = when (session) {
             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
             is AirwallexPaymentSession -> TransactionMode.ONE_OFF

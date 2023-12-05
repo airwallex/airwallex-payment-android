@@ -121,48 +121,68 @@ internal class PaymentMethodsViewModel(
         return resultData
     }
 
-//    suspend fun <T> loadingPagedItems(
-//        loadItems: () -> ,
-//        items: MutableList<T>,
-//        pageNum: AtomicInteger = AtomicInteger(0),
-//        resultData: MutableLiveData<Result<List<T>>>
-//    ) {
-//
-//    }
+    private suspend fun retrieveAvailablePaymentConsents(
+        resultData: MutableLiveData<Result<List<PaymentConsent>>>,
+        clientSecret: String
+    ) {
+        loadPagedItems(
+            loadPage = { pageNum ->
+                airwallex.retrieveAvailablePaymentConsents(
+                    RetrieveAvailablePaymentConsentsParams.Builder(
+                        clientSecret = clientSecret,
+                        pageNum = pageNum
+                    ).build()
+                )
+            },
+            resultData = resultData
+        )
+    }
 
     private suspend fun retrieveAvailablePaymentMethods(
-        availablePaymentMethodList: MutableList<AvailablePaymentMethodType> = mutableListOf(),
-        availablePaymentMethodPageNum: AtomicInteger = AtomicInteger(0),
         resultData: MutableLiveData<Result<List<AvailablePaymentMethodType>>>,
         clientSecret: String
     ) {
-        val response = try {
-            airwallex.retrieveAvailablePaymentMethods(
-                session = session,
-                params = RetrieveAvailablePaymentMethodParams.Builder(
-                    clientSecret = clientSecret,
-                    pageNum = availablePaymentMethodPageNum.get()
+        loadPagedItems(
+            loadPage = { pageNum ->
+                airwallex.retrieveAvailablePaymentMethods(
+                    session = session,
+                    params = RetrieveAvailablePaymentMethodParams.Builder(
+                        clientSecret = clientSecret,
+                        pageNum = pageNum
+                    )
+                        .setActive(true)
+                        .setTransactionCurrency(session.currency)
+                        .setCountryCode(session.countryCode)
+                        .build()
                 )
-                    .setActive(true)
-                    .setTransactionCurrency(session.currency)
-                    .setCountryCode(session.countryCode)
-                    .build()
-            )
+            },
+            resultData = resultData
+        )
+    }
+
+    private suspend fun <T> loadPagedItems(
+        loadPage: suspend (Int) -> Page<T>,
+        items: MutableList<T> = mutableListOf(),
+        pageNum: AtomicInteger = AtomicInteger(0),
+        resultData: MutableLiveData<Result<List<T>>>
+    ) {
+        val response = try {
+            loadPage(pageNum.get())
         } catch (exception: AirwallexException) {
             resultData.value = Result.failure(exception)
             return
         }
-        availablePaymentMethodPageNum.incrementAndGet()
-        availablePaymentMethodList.addAll(response.items)
+        pageNum.incrementAndGet()
+        items.addAll(response.items)
         if (response.hasMore) {
-            retrieveAvailablePaymentMethods(
-                availablePaymentMethodList,
-                availablePaymentMethodPageNum,
-                resultData,
-                clientSecret
+            loadPagedItems(
+                loadPage,
+                items,
+                pageNum,
+                resultData
             )
         } else {
-            resultData.value = Result.success(availablePaymentMethodList)
+            resultData.value = Result.success(items)
         }
     }
 

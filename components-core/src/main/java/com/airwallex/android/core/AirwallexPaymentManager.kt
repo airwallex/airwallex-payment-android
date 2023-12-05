@@ -32,6 +32,18 @@ class AirwallexPaymentManager(
         }
     }
 
+    override suspend fun retrieveAvailablePaymentConsents(
+        options: Options.RetrieveAvailablePaymentConsentsOptions
+    ): Page<PaymentConsent> {
+        val result = runCatching {
+            requireNotNull(repository.retrieveAvailablePaymentConsents(options))
+        }
+        result.fold(
+            onSuccess = { return it },
+            onFailure = { throw handleError(it) }
+        )
+    }
+
     override suspend fun retrieveAvailablePaymentMethods(
         options: Options.RetrieveAvailablePaymentMethodsOptions
     ): Page<AvailablePaymentMethodType> {
