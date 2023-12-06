@@ -211,4 +211,21 @@ class OptionsExtensionsTest {
         assertEquals(request.options, option)
         assertNull(request.params)
     }
+
+    @Test
+    fun `test RetrieveAvailablePaymentConsentsOptions toAirwallexHttpRequest`() {
+        val option = Options.RetrieveAvailablePaymentConsentsOptions(
+            clientSecret,
+            "cusid",
+            null,
+            null,
+            null,
+            0,
+            5
+        )
+        val request = option.toAirwallexHttpRequest()
+        assertEquals(request.method, AirwallexHttpRequest.Method.GET)
+        assertEquals(request.url, mockUrl)
+        assertEquals(request.options, option)
+    }
 }

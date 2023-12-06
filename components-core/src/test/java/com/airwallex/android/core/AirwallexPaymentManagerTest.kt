@@ -23,8 +23,8 @@ import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TrackerRequest
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
 import com.airwallex.android.core.model.parser.PageParser
+import com.airwallex.android.core.model.parser.PaymentConsentParser
 import com.airwallex.android.core.util.BuildHelper
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -52,12 +52,11 @@ class AirwallexPaymentManagerTest {
     private val mockInfo: PaymentMethodTypeInfo = mockk()
     private val mockBank: BankResponse = mockk()
     private lateinit var mockResponse: Page<AvailablePaymentMethodType>
+    private lateinit var mockConsents: Page<PaymentConsent>
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this)
         mockkObject(BuildHelper)
-
         val testDispatcher = UnconfinedTestDispatcher()
         Dispatchers.setMain(testDispatcher)
 
@@ -80,8 +79,32 @@ class AirwallexPaymentManagerTest {
             )
         )
 
+        mockConsents = PageParser(PaymentConsentParser()).parse(
+            JSONObject(
+                """
+        {
+            "items":[
+                {
+                  "payment_method": {
+                    "type": "card",
+                    "card": {
+                        "name": "John",
+                        "number_type": "PAN"
+                    }
+                  },
+                  "next_triggered_by": "customer",
+                  "status": "VERIFIED"
+                }   
+            ],
+            "has_more":false
+        }
+                """.trimIndent()
+            )
+        )
+
         val apiRepository = mockk<ApiRepository>()
         coEvery { apiRepository.retrieveAvailablePaymentMethods(any()) } returns mockResponse
+        coEvery { apiRepository.retrieveAvailablePaymentConsents(any()) } returns mockConsents
         coEvery { apiRepository.createPaymentMethod(any()) } returns mockMethod
         coEvery { apiRepository.createPaymentConsent(any()) } returns mockConsent
         coEvery { apiRepository.retrievePaymentConsent(any()) } returns mockConsent
@@ -100,6 +123,13 @@ class AirwallexPaymentManagerTest {
         val options = mockk<Options.RetrieveAvailablePaymentMethodsOptions>()
         val response = paymentManager.retrieveAvailablePaymentMethods(options)
         assertEquals(response.items.first().name, "card")
+    }
+
+    @Test
+    fun `test retrieveAvailablePaymentConsents`() = runTest {
+        val options = mockk<Options.RetrieveAvailablePaymentConsentsOptions>()
+        val response = paymentManager.retrieveAvailablePaymentConsents(options)
+        assertEquals(response.items.first().paymentMethod?.card?.name, "John")
     }
 
     @Test

@@ -175,15 +175,17 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             result?.fold(
                 onSuccess = { methodsAndConsents ->
                     setLoadingProgress(loading = false)
-                    // Complete load available payment method type
+                    // Complete load available payment method type and consents
                     val availableMethodTypes = methodsAndConsents.first
                     this@PaymentMethodsActivity.availablePaymentMethodTypes = availableMethodTypes
 
                     val cardPaymentMethod = availablePaymentMethodTypes?.findWithType(PaymentMethodType.CARD)
                     val availablePaymentConsents =
-                        if (cardPaymentMethod != null && session is AirwallexPaymentSession)
+                        if (cardPaymentMethod != null && session is AirwallexPaymentSession) {
                             methodsAndConsents.second.filter { it.paymentMethod?.type == PaymentMethodType.CARD.value }
-                        else emptyList()
+                        } else {
+                            emptyList()
+                        }
                     this@PaymentMethodsActivity.availablePaymentConsents = availablePaymentConsents
 
                     // skip straight to the individual card screen?
@@ -210,39 +212,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 }
             )
         }
-    }
-
-    // To be extracted to view model so that it can be tested
-    private fun filterPaymentConsents(cardPaymentMethod: AvailablePaymentMethodType?): List<PaymentConsent> {
-        if (cardPaymentMethod == null || cardPaymentMethod.name != PaymentMethodType.CARD.value) {
-            return emptyList()
-        }
-
-        val paymentIntent = viewModel.paymentIntent
-        val customerPaymentConsents = paymentIntent?.customerPaymentConsents ?: return emptyList()
-        val customerPaymentMethods = paymentIntent.customerPaymentMethods ?: return emptyList()
-
-        if (session is AirwallexPaymentSession) {
-            val filteredConsents = customerPaymentConsents.filter {
-                it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER &&
-                        it.status == PaymentConsent.PaymentConsentStatus.VERIFIED &&
-                        it.paymentMethod?.type == PaymentMethodType.CARD.value
-            }
-            val paymentConsents = mutableListOf<PaymentConsent>()
-            val cardsFingerprint = mutableListOf<String>()
-            for (consent in filteredConsents) {
-                val fingerprint = consent.paymentMethod?.card?.fingerprint
-                if (!cardsFingerprint.contains(fingerprint)) {
-                    fingerprint?.let { cardsFingerprint.add(it) }
-                    consent.paymentMethod = customerPaymentMethods.find { paymentMethod ->
-                        paymentMethod.id == consent.paymentMethod?.id
-                    }
-                    paymentConsents.add(consent)
-                }
-            }
-            return paymentConsents
-        }
-        return emptyList()
     }
 
     override fun homeAsUpIndicatorResId(): Int {

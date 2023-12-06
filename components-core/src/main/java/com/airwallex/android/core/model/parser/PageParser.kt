@@ -15,8 +15,7 @@ class PageParser<T>(private val itemParser: ModelJsonParser<T>) : ModelJsonParse
             }
 
         return object : Page<T> {
-            override val items: List<T>
-                get() = items
+            override var items: List<T> = items
             override val hasMore: Boolean
                 get() = AirwallexJsonUtils.optBoolean(json, FIELD_HAS_MORE)
 

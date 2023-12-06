@@ -261,6 +261,7 @@ class AirwallexApiRepository : ApiRepository {
         /**
          *  `/api/v1/pa/payment_consents`
          */
+        @Suppress("LongParameterList")
         internal fun retrieveAvailablePaymentConsentsUrl(
             baseUrl: String,
             customerId: String?,

@@ -47,7 +47,7 @@ class CardWidgetTest {
         cardNameTextInputLayout.value = "aaa"
         cardNumberTextInputLayout.value = "4242424242424242"
         cvcTextInputLayout.value = "123"
-        expiryTextInputLayout.value = "1023"
+        expiryTextInputLayout.value = "1024"
         assertEquals(true, cardWidget.isValid)
 
         cardNameTextInputLayout.value = "aaa"
@@ -65,14 +65,14 @@ class CardWidgetTest {
         cardNameTextInputLayout.value = "aaa"
         cardNumberTextInputLayout.value = "4242424242424242"
         cvcTextInputLayout.value = "123"
-        expiryTextInputLayout.value = "1023"
+        expiryTextInputLayout.value = "1024"
         assertEquals(
             PaymentMethod.Card.Builder()
                 .setName("aaa")
                 .setNumber("4242424242424242")
                 .setCvc("123")
                 .setExpiryMonth("10")
-                .setExpiryYear("2023")
+                .setExpiryYear("2024")
                 .build(),
             cardWidget.paymentMethodCard
         )

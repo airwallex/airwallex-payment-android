@@ -165,7 +165,7 @@ class Airwallex internal constructor(
     /**
      * Retrieve available payment methods
      *
-     * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve the [AvailablePaymentMethodTypeResponse]
+     * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve all [AvailablePaymentMethodType]
      */
     suspend fun retrieveAvailablePaymentMethods(
         session: AirwallexSession,
@@ -188,7 +188,7 @@ class Airwallex internal constructor(
                 countryCode = params.countryCode
             )
         )
-        val filteredItems = response.items.filter { paymentMethod ->
+        response.items = response.items.filter { paymentMethod ->
             paymentMethod.transactionMode == transactionMode &&
                     AirwallexPlugins.getProvider(paymentMethod)?.canHandleSessionAndPaymentMethod(
                         session,
@@ -197,7 +197,7 @@ class Airwallex internal constructor(
                     ) ?: false
         }
 
-        return AvailablePaymentMethodTypeResponse(response.hasMore, filteredItems)
+        return response
     }
 
     /**

@@ -9,8 +9,6 @@ import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
@@ -116,7 +114,8 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    suspend fun fetchAvailablePaymentMethodsAndConsents(): Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>? {
+    suspend fun fetchAvailablePaymentMethodsAndConsents():
+            Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>? {
         return when (session) {
             is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
                 paymentIntent?.clientSecret

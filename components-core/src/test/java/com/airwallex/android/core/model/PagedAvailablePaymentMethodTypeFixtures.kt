@@ -4,8 +4,8 @@ import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
 import com.airwallex.android.core.model.parser.PageParser
 import org.json.JSONObject
 
-internal object AvailablePaymentMethodResponseFixtures {
-    val PAYMENMETHODRESPONSE: AvailablePaymentMethodTypeResponse = PageParser(
+internal object PagedAvailablePaymentMethodTypeFixtures {
+    val PAYMENMETHODRESPONSE = PageParser(
         AvailablePaymentMethodTypeParser()
     ).parse(
         JSONObject(
@@ -24,10 +24,5 @@ internal object AvailablePaymentMethodResponseFixtures {
         }
             """.trimIndent()
         )
-    ).let {
-        AvailablePaymentMethodTypeResponse(
-            hasMore = it.hasMore,
-            items = it.items
-        )
-    }
+    )
 }
