@@ -47,7 +47,7 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
 
     internal class CardParser : ModelJsonParser<PaymentMethod.Card> {
 
-        override fun parse(json: JSONObject): PaymentMethod.Card? {
+        override fun parse(json: JSONObject): PaymentMethod.Card {
             return PaymentMethod.Card(
                 cvc = AirwallexJsonUtils.optString(json, FIELD_CVC),
                 expiryMonth = AirwallexJsonUtils.optString(json, FIELD_EXPIRY_MONTH),
@@ -63,7 +63,10 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
                 cvcCheck = AirwallexJsonUtils.optString(json, FIELD_CVC_CHECK),
                 avsCheck = AirwallexJsonUtils.optString(json, FIELD_AVS_CHECK),
                 issuerCountryCode = AirwallexJsonUtils.optString(json, FIELD_ISSUER_COUNTRY_CODE),
-                cardType = AirwallexJsonUtils.optString(json, FIELD_CARD_TYPE)
+                cardType = AirwallexJsonUtils.optString(json, FIELD_CARD_TYPE),
+                numberType = PaymentMethod.Card.NumberType.fromValue(
+                    AirwallexJsonUtils.optString(json, FIELD_NUMBER_TYPE)
+                )
             )
         }
 
@@ -83,6 +86,7 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
             const val FIELD_AVS_CHECK = "avs_check"
             const val FIELD_ISSUER_COUNTRY_CODE = "issuer_country_code"
             const val FIELD_CARD_TYPE = "card_type"
+            const val FIELD_NUMBER_TYPE = "number_type"
         }
     }
 }

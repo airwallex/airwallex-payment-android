@@ -53,6 +53,7 @@ sealed class Options(
 
     data class RetrieveAvailablePaymentConsentsOptions(
         override val clientSecret: String,
+        internal val customerId: String,
         internal val merchantTriggerReason: PaymentConsent.MerchantTriggerReason?,
         internal val nextTriggeredBy: PaymentConsent.NextTriggeredBy?,
         internal val status: PaymentConsent.PaymentConsentStatus?,

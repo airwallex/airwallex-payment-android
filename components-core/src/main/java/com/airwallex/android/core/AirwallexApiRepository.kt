@@ -263,6 +263,7 @@ class AirwallexApiRepository : ApiRepository {
          */
         internal fun retrieveAvailablePaymentConsentsUrl(
             baseUrl: String,
+            customerId: String?,
             merchantTriggerReason: PaymentConsent.MerchantTriggerReason?,
             nextTriggeredBy: PaymentConsent.NextTriggeredBy?,
             status: PaymentConsent.PaymentConsentStatus?,
@@ -275,6 +276,9 @@ class AirwallexApiRepository : ApiRepository {
             )
 
             val builder = Uri.parse(url).buildUpon()
+            customerId?.let {
+                builder.appendQueryParameter("customer_id", it)
+            }
             merchantTriggerReason?.let {
                 builder.appendQueryParameter("merchant_trigger_reason", it.value)
             }

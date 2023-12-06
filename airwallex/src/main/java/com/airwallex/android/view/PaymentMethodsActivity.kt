@@ -299,7 +299,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             PaymentMethodType.CARD.value -> {
                 setLoadingProgress(false)
                 // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
-                if (paymentConsent.requiresCvc) {
+                if (paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN) {
                     PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
                         .startForResult(
                             PaymentCheckoutActivityLaunch.Args.Builder()

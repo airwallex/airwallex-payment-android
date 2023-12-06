@@ -40,6 +40,23 @@ internal class PaymentMethodsViewModel(
         }
     }
 
+    private val customerId: String? by lazy {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                session.paymentIntent.customerId
+            }
+            is AirwallexRecurringWithIntentSession -> {
+                session.paymentIntent.customerId
+            }
+            is AirwallexRecurringSession -> {
+                session.customerId
+            }
+            else -> {
+                throw Exception("Not supported session $session")
+            }
+        }
+    }
+
     fun trackCardPaymentSuccess() {
         AnalyticsLogger.logAction(
             PAYMENT_SUCCESS,
@@ -117,7 +134,11 @@ internal class PaymentMethodsViewModel(
         }?.let { clientSecret ->
             TokenManager.updateClientSecret(clientSecret)
             supervisorScope {
-                val retrieveConsents = async { retrieveAvailablePaymentConsents(clientSecret) }
+                val retrieveConsents = async {
+                    customerId?.let {
+                        retrieveAvailablePaymentConsents(clientSecret, it)
+                    } ?: emptyList()
+                }
                 val retrieveMethods = async { retrieveAvailablePaymentMethods(clientSecret) }
                 try {
                     Result.success(Pair(retrieveMethods.await(), retrieveConsents.await()))
@@ -129,12 +150,14 @@ internal class PaymentMethodsViewModel(
     }
 
     private suspend fun retrieveAvailablePaymentConsents(
-        clientSecret: String
+        clientSecret: String,
+        customerId: String
     ) = loadPagedItems(
             loadPage = { pageNum ->
                 airwallex.retrieveAvailablePaymentConsents(
                     RetrieveAvailablePaymentConsentsParams.Builder(
                         clientSecret = clientSecret,
+                        customerId = customerId,
                         pageNum = pageNum
                     )
                         .setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)

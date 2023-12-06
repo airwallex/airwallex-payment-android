@@ -126,6 +126,7 @@ fun Options.getUrl(): String {
         )
         is Options.RetrieveAvailablePaymentConsentsOptions -> retrieveAvailablePaymentConsentsUrl(
             AirwallexPlugins.environment.baseUrl(),
+            customerId,
             merchantTriggerReason,
             nextTriggeredBy,
             status,

@@ -152,6 +152,7 @@ class Airwallex internal constructor(
         return paymentManager.retrieveAvailablePaymentConsents(
             Options.RetrieveAvailablePaymentConsentsOptions(
                 clientSecret = params.clientSecret,
+                customerId = params.customerId,
                 merchantTriggerReason = params.merchantTriggerReason,
                 nextTriggeredBy = params.nextTriggeredBy,
                 status = params.status,
