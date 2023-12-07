@@ -5,9 +5,11 @@ import com.airwallex.android.core.ActionComponentProviderType
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.model.AvailablePaymentMethodTypeResponse
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentIntent
-import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
+import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
+import com.airwallex.android.core.model.parser.PageParser
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.tasks.OnCompleteListener
@@ -41,8 +43,8 @@ class GooglePayComponentProviderTest {
         GooglePayComponentProvider()
     }
 
-    private val mockResponse: AvailablePaymentMethodTypeResponse =
-        AvailablePaymentMethodTypeResponseParser().parse(
+    private val mockResponse: Page<AvailablePaymentMethodType> =
+        PageParser(AvailablePaymentMethodTypeParser()).parse(
             JSONObject(
                 """
                     {

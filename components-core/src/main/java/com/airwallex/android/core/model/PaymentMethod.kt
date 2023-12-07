@@ -231,7 +231,12 @@ data class PaymentMethod internal constructor(
         /**
          * Card type of the card
          */
-        val cardType: String? = null
+        val cardType: String? = null,
+
+        /**
+         * Type of the number
+         */
+        val numberType: NumberType? = null
 
     ) : AirwallexModel, AirwallexRequestModel, Parcelable {
 
@@ -317,6 +322,11 @@ data class PaymentMethod internal constructor(
                         mapOf(PaymentMethodParser.CardParser.FIELD_CARD_TYPE to it)
                     }.orEmpty()
                 )
+                .plus(
+                    numberType?.let {
+                        mapOf(PaymentMethodParser.CardParser.FIELD_NUMBER_TYPE to it)
+                    }.orEmpty()
+                )
         }
 
         class Builder : ObjectBuilder<Card> {
@@ -335,6 +345,7 @@ data class PaymentMethod internal constructor(
             private var avsCheck: String? = null
             private var issuerCountryCode: String? = null
             private var cardType: String? = null
+            private var numberType: NumberType? = null
             fun setCvc(cvc: String?): Builder = apply {
                 this.cvc = cvc
             }
@@ -411,8 +422,21 @@ data class PaymentMethod internal constructor(
                     cvcCheck = cvcCheck,
                     avsCheck = avsCheck,
                     issuerCountryCode = issuerCountryCode,
-                    cardType = cardType
+                    cardType = cardType,
+                    numberType = numberType
                 )
+            }
+        }
+
+        enum class NumberType {
+            PAN,
+            EXTERNAL_NETWORK_TOKEN,
+            AIRWALLEX_NETWORK_TOKEN;
+
+            internal companion object {
+                internal fun fromValue(value: String?): NumberType? {
+                    return NumberType.values().firstOrNull { it.name == value }
+                }
             }
         }
     }

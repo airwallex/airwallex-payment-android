@@ -7,8 +7,11 @@ interface PaymentManager {
 
     fun <T> startOperation(options: Options, listener: PaymentListener<T>)
 
+    suspend fun retrieveAvailablePaymentConsents(options: Options.RetrieveAvailablePaymentConsentsOptions):
+            Page<PaymentConsent>
+
     suspend fun retrieveAvailablePaymentMethods(options: Options.RetrieveAvailablePaymentMethodsOptions):
-            AvailablePaymentMethodTypeResponse
+            Page<AvailablePaymentMethodType>
 
     suspend fun createPaymentMethod(options: Options.CreatePaymentMethodOptions):
             PaymentMethod

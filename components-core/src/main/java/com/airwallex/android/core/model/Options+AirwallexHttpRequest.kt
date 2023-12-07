@@ -6,6 +6,7 @@ import com.airwallex.android.core.AirwallexApiRepository.Companion.continuePayme
 import com.airwallex.android.core.AirwallexApiRepository.Companion.createPaymentConsentUrl
 import com.airwallex.android.core.AirwallexApiRepository.Companion.createPaymentMethodUrl
 import com.airwallex.android.core.AirwallexApiRepository.Companion.disablePaymentConsentUrl
+import com.airwallex.android.core.AirwallexApiRepository.Companion.retrieveAvailablePaymentConsentsUrl
 import com.airwallex.android.core.AirwallexApiRepository.Companion.retrieveAvailablePaymentMethodsUrl
 import com.airwallex.android.core.AirwallexApiRepository.Companion.retrieveBanksUrl
 import com.airwallex.android.core.AirwallexApiRepository.Companion.retrievePaymentIntentUrl
@@ -72,6 +73,11 @@ fun Options.toAirwallexHttpRequest(): AirwallexHttpRequest {
             params = null,
             awxTracker = UUID.randomUUID().toString()
         )
+        is Options.RetrieveAvailablePaymentConsentsOptions -> AirwallexHttpRequest.createGet(
+            url = url,
+            options = this,
+            params = null
+        )
         is Options.RetrievePaymentMethodTypeInfoOptions -> AirwallexHttpRequest.createGet(
             url = url,
             options = this,
@@ -85,6 +91,7 @@ fun Options.toAirwallexHttpRequest(): AirwallexHttpRequest {
     }
 }
 
+@Suppress("LongMethod")
 fun Options.getUrl(): String {
     return when (this) {
         is Options.ContinuePaymentIntentOptions -> continuePaymentIntentUrl(
@@ -116,6 +123,15 @@ fun Options.getUrl(): String {
         is Options.RetrievePaymentConsentOptions -> retrievePaymentIntentUrl(
             AirwallexPlugins.environment.baseUrl(),
             paymentConsentId
+        )
+        is Options.RetrieveAvailablePaymentConsentsOptions -> retrieveAvailablePaymentConsentsUrl(
+            AirwallexPlugins.environment.baseUrl(),
+            customerId,
+            merchantTriggerReason,
+            nextTriggeredBy,
+            status,
+            pageNum,
+            pageSize
         )
         is Options.TrackerOptions -> createTrackerUrl()
         is Options.RetrieveAvailablePaymentMethodsOptions -> retrieveAvailablePaymentMethodsUrl(

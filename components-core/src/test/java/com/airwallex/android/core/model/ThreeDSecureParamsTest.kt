@@ -7,7 +7,7 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-class ThreeDSecureParesTest {
+class ThreeDSecureParamsTest {
 
     @Test
     fun testParcelable() {

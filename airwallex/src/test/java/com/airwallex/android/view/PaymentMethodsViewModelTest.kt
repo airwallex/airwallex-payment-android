@@ -6,7 +6,9 @@ import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
-import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeResponseParser
+import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
+import com.airwallex.android.core.model.parser.PageParser
+import com.airwallex.android.core.model.parser.PaymentConsentParser
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
@@ -37,8 +39,9 @@ class PaymentMethodsViewModelTest {
     fun `test fetchAvailablePaymentMethodTypes when session is recurring and has client secret`() =
         runTest {
             val viewModel = mockViewModel(transactionMode = TransactionMode.RECURRING)
-            val result = viewModel.fetchAvailablePaymentMethodTypes()
-            assertEquals(result.value?.getOrNull()?.first()?.name, "card")
+            val result = viewModel.fetchAvailablePaymentMethodsAndConsents()?.getOrNull()
+            assertEquals(result?.first?.first()?.name, "card")
+            assertEquals(result?.second?.first()?.paymentMethod?.card?.name, "John")
             verify(exactly = 1) { TokenManager.updateClientSecret(any()) }
         }
 
@@ -46,8 +49,8 @@ class PaymentMethodsViewModelTest {
     fun `test fetchAvailablePaymentMethodTypes when session is recurring and has no client secret`() =
         runTest {
             val viewModel = mockViewModel(false, TransactionMode.RECURRING)
-            val result = viewModel.fetchAvailablePaymentMethodTypes()
-            assertEquals(result.value?.isFailure, true)
+            val result = viewModel.fetchAvailablePaymentMethodsAndConsents()
+            assertEquals(result?.isFailure, true)
         }
 
     @Test
@@ -119,8 +122,8 @@ class PaymentMethodsViewModelTest {
     @Test
     fun `test fetchAvailablePaymentMethodTypes when session is oneoff`() = runTest {
         val viewModel = mockViewModel(transactionMode = TransactionMode.ONE_OFF)
-        val result = viewModel.fetchAvailablePaymentMethodTypes()
-        assertEquals(result.value?.getOrNull()?.first()?.name, "card")
+        val result = viewModel.fetchAvailablePaymentMethodsAndConsents()?.getOrNull()
+        assertEquals(result?.first?.first()?.name, "card")
         verify(exactly = 1) { TokenManager.updateClientSecret(any()) }
     }
 
@@ -143,14 +146,39 @@ class PaymentMethodsViewModelTest {
         verify(exactly = 1) { AnalyticsLogger.logAction("payment_success", mapOf("payment_method" to "card")) }
     }
 
+    @Suppress("LongMethod")
     private fun mockViewModel(hasClientSecret: Boolean = true, transactionMode: TransactionMode):
             PaymentMethodsViewModel {
         mockkObject(TokenManager)
-        val mockResponse = AvailablePaymentMethodTypeResponseParser().parse(
+        val mockConsents = PageParser(PaymentConsentParser()).parse(
             JSONObject(
                 """
         {
-        "items":[ 
+            "items":[
+                {
+                  "payment_method": {
+                    "type": "card",
+                    "card": {
+                        "name": "John",
+                        "issuer_name": "DISCOVER BANK",
+                        "is_commercial": false,
+                        "number_type": "PAN"
+                    }
+                  },
+                  "next_triggered_by": "customer",
+                  "status": "VERIFIED"
+                }   
+            ],
+            "has_more":false
+        }
+                """.trimIndent()
+            )
+        )
+        val mockMethods = PageParser(AvailablePaymentMethodTypeParser()).parse(
+            JSONObject(
+                """
+        {
+            "items":[ 
                   {
                    "name":"card",
                    "transaction_mode":${transactionMode.value},
@@ -201,7 +229,8 @@ class PaymentMethodsViewModelTest {
             TransactionMode.ONE_OFF -> oneOffSession
             TransactionMode.RECURRING -> recurringSession
         }
-        coEvery { airwallex.retrieveAvailablePaymentMethods(any(), any()) } returns mockResponse
+        coEvery { airwallex.retrieveAvailablePaymentMethods(any(), any()) } returns mockMethods
+        coEvery { airwallex.retrieveAvailablePaymentConsents(any()) } returns mockConsents
         return PaymentMethodsViewModel(application, airwallex, session)
     }
 }

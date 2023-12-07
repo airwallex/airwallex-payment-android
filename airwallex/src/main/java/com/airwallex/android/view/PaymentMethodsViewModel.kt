@@ -8,6 +8,9 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.supervisorScope
+import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class PaymentMethodsViewModel(
@@ -28,6 +31,23 @@ internal class PaymentMethodsViewModel(
             }
             is AirwallexRecurringSession -> {
                 null
+            }
+            else -> {
+                throw Exception("Not supported session $session")
+            }
+        }
+    }
+
+    private val customerId: String? by lazy {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                session.paymentIntent.customerId
+            }
+            is AirwallexRecurringWithIntentSession -> {
+                session.paymentIntent.customerId
+            }
+            is AirwallexRecurringSession -> {
+                session.customerId
             }
             else -> {
                 throw Exception("Not supported session $session")
@@ -94,9 +114,9 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    suspend fun fetchAvailablePaymentMethodTypes(): LiveData<Result<List<AvailablePaymentMethodType>>> {
-        val resultData = MutableLiveData<Result<List<AvailablePaymentMethodType>>>()
-        when (session) {
+    suspend fun fetchAvailablePaymentMethodsAndConsents():
+            Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>? {
+        return when (session) {
             is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
                 paymentIntent?.clientSecret
             }
@@ -106,54 +126,80 @@ internal class PaymentMethodsViewModel(
                         .retrieveClientSecret(requireNotNull(session.customerId))
                         .value
                 } catch (e: AirwallexCheckoutException) {
-                    resultData.value = Result.failure(e)
-                    null
+                    return Result.failure(e)
                 }
             }
             else -> null
         }?.let { clientSecret ->
             TokenManager.updateClientSecret(clientSecret)
-            retrieveAvailablePaymentMethods(
-                resultData = resultData,
-                clientSecret = clientSecret
-            )
+            supervisorScope {
+                val retrieveConsents = async {
+                    customerId?.let {
+                        retrieveAvailablePaymentConsents(clientSecret, it)
+                    } ?: emptyList()
+                }
+                val retrieveMethods = async { retrieveAvailablePaymentMethods(clientSecret) }
+                try {
+                    Result.success(Pair(retrieveMethods.await(), retrieveConsents.await()))
+                } catch (exception: AirwallexException) {
+                    Result.failure(exception)
+                }
+            }
         }
-        return resultData
     }
 
-    private suspend fun retrieveAvailablePaymentMethods(
-        availablePaymentMethodList: MutableList<AvailablePaymentMethodType> = mutableListOf(),
-        availablePaymentMethodPageNum: AtomicInteger = AtomicInteger(0),
-        resultData: MutableLiveData<Result<List<AvailablePaymentMethodType>>>,
-        clientSecret: String
-    ) {
-        val response = try {
-            airwallex.retrieveAvailablePaymentMethods(
-                session = session,
-                params = RetrieveAvailablePaymentMethodParams.Builder(
-                    clientSecret = clientSecret,
-                    pageNum = availablePaymentMethodPageNum.get()
+    private suspend fun retrieveAvailablePaymentConsents(
+        clientSecret: String,
+        customerId: String
+    ) = loadPagedItems(
+            loadPage = { pageNum ->
+                airwallex.retrieveAvailablePaymentConsents(
+                    RetrieveAvailablePaymentConsentsParams.Builder(
+                        clientSecret = clientSecret,
+                        customerId = customerId,
+                        pageNum = pageNum
+                    )
+                        .setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
+                        .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED)
+                        .build()
                 )
-                    .setActive(true)
-                    .setTransactionCurrency(session.currency)
-                    .setCountryCode(session.countryCode)
-                    .build()
-            )
-        } catch (exception: AirwallexException) {
-            resultData.value = Result.failure(exception)
-            return
-        }
-        availablePaymentMethodPageNum.incrementAndGet()
-        availablePaymentMethodList.addAll(response.items ?: emptyList())
-        if (response.hasMore) {
-            retrieveAvailablePaymentMethods(
-                availablePaymentMethodList,
-                availablePaymentMethodPageNum,
-                resultData,
-                clientSecret
+            }
+        )
+
+    private suspend fun retrieveAvailablePaymentMethods(
+        clientSecret: String
+    ) = loadPagedItems(
+            loadPage = { pageNum ->
+                airwallex.retrieveAvailablePaymentMethods(
+                    session = session,
+                    params = RetrieveAvailablePaymentMethodParams.Builder(
+                        clientSecret = clientSecret,
+                        pageNum = pageNum
+                    )
+                        .setActive(true)
+                        .setTransactionCurrency(session.currency)
+                        .setCountryCode(session.countryCode)
+                        .build()
+                )
+            }
+        )
+
+    private suspend fun <T> loadPagedItems(
+        loadPage: suspend (Int) -> Page<T>,
+        items: MutableList<T> = Collections.synchronizedList(mutableListOf()),
+        pageNum: AtomicInteger = AtomicInteger(0)
+    ): List<T> {
+        val response = loadPage(pageNum.get())
+        pageNum.incrementAndGet()
+        items.addAll(response.items)
+        return if (response.hasMore) {
+            loadPagedItems(
+                loadPage,
+                items,
+                pageNum
             )
         } else {
-            resultData.value = Result.success(availablePaymentMethodList)
+            items
         }
     }
 

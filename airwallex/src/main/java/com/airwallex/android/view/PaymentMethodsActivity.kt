@@ -67,7 +67,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        fetchPaymentMethods()
+        fetchPaymentMethodsAndConsents()
     }
 
     override fun onBackPressed() {
@@ -168,84 +168,50 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         }
     }
 
-    private fun fetchPaymentMethods() {
+    private fun fetchPaymentMethodsAndConsents() {
         lifecycleScope.launch {
             setLoadingProgress(loading = true, cancelable = false)
-            viewModel.fetchAvailablePaymentMethodTypes().observe(
-                this@PaymentMethodsActivity
-            ) { result ->
-                result.fold(
-                    onSuccess = {
-                        setLoadingProgress(loading = false)
-                        // Complete load available payment method type
-                        val availableMethodTypes = it
-                        val cardPaymentMethod = it.findWithType(PaymentMethodType.CARD)
+            val result = viewModel.fetchAvailablePaymentMethodsAndConsents()
+            result?.fold(
+                onSuccess = { methodsAndConsents ->
+                    setLoadingProgress(loading = false)
+                    // Complete load available payment method type and consents
+                    val availableMethodTypes = methodsAndConsents.first
+                    this@PaymentMethodsActivity.availablePaymentMethodTypes = availableMethodTypes
 
-                        val availablePaymentConsents = filterPaymentConsents(cardPaymentMethod)
-
-                        this@PaymentMethodsActivity.availablePaymentMethodTypes =
-                            availableMethodTypes
-                        this@PaymentMethodsActivity.availablePaymentConsents =
-                            availablePaymentConsents
-
-                        // skip straight to the individual card screen?
-                        val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
-                            desiredPaymentMethodType = cardPaymentMethod,
-                            paymentMethods = availableMethodTypes,
-                            consents = availablePaymentConsents
-                        )
-
-                        if (hasSinglePaymentMethod && cardPaymentMethod != null) {
-                            // only one payment method and it's Card.
-                            val cardSchemes = cardPaymentMethod.cardSchemes ?: emptyList()
-                            startAddPaymentMethod(cardSchemes, isSinglePaymentMethod = true)
+                    val cardPaymentMethod = availablePaymentMethodTypes?.findWithType(PaymentMethodType.CARD)
+                    val availablePaymentConsents =
+                        if (cardPaymentMethod != null && session is AirwallexPaymentSession) {
+                            methodsAndConsents.second.filter { it.paymentMethod?.type == PaymentMethodType.CARD.value }
                         } else {
-                            initView(
-                                availablePaymentMethodTypes = availableMethodTypes,
-                                availablePaymentConsents = availablePaymentConsents
-                            )
+                            emptyList()
                         }
-                    },
-                    onFailure = {
-                        setLoadingProgress(loading = false)
-                        alert(message = it.message ?: it.toString())
+                    this@PaymentMethodsActivity.availablePaymentConsents = availablePaymentConsents
+
+                    // skip straight to the individual card screen?
+                    val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
+                        desiredPaymentMethodType = cardPaymentMethod,
+                        paymentMethods = availableMethodTypes,
+                        consents = availablePaymentConsents
+                    )
+
+                    if (hasSinglePaymentMethod && cardPaymentMethod != null) {
+                        // only one payment method and it's Card.
+                        val cardSchemes = cardPaymentMethod.cardSchemes ?: emptyList()
+                        startAddPaymentMethod(cardSchemes, isSinglePaymentMethod = true)
+                    } else {
+                        initView(
+                            availablePaymentMethodTypes = availableMethodTypes,
+                            availablePaymentConsents = availablePaymentConsents
+                        )
                     }
-                )
-            }
-        }
-    }
-
-    // To be extracted to view model so that it can be tested
-    private fun filterPaymentConsents(cardPaymentMethod: AvailablePaymentMethodType?): List<PaymentConsent> {
-        if (cardPaymentMethod == null || cardPaymentMethod.name != PaymentMethodType.CARD.value) {
-            return emptyList()
-        }
-
-        val paymentIntent = viewModel.paymentIntent
-        val customerPaymentConsents = paymentIntent?.customerPaymentConsents ?: return emptyList()
-        val customerPaymentMethods = paymentIntent.customerPaymentMethods ?: return emptyList()
-
-        if (session is AirwallexPaymentSession) {
-            val filteredConsents = customerPaymentConsents.filter {
-                it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER &&
-                        it.status == PaymentConsent.PaymentConsentStatus.VERIFIED &&
-                        it.paymentMethod?.type == PaymentMethodType.CARD.value
-            }
-            val paymentConsents = mutableListOf<PaymentConsent>()
-            val cardsFingerprint = mutableListOf<String>()
-            for (consent in filteredConsents) {
-                val fingerprint = consent.paymentMethod?.card?.fingerprint
-                if (!cardsFingerprint.contains(fingerprint)) {
-                    fingerprint?.let { cardsFingerprint.add(it) }
-                    consent.paymentMethod = customerPaymentMethods.find { paymentMethod ->
-                        paymentMethod.id == consent.paymentMethod?.id
-                    }
-                    paymentConsents.add(consent)
+                },
+                onFailure = {
+                    setLoadingProgress(loading = false)
+                    alert(message = it.message ?: it.toString())
                 }
-            }
-            return paymentConsents
+            )
         }
-        return emptyList()
     }
 
     override fun homeAsUpIndicatorResId(): Int {
@@ -302,7 +268,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             PaymentMethodType.CARD.value -> {
                 setLoadingProgress(false)
                 // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
-                if (paymentConsent.requiresCvc) {
+                if (paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN) {
                     PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
                         .startForResult(
                             PaymentCheckoutActivityLaunch.Args.Builder()

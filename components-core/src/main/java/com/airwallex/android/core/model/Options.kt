@@ -51,6 +51,16 @@ sealed class Options(
         internal val paymentConsentId: String
     ) : Options(clientSecret = clientSecret)
 
+    data class RetrieveAvailablePaymentConsentsOptions(
+        override val clientSecret: String,
+        internal val customerId: String,
+        internal val merchantTriggerReason: PaymentConsent.MerchantTriggerReason?,
+        internal val nextTriggeredBy: PaymentConsent.NextTriggeredBy?,
+        internal val status: PaymentConsent.PaymentConsentStatus?,
+        internal val pageNum: Int,
+        internal val pageSize: Int
+    ) : Options(clientSecret = clientSecret)
+
     data class TrackerOptions(
         internal val request: TrackerRequest
     ) : Options(clientSecret = "")

@@ -142,14 +142,35 @@ class Airwallex internal constructor(
     }
 
     /**
+     * Retrieve available payment consents
+     *
+     * @param params [RetrieveAvailablePaymentConsentsParams] used to retrieve all [PaymentConsent]
+     */
+    suspend fun retrieveAvailablePaymentConsents(
+        params: RetrieveAvailablePaymentConsentsParams
+    ): Page<PaymentConsent> {
+        return paymentManager.retrieveAvailablePaymentConsents(
+            Options.RetrieveAvailablePaymentConsentsOptions(
+                clientSecret = params.clientSecret,
+                customerId = params.customerId,
+                merchantTriggerReason = params.merchantTriggerReason,
+                nextTriggeredBy = params.nextTriggeredBy,
+                status = params.status,
+                pageNum = params.pageNum,
+                pageSize = params.pageSize
+            )
+        )
+    }
+
+    /**
      * Retrieve available payment methods
      *
-     * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve the [AvailablePaymentMethodTypeResponse]
+     * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve all [AvailablePaymentMethodType]
      */
     suspend fun retrieveAvailablePaymentMethods(
         session: AirwallexSession,
         params: RetrieveAvailablePaymentMethodParams
-    ): AvailablePaymentMethodTypeResponse {
+    ): Page<AvailablePaymentMethodType> {
         val transactionMode = when (session) {
             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
             is AirwallexPaymentSession -> TransactionMode.ONE_OFF
@@ -167,7 +188,7 @@ class Airwallex internal constructor(
                 countryCode = params.countryCode
             )
         )
-        val filteredItems = response.items?.filter { paymentMethod ->
+        response.items = response.items.filter { paymentMethod ->
             paymentMethod.transactionMode == transactionMode &&
                     AirwallexPlugins.getProvider(paymentMethod)?.canHandleSessionAndPaymentMethod(
                         session,
@@ -176,7 +197,7 @@ class Airwallex internal constructor(
                     ) ?: false
         }
 
-        return AvailablePaymentMethodTypeResponse(response.hasMore, filteredItems)
+        return response
     }
 
     /**

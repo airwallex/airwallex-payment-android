@@ -1,12 +1,12 @@
 package com.airwallex.android.core.model.parser
 
-import com.airwallex.android.core.model.ThreeDSecurePares
+import com.airwallex.android.core.model.ThreeDSecureParams
 import org.json.JSONObject
 
-class ThreeDSecureParesParser : ModelJsonParser<ThreeDSecurePares> {
+class ThreeDSecureParesParser : ModelJsonParser<ThreeDSecureParams> {
 
-    override fun parse(json: JSONObject): ThreeDSecurePares {
-        return ThreeDSecurePares(
+    override fun parse(json: JSONObject): ThreeDSecureParams {
+        return ThreeDSecureParams(
             paresId = json.optString(FIELD_PARES_ID),
             pares = json.optString(FIELD_PARES)
         )
