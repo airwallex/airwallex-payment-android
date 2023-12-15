@@ -58,6 +58,7 @@ class AddPaymentMethodViewModelTest {
             requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
         val resultBilling = requireNotNull(result.paymentMethod.billing)
 
+        assertEquals(viewModel.ctaTitle, R.string.airwallex_pay_now)
         assertEquals(resultBilling, billing)
     }
 
@@ -121,6 +122,7 @@ class AddPaymentMethodViewModelTest {
         val result =
             requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
 
+        assertEquals(viewModel.ctaTitle, R.string.airwallex_confirm)
         assertEquals(result.paymentMethod, paymentMethod)
 
         val params = CreatePaymentMethodParams(
@@ -155,6 +157,7 @@ class AddPaymentMethodViewModelTest {
         val result =
             requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
 
+        assertEquals(viewModel.ctaTitle, R.string.airwallex_pay_now)
         assertEquals(result.paymentMethod, paymentMethod)
 
         val params = CreatePaymentMethodParams(

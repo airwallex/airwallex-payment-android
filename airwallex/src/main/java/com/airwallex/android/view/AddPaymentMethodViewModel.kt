@@ -23,6 +23,13 @@ internal class AddPaymentMethodViewModel(
     val additionalInfo: Map<String, List<String>> =
         mapOf("supportedSchemes" to supportedCardSchemes.map { it.name })
 
+    @StringRes
+    val ctaTitle = if (session is AirwallexRecurringSession) {
+        R.string.airwallex_confirm
+    } else {
+        R.string.airwallex_pay_now
+    }
+
     fun getValidationResult(cardNumber: String): ValidationResult {
         if (cardNumber.isEmpty()) {
             return ValidationResult.Error(R.string.airwallex_empty_card_number)

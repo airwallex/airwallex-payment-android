@@ -23,6 +23,7 @@
     <string name="airwallex_shipping">Shipping</string>
     <string name="airwallex_total">Total %s</string>
     <string name="airwallex_pay_now">Pay</string>
+    <string name="airwallex_confirm">Confirm</string>
     <string name="airwallex_payment_methods">Payment methods</string>
     <string name="airwallex_cvc_hint">CVC/CVV</string>
     <string name="airwallex_card_name_hint">Name on card</string>
