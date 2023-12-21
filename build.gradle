@@ -21,7 +21,7 @@ buildscript {
 plugins {
     id "io.gitlab.arturbosch.detekt" version "${detektVersion}"
     id "nl.neotech.plugin.rootcoverage" version "1.5.3"
-    id "org.sonarqube" version "3.3"
+    id "org.sonarqube" version "4.4.1.3373"
     id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
