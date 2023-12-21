@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 buildscript {
     ext {
         kotlinVersion = '1.7.20'
@@ -10,7 +12,7 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:8.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.7.10"
     }
@@ -23,16 +25,12 @@ plugins {
     id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
-tasks.withType(io.gitlab.arturbosch.detekt.Detekt).configureEach {
+tasks.withType(Detekt).configureEach {
     reports {
         html.required.set(true)
         xml.required.set(true)
         txt.required.set(true)
     }
-}
-
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
 }
 
 allprojects {
@@ -42,12 +40,7 @@ allprojects {
     }
 }
 
-jacoco {
-    // https://www.jacoco.org/jacoco/trunk/doc/changes.html
-    toolVersion = "$jacocoVersion"
-}
-
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
 
@@ -72,15 +65,17 @@ ext {
 
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
-        tasks.withType(Javadoc) {
-            options.addStringOption('Xdoclint:none', '-quiet')
-            options.addStringOption('encoding', 'UTF-8')
+        tasks.withType(Javadoc).tap {
+            configureEach {
+                options.addStringOption('Xdoclint:none', '-quiet')
+                options.addStringOption('encoding', 'UTF-8')
+            }
         }
     }
 }
 
 subprojects {
-    configurations.all {
+    configurations.configureEach {
         resolutionStrategy {
             eachDependency { details ->
                 if ('org.jacoco' == details.requested.group) {

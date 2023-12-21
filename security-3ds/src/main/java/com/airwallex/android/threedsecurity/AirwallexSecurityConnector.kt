@@ -4,9 +4,12 @@ import android.content.Context
 import com.airwallex.android.core.SecurityConnector
 import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.log.ConsoleLogger
-import com.threatmetrix.TrustDefender.RL.*
-import com.threatmetrix.TrustDefender.RL.TMXProfiling.*
-import com.threatmetrix.TrustDefender.RL.TMXProfilingConnections.*
+import com.lexisnexisrisk.threatmetrix.TMXConfig
+import com.lexisnexisrisk.threatmetrix.TMXProfiling.getInstance
+import com.lexisnexisrisk.threatmetrix.TMXProfilingConnectionsInterface
+import com.lexisnexisrisk.threatmetrix.TMXProfilingHandle
+import com.lexisnexisrisk.threatmetrix.TMXProfilingOptions
+import com.lexisnexisrisk.threatmetrix.tmxprofilingconnections.TMXProfilingConnections
 import java.util.concurrent.TimeUnit
 
 /**
