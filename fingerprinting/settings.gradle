@@ -1,5 +1,4 @@
 rootProject.name = 'airwallex-android-fingerprinting'
 
-include ':airwallex-fingerprinting-behavioral'
 include ':airwallex-fingerprinting-profiling'
 include ':airwallex-fingerprinting-profiling-connections'

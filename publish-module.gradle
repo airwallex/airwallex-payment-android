@@ -4,7 +4,7 @@ apply plugin: "org.jetbrains.dokka"
 
 apply from: "${rootDir}/gradle/scripts/publish-base.gradle"
 
-task androidSourcesJar(type: Jar) {
+tasks.register('androidSourcesJar', Jar) {
     archiveClassifier.set('sources')
     if (project.plugins.findPlugin("com.android.library")) {
         from android.sourceSets.main.java.srcDirs
@@ -13,7 +13,8 @@ task androidSourcesJar(type: Jar) {
     }
 }
 
-task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+tasks.register('javadocJar', Jar) {
+    dependsOn dokkaJavadoc
     archiveClassifier.set('javadoc')
     from dokkaJavadoc.outputDirectory
 }

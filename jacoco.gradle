@@ -7,7 +7,7 @@ jacoco {
 // Force Jacoco Version
 
 subprojects {
-    configurations.all {
+    configurations.configureEach {
         resolutionStrategy {
             eachDependency { details ->
                 if ('org.jacoco' == details.requested.group) {
@@ -20,7 +20,7 @@ subprojects {
 
 project.afterEvaluate { project ->
 
-    tasks.withType(Test) {
+    tasks.withType(Test).configureEach {
         jacoco.includeNoLocationClasses = true
         jacoco.excludes = ['jdk.internal.*']
     }
@@ -29,8 +29,8 @@ project.afterEvaluate { project ->
     final variant = "$buildType"
     final taskName = "jacocoTest${variant.capitalize()}UnitTestReport"
 
-    task "$taskName"(type: JacocoReport, dependsOn: "test${variant.capitalize()}UnitTest") {
-
+    tasks.register(taskName, JacocoReport) {
+        dependsOn "test${variant.capitalize()}UnitTest"
         reports {
             csv.required = false
             xml.required = true

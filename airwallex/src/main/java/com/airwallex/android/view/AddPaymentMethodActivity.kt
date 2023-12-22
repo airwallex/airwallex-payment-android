@@ -234,6 +234,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
             AnalyticsLogger.logAction("toggle_billing_address")
         }
 
+        viewBinding.btnSaveCard.text = getString(viewModel.ctaTitle)
         viewBinding.btnSaveCard.isEnabled = isValid
         viewBinding.btnSaveCard.setOnSingleClickListener { onSaveCard() }
 
