@@ -311,7 +311,7 @@ class PaymentSettingsFragment :
                 val mPendingIntent = PendingIntent
                     .getActivity(
                         c, mPendingIntentId, activity,
-                        PendingIntent.FLAG_CANCEL_CURRENT
+                        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
                 val mgr = c.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                 mgr[AlarmManager.RTC, System.currentTimeMillis() + 100] = mPendingIntent
