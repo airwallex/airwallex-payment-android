@@ -18,6 +18,6 @@ class WeChatComponentProvider : ActionComponentProvider<WeChatComponent> {
     }
 
     override fun getType(): ActionComponentProviderType {
-        return ActionComponentProviderType.WECHAT
+        return ActionComponentProviderType.WECHATPAY
     }
 }

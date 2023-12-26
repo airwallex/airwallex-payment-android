@@ -89,6 +89,27 @@ class AirwallexPluginsTest {
     }
 
     @Test
+    fun `test get wechat action component provider`() {
+        AirwallexPlugins.initialize(
+            AirwallexConfiguration.Builder()
+                .setSupportComponentProviders(
+                    listOf(
+                        TestComponentProvider(ActionComponentProviderType.WECHATPAY)
+                    )
+                )
+                .build()
+        )
+        assertEquals(
+            AirwallexPlugins.getProvider(
+                AvailablePaymentMethodType(
+                    "wechatpay"
+                )
+            )?.getType(),
+            ActionComponentProviderType.WECHATPAY
+        )
+    }
+
+    @Test
     fun `test get redirect action component provider when hasSchema is true`() {
         AirwallexPlugins.initialize(
             AirwallexConfiguration.Builder()
