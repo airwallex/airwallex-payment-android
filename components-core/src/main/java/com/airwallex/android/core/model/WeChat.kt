@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
  * WeChat Pay Payments
  */
 @Parcelize
-data class WeChat constructor(
+data class WeChat(
     val appId: String?,
     val partnerId: String?,
     val prepayId: String?,
