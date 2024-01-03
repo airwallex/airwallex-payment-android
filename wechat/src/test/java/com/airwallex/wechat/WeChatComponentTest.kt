@@ -130,11 +130,13 @@ class WeChatComponentTest {
         handlePaymentIntentResponse(actionData)
         component.handleIntent(intent, paymentCompletionHandler)
         verify(exactly = 1) {
-            paymentCompletionHandler(withArg {
-                assertIs<AirwallexPaymentStatus.Failure>(it).apply {
-                    assertEquals(exception.message, "WeChat Pay has been cancelled!")
+            paymentCompletionHandler(
+                withArg {
+                    assertIs<AirwallexPaymentStatus.Failure>(it).apply {
+                        assertEquals(exception.message, "WeChat Pay has been cancelled!")
+                    }
                 }
-            })
+            )
         }
     }
 
@@ -151,12 +153,14 @@ class WeChatComponentTest {
         handlePaymentIntentResponse(actionData)
         component.handleIntent(intent, paymentCompletionHandler)
         verify(exactly = 1) {
-            paymentCompletionHandler(withArg {
-                assertIs<AirwallexPaymentStatus.Failure>(it).apply {
-                    val errorMsg = requireNotNull(exception.message)
-                    assert(errorMsg.contains("errCode ${BaseResp.ErrCode.ERR_COMM}"))
+            paymentCompletionHandler(
+                withArg {
+                    assertIs<AirwallexPaymentStatus.Failure>(it).apply {
+                        val errorMsg = requireNotNull(exception.message)
+                        assert(errorMsg.contains("errCode ${BaseResp.ErrCode.ERR_COMM}"))
+                    }
                 }
-            })
+            )
         }
     }
 
