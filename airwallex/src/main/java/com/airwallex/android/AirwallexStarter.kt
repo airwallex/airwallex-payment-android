@@ -117,6 +117,7 @@ class AirwallexStarter {
             paymentResultListener: Airwallex.PaymentResultListener
         ) {
             this.paymentResultListener = paymentResultListener
+            PaymentResultManager.getInstance(paymentResultListener)
             launch.startForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)

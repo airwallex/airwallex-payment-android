@@ -2,25 +2,34 @@ package com.airwallex.wechat
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.wechat.WeChatComponent
+import com.tencent.mm.opensdk.modelbase.BaseResp
+import com.tencent.mm.opensdk.modelpay.PayResp
 import com.tencent.mm.opensdk.openapi.IWXAPI
+import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 
 class WeChatComponentTest {
+    lateinit var wechatAPI: IWXAPI
     lateinit var component: WeChatComponent
     lateinit var activity: Activity
     lateinit var context: Context
+    lateinit var intent: Intent
     lateinit var listener: Airwallex.PaymentResultListener
+    lateinit var paymentCompletionHandler: (AirwallexPaymentStatus) -> Unit
     private val actionData = mapOf(
         "appId" to "wx4c86d73fe4f82431",
         "nonceStr" to "DUY8tIYUmyKO6Lhb1jTBFKUBWNud6XXu",
@@ -36,11 +45,13 @@ class WeChatComponentTest {
         component = spyk(recordPrivateCalls = true)
         activity = mockk()
         context = mockk()
+        intent = mockk()
         listener = mockk(relaxed = true)
+        paymentCompletionHandler = mockk(relaxed = true)
 
-        val mockAPI = mockk<IWXAPI>()
+        wechatAPI = mockk<IWXAPI>(relaxed = true)
         mockkStatic(WXAPIFactory::class)
-        every { WXAPIFactory.createWXAPI(context, null, true) } returns mockAPI
+        every { WXAPIFactory.createWXAPI(context, null, true) } returns wechatAPI
         mockkObject(AnalyticsLogger)
     }
 
@@ -89,6 +100,68 @@ class WeChatComponentTest {
         handlePaymentIntentResponse(mapOf())
 
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.InProgress("id")) }
+    }
+
+    @Test
+    fun `test handleIntent when WeChat response is ok`() {
+        val eventHandler = slot<IWXAPIEventHandler>()
+        val response = PayResp()
+        response.errCode = BaseResp.ErrCode.ERR_OK
+        every { wechatAPI.handleIntent(any(), capture(eventHandler)) } answers {
+            eventHandler.captured.onResp(response)
+            true
+        }
+
+        handlePaymentIntentResponse(actionData)
+        component.handleIntent(intent, paymentCompletionHandler)
+        verify(exactly = 1) { paymentCompletionHandler(AirwallexPaymentStatus.Success("id")) }
+    }
+
+    @Test
+    fun `test handleIntent when WeChat response is user cancel`() {
+        val eventHandler = slot<IWXAPIEventHandler>()
+        val response = PayResp()
+        response.errCode = BaseResp.ErrCode.ERR_USER_CANCEL
+        every { wechatAPI.handleIntent(any(), capture(eventHandler)) } answers {
+            eventHandler.captured.onResp(response)
+            true
+        }
+
+        handlePaymentIntentResponse(actionData)
+        component.handleIntent(intent, paymentCompletionHandler)
+        verify(exactly = 1) {
+            paymentCompletionHandler(
+                withArg {
+                    assertIs<AirwallexPaymentStatus.Failure>(it).apply {
+                        assertEquals(exception.message, "WeChat Pay has been cancelled!")
+                    }
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `test handleIntent when WeChat response is other error`() {
+        val eventHandler = slot<IWXAPIEventHandler>()
+        val response = PayResp()
+        response.errCode = BaseResp.ErrCode.ERR_COMM
+        every { wechatAPI.handleIntent(any(), capture(eventHandler)) } answers {
+            eventHandler.captured.onResp(response)
+            true
+        }
+
+        handlePaymentIntentResponse(actionData)
+        component.handleIntent(intent, paymentCompletionHandler)
+        verify(exactly = 1) {
+            paymentCompletionHandler(
+                withArg {
+                    assertIs<AirwallexPaymentStatus.Failure>(it).apply {
+                        val errorMsg = requireNotNull(exception.message)
+                        assert(errorMsg.contains("errCode ${BaseResp.ErrCode.ERR_COMM}"))
+                    }
+                }
+            )
+        }
     }
 
     private fun handlePaymentIntentResponse(actionData: Map<String, Any?>? = null) {

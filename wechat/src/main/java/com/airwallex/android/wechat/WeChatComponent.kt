@@ -32,30 +32,29 @@ class WeChatComponent : ActionComponent {
         private const val EVENT_NAME = "wechat_redirect"
     }
 
-    internal fun handleIntent(intent: Intent, onEnd: () -> Unit) {
+    internal fun handleIntent(
+        intent: Intent,
+        onPaymentCompletion: (AirwallexPaymentStatus) -> Unit
+    ) {
         weChatApi?.handleIntent(
             intent,
             object : IWXAPIEventHandler {
                 override fun onReq(resp: BaseReq) {}
 
                 override fun onResp(resp: BaseResp) {
-                    when (resp.errCode) {
-                        BaseResp.ErrCode.ERR_OK -> listener?.onCompleted(
-                            AirwallexPaymentStatus.Success(
-                                paymentIntentId
-                            )
-                        )
-                        BaseResp.ErrCode.ERR_USER_CANCEL -> listener?.onCompleted(
+                    val status = when (resp.errCode) {
+                        BaseResp.ErrCode.ERR_OK ->
+                            AirwallexPaymentStatus.Success(paymentIntentId)
+                        BaseResp.ErrCode.ERR_USER_CANCEL ->
                             AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "WeChat Pay has been cancelled!"))
-                        )
                         else -> {
                             val exception =
                                 AirwallexCheckoutException(message = "Failed to process WeChat Pay, errCode ${resp.errCode}, errStr ${resp.errStr}")
-                            listener?.onCompleted(AirwallexPaymentStatus.Failure(exception))
                             AnalyticsLogger.logError(EVENT_NAME, exception = exception)
+                            AirwallexPaymentStatus.Failure(exception)
                         }
                     }
-                    onEnd.invoke()
+                    onPaymentCompletion(status)
                 }
             }
         )
