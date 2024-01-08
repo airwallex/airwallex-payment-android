@@ -34,7 +34,7 @@ class WeChatComponent : ActionComponent {
 
     internal fun handleIntent(
         intent: Intent,
-        onPaymentCompletion: (AirwallexPaymentStatus) -> Unit
+        onCompletion: () -> Unit
     ) {
         weChatApi?.handleIntent(
             intent,
@@ -54,7 +54,8 @@ class WeChatComponent : ActionComponent {
                             AirwallexPaymentStatus.Failure(exception)
                         }
                     }
-                    onPaymentCompletion(status)
+                    listener?.onCompleted(status)
+                    onCompletion()
                 }
             }
         )
@@ -113,7 +114,7 @@ class WeChatComponent : ActionComponent {
                             mapOf("message" to errorMsg)
                         )
                     } else {
-                        listener.onCompleted(AirwallexPaymentStatus.InProgress(paymentIntentId))
+                        PaymentResultManager.getInstance().updateStatus(AirwallexPaymentStatus.InProgress(paymentIntentId))
                         AnalyticsLogger.logPageView(EVENT_NAME)
                     }
                 }

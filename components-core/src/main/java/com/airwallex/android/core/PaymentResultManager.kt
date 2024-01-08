@@ -16,7 +16,7 @@ class PaymentResultManager private constructor(private val listener: Airwallex.P
             }
     }
 
-    fun completePayment(status: AirwallexPaymentStatus) {
+    fun updateStatus(status: AirwallexPaymentStatus) {
         listener.onCompleted(status)
     }
 }

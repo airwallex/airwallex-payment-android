@@ -10,7 +10,7 @@ class PaymentResultManagerTest {
         val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
         val manager = PaymentResultManager.getInstance(listener)
         val status = AirwallexPaymentStatus.InProgress("id")
-        manager.completePayment(status)
+        manager.updateStatus(status)
         verify { listener.onCompleted(status) }
     }
 }
