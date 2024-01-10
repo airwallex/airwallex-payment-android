@@ -2,7 +2,6 @@ package com.airwallex.android.wechat
 
 import android.app.Activity
 import android.os.Bundle
-import com.airwallex.android.core.PaymentResultManager
 
 internal class WeChatPayAuthActivity : Activity() {
 
@@ -15,8 +14,7 @@ internal class WeChatPayAuthActivity : Activity() {
         intent?.let {
             weChatComponent.handleIntent(
                 intent = intent
-            ) { status ->
-                PaymentResultManager.getInstance().completePayment(status)
+            ) {
                 finish()
             }
         }
