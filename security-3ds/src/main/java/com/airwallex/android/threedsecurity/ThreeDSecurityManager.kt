@@ -38,7 +38,8 @@ object ThreeDSecurityManager {
         val webView = AirwallexWebView(activity).apply {
             if (nextAction.stage == NextAction.NextActionStage.WAITING_USER_INFO_INPUT) {
                 visibility = View.VISIBLE
-                (activity as AirwallexActivity).setLoadingProgress(loading = false)
+                // show loading only when the parent activity is provided by us.
+                (activity as? AirwallexActivity)?.setLoadingProgress(loading = false)
 
                 AnalyticsLogger.logPageView(
                     "webview_redirect",

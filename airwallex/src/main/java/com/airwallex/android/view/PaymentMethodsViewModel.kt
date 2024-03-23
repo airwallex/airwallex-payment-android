@@ -21,7 +21,7 @@ internal class PaymentMethodsViewModel(
 
     val pageName: String = "payment_method_list"
 
-    val paymentIntent: PaymentIntent? by lazy {
+    private val paymentIntent: PaymentIntent? by lazy {
         when (session) {
             is AirwallexPaymentSession -> {
                 session.paymentIntent
