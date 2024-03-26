@@ -54,7 +54,7 @@ object ThreeDSecurityManager {
                 override fun onWebViewConfirmation(payload: String) {
                     ConsoleLogger.debug("onWebViewConfirmation $payload")
                     visibility = View.INVISIBLE
-                    (activity as AirwallexActivity).setLoadingProgress(
+                    (activity as? AirwallexActivity)?.setLoadingProgress(
                         loading = true,
                         cancelable = false
                     )

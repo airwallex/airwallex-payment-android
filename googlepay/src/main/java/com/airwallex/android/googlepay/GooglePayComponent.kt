@@ -29,6 +29,7 @@ import org.json.JSONObject
 
 class GooglePayComponent : ActionComponent {
     companion object {
+        val PROVIDER: ActionComponentProvider<GooglePayComponent> = GooglePayComponentProvider()
         private const val loadPaymentDataRequestCode = 991
         private const val errorTag = "Google Pay loadPaymentData failed"
     }
