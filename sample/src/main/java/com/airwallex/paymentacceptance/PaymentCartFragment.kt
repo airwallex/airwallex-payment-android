@@ -458,23 +458,7 @@ class PaymentCartFragment : Fragment() {
                 this@PaymentCartFragment,
                 buildSession(customerId = customerId)
             ).observe(viewLifecycleOwner) {
-                when (it) {
-                    is AirwallexPaymentStatus.Success -> {
-                        Log.d(TAG, "Payment success ${it.paymentIntentId}")
-                        showPaymentSuccess()
-                    }
-                    is AirwallexPaymentStatus.InProgress -> {
-                        // redirecting
-                        Log.d(TAG, "Payment is redirecting ${it.paymentIntentId}")
-                    }
-                    is AirwallexPaymentStatus.Failure -> {
-                        showPaymentError(it.exception.localizedMessage)
-                    }
-                    is AirwallexPaymentStatus.Cancel -> {
-                        Log.d(TAG, "User cancel the payment")
-                        showPaymentCancelled()
-                    }
-                }
+                handleStatusUpdate(it)
             }
         }
     }
@@ -551,23 +535,7 @@ class PaymentCartFragment : Fragment() {
                 this@PaymentCartFragment,
                 buildSession(paymentIntent = paymentIntent)
             ).observe(viewLifecycleOwner) {
-                when (it) {
-                    is AirwallexPaymentStatus.Success -> {
-                        Log.d(TAG, "Payment success ${it.paymentIntentId}")
-                        showPaymentSuccess()
-                    }
-                    is AirwallexPaymentStatus.InProgress -> {
-                        // redirecting
-                        Log.d(TAG, "Payment is redirecting ${it.paymentIntentId}")
-                    }
-                    is AirwallexPaymentStatus.Failure -> {
-                        showPaymentError(it.exception.message)
-                    }
-                    is AirwallexPaymentStatus.Cancel -> {
-                        Log.d(TAG, "User cancel the payment")
-                        showPaymentCancelled()
-                    }
-                }
+                handleStatusUpdate(it)
             }
         }
     }
@@ -608,7 +576,27 @@ class PaymentCartFragment : Fragment() {
         AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
     }
 
-    fun showPaymentSuccess() {
+    private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
+        when (status) {
+            is AirwallexPaymentStatus.Success -> {
+                Log.d(TAG, "Payment success ${status.paymentIntentId}")
+                showPaymentSuccess()
+            }
+            is AirwallexPaymentStatus.InProgress -> {
+                // redirecting
+                Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
+            }
+            is AirwallexPaymentStatus.Failure -> {
+                showPaymentError(status.exception.localizedMessage)
+            }
+            is AirwallexPaymentStatus.Cancel -> {
+                Log.d(TAG, "User cancel the payment")
+                showPaymentCancelled()
+            }
+        }
+    }
+
+    private fun showPaymentSuccess() {
         (activity as? PaymentCartActivity)?.setLoadingProgress(false)
         (activity as? PaymentCartActivity)?.showAlert(
             getString(R.string.payment_successful),

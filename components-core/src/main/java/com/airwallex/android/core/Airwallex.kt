@@ -126,7 +126,7 @@ class Airwallex internal constructor(
             saveCard = saveCard,
             listener = object : PaymentListener<PaymentMethod> {
                 override fun onSuccess(response: PaymentMethod) {
-                    checkout(session, response, listener)
+                    checkout(session, response, card.cvc, saveCard, listener)
                 }
 
                 override fun onFailed(exception: AirwallexException) {
@@ -414,9 +414,11 @@ class Airwallex internal constructor(
     internal fun checkout(
         session: AirwallexSession,
         paymentMethod: PaymentMethod,
+        cvc: String? = null,
+        saveCard: Boolean = false,
         listener: PaymentResultListener
     ) {
-        this.checkout(session, paymentMethod, null, null, null, null, listener)
+        this.checkout(session, paymentMethod, null, cvc, null, null, listener, saveCard)
     }
 
     /**
@@ -437,12 +439,15 @@ class Airwallex internal constructor(
         cvc: String? = null,
         additionalInfo: Map<String, String>? = null,
         flow: AirwallexPaymentRequestFlow? = null,
-        listener: PaymentResultListener
+        listener: PaymentResultListener,
+        saveCard: Boolean = false,
     ) {
         when (session) {
             is AirwallexPaymentSession -> {
                 if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
                     checkoutGooglePay(session, listener)
+                } else if (saveCard) {
+                    createPaymentConsentAndConfirmIntent(session, paymentMethod, cvc, listener)
                 } else {
                     val paymentIntent = session.paymentIntent
                     confirmPaymentIntent(

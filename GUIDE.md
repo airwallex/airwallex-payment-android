@@ -9,7 +9,8 @@ To accept online payments with Airwallex Android SDK, please complete preparatio
 1. [Before you start](#before-you-start) to use SDK, you need to set up SDK, complete configuration, and create payment intent in your server.
 
 *Integration options*
-1. [Airwallex Native UI integration](#airwallex-native-ui-integration)You can choose to use Airwallex Android SDK with our prebuilt UI page
+1. [Airwallex Native UI integration](#airwallex-native-ui-integration)You can choose to use this SDK with our prebuilt UI page, this is **recommended usage**. 
+2. [Low-level API Integration](#low-level-api-integration)You can build your own custom UI and use our low-level APIs.
 
 Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to integrate Airwallex Android SDK in your Android App.
 
@@ -26,6 +27,8 @@ Our demo application is available open source on [Github](https://github.com/air
     * [Edit Shipping Info](#edit-shipping-info)
     * [Use the entire Native UI in one flow](#use-the-entire-native-ui-in-one-flow)
     * [Custom Theme](#custom-theme)
+* [Low-level API Integration](#low-level-api-integration)
+    * [Confirm card payment with card and billing details or payment consent ID](#confirm-card-payment-with-card-and-billing-details-or-payment-consent-id)
 * [SDK Example](#sdk-example)
 * [Test Card Numbers](#test-card-numbers)
 * [Contributing](#Contributing)
@@ -64,13 +67,13 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment:4.4.3'
+        implementation 'io.github.airwallex:payment:4.4.5'
         
         // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:4.4.3'
-        implementation 'io.github.airwallex:payment-redirect:4.4.3'
-        implementation 'io.github.airwallex:payment-wechat:4.4.3'
-        implementation 'io.github.airwallex:payment-googlepay:4.4.3'
+        implementation 'io.github.airwallex:payment-card:4.4.5'
+        implementation 'io.github.airwallex:payment-redirect:4.4.5'
+        implementation 'io.github.airwallex:payment-wechat:4.4.5'
+        implementation 'io.github.airwallex:payment-googlepay:4.4.5'
     }
 ```
 
@@ -266,6 +269,44 @@ val paymentSession = AirwallexPaymentSession.Builder(
 You can overwrite these color values in your app. https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
 ```
     <color name="airwallex_tint_color">@color/airwallex_color_red</color>
+```
+
+## Low-level API Integration
+You can build your own entirely custom UI on top of our low-level APIs.
+
+### Confirm card payment with card and billing details or payment consent ID
+```kotlin
+val session = buildSessionWithIntent(paymentIntent, customerId)
+val airwallex = Airwallex(this@PaymentCartFragment)
+
+// Confirm intent with card and billing
+airwallex.confirmPaymentIntent(
+    session = session,
+    card = PaymentMethod.Card.Builder()
+        .setNumber("4012000300000021")
+        .setName("John Citizen")
+        .setExpiryMonth("12")
+        .setExpiryYear("2029")
+        .setCvc("737")
+        .build(),
+    billing = null,
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+            // You can handle different payment statuses and perform UI action respectively here
+        }
+    }
+)
+
+// Or to confirm intent with a valid payment consent ID
+airwallex.confirmPaymentIntent(
+    session = session,
+    paymentConsentId = "cst_xxxxxxxxxx",
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+            // You can handle different payment statuses and perform UI action respectively here
+        }
+    }
+)
 ```
 
 ## SDK Example

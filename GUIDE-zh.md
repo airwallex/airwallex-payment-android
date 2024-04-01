@@ -9,7 +9,8 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
 1. [准备集成](#准备集成) SDK之前, 您需要配置SDK，并在服务端创建PaymentIntent
 
 *集成选项*
-1. [Airwallex Native UI integration](#airwallex-native-ui-integration)You can choose to use Airwallex Android SDK with our prebuilt UI page
+1. [UI集成](#UI集成)你可以使用我们SDK提供的已构建好的用户UI, 这是**推荐用法**。
+2. [低层API集成](#低层API集成)你可以构建你自定义的UI，并使用我们的低层API。
 
 我们的Demo开源在 [Github](https://github.com/airwallex/airwallex-payment-android)，可以帮助你更好地了解如何在你的Android项目中集成Airwallex Android SDK。
 
@@ -27,6 +28,8 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
     * [Use the entire Native UI in one flow](#use-the-entire-native-ui-in-one-flow)
     * [Set up Google Pay](#set-up-google-pay)
     * [Custom Theme](#custom-theme)
+* [低层API集成](#低层API集成)
+    * [用卡和账单详情或者consent ID来确认卡支付](#用卡和账单详情或者consent-id来确认卡支付)
 * [SDK Example](#sdk-example)
 * [测试卡号](#测试卡号)
 * [贡献](#贡献)
@@ -65,13 +68,13 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment:4.4.3'
+        implementation 'io.github.airwallex:payment:4.4.5'
         
         // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:4.4.3'
-        implementation 'io.github.airwallex:payment-redirect:4.4.3'
-        implementation 'io.github.airwallex:payment-wechat:4.4.3'
-        implementation 'io.github.airwallex:payment-googlepay:4.4.3'
+        implementation 'io.github.airwallex:payment-card:4.4.5'
+        implementation 'io.github.airwallex:payment-redirect:4.4.5'
+        implementation 'io.github.airwallex:payment-wechat:4.4.5'
+        implementation 'io.github.airwallex:payment-googlepay:4.4.5'
     }
 ```
 
@@ -263,6 +266,44 @@ val paymentSession = AirwallexPaymentSession.Builder(
 您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格。 https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
 ```
     <color name="airwallex_tint_color">@color/airwallex_color_red</color>
+```
+
+## 低层API集成
+你可以基于我们的低层API来构建完全由你自定义的UI。
+
+### 用卡和账单详情或者consent ID来确认卡支付
+```kotlin
+val session = buildSessionWithIntent(paymentIntent, customerId)
+val airwallex = Airwallex(this@PaymentCartFragment)
+
+// Confirm intent with card and billing
+airwallex.confirmPaymentIntent(
+    session = session,
+    card = PaymentMethod.Card.Builder()
+        .setNumber("4012000300000021")
+        .setName("John Citizen")
+        .setExpiryMonth("12")
+        .setExpiryYear("2029")
+        .setCvc("737")
+        .build(),
+    billing = null,
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+            // You can handle different payment statuses and perform UI action respectively here
+        }
+    }
+)
+
+// Or to confirm intent with a valid payment consent ID
+airwallex.confirmPaymentIntent(
+    session = session,
+    paymentConsentId = "cst_xxxxxxxxxx",
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+            // You can handle different payment statuses and perform UI action respectively here
+        }
+    }
+)
 ```
 
 ## SDK Example
