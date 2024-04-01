@@ -9,7 +9,6 @@
     <ID>LongMethod:AirwallexStarter.kt$AirwallexStarter.Companion$fun handlePaymentData( requestCode: Int, resultCode: Int, data: Intent? ): Boolean</ID>
     <ID>LongMethod:PaymentInfoBottomSheetDialog.kt$PaymentInfoBottomSheetDialog$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
     <ID>LongMethod:PaymentMethodsActivity.kt$PaymentMethodsActivity$private fun handleProcessPaymentMethod( paymentConsent: PaymentConsent, paymentMethodType: AvailablePaymentMethodType?, cvc: String? = null )</ID>
-    <ID>LongParameterList:AirwallexCheckoutBaseActivity.kt$AirwallexCheckoutBaseActivity$( paymentMethod: PaymentMethod, paymentConsentId: String? = null, cvc: String? = null, additionalInfo: Map&lt;String, String>? = null, flow: AirwallexPaymentRequestFlow? = null, saveCard: Boolean = false, observer: Observer&lt;AirwallexPaymentStatus> )</ID>
     <ID>MemberNameEqualsClassName:AirwallexTextInputLayoutTest.kt$AirwallexTextInputLayoutTest$@Test fun airwallexTextInputLayoutTest()</ID>
     <ID>NotNullAssertionOperatorRule:BottomSheetDialog.kt$BottomSheetDialog$_baseBinding!!</ID>
     <ID>NotNullAssertionOperatorRule:BottomSheetDialog.kt$BottomSheetDialog$_binding!!</ID>

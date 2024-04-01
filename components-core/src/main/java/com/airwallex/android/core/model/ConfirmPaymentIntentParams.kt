@@ -196,7 +196,7 @@ data class ConfirmPaymentIntentParams internal constructor(
         fun createCardParams(
             paymentIntentId: String,
             clientSecret: String,
-            paymentMethod: PaymentMethod,
+            paymentMethod: PaymentMethod?,
             cvc: String?,
             customerId: String? = null,
             paymentConsentId: String? = null,

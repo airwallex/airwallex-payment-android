@@ -10,6 +10,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.extension.confirmGooglePayIntent
+import com.airwallex.android.core.extension.createCardPaymentMethod
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import java.math.BigDecimal
@@ -98,6 +99,67 @@ class Airwallex internal constructor(
             }
         }
         return false
+    }
+
+    /**
+     * Confirm a payment intent with card and billing details
+     *
+     * @param session a [AirwallexSession] used to start the payment flow
+     * @param card the card information
+     * @param billing the billing information, it's optional
+     * @param saveCard whether card will be saved as a payment consent,
+     * if set as true, [AirwallexSession.customerId] must be provided for the [session]
+     * @param listener The callback of the payment flow
+     */
+    @UiThread
+    fun confirmPaymentIntent(
+        session: AirwallexSession,
+        card: PaymentMethod.Card,
+        billing: Billing?,
+        saveCard: Boolean = false,
+        listener: PaymentResultListener
+    ) {
+        createCardPaymentMethod(
+            session = session,
+            card = card,
+            billing = billing,
+            saveCard = saveCard,
+            listener = object : PaymentListener<PaymentMethod> {
+                override fun onSuccess(response: PaymentMethod) {
+                    checkout(session, response, listener)
+                }
+
+                override fun onFailed(exception: AirwallexException) {
+                    listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
+                }
+            }
+        )
+    }
+
+    /**
+     * Confirm a payment intent with payment consent ID
+     *
+     * @param session a [AirwallexPaymentSession] used to start the payment flow
+     * @param paymentConsentId the ID of the [PaymentConsent]
+     * @param listener The callback of the payment flow
+     */
+    @UiThread
+    fun confirmPaymentIntent(
+        session: AirwallexPaymentSession,
+        paymentConsentId: String,
+        listener: PaymentResultListener
+    ) {
+        val params = ConfirmPaymentIntentParams.createCardParams(
+            paymentIntentId = session.paymentIntent.id,
+            clientSecret = requireNotNull(session.paymentIntent.clientSecret),
+            paymentMethod = null,
+            cvc = null,
+            customerId = session.customerId,
+            paymentConsentId = paymentConsentId,
+            returnUrl = AirwallexPlugins.environment.threeDsReturnUrl(),
+            autoCapture = session.autoCapture
+        )
+        confirmPaymentIntent(params, listener)
     }
 
     /**
