@@ -12,6 +12,7 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
+import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
 
 class CardComponent : ActionComponent {
@@ -21,6 +22,7 @@ class CardComponent : ActionComponent {
     }
 
     private var dccCallback: DccCallback? = null
+    private var listener: Airwallex.PaymentResultListener? = null
 
     override fun handlePaymentIntentResponse(
         paymentIntentId: String,
@@ -30,6 +32,7 @@ class CardComponent : ActionComponent {
         cardNextActionModel: CardNextActionModel?,
         listener: Airwallex.PaymentResultListener
     ) {
+        this.listener = listener
         if (cardNextActionModel == null) {
             listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Card payment info not found")))
             return
@@ -122,6 +125,15 @@ class CardComponent : ActionComponent {
                 } catch (e: Exception) {
                     it.onFailed(DccException(message = e.localizedMessage ?: "Dcc failed."))
                 }
+            }
+            return true
+        } else if (requestCode == ThreeDSecurityActivityLaunch.REQUEST_CODE) {
+            val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
+            result?.paymentIntentId?.let {
+                listener?.onCompleted(AirwallexPaymentStatus.Success(it))
+            }
+            result?.exception?.let {
+                listener?.onCompleted(AirwallexPaymentStatus.Failure(it))
             }
             return true
         }

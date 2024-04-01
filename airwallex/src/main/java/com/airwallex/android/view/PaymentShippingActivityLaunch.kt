@@ -2,6 +2,7 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.model.ObjectBuilder
@@ -46,7 +47,11 @@ class PaymentShippingActivityLaunch :
 
         internal companion object {
             internal fun getExtra(intent: Intent): Args {
-                return requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA))
+                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA, Args::class.java))
+                } else {
+                    requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA))
+                }
             }
         }
     }

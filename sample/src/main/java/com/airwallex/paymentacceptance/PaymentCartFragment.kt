@@ -349,30 +349,65 @@ class PaymentCartFragment : Fragment() {
 
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
-
-            viewModel.presentPaymentFlow(
-                this@PaymentCartFragment,
-                buildSession(paymentIntent = paymentIntent)
-            ).observe(viewLifecycleOwner) {
-                when (it) {
-                    is AirwallexPaymentStatus.Success -> {
-                        Log.d(TAG, "Payment success ${it.paymentIntentId}")
-                        showPaymentSuccess()
-                    }
-                    is AirwallexPaymentStatus.InProgress -> {
-                        // redirecting
-                        Log.d(TAG, "Payment is redirecting ${it.paymentIntentId}")
-                        showPaymentInProgress()
-                    }
-                    is AirwallexPaymentStatus.Failure -> {
-                        showPaymentError(it.exception.message)
-                    }
-                    is AirwallexPaymentStatus.Cancel -> {
-                        Log.d(TAG, "User cancel the payment")
-                        showPaymentCancelled()
+            val session = buildSession(paymentIntent)
+            val airwallex = Airwallex(this@PaymentCartFragment)
+            airwallex.confirmPaymentIntent(
+                session = session,
+                card = PaymentMethod.Card.Builder()
+                    .setNumber("4751293321421590")
+                    .setName("John Citizen")
+                    .setExpiryMonth("12")
+                    .setExpiryYear("2029")
+                    .setCvc("737")
+                    .build(),
+                billing = null,
+                listener = object : Airwallex.PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        when (status) {
+                            is AirwallexPaymentStatus.Success -> {
+                                Log.d(TAG, "Payment success ${status.paymentIntentId}")
+                                showPaymentSuccess()
+                            }
+                            is AirwallexPaymentStatus.InProgress -> {
+                                // redirecting
+                                Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
+                                showPaymentInProgress()
+                            }
+                            is AirwallexPaymentStatus.Failure -> {
+                                showPaymentError(status.exception.message)
+                            }
+                            is AirwallexPaymentStatus.Cancel -> {
+                                Log.d(TAG, "User cancel the payment")
+                                showPaymentCancelled()
+                            }
+                        }
                     }
                 }
-            }
+            )
+
+//            viewModel.presentPaymentFlow(
+//                this@PaymentCartFragment,
+//                buildSession(paymentIntent = paymentIntent)
+//            ).observe(viewLifecycleOwner) {
+//                when (it) {
+//                    is AirwallexPaymentStatus.Success -> {
+//                        Log.d(TAG, "Payment success ${it.paymentIntentId}")
+//                        showPaymentSuccess()
+//                    }
+//                    is AirwallexPaymentStatus.InProgress -> {
+//                        // redirecting
+//                        Log.d(TAG, "Payment is redirecting ${it.paymentIntentId}")
+//                        showPaymentInProgress()
+//                    }
+//                    is AirwallexPaymentStatus.Failure -> {
+//                        showPaymentError(it.exception.message)
+//                    }
+//                    is AirwallexPaymentStatus.Cancel -> {
+//                        Log.d(TAG, "User cancel the payment")
+//                        showPaymentCancelled()
+//                    }
+//                }
+//            }
         }
     }
 
