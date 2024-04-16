@@ -26,6 +26,7 @@ class PaymentShippingActivity : AirwallexActivity() {
 
     override fun onBackButtonPressed() {
         setResult(RESULT_CANCELED)
+        finish()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

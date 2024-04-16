@@ -1,7 +1,6 @@
 package com.airwallex.android.threedsecurity
 
 import android.app.Activity
-import android.content.Intent
 import android.view.View
 import android.view.ViewGroup
 import com.airwallex.android.core.*
@@ -20,6 +19,7 @@ import java.net.URLEncoder
 import java.util.*
 
 object ThreeDSecurityManager {
+    @Suppress("LongParameterList")
     fun handleThreeDSFlow(
         paymentIntentId: String,
         activity: Activity,
@@ -83,6 +83,7 @@ object ThreeDSecurityManager {
 
                 webViewClient =
                     ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
+                        @Suppress("LongMethod")
                         override fun onWebViewConfirmation(payload: String) {
                             val options = build3DSContinuePaymentIntentOptions(
                                 device = cardNextActionModel.device,

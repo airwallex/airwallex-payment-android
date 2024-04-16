@@ -97,6 +97,7 @@ class GooglePayComponent : ActionComponent {
         }
     }
 
+    @Suppress("ComplexMethod")
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (requestCode == loadPaymentDataRequestCode) {
             AnalyticsLogger.logPageView("google_pay_sheet", mapOf("code" to resultCode))

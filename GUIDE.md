@@ -130,6 +130,9 @@ At first, add below code in your host Activity or Fragment, implement Activity#o
         
         // You must call this method on `onActivityResult`
         AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
+    
+        // Note: If you are integrating by low-level API, you should call the following instead of the above method
+        // airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
 

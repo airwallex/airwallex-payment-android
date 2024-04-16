@@ -129,6 +129,9 @@ Airwallex Android SDK 支持Android API 19及以上版本。
         
         // You must call this method on `onActivityResult`
         AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
+
+        // Note: If you are integrating by low-level API, you should call the following instead of the above method
+        // airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
 

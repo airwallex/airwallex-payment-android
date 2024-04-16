@@ -42,11 +42,14 @@ abstract class AirwallexActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
-        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                onBackButtonPressed()
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackButtonPressed()
+                }
             }
-        })
+        )
 
         setSupportActionBar(toolbar)
         supportActionBar?.setHomeAsUpIndicator(homeAsUpIndicatorResId())

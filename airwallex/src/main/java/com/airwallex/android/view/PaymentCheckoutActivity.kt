@@ -51,6 +51,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override fun onBackButtonPressed() {
         setResult(RESULT_CANCELED)
+        finish()
     }
 
     override fun homeAsUpIndicatorResId(): Int {

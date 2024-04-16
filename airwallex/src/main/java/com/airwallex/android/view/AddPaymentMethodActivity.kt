@@ -96,6 +96,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                 ).toBundle()
             )
         )
+        finish()
     }
 
     private fun onSaveCard() {

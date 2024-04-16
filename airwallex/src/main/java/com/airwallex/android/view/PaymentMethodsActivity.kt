@@ -72,6 +72,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
     override fun onBackButtonPressed() {
         setResult(RESULT_CANCELED)
+        finish()
     }
 
     private fun initView(

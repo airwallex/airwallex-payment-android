@@ -354,30 +354,31 @@ class PaymentCartFragment : Fragment() {
 
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
-            val session = buildSession(paymentIntent)
-            airwallex.confirmPaymentIntent(
-                session = session,
-                card = PaymentMethod.Card.Builder()
-                    .setNumber("4751293321421590")
-                    .setName("John Citizen")
-                    .setExpiryMonth("12")
-                    .setExpiryYear("2029")
-                    .setCvc("737")
-                    .build(),
-                billing = null,
-                listener = object : Airwallex.PaymentResultListener {
-                    override fun onCompleted(status: AirwallexPaymentStatus) {
-                        handleStatusUpdate(status)
-                    }
-                }
-            )
 
-//            viewModel.presentPaymentFlow(
-//                this@PaymentCartFragment,
-//                buildSession(paymentIntent = paymentIntent)
-//            ).observe(viewLifecycleOwner) {
-//                handleStatusUpdate(it)
-//            }
+            // Low-level API integration example - confirm intent with card and billing
+//            airwallex.confirmPaymentIntent(
+//                session = buildSession(paymentIntent),
+//                card = PaymentMethod.Card.Builder()
+//                    .setNumber("4751293321421590")
+//                    .setName("John Citizen")
+//                    .setExpiryMonth("12")
+//                    .setExpiryYear("2029")
+//                    .setCvc("737")
+//                    .build(),
+//                billing = null,
+//                listener = object : Airwallex.PaymentResultListener {
+//                    override fun onCompleted(status: AirwallexPaymentStatus) {
+//                        handleStatusUpdate(status)
+//                    }
+//                }
+//            )
+
+            viewModel.presentPaymentFlow(
+                this@PaymentCartFragment,
+                buildSession(paymentIntent = paymentIntent)
+            ).observe(viewLifecycleOwner) {
+                handleStatusUpdate(it)
+            }
         }
     }
 
@@ -543,8 +544,10 @@ class PaymentCartFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // We need to handle activity result
-        //AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
-        airwallex.handlePaymentData(requestCode, resultCode, data)
+        AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
+
+        // If integrate by low-level API
+//        airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
