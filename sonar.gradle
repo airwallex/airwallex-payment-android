@@ -94,7 +94,8 @@ sonarqube {
                 '**/*EditText.kt',
                 '**/view/CardWidget.kt',
                 '**/paymentacceptance/**',
-                'security-3ds/**'
+                'security-3ds/**',
+                '**/ui/extension/Intent+Extensions.kt'
         ].join(",")
         property 'detekt.sonar.kotlin.config.path', "$rootDir/config/detekt.yml"
         property 'sonar.qualitygate.wait', true

@@ -2,7 +2,6 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
@@ -10,6 +9,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.ui.AirwallexActivityLaunch
+import com.airwallex.android.ui.extension.getExtraResult
 import com.airwallex.android.view.PaymentMethodsActivityLaunch.Args
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
@@ -44,16 +44,6 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
                 return Args(
                     session = session
                 )
-            }
-        }
-
-        internal companion object {
-            internal fun getExtra(intent: Intent): Args {
-                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA, Args::class.java))
-                } else {
-                    requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA))
-                }
             }
         }
     }
@@ -98,7 +88,7 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
             }
 
             fun fromIntent(intent: Intent?): Result? {
-                return intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
+                return intent?.getExtraResult()
             }
         }
     }

@@ -17,6 +17,7 @@ import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.databinding.ActivityAddCardBinding
+import com.airwallex.android.ui.extension.getExtraArgs
 import kotlinx.coroutines.launch
 
 /**
@@ -31,7 +32,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
     }
 
     private val args: AddPaymentMethodActivityLaunch.Args by lazy {
-        AddPaymentMethodActivityLaunch.Args.getExtra(intent)
+        intent.getExtraArgs()
     }
 
     override val pageName: String

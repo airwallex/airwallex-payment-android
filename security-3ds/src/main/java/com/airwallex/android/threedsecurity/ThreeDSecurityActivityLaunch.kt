@@ -2,7 +2,6 @@ package com.airwallex.android.threedsecurity
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
@@ -10,6 +9,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Options
 import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch.Args
 import com.airwallex.android.ui.AirwallexActivityLaunch
+import com.airwallex.android.ui.extension.getExtraResult
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
@@ -32,17 +32,7 @@ class ThreeDSecurityActivityLaunch : AirwallexActivityLaunch<ThreeDSecurityActiv
         val url: String,
         val body: String,
         val options: Options.ContinuePaymentIntentOptions
-    ) : AirwallexActivityLaunch.Args {
-        internal companion object {
-            internal fun getExtra(intent: Intent): Args {
-                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA, Args::class.java))
-                } else {
-                    requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA))
-                }
-            }
-        }
-    }
+    ) : AirwallexActivityLaunch.Args
 
     @Parcelize
     data class Result internal constructor(
@@ -69,11 +59,7 @@ class ThreeDSecurityActivityLaunch : AirwallexActivityLaunch<ThreeDSecurityActiv
             }
 
             fun fromIntent(intent: Intent?): Result? {
-                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA, Result::class.java)
-                } else {
-                    intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
-                }
+                return intent?.getExtraResult()
             }
         }
     }

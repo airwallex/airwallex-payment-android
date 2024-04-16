@@ -15,6 +15,7 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.threedsecurity.databinding.ActivityThreeDSecurityBinding
 import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
 import com.airwallex.android.ui.AirwallexActivity
+import com.airwallex.android.ui.extension.getExtraArgs
 
 class ThreeDSecurityActivity : AirwallexActivity() {
 
@@ -25,7 +26,7 @@ class ThreeDSecurityActivity : AirwallexActivity() {
     }
 
     private val args: ThreeDSecurityActivityLaunch.Args by lazy {
-        ThreeDSecurityActivityLaunch.Args.getExtra(intent)
+        intent.getExtraArgs()
     }
 
     private val paymentManager: PaymentManager by lazy {
@@ -81,11 +82,6 @@ class ThreeDSecurityActivity : AirwallexActivity() {
             })
         }
         webView.postUrl(args.url, args.body.toByteArray())
-    }
-
-    override fun onBackPressed() {
-        finishWithData(exception = AirwallexCheckoutException(message = "3DS has been cancelled!"))
-        super.onBackPressed()
     }
 
     private fun finishWithData(

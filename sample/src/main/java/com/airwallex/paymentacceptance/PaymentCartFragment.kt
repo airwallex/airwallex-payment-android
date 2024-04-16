@@ -354,8 +354,14 @@ class PaymentCartFragment : Fragment() {
 
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
+            viewModel.presentPaymentFlow(
+                this@PaymentCartFragment,
+                buildSession(paymentIntent = paymentIntent)
+            ).observe(viewLifecycleOwner) {
+                handleStatusUpdate(it)
+            }
 
-            // Low-level API integration example - confirm intent with card and billing
+            // Example of using low-level API to confirm payment intent
 //            airwallex.confirmPaymentIntent(
 //                session = buildSession(paymentIntent),
 //                card = PaymentMethod.Card.Builder()
@@ -366,19 +372,13 @@ class PaymentCartFragment : Fragment() {
 //                    .setCvc("737")
 //                    .build(),
 //                billing = null,
+//                saveCard = true,
 //                listener = object : Airwallex.PaymentResultListener {
 //                    override fun onCompleted(status: AirwallexPaymentStatus) {
 //                        handleStatusUpdate(status)
 //                    }
 //                }
 //            )
-
-            viewModel.presentPaymentFlow(
-                this@PaymentCartFragment,
-                buildSession(paymentIntent = paymentIntent)
-            ).observe(viewLifecycleOwner) {
-                handleStatusUpdate(it)
-            }
         }
     }
 

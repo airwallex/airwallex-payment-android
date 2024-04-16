@@ -2,7 +2,6 @@ package com.airwallex.android.card.view
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
@@ -10,6 +9,7 @@ import com.airwallex.android.card.view.DccActivityLaunch.Args
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.ui.AirwallexActivityLaunch
+import com.airwallex.android.ui.extension.getExtraResult
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
@@ -35,18 +35,7 @@ internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
         val currency: String,
         val amount: BigDecimal,
         val clientSecret: String,
-    ) : AirwallexActivityLaunch.Args {
-
-        internal companion object {
-            internal fun getExtra(intent: Intent): Args {
-                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA, Args::class.java))
-                } else {
-                    requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA))
-                }
-            }
-        }
-    }
+    ) : AirwallexActivityLaunch.Args
 
     @Parcelize
     internal data class Result internal constructor(
@@ -73,7 +62,7 @@ internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
             }
 
             fun fromIntent(intent: Intent?): Result? {
-                return intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
+                return intent?.getExtraResult()
             }
         }
     }
