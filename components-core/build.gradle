@@ -9,6 +9,10 @@ apply from: "$rootProject.projectDir/android-module.gradle"
 def API_VERSION = '"2021-11-25"'
 
 android {
+
+    buildFeatures {
+        buildConfig true
+    }
     namespace 'com.airwallex.android.core'
     defaultConfig {
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.ext.versionName}\""

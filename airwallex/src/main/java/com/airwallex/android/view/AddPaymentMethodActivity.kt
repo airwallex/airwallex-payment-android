@@ -87,7 +87,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     private var currentBrand: CardBrand? = null
 
-    override fun onBackPressed() {
+    override fun onBackButtonPressed() {
         setResult(
             Activity.RESULT_CANCELED,
             Intent().putExtras(
@@ -96,7 +96,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                 ).toBundle()
             )
         )
-        super.onBackPressed()
     }
 
     private fun onSaveCard() {

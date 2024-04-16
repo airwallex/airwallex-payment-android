@@ -49,6 +49,10 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         args.session
     }
 
+    override fun onBackButtonPressed() {
+        setResult(RESULT_CANCELED)
+    }
+
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_back
     }
@@ -80,11 +84,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             startConfirmPaymentIntent()
         }
         updateButtonStatus()
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        setResult(RESULT_CANCELED)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

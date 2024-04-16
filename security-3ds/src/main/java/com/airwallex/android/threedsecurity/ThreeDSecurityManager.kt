@@ -53,106 +53,122 @@ object ThreeDSecurityManager {
                     putIfNotNull("stage", nextAction.stage?.value)
                 }
             )
-            ThreeDSecurityActivityLaunch(activity)
-                .startForResult(
-                    ThreeDSecurityActivityLaunch.Args(
-                        url = url,
-                        body = postResult.toString(),
-                        options = build3DSContinuePaymentIntentOptions(
-                            device = cardNextActionModel.device,
-                            paymentIntentId = paymentIntentId,
-                            clientSecret = cardNextActionModel.clientSecret,
-                            threeDSecure = ThreeDSecure.Builder()
-                                .setAcsResponse(payload)
-                                .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl())
-                                .build()
-                        )
+
+            val fragment = cardNextActionModel.fragment
+            val threeDSecurityActivityLaunch = if (fragment != null) {
+                ThreeDSecurityActivityLaunch(fragment)
+            } else {
+                ThreeDSecurityActivityLaunch(activity)
+            }
+
+            threeDSecurityActivityLaunch.startForResult(
+                ThreeDSecurityActivityLaunch.Args(
+                    url = url,
+                    body = postResult.toString(),
+                    options = build3DSContinuePaymentIntentOptions(
+                        device = cardNextActionModel.device,
+                        paymentIntentId = paymentIntentId,
+                        clientSecret = cardNextActionModel.clientSecret,
+                        threeDSecure = ThreeDSecure.Builder()
+                            .setAcsResponse(payload)
+                            .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl())
+                            .build()
                     )
                 )
+            )
         } else {
             val container = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
             val webView = AirwallexWebView(activity).apply {
                 visibility = View.INVISIBLE
 
-                webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
-                    override fun onWebViewConfirmation(payload: String) {
-                        val options = build3DSContinuePaymentIntentOptions(
-                            device = cardNextActionModel.device,
-                            paymentIntentId = paymentIntentId,
-                            clientSecret = cardNextActionModel.clientSecret,
-                            threeDSecure = ThreeDSecure.Builder()
-                                .setAcsResponse(payload)
-                                .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl())
-                                .build()
-                        )
-
-                        ConsoleLogger.debug("onWebViewConfirmation $payload")
-                        if (nextAction.stage == NextAction.NextActionStage.WAITING_USER_INFO_INPUT) {
-                            AnalyticsLogger.logPageView(
-                                "webview_redirect",
-                                mutableMapOf<String, Any>().apply {
-                                    putIfNotNull("stage", nextAction.stage?.value)
-                                }
+                webViewClient =
+                    ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
+                        override fun onWebViewConfirmation(payload: String) {
+                            val options = build3DSContinuePaymentIntentOptions(
+                                device = cardNextActionModel.device,
+                                paymentIntentId = paymentIntentId,
+                                clientSecret = cardNextActionModel.clientSecret,
+                                threeDSecure = ThreeDSecure.Builder()
+                                    .setAcsResponse(payload)
+                                    .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl())
+                                    .build()
                             )
-                            ThreeDSecurityActivityLaunch(activity)
-                                .startForResult(
-                                    ThreeDSecurityActivityLaunch.Args(
-                                        url = url,
-                                        body = postResult.toString(),
-                                        options = options
-                                    )
+
+                            ConsoleLogger.debug("onWebViewConfirmation $payload")
+                            if (nextAction.stage == NextAction.NextActionStage.WAITING_USER_INFO_INPUT) {
+                                AnalyticsLogger.logPageView(
+                                    "webview_redirect",
+                                    mutableMapOf<String, Any>().apply {
+                                        putIfNotNull("stage", nextAction.stage?.value)
+                                    }
                                 )
-                        } else {
-                            (activity as? AirwallexActivity)?.setLoadingProgress(
-                                loading = true,
-                                cancelable = false
-                            )
-                            cardNextActionModel.paymentManager.startOperation(
-                                options,
-                                object : Airwallex.PaymentListener<PaymentIntent> {
-                                    override fun onSuccess(response: PaymentIntent) {
-                                        ConsoleLogger.debug("onSuccess $response")
-                                        destroyWebView()
-                                        val continueNextAction = response.nextAction
-                                        if (continueNextAction == null) {
-                                            ConsoleLogger.debug("3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
-                                            listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
-                                            return
-                                        }
-                                        handleThreeDSFlow(
-                                            paymentIntentId,
-                                            activity,
-                                            continueNextAction,
-                                            cardNextActionModel,
-                                            listener,
-                                            payload
+                                ThreeDSecurityActivityLaunch(activity)
+                                    .startForResult(
+                                        ThreeDSecurityActivityLaunch.Args(
+                                            url = url,
+                                            body = postResult.toString(),
+                                            options = options
                                         )
-                                    }
+                                    )
+                            } else {
+                                (activity as? AirwallexActivity)?.setLoadingProgress(
+                                    loading = true,
+                                    cancelable = false
+                                )
+                                cardNextActionModel.paymentManager.startOperation(
+                                    options,
+                                    object : Airwallex.PaymentListener<PaymentIntent> {
+                                        override fun onSuccess(response: PaymentIntent) {
+                                            ConsoleLogger.debug("onSuccess $response")
+                                            destroyWebView()
+                                            val continueNextAction = response.nextAction
+                                            if (continueNextAction == null) {
+                                                ConsoleLogger.debug("3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
+                                                listener.onCompleted(
+                                                    AirwallexPaymentStatus.Success(
+                                                        response.id
+                                                    )
+                                                )
+                                                return
+                                            }
+                                            handleThreeDSFlow(
+                                                paymentIntentId,
+                                                activity,
+                                                continueNextAction,
+                                                cardNextActionModel,
+                                                listener,
+                                                payload
+                                            )
+                                        }
 
-                                    override fun onFailed(exception: AirwallexException) {
-                                        destroyWebView()
-                                        listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
+                                        override fun onFailed(exception: AirwallexException) {
+                                            destroyWebView()
+                                            listener.onCompleted(
+                                                AirwallexPaymentStatus.Failure(
+                                                    exception
+                                                )
+                                            )
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
-                    }
 
-                    override fun onWebViewError(error: WebViewConnectionException) {
-                        AnalyticsLogger.logError("webview_redirect", exception = error)
-                        ConsoleLogger.error("onWebViewError", error)
-                        destroyWebView()
-                        listener.onCompleted(AirwallexPaymentStatus.Failure(error))
-                    }
+                        override fun onWebViewError(error: WebViewConnectionException) {
+                            AnalyticsLogger.logError("webview_redirect", exception = error)
+                            ConsoleLogger.error("onWebViewError", error)
+                            destroyWebView()
+                            listener.onCompleted(AirwallexPaymentStatus.Failure(error))
+                        }
 
-                    override fun onPageFinished(url: String?) {
-                        ConsoleLogger.debug("onPageFinished $url")
-                    }
+                        override fun onPageFinished(url: String?) {
+                            ConsoleLogger.debug("onPageFinished $url")
+                        }
 
-                    override fun onPageStarted(url: String?) {
-                        ConsoleLogger.debug("onPageStarted $url")
-                    }
-                })
+                        override fun onPageStarted(url: String?) {
+                            ConsoleLogger.debug("onPageStarted $url")
+                        }
+                    })
 
                 postUrl(url, postResult.toString().toByteArray())
             }

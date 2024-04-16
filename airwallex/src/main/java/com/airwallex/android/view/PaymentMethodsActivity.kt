@@ -70,8 +70,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         fetchPaymentMethodsAndConsents()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun onBackButtonPressed() {
         setResult(RESULT_CANCELED)
     }
 

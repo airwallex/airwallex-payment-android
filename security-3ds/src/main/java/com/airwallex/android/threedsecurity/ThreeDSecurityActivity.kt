@@ -1,8 +1,11 @@
 package com.airwallex.android.threedsecurity
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexApiRepository
 import com.airwallex.android.core.AirwallexPaymentManager
@@ -30,6 +33,10 @@ class ThreeDSecurityActivity : AirwallexActivity() {
 
     private val paymentManager: PaymentManager by lazy {
         AirwallexPaymentManager(AirwallexApiRepository())
+    }
+
+    override fun onBackButtonPressed() {
+        finishWithData(exception = AirwallexCheckoutException(message = "3DS has been cancelled!"))
     }
 
     override fun homeAsUpIndicatorResId(): Int {

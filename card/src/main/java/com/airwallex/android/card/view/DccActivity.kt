@@ -39,8 +39,7 @@ class DccActivity : AirwallexActivity() {
         )[DccViewModel::class.java]
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun onBackButtonPressed() {
         setResult(RESULT_CANCELED)
     }
 

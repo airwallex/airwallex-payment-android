@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.ViewStub
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -35,9 +36,17 @@ abstract class AirwallexActivity : AppCompatActivity() {
 
     private var loadingDialog: Dialog? = null
 
+    abstract fun onBackButtonPressed()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+
+        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                onBackButtonPressed()
+            }
+        })
 
         setSupportActionBar(toolbar)
         supportActionBar?.setHomeAsUpIndicator(homeAsUpIndicatorResId())
@@ -62,7 +71,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
         ConsoleLogger.debug("$localClassName#onCreateOptionsMenu()")
         val handled = super.onOptionsItemSelected(item)
         if (!handled) {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
         return handled
     }

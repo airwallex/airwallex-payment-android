@@ -148,6 +148,11 @@ class PaymentCartFragment : Fragment() {
             }
         }
 
+    // Airwallex instance used for low-level API integration
+    private val airwallex: Airwallex by lazy {
+        Airwallex(this)
+    }
+
     private fun buildSession(
         paymentIntent: PaymentIntent? = null,
         customerId: String? = null
@@ -208,7 +213,7 @@ class PaymentCartFragment : Fragment() {
         }
     }
 
-    private class CartItem constructor(
+    private class CartItem(
         order: PhysicalProduct,
         context: Context?,
         attrs: AttributeSet? = null,
@@ -350,7 +355,6 @@ class PaymentCartFragment : Fragment() {
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
             val session = buildSession(paymentIntent)
-            val airwallex = Airwallex(this@PaymentCartFragment)
             airwallex.confirmPaymentIntent(
                 session = session,
                 card = PaymentMethod.Card.Builder()
@@ -363,24 +367,7 @@ class PaymentCartFragment : Fragment() {
                 billing = null,
                 listener = object : Airwallex.PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
-                        when (status) {
-                            is AirwallexPaymentStatus.Success -> {
-                                Log.d(TAG, "Payment success ${status.paymentIntentId}")
-                                showPaymentSuccess()
-                            }
-                            is AirwallexPaymentStatus.InProgress -> {
-                                // redirecting
-                                Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
-                                showPaymentInProgress()
-                            }
-                            is AirwallexPaymentStatus.Failure -> {
-                                showPaymentError(status.exception.message)
-                            }
-                            is AirwallexPaymentStatus.Cancel -> {
-                                Log.d(TAG, "User cancel the payment")
-                                showPaymentCancelled()
-                            }
-                        }
+                        handleStatusUpdate(status)
                     }
                 }
             )
@@ -389,24 +376,7 @@ class PaymentCartFragment : Fragment() {
 //                this@PaymentCartFragment,
 //                buildSession(paymentIntent = paymentIntent)
 //            ).observe(viewLifecycleOwner) {
-//                when (it) {
-//                    is AirwallexPaymentStatus.Success -> {
-//                        Log.d(TAG, "Payment success ${it.paymentIntentId}")
-//                        showPaymentSuccess()
-//                    }
-//                    is AirwallexPaymentStatus.InProgress -> {
-//                        // redirecting
-//                        Log.d(TAG, "Payment is redirecting ${it.paymentIntentId}")
-//                        showPaymentInProgress()
-//                    }
-//                    is AirwallexPaymentStatus.Failure -> {
-//                        showPaymentError(it.exception.message)
-//                    }
-//                    is AirwallexPaymentStatus.Cancel -> {
-//                        Log.d(TAG, "User cancel the payment")
-//                        showPaymentCancelled()
-//                    }
-//                }
+//                handleStatusUpdate(it)
 //            }
         }
     }
@@ -573,7 +543,8 @@ class PaymentCartFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // We need to handle activity result
-        AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
+        //AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
+        airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
