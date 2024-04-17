@@ -11,6 +11,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.ui.AirwallexActivityLaunch
+import com.airwallex.android.ui.extension.getExtraResult
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
@@ -61,12 +62,6 @@ internal class AddPaymentMethodActivityLaunch :
                 )
             }
         }
-
-        internal companion object {
-            internal fun getExtra(intent: Intent): Args {
-                return requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA))
-            }
-        }
     }
 
     @Parcelize
@@ -95,7 +90,7 @@ internal class AddPaymentMethodActivityLaunch :
             }
 
             fun fromIntent(intent: Intent?): Result? {
-                return intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
+                return intent?.getExtraResult()
             }
         }
     }
@@ -113,7 +108,7 @@ internal class AddPaymentMethodActivityLaunch :
         internal companion object {
 
             fun fromIntent(intent: Intent?): CancellationResult? {
-                return intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
+                return intent?.getExtraResult()
             }
         }
     }

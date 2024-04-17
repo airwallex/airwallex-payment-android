@@ -15,6 +15,7 @@ import com.airwallex.android.core.log.ConsoleLogger
 import com.airwallex.android.core.model.ContinuePaymentIntentParams
 import com.airwallex.android.core.model.PaymentIntentContinueType
 import com.airwallex.android.ui.AirwallexActivity
+import com.airwallex.android.ui.extension.getExtraArgs
 
 /**
  * Allow the customer to select your currency.
@@ -28,7 +29,7 @@ class DccActivity : AirwallexActivity() {
     }
 
     private val airwallex: Airwallex by lazy { Airwallex(this) }
-    private val args: DccActivityLaunch.Args by lazy { DccActivityLaunch.Args.getExtra(intent) }
+    private val args: DccActivityLaunch.Args by lazy { intent.getExtraArgs() }
     private val viewModel: DccViewModel by lazy {
         ViewModelProvider(
             this,
@@ -39,9 +40,9 @@ class DccActivity : AirwallexActivity() {
         )[DccViewModel::class.java]
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun onBackButtonPressed() {
         setResult(RESULT_CANCELED)
+        finish()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

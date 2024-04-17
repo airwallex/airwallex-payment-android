@@ -148,6 +148,11 @@ class PaymentCartFragment : Fragment() {
             }
         }
 
+    // Airwallex instance used for low-level API integration
+    private val airwallex: Airwallex by lazy {
+        Airwallex(this)
+    }
+
     private fun buildSession(
         paymentIntent: PaymentIntent? = null,
         customerId: String? = null
@@ -208,7 +213,7 @@ class PaymentCartFragment : Fragment() {
         }
     }
 
-    private class CartItem constructor(
+    private class CartItem(
         order: PhysicalProduct,
         context: Context?,
         attrs: AttributeSet? = null,
@@ -357,12 +362,10 @@ class PaymentCartFragment : Fragment() {
             }
 
             // Example of using low-level API to confirm payment intent
-//            val session = buildSession(paymentIntent)
-//            val airwallex = Airwallex(this@PaymentCartFragment)
 //            airwallex.confirmPaymentIntent(
-//                session = session,
+//                session = buildSession(paymentIntent),
 //                card = PaymentMethod.Card.Builder()
-//                    .setNumber("5425233430109903")
+//                    .setNumber("4751293321421590")
 //                    .setName("John Citizen")
 //                    .setExpiryMonth("12")
 //                    .setExpiryYear("2029")
@@ -542,6 +545,9 @@ class PaymentCartFragment : Fragment() {
 
         // We need to handle activity result
         AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
+
+        // If integrate by low-level API
+//        airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {

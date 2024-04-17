@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.ui.AirwallexActivityLaunch
+import com.airwallex.android.ui.extension.getExtraResult
 import com.airwallex.android.view.PaymentShippingActivityLaunch.Args
 import kotlinx.parcelize.Parcelize
 
@@ -43,12 +44,6 @@ class PaymentShippingActivityLaunch :
                 )
             }
         }
-
-        internal companion object {
-            internal fun getExtra(intent: Intent): Args {
-                return requireNotNull(intent.getParcelableExtra(AirwallexActivityLaunch.Args.AIRWALLEX_EXTRA))
-            }
-        }
     }
 
     @Parcelize
@@ -63,7 +58,7 @@ class PaymentShippingActivityLaunch :
 
         companion object {
             fun fromIntent(intent: Intent?): Result? {
-                return intent?.getParcelableExtra(AirwallexActivityLaunch.Result.AIRWALLEX_EXTRA)
+                return intent?.getExtraResult()
             }
         }
     }

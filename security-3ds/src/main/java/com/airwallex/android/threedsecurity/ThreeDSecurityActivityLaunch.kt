@@ -1,44 +1,41 @@
-package com.airwallex.android.card.view
+package com.airwallex.android.threedsecurity
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
-import com.airwallex.android.card.view.DccActivityLaunch.Args
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.model.NextAction
+import com.airwallex.android.core.model.Options
+import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch.Args
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.ui.extension.getExtraResult
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
-import java.math.BigDecimal
 
-internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
+class ThreeDSecurityActivityLaunch : AirwallexActivityLaunch<ThreeDSecurityActivity, Args> {
 
     constructor(activity: Activity) : super(
         activity,
-        DccActivity::class.java,
+        ThreeDSecurityActivity::class.java,
         REQUEST_CODE
     )
 
     constructor(fragment: Fragment) : super(
         fragment,
-        DccActivity::class.java,
+        ThreeDSecurityActivity::class.java,
         REQUEST_CODE
     )
 
     @Parcelize
-    internal data class Args internal constructor(
-        val dcc: NextAction.DccData,
-        val paymentIntentId: String,
-        val currency: String,
-        val amount: BigDecimal,
-        val clientSecret: String,
+    data class Args internal constructor(
+        val url: String,
+        val body: String,
+        val options: Options.ContinuePaymentIntentOptions
     ) : AirwallexActivityLaunch.Args
 
     @Parcelize
-    internal data class Result internal constructor(
+    data class Result internal constructor(
         val paymentIntentId: String? = null,
         val exception: AirwallexException? = null
     ) : AirwallexActivityLaunch.Result {
@@ -48,11 +45,11 @@ internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
             }
         }
 
-        internal companion object : Parceler<Result> {
+        companion object : Parceler<Result> {
             override fun create(parcel: Parcel): Result {
                 return Result(
                     paymentIntentId = parcel.readString(),
-                    exception = parcel.readSerializable() as? AirwallexException?
+                    exception = parcel.readSerializable() as? AirwallexException
                 )
             }
 
@@ -68,6 +65,6 @@ internal class DccActivityLaunch : AirwallexActivityLaunch<DccActivity, Args> {
     }
 
     companion object {
-        const val REQUEST_CODE: Int = 1005
+        const val REQUEST_CODE: Int = 1006
     }
 }

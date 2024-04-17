@@ -19,6 +19,7 @@ import com.airwallex.android.core.log.ConsoleLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
+import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.AutoResolveHelper
@@ -96,6 +97,7 @@ class GooglePayComponent : ActionComponent {
         }
     }
 
+    @Suppress("ComplexMethod")
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (requestCode == loadPaymentDataRequestCode) {
             AnalyticsLogger.logPageView("google_pay_sheet", mapOf("code" to resultCode))
@@ -148,6 +150,15 @@ class GooglePayComponent : ActionComponent {
                     }
                     listener?.onCompleted(AirwallexPaymentStatus.Cancel)
                 }
+            }
+            return true
+        } else if (requestCode == ThreeDSecurityActivityLaunch.REQUEST_CODE) {
+            val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
+            result?.paymentIntentId?.let {
+                listener?.onCompleted(AirwallexPaymentStatus.Success(it))
+            }
+            result?.exception?.let {
+                listener?.onCompleted(AirwallexPaymentStatus.Failure(it))
             }
             return true
         }

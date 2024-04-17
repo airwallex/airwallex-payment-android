@@ -21,6 +21,7 @@ import com.airwallex.android.core.log.ConsoleLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
+import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.util.findWithType
 import kotlinx.coroutines.launch
@@ -36,7 +37,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     private lateinit var paymentMethodsAdapter: PaymentMethodsAdapter
 
     private val args: PaymentMethodsActivityLaunch.Args by lazy {
-        PaymentMethodsActivityLaunch.Args.getExtra(intent)
+        intent.getExtraArgs()
     }
 
     override val session: AirwallexSession by lazy {
@@ -70,9 +71,9 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         fetchPaymentMethodsAndConsents()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun onBackButtonPressed() {
         setResult(RESULT_CANCELED)
+        finish()
     }
 
     private fun initView(

@@ -16,6 +16,7 @@ import com.airwallex.android.R
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.ui.extension.getExtraArgs
 import java.util.*
 
 /**
@@ -34,7 +35,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private val args: PaymentCheckoutActivityLaunch.Args by lazy {
-        PaymentCheckoutActivityLaunch.Args.getExtra(intent)
+        intent.getExtraArgs()
     }
 
     private val paymentMethod: PaymentMethod by lazy {
@@ -47,6 +48,11 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override val session: AirwallexSession by lazy {
         args.session
+    }
+
+    override fun onBackButtonPressed() {
+        setResult(RESULT_CANCELED)
+        finish()
     }
 
     override fun homeAsUpIndicatorResId(): Int {
@@ -80,11 +86,6 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             startConfirmPaymentIntent()
         }
         updateButtonStatus()
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        setResult(RESULT_CANCELED)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

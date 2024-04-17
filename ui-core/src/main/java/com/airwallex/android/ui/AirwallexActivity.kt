@@ -4,8 +4,8 @@ import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.ViewGroup
 import android.view.ViewStub
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -36,9 +36,20 @@ abstract class AirwallexActivity : AppCompatActivity() {
 
     private var loadingDialog: Dialog? = null
 
+    abstract fun onBackButtonPressed()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackButtonPressed()
+                }
+            }
+        )
 
         setSupportActionBar(toolbar)
         supportActionBar?.setHomeAsUpIndicator(homeAsUpIndicatorResId())
@@ -59,20 +70,11 @@ abstract class AirwallexActivity : AppCompatActivity() {
     @DrawableRes
     protected abstract fun homeAsUpIndicatorResId(): Int
 
-    override fun onBackPressed() {
-        val container = window.decorView.findViewById<ViewGroup>(android.R.id.content)
-        if (container.childCount > 0 && container.getChildAt(container.childCount - 1) is AirwallexWebView) {
-            (container.getChildAt(container.childCount - 1) as AirwallexWebView).destroyWebView()
-            return
-        }
-        super.onBackPressed()
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         ConsoleLogger.debug("$localClassName#onCreateOptionsMenu()")
         val handled = super.onOptionsItemSelected(item)
         if (!handled) {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
         return handled
     }

@@ -9,6 +9,10 @@ def DEVICE_FINGERPRINT_ORG_ID = '"1snn5n9w"'
 def DEVICE_FINGERPRINT_MERCHANT_ID = '"airwallex_cybs"'
 
 android {
+
+    buildFeatures {
+        buildConfig true
+    }
     namespace 'com.airwallex.android.threedsecurity'
 }
 

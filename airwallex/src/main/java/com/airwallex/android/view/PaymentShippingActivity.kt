@@ -8,6 +8,7 @@ import com.airwallex.android.databinding.ActivityAddShippingBinding
 import com.airwallex.android.R
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.ui.AirwallexActivity
+import com.airwallex.android.ui.extension.getExtraArgs
 
 /**
  * Activity to edit shipping address
@@ -21,12 +22,12 @@ class PaymentShippingActivity : AirwallexActivity() {
     }
 
     private val args: PaymentShippingActivityLaunch.Args by lazy {
-        PaymentShippingActivityLaunch.Args.getExtra(intent)
+        intent.getExtraArgs()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun onBackButtonPressed() {
         setResult(RESULT_CANCELED)
+        finish()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
