@@ -68,13 +68,13 @@ Airwallex Android SDK 支持Android API 19及以上版本。
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment:4.4.6'
+        implementation 'io.github.airwallex:payment:4.4.7'
         
         // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:4.4.6'
-        implementation 'io.github.airwallex:payment-redirect:4.4.6'
-        implementation 'io.github.airwallex:payment-wechat:4.4.6'
-        implementation 'io.github.airwallex:payment-googlepay:4.4.6'
+        implementation 'io.github.airwallex:payment-card:4.4.7'
+        implementation 'io.github.airwallex:payment-redirect:4.4.7'
+        implementation 'io.github.airwallex:payment-wechat:4.4.7'
+        implementation 'io.github.airwallex:payment-googlepay:4.4.7'
     }
 ```
 
