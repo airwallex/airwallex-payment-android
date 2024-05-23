@@ -76,6 +76,11 @@ class PaymentCartActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        supportFragmentManager.fragments[0].onActivityResult(requestCode, resultCode, data)
+    }
+
     fun showAlert(title: String, message: String) {
         AlertDialog.Builder(this)
             .setTitle(title)

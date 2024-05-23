@@ -13,6 +13,9 @@ import com.airwallex.android.core.extension.confirmGooglePayIntent
 import com.airwallex.android.core.extension.createCardPaymentMethod
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.*
 
@@ -163,6 +166,43 @@ class Airwallex internal constructor(
     }
 
     /**
+     * Confirm a payment intent with google pay options
+     *
+     * @param session a [AirwallexPaymentSession] used to start the payment flow
+     * @param listener The callback of the payment flow
+     */
+    @UiThread
+    fun confirmPaymentIntent(
+        session: AirwallexPaymentSession,
+        listener: PaymentResultListener
+    ) {
+        val coroutineScope = CoroutineScope(Dispatchers.Main)
+        val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
+        if (googlePayProvider != null) {
+            coroutineScope.launch {
+                val canMakePayment = googlePayProvider.canHandleSessionAndPaymentMethod(
+                    session,
+                    AvailablePaymentMethodType(
+                        "googlepay"
+                    ),
+                    activity
+                )
+                if (canMakePayment) {
+                    checkoutGooglePay(session = session, listener = listener)
+                } else {
+                    listener.onCompleted(
+                        AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Payment cannot be made with GooglePay."))
+                    )
+                }
+            }
+        } else {
+            listener.onCompleted(
+                AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "GooglePay not available."))
+            )
+        }
+    }
+
+    /**
      * Create a payment method
      *
      * @param params [CreatePaymentMethodParams] used to create the [PaymentMethod]
@@ -283,6 +323,7 @@ class Airwallex internal constructor(
                     cvc = params.cvc,
                 )
             )
+
             else -> {
                 PaymentConsentVerifyRequest.VerificationOptions(
                     type = paymentMethodType,
@@ -329,6 +370,7 @@ class Airwallex internal constructor(
                             currency = requireNotNull(params.currency),
                             amount = requireNotNull(params.amount),
                         )
+
                         else -> null
                     }
 
@@ -468,6 +510,7 @@ class Airwallex internal constructor(
                     )
                 }
             }
+
             else -> createPaymentConsentAndConfirmIntent(session, paymentMethod, cvc, listener)
         }
     }
@@ -479,7 +522,10 @@ class Airwallex internal constructor(
         cvc: String? = null,
         listener: PaymentResultListener
     ) {
-        fun confirmPaymentIntent(session: AirwallexPaymentSession, consent: PaymentConsent? = null) {
+        fun confirmPaymentIntent(
+            session: AirwallexPaymentSession,
+            consent: PaymentConsent? = null
+        ) {
             confirmPaymentIntent(
                 paymentIntentId = session.paymentIntent.id,
                 clientSecret = requireNotNull(session.paymentIntent.clientSecret),
@@ -489,7 +535,9 @@ class Airwallex internal constructor(
                 paymentConsentId = consent?.id,
                 returnUrl = if (paymentMethod.type
                     == PaymentMethodType.CARD.value
-                ) { AirwallexPlugins.environment.threeDsReturnUrl() } else session.returnUrl,
+                ) {
+                    AirwallexPlugins.environment.threeDsReturnUrl()
+                } else session.returnUrl,
                 autoCapture = session.autoCapture,
                 listener = listener
             )
@@ -516,6 +564,7 @@ class Airwallex internal constructor(
                     }
                 )
             }
+
             is AirwallexRecurringSession -> {
                 val customerId = session.customerId
                 try {
@@ -569,6 +618,7 @@ class Airwallex internal constructor(
                     listener.onCompleted(AirwallexPaymentStatus.Failure(e))
                 }
             }
+
             is AirwallexRecurringWithIntentSession -> {
                 val paymentIntent = session.paymentIntent
                 createPaymentConsent(
@@ -598,6 +648,7 @@ class Airwallex internal constructor(
                                         listener = listener
                                     )
                                 }
+
                                 else -> {
                                     // this should not happen
                                     verifyPaymentConsent(
@@ -660,6 +711,7 @@ class Airwallex internal constructor(
                                     )
                                 }
                             }
+
                             else -> {
                                 listener.onCompleted(status)
                             }
@@ -703,6 +755,7 @@ class Airwallex internal constructor(
                     autoCapture = autoCapture
                 )
             }
+
             else -> {
                 ConfirmPaymentIntentParams.createThirdPartPayParams(
                     paymentMethodType = paymentMethodType,
@@ -772,6 +825,7 @@ class Airwallex internal constructor(
             PaymentMethodType.CARD.value -> {
                 buildCardPaymentIntentOptions(params, device)
             }
+
             else -> {
                 buildThirdPartPaymentIntentOptions(params, device)
             }
@@ -795,6 +849,7 @@ class Airwallex internal constructor(
                             currency = response.currency,
                             amount = response.amount,
                         )
+
                         else -> null
                     }
                     val provider = AirwallexPlugins.getProvider(response.nextAction)
@@ -1044,6 +1099,7 @@ class Airwallex internal constructor(
                         requiresCvc = requiresCvc
                     )
                 }
+
                 else -> {
                     CreatePaymentConsentParams.createThirdPartParams(
                         paymentMethodType = paymentMethodType,
@@ -1091,6 +1147,7 @@ class Airwallex internal constructor(
                     returnUrl = returnUrl
                 )
             }
+
             else -> {
                 VerifyPaymentConsentParams.createThirdPartParams(
                     paymentMethodType = paymentMethodType,
