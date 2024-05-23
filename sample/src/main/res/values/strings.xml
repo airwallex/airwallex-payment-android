@@ -66,6 +66,7 @@
     <string name="requires_email">Requires Email</string>
     <string name="force_3ds">Force 3DS</string>
     <string name="auto_capture">Auto Capture</string>
+    <string name="google_pay_checkout">Direct Google Pay Checkout</string>
     <string name="shipping">Shipping</string>
     <string name="item">Item</string>
     <string name="total">Total</string>

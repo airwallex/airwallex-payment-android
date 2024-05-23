@@ -36,4 +36,9 @@
         <item>Enabled</item>
         <item>Disabled</item>
     </string-array>
+
+    <string-array name="array_google_pay_checkout">
+        <item>False</item>
+        <item>True</item>
+    </string-array>
 </resources>

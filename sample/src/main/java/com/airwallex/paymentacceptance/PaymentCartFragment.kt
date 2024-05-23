@@ -139,6 +139,11 @@ class PaymentCartFragment : Fragment() {
             return Settings.force3DS.toBoolean()
         }
 
+    private val directGooglePayCheckout: Boolean
+        get() {
+            return Settings.directGooglePayCheckout.toBoolean()
+        }
+
     private val autoCapture: Boolean
         get() {
             return when (Settings.autoCapture) {
@@ -175,6 +180,7 @@ class PaymentCartFragment : Fragment() {
                     .setAutoCapture(autoCapture)
                     .build()
             }
+
             AirwallexCheckoutMode.RECURRING -> {
                 AirwallexRecurringSession.Builder(
                     customerId = requireNotNull(customerId, { "CustomerId is required" }),
@@ -190,6 +196,7 @@ class PaymentCartFragment : Fragment() {
                     .setReturnUrl(Settings.returnUrl)
                     .build()
             }
+
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
                 AirwallexRecurringWithIntentSession.Builder(
                     paymentIntent = requireNotNull(
@@ -283,6 +290,7 @@ class PaymentCartFragment : Fragment() {
                         viewBinding.shippingItemView.renewalShipping(it.shipping)
                         this@PaymentCartFragment.shipping = it.shipping
                     }
+
                     is AirwallexShippingStatus.Cancel -> {
                         Log.d(TAG, "User cancel edit shipping...")
                     }
@@ -295,13 +303,23 @@ class PaymentCartFragment : Fragment() {
                 AirwallexCheckoutMode.PAYMENT -> {
                     startPaymentFlow()
                 }
+
                 AirwallexCheckoutMode.RECURRING -> {
                     startRecurringFlow()
                 }
+
                 AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
                     startRecurringWithIntentFlow()
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewBinding.btnCheckout.text = when (directGooglePayCheckout) {
+            true -> getString(R.string.google_pay_checkout)
+            false -> getString(R.string.checkout)
         }
     }
 
@@ -342,7 +360,8 @@ class PaymentCartFragment : Fragment() {
                     "return_url" to Settings.returnUrl
                 )
                 if (force3DS) {
-                    body["payment_method_options"] = mapOf("card" to mapOf("three_ds_action" to "FORCE_3DS"))
+                    body["payment_method_options"] =
+                        mapOf("card" to mapOf("three_ds_action" to "FORCE_3DS"))
                 }
                 Settings.cachedCustomerId?.let {
                     body.put("customer_id", it)
@@ -354,12 +373,26 @@ class PaymentCartFragment : Fragment() {
 
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
-            viewModel.presentPaymentFlow(
-                this@PaymentCartFragment,
-                buildSession(paymentIntent = paymentIntent)
-            ).observe(viewLifecycleOwner) {
-                handleStatusUpdate(it)
+            if (directGooglePayCheckout) {
+                // Direct google pay flow
+                val session = buildSession(paymentIntent) as AirwallexPaymentSession
+                airwallex.confirmPaymentIntent(
+                    session = session,
+                    listener = object : Airwallex.PaymentResultListener {
+                        override fun onCompleted(status: AirwallexPaymentStatus) {
+                            handleStatusUpdate(status)
+                        }
+                    }
+                )
+            } else {
+                viewModel.presentPaymentFlow(
+                    this@PaymentCartFragment,
+                    buildSession(paymentIntent = paymentIntent)
+                ).observe(viewLifecycleOwner) {
+                    handleStatusUpdate(it)
+                }
             }
+
 
             // Example of using low-level API to confirm payment intent
 //            airwallex.confirmPaymentIntent(
@@ -547,7 +580,9 @@ class PaymentCartFragment : Fragment() {
         AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
 
         // If integrate by low-level API
-//        airwallex.handlePaymentData(requestCode, resultCode, data)
+        if (directGooglePayCheckout) {
+            airwallex.handlePaymentData(requestCode, resultCode, data)
+        }
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
@@ -556,13 +591,16 @@ class PaymentCartFragment : Fragment() {
                 Log.d(TAG, "Payment success ${status.paymentIntentId}")
                 showPaymentSuccess()
             }
+
             is AirwallexPaymentStatus.InProgress -> {
                 // redirecting
                 Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
             }
+
             is AirwallexPaymentStatus.Failure -> {
                 showPaymentError(status.exception.localizedMessage)
             }
+
             is AirwallexPaymentStatus.Cancel -> {
                 Log.d(TAG, "User cancel the payment")
                 showPaymentCancelled()

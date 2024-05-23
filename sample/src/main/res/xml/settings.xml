@@ -54,6 +54,13 @@
             android:key="@string/auto_capture"
             android:title="@string/auto_capture" />
 
+        <ListPreference
+            android:dialogTitle="@string/google_pay_checkout"
+            android:entries="@array/array_google_pay_checkout"
+            android:entryValues="@array/array_google_pay_checkout"
+            android:key="@string/google_pay_checkout"
+            android:title="@string/google_pay_checkout" />
+
         <EditTextPreference
             android:key="@string/return_url"
             android:title="@string/return_url" />
