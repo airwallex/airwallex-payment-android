@@ -678,7 +678,16 @@ class Airwallex internal constructor(
                 nextAction = null,
                 activity = activity,
                 applicationContext = applicationContext,
-                cardNextActionModel = null,
+                cardNextActionModel = CardNextActionModel(
+                    fragment = fragment,
+                    activity = activity,
+                    paymentManager = paymentManager,
+                    clientSecret = requireNotNull(session.paymentIntent.clientSecret),
+                    device = null,
+                    paymentIntentId = session.paymentIntent.id,
+                    currency = session.currency,
+                    amount = session.amount
+                ),
                 listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         when (status) {
