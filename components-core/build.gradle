@@ -28,7 +28,7 @@ dependencies {
     api 'com.google.android.material:material:1.4.0'
 
     // kotlin
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     api "org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlinVersion"
     api "org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlinVersion"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"

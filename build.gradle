@@ -2,7 +2,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 
 buildscript {
     ext {
-        kotlinVersion = '1.7.20'
+        kotlinVersion = '1.8.0'
         jacocoVersion = '0.8.8'
         detektVersion = '1.21.0'
     }
@@ -48,7 +48,7 @@ tasks.register('clean', Delete) {
 version = '4.4.7'
 
 ext {
-    compileSdkVersion = 33
+    compileSdkVersion = 34
     minSdkVersion = 21
 
     kotlinCoroutinesVersion = '1.5.2'

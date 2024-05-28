@@ -23,7 +23,6 @@ import com.airwallex.android.core.model.parser.PaymentIntentParser
 import com.airwallex.paymentacceptance.databinding.CartItemBinding
 import com.airwallex.paymentacceptance.databinding.FragmentCartBinding
 import kotlinx.coroutines.*
-import okhttp3.*
 import org.json.JSONObject
 import retrofit2.HttpException
 import java.math.BigDecimal
@@ -376,7 +375,7 @@ class PaymentCartFragment : Fragment() {
             if (directGooglePayCheckout) {
                 // Direct google pay flow
                 val session = buildSession(paymentIntent) as AirwallexPaymentSession
-                airwallex.confirmPaymentIntent(
+                airwallex.startGooglePay(
                     session = session,
                     listener = object : Airwallex.PaymentResultListener {
                         override fun onCompleted(status: AirwallexPaymentStatus) {

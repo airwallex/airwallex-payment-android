@@ -172,7 +172,7 @@ class Airwallex internal constructor(
      * @param listener The callback of the payment flow
      */
     @UiThread
-    fun confirmPaymentIntent(
+    fun startGooglePay(
         session: AirwallexPaymentSession,
         listener: PaymentResultListener
     ) {
@@ -197,7 +197,7 @@ class Airwallex internal constructor(
             }
         } else {
             listener.onCompleted(
-                AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "GooglePay not available."))
+                AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Google Pay component is not available."))
             )
         }
     }

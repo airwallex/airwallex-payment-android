@@ -24,7 +24,6 @@ import com.airwallex.android.threedsecurity.ThreeDSecurityManager
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
-import com.google.android.gms.wallet.PaymentDataRequest
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -71,29 +70,42 @@ class GooglePayComponent : ActionComponent {
             this.paymentIntentId = paymentIntentId
             this.listener = listener
             val googlePayOptions = session.googlePayOptions ?: return
-            val paymentDataRequestJson = PaymentsUtil.getPaymentDataRequest(
-                price = session.amount,
-                countryCode = session.countryCode,
-                currency = session.currency,
-                googlePayOptions = googlePayOptions,
-                supportedCardSchemes = paymentMethodType.cardSchemes
-            ) ?: run {
-                listener.onCompleted(
-                    AirwallexPaymentStatus.Failure(
-                        AirwallexCheckoutException(
-                            message = "Can't serialize Google Pay payment data request"
-                        )
-                    )
-                )
-                return
+            val fragment = cardNextActionModel?.fragment
+            val googlePayActivityLaunch = if (fragment != null) {
+                GooglePayActivityLaunch(fragment)
+            } else {
+                GooglePayActivityLaunch(activity)
             }
-            val request = PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
-            val paymentClient = PaymentsUtil.createPaymentsClient(activity)
-            resolvePaymentRequest(
-                paymentClient.loadPaymentData(request),
-                activity,
-                loadPaymentDataRequestCode
+            googlePayActivityLaunch.startForResult(
+                GooglePayActivityLaunch.Args(
+                    session = session,
+                    googlePayOptions = googlePayOptions,
+                    paymentMethodType = paymentMethodType
+                )
             )
+//            val paymentDataRequestJson = PaymentsUtil.getPaymentDataRequest(
+//                price = session.amount,
+//                countryCode = session.countryCode,
+//                currency = session.currency,
+//                googlePayOptions = googlePayOptions,
+//                supportedCardSchemes = paymentMethodType.cardSchemes
+//            ) ?: run {
+//                listener.onCompleted(
+//                    AirwallexPaymentStatus.Failure(
+//                        AirwallexCheckoutException(
+//                            message = "Can't serialize Google Pay payment data request"
+//                        )
+//                    )
+//                )
+//                return
+//            }
+//            val request = PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
+//            val paymentClient = PaymentsUtil.createPaymentsClient(activity)
+//            resolvePaymentRequest(
+//                paymentClient.loadPaymentData(request),
+//                activity,
+//                loadPaymentDataRequestCode
+//            )
         }
     }
 
@@ -116,7 +128,12 @@ class GooglePayComponent : ActionComponent {
                         if (paymentData != null) {
                             val successInfo = createPaymentSuccessInfo(paymentData)
                             if (successInfo != null) {
-                                listener?.onCompleted(AirwallexPaymentStatus.Success(id, successInfo))
+                                listener?.onCompleted(
+                                    AirwallexPaymentStatus.Success(
+                                        id,
+                                        successInfo
+                                    )
+                                )
                             } else {
                                 listener?.onCompleted(AirwallexPaymentStatus.Cancel)
                             }
@@ -146,7 +163,10 @@ class GooglePayComponent : ActionComponent {
                                 putIfNotNull("message", it.statusMessage)
                             }
                         )
-                        ConsoleLogger.error(errorTag, String.format("Error code: %d", it.statusCode))
+                        ConsoleLogger.error(
+                            errorTag,
+                            String.format("Error code: %d", it.statusCode)
+                        )
                     }
                     listener?.onCompleted(AirwallexPaymentStatus.Cancel)
                 }
@@ -159,6 +179,25 @@ class GooglePayComponent : ActionComponent {
             }
             result?.exception?.let {
                 listener?.onCompleted(AirwallexPaymentStatus.Failure(it))
+            }
+            return true
+        } else if (requestCode == GooglePayActivityLaunch.REQUEST_CODE) {
+            when (val result = GooglePayActivityLaunch.Result.fromIntent(data)) {
+                GooglePayActivityLaunch.Result.Cancel -> listener?.onCompleted(
+                    AirwallexPaymentStatus.Cancel
+                )
+
+                is GooglePayActivityLaunch.Result.Failure -> listener?.onCompleted(
+                    AirwallexPaymentStatus.Failure(result.exception)
+                )
+
+                is GooglePayActivityLaunch.Result.Success -> listener?.onCompleted(
+                    AirwallexPaymentStatus.Success(paymentIntentId!!, result.info)
+                )
+
+                else -> {
+                    // no op
+                }
             }
             return true
         }

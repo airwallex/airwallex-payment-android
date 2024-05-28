@@ -258,7 +258,7 @@ internal class PaymentMethodsViewModel(
         private val airwallex: Airwallex,
         private val session: AirwallexSession
     ) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return PaymentMethodsViewModel(
                 application,
