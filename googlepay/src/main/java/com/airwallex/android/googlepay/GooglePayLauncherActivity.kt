@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
-import com.airwallex.android.core.model.Billing
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.PaymentsClient
@@ -68,12 +68,37 @@ class GooglePayLauncherActivity : ComponentActivity() {
                         )
                     }
                 } else {
-
+                    finishWithResult(
+                        GooglePayActivityLaunch.Result.Failure(
+                            AirwallexCheckoutException(message = "Google Pay missing result data")
+                        )
+                    )
                 }
             }
+
             CommonStatusCodes.CANCELED -> finishWithResult(
                 GooglePayActivityLaunch.Result.Cancel
             )
+
+            AutoResolveHelper.RESULT_ERROR -> {
+                val status = taskResult.status
+                val statusMessage = status.statusMessage.orEmpty()
+                val statusCode = status.statusCode.toString()
+                finishWithResult(
+                    GooglePayActivityLaunch.Result.Failure(
+                        AirwallexCheckoutException(message = "Google Pay failed with error $statusCode: $statusMessage")
+                    )
+                )
+            }
+
+            else -> {
+                finishWithResult(
+                    GooglePayActivityLaunch.Result.Failure(
+                        AirwallexCheckoutException(message = "Google Pay returned an unexpected result code.")
+                    )
+                )
+            }
+
         }
     }
 
@@ -100,7 +125,7 @@ class GooglePayLauncherActivity : ComponentActivity() {
                     "encrypted_payment_token",
                     paymentMethodData.getJSONObject("tokenizationData").getString("token")
                 )
-                paymentMethodData.optJSONObject("info").optJSONObject("billingAddress")
+                paymentMethodData.optJSONObject("info")?.optJSONObject("billingAddress")
                     ?.let { billingAddress ->
                         PaymentsUtil.getBilling(billingAddress)?.let {
                             put("billing", it)

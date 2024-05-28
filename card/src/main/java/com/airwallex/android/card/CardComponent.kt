@@ -3,6 +3,7 @@ package com.airwallex.android.card
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.Fragment
 
 import com.airwallex.android.card.exception.DccException
 import com.airwallex.android.card.view.DccActivityLaunch
@@ -27,6 +28,7 @@ class CardComponent : ActionComponent {
     override fun handlePaymentIntentResponse(
         paymentIntentId: String,
         nextAction: NextAction?,
+        fragment: Fragment?,
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
@@ -38,7 +40,6 @@ class CardComponent : ActionComponent {
             return
         }
 
-        val fragment = cardNextActionModel.fragment
         val dccActivityLaunch: DccActivityLaunch = if (fragment != null) {
             DccActivityLaunch(fragment)
         } else {

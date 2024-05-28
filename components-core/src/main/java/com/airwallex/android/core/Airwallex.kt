@@ -377,6 +377,7 @@ class Airwallex internal constructor(
                     provider.get().handlePaymentIntentResponse(
                         paymentIntentId,
                         response.nextAction,
+                        fragment,
                         activity,
                         applicationContext,
                         cardNextActionModel,
@@ -676,18 +677,10 @@ class Airwallex internal constructor(
             googlePayProvider.get().handlePaymentIntentResponse(
                 paymentIntentId = session.paymentIntent.id,
                 nextAction = null,
+                fragment = fragment,
                 activity = activity,
                 applicationContext = applicationContext,
-                cardNextActionModel = CardNextActionModel(
-                    fragment = fragment,
-                    activity = activity,
-                    paymentManager = paymentManager,
-                    clientSecret = requireNotNull(session.paymentIntent.clientSecret),
-                    device = null,
-                    paymentIntentId = session.paymentIntent.id,
-                    currency = session.currency,
-                    amount = session.amount
-                ),
+                cardNextActionModel = null,
                 listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         when (status) {
@@ -871,6 +864,7 @@ class Airwallex internal constructor(
                     provider.get().handlePaymentIntentResponse(
                         response.id,
                         response.nextAction,
+                        fragment,
                         activity,
                         applicationContext,
                         cardNextActionModel,
@@ -1056,6 +1050,7 @@ class Airwallex internal constructor(
                 provider.get().handlePaymentIntentResponse(
                     response.id,
                     response.nextAction,
+                    fragment,
                     activity,
                     applicationContext,
                     CardNextActionModel(

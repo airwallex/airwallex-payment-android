@@ -68,6 +68,7 @@ internal fun ActionComponent.confirmGooglePayIntent(
                                 handlePaymentIntentResponse(
                                     response.id,
                                     response.nextAction,
+                                    fragment,
                                     activity,
                                     applicationContext,
                                     cardNextActionModel,

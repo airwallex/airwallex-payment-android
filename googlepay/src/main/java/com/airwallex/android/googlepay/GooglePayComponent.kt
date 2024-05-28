@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.Fragment
 import com.airwallex.android.core.ActionComponent
 import com.airwallex.android.core.ActionComponentProvider
 import com.airwallex.android.core.Airwallex
@@ -21,7 +22,6 @@ import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
 import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
 import org.json.JSONException
@@ -30,12 +30,9 @@ import org.json.JSONObject
 class GooglePayComponent : ActionComponent {
     companion object {
         val PROVIDER: ActionComponentProvider<GooglePayComponent> = GooglePayComponentProvider()
-        private const val loadPaymentDataRequestCode = 991
-        private const val errorTag = "Google Pay loadPaymentData failed"
+        private const val LOAD_PAYMENT_DATA_REQUEST_CODE = 991
+        private const val ERROR_TAG = "Google Pay loadPaymentData failed"
     }
-
-    var resolvePaymentRequest: (task: Task<PaymentData>, activity: Activity, requestCode: Int) -> Unit =
-        AutoResolveHelper::resolveTask
 
     private var listener: Airwallex.PaymentResultListener? = null
     private var paymentIntentId: String? = null
@@ -45,6 +42,7 @@ class GooglePayComponent : ActionComponent {
     override fun handlePaymentIntentResponse(
         paymentIntentId: String,
         nextAction: NextAction?,
+        fragment: Fragment?,
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
@@ -70,7 +68,6 @@ class GooglePayComponent : ActionComponent {
             this.paymentIntentId = paymentIntentId
             this.listener = listener
             val googlePayOptions = session.googlePayOptions ?: return
-            val fragment = cardNextActionModel?.fragment
             val googlePayActivityLaunch = if (fragment != null) {
                 GooglePayActivityLaunch(fragment)
             } else {
@@ -83,41 +80,18 @@ class GooglePayComponent : ActionComponent {
                     paymentMethodType = paymentMethodType
                 )
             )
-//            val paymentDataRequestJson = PaymentsUtil.getPaymentDataRequest(
-//                price = session.amount,
-//                countryCode = session.countryCode,
-//                currency = session.currency,
-//                googlePayOptions = googlePayOptions,
-//                supportedCardSchemes = paymentMethodType.cardSchemes
-//            ) ?: run {
-//                listener.onCompleted(
-//                    AirwallexPaymentStatus.Failure(
-//                        AirwallexCheckoutException(
-//                            message = "Can't serialize Google Pay payment data request"
-//                        )
-//                    )
-//                )
-//                return
-//            }
-//            val request = PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
-//            val paymentClient = PaymentsUtil.createPaymentsClient(activity)
-//            resolvePaymentRequest(
-//                paymentClient.loadPaymentData(request),
-//                activity,
-//                loadPaymentDataRequestCode
-//            )
         }
     }
 
     @Suppress("ComplexMethod")
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        if (requestCode == loadPaymentDataRequestCode) {
+        if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
             AnalyticsLogger.logPageView("google_pay_sheet", mapOf("code" to resultCode))
             when (resultCode) {
                 RESULT_OK -> {
                     val id = paymentIntentId ?: run {
                         ConsoleLogger.error(
-                            errorTag,
+                            ERROR_TAG,
                             "Invalid payment intent ID"
                         )
                         listener?.onCompleted(AirwallexPaymentStatus.Cancel)
@@ -164,7 +138,7 @@ class GooglePayComponent : ActionComponent {
                             }
                         )
                         ConsoleLogger.error(
-                            errorTag,
+                            ERROR_TAG,
                             String.format("Error code: %d", it.statusCode)
                         )
                     }
@@ -228,14 +202,14 @@ class GooglePayComponent : ActionComponent {
                     "encrypted_payment_token",
                     paymentMethodData.getJSONObject("tokenizationData").getString("token")
                 )
-                paymentMethodData.optJSONObject("info").optJSONObject("billingAddress")
+                paymentMethodData.optJSONObject("info")?.optJSONObject("billingAddress")
                     ?.let { billingAddress ->
                         PaymentsUtil.getBilling(billingAddress)?.let {
                             put("billing", it)
                         }
                     }
             } catch (e: JSONException) {
-                ConsoleLogger.error(errorTag, "Error: ${e.message}")
+                ConsoleLogger.error(ERROR_TAG, "Error: ${e.message}")
                 return null
             }
         }
