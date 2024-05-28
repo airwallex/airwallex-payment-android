@@ -10,6 +10,16 @@
         <item name="colorControlActivated">@color/airwallex_tint_color</item>
     </style>
 
+    <style name="AirwallexTransparentTheme" parent="@style/Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
     <style name="AirwallexProgressBarStyle">
         <item name="colorAccent">@color/airwallex_tint_color</item>
     </style>
