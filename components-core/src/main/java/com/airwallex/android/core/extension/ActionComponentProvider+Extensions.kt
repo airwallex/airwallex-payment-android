@@ -24,6 +24,7 @@ internal fun ActionComponent.confirmGooglePayIntent(
     retrieveSecurityToken(
         paymentIntentId, applicationContext,
         object : SecurityTokenListener {
+            @Suppress("LongMethod")
             override fun onResponse(deviceId: String) {
                 val device = paymentManager.buildDeviceInfo(deviceId)
                 val threeDSecure = ThreeDSecure.Builder()

@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
@@ -13,7 +15,6 @@ import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.contract.ApiTaskResult
 import com.google.android.gms.wallet.contract.TaskResultContracts.GetPaymentDataResult
-import org.json.JSONException
 import org.json.JSONObject
 
 class GooglePayLauncherActivity : ComponentActivity() {
@@ -55,24 +56,30 @@ class GooglePayLauncherActivity : ComponentActivity() {
             CommonStatusCodes.SUCCESS -> {
                 val result = taskResult.result
                 if (result != null) {
-                    val successInfo = createPaymentSuccessInfo(result)
-                    if (successInfo != null) {
+                    try {
+                        val successInfo = createPaymentSuccessInfo(result)
                         finishWithResult(
                             GooglePayActivityLaunch.Result.Success(successInfo)
                         )
-                    } else {
-                        finishWithResult(
-                            GooglePayActivityLaunch.Result.Failure(
-                                AirwallexCheckoutException(message = "Missing Google Pay token response")
-                            )
+                    } catch (e: Throwable) {
+                        val exception = AirwallexCheckoutException(
+                            message = "Google Pay missing token data",
+                            e = e
                         )
+                        AnalyticsLogger.logError(
+                            "googlepay_payment_data_retrieve",
+                            exception = exception
+                        )
+                        finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
                     }
                 } else {
-                    finishWithResult(
-                        GooglePayActivityLaunch.Result.Failure(
-                            AirwallexCheckoutException(message = "Google Pay missing result data")
-                        )
+                    val exception =
+                        AirwallexCheckoutException(message = "Google Pay missing result data")
+                    AnalyticsLogger.logError(
+                        "googlepay_payment_data_retrieve",
+                        exception = exception
                     )
+                    finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
                 }
             }
 
@@ -84,6 +91,12 @@ class GooglePayLauncherActivity : ComponentActivity() {
                 val status = taskResult.status
                 val statusMessage = status.statusMessage.orEmpty()
                 val statusCode = status.statusCode.toString()
+                AnalyticsLogger.logError(
+                    "googlepay_payment_data_retrieve",
+                    mutableMapOf("code" to statusCode).apply {
+                        putIfNotNull("message", statusMessage)
+                    }
+                )
                 finishWithResult(
                     GooglePayActivityLaunch.Result.Failure(
                         AirwallexCheckoutException(message = "Google Pay failed with error $statusCode: $statusMessage")
@@ -92,13 +105,11 @@ class GooglePayLauncherActivity : ComponentActivity() {
             }
 
             else -> {
-                finishWithResult(
-                    GooglePayActivityLaunch.Result.Failure(
-                        AirwallexCheckoutException(message = "Google Pay returned an unexpected result code.")
-                    )
-                )
+                val exception =
+                    AirwallexCheckoutException(message = "Google Pay returned an unexpected result code.")
+                AnalyticsLogger.logError("googlepay_payment_data_retrieve", exception = exception)
+                finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
             }
-
         }
     }
 
@@ -113,10 +124,10 @@ class GooglePayLauncherActivity : ComponentActivity() {
         finish()
     }
 
-    private fun createPaymentSuccessInfo(paymentData: PaymentData): Map<String, Any>? {
+    private fun createPaymentSuccessInfo(paymentData: PaymentData): Map<String, Any> {
         val paymentInformation = paymentData.toJson()
         val info = mutableMapOf<String, Any>().apply {
-            try {
+            runCatching {
                 val paymentMethodData =
                     JSONObject(paymentInformation).getJSONObject("paymentMethodData")
                 put("payment_data_type", "encrypted_payment_token")
@@ -127,13 +138,8 @@ class GooglePayLauncherActivity : ComponentActivity() {
                 )
                 paymentMethodData.optJSONObject("info")?.optJSONObject("billingAddress")
                     ?.let { billingAddress ->
-                        PaymentsUtil.getBilling(billingAddress)?.let {
-                            put("billing", it)
-                        }
+                        putIfNotNull("billing", PaymentsUtil.getBilling(billingAddress))
                     }
-            } catch (e: JSONException) {
-
-                return null
             }
         }
         return info

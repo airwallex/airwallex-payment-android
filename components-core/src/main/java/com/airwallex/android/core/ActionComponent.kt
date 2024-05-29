@@ -8,6 +8,7 @@ import com.airwallex.android.core.model.NextAction
 
 interface ActionComponent {
 
+    @Suppress("LongParameterList")
     fun handlePaymentIntentResponse(
         paymentIntentId: String,
         nextAction: NextAction?,
