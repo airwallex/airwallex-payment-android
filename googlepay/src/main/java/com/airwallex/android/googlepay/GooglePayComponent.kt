@@ -37,6 +37,7 @@ class GooglePayComponent : ActionComponent {
         cardNextActionModel: CardNextActionModel?,
         listener: Airwallex.PaymentResultListener
     ) {
+        this.listener = listener
         if (nextAction?.type == NextAction.NextActionType.REDIRECT_FORM) {
             if (cardNextActionModel == null) {
                 listener.onCompleted(
@@ -55,7 +56,6 @@ class GooglePayComponent : ActionComponent {
             )
         } else {
             this.paymentIntentId = paymentIntentId
-            this.listener = listener
             val googlePayOptions = session.googlePayOptions ?: return
             val googlePayActivityLaunch = if (fragment != null) {
                 GooglePayActivityLaunch(fragment)
@@ -74,14 +74,16 @@ class GooglePayComponent : ActionComponent {
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (requestCode == ThreeDSecurityActivityLaunch.REQUEST_CODE) {
-            val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
-            result?.paymentIntentId?.let {
-                listener?.onCompleted(AirwallexPaymentStatus.Success(it))
-            }
-            result?.exception?.let {
-                listener?.onCompleted(AirwallexPaymentStatus.Failure(it))
-            }
-            return true
+            listener?.let {
+                val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
+                result?.paymentIntentId?.let { intentId ->
+                    it.onCompleted(AirwallexPaymentStatus.Success(intentId))
+                }
+                result?.exception?.let { exception ->
+                    it.onCompleted(AirwallexPaymentStatus.Failure(exception))
+                }
+                return true
+            } ?: return false
         } else if (requestCode == GooglePayActivityLaunch.REQUEST_CODE) {
             when (val result = GooglePayActivityLaunch.Result.fromIntent(data)) {
                 GooglePayActivityLaunch.Result.Cancel -> listener?.onCompleted(

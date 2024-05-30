@@ -129,14 +129,16 @@ class CardComponent : ActionComponent {
             }
             return true
         } else if (requestCode == ThreeDSecurityActivityLaunch.REQUEST_CODE) {
-            val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
-            result?.paymentIntentId?.let {
-                listener?.onCompleted(AirwallexPaymentStatus.Success(it))
-            }
-            result?.exception?.let {
-                listener?.onCompleted(AirwallexPaymentStatus.Failure(it))
-            }
-            return true
+            listener?.let {
+                val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
+                result?.paymentIntentId?.let { intentId ->
+                    it.onCompleted(AirwallexPaymentStatus.Success(intentId))
+                }
+                result?.exception?.let { exception ->
+                    it.onCompleted(AirwallexPaymentStatus.Failure(exception))
+                }
+                return true
+            } ?: return false
         }
         return false
     }
