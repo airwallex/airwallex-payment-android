@@ -87,6 +87,7 @@ sonarqube {
 
                 '**/*ViewModelFactory.*',
                 '**/*ScreenEvent.*',
+                '**/*ActivityLaunch.*',
                 '**/core/Airwallex.kt',
                 '**/card/AirwallexSecurityConnector.kt',
                 '**/AirwallexStarter.kt',

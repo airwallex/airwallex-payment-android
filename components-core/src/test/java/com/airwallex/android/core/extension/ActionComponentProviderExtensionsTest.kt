@@ -58,6 +58,7 @@ class ActionComponentProviderExtensionsTest {
             actionComponent.handlePaymentIntentResponse(
                 paymentIntent.id,
                 paymentIntent.nextAction,
+                fragment,
                 activity,
                 context,
                 any(),

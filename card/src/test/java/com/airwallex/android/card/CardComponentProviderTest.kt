@@ -105,6 +105,7 @@ class CardComponentProviderTest {
                 url = null,
                 method = "POST"
             ),
+            null,
             activity,
             context,
             CardNextActionModel(

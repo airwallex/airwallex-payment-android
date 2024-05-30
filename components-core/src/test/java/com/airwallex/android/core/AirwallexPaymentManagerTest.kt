@@ -33,15 +33,19 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.json.JSONObject
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class AirwallexPaymentManagerTest {
+    private lateinit var dispatcher: TestDispatcher
+
     private lateinit var paymentManager: PaymentManager
     private val clientSecret = "qadf"
     private val consentId = "cid"
@@ -57,8 +61,8 @@ class AirwallexPaymentManagerTest {
     @Before
     fun setUp() {
         mockkObject(BuildHelper)
-        val testDispatcher = UnconfinedTestDispatcher()
-        Dispatchers.setMain(testDispatcher)
+        dispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(dispatcher)
 
         mockResponse = PageParser(AvailablePaymentMethodTypeParser()).parse(
             JSONObject(
@@ -118,6 +122,11 @@ class AirwallexPaymentManagerTest {
         paymentManager = AirwallexPaymentManager(apiRepository)
     }
 
+    @After
+    fun unmockk() {
+        unmockkAll()
+    }
+
     @Test
     fun `test retrieveAvailablePaymentMethods`() = runTest {
         val options = mockk<Options.RetrieveAvailablePaymentMethodsOptions>()
@@ -165,8 +174,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start RetrievePaymentConsentOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<PaymentConsent>>()
+    fun `test start RetrievePaymentConsentOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<PaymentConsent>>(relaxed = true)
         paymentManager.startOperation(
             Options.RetrievePaymentConsentOptions(
                 clientSecret,
@@ -178,8 +187,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start DisablePaymentConsentOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<PaymentConsent>>()
+    fun `test start DisablePaymentConsentOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<PaymentConsent>>(relaxed = true)
         paymentManager.startOperation(
             Options.DisablePaymentConsentOptions(
                 clientSecret,
@@ -192,8 +201,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start VerifyPaymentConsentOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<PaymentConsent>>()
+    fun `test start VerifyPaymentConsentOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<PaymentConsent>>(relaxed = true)
         paymentManager.startOperation(
             Options.VerifyPaymentConsentOptions(
                 clientSecret,
@@ -206,8 +215,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start CreatePaymentConsentOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<PaymentConsent>>()
+    fun `test start CreatePaymentConsentOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<PaymentConsent>>(relaxed = true)
         paymentManager.startOperation(
             Options.CreatePaymentConsentOptions(
                 clientSecret,
@@ -219,8 +228,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start RetrieveAvailablePaymentMethodsOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<Page<AvailablePaymentMethodType>>>()
+    fun `test start RetrieveAvailablePaymentMethodsOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<Page<AvailablePaymentMethodType>>>(relaxed = true)
         paymentManager.startOperation(
             Options.RetrieveAvailablePaymentMethodsOptions(
                 clientSecret,
@@ -237,8 +246,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start CreatePaymentMethodOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<PaymentMethod>>()
+    fun `test start CreatePaymentMethodOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<PaymentMethod>>(relaxed = true)
         paymentManager.startOperation(
             Options.CreatePaymentMethodOptions(
                 clientSecret,
@@ -250,8 +259,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start RetrievePaymentIntentOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<PaymentIntent>>()
+    fun `test start RetrievePaymentIntentOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<PaymentIntent>>(relaxed = true)
         paymentManager.startOperation(
             Options.RetrievePaymentIntentOptions(
                 clientSecret,
@@ -263,8 +272,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start ConfirmPaymentIntentOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<PaymentIntent>>()
+    fun `test start ConfirmPaymentIntentOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<PaymentIntent>>(relaxed = true)
         paymentManager.startOperation(
             Options.ConfirmPaymentIntentOptions(
                 clientSecret,
@@ -277,8 +286,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start ContinuePaymentIntentOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<PaymentIntent>>()
+    fun `test start ContinuePaymentIntentOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<PaymentIntent>>(relaxed = true)
         paymentManager.startOperation(
             Options.ContinuePaymentIntentOptions(
                 clientSecret,
@@ -291,8 +300,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start RetrievePaymentMethodTypeInfoOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+    fun `test start RetrievePaymentMethodTypeInfoOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<PaymentMethodTypeInfo>>(relaxed = true)
         paymentManager.startOperation(
             Options.RetrievePaymentMethodTypeInfoOptions(
                 clientSecret,
@@ -308,8 +317,8 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start RetrieveBankOptions operation`() {
-        val listener = mockk<Airwallex.PaymentListener<BankResponse>>()
+    fun `test start RetrieveBankOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<BankResponse>>(relaxed = true)
         paymentManager.startOperation(
             Options.RetrieveBankOptions(
                 clientSecret,
@@ -325,7 +334,7 @@ class AirwallexPaymentManagerTest {
     }
 
     @Test
-    fun `test start TrackerOptions operation`() {
+    fun `test start TrackerOptions operation`() = runTest {
         mockkObject(AnalyticsLogger)
         val testUrl = "http://abc.com"
         mockkStatic((Uri::class))
@@ -349,7 +358,5 @@ class AirwallexPaymentManagerTest {
             )
         }
         verify { listener.onFailed(any()) }
-
-        unmockkAll()
     }
 }

@@ -51,12 +51,12 @@ ext {
     compileSdkVersion = 34
     minSdkVersion = 21
 
-    kotlinCoroutinesVersion = '1.5.2'
+    kotlinCoroutinesVersion = '1.8.0'
 
     wechatPayVersion = "6.8.0"
 
     junitVersion = '4.13.2'
-    robolectricVersion = '4.10.3'
+    robolectricVersion = '4.12.2'
     testCoreVersion = '1.5.0'
 
     versionCode = System.getenv("AIRWALLEX_VERSION_CODE") as Integer ?: 1

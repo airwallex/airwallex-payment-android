@@ -9,7 +9,7 @@ import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import kotlinx.coroutines.async
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.coroutineScope
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -132,7 +132,7 @@ internal class PaymentMethodsViewModel(
             else -> null
         }?.let { clientSecret ->
             TokenManager.updateClientSecret(clientSecret)
-            supervisorScope {
+            coroutineScope {
                 val retrieveConsents = async {
                     customerId?.let {
                         retrieveAvailablePaymentConsents(clientSecret, it)
