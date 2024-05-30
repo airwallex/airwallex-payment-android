@@ -5,7 +5,10 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.InvalidParamsException
@@ -15,6 +18,8 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.*
@@ -176,9 +181,15 @@ class Airwallex internal constructor(
         session: AirwallexPaymentSession,
         listener: PaymentResultListener
     ) {
-        val coroutineScope = CoroutineScope(Dispatchers.Main)
         val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
         if (googlePayProvider != null) {
+            val coroutineScope = fragment?.lifecycleScope
+                ?: if (activity is AppCompatActivity) {
+                    activity.lifecycleScope
+                } else {
+                    MainScope()
+                }
+
             coroutineScope.launch {
                 val canMakePayment = googlePayProvider.canHandleSessionAndPaymentMethod(
                     session,
@@ -191,13 +202,13 @@ class Airwallex internal constructor(
                     checkoutGooglePay(session = session, listener = listener)
                 } else {
                     listener.onCompleted(
-                        AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Payment cannot be made with GooglePay."))
+                        AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Payment not supported via Google Pay."))
                     )
                 }
             }
         } else {
             listener.onCompleted(
-                AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Google Pay component is not available."))
+                AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing ${Dependency.GOOGLEPAY.value} dependency!"))
             )
         }
     }
