@@ -374,6 +374,7 @@ class PaymentCartFragment : Fragment() {
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
             if (directGooglePayCheckout) {
                 // Direct google pay flow
+                (activity as? PaymentCartActivity)?.setLoadingProgress(true)
                 val session = buildSession(paymentIntent) as AirwallexPaymentSession
                 airwallex.startGooglePay(
                     session = session,
@@ -576,11 +577,12 @@ class PaymentCartFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // We need to handle activity result
-        AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
-
-        // If integrate by low-level API
         if (directGooglePayCheckout) {
+            // If integrate by low-level API
             airwallex.handlePaymentData(requestCode, resultCode, data)
+        } else {
+            // If integrate by entire Airwallex Native UI
+            AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
         }
     }
 

@@ -217,7 +217,7 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
         }
     }
 
-    val session = buildSessionWithIntent(paymentIntent, customerId)
+    val session = buildSession(paymentIntent, customerId)
     AirwallexStarter.presentPaymentFlow(this, session,
         object : Airwallex.PaymentResultListener {
     
@@ -279,7 +279,7 @@ You can build your own entirely custom UI on top of our low-level APIs.
 
 ### Confirm card payment with card and billing details or payment consent ID
 ```kotlin
-val session = buildSessionWithIntent(paymentIntent, customerId)
+val session = buildSession(paymentIntent, customerId)
 val airwallex = Airwallex(this@PaymentCartFragment)
 
 // Confirm intent with card and billing
@@ -304,6 +304,23 @@ airwallex.confirmPaymentIntent(
 airwallex.confirmPaymentIntent(
     session = session,
     paymentConsentId = "cst_xxxxxxxxxx",
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+            // You can handle different payment statuses and perform UI action respectively here
+        }
+    }
+)
+```
+
+### Launch payment via Google Pay
+```kotlin
+// NOTE: We only support AirwallexPaymentSession (one off session), no recurring session for Google Pay at the moment.
+// Also make sure you pass GooglePayOptions to the session.
+val session = buildSession(paymentIntent)
+val airwallex = Airwallex(this@PaymentCartFragment)
+
+airwallex.startGooglePay(
+    session = session,
     listener = object : Airwallex.PaymentResultListener {
         override fun onCompleted(status: AirwallexPaymentStatus) {
             // You can handle different payment statuses and perform UI action respectively here
