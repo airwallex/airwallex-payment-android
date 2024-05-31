@@ -4,6 +4,7 @@
 
     <application tools:targetApi="n">
         <activity
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:name=".GooglePayLauncherActivity"
             android:launchMode="singleTop"
             android:theme="@style/AirwallexTransparentTheme" />
