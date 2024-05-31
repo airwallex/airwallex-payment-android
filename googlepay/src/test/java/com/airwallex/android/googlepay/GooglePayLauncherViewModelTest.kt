@@ -35,12 +35,10 @@ class GooglePayLauncherViewModelTest {
         every { mockClient.loadPaymentData(mockRequest) } returns mockTask
         every { PaymentsUtil.createPaymentsClient(application) } returns mockClient
 
-        val viewModel = GooglePayLauncherViewModel(
+        val viewModel = GooglePayLauncherViewModel.Factory(
             application = application,
-            session = session,
-            googlePayOptions = googlePayOptions,
-            paymentMethodType = paymentMethodType
-        )
+            args = GooglePayActivityLaunch.Args(session, googlePayOptions, paymentMethodType)
+        ).create(GooglePayLauncherViewModel::class.java)
         viewModel.getLoadPaymentDataTask()
         verify { mockClient.loadPaymentData(mockRequest) }
 
