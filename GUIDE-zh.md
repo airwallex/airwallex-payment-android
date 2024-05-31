@@ -40,7 +40,7 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
 
 Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成到您的Android App中。
 
-注意：Airwallex Android SDK与支持Android API级别19及更高版本的应用程序兼容，SDK文件大小约为3188.04KB
+注意：Airwallex Android SDK与支持Android API级别21及更高版本的应用程序兼容，SDK文件大小约为3188.04KB
 
 支持的付款方式：
 - Cards: [`Visa, Mastercard`](#cards). If you want to integrate Airwallex API without our Native UI for card payments, then your website is required to be PCI-DSS compliant. 
@@ -58,7 +58,7 @@ Airwallex Native UI 是一个预构建的UI，可让您自定义UI颜色并适�
 ## 准备集成
 
 ### 添加依赖
-Airwallex Android SDK 支持Android API 19及以上版本。
+Airwallex Android SDK 支持Android API 21及以上版本。
 
 - 安装SDK
 已经上传到[Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), 你只需要添加Gradle依赖项。
