@@ -40,7 +40,7 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
 
 Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成到您的Android App中。
 
-注意：Airwallex Android SDK与支持Android API级别19及更高版本的应用程序兼容，SDK文件大小约为3188.04KB
+注意：Airwallex Android SDK与支持Android API级别21及更高版本的应用程序兼容，SDK文件大小约为3188.04KB
 
 支持的付款方式：
 - Cards: [`Visa, Mastercard`](#cards). If you want to integrate Airwallex API without our Native UI for card payments, then your website is required to be PCI-DSS compliant. 
@@ -58,7 +58,7 @@ Airwallex Native UI 是一个预构建的UI，可让您自定义UI颜色并适�
 ## 准备集成
 
 ### 添加依赖
-Airwallex Android SDK 支持Android API 19及以上版本。
+Airwallex Android SDK 支持Android API 21及以上版本。
 
 - 安装SDK
 已经上传到[Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), 你只需要添加Gradle依赖项。
@@ -214,7 +214,7 @@ Airwallex Android SDK 支持Android API 19及以上版本。
             }
         }
     }
-    val session = buildSessionWithIntent(paymentIntent, customerId)
+    val session = buildSession(paymentIntent, customerId)
     AirwallexStarter.presentPaymentFlow(this, session,
         object : Airwallex.PaymentResultListener {
     
@@ -276,7 +276,7 @@ val paymentSession = AirwallexPaymentSession.Builder(
 
 ### 用卡和账单详情或者consent ID来确认卡支付
 ```kotlin
-val session = buildSessionWithIntent(paymentIntent, customerId)
+val session = buildSession(paymentIntent, customerId)
 val airwallex = Airwallex(this@PaymentCartFragment)
 
 // Confirm intent with card and billing
@@ -301,6 +301,23 @@ airwallex.confirmPaymentIntent(
 airwallex.confirmPaymentIntent(
     session = session,
     paymentConsentId = "cst_xxxxxxxxxx",
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+            // You can handle different payment statuses and perform UI action respectively here
+        }
+    }
+)
+```
+
+### 通过Google Pay来发起支付
+```kotlin
+// 注意：我们目前仅支持AirwallexPaymentSession（一次性付款），暂不支持对于Google Pay的recurring session。
+// Also make sure you pass GooglePayOptions to the session.
+val session = buildSession(paymentIntent)
+val airwallex = Airwallex(this@PaymentCartFragment)
+
+airwallex.startGooglePay(
+    session = session,
     listener = object : Airwallex.PaymentResultListener {
         override fun onCompleted(status: AirwallexPaymentStatus) {
             // You can handle different payment statuses and perform UI action respectively here

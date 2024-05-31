@@ -1,21 +1,18 @@
 package com.airwallex.android.googlepay
 
 import android.app.Activity
-import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.os.SystemClock
 import com.airwallex.android.core.*
-import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
 import com.airwallex.android.core.model.parser.PageParser
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
+import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
-import com.google.android.gms.common.api.Status
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.wallet.*
+import com.airwallex.android.ui.extension.getExtraResult
 import io.mockk.*
 import org.json.JSONObject
 import org.junit.After
@@ -29,7 +26,6 @@ class GooglePayComponentTest {
     private lateinit var activity: Activity
     private lateinit var context: Context
     private lateinit var listener: Airwallex.PaymentResultListener
-    private lateinit var mockTask: Task<PaymentData>
 
     private val mockResponse: Page<AvailablePaymentMethodType> =
         PageParser(AvailablePaymentMethodTypeParser()).parse(
@@ -54,54 +50,26 @@ class GooglePayComponentTest {
 
     @Before
     fun setUp() {
-        mockkObject(AnalyticsLogger)
-        mockkStatic(PaymentDataRequest::class)
-        mockkStatic(PaymentsUtil::class)
-        mockkStatic(Wallet::class)
-        mockkStatic(PaymentsClient::class)
-        mockkStatic(SystemClock::class)
-        mockkStatic(PaymentData::class)
-        mockkStatic(AutoResolveHelper::class)
         mockkObject(ThreeDSecurityManager)
         mockkConstructor(AirwallexSecurityConnector::class)
+        mockkConstructor(GooglePayActivityLaunch::class)
         component = GooglePayComponent()
 
+        every { anyConstructed<GooglePayActivityLaunch>().startForResult(any()) } just runs
         val session = mockk<AirwallexSession>(relaxed = true)
         val mockPaymentType = mockk<AvailablePaymentMethodType>()
-        val mockResolver =
-            mockk<(task: Task<PaymentData>, activity: Activity, requestCode: Int) -> Unit>(relaxed = true)
-        component.resolvePaymentRequest = mockResolver
         component.session = session
-        component.paymentMethodType = mockResponse.items?.first() ?: mockPaymentType
+        component.paymentMethodType = mockResponse.items.first() ?: mockPaymentType
         activity = mockk()
         context = mockk()
-        val mockClient = mockk<PaymentsClient>()
-        val mockRequest = mockk<PaymentDataRequest>()
         listener = mockk(relaxed = true)
-        mockTask = mockk()
-        every { PaymentDataRequest.fromJson(any()) } returns mockRequest
-        every { mockClient.loadPaymentData(mockRequest) } returns mockTask
-        every { PaymentsUtil.createPaymentsClient(activity) } returns mockClient
     }
 
     @After
     fun unmockStatics() {
-        unmockkObject(AnalyticsLogger)
-        unmockkStatic(PaymentDataRequest::class)
-        unmockkStatic(PaymentsUtil::class)
-        unmockkStatic(Wallet::class)
-        unmockkStatic(PaymentsClient::class)
-        unmockkStatic(SystemClock::class)
-        unmockkStatic(PaymentData::class)
-        unmockkStatic(AutoResolveHelper::class)
         unmockkObject(ThreeDSecurityManager)
         unmockkConstructor(AirwallexSecurityConnector::class)
-    }
-
-    @Test
-    fun `test handlePaymentIntentResponse when payment data request is valid`() {
-        handlePaymentIntentResponse()
-        verify(exactly = 1) { component.resolvePaymentRequest(mockTask, activity, 991) }
+        unmockkConstructor(GooglePayActivityLaunch::class)
     }
 
     @Test
@@ -127,8 +95,6 @@ class GooglePayComponentTest {
             method = null
         )
         val cardModel = CardNextActionModel(
-            fragment = null,
-            activity = activity,
             paymentManager = AirwallexPaymentManager(AirwallexApiRepository()),
             clientSecret = "tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             device = null,
@@ -141,6 +107,7 @@ class GooglePayComponentTest {
             ThreeDSecurityManager.handleThreeDSFlow(
                 "id",
                 activity,
+                null,
                 redirectAction,
                 cardModel,
                 listener
@@ -154,87 +121,70 @@ class GooglePayComponentTest {
     }
 
     @Test
-    fun `test handleActivityResult when result code is cancelled`() {
-        handlePaymentIntentResponse()
-        component.handleActivityResult(991, RESULT_CANCELED, null)
-        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Cancel) }
-        verify(exactly = 1) { AnalyticsLogger.logPageView("google_pay_sheet", mapOf("code" to RESULT_CANCELED)) }
+    fun `test handleActivityResult when listener is null`() {
+        val intent = mockk<Intent>()
+        assertFalse(component.handleActivityResult(1006, RESULT_OK, intent))
     }
 
     @Test
-    fun `test handleActivityResult when result code is error`() {
-        val intentData = mockk<Intent>()
-        every { SystemClock.elapsedRealtime() } returns 0
-        every { AutoResolveHelper.getStatusFromIntent(intentData) } returns Status.RESULT_INTERNAL_ERROR
+    fun `test handleActivityResult when result is 3ds success`() {
+        val intent = mockk<Intent>()
+        val result = mockk<ThreeDSecurityActivityLaunch.Result>(relaxed = true)
+        every { result.paymentIntentId } returns "intentId"
+        every { intent.getExtraResult<ThreeDSecurityActivityLaunch.Result>() } returns result
+
         handlePaymentIntentResponse()
-        component.handleActivityResult(991, AutoResolveHelper.RESULT_ERROR, intentData)
-        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Cancel) }
-        verify(exactly = 1) {
-            AnalyticsLogger.logError(
-                "googlepay_payment_data_retrieve",
-                mapOf("code" to Status.RESULT_INTERNAL_ERROR.statusCode.toString())
-            )
-        }
+        assert(component.handleActivityResult(1006, RESULT_OK, intent))
+        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Success("intentId")) }
     }
 
     @Test
-    fun `test handleActivityResult when result code is OK with intent data`() {
-        val mockResponseJson =
-            "{\"paymentMethodData\":{\"info\":{\"billingAddress\":{\"address1\":\"10 Collins St\"," +
-                    "\"address2\":\"\",\"address3\":\"\",\"administrativeArea\":\"VIC\",\"countryCode\":\"AU\"," +
-                    "\"locality\":\"Melbourne\",\"name\":\"John Citizen\",\"postalCode\":\"3000\"," +
-                    "\"sortingCode\":\"\"}},\"tokenizationData\":{\"token\":\"MEUCIAzbCIvhBuBvH3Pz\"}}}"
-        val mockData = mockk<Intent>()
-        val paymentData = mockk<PaymentData>()
-        every { paymentData.toJson() } returns mockResponseJson
-        every { PaymentData.getFromIntent(mockData) } returns paymentData
+    fun `test handleActivityResult when result is 3ds fail`() {
+        val intent = mockk<Intent>()
+        val result = mockk<ThreeDSecurityActivityLaunch.Result>(relaxed = true)
+        val exception = mockk<AirwallexException>()
+        every { result.exception } returns exception
+        every { intent.getExtraResult<ThreeDSecurityActivityLaunch.Result>() } returns result
 
         handlePaymentIntentResponse()
-        component.handleActivityResult(991, RESULT_OK, mockData)
-        val billing = Billing.Builder().setAddress(
-            Address.Builder()
-                .setCity("Melbourne")
-                .setCountryCode("AU")
-                .setPostcode("3000")
-                .setState("VIC")
-                .setStreet("10 Collins St")
-                .build()
+        assert(component.handleActivityResult(1006, RESULT_OK, intent))
+        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Failure(exception)) }
+    }
+
+    @Test
+    fun `test handleActivityResult when result is google pay cancel`() {
+        val intent = mockk<Intent>()
+        every { intent.getExtraResult<GooglePayActivityLaunch.Result>() } returns GooglePayActivityLaunch.Result.Cancel
+
+        handlePaymentIntentResponse()
+        assert(component.handleActivityResult(1007, RESULT_OK, intent))
+        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Cancel) }
+    }
+
+    @Test
+    fun `test handleActivityResult when result is google pay fail`() {
+        val intent = mockk<Intent>()
+        val exception = mockk<AirwallexException>()
+        every { intent.getExtraResult<GooglePayActivityLaunch.Result>() } returns GooglePayActivityLaunch.Result.Failure(
+            exception
         )
-            .setFirstName("John")
-            .setLastName("Citizen")
-            .build()
-        verify {
-            listener.onCompleted(
-                AirwallexPaymentStatus.Success(
-                    "id",
-                    mapOf(
-                        "payment_data_type" to "encrypted_payment_token",
-                        "encrypted_payment_token" to "MEUCIAzbCIvhBuBvH3Pz",
-                        "billing" to billing
-                    )
-                )
-            )
-        }
+
+        handlePaymentIntentResponse()
+        assert(component.handleActivityResult(1007, RESULT_OK, intent))
+        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Failure(exception)) }
     }
 
     @Test
-    fun `test handleActivityResult when result code is OK without intent data`() {
-        handlePaymentIntentResponse()
-        component.handleActivityResult(991, RESULT_OK, null)
-        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Cancel) }
-    }
-
-    @Test
-    fun `test handleActivityResult when result code is OK with invalid intent data`() {
-        val mockResponseJson = "adfqrdasf"
-        val mockData = mockk<Intent>()
-        val paymentData = mockk<PaymentData>()
-        every { paymentData.toJson() } returns mockResponseJson
-        every { PaymentData.getFromIntent(mockData) } returns paymentData
+    fun `test handleActivityResult when result is google pay success`() {
+        val intent = mockk<Intent>()
+        val map = mockk<Map<String, Any>>()
+        every { intent.getExtraResult<GooglePayActivityLaunch.Result>() } returns GooglePayActivityLaunch.Result.Success(
+            map
+        )
 
         handlePaymentIntentResponse()
-        component.handleActivityResult(991, RESULT_OK, null)
-        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Cancel) }
+        assert(component.handleActivityResult(1007, RESULT_OK, intent))
+        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Success("id", map)) }
     }
 
     @Test

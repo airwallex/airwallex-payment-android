@@ -135,6 +135,28 @@ object Settings {
                 ?: defaultAutoCapture
         }
 
+    val directCardCheckout: String
+        get() {
+            val defaultDirectCardCheckout =
+                SampleApplication.instance.resources.getStringArray(R.array.array_card_checkout)[1]
+            return sharedPreferences.getString(
+                context.getString(R.string.card_checkout),
+                defaultDirectCardCheckout
+            )
+                ?: defaultDirectCardCheckout
+        }
+
+    val directGooglePayCheckout: String
+        get() {
+            val defaultDirectGooglePayCheckout =
+                SampleApplication.instance.resources.getStringArray(R.array.array_google_pay_checkout)[1]
+            return sharedPreferences.getString(
+                context.getString(R.string.google_pay_checkout),
+                defaultDirectGooglePayCheckout
+            )
+                ?: defaultDirectGooglePayCheckout
+        }
+
     val apiKey: String
         get() {
             val value = sharedPreferences.getString(context.getString(R.string.api_key), getMetadata(METADATA_KEY_API_KEY))

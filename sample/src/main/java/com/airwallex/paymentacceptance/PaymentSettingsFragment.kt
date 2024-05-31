@@ -147,6 +147,16 @@ class PaymentSettingsFragment :
             force3DSPref.setValueIndex(0)
         }
 
+        val cardCheckoutPref: ListPreference? = findPreference(getString(R.string.card_checkout))
+        if (cardCheckoutPref != null && cardCheckoutPref.value == null) {
+            cardCheckoutPref.setValueIndex(0)
+        }
+
+        val googlePayCheckoutPref: ListPreference? = findPreference(getString(R.string.google_pay_checkout))
+        if (googlePayCheckoutPref != null && googlePayCheckoutPref.value == null) {
+            googlePayCheckoutPref.setValueIndex(0)
+        }
+
         val autoCapturePref: ListPreference? = findPreference(getString(R.string.auto_capture))
         if (autoCapturePref != null && autoCapturePref.value == null) {
             autoCapturePref.setValueIndex(0)
@@ -215,6 +225,8 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.requires_cvc))
         onSharedPreferenceChanged(preferences, getString(R.string.requires_email))
         onSharedPreferenceChanged(preferences, getString(R.string.force_3ds))
+        onSharedPreferenceChanged(preferences, getString(R.string.card_checkout))
+        onSharedPreferenceChanged(preferences, getString(R.string.google_pay_checkout))
         onSharedPreferenceChanged(preferences, getString(R.string.auto_capture))
         registerOnSharedPreferenceChangeListener()
     }
@@ -267,6 +279,8 @@ class PaymentSettingsFragment :
             getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy
             getString(R.string.requires_cvc) -> preference?.summary = Settings.requiresCVC
             getString(R.string.force_3ds) -> preference?.summary = Settings.force3DS
+            getString(R.string.card_checkout) -> preference?.summary = Settings.directCardCheckout
+            getString(R.string.google_pay_checkout) -> preference?.summary = Settings.directGooglePayCheckout
             getString(R.string.auto_capture) -> preference?.summary = Settings.autoCapture
             getString(R.string.requires_email) -> preference?.summary = Settings.requiresEmail
         }

@@ -49,7 +49,7 @@ internal class PaymentCartViewModel(
     internal class Factory(
         private val application: Application
     ) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return PaymentCartViewModel(
                 application

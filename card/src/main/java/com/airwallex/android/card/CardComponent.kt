@@ -3,6 +3,7 @@ package com.airwallex.android.card
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.Fragment
 
 import com.airwallex.android.card.exception.DccException
 import com.airwallex.android.card.view.DccActivityLaunch
@@ -27,6 +28,7 @@ class CardComponent : ActionComponent {
     override fun handlePaymentIntentResponse(
         paymentIntentId: String,
         nextAction: NextAction?,
+        fragment: Fragment?,
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
@@ -38,7 +40,6 @@ class CardComponent : ActionComponent {
             return
         }
 
-        val fragment = cardNextActionModel.fragment
         val dccActivityLaunch: DccActivityLaunch = if (fragment != null) {
             DccActivityLaunch(fragment)
         } else {
@@ -91,6 +92,7 @@ class CardComponent : ActionComponent {
                 ThreeDSecurityManager.handleThreeDSFlow(
                     paymentIntentId = paymentIntentId,
                     activity = activity,
+                    fragment = fragment,
                     nextAction = nextAction,
                     cardNextActionModel = cardNextActionModel,
                     listener = listener
@@ -128,14 +130,16 @@ class CardComponent : ActionComponent {
             }
             return true
         } else if (requestCode == ThreeDSecurityActivityLaunch.REQUEST_CODE) {
-            val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
-            result?.paymentIntentId?.let {
-                listener?.onCompleted(AirwallexPaymentStatus.Success(it))
-            }
-            result?.exception?.let {
-                listener?.onCompleted(AirwallexPaymentStatus.Failure(it))
-            }
-            return true
+            listener?.let {
+                val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
+                result?.paymentIntentId?.let { intentId ->
+                    it.onCompleted(AirwallexPaymentStatus.Success(intentId))
+                }
+                result?.exception?.let { exception ->
+                    it.onCompleted(AirwallexPaymentStatus.Failure(exception))
+                }
+                return true
+            } ?: return false
         }
         return false
     }

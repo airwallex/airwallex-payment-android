@@ -3,6 +3,7 @@ package com.airwallex.android.core
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.Fragment
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.AvailablePaymentMethodTypeResource
 import com.airwallex.android.core.model.NextAction
@@ -30,6 +31,7 @@ class AirwallexPluginsTest {
         override fun handlePaymentIntentResponse(
             paymentIntentId: String,
             nextAction: NextAction?,
+            fragment: Fragment?,
             activity: Activity,
             applicationContext: Context,
             cardNextActionModel: CardNextActionModel?,

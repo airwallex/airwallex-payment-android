@@ -39,7 +39,7 @@ Our demo application is available open source on [Github](https://github.com/air
 
 Airwallex Android SDK is a flexible tool that enables you to integrate payment methods into your Android App. 
 
-Note: The Airwallex Android SDK is compatible with apps supporting Android API level 19 and above and SDK file size is 3188.04KB approximately
+Note: The Airwallex Android SDK is compatible with apps supporting Android API level 21 and above and SDK file size is 3188.04KB approximately
 
 Payment methods supported: 
 - Cards: [`Visa, Mastercard`](#cards). If you want to integrate Airwallex API without our Native UI for card payments, then your website is required to be PCI-DSS compliant. 
@@ -57,7 +57,7 @@ Airwallex Native UI is a prebuilt UI which enables you to customize the UI color
 ## Before you start
 
 ### Step1: Set up SDK
-The Airwallex Android SDK is compatible with apps supporting Android API level 19 and above.
+The Airwallex Android SDK is compatible with apps supporting Android API level 21 and above.
 
 - Install the SDK
 The Components are available through [Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), you only need to add the Gradle dependency.
@@ -217,7 +217,7 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
         }
     }
 
-    val session = buildSessionWithIntent(paymentIntent, customerId)
+    val session = buildSession(paymentIntent, customerId)
     AirwallexStarter.presentPaymentFlow(this, session,
         object : Airwallex.PaymentResultListener {
     
@@ -279,7 +279,7 @@ You can build your own entirely custom UI on top of our low-level APIs.
 
 ### Confirm card payment with card and billing details or payment consent ID
 ```kotlin
-val session = buildSessionWithIntent(paymentIntent, customerId)
+val session = buildSession(paymentIntent, customerId)
 val airwallex = Airwallex(this@PaymentCartFragment)
 
 // Confirm intent with card and billing
@@ -304,6 +304,23 @@ airwallex.confirmPaymentIntent(
 airwallex.confirmPaymentIntent(
     session = session,
     paymentConsentId = "cst_xxxxxxxxxx",
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+            // You can handle different payment statuses and perform UI action respectively here
+        }
+    }
+)
+```
+
+### Launch payment via Google Pay
+```kotlin
+// NOTE: We only support AirwallexPaymentSession (one off session), no recurring session for Google Pay at the moment.
+// Also make sure you pass GooglePayOptions to the session.
+val session = buildSession(paymentIntent)
+val airwallex = Airwallex(this@PaymentCartFragment)
+
+airwallex.startGooglePay(
+    session = session,
     listener = object : Airwallex.PaymentResultListener {
         override fun onCompleted(status: AirwallexPaymentStatus) {
             // You can handle different payment statuses and perform UI action respectively here

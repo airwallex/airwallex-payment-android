@@ -3,6 +3,7 @@ package com.airwallex.android.redirect
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.extension.putIfNotNull
@@ -20,6 +21,7 @@ class RedirectComponent : ActionComponent {
     override fun handlePaymentIntentResponse(
         paymentIntentId: String,
         nextAction: NextAction?,
+        fragment: Fragment?,
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,

@@ -75,6 +75,7 @@ class WeChatComponentProviderTest {
                 ),
                 dcc = null, url = null, method = null
             ),
+            null,
             activity,
             ApplicationProvider.getApplicationContext(),
             null,

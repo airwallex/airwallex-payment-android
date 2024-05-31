@@ -105,11 +105,10 @@ class CardComponentProviderTest {
                 url = null,
                 method = "POST"
             ),
+            null,
             activity,
             context,
             CardNextActionModel(
-                fragment = null,
-                activity = activity,
                 paymentManager = AirwallexPaymentManager(AirwallexApiRepository()),
                 clientSecret = "tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
                 device = null,

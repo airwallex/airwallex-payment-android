@@ -9,7 +9,7 @@ import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import kotlinx.coroutines.async
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.coroutineScope
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -132,7 +132,7 @@ internal class PaymentMethodsViewModel(
             else -> null
         }?.let { clientSecret ->
             TokenManager.updateClientSecret(clientSecret)
-            supervisorScope {
+            coroutineScope {
                 val retrieveConsents = async {
                     customerId?.let {
                         retrieveAvailablePaymentConsents(clientSecret, it)
@@ -258,7 +258,7 @@ internal class PaymentMethodsViewModel(
         private val airwallex: Airwallex,
         private val session: AirwallexSession
     ) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return PaymentMethodsViewModel(
                 application,

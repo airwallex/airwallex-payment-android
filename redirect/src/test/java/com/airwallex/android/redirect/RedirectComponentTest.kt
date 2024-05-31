@@ -57,6 +57,7 @@ class RedirectComponentTest {
                 url = testUrl,
                 method = null
             ),
+            null,
             activity,
             context,
             null,
@@ -80,6 +81,7 @@ class RedirectComponentTest {
                 url = testUrl,
                 method = null
             ),
+            null,
             activity,
             context,
             null,

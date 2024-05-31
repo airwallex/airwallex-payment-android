@@ -67,6 +67,7 @@ class RedirectComponentProviderTest {
                     url = "https://cdn-psp.marmot-cloud.com/acwallet/alipayconnectcode?code=golcashier1629873426081sandbox&golSandbox=true&pspName=ALIPAY_CN",
                     method = "GET"
                 ),
+                null,
                 activity,
                 ApplicationProvider.getApplicationContext(),
                 null,

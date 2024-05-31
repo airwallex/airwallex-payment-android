@@ -53,8 +53,6 @@ class CardComponentTest {
             method = null
         )
         val cardModel = CardNextActionModel(
-            fragment = null,
-            activity = activity,
             paymentManager = AirwallexPaymentManager(AirwallexApiRepository()),
             clientSecret = "tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             device = null,
@@ -64,7 +62,7 @@ class CardComponentTest {
         )
         handlePaymentIntentResponse(redirectAction, cardModel)
         verify(exactly = 1) {
-            ThreeDSecurityManager.handleThreeDSFlow("id", activity, redirectAction, cardModel, listener)
+            ThreeDSecurityManager.handleThreeDSFlow("id", activity, null, redirectAction, cardModel, listener)
         }
     }
 
