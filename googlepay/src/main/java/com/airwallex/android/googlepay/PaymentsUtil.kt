@@ -1,6 +1,7 @@
 package com.airwallex.android.googlepay
 
 import android.app.Activity
+import android.content.Context
 import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.TokenManager
@@ -142,14 +143,14 @@ object PaymentsUtil {
      * Creates an instance of [PaymentsClient] for use in an [Activity] using the
      * environment and theme set in [Constants].
      *
-     * @param activity is the caller's activity.
+     * @param context from the caller activity.
      */
-    fun createPaymentsClient(activity: Activity): PaymentsClient {
+    fun createPaymentsClient(context: Context): PaymentsClient {
         val walletOptions = Wallet.WalletOptions.Builder()
             .setEnvironment(AirwallexPlugins.environment.googlePayEnvironment())
             .build()
 
-        return Wallet.getPaymentsClient(activity, walletOptions)
+        return Wallet.getPaymentsClient(context, walletOptions)
     }
 
     /**

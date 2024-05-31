@@ -3,52 +3,39 @@ package com.airwallex.android.googlepay
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.google.android.gms.common.api.CommonStatusCodes
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
-import com.google.android.gms.wallet.PaymentDataRequest
-import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.contract.ApiTaskResult
 import com.google.android.gms.wallet.contract.TaskResultContracts.GetPaymentDataResult
 import org.json.JSONObject
 
 class GooglePayLauncherActivity : ComponentActivity() {
-    // A client for interacting with the Google Pay API.
-    private val paymentsClient: PaymentsClient by lazy {
-        PaymentsUtil.createPaymentsClient(this)
+    private val viewModel: GooglePayLauncherViewModel by lazy {
+        ViewModelProvider(
+            this,
+            GooglePayLauncherViewModel.Factory(application, args)
+        )[GooglePayLauncherViewModel::class.java]
     }
 
     private val args: GooglePayActivityLaunch.Args by lazy {
         intent.getExtraArgs()
     }
 
+    private val googlePayLauncher = registerForActivityResult(GetPaymentDataResult()) {
+        onGooglePayResult(it)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val googlePayLauncher = registerForActivityResult(GetPaymentDataResult()) {
-            onGooglePayResult(it)
-        }
-
-        val task = getLoadPaymentDataTask()
+        val task = viewModel.getLoadPaymentDataTask()
         task.addOnCompleteListener(googlePayLauncher::launch)
-    }
-
-    private fun getLoadPaymentDataTask(): Task<PaymentData> {
-        val session = args.session
-        val paymentDataRequestJson = PaymentsUtil.getPaymentDataRequest(
-            price = session.amount,
-            countryCode = session.countryCode,
-            currency = session.currency,
-            googlePayOptions = args.googlePayOptions,
-            supportedCardSchemes = args.paymentMethodType.cardSchemes
-        )
-        val request = PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
-        return paymentsClient.loadPaymentData(request)
     }
 
     private fun onGooglePayResult(taskResult: ApiTaskResult<PaymentData>) {
