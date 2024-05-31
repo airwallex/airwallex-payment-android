@@ -57,8 +57,6 @@ internal fun ActionComponent.confirmGooglePayIntent(
                         override fun onSuccess(response: PaymentIntent) {
                             if (response.nextAction != null) {
                                 val cardNextActionModel = CardNextActionModel(
-                                    fragment = fragment,
-                                    activity = activity,
                                     paymentManager = paymentManager,
                                     clientSecret = clientSecret,
                                     device = device,

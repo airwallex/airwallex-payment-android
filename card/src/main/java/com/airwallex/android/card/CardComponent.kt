@@ -92,6 +92,7 @@ class CardComponent : ActionComponent {
                 ThreeDSecurityManager.handleThreeDSFlow(
                     paymentIntentId = paymentIntentId,
                     activity = activity,
+                    fragment = fragment,
                     nextAction = nextAction,
                     cardNextActionModel = cardNextActionModel,
                     listener = listener

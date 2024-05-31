@@ -55,6 +55,13 @@
             android:title="@string/auto_capture" />
 
         <ListPreference
+            android:dialogTitle="@string/card_checkout"
+            android:entries="@array/array_card_checkout"
+            android:entryValues="@array/array_card_checkout"
+            android:key="@string/card_checkout"
+            android:title="@string/card_checkout" />
+
+        <ListPreference
             android:dialogTitle="@string/google_pay_checkout"
             android:entries="@array/array_google_pay_checkout"
             android:entryValues="@array/array_google_pay_checkout"

@@ -95,8 +95,6 @@ class GooglePayComponentTest {
             method = null
         )
         val cardModel = CardNextActionModel(
-            fragment = null,
-            activity = activity,
             paymentManager = AirwallexPaymentManager(AirwallexApiRepository()),
             clientSecret = "tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             device = null,
@@ -109,6 +107,7 @@ class GooglePayComponentTest {
             ThreeDSecurityManager.handleThreeDSFlow(
                 "id",
                 activity,
+                null,
                 redirectAction,
                 cardModel,
                 listener

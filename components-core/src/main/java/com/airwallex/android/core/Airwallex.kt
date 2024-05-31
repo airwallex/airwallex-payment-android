@@ -368,8 +368,6 @@ class Airwallex internal constructor(
                     val paymentIntentId = requireNotNull(response.initialPaymentIntentId)
                     val cardNextActionModel = when (params.paymentMethodType) {
                         PaymentMethodType.CARD.value -> CardNextActionModel(
-                            fragment = fragment,
-                            activity = activity,
                             paymentManager = paymentManager,
                             clientSecret = params.clientSecret,
                             device = null,
@@ -849,8 +847,6 @@ class Airwallex internal constructor(
                 override fun onSuccess(response: PaymentIntent) {
                     val cardNextActionModel = when (params.paymentMethodType) {
                         PaymentMethodType.CARD.value -> CardNextActionModel(
-                            fragment = fragment,
-                            activity = activity,
                             paymentManager = paymentManager,
                             clientSecret = params.clientSecret,
                             device = device,
@@ -1061,8 +1057,6 @@ class Airwallex internal constructor(
                     activity,
                     applicationContext,
                     CardNextActionModel(
-                        fragment = fragment,
-                        activity = activity,
                         paymentManager = paymentManager,
                         clientSecret = params.clientSecret,
                         device = params.device,

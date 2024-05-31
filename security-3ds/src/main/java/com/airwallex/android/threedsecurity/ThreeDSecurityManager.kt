@@ -3,6 +3,7 @@ package com.airwallex.android.threedsecurity
 import android.app.Activity
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.putIfNotNull
@@ -23,6 +24,7 @@ object ThreeDSecurityManager {
     fun handleThreeDSFlow(
         paymentIntentId: String,
         activity: Activity,
+        fragment: Fragment?,
         nextAction: NextAction,
         cardNextActionModel: CardNextActionModel,
         listener: Airwallex.PaymentResultListener,
@@ -54,7 +56,6 @@ object ThreeDSecurityManager {
                 }
             )
 
-            val fragment = cardNextActionModel.fragment
             val threeDSecurityActivityLaunch = if (fragment != null) {
                 ThreeDSecurityActivityLaunch(fragment)
             } else {
@@ -135,6 +136,7 @@ object ThreeDSecurityManager {
                                             handleThreeDSFlow(
                                                 paymentIntentId,
                                                 activity,
+                                                fragment,
                                                 continueNextAction,
                                                 cardNextActionModel,
                                                 listener,
