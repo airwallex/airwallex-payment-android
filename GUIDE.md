@@ -19,8 +19,8 @@ Our demo application is available open source on [Github](https://github.com/air
     * [Airwallex API](#airwallex-api)
     * [Airwallex Native UI](#airwallex-native-ui)
 * [Before you start](#before-you-start)
-    * [Step1: Set up SDK](#step1-set-up-sdk)
-    * [Step2: Configuration and preparation](#step-2-configuration-and-preparation)
+    * [Step 1: Set up SDK](#step-1-set-up-sdk)
+    * [Step 2: Configuration and preparation](#step-2-configuration-and-preparation)
         * [Configuration the SDK](#configuration-the-sdk)
         * [Create Payment Intent](#create-payment-intent-on-the-merchants-server)
 * [Airwallex Native UI integration](#airwallex-native-ui-integration)
@@ -28,7 +28,10 @@ Our demo application is available open source on [Github](https://github.com/air
     * [Use the entire Native UI in one flow](#use-the-entire-native-ui-in-one-flow)
     * [Custom Theme](#custom-theme)
 * [Low-level API Integration](#low-level-api-integration)
+    * [Step 1](#step-1-create-airwallexsession-and-airwallex-object)
+    * [Step 2](#step-2-implement-activityonactivityresult-in-your-host-activity-or-fragment)
     * [Confirm card payment with card and billing details or payment consent ID](#confirm-card-payment-with-card-and-billing-details-or-payment-consent-id)
+    * [Launch payment via Google Pay](#launch-payment-via-google-pay)
 * [SDK Example](#sdk-example)
 * [Test Card Numbers](#test-card-numbers)
 * [Contributing](#Contributing)
@@ -56,7 +59,7 @@ Airwallex Native UI is a prebuilt UI which enables you to customize the UI color
 
 ## Before you start
 
-### Step1: Set up SDK
+### Step 1: Set up SDK
 The Airwallex Android SDK is compatible with apps supporting Android API level 21 and above.
 
 - Install the SDK
@@ -130,9 +133,6 @@ At first, add below code in your host Activity or Fragment, implement Activity#o
         
         // You must call this method on `onActivityResult`
         AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
-    
-        // Note: If you are integrating by low-level API, you should call the following instead of the above method
-        // airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
 
@@ -228,7 +228,7 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
     )
 ```
 - To obtain the payment result, you can use the `retrievePaymentIntent` method and check the latest status. Then you can prompt the shopper with the result.
-```
+```kotlin
     airwallex.retrievePaymentIntent(
         params = RetrievePaymentIntentParams(
             // the ID of the `PaymentIntent`, required.
@@ -253,17 +253,17 @@ The Airwallex Android SDK allows merchants to provide Google Pay as a payment me
 - Make sure Google Pay is enabled on your Airwallex account.
 - Include the Google Pay module when installing the SDK as per [Step1](#step1-set-up-sdk).
 - You can customize the Google Pay options to restrict as well as provide extra context. For more information, please refer to `GooglePayOptions` class.
-```
+```kotlin
 val googlePayOptions = GooglePayOptions(
-        allowedCardAuthMethods = listOf("CRYPTOGRAM_3DS"),
-        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
-        shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
-    )
+    allowedCardAuthMethods = listOf("CRYPTOGRAM_3DS"),
+    billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+    shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
+)
 val paymentSession = AirwallexPaymentSession.Builder(
-        paymentIntent = ...,
-        countryCode = ...,
-        googlePayOptions = googlePayOptions
-    )
+    paymentIntent = ...,
+    countryCode = ...,
+    googlePayOptions = googlePayOptions
+)
 ```
 - We currently only support Visa and MasterCard for Google Pay, customers will only be able to select the cards of these payment networks during Google Pay.
 > Please note that our Google Pay module only supports `AirwallexPaymentSession` at the moment. We'll add support for recurring payment sessions in the future.
@@ -277,11 +277,24 @@ You can overwrite these color values in your app. https://developer.android.com/
 ## Low-level API Integration
 You can build your own entirely custom UI on top of our low-level APIs.
 
-### Confirm card payment with card and billing details or payment consent ID
+### Step 1: Create AirwallexSession and Airwallex object
 ```kotlin
 val session = buildSession(paymentIntent, customerId)
 val airwallex = Airwallex(this@PaymentCartFragment)
+```
 
+### Step 2: Implement Activity#onActivityResult in your host Activity or Fragment
+```kotlin
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+  
+    // You must call this method on `onActivityResult`
+    airwallex.handlePaymentData(requestCode, resultCode, data)
+}
+```
+
+### Confirm card payment with card and billing details or payment consent ID
+```kotlin
 // Confirm intent with card and billing
 airwallex.confirmPaymentIntent(
     session = session,
@@ -315,10 +328,7 @@ airwallex.confirmPaymentIntent(
 ### Launch payment via Google Pay
 ```kotlin
 // NOTE: We only support AirwallexPaymentSession (one off session), no recurring session for Google Pay at the moment.
-// Also make sure you pass GooglePayOptions to the session.
-val session = buildSession(paymentIntent)
-val airwallex = Airwallex(this@PaymentCartFragment)
-
+// Also make sure you pass GooglePayOptions to the session. Refer to [Set up Google Pay].
 airwallex.startGooglePay(
     session = session,
     listener = object : Airwallex.PaymentResultListener {
