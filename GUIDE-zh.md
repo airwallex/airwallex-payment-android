@@ -29,7 +29,10 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
     * [Set up Google Pay](#set-up-google-pay)
     * [Custom Theme](#custom-theme)
 * [低层API集成](#低层API集成)
+    * [步骤一](#步骤一创建AirwallexSession和Airwallex对象)
+    * [步骤二](#步骤二在你的Activity或Fragment中实现ActivityonActivityResult)
     * [用卡和账单详情或者consent ID来确认卡支付](#用卡和账单详情或者consent-id来确认卡支付)
+    * [通过Google Pay来发起支付](#通过google-pay来发起支付)
 * [SDK Example](#sdk-example)
 * [测试卡号](#测试卡号)
 * [贡献](#贡献)
@@ -129,9 +132,6 @@ Airwallex Android SDK 支持Android API 21及以上版本。
         
         // You must call this method on `onActivityResult`
         AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
-
-        // Note: If you are integrating by low-level API, you should call the following instead of the above method
-        // airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 ```
 
@@ -225,7 +225,7 @@ Airwallex Android SDK 支持Android API 21及以上版本。
     )
 ```
 - 获取支付结果, 你可以通过调用 `retrievePaymentIntent` 方法检查最新的状态，并提供用户结果
-```
+```kotlin
     airwallex.retrievePaymentIntent(
         params = RetrievePaymentIntentParams(
             // the ID of the `PaymentIntent`, required.
@@ -250,17 +250,17 @@ Airwallex Android SDK可以通过以下步骤允许商户给顾客提供Google P
 - 确认Google Pay在您的Airwallex账号上已开通
 - 根据[添加依赖](#添加依赖)在安装SDK时添加Google Pay模块
 - 您可以自定义Google Pay选项来限制或提供额外的付款参数。请参考`GooglePayOptions`类中的更多信息。
-```
+```kotlin
 val googlePayOptions = GooglePayOptions(
-        allowedCardAuthMethods = listOf("CRYPTOGRAM_3DS"),
-        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
-        shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
-    )
+    allowedCardAuthMethods = listOf("CRYPTOGRAM_3DS"),
+    billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+    shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
+)
 val paymentSession = AirwallexPaymentSession.Builder(
-        paymentIntent = ...,
-        countryCode = ...,
-        googlePayOptions = googlePayOptions
-    )
+    paymentIntent = ...,
+    countryCode = ...,
+    googlePayOptions = googlePayOptions
+)
 ```
 - 我们现在暂时只支持Visa和MasterCard来进行Google Pay支付，用户在通过Google Pay付款时只能选择这两种卡。
 > 请注意我们的Google Pay模块目前只支持`AirwallexPaymentSession`。我们会在以后添加对recurring payment sessions的支持。
@@ -274,11 +274,24 @@ val paymentSession = AirwallexPaymentSession.Builder(
 ## 低层API集成
 你可以基于我们的低层API来构建完全由你自定义的UI。
 
-### 用卡和账单详情或者consent ID来确认卡支付
+### 步骤一：创建AirwallexSession和Airwallex对象
 ```kotlin
 val session = buildSession(paymentIntent, customerId)
 val airwallex = Airwallex(this@PaymentCartFragment)
+```
 
+### 步骤二：在你的Activity或Fragment中实现Activity#onActivityResult
+```kotlin
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+  
+    // You must call this method on `onActivityResult`
+    airwallex.handlePaymentData(requestCode, resultCode, data)
+}
+```
+
+### 用卡和账单详情或者consent ID来确认卡支付
+```kotlin
 // Confirm intent with card and billing
 airwallex.confirmPaymentIntent(
     session = session,
@@ -312,10 +325,7 @@ airwallex.confirmPaymentIntent(
 ### 通过Google Pay来发起支付
 ```kotlin
 // 注意：我们目前仅支持AirwallexPaymentSession（一次性付款），暂不支持对于Google Pay的recurring session。
-// Also make sure you pass GooglePayOptions to the session.
-val session = buildSession(paymentIntent)
-val airwallex = Airwallex(this@PaymentCartFragment)
-
+// 同时保证将GooglePayOptions传给该session。参考[Set up Google Pay]。
 airwallex.startGooglePay(
     session = session,
     listener = object : Airwallex.PaymentResultListener {
