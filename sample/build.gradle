@@ -107,6 +107,9 @@ dependencies {
 //    implementation 'io.github.airwallex:payment-redirect:4.1.0'
 //    implementation 'io.github.airwallex:payment-wechat:4.1.0'
 //    implementation 'io.github.airwallex:payment-googlepay:4.1.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.activity:activity-ktx:1.9.0'
+    implementation 'androidx.fragment:fragment-ktx:1.8.0'
 
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.preference:preference-ktx:1.1.1'
@@ -118,5 +121,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.2"
+    implementation 'androidx.activity:activity:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }

@@ -3,8 +3,14 @@ package com.airwallex.android
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import com.airwallex.android.core.*
+import androidx.lifecycle.LifecycleOwner
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.AirwallexShippingStatus
+import com.airwallex.android.core.PaymentResultManager
 import com.airwallex.android.core.model.Shipping
+import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
 
@@ -21,6 +27,12 @@ class AirwallexStarter {
             PaymentMethodsActivityLaunch.REQUEST_CODE,
             PaymentShippingActivityLaunch.REQUEST_CODE
         )
+
+        fun registerLifecycle(lifecycleOwner: LifecycleOwner) {
+            AirwallexActivityLaunch.registerForActivityResult(lifecycleOwner){requestCode, result ->
+                handlePaymentData(requestCode, resultCode = result.resultCode, result.data)
+            }
+        }
 
         /**
          * Launch the shipping flow to allow the user to fill the shipping information
@@ -118,10 +130,10 @@ class AirwallexStarter {
         ) {
             this.paymentResultListener = paymentResultListener
             PaymentResultManager.getInstance(paymentResultListener)
-            launch.startForResult(
+            launch.launchForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
-                    .build()
+                    .build(),
             )
         }
 
