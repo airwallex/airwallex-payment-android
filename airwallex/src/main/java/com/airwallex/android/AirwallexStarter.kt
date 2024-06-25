@@ -133,7 +133,7 @@ class AirwallexStarter {
             launch.launchForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
-                    .build(),
+                    .build()
             )
         }
 

@@ -96,7 +96,6 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         resultLauncher?.apply {
             launchRequestCode = requestCode
             val intent = Intent(originalActivity, targetActivity).putExtra(Args.AIRWALLEX_EXTRA, args)
-            intent.putExtra("pageCode", requestCode)
             launch(intent)
         }
     }
