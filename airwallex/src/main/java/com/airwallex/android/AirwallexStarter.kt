@@ -29,7 +29,7 @@ class AirwallexStarter {
         )
 
         fun registerLifecycle(lifecycleOwner: LifecycleOwner) {
-            AirwallexActivityLaunch.registerForActivityResult(lifecycleOwner){requestCode, result ->
+            AirwallexActivityLaunch.registerForActivityResult(lifecycleOwner) { requestCode, result ->
                 handlePaymentData(requestCode, resultCode = result.resultCode, result.data)
             }
         }
