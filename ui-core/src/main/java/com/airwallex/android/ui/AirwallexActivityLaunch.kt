@@ -4,7 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 
 abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : AirwallexActivityLaunch.Args> constructor(
     private val originalActivity: Activity,
@@ -12,6 +20,46 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
     private val targetActivity: Class<TargetActivity>,
     private val requestCode: Int
 ) {
+    companion object {
+        private var resultLauncher: ActivityResultLauncher<Intent>? = null
+        private var launchObserver: LifecycleObserver? = null
+        private var launchRequestCode = 0
+
+        fun registerForActivityResult(
+            lifecycleOwner: LifecycleOwner,
+            callBack: (requestCode: Int, activityResult: ActivityResult) -> Unit
+        ) {
+            val activityResult = ActivityResultCallback<ActivityResult> { result ->
+                callBack.invoke(launchRequestCode, result)
+            }
+            launchObserver = object : DefaultLifecycleObserver {
+
+                override fun onCreate(owner: LifecycleOwner) {
+                    super.onCreate(owner)
+                    if (owner is Fragment) {
+                        resultLauncher = owner.registerForActivityResult(
+                            ActivityResultContracts.StartActivityForResult(),
+                            activityResult
+                        )
+                    } else if (owner is ComponentActivity) {
+                        resultLauncher = owner.registerForActivityResult(
+                            ActivityResultContracts.StartActivityForResult(), activityResult
+                        )
+                    }
+                }
+
+                override fun onDestroy(owner: LifecycleOwner) {
+                    super.onDestroy(owner)
+                    resultLauncher = null
+                    launchObserver?.apply {
+                        lifecycleOwner.lifecycle.removeObserver(this)
+                    }
+
+                }
+            }
+            launchObserver?.apply { lifecycleOwner.lifecycle.addObserver(this) }
+        }
+    }
 
     constructor(
         activity: Activity,
@@ -41,6 +89,14 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
             fragment.startActivityForResult(intent, requestCode)
         } else {
             originalActivity.startActivityForResult(intent, requestCode)
+        }
+    }
+
+    fun launchForResult(args: ArgsType) {
+        resultLauncher?.apply {
+            launchRequestCode = requestCode
+            val intent = Intent(originalActivity, targetActivity).putExtra(Args.AIRWALLEX_EXTRA, args)
+            launch(intent)
         }
     }
 

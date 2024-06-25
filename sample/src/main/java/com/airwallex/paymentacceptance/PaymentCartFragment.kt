@@ -258,6 +258,11 @@ class PaymentCartFragment : Fragment() {
         return viewBinding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        AirwallexStarter.registerLifecycle(this)
+    }
+
     private fun initializeProductsViews(products: MutableList<PhysicalProduct>) {
         viewBinding.llProducts.removeAllViews()
         products.map {
@@ -583,14 +588,10 @@ class PaymentCartFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         // We need to handle activity result
         if (directCardCheckout || directGooglePayCheckout) {
             // If integrate by low-level API
             airwallex.handlePaymentData(requestCode, resultCode, data)
-        } else {
-            // If integrate by entire Airwallex Native UI
-            AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
         }
     }
 

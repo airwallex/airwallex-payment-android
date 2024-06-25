@@ -49,3 +49,5 @@ airwallex/bin
 example/target
 example/gen
 example/bin
+
+*.properties
