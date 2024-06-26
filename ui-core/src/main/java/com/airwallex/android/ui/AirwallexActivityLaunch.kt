@@ -23,14 +23,16 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
     companion object {
         private var resultLauncher: ActivityResultLauncher<Intent>? = null
         private var launchObserver: LifecycleObserver? = null
-        private var launchRequestCode = 0
+        private var launchRequestCode: Int? = null
 
         fun registerForActivityResult(
             lifecycleOwner: LifecycleOwner,
             callBack: (requestCode: Int, activityResult: ActivityResult) -> Unit
         ) {
             val activityResult = ActivityResultCallback<ActivityResult> { result ->
-                callBack.invoke(launchRequestCode, result)
+                launchRequestCode?.apply {
+                    callBack.invoke(this, result)
+                }
             }
             launchObserver = object : DefaultLifecycleObserver {
 
@@ -51,6 +53,7 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
                 override fun onDestroy(owner: LifecycleOwner) {
                     super.onDestroy(owner)
                     resultLauncher = null
+                    launchRequestCode = null
                     launchObserver?.apply {
                         lifecycleOwner.lifecycle.removeObserver(this)
                     }
