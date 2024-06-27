@@ -1,9 +1,14 @@
 package com.airwallex.android.ui
 
 import android.app.Activity
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 
 abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : AirwallexActivityLaunch.Args> constructor(
@@ -12,6 +17,59 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
     private val targetActivity: Class<TargetActivity>,
     private val requestCode: Int
 ) {
+
+    companion object {
+        private var inited = false
+        private val resultLauncherMap = HashMap<Activity, ActivityResultLauncher<Intent>>()
+        private val resultCallbackMap = HashMap<Activity, AirwallexActivityResultCallback>()
+
+        fun init(application: Application) {
+            if (inited) return
+            inited = true
+            registerAllActivityResult(application)
+        }
+
+        private fun registerAllActivityResult(application: Application) {
+            application.registerActivityLifecycleCallbacks(object :
+                AirwallexActivityLifecycleCallbacks() {
+                override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                    if (activity is ComponentActivity) {
+                        val resultCallback = object : AirwallexActivityResultCallback() {
+                            override fun onActivityResult(result: ActivityResult) {
+                                getRequestCode()?.let {
+                                    getResultCallback()?.invoke(it, result)
+                                }
+                            }
+                        }
+                        val resultLauncher = activity.registerForActivityResult(
+                            ActivityResultContracts.StartActivityForResult(),
+                            resultCallback
+                        )
+                        resultLauncherMap[activity] = resultLauncher
+                        resultCallbackMap[activity] = resultCallback
+                    }
+                }
+
+                override fun onActivityDestroyed(activity: Activity) {
+                    resultLauncherMap.remove(activity)
+                    resultCallbackMap.remove(activity)
+                }
+
+            })
+        }
+
+        private fun setResultCallBack(
+            activity: Activity,
+            requestCode: Int,
+            resultCallBack: (requestCode: Int, result: ActivityResult) -> Unit
+        ) {
+            resultCallbackMap[activity]?.setRequestCode(requestCode)
+            resultCallbackMap[activity]?.setResultCallback(resultCallBack)
+        }
+
+        private fun getActivityResultLauncher(activity: Activity): ActivityResultLauncher<Intent>? =
+            resultLauncherMap[activity]
+    }
 
     constructor(
         activity: Activity,
@@ -42,6 +100,15 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         } else {
             originalActivity.startActivityForResult(intent, requestCode)
         }
+    }
+
+    fun launchForResult(
+        args: ArgsType,
+        resultCallBack: (requestCode: Int, result: ActivityResult) -> Unit
+    ) {
+        val intent = Intent(originalActivity, targetActivity).putExtra(Args.AIRWALLEX_EXTRA, args)
+        setResultCallBack(originalActivity, requestCode, resultCallBack)
+        getActivityResultLauncher(originalActivity)?.launch(intent)
     }
 
     interface Args : Parcelable {

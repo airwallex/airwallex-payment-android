@@ -1,6 +1,7 @@
 package com.airwallex.paymentacceptance
 
 import android.app.Application
+import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.card.CardComponent
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexConfiguration
@@ -28,7 +29,7 @@ class SampleApplication : Application() {
             resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
             else -> throw Exception("No environment")
         }
-
+        AirwallexStarter.init(this)
         Airwallex.initialize(
             AirwallexConfiguration.Builder()
                 .enableLogging(true) // Enable log in sdk, best set to false in release version
