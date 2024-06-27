@@ -3,7 +3,7 @@ package com.airwallex.android.ui
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 
-abstract class AirwallexActivityResultCallback : ActivityResultCallback<ActivityResult> {
+abstract class AirwallexActivityLaunchResultCallback : ActivityResultCallback<ActivityResult> {
 
     private var callback: ((requestCode: Int, result: ActivityResult) -> Unit)? = null
     private var requestCode: Int? = null

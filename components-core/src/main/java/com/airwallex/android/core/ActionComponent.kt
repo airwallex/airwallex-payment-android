@@ -1,12 +1,15 @@
 package com.airwallex.android.core
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.model.NextAction
 
 interface ActionComponent {
+
+    fun init(application: Application)
 
     @Suppress("LongParameterList")
     fun handlePaymentIntentResponse(

@@ -1,17 +1,29 @@
 package com.airwallex.android.core
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.AvailablePaymentMethodTypeResource
 import com.airwallex.android.core.model.NextAction
+import io.mockk.mockk
+import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class AirwallexPluginsTest {
+
+    private lateinit var application: Application
+
+    @Before
+    fun setUp() {
+        // Mock Application instance
+        application = mockk()
+    }
+
     private class TestComponentProvider(val providerType: ActionComponentProviderType) :
         ActionComponentProvider<TestComponnent> {
         override fun get(): TestComponnent {
@@ -28,6 +40,11 @@ class AirwallexPluginsTest {
     }
 
     private class TestComponnent : ActionComponent {
+
+        override fun init(application: Application) {
+
+        }
+
         override fun handlePaymentIntentResponse(
             paymentIntentId: String,
             nextAction: NextAction?,
@@ -60,6 +77,7 @@ class AirwallexPluginsTest {
     @Test
     fun `test REST client`() {
         AirwallexPlugins.initialize(
+            application,
             AirwallexConfiguration.Builder()
                 .enableLogging(true)
                 .setEnvironment(Environment.DEMO)
@@ -72,6 +90,7 @@ class AirwallexPluginsTest {
     @Test
     fun `test get Google Pay action component provider`() {
         AirwallexPlugins.initialize(
+            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
@@ -93,6 +112,7 @@ class AirwallexPluginsTest {
     @Test
     fun `test get wechat action component provider`() {
         AirwallexPlugins.initialize(
+            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
@@ -114,6 +134,7 @@ class AirwallexPluginsTest {
     @Test
     fun `test get redirect action component provider when hasSchema is true`() {
         AirwallexPlugins.initialize(
+            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
@@ -136,6 +157,7 @@ class AirwallexPluginsTest {
     @Test
     fun `test get redirect action component provider when hasSchema is false`() {
         AirwallexPlugins.initialize(
+            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(

@@ -4,7 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 
-abstract class AirwallexActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
+abstract class AirwallexActivityLaunchLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityStarted(activity: Activity) {
     }

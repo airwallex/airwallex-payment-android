@@ -21,7 +21,7 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
     companion object {
         private var inited = false
         private val resultLauncherMap = HashMap<Activity, ActivityResultLauncher<Intent>>()
-        private val resultCallbackMap = HashMap<Activity, AirwallexActivityResultCallback>()
+        private val resultCallbackMap = HashMap<Activity, AirwallexActivityLaunchResultCallback>()
 
         fun init(application: Application) {
             if (inited) return
@@ -31,10 +31,10 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
 
         private fun registerAllActivityResult(application: Application) {
             application.registerActivityLifecycleCallbacks(object :
-                AirwallexActivityLifecycleCallbacks() {
+                AirwallexActivityLaunchLifecycleCallbacks() {
                 override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                     if (activity is ComponentActivity) {
-                        val resultCallback = object : AirwallexActivityResultCallback() {
+                        val resultCallback = object : AirwallexActivityLaunchResultCallback() {
                             override fun onActivityResult(result: ActivityResult) {
                                 getRequestCode()?.let {
                                     getResultCallback()?.invoke(it, result)

@@ -1,6 +1,7 @@
 package com.airwallex.android.wechat
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
@@ -60,6 +61,10 @@ class WeChatComponent : ActionComponent {
                 }
             }
         )
+    }
+
+    override fun init(application: Application) {
+
     }
 
     override fun handlePaymentIntentResponse(

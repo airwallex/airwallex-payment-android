@@ -31,6 +31,7 @@ class SampleApplication : Application() {
         }
         AirwallexStarter.init(this)
         Airwallex.initialize(
+            this,
             AirwallexConfiguration.Builder()
                 .enableLogging(true) // Enable log in sdk, best set to false in release version
                 .setEnvironment(environment)

@@ -1,6 +1,7 @@
 package com.airwallex.android.card
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
@@ -15,6 +16,7 @@ import com.airwallex.android.core.model.*
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
 import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
+import com.airwallex.android.ui.AirwallexActivityLaunch
 
 class CardComponent : ActionComponent {
 
@@ -24,6 +26,10 @@ class CardComponent : ActionComponent {
 
     private var dccCallback: DccCallback? = null
     private var listener: Airwallex.PaymentResultListener? = null
+
+    override fun init(application: Application) {
+        AirwallexActivityLaunch.init(application)
+    }
 
     override fun handlePaymentIntentResponse(
         paymentIntentId: String,
@@ -96,27 +102,37 @@ class CardComponent : ActionComponent {
                     nextAction = nextAction,
                     cardNextActionModel = cardNextActionModel,
                     listener = listener
-                )
-            }
-            else -> {
-                val retrievePaymentIntentListener = object : PaymentListener<PaymentIntent> {
-                    override fun onSuccess(response: PaymentIntent) {
-                        listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
-                    }
-
-                    override fun onFailed(exception: AirwallexException) {
-                        listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
-                    }
+                ) { requestCode, resultCode, data ->
+                    handleActivityResult(requestCode, resultCode, data)
                 }
-                cardNextActionModel.paymentManager.startOperation(
-                    Options.RetrievePaymentIntentOptions(
-                        clientSecret = cardNextActionModel.clientSecret,
-                        paymentIntentId = cardNextActionModel.paymentIntentId
-                    ),
-                    retrievePaymentIntentListener
-                )
+            }
+            // payPayment
+            else -> {
+                startPaymentFlow(listener, cardNextActionModel)
             }
         }
+    }
+
+    private fun startPaymentFlow(
+        listener: Airwallex.PaymentResultListener,
+        cardNextActionModel: CardNextActionModel
+    ) {
+        val retrievePaymentIntentListener = object : PaymentListener<PaymentIntent> {
+            override fun onSuccess(response: PaymentIntent) {
+                listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
+            }
+
+            override fun onFailed(exception: AirwallexException) {
+                listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
+            }
+        }
+        cardNextActionModel.paymentManager.startOperation(
+            Options.RetrievePaymentIntentOptions(
+                clientSecret = cardNextActionModel.clientSecret,
+                paymentIntentId = cardNextActionModel.paymentIntentId
+            ),
+            retrievePaymentIntentListener
+        )
     }
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
@@ -171,6 +187,7 @@ class CardComponent : ActionComponent {
                     callback.onFailed(result?.exception ?: DccException(message = "Dcc failed."))
                 }
             }
+
             Activity.RESULT_CANCELED -> {
                 callback.onFailed(DccException(message = "Dcc failed. Reason: User cancel the Dcc"))
             }
