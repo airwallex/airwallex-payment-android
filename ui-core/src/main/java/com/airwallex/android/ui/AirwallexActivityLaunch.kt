@@ -23,7 +23,7 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         private val resultLauncherMap = HashMap<Activity, ActivityResultLauncher<Intent>>()
         private val resultCallbackMap = HashMap<Activity, AirwallexActivityLaunchResultCallback>()
 
-        fun init(application: Application) {
+        fun initialize(application: Application) {
             if (inited) return
             inited = true
             registerAllActivityResult(application)

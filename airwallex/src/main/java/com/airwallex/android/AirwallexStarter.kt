@@ -24,8 +24,8 @@ class AirwallexStarter {
             PaymentShippingActivityLaunch.REQUEST_CODE
         )
 
-        fun init(application: Application) {
-            AirwallexActivityLaunch.init(application)
+        fun initialize(application: Application) {
+            AirwallexActivityLaunch.initialize(application)
         }
 
         /**

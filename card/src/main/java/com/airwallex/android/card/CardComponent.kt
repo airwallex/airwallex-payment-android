@@ -28,7 +28,7 @@ class CardComponent : ActionComponent {
     private var listener: Airwallex.PaymentResultListener? = null
 
     override fun init(application: Application) {
-        AirwallexActivityLaunch.init(application)
+        AirwallexActivityLaunch.initialize(application)
     }
 
     override fun handlePaymentIntentResponse(

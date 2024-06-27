@@ -29,7 +29,7 @@ class SampleApplication : Application() {
             resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
             else -> throw Exception("No environment")
         }
-        AirwallexStarter.init(this)
+        AirwallexStarter.initialize(this)
         Airwallex.initialize(
             this,
             AirwallexConfiguration.Builder()

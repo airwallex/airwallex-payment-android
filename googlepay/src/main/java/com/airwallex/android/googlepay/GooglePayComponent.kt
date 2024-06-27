@@ -32,7 +32,7 @@ class GooglePayComponent : ActionComponent {
     lateinit var session: AirwallexSession
 
     override fun init(application: Application) {
-        AirwallexActivityLaunch.init(application)
+        AirwallexActivityLaunch.initialize(application)
     }
 
     override fun handlePaymentIntentResponse(
