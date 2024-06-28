@@ -298,6 +298,9 @@ class PaymentCartFragment : Fragment() {
                     is AirwallexShippingStatus.Cancel -> {
                         Log.d(TAG, "User cancel edit shipping...")
                     }
+                    is AirwallexShippingStatus.Failure -> {
+                        Log.d(TAG, it.exception.message ?: "Shipping Fail")
+                    }
                 }
             }
         }
