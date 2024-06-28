@@ -87,6 +87,7 @@ After setting up the SDK, you are required to config your SDK with some paramete
 We provide some parameters that can be used to debug the SDK, you can call it in Application
 ```kotlin
     Airwallex.initialize(
+        mApplication,
         AirwallexConfiguration.Builder()
             .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
             .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
@@ -126,14 +127,9 @@ Next Step:
 ## Airwallex Native UI integration
 We provide native screens to facilitate the integration of payment functions.
 
-At first, add below code in your host Activity or Fragment, implement Activity#onActivityResult and handle the result.
+At first, call the initialization method of AirwallexStarter in your Application.
 ```kotlin
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        
-        // You must call this method on `onActivityResult`
-        AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
-    }
+    AirwallexStarter.initialize(mApplication)
 ```
 
 ### Edit shipping info
@@ -281,16 +277,6 @@ You can build your own entirely custom UI on top of our low-level APIs.
 ```kotlin
 val session = buildSession(paymentIntent, customerId)
 val airwallex = Airwallex(this@PaymentCartFragment)
-```
-
-### Step 2: Implement Activity#onActivityResult in your host Activity or Fragment
-```kotlin
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-  
-    // You must call this method on `onActivityResult`
-    airwallex.handlePaymentData(requestCode, resultCode, data)
-}
 ```
 
 ### Confirm card payment with card and billing details or payment consent ID

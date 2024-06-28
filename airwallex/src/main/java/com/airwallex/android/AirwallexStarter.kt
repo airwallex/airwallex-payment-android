@@ -146,7 +146,7 @@ class AirwallexStarter {
          * @return `true` if the activity result was handled by this function,
          * otherwise `false`
          */
-        fun handlePaymentData(
+        private fun handlePaymentData(
             requestCode: Int,
             resultCode: Int,
             data: Intent?

@@ -88,6 +88,7 @@ Airwallex Android SDK 支持Android API 21及以上版本。
 我们提供了一些可用于调试SDK的参数，你可以在Application中调用
 ```kotlin
     Airwallex.initialize(
+        mApplication,
         AirwallexConfiguration.Builder()
             .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
             .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
@@ -125,14 +126,9 @@ Airwallex Android SDK 支持Android API 21及以上版本。
 
 ## UI集成
 我们提供一些UI组件，以加快付款功能的集成。
-首先，在你的Activity或Fragment中，重写 Activity#onActivityResult 方法，并调用AirwallexStarter.handlePaymentData方法。
+首先，在你的Application中，调用AirwallexStarter的初始化方法。
 ```kotlin
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        
-        // You must call this method on `onActivityResult`
-        AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
-    }
+    AirwallexStarter.initialize(mApplication)
 ```
 
 ### Edit shipping info
@@ -278,16 +274,6 @@ val paymentSession = AirwallexPaymentSession.Builder(
 ```kotlin
 val session = buildSession(paymentIntent, customerId)
 val airwallex = Airwallex(this@PaymentCartFragment)
-```
-
-### 步骤二：在你的Activity或Fragment中实现Activity#onActivityResult
-```kotlin
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-  
-    // You must call this method on `onActivityResult`
-    airwallex.handlePaymentData(requestCode, resultCode, data)
-}
 ```
 
 ### 用卡和账单详情或者consent ID来确认卡支付
