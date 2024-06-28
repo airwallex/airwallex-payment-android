@@ -19,13 +19,13 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
 ) {
 
     companion object {
-        private var inited = false
+        private var isInitialized = false
         private val resultLauncherMap = HashMap<Activity, ActivityResultLauncher<Intent>>()
         private val resultCallbackMap = HashMap<Activity, AirwallexActivityLaunchResultCallback>()
 
         fun initialize(application: Application) {
-            if (inited) return
-            inited = true
+            if (isInitialized) return
+            isInitialized = true
             registerAllActivityResult(application)
         }
 

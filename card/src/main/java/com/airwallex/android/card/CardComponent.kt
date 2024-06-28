@@ -27,7 +27,7 @@ class CardComponent : ActionComponent {
     private var dccCallback: DccCallback? = null
     private var listener: Airwallex.PaymentResultListener? = null
 
-    override fun init(application: Application) {
+    override fun initialize(application: Application) {
         AirwallexActivityLaunch.initialize(application)
     }
 

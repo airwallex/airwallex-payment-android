@@ -41,7 +41,7 @@ class AirwallexPluginsTest {
 
     private class TestComponnent : ActionComponent {
 
-        override fun init(application: Application) {
+        override fun initialize(application: Application) {
 
         }
 

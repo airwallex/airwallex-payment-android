@@ -24,8 +24,16 @@ class AirwallexStarter {
             PaymentShippingActivityLaunch.REQUEST_CODE
         )
 
-        fun initialize(application: Application) {
+        /**
+         * Initialize some global configurations, better to be called on Application
+         */
+        fun initialize(
+            application: Application,
+            configuration: AirwallexConfiguration,
+            clientSecretProvider: ClientSecretProvider? = null
+        ) {
             AirwallexActivityLaunch.initialize(application)
+            Airwallex.initialize(application, configuration, clientSecretProvider)
         }
 
         /**
@@ -146,7 +154,8 @@ class AirwallexStarter {
          * @return `true` if the activity result was handled by this function,
          * otherwise `false`
          */
-        fun handlePaymentData(
+        @Suppress("LongMethod", "ComplexMethod")
+        private fun handlePaymentData(
             requestCode: Int,
             resultCode: Int,
             data: Intent?

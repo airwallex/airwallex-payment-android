@@ -17,7 +17,7 @@ object AirwallexPlugins {
     fun initialize(application: Application, configuration: AirwallexConfiguration) {
         this.configuration = configuration
         configuration.supportComponentProviders.forEach {
-            it.get().init(application)
+            it.get().initialize(application)
         }
     }
 

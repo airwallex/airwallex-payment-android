@@ -19,9 +19,16 @@ class SampleApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        configAirwallex()
+        //if you called this method，the initialization method of Airwallex does not need to be called.
+        configAirwallexStarter()
+        //If you have already called the initialization method of AirwallexStarter, this process does not need to be called.
+        //configAirwallex()
+
     }
 
+    /**
+     * The method demonstrates the initialization process with using the Airwallex UI plugin.
+     */
     fun configAirwallex() {
         val environment = when (Settings.sdkEnv) {
             resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
@@ -29,8 +36,35 @@ class SampleApplication : Application() {
             resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
             else -> throw Exception("No environment")
         }
-        AirwallexStarter.initialize(this)
         Airwallex.initialize(
+            this,
+            AirwallexConfiguration.Builder()
+                .enableLogging(true) // Enable log in sdk, best set to false in release version
+                .setEnvironment(environment)
+                .setSupportComponentProviders(
+                    listOf(
+                        CardComponent.PROVIDER,
+                        WeChatComponent.PROVIDER,
+                        RedirectComponent.PROVIDER,
+                        GooglePayComponent.PROVIDER
+                    )
+                )
+                .build(),
+            ExampleClientSecretProvider()
+        )
+    }
+
+    /**
+     * The method demonstrates the initialization process without using the Airwallex UI plugin.
+     */
+    fun configAirwallexStarter() {
+        val environment = when (Settings.sdkEnv) {
+            resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
+            resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
+            resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
+            else -> throw Exception("No environment")
+        }
+        AirwallexStarter.initialize(
             this,
             AirwallexConfiguration.Builder()
                 .enableLogging(true) // Enable log in sdk, best set to false in release version

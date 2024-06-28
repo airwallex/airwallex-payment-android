@@ -31,7 +31,7 @@ class GooglePayComponent : ActionComponent {
     lateinit var paymentMethodType: AvailablePaymentMethodType
     lateinit var session: AirwallexSession
 
-    override fun init(application: Application) {
+    override fun initialize(application: Application) {
         AirwallexActivityLaunch.initialize(application)
     }
 

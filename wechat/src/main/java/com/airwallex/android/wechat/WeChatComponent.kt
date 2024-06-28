@@ -63,7 +63,7 @@ class WeChatComponent : ActionComponent {
         )
     }
 
-    override fun init(application: Application) {
+    override fun initialize(application: Application) {
 
     }
 

@@ -19,7 +19,7 @@ class RedirectComponent : ActionComponent {
         val PROVIDER: ActionComponentProvider<RedirectComponent> = RedirectComponentProvider()
     }
 
-    override fun init(application: Application) {
+    override fun initialize(application: Application) {
 
     }
 
