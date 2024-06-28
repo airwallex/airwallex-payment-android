@@ -146,6 +146,7 @@ class AirwallexStarter {
          * @return `true` if the activity result was handled by this function,
          * otherwise `false`
          */
+        @Suppress("LongMethod", "ComplexMethod")
         private fun handlePaymentData(
             requestCode: Int,
             resultCode: Int,
