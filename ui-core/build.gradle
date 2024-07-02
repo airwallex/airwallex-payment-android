@@ -18,6 +18,7 @@ dependencies {
     testImplementation "androidx.test:core:$testCoreVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
+    implementation 'androidx.activity:activity-ktx:1.9.0'
 }
 
 apply from: rootProject.file("publish-module.gradle")

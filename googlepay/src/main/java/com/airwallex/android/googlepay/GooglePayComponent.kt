@@ -1,8 +1,10 @@
 package com.airwallex.android.googlepay
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
+import androidx.activity.result.ActivityResult
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.ActionComponent
 import com.airwallex.android.core.ActionComponentProvider
@@ -17,6 +19,7 @@ import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
 import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
+import com.airwallex.android.ui.AirwallexActivityLaunch
 
 class GooglePayComponent : ActionComponent {
     companion object {
@@ -27,6 +30,10 @@ class GooglePayComponent : ActionComponent {
     private var paymentIntentId: String? = null
     lateinit var paymentMethodType: AvailablePaymentMethodType
     lateinit var session: AirwallexSession
+
+    override fun initialize(application: Application) {
+        AirwallexActivityLaunch.initialize(application)
+    }
 
     override fun handlePaymentIntentResponse(
         paymentIntentId: String,
@@ -54,7 +61,9 @@ class GooglePayComponent : ActionComponent {
                 nextAction = nextAction,
                 cardNextActionModel = cardNextActionModel,
                 listener = listener
-            )
+            ) { requestCode, resultCode, data ->
+                handleActivityResult(requestCode, resultCode, data)
+            }
         } else {
             this.paymentIntentId = paymentIntentId
             val googlePayOptions = session.googlePayOptions ?: return
@@ -63,13 +72,15 @@ class GooglePayComponent : ActionComponent {
             } else {
                 GooglePayActivityLaunch(activity)
             }
-            googlePayActivityLaunch.startForResult(
+            googlePayActivityLaunch.launchForResult(
                 GooglePayActivityLaunch.Args(
                     session = session,
                     googlePayOptions = googlePayOptions,
                     paymentMethodType = paymentMethodType
                 )
-            )
+            ) { requestCode: Int, result: ActivityResult ->
+                handleActivityResult(requestCode, result.resultCode, result.data)
+            }
         }
     }
 

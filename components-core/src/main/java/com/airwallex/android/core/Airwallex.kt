@@ -1,6 +1,7 @@
 package com.airwallex.android.core
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.annotation.UiThread
@@ -1171,18 +1172,19 @@ class Airwallex internal constructor(
         /**
          * Initialize some global configurations, better to be called on Application
          */
-        fun initialize(configuration: AirwallexConfiguration) {
-            initialize(configuration, null)
+        fun initialize(application: Application, configuration: AirwallexConfiguration) {
+            initialize(application, configuration, null)
         }
 
         /**
          * Initialize some global configurations, better to be called on Application
          */
         fun initialize(
+            application: Application,
             configuration: AirwallexConfiguration,
             clientSecretProvider: ClientSecretProvider? = null
         ) {
-            AirwallexPlugins.initialize(configuration)
+            AirwallexPlugins.initialize(application, configuration)
             clientSecretProvider?.let {
                 ClientSecretRepository.init(it)
             }

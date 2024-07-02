@@ -56,6 +56,7 @@ class GooglePayComponentTest {
         component = GooglePayComponent()
 
         every { anyConstructed<GooglePayActivityLaunch>().startForResult(any()) } just runs
+        every { anyConstructed<GooglePayActivityLaunch>().launchForResult(any(), any()) } just runs
         val session = mockk<AirwallexSession>(relaxed = true)
         val mockPaymentType = mockk<AvailablePaymentMethodType>()
         component.session = session
@@ -110,7 +111,8 @@ class GooglePayComponentTest {
                 null,
                 redirectAction,
                 cardModel,
-                listener
+                listener,
+                resultCallBack = any()
             )
         }
     }

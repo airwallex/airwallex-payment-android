@@ -1,6 +1,7 @@
 package com.airwallex.android.redirect
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
@@ -16,6 +17,10 @@ class RedirectComponent : ActionComponent {
 
     companion object {
         val PROVIDER: ActionComponentProvider<RedirectComponent> = RedirectComponentProvider()
+    }
+
+    override fun initialize(application: Application) {
+
     }
 
     override fun handlePaymentIntentResponse(

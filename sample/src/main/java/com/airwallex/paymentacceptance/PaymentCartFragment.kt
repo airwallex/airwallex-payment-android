@@ -325,7 +325,7 @@ class PaymentCartFragment : Fragment() {
             getString(R.string.card_checkout)
         } else if (directGooglePayCheckout) {
             getString(R.string.google_pay_checkout)
-        }  else {
+        } else {
             getString(R.string.checkout)
         }
     }
@@ -387,7 +387,7 @@ class PaymentCartFragment : Fragment() {
                 airwallex.confirmPaymentIntent(
                     session = session,
                     card = PaymentMethod.Card.Builder()
-                        .setNumber("4751293321421590")
+                        .setNumber("4012000300000070")
                         .setName("John Citizen")
                         .setExpiryMonth("12")
                         .setExpiryYear("2029")
@@ -579,19 +579,6 @@ class PaymentCartFragment : Fragment() {
                 }
             }
         )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // We need to handle activity result
-        if (directCardCheckout || directGooglePayCheckout) {
-            // If integrate by low-level API
-            airwallex.handlePaymentData(requestCode, resultCode, data)
-        } else {
-            // If integrate by entire Airwallex Native UI
-            AirwallexStarter.handlePaymentData(requestCode, resultCode, data)
-        }
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {

@@ -17,7 +17,7 @@ dependencies {
     api 'com.github.bumptech.glide:glide:4.12.0'
 
     // AndroidX
-    api 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+    api 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
     // test
@@ -30,7 +30,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation 'io.mockk:mockk:1.13.3'
-    testImplementation 'androidx.arch.core:core-testing:2.1.0'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
 }
 
 apply from: rootProject.file("publish-module.gradle")
