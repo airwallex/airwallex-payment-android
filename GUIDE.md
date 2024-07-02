@@ -24,6 +24,7 @@ Our demo application is available open source on [Github](https://github.com/air
     * [Configuration and preparation](#configuration-and-preparation) 
     * [Edit Shipping Info](#edit-shipping-info)
     * [Use the entire Native UI in one flow](#use-the-entire-native-ui-in-one-flow)
+    * [Set up Google Pay](#set-up-google-pay)
     * [Custom Theme](#custom-theme)
 * [Low-level API Integration](#low-level-api-integration)
     * [Step 1: Set up SDK](#step-1-set-up-sdk)
@@ -278,8 +279,6 @@ To install the SDK, in your app-level `build.gradle`, add the following:
         
         // Select the payment method you want to support.
         implementation 'io.github.airwallex:payment-card:4.5.0'
-        implementation 'io.github.airwallex:payment-redirect:4.5.0'
-        implementation 'io.github.airwallex:payment-wechat:4.5.0'
         implementation 'io.github.airwallex:payment-googlepay:4.5.0'
     }
 ```
@@ -308,21 +307,8 @@ We provide some parameters that can be used to debug the SDK, you can call it in
     )
 ```
 
-#### Create Payment Intent (On the Merchant’s server)
-
-Before confirming the `PaymentIntent`, You must create a `PaymentIntent` on the server and pass it to the client.
-
-> Follow these steps to create a PaymentIntent on the Merchant’s server
->1. To begin you will need to obtain an access token to allow you to reach Airwallex API endpoints. Using your unique Client ID and API key (these can be generated within [Account settings > API keys](https://www.airwallex.com/app/settings/api)) you can call the Authentication API endpoint. On success, an access token will be granted.
->
->2. Create customer(optional) allows you to save your customers’ details, attach payment methods so you can quickly retrieve the supported payment methods as your customer checks out on your shopping site. [`/api/v1/pa/customers/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Customers/_api_v1_pa_customers_create/post)
->
->3. Finally, you need to create a `PaymentIntent` object on the Merchant’s server via [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post) and pass it to the client.
->
->4. In the response of each payment intent, you will be returned with client_secret, which you will need to store for later uses.
-
-After creating the payment intent, you can use Airwallex SDK to confirm payment intent and enable the shopper to complete the payment with selected payment methods
-
+#### Create Payment Intent
+[Create Payment Intent (On the Merchant’s server)](#create-payment-intent-on-the-merchants-server)
 
 ### Step 3: Create AirwallexSession and Airwallex object
 ```kotlin
@@ -363,6 +349,7 @@ airwallex.confirmPaymentIntent(
 ```
 
 ### Launch payment via Google Pay
+Before invoking the payment API, you need to follow the steps to[Set up Google Pay](#set-up-google-pay)
 ```kotlin
 // NOTE: We only support AirwallexPaymentSession (one off session), no recurring session for Google Pay at the moment.
 // Also make sure you pass GooglePayOptions to the session. Refer to [Set up Google Pay].

@@ -275,8 +275,6 @@ Airwallex Android SDK 支持Android API 21及以上版本。
         
         // Select the payment method you want to support.
         implementation 'io.github.airwallex:payment-card:4.5.0'
-        implementation 'io.github.airwallex:payment-redirect:4.5.0'
-        implementation 'io.github.airwallex:payment-wechat:4.5.0'
         implementation 'io.github.airwallex:payment-googlepay:4.5.0'
     }
 ```
@@ -305,20 +303,8 @@ Airwallex Android SDK 支持Android API 21及以上版本。
     )
 ```
 
-#### 创建PaymentIntent
-
-在confirm`PaymentIntent`之前, 你必须在服务端创建一个`PaymentIntent`对象，并返回到客户端.
-
-> 请按照以下步骤在商家服务器上创建PaymentIntent
->1. 首先，您需要获取访问令牌以允许您访问Airwallex API端点。 使用您的唯一Client ID 和 API KEY (这些可以在 [Account settings > API keys](https://www.airwallex.com/app/settings/api) 中生成). 成功之后，你可以得到一个access token。
->
->2. 创建 customer(可选的) 允许您保存customer的详细信息, 可以在customer上绑定付款方式，以便在customer在支付时快速检索支持的付款方式 [`/api/v1/pa/customers/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Customers/_api_v1_pa_customers_create/post)
->
->3. 最终, 你可以通过 [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post) 来创建一个`PaymentIntent`对象，然后返回到你的客户端
->
->4. 在返回结果中，将包含client_secret，您需要将其存储以备后用。
-
-创建付款意向后，您可以使用Airwallex SDK confirm PaymentIntent，并使购物者能够使用选定的付款方式完成付款
+#### 创建PaymentIntent(低层API)
+[创建PaymentIntent](#创建PaymentIntent)
 
 ### 创建AirwallexSession和Airwallex对象
 ```kotlin
@@ -359,6 +345,7 @@ airwallex.confirmPaymentIntent(
 ```
 
 ### 通过Google Pay来发起支付
+调用支付API之前，需要按照如下步骤[Set up Google Pay](#set-up-google-pay)进行配置
 ```kotlin
 // 注意：我们目前仅支持AirwallexPaymentSession（一次性付款），暂不支持对于Google Pay的recurring session。
 // 同时保证将GooglePayOptions传给该session。参考[Set up Google Pay]。
