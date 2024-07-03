@@ -10,6 +10,8 @@ import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
 import com.airwallex.android.core.model.parser.PageParser
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.tasks.OnCompleteListener
@@ -70,12 +72,17 @@ class GooglePayComponentProviderTest {
     fun setUp() {
         task = mockGooglePayTask()
         mockkObject(AnalyticsLogger)
+        val service = mockk<GoogleApiAvailability>()
+        mockkStatic(GoogleApiAvailability::class)
+        every { GoogleApiAvailability.getInstance() } returns service
+        every { service.isGooglePlayServicesAvailable(any()) } returns ConnectionResult.SUCCESS
     }
 
     @After
     fun unmockStatics() {
         unmockkStatic(PaymentsUtil::class)
         unmockkStatic(Wallet::class)
+        unmockkStatic(GoogleApiAvailability::class)
         unmockkObject(AnalyticsLogger)
     }
 
