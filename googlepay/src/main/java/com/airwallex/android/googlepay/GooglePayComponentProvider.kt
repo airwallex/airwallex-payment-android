@@ -9,6 +9,8 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.ConsoleLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import kotlin.coroutines.resume
@@ -55,6 +57,11 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
             options,
             paymentMethodType.cardSchemes
         ) ?: return false
+        val googleApiAvailability = GoogleApiAvailability.getInstance()
+        val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(activity)
+        if (resultCode != ConnectionResult.SUCCESS) {
+            return false
+        }
         val request = IsReadyToPayRequest.fromJson(isReadyToPayJson.toString())
         val task = paymentsClient.isReadyToPay(request)
         return suspendCoroutine { cont ->
