@@ -84,7 +84,7 @@ class PaymentSettingsFragment :
         }
         (findPreference<Preference>(getString(R.string.currency)) as? EditTextPreference)?.onPreferenceChangeListener =
             object : Preference.OnPreferenceChangeListener {
-                override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
                     if (newValue?.toString()?.trim().isNullOrEmpty()) {
                         Toast.makeText(
                             context, "Currency can not be empty",
@@ -100,7 +100,7 @@ class PaymentSettingsFragment :
         }
         (findPreference<Preference>(getString(R.string.country_code)) as? EditTextPreference)?.onPreferenceChangeListener =
             object : Preference.OnPreferenceChangeListener {
-                override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
                     if (newValue?.toString()?.trim().isNullOrEmpty()) {
                         Toast.makeText(
                             context, "Country code can not be empty",
@@ -240,7 +240,7 @@ class PaymentSettingsFragment :
 
     override fun onDestroy() {
         super.onDestroy()
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -301,12 +301,14 @@ class PaymentSettingsFragment :
     }
 
     private fun registerOnSharedPreferenceChangeListener() {
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
     }
 
     fun reset() {
-        preferenceManager.sharedPreferences.edit().clear().apply()
-        PreferenceManager.setDefaultValues(activity, R.xml.settings, true)
+        preferenceManager.sharedPreferences?.edit()?.clear()?.apply()
+        context?.apply {
+            PreferenceManager.setDefaultValues(this, R.xml.settings, true)
+        }
         preferenceScreen.removeAll()
         onCreatePreferences(null, null)
     }

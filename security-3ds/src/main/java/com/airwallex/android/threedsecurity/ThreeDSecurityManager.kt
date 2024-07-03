@@ -1,6 +1,7 @@
 package com.airwallex.android.threedsecurity
 
 import android.app.Activity
+import android.content.Intent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -28,7 +29,8 @@ object ThreeDSecurityManager {
         nextAction: NextAction,
         cardNextActionModel: CardNextActionModel,
         listener: Airwallex.PaymentResultListener,
-        payload: String? = null
+        payload: String? = null,
+        resultCallBack: ((requestCode: Int, resultCode: Int, data: Intent?) -> Unit)? = null
     ) {
         val url = nextAction.url
         val data = nextAction.data
@@ -62,7 +64,7 @@ object ThreeDSecurityManager {
                 ThreeDSecurityActivityLaunch(activity)
             }
 
-            threeDSecurityActivityLaunch.startForResult(
+            threeDSecurityActivityLaunch.launchForResult(
                 ThreeDSecurityActivityLaunch.Args(
                     url = url,
                     body = postResult.toString(),
@@ -76,7 +78,9 @@ object ThreeDSecurityManager {
                             .build()
                     )
                 )
-            )
+            ) { requestCode, result ->
+                resultCallBack?.invoke(requestCode, result.resultCode, result.data)
+            }
         } else {
             val container = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
             val webView = AirwallexWebView(activity).apply {
@@ -140,7 +144,8 @@ object ThreeDSecurityManager {
                                                 continueNextAction,
                                                 cardNextActionModel,
                                                 listener,
-                                                payload
+                                                payload,
+                                                resultCallBack
                                             )
                                         }
 

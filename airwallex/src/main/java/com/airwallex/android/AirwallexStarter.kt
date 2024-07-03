@@ -1,10 +1,12 @@
 package com.airwallex.android
 
 import android.app.Activity
+import android.app.Application
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
 import com.airwallex.android.core.model.Shipping
+import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
 
@@ -21,6 +23,18 @@ class AirwallexStarter {
             PaymentMethodsActivityLaunch.REQUEST_CODE,
             PaymentShippingActivityLaunch.REQUEST_CODE
         )
+
+        /**
+         * Initialize some global configurations, better to be called on Application
+         */
+        fun initialize(
+            application: Application,
+            configuration: AirwallexConfiguration,
+            clientSecretProvider: ClientSecretProvider? = null
+        ) {
+            AirwallexActivityLaunch.initialize(application)
+            Airwallex.initialize(application, configuration, clientSecretProvider)
+        }
 
         /**
          * Launch the shipping flow to allow the user to fill the shipping information
@@ -66,11 +80,13 @@ class AirwallexStarter {
             shippingResultListener: Airwallex.ShippingResultListener
         ) {
             this.shippingResultListener = shippingResultListener
-            launch.startForResult(
+            launch.launchForResult(
                 PaymentShippingActivityLaunch.Args.Builder()
                     .setShipping(shipping)
                     .build()
-            )
+            ) { requestCode, result ->
+                handlePaymentData(requestCode, result.resultCode, result.data)
+            }
         }
 
         /**
@@ -118,11 +134,13 @@ class AirwallexStarter {
         ) {
             this.paymentResultListener = paymentResultListener
             PaymentResultManager.getInstance(paymentResultListener)
-            launch.startForResult(
+            launch.launchForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
                     .build()
-            )
+            ) { requestCode, result ->
+                handlePaymentData(requestCode, result.resultCode, result.data)
+            }
         }
 
         /**
@@ -136,7 +154,8 @@ class AirwallexStarter {
          * @return `true` if the activity result was handled by this function,
          * otherwise `false`
          */
-        fun handlePaymentData(
+        @Suppress("LongMethod", "ComplexMethod")
+        private fun handlePaymentData(
             requestCode: Int,
             resultCode: Int,
             data: Intent?
@@ -157,6 +176,7 @@ class AirwallexStarter {
                             shippingResultListener = null
                             true
                         }
+
                         PaymentMethodsActivityLaunch.REQUEST_CODE -> {
                             val result =
                                 PaymentMethodsActivityLaunch.Result.fromIntent(data) ?: return true
@@ -166,6 +186,7 @@ class AirwallexStarter {
                                         AirwallexPaymentStatus.Failure(result.exception)
                                     )
                                 }
+
                                 result.paymentIntentId != null -> {
                                     if (result.isRedirecting) {
                                         paymentResultListener?.onCompleted(
@@ -181,9 +202,11 @@ class AirwallexStarter {
                             paymentResultListener = null
                             true
                         }
+
                         else -> false
                     }
                 }
+
                 Activity.RESULT_CANCELED -> {
                     return when (requestCode) {
                         PaymentShippingActivityLaunch.REQUEST_CODE -> {
@@ -191,14 +214,17 @@ class AirwallexStarter {
                             shippingResultListener = null
                             true
                         }
+
                         PaymentMethodsActivityLaunch.REQUEST_CODE -> {
                             paymentResultListener?.onCompleted(AirwallexPaymentStatus.Cancel)
                             paymentResultListener = null
                             true
                         }
+
                         else -> false
                     }
                 }
+
                 else -> return false
             }
         }
