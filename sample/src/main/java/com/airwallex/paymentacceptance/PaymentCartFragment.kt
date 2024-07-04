@@ -164,7 +164,8 @@ class PaymentCartFragment : Fragment() {
 
     private fun buildSession(
         paymentIntent: PaymentIntent? = null,
-        customerId: String? = null
+        customerId: String? = null,
+        hidePaymentConsents: Boolean = false
     ): AirwallexSession {
         return when (checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
@@ -182,6 +183,7 @@ class PaymentCartFragment : Fragment() {
                     .setRequireEmail(requiresEmail)
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)
+                    .setHidePaymentConsents(hidePaymentConsents)
                     .build()
             }
 
@@ -380,7 +382,7 @@ class PaymentCartFragment : Fragment() {
 
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
-            val session = buildSession(paymentIntent)
+            val session = buildSession(paymentIntent, hidePaymentConsents = false)//use hidePaymentConsents boolean to control whether saved cards are displayed on the list screen
             if (directCardCheckout) {
                 // Direct payment flow with provided card details
                 (activity as? PaymentCartActivity)?.setLoadingProgress(true)

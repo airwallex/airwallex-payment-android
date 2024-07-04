@@ -26,12 +26,15 @@ internal class PaymentMethodsViewModel(
             is AirwallexPaymentSession -> {
                 session.paymentIntent
             }
+
             is AirwallexRecurringWithIntentSession -> {
                 session.paymentIntent
             }
+
             is AirwallexRecurringSession -> {
                 null
             }
+
             else -> {
                 throw Exception("Not supported session $session")
             }
@@ -43,14 +46,29 @@ internal class PaymentMethodsViewModel(
             is AirwallexPaymentSession -> {
                 session.paymentIntent.customerId
             }
+
             is AirwallexRecurringWithIntentSession -> {
                 session.paymentIntent.customerId
             }
+
             is AirwallexRecurringSession -> {
                 session.customerId
             }
+
             else -> {
                 throw Exception("Not supported session $session")
+            }
+        }
+    }
+
+    private val hidePaymentConsents: Boolean by lazy {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                session.hidePaymentConsents
+            }
+
+            else -> {
+                false
             }
         }
     }
@@ -104,10 +122,12 @@ internal class PaymentMethodsViewModel(
             candidates?.find { it.value == AirwallexPaymentRequestFlow.IN_APP.value } != null -> {
                 AirwallexPaymentRequestFlow.IN_APP
             }
+
             candidates != null && candidates.isNotEmpty() -> {
                 AirwallexPaymentRequestFlow.fromValue(candidates[0].value)
                     ?: AirwallexPaymentRequestFlow.IN_APP
             }
+
             else -> {
                 AirwallexPaymentRequestFlow.IN_APP
             }
@@ -120,6 +140,7 @@ internal class PaymentMethodsViewModel(
             is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
                 paymentIntent?.clientSecret
             }
+
             is AirwallexRecurringSession -> {
                 try {
                     ClientSecretRepository.getInstance()
@@ -129,14 +150,19 @@ internal class PaymentMethodsViewModel(
                     return Result.failure(e)
                 }
             }
+
             else -> null
         }?.let { clientSecret ->
             TokenManager.updateClientSecret(clientSecret)
             coroutineScope {
                 val retrieveConsents = async {
-                    customerId?.let {
-                        retrieveAvailablePaymentConsents(clientSecret, it)
-                    } ?: emptyList()
+                    if (hidePaymentConsents) {
+                        emptyList()
+                    } else {
+                        customerId?.let {
+                            retrieveAvailablePaymentConsents(clientSecret, it)
+                        } ?: emptyList()
+                    }
                 }
                 val retrieveMethods = async { retrieveAvailablePaymentMethods(clientSecret) }
                 try {
@@ -152,37 +178,37 @@ internal class PaymentMethodsViewModel(
         clientSecret: String,
         customerId: String
     ) = loadPagedItems(
-            loadPage = { pageNum ->
-                airwallex.retrieveAvailablePaymentConsents(
-                    RetrieveAvailablePaymentConsentsParams.Builder(
-                        clientSecret = clientSecret,
-                        customerId = customerId,
-                        pageNum = pageNum
-                    )
-                        .setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
-                        .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED)
-                        .build()
+        loadPage = { pageNum ->
+            airwallex.retrieveAvailablePaymentConsents(
+                RetrieveAvailablePaymentConsentsParams.Builder(
+                    clientSecret = clientSecret,
+                    customerId = customerId,
+                    pageNum = pageNum
                 )
-            }
-        )
+                    .setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
+                    .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED)
+                    .build()
+            )
+        }
+    )
 
     private suspend fun retrieveAvailablePaymentMethods(
         clientSecret: String
     ) = loadPagedItems(
-            loadPage = { pageNum ->
-                airwallex.retrieveAvailablePaymentMethods(
-                    session = session,
-                    params = RetrieveAvailablePaymentMethodParams.Builder(
-                        clientSecret = clientSecret,
-                        pageNum = pageNum
-                    )
-                        .setActive(true)
-                        .setTransactionCurrency(session.currency)
-                        .setCountryCode(session.countryCode)
-                        .build()
+        loadPage = { pageNum ->
+            airwallex.retrieveAvailablePaymentMethods(
+                session = session,
+                params = RetrieveAvailablePaymentMethodParams.Builder(
+                    clientSecret = clientSecret,
+                    pageNum = pageNum
                 )
-            }
-        )
+                    .setActive(true)
+                    .setTransactionCurrency(session.currency)
+                    .setCountryCode(session.countryCode)
+                    .build()
+            )
+        }
+    )
 
     private suspend fun <T> loadPagedItems(
         loadPage: suspend (Int) -> Page<T>,

@@ -67,7 +67,13 @@ class AirwallexPaymentSession internal constructor(
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */
-    val autoCapture: Boolean = true
+    val autoCapture: Boolean = true,
+
+    /**
+     *  control whether saved cards are displayed on the list screen
+     */
+    val hidePaymentConsents: Boolean = false
+
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
@@ -80,6 +86,7 @@ class AirwallexPaymentSession internal constructor(
         private var isEmailRequired: Boolean = false
         private var returnUrl: String? = null
         private var autoCapture: Boolean = true
+        private var hidePaymentConsents: Boolean = false
 
         fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requiresBillingInformation
@@ -97,6 +104,10 @@ class AirwallexPaymentSession internal constructor(
             this.autoCapture = autoCapture
         }
 
+        fun setHidePaymentConsents(hidePaymentConsents: Boolean): Builder = apply {
+            this.hidePaymentConsents = hidePaymentConsents
+        }
+
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
                 paymentIntent = paymentIntent,
@@ -109,7 +120,8 @@ class AirwallexPaymentSession internal constructor(
                 customerId = paymentIntent.customerId,
                 returnUrl = returnUrl,
                 googlePayOptions = googlePayOptions,
-                autoCapture = autoCapture
+                autoCapture = autoCapture,
+                hidePaymentConsents = hidePaymentConsents
             )
         }
     }
