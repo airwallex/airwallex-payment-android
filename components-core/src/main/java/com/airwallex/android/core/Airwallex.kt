@@ -294,7 +294,7 @@ class Airwallex internal constructor(
                 pageSize = params.pageSize,
                 active = params.active,
                 transactionCurrency = params.transactionCurrency,
-                transactionMode = params.transactionMode,
+                transactionMode = transactionMode,
                 countryCode = params.countryCode
             )
         )
