@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
+import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.ui.AirwallexActivityLaunch
@@ -26,7 +27,6 @@ class AirwallexStarter {
             clientSecretProvider: ClientSecretProvider? = null
         ) {
             AirwallexActivityLaunch.initialize(application)
-            Airwallex.initialize(application, configuration, clientSecretProvider)
             Airwallex.initialize(application, configuration, clientSecretProvider)
         }
 
@@ -152,7 +152,7 @@ class AirwallexStarter {
                     val result = PaymentShippingActivityLaunch.Result.fromIntent(data)
                     if (result == null) {
                         shippingResultListener.onCompleted(
-                            AirwallexShippingStatus.Failure(PaymentException("shipping result is null"))
+                            AirwallexShippingStatus.Failure(AirwallexCheckoutException(message = "shipping result is null"))
                         )
                         return
                     }
@@ -185,7 +185,7 @@ class AirwallexStarter {
                     val result = PaymentMethodsActivityLaunch.Result.fromIntent(data)
                     if (result == null) {
                         paymentResultListener.onCompleted(
-                            AirwallexPaymentStatus.Failure(PaymentException("flow result is null"))
+                            AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "flow result is null"))
                         )
                         return
                     }
@@ -216,8 +216,4 @@ class AirwallexStarter {
             }
         }
     }
-
-    class PaymentException(
-        message: String
-    ) : AirwallexException(null, null, 0, message)
 }
