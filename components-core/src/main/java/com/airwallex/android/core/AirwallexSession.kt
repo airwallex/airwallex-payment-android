@@ -50,4 +50,9 @@ abstract class AirwallexSession : Parcelable {
      * Google Pay options
      */
     abstract val googlePayOptions: GooglePayOptions?
+
+    /**
+     * limit the payment methods displayed on the list screen
+     */
+    abstract val paymentMethods: List<String>?
 }

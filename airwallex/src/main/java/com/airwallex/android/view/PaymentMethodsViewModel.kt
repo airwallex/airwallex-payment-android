@@ -166,11 +166,23 @@ internal class PaymentMethodsViewModel(
                 }
                 val retrieveMethods = async { retrieveAvailablePaymentMethods(clientSecret) }
                 try {
-                    Result.success(Pair(retrieveMethods.await(), retrieveConsents.await()))
+                    val methods = retrieveMethods.await()
+                    val consents = retrieveConsents.await()
+                    Result.success(Pair(filterPaymentMethodsBySession(methods, session.paymentMethods), consents))
                 } catch (exception: AirwallexException) {
                     Result.failure(exception)
                 }
             }
+        }
+    }
+
+    private fun filterPaymentMethodsBySession(
+        sourceList: List<AvailablePaymentMethodType>,
+        filterList: List<String>?
+    ): List<AvailablePaymentMethodType> {
+        if (filterList.isNullOrEmpty()) return sourceList
+        return filterList.mapNotNull { name ->
+            sourceList.find { it.name == name }
         }
     }
 

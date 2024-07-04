@@ -165,7 +165,8 @@ class PaymentCartFragment : Fragment() {
     private fun buildSession(
         paymentIntent: PaymentIntent? = null,
         customerId: String? = null,
-        hidePaymentConsents: Boolean = false
+        hidePaymentConsents: Boolean = false,
+        paymentMethods: List<String>? = null
     ): AirwallexSession {
         return when (checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
@@ -184,6 +185,7 @@ class PaymentCartFragment : Fragment() {
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)
                     .setHidePaymentConsents(hidePaymentConsents)
+                    .sePaymentMethods(paymentMethods)
                     .build()
             }
 
@@ -200,6 +202,7 @@ class PaymentCartFragment : Fragment() {
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .setReturnUrl(Settings.returnUrl)
+                    .sePaymentMethods(paymentMethods)
                     .build()
             }
 
@@ -221,6 +224,7 @@ class PaymentCartFragment : Fragment() {
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)
+                    .sePaymentMethods(paymentMethods)
                     .build()
             }
         }
@@ -382,7 +386,13 @@ class PaymentCartFragment : Fragment() {
 
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
-            val session = buildSession(paymentIntent, hidePaymentConsents = false)//use hidePaymentConsents boolean to control whether saved cards are displayed on the list screen
+            val session = buildSession(
+                paymentIntent,
+                //use hidePaymentConsents boolean to control whether saved cards are displayed on the list screen
+                hidePaymentConsents = false,
+                //limit the payment methods displayed on the list screen
+                // paymentMethods = listOf("fps", "card", "googlepay", "paypal", "alipayhk")
+            )
             if (directCardCheckout) {
                 // Direct payment flow with provided card details
                 (activity as? PaymentCartActivity)?.setLoadingProgress(true)

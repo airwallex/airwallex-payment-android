@@ -64,6 +64,11 @@ class AirwallexPaymentSession internal constructor(
     override val googlePayOptions: GooglePayOptions? = null,
 
     /**
+     * limit the payment methods displayed on the list screen
+     */
+    override val paymentMethods: List<String>? = null,
+
+    /**
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */
@@ -87,6 +92,7 @@ class AirwallexPaymentSession internal constructor(
         private var returnUrl: String? = null
         private var autoCapture: Boolean = true
         private var hidePaymentConsents: Boolean = false
+        private var paymentMethods: List<String>? = null
 
         fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requiresBillingInformation
@@ -108,6 +114,10 @@ class AirwallexPaymentSession internal constructor(
             this.hidePaymentConsents = hidePaymentConsents
         }
 
+        fun sePaymentMethods(paymentMethods: List<String>?): Builder = apply {
+            this.paymentMethods = paymentMethods
+        }
+
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
                 paymentIntent = paymentIntent,
@@ -121,7 +131,8 @@ class AirwallexPaymentSession internal constructor(
                 returnUrl = returnUrl,
                 googlePayOptions = googlePayOptions,
                 autoCapture = autoCapture,
-                hidePaymentConsents = hidePaymentConsents
+                hidePaymentConsents = hidePaymentConsents,
+                paymentMethods = paymentMethods
             )
         }
     }
