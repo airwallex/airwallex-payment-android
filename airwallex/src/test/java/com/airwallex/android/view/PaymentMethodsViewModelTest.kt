@@ -41,7 +41,6 @@ class PaymentMethodsViewModelTest {
             val viewModel = mockViewModel(transactionMode = TransactionMode.RECURRING)
             val result = viewModel.fetchAvailablePaymentMethodsAndConsents()?.getOrNull()
             assertEquals(result?.first?.first()?.name, "card")
-            assertEquals(result?.second?.first()?.paymentMethod?.card?.name, "John")
             verify(exactly = 1) { TokenManager.updateClientSecret(any()) }
         }
 

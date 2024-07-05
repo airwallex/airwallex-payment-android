@@ -66,7 +66,6 @@ internal class PaymentMethodsViewModel(
             is AirwallexPaymentSession -> {
                 session.hidePaymentConsents
             }
-
             else -> {
                 false
             }
@@ -156,24 +155,32 @@ internal class PaymentMethodsViewModel(
             TokenManager.updateClientSecret(clientSecret)
             coroutineScope {
                 val retrieveConsents = async {
-                    if (hidePaymentConsents) {
-                        emptyList()
-                    } else {
-                        customerId?.let {
-                            retrieveAvailablePaymentConsents(clientSecret, it)
-                        } ?: emptyList()
-                    }
+                    customerId?.takeIf { needRequestConsent() }
+                        ?.let { retrieveAvailablePaymentConsents(clientSecret, it) }
+                        ?: emptyList()
                 }
                 val retrieveMethods = async { retrieveAvailablePaymentMethods(clientSecret) }
                 try {
-                    val methods = retrieveMethods.await()
+                    val methods = filterPaymentMethodsBySession(
+                        retrieveMethods.await(),
+                        session.paymentMethods
+                    )
                     val consents = retrieveConsents.await()
-                    Result.success(Pair(filterPaymentMethodsBySession(methods, session.paymentMethods), consents))
+                    Result.success(Pair(methods, consents))
                 } catch (exception: AirwallexException) {
                     Result.failure(exception)
                 }
             }
         }
+    }
+
+    private fun needRequestConsent(): Boolean {
+        // if the customerId is null or empty ,there is no need to request consents
+        if (customerId.isNullOrEmpty()) return false
+        // only payment mode needs to request consents
+        if (session !is AirwallexPaymentSession) return false
+        // if user wants to hide consents,there is no need to request consents
+        return !hidePaymentConsents
     }
 
     private fun filterPaymentMethodsBySession(
