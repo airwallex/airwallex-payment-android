@@ -22,6 +22,8 @@ class AirwallexRecurringSessionTest {
             .setRequireBillingInformation(false)
             .setRequireCvc(true)
             .setRequireEmail(true)
+            .setReturnUrl("airwallexcheckout://com.airwallex.paymentacceptance")
+            .setPaymentMethods(listOf("googlepay"))
             .build()
 
         assertNotNull(airwallexRecurringSession)
@@ -47,5 +49,8 @@ class AirwallexRecurringSessionTest {
 
         assertNotNull(airwallexRecurringSession.customerId)
         assertEquals("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu", airwallexRecurringSession.customerId)
+
+        assertEquals("airwallexcheckout://com.airwallex.paymentacceptance", airwallexRecurringSession.returnUrl)
+        assertNotNull(airwallexRecurringSession.paymentMethods)
     }
 }

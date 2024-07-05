@@ -1,7 +1,6 @@
 package com.airwallex.paymentacceptance
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.AttributeSet
@@ -13,7 +12,6 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
@@ -185,7 +183,7 @@ class PaymentCartFragment : Fragment() {
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)
                     .setHidePaymentConsents(hidePaymentConsents)
-                    .sePaymentMethods(paymentMethods)
+                    .setPaymentMethods(paymentMethods)
                     .build()
             }
 
@@ -202,7 +200,7 @@ class PaymentCartFragment : Fragment() {
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .setReturnUrl(Settings.returnUrl)
-                    .sePaymentMethods(paymentMethods)
+                    .setPaymentMethods(paymentMethods)
                     .build()
             }
 
@@ -224,7 +222,7 @@ class PaymentCartFragment : Fragment() {
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)
-                    .sePaymentMethods(paymentMethods)
+                    .setPaymentMethods(paymentMethods)
                     .build()
             }
         }

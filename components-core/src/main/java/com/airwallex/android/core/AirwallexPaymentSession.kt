@@ -114,7 +114,7 @@ class AirwallexPaymentSession internal constructor(
             this.hidePaymentConsents = hidePaymentConsents
         }
 
-        fun sePaymentMethods(paymentMethods: List<String>?): Builder = apply {
+        fun setPaymentMethods(paymentMethods: List<String>?): Builder = apply {
             this.paymentMethods = paymentMethods
         }
 

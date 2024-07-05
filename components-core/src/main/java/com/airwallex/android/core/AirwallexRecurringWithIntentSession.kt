@@ -135,7 +135,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
             this.autoCapture = autoCapture
         }
 
-        fun sePaymentMethods(paymentMethods: List<String>?): Builder = apply {
+        fun setPaymentMethods(paymentMethods: List<String>?): Builder = apply {
             this.paymentMethods = paymentMethods
         }
 

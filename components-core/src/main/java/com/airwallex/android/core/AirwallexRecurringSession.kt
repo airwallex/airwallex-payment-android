@@ -123,7 +123,7 @@ class AirwallexRecurringSession internal constructor(
             this.returnUrl = returnUrl
         }
 
-        fun sePaymentMethods(paymentMethods: List<String>?): Builder = apply {
+        fun setPaymentMethods(paymentMethods: List<String>?): Builder = apply {
             this.paymentMethods = paymentMethods
         }
 

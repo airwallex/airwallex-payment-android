@@ -22,10 +22,12 @@ import java.math.BigDecimal
 import kotlin.test.assertEquals
 
 class PaymentMethodsViewModelTest {
+    private lateinit var airwallex: Airwallex
+
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    @Before
+        @Before
     fun setUp() {
         mockkObject(AnalyticsLogger)
     }
@@ -50,6 +52,49 @@ class PaymentMethodsViewModelTest {
             val viewModel = mockViewModel(false, TransactionMode.RECURRING)
             val result = viewModel.fetchAvailablePaymentMethodsAndConsents()
             assertEquals(result?.isFailure, true)
+        }
+
+    @Test
+    fun `test fetchAvailablePaymentMethodTypes when hidePaymentConsents is true`() =
+        runTest {
+            val viewModel =
+                mockViewModel(transactionMode = TransactionMode.ONE_OFF, hidePaymentConsents = true)
+            viewModel.fetchAvailablePaymentMethodsAndConsents()
+            coVerify(exactly = 0) { airwallex.retrieveAvailablePaymentConsents(any()) }
+        }
+
+    @Test
+    fun `test fetchAvailablePaymentMethodTypes when hidePaymentConsents is false`() =
+        runTest {
+            val viewModel = mockViewModel(
+                transactionMode = TransactionMode.ONE_OFF,
+                hidePaymentConsents = false
+            )
+            viewModel.fetchAvailablePaymentMethodsAndConsents()
+            coVerify { airwallex.retrieveAvailablePaymentConsents(any()) }
+        }
+
+    @Test
+    fun `test fetchAvailablePaymentMethodTypes when paymentMethods is null`() =
+        runTest {
+            val viewModel =
+                mockViewModel(transactionMode = TransactionMode.ONE_OFF)
+            viewModel.fetchAvailablePaymentMethodsAndConsents()
+            val result = viewModel.fetchAvailablePaymentMethodsAndConsents()?.getOrNull()
+            assertEquals(result?.first?.first()?.name, "card")
+        }
+
+    @Test
+    fun `test fetchAvailablePaymentMethodTypes when paymentMethods is not null`() =
+        runTest {
+            val viewModel =
+                mockViewModel(
+                    transactionMode = TransactionMode.ONE_OFF,
+                    paymentMethods = listOf("card")
+                )
+            viewModel.fetchAvailablePaymentMethodsAndConsents()
+            val result = viewModel.fetchAvailablePaymentMethodsAndConsents()?.getOrNull()
+            assertEquals(result?.first?.first()?.name, "card")
         }
 
     @Test
@@ -146,7 +191,12 @@ class PaymentMethodsViewModelTest {
     }
 
     @Suppress("LongMethod")
-    private fun mockViewModel(hasClientSecret: Boolean = true, transactionMode: TransactionMode):
+    private fun mockViewModel(
+        hasClientSecret: Boolean = true,
+        transactionMode: TransactionMode,
+        hidePaymentConsents: Boolean = false,
+        paymentMethods: List<String> = emptyList()
+    ):
             PaymentMethodsViewModel {
         mockkObject(TokenManager)
         val mockConsents = PageParser(PaymentConsentParser()).parse(
@@ -203,7 +253,7 @@ class PaymentMethodsViewModelTest {
 
         every { ClientSecretRepository.getInstance() } returns clientSecretRepository
         val application = mockk<Application>()
-        val airwallex = mockk<Airwallex>()
+        airwallex = mockk<Airwallex>()
         val recurringSession = AirwallexRecurringSession.Builder(
             nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
             customerId = "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
@@ -213,17 +263,23 @@ class PaymentMethodsViewModelTest {
         )
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
             .setRequireCvc(true)
+            .setPaymentMethods(paymentMethods)
             .build()
         val oneOffSession = AirwallexPaymentSession.Builder(
             PaymentIntent(
                 id = "id",
                 amount = BigDecimal.valueOf(100.01),
                 currency = "AUD",
-                clientSecret = "qadf"
+                clientSecret = "qadf",
+                customerId = "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
             ),
             "AU",
             GooglePayOptions()
-        ).build()
+        )
+            .setHidePaymentConsents(hidePaymentConsents)
+            .setPaymentMethods(paymentMethods)
+            .build()
+
         val session = when (transactionMode) {
             TransactionMode.ONE_OFF -> oneOffSession
             TransactionMode.RECURRING -> recurringSession
