@@ -1,7 +1,6 @@
 package com.airwallex.paymentacceptance
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.AttributeSet
@@ -13,7 +12,6 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
@@ -164,7 +162,9 @@ class PaymentCartFragment : Fragment() {
 
     private fun buildSession(
         paymentIntent: PaymentIntent? = null,
-        customerId: String? = null
+        customerId: String? = null,
+        hidePaymentConsents: Boolean = false,
+        paymentMethods: List<String>? = null
     ): AirwallexSession {
         return when (checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
@@ -182,6 +182,8 @@ class PaymentCartFragment : Fragment() {
                     .setRequireEmail(requiresEmail)
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)
+                    .setHidePaymentConsents(hidePaymentConsents)
+                    .setPaymentMethods(paymentMethods)
                     .build()
             }
 
@@ -198,6 +200,7 @@ class PaymentCartFragment : Fragment() {
                     .setRequireCvc(requiresCVC)
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .setReturnUrl(Settings.returnUrl)
+                    .setPaymentMethods(paymentMethods)
                     .build()
             }
 
@@ -219,6 +222,7 @@ class PaymentCartFragment : Fragment() {
                     .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)
+                    .setPaymentMethods(paymentMethods)
                     .build()
             }
         }
@@ -383,7 +387,13 @@ class PaymentCartFragment : Fragment() {
 
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
-            val session = buildSession(paymentIntent)
+            val session = buildSession(
+                paymentIntent,
+                //use hidePaymentConsents boolean to control whether saved cards are displayed on the list screen
+                hidePaymentConsents = false,
+                //limit the payment methods displayed on the list screen
+//                 paymentMethods = listOf("card", "Googlepay", "paypal", "alipayhk","fps")
+            )
             if (directCardCheckout) {
                 // Direct payment flow with provided card details
                 (activity as? PaymentCartActivity)?.setLoadingProgress(true)

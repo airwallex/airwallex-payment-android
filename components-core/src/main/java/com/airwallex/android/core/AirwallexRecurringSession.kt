@@ -73,7 +73,13 @@ class AirwallexRecurringSession internal constructor(
     /**
      * Google Pay options
      */
-    override val googlePayOptions: GooglePayOptions? = null
+    override val googlePayOptions: GooglePayOptions? = null,
+
+    /**
+     * An array of payment method type names to limit the payment methods displayed on the list screen. Only available ones from your Airwallex account will be applied, any other ones will be ignored. Also the order of payment method list will follow the order of this array.
+     * API reference: https://www.airwallex.com/docs/api#/Payment_Acceptance/Config/_api_v1_pa_config_payment_method_types/get JSON Object field: items.name
+     */
+    override val paymentMethods: List<String>? = null,
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
@@ -91,6 +97,7 @@ class AirwallexRecurringSession internal constructor(
         private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason =
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
         private var returnUrl: String? = null
+        private var paymentMethods: List<String>? = null
 
         fun setShipping(shipping: Shipping?): Builder = apply {
             this.shipping = shipping
@@ -117,6 +124,10 @@ class AirwallexRecurringSession internal constructor(
             this.returnUrl = returnUrl
         }
 
+        fun setPaymentMethods(paymentMethods: List<String>?): Builder = apply {
+            this.paymentMethods = paymentMethods
+        }
+
         override fun build(): AirwallexRecurringSession {
             return AirwallexRecurringSession(
                 nextTriggerBy = nextTriggerBy,
@@ -129,7 +140,8 @@ class AirwallexRecurringSession internal constructor(
                 isBillingInformationRequired = isBillingInformationRequired,
                 isEmailRequired = isEmailRequired,
                 customerId = customerId,
-                returnUrl = returnUrl
+                returnUrl = returnUrl,
+                paymentMethods = paymentMethods
             )
         }
     }

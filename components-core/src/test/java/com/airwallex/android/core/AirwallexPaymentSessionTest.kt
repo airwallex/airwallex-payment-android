@@ -16,6 +16,10 @@ class AirwallexPaymentSessionTest {
         )
             .setRequireBillingInformation(false)
             .setRequireEmail(true)
+            .setReturnUrl("airwallexcheckout://com.airwallex.paymentacceptance")
+            .setPaymentMethods(listOf("googlepay"))
+            .setHidePaymentConsents(false)
+            .setAutoCapture(false)
             .build()
 
         assertNotNull(airwallexPaymentSession)
@@ -34,5 +38,9 @@ class AirwallexPaymentSessionTest {
         assertEquals(null, airwallexPaymentSession.shipping)
 
         assertEquals("cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu", airwallexPaymentSession.customerId)
+        assertEquals("airwallexcheckout://com.airwallex.paymentacceptance", airwallexPaymentSession.returnUrl)
+        assertEquals(false, airwallexPaymentSession.autoCapture)
+        assertEquals(false, airwallexPaymentSession.hidePaymentConsents)
+        assertNotNull(airwallexPaymentSession.paymentMethods)
     }
 }
