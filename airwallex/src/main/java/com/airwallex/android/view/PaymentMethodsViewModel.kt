@@ -189,7 +189,7 @@ internal class PaymentMethodsViewModel(
     ): List<AvailablePaymentMethodType> {
         if (filterList.isNullOrEmpty()) return sourceList
         return filterList.mapNotNull { name ->
-            sourceList.find { it.name == name }
+            sourceList.find { it.name.equals(name, ignoreCase = true) }
         }
     }
 

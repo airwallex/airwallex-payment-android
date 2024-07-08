@@ -389,7 +389,7 @@ class PaymentCartFragment : Fragment() {
                 //use hidePaymentConsents boolean to control whether saved cards are displayed on the list screen
                 hidePaymentConsents = false,
                 //limit the payment methods displayed on the list screen
-                // paymentMethods = listOf("fps", "card", "googlepay", "paypal", "alipayhk")
+//                 paymentMethods = listOf("card", "Googlepay", "paypal", "alipayhk","fps")
             )
             if (directCardCheckout) {
                 // Direct payment flow with provided card details
