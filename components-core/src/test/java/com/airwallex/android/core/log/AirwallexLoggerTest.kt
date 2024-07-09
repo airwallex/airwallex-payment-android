@@ -7,7 +7,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class ConsoleLoggerTest {
+class AirwallexLoggerTest {
     @Before
     fun setUp() {
         mockkStatic(Log::class)
@@ -31,7 +31,7 @@ class ConsoleLoggerTest {
         val message = "Error message"
         val throwable = RuntimeException()
 
-        ConsoleLogger.error(message, throwable)
+        AirwallexLogger.error(message, throwable)
 
         verify(exactly = 1) {
             Log.e("ERROR", message, throwable)
@@ -43,7 +43,7 @@ class ConsoleLoggerTest {
         val message = "Warning message"
         val throwable = RuntimeException()
 
-        ConsoleLogger.warn(message, throwable)
+        AirwallexLogger.warn(message, throwable)
 
         verify(exactly = 1) {
             Log.w("WARN", message, throwable)
@@ -55,7 +55,7 @@ class ConsoleLoggerTest {
         val message = "Info message"
         val throwable = RuntimeException()
 
-        ConsoleLogger.info(message, throwable)
+        AirwallexLogger.info(message, throwable)
 
         verify(exactly = 1) {
             Log.i("INFO", message, throwable)
@@ -67,7 +67,7 @@ class ConsoleLoggerTest {
         val message = "Debug message"
         val throwable = RuntimeException()
 
-        ConsoleLogger.debug(message, throwable)
+        AirwallexLogger.debug(message, throwable)
 
         verify(exactly = 1) {
             Log.d("DEBUG", message, throwable)
@@ -79,7 +79,7 @@ class ConsoleLoggerTest {
         val message = "Verbose message"
         val throwable = RuntimeException()
 
-        ConsoleLogger.verbose(message, throwable)
+        AirwallexLogger.verbose(message, throwable)
 
         verify(exactly = 1) {
             Log.v("VERBOSE", message, throwable)

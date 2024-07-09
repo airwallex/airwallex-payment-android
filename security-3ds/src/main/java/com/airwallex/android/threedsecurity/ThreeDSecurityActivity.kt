@@ -10,7 +10,7 @@ import com.airwallex.android.core.PaymentManager
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.log.ConsoleLogger
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.threedsecurity.databinding.ActivityThreeDSecurityBinding
 import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
@@ -46,20 +46,21 @@ class ThreeDSecurityActivity : AirwallexActivity() {
         val webView = viewBinding.webView.apply {
             webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
                 override fun onWebViewConfirmation(payload: String) {
-                    ConsoleLogger.debug("onWebViewConfirmation $payload")
+                    AirwallexLogger.info("ThreeDSecurityActivity onWebViewConfirmation: payload = $payload")
                     paymentManager.startOperation(
                         args.options,
                         object : Airwallex.PaymentListener<PaymentIntent> {
                             override fun onSuccess(response: PaymentIntent) {
-                                ConsoleLogger.debug("onSuccess $response")
+                                AirwallexLogger.info("ThreeDSecurityActivity onSuccess $response")
                                 val continueNextAction = response.nextAction
                                 if (continueNextAction == null) {
-                                    ConsoleLogger.debug("3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
+                                    AirwallexLogger.info("ThreeDSecurityActivity 3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
                                     finishWithData(paymentIntentId = response.id)
                                 }
                             }
 
                             override fun onFailed(exception: AirwallexException) {
+                                AirwallexLogger.error("ThreeDSecurityActivity onFailed", exception)
                                 finishWithData(exception = exception)
                             }
                         }
@@ -68,16 +69,16 @@ class ThreeDSecurityActivity : AirwallexActivity() {
 
                 override fun onWebViewError(error: WebViewConnectionException) {
                     AnalyticsLogger.logError("webview_redirect", exception = error)
-                    ConsoleLogger.error("onWebViewError", error)
+                    AirwallexLogger.error("onWebViewError", error)
                     finishWithData(exception = error)
                 }
 
                 override fun onPageFinished(url: String?) {
-                    ConsoleLogger.debug("onPageFinished $url")
+                    AirwallexLogger.debug("onPageFinished $url")
                 }
 
                 override fun onPageStarted(url: String?) {
-                    ConsoleLogger.debug("onPageStarted $url")
+                    AirwallexLogger.debug("onPageStarted $url")
                 }
             })
         }

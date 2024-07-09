@@ -6,12 +6,14 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexConfiguration
+import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.ClientSecretProvider
 import com.airwallex.android.core.PaymentResultManager
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
@@ -32,6 +34,7 @@ class AirwallexStarter {
             clientSecretProvider: ClientSecretProvider? = null
         ) {
             AirwallexActivityLaunch.initialize(application)
+            AirwallexLogger.initialize(application, configuration.enableLogging)
             Airwallex.initialize(application, configuration, clientSecretProvider)
         }
 
@@ -130,13 +133,20 @@ class AirwallexStarter {
             session: AirwallexSession,
             paymentResultListener: Airwallex.PaymentResultListener
         ) {
+            val paymentSession: AirwallexPaymentSession? = session as? AirwallexPaymentSession
+            AirwallexLogger.info("AirwallexStarter presentPaymentFlow[${paymentSession?.paymentIntent?.id}]")
             PaymentResultManager.getInstance(paymentResultListener)
             launch.launchForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
                     .build()
             ) { _, result ->
-                handlePaymentData(result.resultCode, result.data, paymentResultListener)
+                handlePaymentData(
+                    result.resultCode,
+                    result.data,
+                    paymentResultListener,
+                    paymentSession
+                )
             }
         }
 
@@ -156,17 +166,20 @@ class AirwallexStarter {
                 Activity.RESULT_OK -> {
                     val result = PaymentShippingActivityLaunch.Result.fromIntent(data)
                     if (result == null) {
+                        AirwallexLogger.error("AirwallexStarter handleShippingPaymentData: failed, result = null")
                         shippingResultListener.onCompleted(
                             AirwallexShippingStatus.Failure(AirwallexCheckoutException(message = "shipping result is null"))
                         )
                         return
                     }
+                    AirwallexLogger.info("AirwallexStarter handleShippingPaymentData: success")
                     shippingResultListener.onCompleted(
                         AirwallexShippingStatus.Success(result.shipping)
                     )
                 }
 
                 Activity.RESULT_CANCELED -> {
+                    AirwallexLogger.info("AirwallexStarter handleShippingPaymentData: cancel")
                     shippingResultListener.onCompleted(AirwallexShippingStatus.Cancel)
                 }
 
@@ -183,12 +196,14 @@ class AirwallexStarter {
         private fun handlePaymentData(
             resultCode: Int,
             data: Intent?,
-            paymentResultListener: Airwallex.PaymentResultListener
+            paymentResultListener: Airwallex.PaymentResultListener,
+            session: AirwallexPaymentSession? = null
         ) {
             when (resultCode) {
                 Activity.RESULT_OK -> {
                     val result = PaymentMethodsActivityLaunch.Result.fromIntent(data)
                     if (result == null) {
+                        AirwallexLogger.error("AirwallexStarter handlePaymentData[${session?.paymentIntent?.id}]: failed, result = null")
                         paymentResultListener.onCompleted(
                             AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "flow result is null"))
                         )
@@ -196,12 +211,14 @@ class AirwallexStarter {
                     }
                     when {
                         result.exception != null -> {
+                            AirwallexLogger.error("AirwallexStarter handlePaymentData[${session?.paymentIntent?.id}]: failed", result.exception)
                             paymentResultListener.onCompleted(
                                 AirwallexPaymentStatus.Failure(result.exception)
                             )
                         }
 
                         result.paymentIntentId != null -> {
+                            AirwallexLogger.info("AirwallexStarter handlePaymentData[${session?.paymentIntent?.id}]: success, isRedirecting = ${result.isRedirecting}")
                             if (result.isRedirecting) {
                                 paymentResultListener.onCompleted(
                                     AirwallexPaymentStatus.InProgress(result.paymentIntentId)
@@ -216,6 +233,7 @@ class AirwallexStarter {
                 }
 
                 Activity.RESULT_CANCELED -> {
+                    AirwallexLogger.info("AirwallexStarter handlePaymentData[${session?.paymentIntent?.id}]: cancel")
                     paymentResultListener.onCompleted(AirwallexPaymentStatus.Cancel)
                 }
             }

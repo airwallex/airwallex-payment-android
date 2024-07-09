@@ -17,7 +17,7 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.log.ConsoleLogger
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
@@ -301,7 +301,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     // 1. Retrieve all required schema fields of the payment method
                     // 2. If the bank is needed, need to retrieve the bank list.
                     // 3. If the bank is not needed or bank list is empty, then show the schema fields dialog.
-                    ConsoleLogger.debug(TAG, "Get more payment Info fields on one-off flow.")
+                    AirwallexLogger.debug("Get more payment Info fields on one-off flow.")
                     paymentMethod.type?.let { type ->
                         retrievePaymentMethodTypeInfo(type) { result ->
                             result.fold(

@@ -11,7 +11,7 @@ import com.airwallex.android.card.databinding.ActivitySelectCurrencyBinding
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
-import com.airwallex.android.core.log.ConsoleLogger
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.ContinuePaymentIntentParams
 import com.airwallex.android.core.model.PaymentIntentContinueType
 import com.airwallex.android.ui.AirwallexActivity
@@ -69,12 +69,12 @@ class DccActivity : AirwallexActivity() {
             )
         viewBinding.currentCurrency.isSelected = true
         viewBinding.currentCurrency.setOnSingleClickListener {
-            ConsoleLogger.debug("Current currency selected")
+            AirwallexLogger.debug("Current currency selected")
             viewBinding.currentCurrency.isSelected = true
             viewBinding.transferCurrency.isSelected = false
         }
         viewBinding.transferCurrency.setOnSingleClickListener {
-            ConsoleLogger.debug("Transfer currency selected")
+            AirwallexLogger.debug("Transfer currency selected")
             viewBinding.currentCurrency.isSelected = false
             viewBinding.transferCurrency.isSelected = true
         }

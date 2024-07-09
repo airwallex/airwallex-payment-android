@@ -5,7 +5,7 @@ import com.airwallex.android.core.exception.*
 import com.airwallex.android.core.http.AirwallexHttpClient
 import com.airwallex.android.core.http.AirwallexHttpRequest
 import com.airwallex.android.core.http.AirwallexHttpResponse
-import com.airwallex.android.core.log.ConsoleLogger
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.parser.*
 import kotlinx.coroutines.Dispatchers
@@ -79,7 +79,7 @@ class AirwallexApiRepository : ApiRepository {
         runCatching {
             httpClient.execute(options.toAirwallexHttpRequest())
         }.getOrElse {
-            ConsoleLogger.debug("Tracker failed.")
+            AirwallexLogger.debug("Tracker failed.")
         }
     }
 
@@ -94,7 +94,7 @@ class AirwallexApiRepository : ApiRepository {
                 )
             )
         }.getOrElse {
-            ConsoleLogger.debug("Execute Mock WeChat failed.")
+            AirwallexLogger.debug("Execute Mock WeChat failed.")
         }
     }
 
