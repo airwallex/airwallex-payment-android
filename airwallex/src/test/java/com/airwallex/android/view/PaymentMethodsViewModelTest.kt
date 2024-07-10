@@ -265,6 +265,9 @@ class PaymentMethodsViewModelTest {
             .setRequireCvc(true)
             .setPaymentMethods(paymentMethods)
             .build()
+
+        mockkObject(TokenManager)
+        coEvery { TokenManager.updateClientSecret(any()) } returns Unit
         val oneOffSession = AirwallexPaymentSession.Builder(
             PaymentIntent(
                 id = "id",
