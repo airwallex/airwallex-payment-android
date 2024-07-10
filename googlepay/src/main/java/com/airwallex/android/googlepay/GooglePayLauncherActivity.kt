@@ -8,6 +8,7 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.ui.extension.getExtraArgs
+import com.airwallex.risk.AirwallexRisk
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
@@ -33,7 +34,7 @@ class GooglePayLauncherActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        AirwallexRisk.log(event = "show_google_pay", screen = "page_google_pay")
         val task = viewModel.getLoadPaymentDataTask()
         task.addOnCompleteListener(googlePayLauncher::launch)
     }

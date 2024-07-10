@@ -16,6 +16,8 @@ import com.airwallex.android.core.extension.confirmGooglePayIntent
 import com.airwallex.android.core.extension.createCardPaymentMethod
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
+import com.airwallex.risk.AirwallexRisk
+import com.airwallex.risk.RiskConfiguration
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -1188,6 +1190,14 @@ class Airwallex internal constructor(
             clientSecretProvider?.let {
                 ClientSecretRepository.init(it)
             }
+            //todo
+            AirwallexRisk.start(
+                applicationContext = application,
+                accountId = TokenManager.accountId,
+                configuration = RiskConfiguration(isProduction = !BuildConfig.DEBUG)
+            )
+            //todo
+//            AirwallexRisk.setUserId(userID = "USER_ID")
         }
     }
 }
