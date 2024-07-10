@@ -111,6 +111,12 @@ class AirwallexRecurringWithIntentSession internal constructor(
         private var autoCapture: Boolean = true
         private var paymentMethods: List<String>? = null
 
+        init {
+            paymentIntent.clientSecret?.apply {
+                TokenManager.updateClientSecret(this)
+            }
+        }
+
         fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requiresBillingInformation
         }
