@@ -2,9 +2,6 @@ name: Debug push release to Maven
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
 
 jobs:
   maven:
