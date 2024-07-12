@@ -27,7 +27,9 @@ class ClientSecretRepository(private val provider: ClientSecretProvider) {
     suspend fun retrieveClientSecret(customerId: String): ClientSecret {
         return withContext(Dispatchers.IO) {
             try {
-                provider.provideClientSecret(customerId)
+                val clientSecret = provider.provideClientSecret(customerId)
+                TokenManager.updateClientSecret(clientSecret.value)
+                clientSecret
             } catch (throwable: Throwable) {
                 throw AirwallexCheckoutException(
                     message = "Could not retrieve client secret from the given provider", e = throwable

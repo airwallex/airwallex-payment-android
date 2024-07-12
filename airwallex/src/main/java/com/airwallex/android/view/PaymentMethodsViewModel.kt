@@ -152,7 +152,6 @@ internal class PaymentMethodsViewModel(
 
             else -> null
         }?.let { clientSecret ->
-            TokenManager.updateClientSecret(clientSecret)
             coroutineScope {
                 val retrieveConsents = async {
                     customerId?.takeIf { needRequestConsent() }
