@@ -1193,7 +1193,7 @@ class Airwallex internal constructor(
             }
             AirwallexRisk.start(
                 applicationContext = application,
-                accountId = "",
+                accountId = null,
                 configuration = RiskConfiguration(
                     isProduction = configuration.environment == Environment.PRODUCTION,
                     tenant = Tenant.PA
