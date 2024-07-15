@@ -33,7 +33,6 @@ object AirwallexLogger {
         logWorker.initialize(context)
     }
 
-
     @JvmField
     internal val DEFAULT_LOG_WORKER = object : LogWorker {
         private var logFile: File? = null

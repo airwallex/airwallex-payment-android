@@ -13,6 +13,7 @@ class AirwallexLoggerTest {
         mockkStatic(Log::class)
         mockkObject(AirwallexPlugins)
 
+        AirwallexLogger.initialize(mockk(relaxed = true), loggingEnabled = true)
         every { AirwallexPlugins.enableLogging } returns true
         every { Log.e(any(), any(), any()) } returns 0
         every { Log.w(any(), any(), any()) } returns 0
@@ -34,7 +35,7 @@ class AirwallexLoggerTest {
         AirwallexLogger.error(message, throwable)
 
         verify(exactly = 1) {
-            Log.e("ERROR", message, throwable)
+            Log.e(eq("AirwallexLogger"), withArg { arg -> arg.contains(message) }, eq(throwable))
         }
     }
 
@@ -46,7 +47,7 @@ class AirwallexLoggerTest {
         AirwallexLogger.warn(message, throwable)
 
         verify(exactly = 1) {
-            Log.w("WARN", message, throwable)
+            Log.w(eq("AirwallexLogger"), withArg { arg -> arg.contains(message) }, eq(throwable))
         }
     }
 
@@ -58,7 +59,7 @@ class AirwallexLoggerTest {
         AirwallexLogger.info(message, throwable)
 
         verify(exactly = 1) {
-            Log.i("INFO", message, throwable)
+            Log.i(eq("AirwallexLogger"), withArg { arg -> arg.contains(message) }, eq(throwable))
         }
     }
 
@@ -70,7 +71,7 @@ class AirwallexLoggerTest {
         AirwallexLogger.debug(message, throwable)
 
         verify(exactly = 1) {
-            Log.d("DEBUG", message, throwable)
+            Log.d(eq("AirwallexLogger"), withArg { arg -> arg.contains(message) }, eq(throwable))
         }
     }
 
@@ -82,7 +83,7 @@ class AirwallexLoggerTest {
         AirwallexLogger.verbose(message, throwable)
 
         verify(exactly = 1) {
-            Log.v("VERBOSE", message, throwable)
+            Log.v(eq("AirwallexLogger"), withArg { arg -> arg.contains(message) }, eq(throwable))
         }
     }
 }

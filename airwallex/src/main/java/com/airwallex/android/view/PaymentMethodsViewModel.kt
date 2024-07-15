@@ -178,8 +178,7 @@ internal class PaymentMethodsViewModel(
             TokenManager.updateClientSecret(clientSecret)
             coroutineScope {
                 val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
-                AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents" +
-                        "[${intentId}], customerId = $customerId")
+                AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
                 val retrieveConsents = async {
                     customerId?.takeIf { needRequestConsent() }
                         ?.let { retrieveAvailablePaymentConsents(clientSecret, it) }
@@ -194,7 +193,7 @@ internal class PaymentMethodsViewModel(
                     val consents = retrieveConsents.await()
                     Result.success(Pair(methods, consents))
                 } catch (exception: AirwallexException) {
-                    AirwallexLogger.error("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents[${intentId}]: failed ", exception)
+                    AirwallexLogger.error("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: failed ", exception)
                     Result.failure(exception)
                 }
             }
