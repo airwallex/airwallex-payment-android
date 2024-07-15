@@ -72,6 +72,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     override fun onBackButtonPressed() {
+        AirwallexLogger.info("PaymentMethodsActivity onBackButtonPressed")
         setResult(RESULT_CANCELED)
         finish()
     }
@@ -437,6 +438,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     }
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     val result = AddPaymentMethodActivityLaunch.CancellationResult.fromIntent(data)
+                    AirwallexLogger.info("PaymentMethodsActivity onActivityResult: result_canceled")
                     result?.let {
                         if (it.isSinglePaymentMethod) {
                             setResult(Activity.RESULT_CANCELED)
@@ -466,6 +468,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
+        AirwallexLogger.info("PaymentMethodsActivity finishWithPaymentIntent")
         setResult(
             Activity.RESULT_OK,
             Intent().putExtras(

@@ -100,7 +100,7 @@ object ThreeDSecurityManager {
                                     .build()
                             )
 
-                            AirwallexLogger.info("ThreeDSecurityManager: onWebViewConfirmation payload = $payload, nextAction.stage = ${nextAction.stage}")
+                            AirwallexLogger.info("ThreeDSecurityManager onWebViewConfirmation: nextAction.stage = ${nextAction.stage}", sensitiveMessage = "payload = $payload")
                             if (nextAction.stage == NextAction.NextActionStage.WAITING_USER_INFO_INPUT) {
                                 AnalyticsLogger.logPageView(
                                     "webview_redirect",
@@ -125,11 +125,14 @@ object ThreeDSecurityManager {
                                     options,
                                     object : Airwallex.PaymentListener<PaymentIntent> {
                                         override fun onSuccess(response: PaymentIntent) {
-                                            AirwallexLogger.info("ThreeDSecurityManager: onSuccess $response")
+                                            AirwallexLogger.info(
+                                                "ThreeDSecurityManager: onSuccess ",
+                                                sensitiveMessage = response.toString()
+                                            )
                                             destroyWebView()
                                             val continueNextAction = response.nextAction
                                             if (continueNextAction == null) {
-                                                AirwallexLogger.error("ThreeDSecurityManager: 3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
+                                                AirwallexLogger.info("ThreeDSecurityManager: 3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
                                                 listener.onCompleted(
                                                     AirwallexPaymentStatus.Success(
                                                         response.id

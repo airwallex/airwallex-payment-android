@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -101,6 +102,7 @@ class GooglePayLauncherActivity : ComponentActivity() {
     }
 
     private fun finishWithResult(result: GooglePayActivityLaunch.Result) {
+        AirwallexLogger.info("GooglePayLauncherActivity finishWithResult")
         setResult(
             RESULT_OK,
             Intent()

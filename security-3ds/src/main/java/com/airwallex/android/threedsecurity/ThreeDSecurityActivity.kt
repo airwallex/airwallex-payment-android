@@ -46,12 +46,15 @@ class ThreeDSecurityActivity : AirwallexActivity() {
         val webView = viewBinding.webView.apply {
             webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
                 override fun onWebViewConfirmation(payload: String) {
-                    AirwallexLogger.info("ThreeDSecurityActivity onWebViewConfirmation: payload = $payload")
+                    AirwallexLogger.info("ThreeDSecurityActivity onWebViewConfirmation", sensitiveMessage = "payload = $payload")
                     paymentManager.startOperation(
                         args.options,
                         object : Airwallex.PaymentListener<PaymentIntent> {
                             override fun onSuccess(response: PaymentIntent) {
-                                AirwallexLogger.info("ThreeDSecurityActivity onSuccess $response")
+                                AirwallexLogger.info(
+                                    "ThreeDSecurityActivity onSuccess ",
+                                    sensitiveMessage = response.toString()
+                                )
                                 val continueNextAction = response.nextAction
                                 if (continueNextAction == null) {
                                     AirwallexLogger.info("ThreeDSecurityActivity 3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
@@ -89,6 +92,7 @@ class ThreeDSecurityActivity : AirwallexActivity() {
         paymentIntentId: String? = null,
         exception: AirwallexException? = null
     ) {
+        AirwallexLogger.info("ThreeDSecurityActivity finishWithData")
         setResult(
             RESULT_OK,
             Intent().putExtras(

@@ -34,7 +34,6 @@ class AirwallexStarter {
             clientSecretProvider: ClientSecretProvider? = null
         ) {
             AirwallexActivityLaunch.initialize(application)
-            AirwallexLogger.initialize(application, configuration.enableLogging)
             Airwallex.initialize(application, configuration, clientSecretProvider)
         }
 

@@ -527,6 +527,7 @@ class Airwallex internal constructor(
         listener: PaymentResultListener,
         saveCard: Boolean = false,
     ) {
+        AirwallexLogger.info("Airwallex checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
         when (session) {
             is AirwallexPaymentSession -> {
                 if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
@@ -748,6 +749,7 @@ class Airwallex internal constructor(
                                         listener = listener
                                     )
                                 } else {
+                                    AirwallexLogger.error("Airwallex checkoutGooglePay: failed , Missing Google Pay token response")
                                     listener.onCompleted(
                                         AirwallexPaymentStatus.Failure(
                                             AirwallexCheckoutException(message = "Missing Google Pay token response")
@@ -764,6 +766,7 @@ class Airwallex internal constructor(
                 }
             )
         } else {
+            AirwallexLogger.error("Airwallex checkoutGooglePay: failed , Missing ${PaymentMethodType.GOOGLEPAY.dependencyName} dependency")
             listener.onCompleted(
                 AirwallexPaymentStatus.Failure(
                     AirwallexCheckoutException(message = "Missing ${PaymentMethodType.GOOGLEPAY.dependencyName} dependency")
@@ -1221,6 +1224,7 @@ class Airwallex internal constructor(
             clientSecretProvider: ClientSecretProvider? = null
         ) {
             AirwallexPlugins.initialize(application, configuration)
+            AirwallexLogger.initialize(application, configuration.enableLogging)
             clientSecretProvider?.let {
                 ClientSecretRepository.init(it)
             }

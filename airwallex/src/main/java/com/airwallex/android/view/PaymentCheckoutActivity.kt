@@ -15,6 +15,7 @@ import com.airwallex.android.databinding.ActivityPaymentCheckoutBinding
 import com.airwallex.android.R
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.ui.extension.getExtraArgs
 import java.util.*
@@ -51,6 +52,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     override fun onBackButtonPressed() {
+        AirwallexLogger.info("PaymentCheckoutActivity onBackButtonPressed")
         setResult(RESULT_CANCELED)
         finish()
     }
@@ -95,6 +97,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     private fun startConfirmPaymentIntent() {
+        AirwallexLogger.info("PaymentCheckoutActivity startConfirmPaymentIntent")
         startCheckout(
             paymentMethod = paymentMethod,
             paymentConsentId = paymentConsentId,
@@ -102,6 +105,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             observer = { result ->
                 when (result) {
                     is AirwallexPaymentStatus.Success -> {
+                        AirwallexLogger.info("PaymentCheckoutActivity startConfirmPaymentIntent success")
                         AnalyticsLogger.logAction(
                             "payment_success",
                             mutableMapOf<String, String>().apply {
@@ -112,6 +116,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                         finishWithPaymentIntent(paymentIntentId = result.paymentIntentId)
                     }
                     is AirwallexPaymentStatus.Failure -> {
+                        AirwallexLogger.error("PaymentCheckoutActivity startConfirmPaymentIntent fail", result.exception)
                         finishWithPaymentIntent(exception = result.exception)
                     }
                     else -> Unit
@@ -127,6 +132,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
+        AirwallexLogger.info("PaymentCheckoutActivity finishWithPaymentIntent")
         setResult(
             Activity.RESULT_OK,
             Intent().putExtras(

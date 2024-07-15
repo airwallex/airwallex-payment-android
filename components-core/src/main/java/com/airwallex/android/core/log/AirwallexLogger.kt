@@ -2,6 +2,8 @@ package com.airwallex.android.core.log
 
 import android.content.Context
 import android.util.Log
+import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.android.core.Environment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -111,6 +113,11 @@ object AirwallexLogger {
 
     fun warn(message: String?, throwable: Throwable? = null) {
         logWorker.log(Level.WARNING, message, throwable)
+    }
+
+    fun info(message: String?, throwable: Throwable? = null, sensitiveMessage: String?) {
+        val msg = message + if (AirwallexPlugins.environment != Environment.PRODUCTION) sensitiveMessage else ""
+        logWorker.log(Level.INFO, msg, throwable)
     }
 
     fun info(message: String?, throwable: Throwable? = null) {

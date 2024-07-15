@@ -9,7 +9,7 @@ class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
     AirwallexWebViewClient(callbacks) {
 
     override fun hasCallbackUrl(view: WebView?, url: String?): Boolean {
-        AirwallexLogger.info("ThreeDSecureWebViewClient hasCallbackUrl: Redirect Url = $url")
+        AirwallexLogger.info("ThreeDSecureWebViewClient hasCallbackUrl: acsResponse = ${url?.contains(ACS_RESPONSE)}", sensitiveMessage = "Redirect Url = $url")
         // Intercept paRes and return
         if (url?.contains(ACS_RESPONSE) == true) {
             val subUrl = url.substring(url.indexOf(ACS_RESPONSE) + ACS_RESPONSE.length + 1)

@@ -14,6 +14,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardNextActionModel
 import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
@@ -54,6 +55,7 @@ class GooglePayComponent : ActionComponent {
                 )
                 return
             }
+            AirwallexLogger.info("GooglePayComponent handlePaymentIntentResponse: handleThreeDSFlow")
             ThreeDSecurityManager.handleThreeDSFlow(
                 paymentIntentId = paymentIntentId,
                 activity = activity,
@@ -72,6 +74,7 @@ class GooglePayComponent : ActionComponent {
             } else {
                 GooglePayActivityLaunch(activity)
             }
+            AirwallexLogger.info("GooglePayComponent handlePaymentIntentResponse: launch googlePay Activity")
             googlePayActivityLaunch.launchForResult(
                 GooglePayActivityLaunch.Args(
                     session = session,
@@ -85,6 +88,7 @@ class GooglePayComponent : ActionComponent {
     }
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+        AirwallexLogger.info("GooglePayComponent handleActivityResult: requestCode =$requestCode")
         if (requestCode == ThreeDSecurityActivityLaunch.REQUEST_CODE) {
             listener?.let {
                 val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
@@ -106,13 +110,15 @@ class GooglePayComponent : ActionComponent {
                     AirwallexPaymentStatus.Failure(result.exception)
                 )
 
-                is GooglePayActivityLaunch.Result.Success ->
+                is GooglePayActivityLaunch.Result.Success ->{
+                    AirwallexLogger.info("GooglePayComponent handleActivityResult: success, paymentIntentId =$paymentIntentId")
                     paymentIntentId?.let {
                         listener?.onCompleted(AirwallexPaymentStatus.Success(it, result.info))
                     }
-
+                }
                 else -> {
                     // no op
+                    AirwallexLogger.info("GooglePayComponent handleActivityResult: unknown result")
                 }
             }
             return true

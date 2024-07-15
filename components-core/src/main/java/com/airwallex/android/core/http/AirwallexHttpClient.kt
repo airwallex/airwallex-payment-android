@@ -12,7 +12,10 @@ class AirwallexHttpClient {
 
     @Throws(IOException::class, InvalidRequestException::class)
     fun execute(request: AirwallexHttpRequest): AirwallexHttpResponse {
-        AirwallexLogger.info("AirwallexHttpClient execute: url = ${request.url}")
+        AirwallexLogger.info(
+            "AirwallexHttpClient request:url = ${request.url}",
+            sensitiveMessage = request.toString()
+        )
         AirwallexHttpConnection(
             (URL(request.url).openConnection() as HttpsURLConnection).apply {
                 connectTimeout = CONNECT_TIMEOUT
@@ -33,10 +36,16 @@ class AirwallexHttpClient {
         ).use {
             try {
                 val response = it.response
-                AirwallexLogger.info("AirwallexHttpClient execute: success, url = ${request.url}")
+                AirwallexLogger.info(
+                    "AirwallexHttpClient response: success, url = ${request.url}",
+                    sensitiveMessage = response.toString()
+                )
                 return response
             } catch (e: IOException) {
-                AirwallexLogger.error("AirwallexHttpClient execute: failed, url = ${request.url}", e)
+                AirwallexLogger.error(
+                    "AirwallexHttpClient response: failed, url = ${request.url}",
+                    e
+                )
                 throw APIConnectionException.create(e, request.url)
             }
         }
