@@ -1,14 +1,79 @@
 package com.airwallex.android.core
 
+import com.airwallex.android.core.http.AirwallexHttpClient
+import com.airwallex.android.core.http.AirwallexHttpRequest
+import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.model.Options
 import com.airwallex.android.core.model.Options.RetrieveAvailablePaymentMethodsOptions
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.PaymentConsentCreateRequest
+import com.airwallex.android.core.model.PaymentConsentDisableRequest
+import com.airwallex.android.core.model.PaymentConsentVerifyRequest
+import com.airwallex.android.core.model.PaymentIntentConfirmRequest
+import com.airwallex.android.core.model.PaymentIntentContinueRequest
+import com.airwallex.android.core.model.PaymentMethodCreateRequest
+import com.airwallex.android.core.model.TrackerRequest
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkConstructor
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
+import io.mockk.verify
+import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class AirwallexApiRepositoryTest {
+
+    private lateinit var apiRepository: AirwallexApiRepository
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+
+        mockkConstructor(AirwallexHttpClient::class)
+        val httpClientMock = mockk<AirwallexHttpClient>(relaxed = true)
+        every { anyConstructed<AirwallexHttpClient>().execute(any()) } answers {
+            httpClientMock.execute(firstArg())
+        }
+        mockkObject(AirwallexLogger)
+        apiRepository = AirwallexApiRepository()
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
+
+    @Test
+    fun trackerLogsDebugMessageOnFailure() = runBlocking {
+        coEvery { anyConstructed<AirwallexHttpClient>().execute(any<AirwallexHttpRequest>()) } throws IOException(
+            "Mocked IO Exception"
+        )
+        val options = Options.TrackerOptions(request = TrackerRequest())
+        try {
+            apiRepository.tracker(options)
+        } catch (e: IOException) {
+            // Ignored
+        }
+        verify { AirwallexLogger.debug("Tracker failed.") }
+    }
+
+    @Test
+    fun executeMockWeChatLogsDebugMessageOnFailure() = runBlocking {
+        coEvery { anyConstructed<AirwallexHttpClient>().execute(any<AirwallexHttpRequest>()) } throws IOException(
+            "Mocked IO Exception"
+        )
+        apiRepository.executeMockWeChat("https://mock.wechat.url")
+        verify { AirwallexLogger.debug("Execute Mock WeChat failed.") }
+    }
 
     @Test
     fun retrieveAvailablePaymentMethodsOptionsTest() {

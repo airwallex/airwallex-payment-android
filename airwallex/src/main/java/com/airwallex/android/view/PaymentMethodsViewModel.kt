@@ -12,7 +12,6 @@ import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.ClientSecretRepository
-import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.putIfNotNull

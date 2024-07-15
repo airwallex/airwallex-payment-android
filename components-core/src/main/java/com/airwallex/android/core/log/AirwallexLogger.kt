@@ -22,14 +22,17 @@ object AirwallexLogger {
     private const val LOG_TAG = "AirwallexLogger"
     private var loggingEnabled: Boolean = false
     private var saveLogToLocal: Boolean = false
+    private var logWorker: LogWorker? = null
 
     fun initialize(
         context: Context,
         loggingEnabled: Boolean = false,
-        saveLogToLocal: Boolean = false
+        saveLogToLocal: Boolean = false,
+        logWorker: LogWorker = DEFAULT_LOG_WORKER
     ) {
         this.loggingEnabled = loggingEnabled
         this.saveLogToLocal = saveLogToLocal
+        this.logWorker = logWorker
         logWorker.initialize(context)
     }
 
@@ -104,38 +107,37 @@ object AirwallexLogger {
         }
     }
 
-    private var logWorker: LogWorker = DEFAULT_LOG_WORKER
-
     fun error(message: String?, throwable: Throwable? = null) {
-        logWorker.log(Level.ERROR, message, throwable)
+        logWorker?.log(Level.ERROR, message, throwable)
     }
 
     fun warn(message: String?, throwable: Throwable? = null) {
-        logWorker.log(Level.WARNING, message, throwable)
+        logWorker?.log(Level.WARNING, message, throwable)
     }
 
     fun info(message: String?, throwable: Throwable? = null, sensitiveMessage: String?) {
-        val msg = message + if (AirwallexPlugins.environment != Environment.PRODUCTION) sensitiveMessage else ""
-        logWorker.log(Level.INFO, msg, throwable)
+        val msg =
+            message + if (AirwallexPlugins.environment != Environment.PRODUCTION) sensitiveMessage else ""
+        logWorker?.log(Level.INFO, msg, throwable)
     }
 
     fun info(message: String?, throwable: Throwable? = null) {
-        logWorker.log(Level.INFO, message, throwable)
+        logWorker?.log(Level.INFO, message, throwable)
     }
 
     fun debug(message: String?, throwable: Throwable? = null) {
-        logWorker.log(Level.DEBUG, message, throwable)
+        logWorker?.log(Level.DEBUG, message, throwable)
     }
 
     fun verbose(message: String?, throwable: Throwable? = null) {
-        logWorker.log(Level.VERBOSE, message, throwable)
+        logWorker?.log(Level.VERBOSE, message, throwable)
     }
 
-    internal enum class Level {
+    enum class Level {
         VERBOSE, DEBUG, INFO, WARNING, ERROR
     }
 
-    internal interface LogWorker {
+    interface LogWorker {
         fun log(level: Level, message: String?, throwable: Throwable?)
 
         fun initialize(context: Context)
