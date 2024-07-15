@@ -1,10 +1,7 @@
-name: Push release to Maven
+name: Debug push release to Maven
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
 
 jobs:
   maven:
@@ -23,12 +20,15 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Gradle check
+        run: ./gradlew check
+
       # Packages and publishes to Maven Central
       - name: Publish to Maven Central
         run: |
           ./gradlew --stacktrace \
-          publishReleasePublicationToSonatypeRepository --max-workers 1 \
-          closeAndReleaseSonatypeStagingRepository
+          publishToSonatype --max-workers 1 \
+          closeSonatypeStagingRepository
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}

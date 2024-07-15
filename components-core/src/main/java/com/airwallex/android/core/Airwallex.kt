@@ -52,6 +52,10 @@ import com.airwallex.android.core.model.RetrievePaymentMethodTypeInfoParams
 import com.airwallex.android.core.model.ThreeDSecure
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.core.model.VerifyPaymentConsentParams
+import com.airwallex.android.core.model.*
+import com.airwallex.risk.AirwallexRisk
+import com.airwallex.risk.RiskConfiguration
+import com.airwallex.risk.Tenant
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -1228,6 +1232,14 @@ class Airwallex internal constructor(
             clientSecretProvider?.let {
                 ClientSecretRepository.init(it)
             }
+            AirwallexRisk.start(
+                applicationContext = application,
+                accountId = null,
+                configuration = RiskConfiguration(
+                    isProduction = configuration.environment == Environment.PRODUCTION,
+                    tenant = Tenant.PA
+                )
+            )
         }
     }
 }

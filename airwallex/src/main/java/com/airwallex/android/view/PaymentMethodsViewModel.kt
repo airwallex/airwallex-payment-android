@@ -175,7 +175,6 @@ internal class PaymentMethodsViewModel(
 
             else -> null
         }?.let { clientSecret ->
-            TokenManager.updateClientSecret(clientSecret)
             coroutineScope {
                 val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
                 AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")

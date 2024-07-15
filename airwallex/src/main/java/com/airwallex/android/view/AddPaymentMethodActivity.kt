@@ -19,6 +19,7 @@ import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.databinding.ActivityAddCardBinding
 import com.airwallex.android.ui.extension.getExtraArgs
+import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.launch
 
 /**
@@ -104,6 +105,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     private fun onSaveCard() {
         AnalyticsLogger.logAction("tap_pay_button")
+        AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
 
         val card = viewBinding.cardWidget.paymentMethodCard ?: return
         val resultHandler: (AirwallexPaymentStatus) -> Unit = { result ->
@@ -244,5 +246,23 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
         viewBinding.billingGroup.visibility =
             if (session.isBillingInformationRequired) View.VISIBLE else View.GONE
+
+        airwallexRiskLog()
+    }
+
+    private fun airwallexRiskLog() {
+        AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
+        viewBinding.cardWidget.cardNumberClickCallback = {
+            AirwallexRisk.log(event = "input_card_number", screen = "page_create_card")
+        }
+        viewBinding.cardWidget.holderNameClickCallback = {
+            AirwallexRisk.log(event = "input_card_holder_name", screen = "page_create_card")
+        }
+        viewBinding.cardWidget.expiresClickCallback = {
+            AirwallexRisk.log(event = "input_card_expiry", screen = "page_create_card")
+        }
+        viewBinding.cardWidget.cvcClickCallback = {
+            AirwallexRisk.log(event = "input_card_cvc", screen = "page_create_card")
+        }
     }
 }

@@ -24,6 +24,7 @@ import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.util.findWithType
+import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.launch
 
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
@@ -81,6 +82,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
         availablePaymentConsents: List<PaymentConsent>
     ) {
+        AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         paymentMethodsAdapter = PaymentMethodsAdapter(
             availablePaymentMethodTypes = availablePaymentMethodTypes,

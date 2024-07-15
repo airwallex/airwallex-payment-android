@@ -1,11 +1,13 @@
 package com.airwallex.android.view.inputs
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.text.method.KeyListener
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -94,6 +96,16 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
 
     fun setKeyListener(input: KeyListener) {
         teInput.keyListener = input
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun setOnInputEditTextClickListener(listener: OnClickListener) {
+        teInput.setOnTouchListener { v, event ->
+            if (event?.action == MotionEvent.ACTION_UP) {
+                listener.onClick(v)
+            }
+            false
+        }
     }
 
     fun setInputType(type: Int) {

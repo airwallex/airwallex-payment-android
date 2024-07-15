@@ -49,6 +49,10 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
         }
 
     var cardChangeCallback: () -> Unit = {}
+    var cardNumberClickCallback: () -> Unit = {}
+    var holderNameClickCallback: () -> Unit = {}
+    var expiresClickCallback: () -> Unit = {}
+    var cvcClickCallback: () -> Unit = {}
 
     val paymentMethodCard: PaymentMethod.Card?
         get() {
@@ -96,6 +100,22 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
         listenTextChanged()
         listenFocusChanged()
         listenCompletionCallback()
+        listenClick()
+    }
+
+    private fun listenClick() {
+        cardNumberTextInputLayout.setOnInputEditTextClickListener {
+            cardNumberClickCallback.invoke()
+        }
+        cardNameTextInputLayout.setOnInputEditTextClickListener {
+            holderNameClickCallback.invoke()
+        }
+        expiryTextInputLayout.setOnInputEditTextClickListener {
+            expiresClickCallback.invoke()
+        }
+        cvcTextInputLayout.setOnInputEditTextClickListener {
+            cvcClickCallback.invoke()
+        }
     }
 
     private fun listenTextChanged() {
