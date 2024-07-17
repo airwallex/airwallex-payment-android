@@ -39,6 +39,9 @@ object AirwallexLogger {
     @JvmField
     internal val DEFAULT_LOG_WORKER = object : LogWorker {
         private var logFile: File? = null
+        private val PREFERENCES_NAME = "airwallex_log_prefs"
+        private val LAST_DELETE_TIME_KEY = "airwallex_log_last_delete_time"
+        private val MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24
         private val ioScope = CoroutineScope(Dispatchers.IO)
         private val LOG_DIR = "AirwallexLogger"
         private val LOG_FILE_NAME = "log.txt"
@@ -50,7 +53,7 @@ object AirwallexLogger {
                     logDir.mkdirs()
                 }
                 logFile = File(logDir, LOG_FILE_NAME)
-                clearOldLogs(7)
+                clearOldLogs(context, 7)
             }
         }
 
@@ -91,15 +94,18 @@ object AirwallexLogger {
             }
         }
 
-        private fun clearOldLogs(retentionDays: Int = 7) {
+        fun clearOldLogs(context: Context, retentionDays: Int = 7) {
             ioScope.launch {
-                logFile?.let {
-                    if (it.exists()) {
-                        val lastModified = it.lastModified()
-                        val currentTime = System.currentTimeMillis()
-                        val ageInDays = (currentTime - lastModified) / (1000 * 60 * 60 * 24)
-                        if (ageInDays > retentionDays) {
-                            it.delete()
+                val sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+                val lastDeleteTime = sharedPreferences.getLong(LAST_DELETE_TIME_KEY, 0L)
+                val currentTime = System.currentTimeMillis()
+
+                if (currentTime - lastDeleteTime > retentionDays * MILLISECONDS_IN_A_DAY) {
+                    logFile?.let {
+                        if (it.exists()) {
+                            if (it.delete()) {
+                                sharedPreferences.edit().putLong(LAST_DELETE_TIME_KEY, currentTime).apply()
+                            }
                         }
                     }
                 }

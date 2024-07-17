@@ -54,7 +54,7 @@ class AirwallexLoggerTest {
     @Test
     fun `test initialize calls clearOldLogs`() = runBlocking {
         AirwallexLogger.initialize(mockContext, loggingEnabled = true, saveLogToLocal = true)
-        verify { spyLogWorker["clearOldLogs"](any<Int>()) }
+        verify { spyLogWorker["clearOldLogs"](mockContext, any<Int>()) }
     }
 
     @Test
