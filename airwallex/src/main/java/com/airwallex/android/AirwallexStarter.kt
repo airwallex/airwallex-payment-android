@@ -224,7 +224,7 @@ class AirwallexStarter {
                                 )
                             } else {
                                 paymentResultListener.onCompleted(
-                                    AirwallexPaymentStatus.Success(result.paymentIntentId)
+                                    AirwallexPaymentStatus.Success(result.paymentIntentId, result.paymentConsentId)
                                 )
                             }
                         }

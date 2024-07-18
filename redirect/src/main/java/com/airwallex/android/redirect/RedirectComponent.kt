@@ -30,7 +30,8 @@ class RedirectComponent : ActionComponent {
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
-        listener: Airwallex.PaymentResultListener
+        listener: Airwallex.PaymentResultListener,
+        consentId: String?
     ) {
         when (nextAction?.type) {
             NextAction.NextActionType.REDIRECT -> {

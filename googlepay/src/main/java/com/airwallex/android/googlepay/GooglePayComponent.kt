@@ -43,7 +43,8 @@ class GooglePayComponent : ActionComponent {
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
-        listener: Airwallex.PaymentResultListener
+        listener: Airwallex.PaymentResultListener,
+        consentId: String?
     ) {
         this.listener = listener
         if (nextAction?.type == NextAction.NextActionType.REDIRECT_FORM) {
@@ -113,7 +114,7 @@ class GooglePayComponent : ActionComponent {
                 is GooglePayActivityLaunch.Result.Success -> {
                     AirwallexLogger.info("GooglePayComponent handleActivityResult: success, paymentIntentId =$paymentIntentId")
                     paymentIntentId?.let {
-                        listener?.onCompleted(AirwallexPaymentStatus.Success(it, result.info))
+                        listener?.onCompleted(AirwallexPaymentStatus.Success(it, additionalInfo = result.info))
                     }
                 }
                 else -> {

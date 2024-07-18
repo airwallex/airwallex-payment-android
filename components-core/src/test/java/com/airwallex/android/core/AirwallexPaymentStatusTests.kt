@@ -6,7 +6,8 @@ import kotlin.test.assertEquals
 class AirwallexPaymentStatusTests {
     @Test
     fun `test success status`() {
-        val status = AirwallexPaymentStatus.Success("id", mapOf("paymentMethod" to "googlepay"))
+        val status =
+            AirwallexPaymentStatus.Success("id", "consentId", mapOf("paymentMethod" to "googlepay"))
         assertEquals(status.paymentIntentId, "id")
         assertEquals(status.additionalInfo?.get("paymentMethod"), "googlepay")
     }
