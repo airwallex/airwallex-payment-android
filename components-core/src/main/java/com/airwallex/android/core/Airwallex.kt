@@ -391,7 +391,7 @@ class Airwallex internal constructor(
                         applicationContext,
                         cardNextActionModel,
                         listener,
-                        params.paymentConsentId
+                        response.id
                     )
                 }
             }
@@ -877,7 +877,7 @@ class Airwallex internal constructor(
                         applicationContext,
                         cardNextActionModel,
                         listener,
-                        params.customerId
+                        params.paymentConsentId
                     )
                 }
             }
