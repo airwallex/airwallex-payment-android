@@ -390,7 +390,8 @@ class Airwallex internal constructor(
                         activity,
                         applicationContext,
                         cardNextActionModel,
-                        listener
+                        listener,
+                        params.paymentConsentId
                     )
                 }
             }
