@@ -7,7 +7,6 @@ import com.airwallex.android.core.Environment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -36,7 +35,6 @@ object AirwallexLogger {
         logWorker.initialize(context)
     }
 
-    @JvmField
     internal val DEFAULT_LOG_WORKER = object : LogWorker {
         private var logFile: File? = null
         private val PREFERENCES_NAME = "airwallex_log_prefs"
@@ -73,15 +71,13 @@ object AirwallexLogger {
                 }
             }
             if (saveLogToLocal) {
-                ioScope.launch {
-                    writeLogToFile("$logMessage ${Log.getStackTraceString(throwable)}")
-                }
+                writeLogToFile("$logMessage ${Log.getStackTraceString(throwable)}")
             }
         }
 
-        private suspend fun writeLogToFile(logMessage: String) {
-            logFile?.let {
-                withContext(Dispatchers.IO) {
+        private fun writeLogToFile(logMessage: String) {
+            ioScope.launch {
+                logFile?.let {
                     try {
                         val writer = FileWriter(it, true)
                         writer.append(logMessage)

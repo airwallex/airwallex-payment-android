@@ -132,7 +132,7 @@ class AirwallexStarter {
             session: AirwallexSession,
             paymentResultListener: Airwallex.PaymentResultListener
         ) {
-            val paymentSession: AirwallexPaymentSession? = session as? AirwallexPaymentSession
+            val paymentSession = session as? AirwallexPaymentSession
             AirwallexLogger.info("AirwallexStarter presentPaymentFlow[${paymentSession?.paymentIntent?.id}]")
             PaymentResultManager.getInstance(paymentResultListener)
             launch.launchForResult(
