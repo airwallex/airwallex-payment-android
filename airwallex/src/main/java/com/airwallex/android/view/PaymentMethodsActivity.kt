@@ -434,7 +434,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         }
                         finishWithPaymentIntent(
                             paymentIntentId = result.paymentIntentId,
-                            exception = result.exception
+                            exception = result.exception,
+                            consentId = it.consentId
                         )
                     }
                 } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -465,7 +466,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     private fun finishWithPaymentIntent(
         paymentIntentId: String? = null,
         isRedirecting: Boolean = false,
-        exception: AirwallexException? = null
+        exception: AirwallexException? = null,
+        consentId: String? = null,
     ) {
         setLoadingProgress(false)
         setResult(
@@ -473,6 +475,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             Intent().putExtras(
                 PaymentMethodsActivityLaunch.Result(
                     paymentIntentId = paymentIntentId,
+                    paymentConsentId = consentId,
                     isRedirecting = isRedirecting,
                     exception = exception
                 ).toBundle()

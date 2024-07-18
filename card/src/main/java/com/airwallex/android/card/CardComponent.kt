@@ -38,7 +38,8 @@ class CardComponent : ActionComponent {
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
-        listener: Airwallex.PaymentResultListener
+        listener: Airwallex.PaymentResultListener,
+        consentId: String?,
     ) {
         this.listener = listener
         if (cardNextActionModel == null) {
@@ -108,18 +109,19 @@ class CardComponent : ActionComponent {
             }
             // payPayment
             else -> {
-                startPaymentFlow(listener, cardNextActionModel)
+                startPaymentFlow(listener, cardNextActionModel, consentId)
             }
         }
     }
 
     private fun startPaymentFlow(
         listener: Airwallex.PaymentResultListener,
-        cardNextActionModel: CardNextActionModel
+        cardNextActionModel: CardNextActionModel,
+        consentId: String?,
     ) {
         val retrievePaymentIntentListener = object : PaymentListener<PaymentIntent> {
             override fun onSuccess(response: PaymentIntent) {
-                listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
+                listener.onCompleted(AirwallexPaymentStatus.Success(response.id, consentId))
             }
 
             override fun onFailed(exception: AirwallexException) {

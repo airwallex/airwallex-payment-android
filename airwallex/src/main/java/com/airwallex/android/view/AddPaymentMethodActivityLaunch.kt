@@ -67,6 +67,7 @@ internal class AddPaymentMethodActivityLaunch :
     @Parcelize
     internal data class Result internal constructor(
         val paymentIntentId: String? = null,
+        val consentId: String? = null,
         val exception: AirwallexException? = null
     ) : AirwallexActivityLaunch.Result {
         override fun toBundle(): Bundle {
@@ -80,12 +81,14 @@ internal class AddPaymentMethodActivityLaunch :
             override fun create(parcel: Parcel): Result {
                 return Result(
                     paymentIntentId = parcel.readString(),
+                    consentId = parcel.readString(),
                     exception = parcel.readSerializable() as? AirwallexException?
                 )
             }
 
             override fun Result.write(parcel: Parcel, flags: Int) {
                 parcel.writeString(paymentIntentId)
+                parcel.writeString(consentId)
                 parcel.writeSerializable(exception)
             }
 

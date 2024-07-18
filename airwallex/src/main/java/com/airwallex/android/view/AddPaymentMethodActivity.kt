@@ -109,7 +109,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         val resultHandler: (AirwallexPaymentStatus) -> Unit = { result ->
             when (result) {
                 is AirwallexPaymentStatus.Success -> {
-                    finishWithPaymentIntent(paymentIntentId = result.paymentIntentId)
+                    finishWithPaymentIntent(paymentIntentId = result.paymentIntentId, consentId = result.consentId)
                 }
                 is AirwallexPaymentStatus.Failure -> {
                     finishWithPaymentIntent(exception = result.exception)
@@ -171,6 +171,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     private fun finishWithPaymentIntent(
         paymentIntentId: String? = null,
+        consentId: String? = null,
         exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
@@ -179,6 +180,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
             Intent().putExtras(
                 AddPaymentMethodActivityLaunch.Result(
                     paymentIntentId = paymentIntentId,
+                    consentId = consentId,
                     exception = exception
                 ).toBundle()
             )
