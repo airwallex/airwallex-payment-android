@@ -6,7 +6,7 @@ import com.airwallex.android.core.ActionComponentProviderType
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.log.ConsoleLogger
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 import com.google.android.gms.common.ConnectionResult
@@ -60,6 +60,7 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(activity)
         if (resultCode != ConnectionResult.SUCCESS) {
+            AirwallexLogger.error("GooglePayComponentProvider requestIsReadyToPay: resultCode = $resultCode")
             return false
         }
         val request = IsReadyToPayRequest.fromJson(isReadyToPayJson.toString())
@@ -78,7 +79,7 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
                             putIfNotNull("message", exception.message)
                         }
                     )
-                    ConsoleLogger.error("isReadyToPay failed", exception)
+                    AirwallexLogger.error("GooglePayComponentProvider isReadyToPay failed", exception)
                     cont.resume(false)
                 }
             }

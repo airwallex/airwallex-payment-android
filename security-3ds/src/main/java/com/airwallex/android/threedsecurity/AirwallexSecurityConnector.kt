@@ -3,7 +3,7 @@ package com.airwallex.android.threedsecurity
 import android.content.Context
 import com.airwallex.android.core.SecurityConnector
 import com.airwallex.android.core.SecurityTokenListener
-import com.airwallex.android.core.log.ConsoleLogger
+import com.airwallex.android.core.log.AirwallexLogger
 import com.lexisnexisrisk.threatmetrix.TMXConfig
 import com.lexisnexisrisk.threatmetrix.TMXProfiling.getInstance
 import com.lexisnexisrisk.threatmetrix.TMXProfilingConnectionsInterface
@@ -31,7 +31,7 @@ class AirwallexSecurityConnector : SecurityConnector {
         applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
-        ConsoleLogger.debug(TAG, "Start init TrustDefender")
+        AirwallexLogger.debug("Start init TrustDefender")
         val profilingConnections: TMXProfilingConnectionsInterface = TMXProfilingConnections()
             .setConnectionTimeout(20, TimeUnit.SECONDS)
             .setRetryTimes(3)
@@ -40,7 +40,7 @@ class AirwallexSecurityConnector : SecurityConnector {
         config.setProfilingConnections(profilingConnections)
         getInstance().init(config)
 
-        ConsoleLogger.debug(TAG, "Successfully init init-ed")
+        AirwallexLogger.debug("Successfully init init-ed")
         doProfile(paymentIntentId, securityTokenListener)
     }
 
@@ -53,14 +53,13 @@ class AirwallexSecurityConnector : SecurityConnector {
         val options = TMXProfilingOptions().setSessionID(sessionID)
         // Fire off the profiling request.
         profilingHandle = getInstance().profile(options) { result ->
-            ConsoleLogger.debug(
-                TAG,
+            AirwallexLogger.debug(
                 "Session id: ${result.sessionID}, Session status: ${result.status}"
             )
             profilingHandle?.cancel()
             profilingHandle = null
         }
-        ConsoleLogger.debug(TAG, "Response sessionID $sessionID")
+        AirwallexLogger.debug("Response sessionID $sessionID")
         securityTokenListener.onResponse(sessionID)
     }
 

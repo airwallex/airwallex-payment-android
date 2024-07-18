@@ -17,7 +17,7 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.log.ConsoleLogger
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
@@ -73,6 +73,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     override fun onBackButtonPressed() {
+        AirwallexLogger.info("PaymentMethodsActivity onBackButtonPressed")
         setResult(RESULT_CANCELED)
         finish()
     }
@@ -303,7 +304,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     // 1. Retrieve all required schema fields of the payment method
                     // 2. If the bank is needed, need to retrieve the bank list.
                     // 3. If the bank is not needed or bank list is empty, then show the schema fields dialog.
-                    ConsoleLogger.debug(TAG, "Get more payment Info fields on one-off flow.")
+                    AirwallexLogger.debug("Get more payment Info fields on one-off flow.")
                     paymentMethod.type?.let { type ->
                         retrievePaymentMethodTypeInfo(type) { result ->
                             result.fold(
@@ -440,6 +441,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     }
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     val result = AddPaymentMethodActivityLaunch.CancellationResult.fromIntent(data)
+                    AirwallexLogger.info("PaymentMethodsActivity onActivityResult: result_canceled")
                     result?.let {
                         if (it.isSinglePaymentMethod) {
                             setResult(Activity.RESULT_CANCELED)
@@ -470,6 +472,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         consentId: String? = null,
     ) {
         setLoadingProgress(false)
+        AirwallexLogger.info("PaymentMethodsActivity finishWithPaymentIntent")
         setResult(
             Activity.RESULT_OK,
             Intent().putExtras(

@@ -9,12 +9,49 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.extension.confirmGooglePayIntent
 import com.airwallex.android.core.extension.createCardPaymentMethod
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.BankResponse
+import com.airwallex.android.core.model.Billing
+import com.airwallex.android.core.model.ClientSecret
+import com.airwallex.android.core.model.ConfirmPaymentIntentParams
+import com.airwallex.android.core.model.ContinuePaymentIntentParams
+import com.airwallex.android.core.model.CreatePaymentConsentParams
+import com.airwallex.android.core.model.CreatePaymentMethodParams
+import com.airwallex.android.core.model.Dependency
+import com.airwallex.android.core.model.Device
+import com.airwallex.android.core.model.DisablePaymentConsentParams
+import com.airwallex.android.core.model.Options
+import com.airwallex.android.core.model.Page
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentConsentCreateRequest
+import com.airwallex.android.core.model.PaymentConsentDisableRequest
+import com.airwallex.android.core.model.PaymentConsentReference
+import com.airwallex.android.core.model.PaymentConsentVerifyRequest
+import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.model.PaymentIntentConfirmRequest
+import com.airwallex.android.core.model.PaymentIntentContinueRequest
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodCreateRequest
+import com.airwallex.android.core.model.PaymentMethodOptions
+import com.airwallex.android.core.model.PaymentMethodRequest
+import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.core.model.PaymentMethodTypeInfo
+import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
+import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
+import com.airwallex.android.core.model.RetrieveBankParams
+import com.airwallex.android.core.model.RetrievePaymentIntentParams
+import com.airwallex.android.core.model.RetrievePaymentMethodTypeInfoParams
+import com.airwallex.android.core.model.ThreeDSecure
+import com.airwallex.android.core.model.TransactionMode
+import com.airwallex.android.core.model.VerifyPaymentConsentParams
 import com.airwallex.android.core.model.*
 import com.airwallex.risk.AirwallexRisk
 import com.airwallex.risk.RiskConfiguration
@@ -22,7 +59,7 @@ import com.airwallex.risk.Tenant
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 
 class Airwallex internal constructor(
     private val fragment: Fragment?,
@@ -289,7 +326,7 @@ class Airwallex internal constructor(
             is AirwallexPaymentSession -> TransactionMode.ONE_OFF
             else -> throw AirwallexCheckoutException(message = "Not support session $session")
         }
-
+        AirwallexLogger.info("Airwallex retrieveAvailablePaymentMethods[${(session as? AirwallexPaymentSession)?.paymentIntent?.id}]: transactionMode = $transactionMode ")
         val response = paymentManager.retrieveAvailablePaymentMethods(
             Options.RetrieveAvailablePaymentMethodsOptions(
                 clientSecret = params.clientSecret,
@@ -309,7 +346,7 @@ class Airwallex internal constructor(
                         activity
                     ) ?: false
         }
-
+        AirwallexLogger.info("Airwallex retrieveAvailablePaymentMethods[${(session as? AirwallexPaymentSession)?.paymentIntent?.id}]: response.items.size = ${response.items.size}")
         return response
     }
 
@@ -495,6 +532,7 @@ class Airwallex internal constructor(
         listener: PaymentResultListener,
         saveCard: Boolean = false,
     ) {
+        AirwallexLogger.info("Airwallex checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
         when (session) {
             is AirwallexPaymentSession -> {
                 if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
@@ -716,6 +754,7 @@ class Airwallex internal constructor(
                                         listener = listener
                                     )
                                 } else {
+                                    AirwallexLogger.error("Airwallex checkoutGooglePay: failed , Missing Google Pay token response")
                                     listener.onCompleted(
                                         AirwallexPaymentStatus.Failure(
                                             AirwallexCheckoutException(message = "Missing Google Pay token response")
@@ -732,6 +771,7 @@ class Airwallex internal constructor(
                 }
             )
         } else {
+            AirwallexLogger.error("Airwallex checkoutGooglePay: failed , Missing ${PaymentMethodType.GOOGLEPAY.dependencyName} dependency")
             listener.onCompleted(
                 AirwallexPaymentStatus.Failure(
                     AirwallexCheckoutException(message = "Missing ${PaymentMethodType.GOOGLEPAY.dependencyName} dependency")
@@ -1190,6 +1230,7 @@ class Airwallex internal constructor(
             clientSecretProvider: ClientSecretProvider? = null
         ) {
             AirwallexPlugins.initialize(application, configuration)
+            AirwallexLogger.initialize(application, configuration.enableLogging)
             clientSecretProvider?.let {
                 ClientSecretRepository.init(it)
             }

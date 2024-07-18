@@ -12,6 +12,7 @@ import com.airwallex.android.R
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.CardScheme
@@ -90,6 +91,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
     private var currentBrand: CardBrand? = null
 
     override fun onBackButtonPressed() {
+        AirwallexLogger.info("AddPaymentMethodActivity onBackButtonPressed")
         setResult(
             Activity.RESULT_CANCELED,
             Intent().putExtras(
@@ -175,6 +177,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         exception: AirwallexException? = null
     ) {
         setLoadingProgress(false)
+        AirwallexLogger.info("AddPaymentMethodActivity finishWithPaymentIntent")
         setResult(
             Activity.RESULT_OK,
             Intent().putExtras(

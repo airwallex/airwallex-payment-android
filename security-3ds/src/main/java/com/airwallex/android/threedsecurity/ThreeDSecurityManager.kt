@@ -9,7 +9,7 @@ import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.log.ConsoleLogger
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.*
 import com.airwallex.android.threedsecurity.exception.ThreeDSException
 import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
@@ -100,7 +100,7 @@ object ThreeDSecurityManager {
                                     .build()
                             )
 
-                            ConsoleLogger.debug("onWebViewConfirmation $payload")
+                            AirwallexLogger.info("ThreeDSecurityManager onWebViewConfirmation: nextAction.stage = ${nextAction.stage}", sensitiveMessage = "payload = $payload")
                             if (nextAction.stage == NextAction.NextActionStage.WAITING_USER_INFO_INPUT) {
                                 AnalyticsLogger.logPageView(
                                     "webview_redirect",
@@ -125,11 +125,14 @@ object ThreeDSecurityManager {
                                     options,
                                     object : Airwallex.PaymentListener<PaymentIntent> {
                                         override fun onSuccess(response: PaymentIntent) {
-                                            ConsoleLogger.debug("onSuccess $response")
+                                            AirwallexLogger.info(
+                                                "ThreeDSecurityManager: onSuccess ",
+                                                sensitiveMessage = response.toString()
+                                            )
                                             destroyWebView()
                                             val continueNextAction = response.nextAction
                                             if (continueNextAction == null) {
-                                                ConsoleLogger.debug("3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
+                                                AirwallexLogger.info("ThreeDSecurityManager: 3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
                                                 listener.onCompleted(
                                                     AirwallexPaymentStatus.Success(
                                                         response.id
@@ -151,6 +154,7 @@ object ThreeDSecurityManager {
 
                                         override fun onFailed(exception: AirwallexException) {
                                             destroyWebView()
+                                            AirwallexLogger.error("ThreeDSecurityManager: onFailed", exception)
                                             listener.onCompleted(
                                                 AirwallexPaymentStatus.Failure(
                                                     exception
@@ -164,17 +168,17 @@ object ThreeDSecurityManager {
 
                         override fun onWebViewError(error: WebViewConnectionException) {
                             AnalyticsLogger.logError("webview_redirect", exception = error)
-                            ConsoleLogger.error("onWebViewError", error)
+                            AirwallexLogger.error("onWebViewError", error)
                             destroyWebView()
                             listener.onCompleted(AirwallexPaymentStatus.Failure(error))
                         }
 
                         override fun onPageFinished(url: String?) {
-                            ConsoleLogger.debug("onPageFinished $url")
+                            AirwallexLogger.debug("onPageFinished $url")
                         }
 
                         override fun onPageStarted(url: String?) {
-                            ConsoleLogger.debug("onPageStarted $url")
+                            AirwallexLogger.debug("onPageStarted $url")
                         }
                     })
 

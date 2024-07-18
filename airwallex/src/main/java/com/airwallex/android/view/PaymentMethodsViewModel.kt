@@ -1,13 +1,35 @@
 package com.airwallex.android.view
 
 import android.app.Application
-import androidx.lifecycle.*
-import com.airwallex.android.core.*
-import com.airwallex.android.core.exception.AirwallexException
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.ClientSecretRepository
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.ClientSecret
+import com.airwallex.android.core.model.DisablePaymentConsentParams
+import com.airwallex.android.core.model.DynamicSchemaField
+import com.airwallex.android.core.model.Page
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.core.model.PaymentMethodTypeInfo
+import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
+import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
+import com.airwallex.android.core.model.TransactionMode
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import java.util.Collections
@@ -153,6 +175,8 @@ internal class PaymentMethodsViewModel(
             else -> null
         }?.let { clientSecret ->
             coroutineScope {
+                val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
+                AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
                 val retrieveConsents = async {
                     customerId?.takeIf { needRequestConsent() }
                         ?.let { retrieveAvailablePaymentConsents(clientSecret, it) }
@@ -167,6 +191,7 @@ internal class PaymentMethodsViewModel(
                     val consents = retrieveConsents.await()
                     Result.success(Pair(methods, consents))
                 } catch (exception: AirwallexException) {
+                    AirwallexLogger.error("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: failed ", exception)
                     Result.failure(exception)
                 }
             }
