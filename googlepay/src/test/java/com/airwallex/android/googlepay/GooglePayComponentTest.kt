@@ -186,7 +186,7 @@ class GooglePayComponentTest {
 
         handlePaymentIntentResponse()
         assert(component.handleActivityResult(1007, RESULT_OK, intent))
-        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Success("id", map)) }
+        verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Success("id", null, map)) }
     }
 
     @Test

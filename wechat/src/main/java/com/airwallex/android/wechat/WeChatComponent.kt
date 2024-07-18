@@ -74,7 +74,8 @@ class WeChatComponent : ActionComponent {
         activity: Activity,
         applicationContext: Context,
         cardNextActionModel: CardNextActionModel?,
-        listener: Airwallex.PaymentResultListener
+        listener: Airwallex.PaymentResultListener,
+        consentId: String?
     ) {
         this.paymentIntentId = paymentIntentId
         this.listener = listener

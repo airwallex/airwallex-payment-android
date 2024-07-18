@@ -6,6 +6,7 @@ sealed class AirwallexPaymentStatus {
     // payment success
     data class Success(
         val paymentIntentId: String,
+        val consentId: String? = null,
         val additionalInfo: Map<String, Any>? = null
     ) : AirwallexPaymentStatus()
 
