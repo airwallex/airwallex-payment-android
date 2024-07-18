@@ -100,8 +100,12 @@ object AirwallexLogger {
                     logFile?.let {
                         if (it.exists()) {
                             if (it.delete()) {
-                                sharedPreferences.edit().putLong(LAST_DELETE_TIME_KEY, currentTime).apply()
+                                sharedPreferences.edit().putLong(LAST_DELETE_TIME_KEY, currentTime)
+                                    .apply()
                             }
+                        } else {
+                            sharedPreferences.edit().putLong(LAST_DELETE_TIME_KEY, currentTime)
+                                .apply()
                         }
                     }
                 }
