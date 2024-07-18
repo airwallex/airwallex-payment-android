@@ -4,7 +4,8 @@ data class AirwallexConfiguration internal constructor(
     val enableLogging: Boolean,
     val environment: Environment,
     val supportComponentProviders: List<ActionComponentProvider<out ActionComponent>>,
-    val enableAnalytics: Boolean
+    val enableAnalytics: Boolean,
+    val saveLogToLocal: Boolean = false
 ) {
     class Builder {
 
@@ -12,6 +13,11 @@ data class AirwallexConfiguration internal constructor(
          * You can set to true if you want to see more debug logs
          */
         private var enableLogging: Boolean = false
+
+        /**
+         * You can set to true if you want to save logs to local
+         */
+        private var saveLogToLocal: Boolean = false
 
         /**
          * Set the environment to be used by Airwallex
@@ -46,12 +52,17 @@ data class AirwallexConfiguration internal constructor(
             this.enableAnalytics = false
         }
 
+        fun saveLogToLocal(saveLogToLocal: Boolean): Builder = apply {
+            this.saveLogToLocal = saveLogToLocal
+        }
+
         fun build(): AirwallexConfiguration {
             return AirwallexConfiguration(
                 enableLogging = enableLogging,
                 environment = environment,
                 supportComponentProviders = supportComponentProviders,
-                enableAnalytics = enableAnalytics
+                enableAnalytics = enableAnalytics,
+                saveLogToLocal = saveLogToLocal
             )
         }
     }

@@ -1230,7 +1230,7 @@ class Airwallex internal constructor(
             clientSecretProvider: ClientSecretProvider? = null
         ) {
             AirwallexPlugins.initialize(application, configuration)
-            AirwallexLogger.initialize(application, configuration.enableLogging)
+            AirwallexLogger.initialize(application, configuration.enableLogging, configuration.saveLogToLocal)
             clientSecretProvider?.let {
                 ClientSecretRepository.init(it)
             }

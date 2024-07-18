@@ -40,6 +40,7 @@ class SampleApplication : Application() {
             this,
             AirwallexConfiguration.Builder()
                 .enableLogging(true) // Enable log in sdk, best set to false in release version
+                .saveLogToLocal(false)// Save the Airwallex logs locally. If you have your own saving strategy, please set this to false.
                 .setEnvironment(environment)
                 .setSupportComponentProviders(
                     listOf(
@@ -68,6 +69,7 @@ class SampleApplication : Application() {
             this,
             AirwallexConfiguration.Builder()
                 .enableLogging(true) // Enable log in sdk, best set to false in release version
+                .saveLogToLocal(false)// Save the Airwallex logs locally. If you have your own saving strategy, please set this to false.
                 .setEnvironment(environment)
                 .setSupportComponentProviders(
                     listOf(
