@@ -109,32 +109,9 @@ class CardComponent : ActionComponent {
             }
             // payPayment
             else -> {
-                startPaymentFlow(listener, cardNextActionModel, consentId)
+                listener.onCompleted(AirwallexPaymentStatus.Success(paymentIntentId, consentId))
             }
         }
-    }
-
-    private fun startPaymentFlow(
-        listener: Airwallex.PaymentResultListener,
-        cardNextActionModel: CardNextActionModel,
-        consentId: String?,
-    ) {
-        val retrievePaymentIntentListener = object : PaymentListener<PaymentIntent> {
-            override fun onSuccess(response: PaymentIntent) {
-                listener.onCompleted(AirwallexPaymentStatus.Success(response.id, consentId))
-            }
-
-            override fun onFailed(exception: AirwallexException) {
-                listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
-            }
-        }
-        cardNextActionModel.paymentManager.startOperation(
-            Options.RetrievePaymentIntentOptions(
-                clientSecret = cardNextActionModel.clientSecret,
-                paymentIntentId = cardNextActionModel.paymentIntentId
-            ),
-            retrievePaymentIntentListener
-        )
     }
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
