@@ -75,14 +75,6 @@ class AirwallexApiRepository : ApiRepository {
         return options.executeApiRequest(PageParser(PaymentConsentParser()))
     }
 
-    override suspend fun tracker(options: Options.TrackerOptions) {
-        runCatching {
-            httpClient.execute(options.toAirwallexHttpRequest())
-        }.getOrElse {
-            AirwallexLogger.debug("Tracker failed.")
-        }
-    }
-
     override suspend fun executeMockWeChat(mockWeChatUrl: String) {
         runCatching {
             httpClient.execute(

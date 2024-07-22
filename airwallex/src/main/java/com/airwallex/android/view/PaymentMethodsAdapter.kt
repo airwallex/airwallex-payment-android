@@ -6,14 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.airwallex.android.core.Tracker
-import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.R
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.PaymentMethodConsentItemBinding
 import com.airwallex.android.databinding.PaymentMethodDynamicItemBinding
 import com.bumptech.glide.Glide
-import java.util.*
+import java.util.Locale
 
 internal class PaymentMethodsAdapter(
     val availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
@@ -127,15 +130,6 @@ internal class PaymentMethodsAdapter(
             viewBinding.rlCard.setOnSingleClickListener {
                 if (selectedPaymentConsent?.id != paymentConsent.id) {
                     selectedPaymentConsent = paymentConsent
-
-                    Tracker.track(
-                        TrackerRequest.Builder()
-                            .setBrand(card.brand)
-                            .setCardBin(card.bin)
-                            .setCode(TrackerRequest.TrackerCode.ON_SWITCH_METHOD)
-                            .build()
-                    )
-
                     notifyDataSetChanged()
                 }
                 selectedPaymentConsent?.let { listener?.onPaymentConsentClick(it) }

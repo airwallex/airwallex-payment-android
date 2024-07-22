@@ -12,13 +12,11 @@ import com.airwallex.android.core.model.Options
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
-import com.airwallex.android.core.model.TrackerRequest
 import com.airwallex.android.core.model.getUrl
 import com.airwallex.android.core.util.BuildHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class AirwallexPaymentManager(
     private val repository: ApiRepository
@@ -124,59 +122,23 @@ class AirwallexPaymentManager(
                     requireNotNull(repository.retrievePaymentMethodTypeInfo(options))
                 is Options.RetrieveBankOptions ->
                     requireNotNull(repository.retrieveBanks(options))
-                is Options.TrackerOptions -> throw IllegalArgumentException("Invalid Options type")
             }
         }
 
-        withContext(Dispatchers.Main) {
-            var trackerCode: TrackerRequest.TrackerCode? = null
-            var origin: String? = null
-            var intentId: String? = null
-            when (options) {
-                is Options.CreatePaymentMethodOptions -> {
-                    trackerCode = if (result.isSuccess) {
-                        TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED
-                    } else {
-                        TrackerRequest.TrackerCode.ON_PAYMENT_METHOD_CREATED_ERROR
-                    }
-                    origin = options.request.customerId
-                }
-                is Options.RetrievePaymentIntentOptions -> {
-                    trackerCode = if (result.isSuccess) {
-                        TrackerRequest.TrackerCode.ON_INTENT_RETRIEVED
-                    } else {
-                        TrackerRequest.TrackerCode.ON_INTENT_RETRIEVED_ERROR
-                    }
-                    intentId = options.paymentIntentId
-                }
-                else -> {
-                    // no op
-                }
-            }
-            trackerCode?.let { code ->
-                Tracker.track(
-                    TrackerRequest.Builder()
-                        .setOrigin(origin)
-                        .setIntentId(intentId)
-                        .setCode(code)
-                        .build()
+        result.fold(
+            onSuccess = {
+                listener.onSuccess(it as T)
+            },
+            onFailure = {
+                val exception = handleError(it)
+                AnalyticsLogger.logError(
+                    eventName = options.getEventName(),
+                    url = options.getUrl(),
+                    exception = exception
                 )
+                listener.onFailed(exception)
             }
-            result.fold(
-                onSuccess = {
-                    listener.onSuccess(it as T)
-                },
-                onFailure = {
-                    val exception = handleError(it)
-                    AnalyticsLogger.logError(
-                        eventName = options.getEventName(),
-                        url = options.getUrl(),
-                        exception = exception
-                    )
-                    listener.onFailed(exception)
-                }
-            )
-        }
+        )
     }
 
     private fun handleError(throwable: Throwable): AirwallexException {
