@@ -26,7 +26,9 @@ data class NextAction(
 
     val url: String?,
 
-    val method: String?
+    val method: String?,
+
+    val packageName: String?
 ) : AirwallexModel, Parcelable {
 
     @Parcelize
