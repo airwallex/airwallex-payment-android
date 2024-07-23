@@ -1,7 +1,6 @@
 package com.airwallex.android.card
 
 import android.app.Activity
-import android.content.Context
 import com.airwallex.android.core.*
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
@@ -9,8 +8,6 @@ import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
 import com.airwallex.android.core.model.parser.PageParser
 import org.junit.Test
-import java.math.BigDecimal
-import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
