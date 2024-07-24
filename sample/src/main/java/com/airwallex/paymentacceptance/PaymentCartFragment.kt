@@ -604,6 +604,7 @@ class PaymentCartFragment : Fragment() {
             is AirwallexPaymentStatus.InProgress -> {
                 // redirecting
                 Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
+                showPaymentInProgress()
             }
 
             is AirwallexPaymentStatus.Failure -> {

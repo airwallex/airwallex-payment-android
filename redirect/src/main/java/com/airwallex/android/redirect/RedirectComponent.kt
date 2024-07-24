@@ -47,9 +47,7 @@ class RedirectComponent : ActionComponent {
                     return
                 }
                 try {
-                    listener.onCompleted(AirwallexPaymentStatus.InProgress(paymentIntentId))
                     RedirectUtil.makeRedirect(activity = activity, redirectUrl = redirectUrl, packageName = nextAction.packageName)
-                    AnalyticsLogger.logPageView("payment_redirect", mapOf("url" to redirectUrl))
                 } catch (e: RedirectException) {
                     listener.onCompleted(AirwallexPaymentStatus.Failure(e))
                     AnalyticsLogger.logError(
@@ -60,6 +58,9 @@ class RedirectComponent : ActionComponent {
                         }
                     )
                 }
+
+                listener.onCompleted(AirwallexPaymentStatus.InProgress(paymentIntentId))
+                AnalyticsLogger.logPageView("payment_redirect", mapOf("url" to redirectUrl))
             }
             else -> {
                 listener.onCompleted(
