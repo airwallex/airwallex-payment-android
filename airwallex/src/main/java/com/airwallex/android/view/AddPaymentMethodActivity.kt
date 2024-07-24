@@ -2,21 +2,20 @@ package com.airwallex.android.view
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.R
-import com.airwallex.android.core.*
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
-import com.airwallex.android.core.model.CardScheme
-import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.databinding.ActivityAddCardBinding
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.risk.AirwallexRisk
@@ -47,31 +46,16 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         args.session
     }
 
-    private val supportedCardSchemes: List<CardScheme> by lazy {
-        args.supportedCardSchemes
-    }
-
-    private val isSinglePaymentMethod: Boolean by lazy {
-        args.isSinglePaymentMethod
-    }
-
-    private val shipping: Shipping? by lazy {
-        when (session) {
-            is AirwallexPaymentSession -> {
-                (session as AirwallexPaymentSession).paymentIntent.order?.shipping
-            }
-            is AirwallexRecurringWithIntentSession -> {
-                (session as AirwallexRecurringWithIntentSession).paymentIntent.order?.shipping
-            }
-            is AirwallexRecurringSession -> {
-                (session as AirwallexRecurringSession).shipping
-            }
-            else -> null
-        }
-    }
-
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
+    }
+
+    private val viewModel: AddPaymentMethodViewModel by lazy {
+        ViewModelProvider(
+            this, AddPaymentMethodViewModel.Factory(
+                application, airwallex, session, args.supportedCardSchemes
+            )
+        )[AddPaymentMethodViewModel::class.java]
     }
 
     private val isValid: Boolean
@@ -79,28 +63,70 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
             return viewBinding.cardWidget.isValid && viewBinding.billingWidget.isValid
         }
 
-    private val viewModel: AddPaymentMethodViewModel by lazy {
-        ViewModelProvider(
-            this,
-            AddPaymentMethodViewModel.Factory(
-                application, airwallex, session, supportedCardSchemes
-            )
-        )[AddPaymentMethodViewModel::class.java]
+    private var currentBrand: CardBrand? = null
+
+    override fun initView() {
+        super.initView()
+        AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
+        viewBinding.cardWidget.showEmail = viewModel.isEmailRequired
+        viewBinding.billingWidget.shipping = viewModel.shipping
+        viewBinding.btnSaveCard.text = viewModel.ctaTitle
+        viewBinding.btnSaveCard.isEnabled = isValid
+        viewBinding.billingGroup.visibility =
+            if (viewModel.isBillingRequired) View.VISIBLE else View.GONE
+        viewBinding.saveCardWidget.visibility =
+            if (viewModel.canSaveCard) View.VISIBLE else View.GONE
     }
 
-    private var currentBrand: CardBrand? = null
+    override fun addListener() {
+        super.addListener()
+        viewBinding.cardWidget.validationMessageCallback = { cardNumber ->
+            when (val result = viewModel.getValidationResult(cardNumber)) {
+                is AddPaymentMethodViewModel.ValidationResult.Success -> null
+                is AddPaymentMethodViewModel.ValidationResult.Error -> resources.getString(result.message)
+            }
+        }
+        viewBinding.cardWidget.brandChangeCallback = { cardBrand ->
+            currentBrand = cardBrand
+            handleUnionPayWarning()
+        }
+        viewBinding.cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
+        viewBinding.billingWidget.billingChangeCallback = {
+            invalidateConfirmStatus()
+            AnalyticsLogger.logAction("toggle_billing_address")
+        }
+        viewBinding.btnSaveCard.setOnSingleClickListener { onSaveCard() }
+        viewBinding.swSaveCard.setOnCheckedChangeListener { _, isChecked ->
+            handleUnionPayWarning()
+            if (isChecked) {
+                AnalyticsLogger.logAction("save_card")
+            }
+        }
+    }
 
     override fun onBackButtonPressed() {
         AirwallexLogger.info("AddPaymentMethodActivity onBackButtonPressed")
         setResult(
-            Activity.RESULT_CANCELED,
-            Intent().putExtras(
+            Activity.RESULT_CANCELED, Intent().putExtras(
                 AddPaymentMethodActivityLaunch.CancellationResult(
-                    isSinglePaymentMethod = isSinglePaymentMethod
+                    isSinglePaymentMethod =  args.isSinglePaymentMethod
                 ).toBundle()
             )
         )
         finish()
+    }
+
+    private fun invalidateConfirmStatus() {
+        viewBinding.btnSaveCard.isEnabled = isValid
+    }
+
+    private fun handleUnionPayWarning() {
+        if (currentBrand == CardBrand.UnionPay && viewBinding.swSaveCard.isChecked) {
+            viewBinding.warningView.message = getString(R.string.airwallex_save_union_pay_card)
+            viewBinding.warningView.visibility = View.VISIBLE
+        } else {
+            viewBinding.warningView.visibility = View.GONE
+        }
     }
 
     private fun onSaveCard() {
@@ -111,11 +137,15 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         val resultHandler: (AirwallexPaymentStatus) -> Unit = { result ->
             when (result) {
                 is AirwallexPaymentStatus.Success -> {
-                    finishWithPaymentIntent(paymentIntentId = result.paymentIntentId, consentId = result.consentId)
+                    finishWithPaymentIntent(
+                        paymentIntentId = result.paymentIntentId, consentId = result.consentId
+                    )
                 }
+
                 is AirwallexPaymentStatus.Failure -> {
                     finishWithPaymentIntent(exception = result.exception)
                 }
+
                 else -> Unit
             }
         }
@@ -135,18 +165,11 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
             setLoadingProgress(loading = true, cancelable = false)
             val observer = Observer(resultHandler)
             viewModel.createPaymentMethod(
-                card,
-                viewBinding.billingWidget.billing
+                card, viewBinding.billingWidget.billing
             ).observe(this) {
                 startPaymentWithMethod(it, observer)
             }
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        airwallex.handlePaymentData(requestCode, resultCode, data)
     }
 
     override fun homeAsUpIndicatorResId(): Int {
@@ -160,11 +183,10 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         when (result) {
             is AddPaymentMethodViewModel.PaymentMethodResult.Success -> {
                 startCheckout(
-                    paymentMethod = result.paymentMethod,
-                    cvc = result.cvc,
-                    observer = observer
+                    paymentMethod = result.paymentMethod, cvc = result.cvc, observer = observer
                 )
             }
+
             is AddPaymentMethodViewModel.PaymentMethodResult.Error -> {
                 finishWithPaymentIntent(exception = result.exception)
             }
@@ -179,92 +201,12 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         setLoadingProgress(false)
         AirwallexLogger.info("AddPaymentMethodActivity finishWithPaymentIntent")
         setResult(
-            Activity.RESULT_OK,
-            Intent().putExtras(
+            Activity.RESULT_OK, Intent().putExtras(
                 AddPaymentMethodActivityLaunch.Result(
-                    paymentIntentId = paymentIntentId,
-                    consentId = consentId,
-                    exception = exception
+                    paymentIntentId = paymentIntentId, consentId = consentId, exception = exception
                 ).toBundle()
             )
         )
         finish()
-    }
-
-    private fun invalidateConfirmStatus() {
-        viewBinding.btnSaveCard.isEnabled = isValid
-    }
-
-    private fun showUnionPayWarning() {
-        viewBinding.warningView.message = getString(R.string.airwallex_save_union_pay_card)
-        viewBinding.warningView.visibility = View.VISIBLE
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        viewBinding.cardWidget.showEmail = session.isEmailRequired
-        viewBinding.cardWidget.validationMessageCallback = { cardNumber ->
-            when (val result = viewModel.getValidationResult(cardNumber)) {
-                is AddPaymentMethodViewModel.ValidationResult.Success -> null
-                is AddPaymentMethodViewModel.ValidationResult.Error -> resources.getString(result.message)
-            }
-        }
-        viewBinding.cardWidget.brandChangeCallback = { cardBrand ->
-            currentBrand = cardBrand
-            if (cardBrand == CardBrand.UnionPay && viewBinding.swSaveCard.isChecked) {
-                showUnionPayWarning()
-            } else {
-                viewBinding.warningView.visibility = View.GONE
-            }
-        }
-        viewBinding.cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
-        if (session is AirwallexPaymentSession && session.customerId != null) {
-            viewBinding.saveCardWidget.visibility = View.VISIBLE
-            viewBinding.swSaveCard.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    AnalyticsLogger.logAction("save_card")
-                    if (currentBrand == CardBrand.UnionPay) {
-                        showUnionPayWarning()
-                    } else {
-                        viewBinding.warningView.visibility = View.GONE
-                    }
-                } else {
-                    viewBinding.warningView.visibility = View.GONE
-                }
-            }
-        } else {
-            viewBinding.saveCardWidget.visibility = View.GONE
-        }
-        viewBinding.billingWidget.shipping = shipping
-        viewBinding.billingWidget.billingChangeCallback = {
-            invalidateConfirmStatus()
-            AnalyticsLogger.logAction("toggle_billing_address")
-        }
-
-        viewBinding.btnSaveCard.text = getString(viewModel.ctaTitle)
-        viewBinding.btnSaveCard.isEnabled = isValid
-        viewBinding.btnSaveCard.setOnSingleClickListener { onSaveCard() }
-
-        viewBinding.billingGroup.visibility =
-            if (session.isBillingInformationRequired) View.VISIBLE else View.GONE
-
-        airwallexRiskLog()
-    }
-
-    private fun airwallexRiskLog() {
-        AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
-        viewBinding.cardWidget.cardNumberClickCallback = {
-            AirwallexRisk.log(event = "input_card_number", screen = "page_create_card")
-        }
-        viewBinding.cardWidget.holderNameClickCallback = {
-            AirwallexRisk.log(event = "input_card_holder_name", screen = "page_create_card")
-        }
-        viewBinding.cardWidget.expiresClickCallback = {
-            AirwallexRisk.log(event = "input_card_expiry", screen = "page_create_card")
-        }
-        viewBinding.cardWidget.cvcClickCallback = {
-            AirwallexRisk.log(event = "input_card_cvc", screen = "page_create_card")
-        }
     }
 }

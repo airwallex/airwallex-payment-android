@@ -23,12 +23,35 @@ internal class AddPaymentMethodViewModel(
     val additionalInfo: Map<String, List<String>> =
         mapOf("supportedSchemes" to supportedCardSchemes.map { it.name })
 
-    @StringRes
     val ctaTitle = if (session is AirwallexRecurringSession) {
-        R.string.airwallex_confirm
+        application.getString(R.string.airwallex_confirm)
     } else {
-        R.string.airwallex_pay_now
+        application.getString(R.string.airwallex_pay_now)
     }
+
+    val shipping: Shipping? by lazy {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                session.paymentIntent.order?.shipping
+            }
+
+            is AirwallexRecurringWithIntentSession -> {
+                session.paymentIntent.order?.shipping
+            }
+
+            is AirwallexRecurringSession -> {
+                session.shipping
+            }
+
+            else -> null
+        }
+    }
+
+    val canSaveCard: Boolean by lazy { session is AirwallexPaymentSession && session.customerId != null }
+
+    val isBillingRequired: Boolean by lazy { session.isBillingInformationRequired }
+
+    val isEmailRequired: Boolean by lazy { session.isEmailRequired }
 
     fun getValidationResult(cardNumber: String): ValidationResult {
         if (cardNumber.isEmpty()) {
