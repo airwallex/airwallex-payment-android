@@ -38,10 +38,18 @@ abstract class AirwallexActivity : AppCompatActivity() {
 
     abstract fun onBackButtonPressed()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(viewBinding.root)
+    open fun initView() {
+        setSupportActionBar(toolbar)
+        supportActionBar?.setHomeAsUpIndicator(homeAsUpIndicatorResId())
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        AirwallexLogger.debug("$localClassName#onCreate()")
+        if (this is TrackablePage) {
+            AnalyticsLogger.logPageView(pageName, additionalInfo)
+        }
+    }
 
+    open fun addListener() {
         onBackPressedDispatcher.addCallback(
             this,
             object : OnBackPressedCallback(true) {
@@ -50,16 +58,13 @@ abstract class AirwallexActivity : AppCompatActivity() {
                 }
             }
         )
+    }
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.setHomeAsUpIndicator(homeAsUpIndicatorResId())
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        AirwallexLogger.debug("$localClassName#onCreate()")
-        if (this is TrackablePage) {
-            AnalyticsLogger.logPageView(pageName, additionalInfo)
-        }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(viewBinding.root)
+        initView()
+        addListener()
     }
 
     override fun onDestroy() {
