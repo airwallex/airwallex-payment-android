@@ -20,7 +20,7 @@ class RedirectUtilTest {
     @Test
     fun createRedirectIntentTest() {
         val uri = Uri.parse("http://www.google.com")
-        val intent = RedirectUtil.createRedirectIntent(context, uri)
+        val intent = RedirectUtil.createRedirectIntent(context, uri, null)
 
         assertEquals(
             "http://www.google.com",

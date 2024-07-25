@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <queries>
+        <package android:name="com.eg.android.AlipayGphone" />
         <package android:name="com.globe.gcash.android" />
+        <package android:name="hk.alipay.wallet" />
+        <package android:name="id.dana" />
+        <package android:name="jp.naver.line.android" />
+        <package android:name="my.com.tngdigital.ewallet" />
+        <package android:name="th.co.truemoney.wallet" />
     </queries>
 </manifest>

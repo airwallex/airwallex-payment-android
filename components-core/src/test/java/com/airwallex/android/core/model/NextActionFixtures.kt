@@ -4,7 +4,7 @@ import com.airwallex.android.core.model.parser.NextActionParser
 import org.json.JSONObject
 
 internal object NextActionFixtures {
-    val NEXTACTION: NextAction? = NextActionParser().parse(
+    val NEXTACTION: NextAction = NextActionParser().parse(
         JSONObject(
             """
         {
@@ -20,8 +20,8 @@ internal object NextActionFixtures {
                     "rate_expiry":"1"
                 },
                 "url":"https://www.airwallex.com",
-                "method":"post"
-            
+                "method":"post",
+                "package_name": "com.airwallex"
         }
             """.trimIndent()
         )

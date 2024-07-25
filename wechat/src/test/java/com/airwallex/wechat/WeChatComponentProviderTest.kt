@@ -32,7 +32,8 @@ class WeChatComponentProviderTest {
                     data = null,
                     dcc = null,
                     url = null,
-                    method = null
+                    method = null,
+                    packageName = null
                 )
             )
         )
@@ -44,7 +45,8 @@ class WeChatComponentProviderTest {
                     data = null,
                     dcc = null,
                     url = null,
-                    method = null
+                    method = null,
+                    packageName = null
                 )
             )
         )
@@ -73,7 +75,7 @@ class WeChatComponentProviderTest {
                     "sign" to "EDD7AFB573F30F4C131898D631AA5ED3DA8FE92289536A6BE43426E71F2A2798",
                     "timeStamp" to 1629872988
                 ),
-                dcc = null, url = null, method = null
+                dcc = null, url = null, method = null, packageName = null
             ),
             null,
             activity,

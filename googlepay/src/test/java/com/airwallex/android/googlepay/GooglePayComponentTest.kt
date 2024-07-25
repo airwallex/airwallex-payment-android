@@ -80,7 +80,8 @@ class GooglePayComponentTest {
             data = null,
             dcc = null,
             url = null,
-            method = null
+            method = null,
+            packageName = null
         )
         handlePaymentIntentResponse(action = redirectAction)
         verify(exactly = 1) { listener.onCompleted(any<AirwallexPaymentStatus.Failure>()) }
@@ -93,7 +94,8 @@ class GooglePayComponentTest {
             data = null,
             dcc = null,
             url = null,
-            method = null
+            method = null,
+            packageName = null
         )
         val cardModel = CardNextActionModel(
             paymentManager = AirwallexPaymentManager(AirwallexApiRepository()),
