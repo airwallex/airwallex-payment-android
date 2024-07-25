@@ -588,7 +588,7 @@ class PaymentCartFragment : Fragment() {
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
             val session =  buildSession(paymentIntent = paymentIntent)
 
-            if (directCardCheckoutWithUI) {
+            if (directCardCheckout) {
                 // present payment flow with session，this method will open list page
                 viewModel.presentEntirePaymentFlow(this@PaymentCartFragment, session)
                     .observe(viewLifecycleOwner) {
