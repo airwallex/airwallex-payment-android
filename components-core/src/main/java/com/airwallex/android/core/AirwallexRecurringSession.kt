@@ -30,6 +30,8 @@ class AirwallexRecurringSession internal constructor(
      */
     val merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
 
+    val clientSecret: String,
+
     /**
      * Amount currency. required.
      */
@@ -84,6 +86,7 @@ class AirwallexRecurringSession internal constructor(
 
     class Builder(
         private var customerId: String,
+        private var clientSecret: String,
         private val currency: String,
         private val amount: BigDecimal,
         private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
@@ -98,6 +101,10 @@ class AirwallexRecurringSession internal constructor(
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
         private var returnUrl: String? = null
         private var paymentMethods: List<String>? = null
+
+        init {
+            TokenManager.updateClientSecret(clientSecret)
+        }
 
         fun setShipping(shipping: Shipping?): Builder = apply {
             this.shipping = shipping
@@ -141,7 +148,8 @@ class AirwallexRecurringSession internal constructor(
                 isEmailRequired = isEmailRequired,
                 customerId = customerId,
                 returnUrl = returnUrl,
-                paymentMethods = paymentMethods
+                paymentMethods = paymentMethods,
+                clientSecret = clientSecret,
             )
         }
     }

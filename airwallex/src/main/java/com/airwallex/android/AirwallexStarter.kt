@@ -10,7 +10,6 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
-import com.airwallex.android.core.ClientSecretProvider
 import com.airwallex.android.core.PaymentResultManager
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
@@ -31,10 +30,9 @@ class AirwallexStarter {
         fun initialize(
             application: Application,
             configuration: AirwallexConfiguration,
-            clientSecretProvider: ClientSecretProvider? = null
         ) {
             AirwallexActivityLaunch.initialize(application)
-            Airwallex.initialize(application, configuration, clientSecretProvider)
+            Airwallex.initialize(application, configuration)
         }
 
         /**
