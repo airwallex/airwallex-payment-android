@@ -22,6 +22,7 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         private var isInitialized = false
         private val resultLauncherMap = HashMap<Activity, ActivityResultLauncher<Intent>>()
         private val resultCallbackMap = HashMap<Activity, AirwallexActivityLaunchResultCallback>()
+        private val launchInstanceMap = HashMap<Class<*>, AirwallexActivityLaunch<*, *>>()
 
         fun initialize(application: Application) {
             if (isInitialized) return
@@ -47,14 +48,15 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
                         )
                         resultLauncherMap[activity] = resultLauncher
                         resultCallbackMap[activity] = resultCallback
+                        launchInstanceMap[activity.javaClass]?.onTargetActivityCreated(activity)
                     }
                 }
 
                 override fun onActivityDestroyed(activity: Activity) {
                     resultLauncherMap.remove(activity)
                     resultCallbackMap.remove(activity)
+                    launchInstanceMap.remove(activity.javaClass)
                 }
-
             })
         }
 
@@ -93,6 +95,10 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         requestCode = requestCode
     )
 
+    init {
+        this.also { launcher -> launchInstanceMap[targetActivity] = launcher }
+    }
+
     fun startForResult(args: ArgsType) {
         val bundle = Bundle().apply {
             putParcelable(Args.AIRWALLEX_EXTRA, args)
@@ -119,6 +125,10 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         }
         setResultCallBack(originalActivity, requestCode, resultCallBack)
         getActivityResultLauncher(originalActivity)?.launch(intent)
+    }
+
+    open fun onTargetActivityCreated(target: Activity) {
+
     }
 
     interface Args : Parcelable {

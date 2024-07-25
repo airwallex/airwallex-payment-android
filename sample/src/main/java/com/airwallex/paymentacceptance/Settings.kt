@@ -146,6 +146,18 @@ object Settings {
                 ?: defaultDirectCardCheckout
         }
 
+    val directCardCheckoutWithUI: String
+        get() {
+            val defaultDirectCardCheckout =
+                SampleApplication.instance.resources.getStringArray(R.array.array_card_checkout_with_ui)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.card_checkout_with_ui),
+                defaultDirectCardCheckout
+            )
+                ?: defaultDirectCardCheckout
+        }
+
+
     val directGooglePayCheckout: String
         get() {
             val defaultDirectGooglePayCheckout =

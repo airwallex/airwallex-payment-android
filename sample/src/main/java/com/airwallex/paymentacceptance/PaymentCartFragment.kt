@@ -141,6 +141,11 @@ class PaymentCartFragment : Fragment() {
             return Settings.directCardCheckout.toBoolean()
         }
 
+    private val directCardCheckoutWithUI: Boolean
+        get() {
+            return Settings.directCardCheckoutWithUI.toBoolean()
+        }
+
     private val directGooglePayCheckout: Boolean
         get() {
             return Settings.directGooglePayCheckout.toBoolean()
@@ -333,6 +338,8 @@ class PaymentCartFragment : Fragment() {
         super.onResume()
         viewBinding.btnCheckout.text = if (directCardCheckout) {
             getString(R.string.card_checkout)
+        } else if (directCardCheckoutWithUI) {
+            getString(R.string.card_checkout_with_ui)
         } else if (directGooglePayCheckout) {
             getString(R.string.google_pay_checkout)
         } else {
@@ -417,6 +424,14 @@ class PaymentCartFragment : Fragment() {
                         }
                     }
                 )
+            } else if (directCardCheckoutWithUI) {
+                // Direct payment flow with session，this method will open card page
+                activity?.let {
+                    viewModel.presentCardPaymentFlow(it, session)
+                        .observe(viewLifecycleOwner) { status ->
+                            handleStatusUpdate(status)
+                        }
+                }
             } else if (directGooglePayCheckout) {
                 // Direct Google Pay flow
                 (activity as? PaymentCartActivity)?.setLoadingProgress(true)
@@ -429,7 +444,7 @@ class PaymentCartFragment : Fragment() {
                     }
                 )
             } else {
-                viewModel.presentPaymentFlow(
+                viewModel.presentEntirePaymentFlow(
                     this@PaymentCartFragment,
                     session
                 ).observe(viewLifecycleOwner) {
@@ -484,12 +499,21 @@ class PaymentCartFragment : Fragment() {
             }
 
             (activity as? PaymentCartActivity)?.setLoadingProgress(false)
-
-            viewModel.presentPaymentFlow(
-                this@PaymentCartFragment,
-                buildSession(customerId = customerId, clientSecret = clientSecret)
-            ).observe(viewLifecycleOwner) {
-                handleStatusUpdate(it)
+            val session = buildSession(customerId = customerId, clientSecret = clientSecret)
+            if (directCardCheckout) {
+                // present payment flow with session，this method will open list page
+                viewModel.presentEntirePaymentFlow(this@PaymentCartFragment, session)
+                    .observe(viewLifecycleOwner) {
+                        handleStatusUpdate(it)
+                    }
+            } else {
+                // Direct payment flow with session，this method will open card page
+                activity?.let {
+                    viewModel.presentCardPaymentFlow(it, session)
+                        .observe(viewLifecycleOwner) { status ->
+                            handleStatusUpdate(status)
+                        }
+                }
             }
         }
     }
@@ -562,11 +586,22 @@ class PaymentCartFragment : Fragment() {
             (activity as? PaymentCartActivity)?.setLoadingProgress(false)
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
-            viewModel.presentPaymentFlow(
-                this@PaymentCartFragment,
-                buildSession(paymentIntent = paymentIntent)
-            ).observe(viewLifecycleOwner) {
-                handleStatusUpdate(it)
+            val session =  buildSession(paymentIntent = paymentIntent)
+
+            if (directCardCheckoutWithUI) {
+                // present payment flow with session，this method will open list page
+                viewModel.presentEntirePaymentFlow(this@PaymentCartFragment, session)
+                    .observe(viewLifecycleOwner) {
+                        handleStatusUpdate(it)
+                    }
+            } else {
+                // Direct payment flow with session，this method will open card page
+                activity?.let {
+                    viewModel.presentCardPaymentFlow(it, session)
+                        .observe(viewLifecycleOwner) { status ->
+                            handleStatusUpdate(status)
+                        }
+                }
             }
         }
     }
