@@ -1,8 +1,5 @@
 package com.airwallex.android.core
 
-import android.net.Uri
-import com.airwallex.android.core.exception.APIException
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.BankResponse
 import com.airwallex.android.core.model.Options
@@ -20,7 +17,6 @@ import com.airwallex.android.core.model.PaymentMethodCreateRequest
 import com.airwallex.android.core.model.PaymentMethodFixtures
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
-import com.airwallex.android.core.model.TrackerRequest
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
 import com.airwallex.android.core.model.parser.PageParser
 import com.airwallex.android.core.model.parser.PaymentConsentParser
@@ -29,7 +25,6 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -331,32 +326,5 @@ class AirwallexPaymentManagerTest {
             listener
         )
         verify { listener.onSuccess(mockBank) }
-    }
-
-    @Test
-    fun `test start TrackerOptions operation`() = runTest {
-        mockkObject(AnalyticsLogger)
-        val testUrl = "http://abc.com"
-        mockkStatic((Uri::class))
-        val mockUri = mockk<Uri>()
-        val mockBuilder = mockk<Uri.Builder>()
-        every { mockUri.toString() } returns testUrl
-        every { mockBuilder.build() } returns mockUri
-        every { mockBuilder.appendQueryParameter(any(), any()) } returns mockBuilder
-        every { Uri.parse(any()).buildUpon() } returns mockBuilder
-
-        val listener = mockk<Airwallex.PaymentListener<Void>>(relaxed = true)
-        paymentManager.startOperation(
-            Options.TrackerOptions(TrackerRequest()),
-            listener
-        )
-        verify {
-            AnalyticsLogger.logError(
-                "tracker",
-                testUrl,
-                any<APIException>()
-            )
-        }
-        verify { listener.onFailed(any()) }
     }
 }

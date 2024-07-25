@@ -11,7 +11,6 @@ import com.airwallex.android.core.model.PaymentConsentVerifyRequest
 import com.airwallex.android.core.model.PaymentIntentConfirmRequest
 import com.airwallex.android.core.model.PaymentIntentContinueRequest
 import com.airwallex.android.core.model.PaymentMethodCreateRequest
-import com.airwallex.android.core.model.TrackerRequest
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
@@ -50,20 +49,6 @@ class AirwallexApiRepositoryTest {
     @After
     fun tearDown() {
         unmockkAll()
-    }
-
-    @Test
-    fun trackerLogsDebugMessageOnFailure() = runBlocking {
-        coEvery { anyConstructed<AirwallexHttpClient>().execute(any<AirwallexHttpRequest>()) } throws IOException(
-            "Mocked IO Exception"
-        )
-        val options = Options.TrackerOptions(request = TrackerRequest())
-        try {
-            apiRepository.tracker(options)
-        } catch (e: IOException) {
-            // Ignored
-        }
-        verify { AirwallexLogger.debug("Tracker failed.") }
     }
 
     @Test
@@ -252,14 +237,6 @@ class AirwallexApiRepositoryTest {
             options.clientSecret
         )
         assertEquals("cst_hkdmr7v9rg1j5g4azy6", options.paymentConsentId)
-    }
-
-    @Test
-    fun trackerOptionsTest() {
-        val options = Options.TrackerOptions(
-            request = TrackerRequest()
-        )
-        assertEquals(TrackerRequest(), options.request)
     }
 
     @Test

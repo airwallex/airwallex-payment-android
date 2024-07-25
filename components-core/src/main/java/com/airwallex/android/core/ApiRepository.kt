@@ -79,13 +79,6 @@ interface ApiRepository {
     ): Page<PaymentConsent>?
 
     /**
-     * Tracker
-     */
-    suspend fun tracker(
-        options: Options.TrackerOptions
-    )
-
-    /**
      * Execute mock wechat (Just for demo env)
      */
     suspend fun executeMockWeChat(

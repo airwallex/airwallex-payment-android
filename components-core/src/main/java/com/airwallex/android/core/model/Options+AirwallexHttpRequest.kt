@@ -1,6 +1,5 @@
 package com.airwallex.android.core.model
 
-import android.net.Uri
 import com.airwallex.android.core.AirwallexApiRepository.Companion.confirmPaymentIntentUrl
 import com.airwallex.android.core.AirwallexApiRepository.Companion.continuePaymentIntentUrl
 import com.airwallex.android.core.AirwallexApiRepository.Companion.createPaymentConsentUrl
@@ -11,11 +10,10 @@ import com.airwallex.android.core.AirwallexApiRepository.Companion.retrieveAvail
 import com.airwallex.android.core.AirwallexApiRepository.Companion.retrieveBanksUrl
 import com.airwallex.android.core.AirwallexApiRepository.Companion.retrievePaymentIntentUrl
 import com.airwallex.android.core.AirwallexApiRepository.Companion.retrievePaymentMethodTypeInfoUrl
-import com.airwallex.android.core.AirwallexApiRepository.Companion.trackerUrl
 import com.airwallex.android.core.AirwallexApiRepository.Companion.verifyPaymentConsentUrl
 import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.http.AirwallexHttpRequest
-import java.util.*
+import java.util.UUID
 
 @Suppress("LongMethod")
 fun Options.toAirwallexHttpRequest(): AirwallexHttpRequest {
@@ -83,11 +81,6 @@ fun Options.toAirwallexHttpRequest(): AirwallexHttpRequest {
             options = this,
             params = null
         )
-        is Options.TrackerOptions -> AirwallexHttpRequest.createGet(
-            url = url,
-            options = this,
-            params = null
-        )
     }
 }
 
@@ -133,7 +126,6 @@ fun Options.getUrl(): String {
             pageNum,
             pageSize
         )
-        is Options.TrackerOptions -> createTrackerUrl()
         is Options.RetrieveAvailablePaymentMethodsOptions -> retrieveAvailablePaymentMethodsUrl(
             AirwallexPlugins.environment.baseUrl(),
             pageNum,
@@ -158,14 +150,4 @@ fun Options.getUrl(): String {
             openId
         )
     }
-}
-
-private fun Options.TrackerOptions.createTrackerUrl(): String {
-    val params = request.toParamMap()
-    val builder = Uri.parse(trackerUrl()).buildUpon()
-    params.forEach {
-        builder.appendQueryParameter(it.key, it.value.toString())
-    }
-    val uri = builder.build()
-    return uri.toString()
 }

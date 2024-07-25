@@ -61,10 +61,6 @@ sealed class Options(
         internal val pageSize: Int
     ) : Options(clientSecret = clientSecret)
 
-    data class TrackerOptions(
-        internal val request: TrackerRequest
-    ) : Options(clientSecret = "")
-
     data class RetrieveAvailablePaymentMethodsOptions(
         override val clientSecret: String,
         /**

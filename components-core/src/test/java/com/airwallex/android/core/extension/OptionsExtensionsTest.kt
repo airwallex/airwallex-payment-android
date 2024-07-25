@@ -203,16 +203,6 @@ class OptionsExtensionsTest {
     }
 
     @Test
-    fun `test TrackerOptions toAirwallexHttpRequest`() {
-        val option = Options.TrackerOptions(TrackerRequest())
-        val request = option.toAirwallexHttpRequest()
-        assertEquals(request.method, AirwallexHttpRequest.Method.GET)
-        assertEquals(request.url, mockUrl)
-        assertEquals(request.options, option)
-        assertNull(request.params)
-    }
-
-    @Test
     fun `test RetrieveAvailablePaymentConsentsOptions toAirwallexHttpRequest`() {
         val option = Options.RetrieveAvailablePaymentConsentsOptions(
             clientSecret,
