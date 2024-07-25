@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
+import com.airwallex.android.core.Airwallex
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch.Args
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
@@ -17,18 +18,27 @@ import kotlinx.parcelize.Parcelize
 
 internal class AddPaymentMethodActivityLaunch :
     AirwallexActivityLaunch<AddPaymentMethodActivity, Args> {
+    private var provider: Airwallex.PaymentFlowProvider? = null
 
-    constructor(activity: Activity) : super(
+    constructor(activity: Activity, provider: Airwallex.PaymentFlowProvider? = null) : super(
         activity,
         AddPaymentMethodActivity::class.java,
         REQUEST_CODE
-    )
+    ) {
+        this.provider = provider
+    }
 
     constructor(fragment: Fragment) : super(
         fragment,
         AddPaymentMethodActivity::class.java,
         REQUEST_CODE
     )
+
+    override fun onTargetActivityCreated(target: Activity) {
+        if(target is AddPaymentMethodActivity){
+            target.setPaymentFlowProvider(provider)
+        }
+    }
 
     @Parcelize
     data class Args internal constructor(
