@@ -164,7 +164,8 @@ class PaymentCartFragment : Fragment() {
         paymentIntent: PaymentIntent? = null,
         customerId: String? = null,
         hidePaymentConsents: Boolean = false,
-        paymentMethods: List<String>? = null
+        paymentMethods: List<String>? = null,
+        clientSecret: String? = null
     ): AirwallexSession {
         return when (checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
@@ -190,6 +191,7 @@ class PaymentCartFragment : Fragment() {
             AirwallexCheckoutMode.RECURRING -> {
                 AirwallexRecurringSession.Builder(
                     customerId = requireNotNull(customerId, { "CustomerId is required" }),
+                    clientSecret = requireNotNull(clientSecret, { "clientSecret is required" }),
                     currency = Settings.currency,
                     amount = BigDecimal.valueOf(Settings.price.toDouble()),
                     nextTriggerBy = nextTriggerBy,
@@ -443,13 +445,16 @@ class PaymentCartFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
             (activity as? PaymentCartActivity)?.setLoadingProgress(true)
             // Recurring flow require customer id
-            val customerId = withContext(Dispatchers.IO) {
-                if (TextUtils.isEmpty(Settings.cachedCustomerId)) {
+            var customerId: String?
+            var clientSecret: String?
+            withContext(Dispatchers.IO) {
+                if (TextUtils.isEmpty(Settings.cachedCustomerId) || TextUtils.isEmpty(Settings.token)) {
                     val response = api.authentication(
                         apiKey = Settings.apiKey,
                         clientId = Settings.clientId
                     )
-                    Settings.token = JSONObject(response.string())["token"].toString()
+                    clientSecret = JSONObject(response.string())["token"].toString()
+                    Settings.token = clientSecret
 
                     val customerResponse = api.createCustomer(
                         mutableMapOf(
@@ -469,11 +474,11 @@ class PaymentCartFragment : Fragment() {
                             )
                         )
                     )
-                    val customerId = JSONObject(customerResponse.string())["id"].toString()
+                    customerId = JSONObject(customerResponse.string())["id"].toString()
                     Settings.cachedCustomerId = customerId
-                    customerId
                 } else {
-                    Settings.cachedCustomerId
+                    customerId =  Settings.cachedCustomerId
+                    clientSecret =  Settings.token
                 }
             }
 
@@ -481,7 +486,7 @@ class PaymentCartFragment : Fragment() {
 
             viewModel.presentPaymentFlow(
                 this@PaymentCartFragment,
-                buildSession(customerId = customerId)
+                buildSession(customerId = customerId, clientSecret = clientSecret)
             ).observe(viewLifecycleOwner) {
                 handleStatusUpdate(it)
             }
