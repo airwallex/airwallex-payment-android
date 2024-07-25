@@ -62,6 +62,10 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     private var currentBrand: CardBrand? = null
 
+    override fun homeAsUpIndicatorResId(): Int {
+        return R.drawable.airwallex_ic_close
+    }
+
     override fun initView() {
         super.initView()
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
@@ -149,10 +153,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
             viewBinding.swSaveCard.isChecked,
             viewBinding.billingWidget.billing
         )
-    }
-
-    override fun homeAsUpIndicatorResId(): Int {
-        return R.drawable.airwallex_ic_close
     }
 
     private fun finishWithPaymentIntent(

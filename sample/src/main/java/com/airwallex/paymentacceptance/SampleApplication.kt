@@ -23,7 +23,6 @@ class SampleApplication : Application() {
         configAirwallexStarter()
         //If you have already called the initialization method of AirwallexStarter, this process does not need to be called.
         //configAirwallex()
-
     }
 
     /**
@@ -50,8 +49,7 @@ class SampleApplication : Application() {
                         GooglePayComponent.PROVIDER
                     )
                 )
-                .build(),
-            ExampleClientSecretProvider()
+                .build()
         )
     }
 
@@ -79,8 +77,7 @@ class SampleApplication : Application() {
                         GooglePayComponent.PROVIDER
                     )
                 )
-                .build(),
-            ExampleClientSecretProvider()
+                .build()
         )
     }
 }
