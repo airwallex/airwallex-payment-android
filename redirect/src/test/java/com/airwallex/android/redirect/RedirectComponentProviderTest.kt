@@ -7,10 +7,11 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.model.NextAction
+import com.airwallex.android.redirect.util.ThemeUtil
+import io.mockk.*
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
-import com.nhaarman.mockitokotlin2.mock
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -57,7 +58,8 @@ class RedirectComponentProviderTest {
 
         var success = false
         val latch = CountDownLatch(1)
-        val activity: Activity = mock()
+        val activity: Activity = mockk(relaxed = true)
+        mockkObject(ThemeUtil)
 
         try {
             redirectComponentProvider.get().handlePaymentIntentResponse(
@@ -82,10 +84,12 @@ class RedirectComponentProviderTest {
                                 success = true
                                 latch.countDown()
                             }
+
                             is AirwallexPaymentStatus.Failure -> {
                                 success = false
                                 latch.countDown()
                             }
+
                             else -> Unit
                         }
                     }
@@ -96,6 +100,7 @@ class RedirectComponentProviderTest {
 
         latch.await()
         assertEquals(true, success)
+        unmockkAll()
     }
 
     @Test

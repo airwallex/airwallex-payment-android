@@ -179,6 +179,7 @@ class PaymentCartFragment : Fragment() {
                         billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
                     )
                 )
+                    .setRequireBillingInformation(false)
                     .setRequireEmail(requiresEmail)
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)
