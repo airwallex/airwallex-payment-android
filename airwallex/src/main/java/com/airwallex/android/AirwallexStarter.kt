@@ -10,11 +10,14 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
+import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.PaymentResultManager
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.ui.AirwallexActivityLaunch
+import com.airwallex.android.view.AddPaymentMethodActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
 
@@ -33,6 +36,33 @@ class AirwallexStarter {
         ) {
             AirwallexActivityLaunch.initialize(application)
             Airwallex.initialize(application, configuration)
+        }
+
+        /**
+         * Launch the card payment flow to allow the user to complete the entire payment flow
+         *
+         * @param activity activity {@link Activity}
+         * @param session a [AirwallexSession] used to present the payment flow
+         * @param paymentResultListener The callback of present entire payment flow
+         */
+        fun presentCardPaymentFlow(
+            activity: Activity,
+            session: AirwallexSession,
+            supportedCards: List<AirwallexSupportedCard> = enumValues<AirwallexSupportedCard>().toList(),
+            provider: Airwallex.PaymentFlowProvider? = null,
+            paymentResultListener: Airwallex.PaymentResultListener,
+        ) {
+            val paymentSession = session as? AirwallexPaymentSession
+            AirwallexLogger.info("AirwallexStarter presentCardPaymentFlow[${paymentSession?.paymentIntent?.id}]")
+            AddPaymentMethodActivityLaunch(activity, provider)
+                .launchForResult(
+                    AddPaymentMethodActivityLaunch.Args.Builder()
+                        .setAirwallexSession(session)
+                        .setSupportedCardSchemes(supportedCards.map { CardScheme(it.brandName) })
+                        .build()
+                ) { _, result ->
+                    handleCardPaymentData(result.resultCode, result.data, paymentResultListener, paymentSession)
+                }
         }
 
         /**
@@ -208,7 +238,10 @@ class AirwallexStarter {
                     }
                     when {
                         result.exception != null -> {
-                            AirwallexLogger.error("AirwallexStarter handlePaymentData[${session?.paymentIntent?.id}]: failed", result.exception)
+                            AirwallexLogger.error(
+                                "AirwallexStarter handlePaymentData[${session?.paymentIntent?.id}]: failed",
+                                result.exception
+                            )
                             paymentResultListener.onCompleted(
                                 AirwallexPaymentStatus.Failure(result.exception)
                             )
@@ -222,9 +255,66 @@ class AirwallexStarter {
                                 )
                             } else {
                                 paymentResultListener.onCompleted(
-                                    AirwallexPaymentStatus.Success(result.paymentIntentId, result.paymentConsentId)
+                                    AirwallexPaymentStatus.Success(
+                                        result.paymentIntentId,
+                                        result.paymentConsentId
+                                    )
                                 )
                             }
+                        }
+                    }
+                }
+
+                Activity.RESULT_CANCELED -> {
+                    AirwallexLogger.info("AirwallexStarter handlePaymentData[${session?.paymentIntent?.id}]: cancel")
+                    paymentResultListener.onCompleted(AirwallexPaymentStatus.Cancel)
+                }
+            }
+        }
+
+
+        /**
+         * Method to handle Activity results from Airwallex activities.
+         *
+         * @param resultCode a result code representing the success of the intended action
+         * @param data an [Intent] with the resulting data from the Activity
+         *
+         */
+        private fun handleCardPaymentData(
+            resultCode: Int,
+            data: Intent?,
+            paymentResultListener: Airwallex.PaymentResultListener,
+            session: AirwallexPaymentSession? = null
+        ) {
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
+                    if (result == null) {
+                        AirwallexLogger.error("AirwallexStarter handleCardPaymentData[${session?.paymentIntent?.id}]: failed, result = null")
+                        paymentResultListener.onCompleted(
+                            AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "flow result is null"))
+                        )
+                        return
+                    }
+                    when {
+                        result.exception != null -> {
+                            AirwallexLogger.error(
+                                "AirwallexStarter handleCardPaymentData[${session?.paymentIntent?.id}]: failed",
+                                result.exception
+                            )
+                            paymentResultListener.onCompleted(
+                                AirwallexPaymentStatus.Failure(result.exception)
+                            )
+                        }
+
+                        result.paymentIntentId != null -> {
+                            AirwallexLogger.info("AirwallexStarter handleCardPaymentData[${session?.paymentIntent?.id}]: success,}")
+                            paymentResultListener.onCompleted(
+                                AirwallexPaymentStatus.Success(
+                                    result.paymentIntentId,
+                                    result.consentId
+                                )
+                            )
                         }
                     }
                 }

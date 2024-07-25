@@ -152,6 +152,11 @@ class PaymentSettingsFragment :
             cardCheckoutPref.setValueIndex(0)
         }
 
+        val cardCheckoutWithUIPref: ListPreference? = findPreference(getString(R.string.card_checkout_with_ui))
+        if (cardCheckoutWithUIPref != null && cardCheckoutWithUIPref.value == null) {
+            cardCheckoutWithUIPref.setValueIndex(0)
+        }
+
         val googlePayCheckoutPref: ListPreference? = findPreference(getString(R.string.google_pay_checkout))
         if (googlePayCheckoutPref != null && googlePayCheckoutPref.value == null) {
             googlePayCheckoutPref.setValueIndex(0)
@@ -226,6 +231,7 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.requires_email))
         onSharedPreferenceChanged(preferences, getString(R.string.force_3ds))
         onSharedPreferenceChanged(preferences, getString(R.string.card_checkout))
+        onSharedPreferenceChanged(preferences, getString(R.string.card_checkout_with_ui))
         onSharedPreferenceChanged(preferences, getString(R.string.google_pay_checkout))
         onSharedPreferenceChanged(preferences, getString(R.string.auto_capture))
         registerOnSharedPreferenceChangeListener()
@@ -280,6 +286,7 @@ class PaymentSettingsFragment :
             getString(R.string.requires_cvc) -> preference?.summary = Settings.requiresCVC
             getString(R.string.force_3ds) -> preference?.summary = Settings.force3DS
             getString(R.string.card_checkout) -> preference?.summary = Settings.directCardCheckout
+            getString(R.string.card_checkout_with_ui) -> preference?.summary = Settings.directCardCheckoutWithUI
             getString(R.string.google_pay_checkout) -> preference?.summary = Settings.directGooglePayCheckout
             getString(R.string.auto_capture) -> preference?.summary = Settings.autoCapture
             getString(R.string.requires_email) -> preference?.summary = Settings.requiresEmail
