@@ -62,6 +62,13 @@
             android:title="@string/card_checkout" />
 
         <ListPreference
+            android:dialogTitle="@string/card_checkout_with_ui"
+            android:entries="@array/array_card_checkout_with_ui"
+            android:entryValues="@array/array_card_checkout_with_ui"
+            android:key="@string/card_checkout_with_ui"
+            android:title="@string/card_checkout_with_ui" />
+
+        <ListPreference
             android:dialogTitle="@string/google_pay_checkout"
             android:entries="@array/array_google_pay_checkout"
             android:entryValues="@array/array_google_pay_checkout"
