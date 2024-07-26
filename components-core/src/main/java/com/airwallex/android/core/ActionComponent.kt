@@ -30,7 +30,7 @@ interface ActionComponent {
     ): Boolean
 
     fun retrieveSecurityToken(
-        paymentIntentId: String,
+        sessionId: String,
         applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     )

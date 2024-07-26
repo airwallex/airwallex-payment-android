@@ -7,7 +7,7 @@ import kotlin.test.assertNotNull
 class EnvironmentTest {
 
     @Test
-    fun baseUrlTest() {
+    fun testBaseUrl() {
         assertNotNull(Environment.STAGING.baseUrl())
         assertEquals("https://api-staging.airwallex.com", Environment.STAGING.baseUrl())
 
@@ -19,7 +19,7 @@ class EnvironmentTest {
     }
 
     @Test
-    fun trackerUrl() {
+    fun testTrackerUrl() {
         assertNotNull(Environment.STAGING.trackerUrl())
         assertEquals("https://api-staging.airwallex.com/api/v1/checkout", Environment.STAGING.trackerUrl())
 
@@ -28,5 +28,12 @@ class EnvironmentTest {
 
         assertNotNull(Environment.PRODUCTION.trackerUrl())
         assertEquals("https://api.airwallex.com/api/v1/checkout", Environment.PRODUCTION.trackerUrl())
+    }
+
+    @Test
+    fun testRiskEnvironment() {
+        assertEquals(Environment.STAGING.riskEnvironment, com.airwallex.risk.Environment.STAGING)
+        assertEquals(Environment.DEMO.riskEnvironment, com.airwallex.risk.Environment.DEMO)
+        assertEquals(Environment.PRODUCTION.riskEnvironment, com.airwallex.risk.Environment.PRODUCTION)
     }
 }

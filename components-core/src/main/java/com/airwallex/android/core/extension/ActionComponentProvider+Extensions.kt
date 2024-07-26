@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
+import com.airwallex.risk.AirwallexRisk
 import java.util.*
 
 @Suppress("LongParameterList")
@@ -22,7 +23,7 @@ internal fun ActionComponent.confirmGooglePayIntent(
     listener: Airwallex.PaymentResultListener
 ) {
     retrieveSecurityToken(
-        paymentIntentId, applicationContext,
+        AirwallexRisk.sessionId.toString(), applicationContext,
         object : SecurityTokenListener {
             @Suppress("LongMethod")
             override fun onResponse(deviceId: String) {

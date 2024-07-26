@@ -79,12 +79,12 @@ class CardComponent : ActionComponent {
     }
 
     override fun retrieveSecurityToken(
-        paymentIntentId: String,
+        sessionId: String,
         applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
         AirwallexSecurityConnector().retrieveSecurityToken(
-            paymentIntentId,
+            sessionId,
             applicationContext,
             securityTokenListener
         )
