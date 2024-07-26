@@ -35,7 +35,7 @@ internal class AddPaymentMethodActivityLaunch :
     )
 
     override fun onTargetActivityCreated(target: Activity) {
-        if(target is AddPaymentMethodActivity){
+        if (target is AddPaymentMethodActivity) {
             target.setPaymentFlowProvider(provider)
         }
     }
