@@ -20,14 +20,14 @@ class AirwallexSecurityConnector : SecurityConnector {
     private var profilingHandle: TMXProfilingHandle? = null
 
     /**
-     *  Retrieve the SecurityToken from Cardinals under the ID of [PaymentIntent]
+     *  Retrieve the SecurityToken from Cardinals under the ID of Airwallex session
      *
-     *  @param paymentIntentId ID of [PaymentIntent]
+     *  @param sessionId ID of an Airwallex session
      *  @param applicationContext The Context of Application
      *  @param securityTokenListener The listener of when retrieved the SecurityToken
      */
     override fun retrieveSecurityToken(
-        paymentIntentId: String,
+        sessionId: String,
         applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
@@ -41,16 +41,14 @@ class AirwallexSecurityConnector : SecurityConnector {
         getInstance().init(config)
 
         AirwallexLogger.debug("Successfully init init-ed")
-        doProfile(paymentIntentId, securityTokenListener)
+        doProfile(sessionId, securityTokenListener)
     }
 
     /**
      * Init was successful or there is a valid instance to be used for further calls. Fire a profile request
      */
-    private fun doProfile(paymentIntentId: String, securityTokenListener: SecurityTokenListener) {
-        val fraudSessionId = "$paymentIntentId${System.currentTimeMillis()}"
-        val sessionID = "${BuildConfig.DEVICE_FINGERPRINT_MERCHANT_ID}$fraudSessionId"
-        val options = TMXProfilingOptions().setSessionID(sessionID)
+    private fun doProfile(sessionId: String, securityTokenListener: SecurityTokenListener) {
+        val options = TMXProfilingOptions().setSessionID(sessionId)
         // Fire off the profiling request.
         profilingHandle = getInstance().profile(options) { result ->
             AirwallexLogger.debug(
@@ -59,11 +57,7 @@ class AirwallexSecurityConnector : SecurityConnector {
             profilingHandle?.cancel()
             profilingHandle = null
         }
-        AirwallexLogger.debug("Response sessionID $sessionID")
-        securityTokenListener.onResponse(sessionID)
-    }
-
-    companion object {
-        private const val TAG = "TrustDefender"
+        AirwallexLogger.debug("Response sessionID $sessionId")
+        securityTokenListener.onResponse(sessionId)
     }
 }

@@ -26,4 +26,11 @@ enum class Environment(val value: String) {
             PRODUCTION -> "https://pci-api.airwallex.com/api/v1/checkout/elements/3ds?origin=https://checkout.airwallex.com"
         }
     }
+
+    val riskEnvironment: com.airwallex.risk.Environment
+        get() = when (this) {
+            STAGING -> com.airwallex.risk.Environment.STAGING
+            DEMO -> com.airwallex.risk.Environment.DEMO
+            PRODUCTION -> com.airwallex.risk.Environment.PRODUCTION
+        }
 }

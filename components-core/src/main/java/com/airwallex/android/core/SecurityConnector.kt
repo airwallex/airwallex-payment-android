@@ -8,7 +8,7 @@ import android.content.Context
 interface SecurityConnector {
 
     fun retrieveSecurityToken(
-        paymentIntentId: String,
+        sessionId: String,
         applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     )

@@ -843,7 +843,7 @@ class Airwallex internal constructor(
                     return
                 }
                 provider.get().retrieveSecurityToken(
-                    params.paymentIntentId, applicationContext,
+                    AirwallexRisk.sessionId.toString(), applicationContext,
                     object : SecurityTokenListener {
                         override fun onResponse(deviceId: String) {
                             val device = paymentManager.buildDeviceInfo(deviceId)
@@ -1238,8 +1238,9 @@ class Airwallex internal constructor(
                 applicationContext = application,
                 accountId = null,
                 configuration = RiskConfiguration(
-                    isProduction = configuration.environment == Environment.PRODUCTION,
-                    tenant = Tenant.PA
+                    environment = configuration.environment.riskEnvironment,
+                    tenant = Tenant.PA,
+                    bufferTimeMillis = 5_000L
                 )
             )
         }

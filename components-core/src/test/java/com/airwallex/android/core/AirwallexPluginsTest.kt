@@ -67,7 +67,7 @@ class AirwallexPluginsTest {
         }
 
         override fun retrieveSecurityToken(
-            paymentIntentId: String,
+            sessionId: String,
             applicationContext: Context,
             securityTokenListener: SecurityTokenListener
         ) {
