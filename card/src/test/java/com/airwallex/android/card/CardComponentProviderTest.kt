@@ -87,12 +87,12 @@ class CardComponentProviderTest {
     fun canHandleSessionAndPaymentMethodTest() = runTest {
         val activity = mockk<Activity>()
         val session = mockk<AirwallexSession>()
-        val paymentMethodType = mockResponse.items?.first()
+        val paymentMethodType = mockResponse.items.first()
         val cardComponentProvider = CardComponentProvider()
         assertTrue(
             cardComponentProvider.canHandleSessionAndPaymentMethod(
                 session,
-                paymentMethodType!!,
+                paymentMethodType,
                 activity
             )
         )

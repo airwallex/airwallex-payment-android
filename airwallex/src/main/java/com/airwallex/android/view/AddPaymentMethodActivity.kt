@@ -49,7 +49,8 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     private val viewModel: AddPaymentMethodViewModel by lazy {
         ViewModelProvider(
-            this, AddPaymentMethodViewModel.Factory(
+            this,
+            AddPaymentMethodViewModel.Factory(
                 application, airwallex, session, args.supportedCardSchemes
             )
         )[AddPaymentMethodViewModel::class.java]
@@ -127,7 +128,8 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
     override fun onBackButtonPressed() {
         AirwallexLogger.info("AddPaymentMethodActivity onBackButtonPressed")
         setResult(
-            Activity.RESULT_CANCELED, Intent().putExtras(
+            Activity.RESULT_CANCELED,
+            Intent().putExtras(
                 AddPaymentMethodActivityLaunch.CancellationResult(
                     isSinglePaymentMethod = args.isSinglePaymentMethod
                 ).toBundle()
@@ -169,7 +171,8 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         setLoadingProgress(false)
         AirwallexLogger.info("AddPaymentMethodActivity finishWithPaymentIntent")
         setResult(
-            Activity.RESULT_OK, Intent().putExtras(
+            Activity.RESULT_OK,
+            Intent().putExtras(
                 AddPaymentMethodActivityLaunch.Result(
                     paymentIntentId = paymentIntentId,
                     consentId = consentId,

@@ -171,32 +171,32 @@ internal class PaymentMethodsViewModel(
 
     suspend fun fetchAvailablePaymentMethodsAndConsents():
             Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>? {
-        return clientSecret?.let { clientSecret ->
-            coroutineScope {
-                val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
-                AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
-                val retrieveConsents = async {
-                    customerId?.takeIf { needRequestConsent() }
-                        ?.let { retrieveAvailablePaymentConsents(clientSecret, it) }
-                        ?: emptyList()
-                }
-                val retrieveMethods = async { retrieveAvailablePaymentMethods(clientSecret) }
-                try {
-                    val methods = filterPaymentMethodsBySession(
-                        retrieveMethods.await(),
-                        session.paymentMethods
-                    )
-                    val consents = retrieveConsents.await()
-                    Result.success(Pair(methods, consents))
-                } catch (exception: AirwallexException) {
-                    AirwallexLogger.error(
-                        "PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: failed ",
-                        exception
-                    )
-                    Result.failure(exception)
-                }
+        val secret = clientSecret.takeIf { !it.isNullOrBlank() }
+            ?: return Result.failure(AirwallexCheckoutException(message = "Client secret is empty or blank"))
+        return coroutineScope {
+            val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
+            AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
+            val retrieveConsents = async {
+                customerId?.takeIf { needRequestConsent() }
+                    ?.let { retrieveAvailablePaymentConsents(secret, it) }
+                    ?: emptyList()
             }
-        } ?: Result.failure(AirwallexCheckoutException(message = "clientSecret is null"))
+            val retrieveMethods = async { retrieveAvailablePaymentMethods(secret) }
+            try {
+                val methods = filterPaymentMethodsBySession(
+                    retrieveMethods.await(),
+                    session.paymentMethods
+                )
+                val consents = retrieveConsents.await()
+                Result.success(Pair(methods, consents))
+            } catch (exception: AirwallexException) {
+                AirwallexLogger.error(
+                    "PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: failed ",
+                    exception
+                )
+                Result.failure(exception)
+            }
+        }
     }
 
     private fun needRequestConsent(): Boolean {
