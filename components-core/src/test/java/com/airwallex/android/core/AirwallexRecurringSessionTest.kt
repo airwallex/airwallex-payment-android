@@ -16,7 +16,8 @@ class AirwallexRecurringSessionTest {
             customerId = "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
             currency = "AUD",
             amount = BigDecimal.valueOf(100.01),
-            countryCode = "CN"
+            countryCode = "CN",
+            clientSecret = "clientSecret"
         )
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
             .setRequireBillingInformation(false)

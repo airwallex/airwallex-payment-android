@@ -665,10 +665,7 @@ class Airwallex internal constructor(
                                 currency = session.currency,
                                 amount = session.amount,
                                 cvc = cvc,
-                                returnUrl = if (paymentMethod.type
-                                    == PaymentMethodType.CARD.value
-                                ) AirwallexPlugins.environment.threeDsReturnUrl()
-                                else session.returnUrl,
+                                returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
                                 listener = listener
                             )
                         }

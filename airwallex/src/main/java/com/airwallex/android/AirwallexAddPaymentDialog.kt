@@ -28,12 +28,13 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 @SuppressLint("InflateParams")
-class AirwallexAddPaymentMethodDialog(
+class AirwallexAddPaymentDialog(
     private val activity: ComponentActivity,
     private val session: AirwallexSession,
     private val supportedCardSchemes: List<CardScheme> =
         enumValues<AirwallexSupportedCard>().toList().map { CardScheme(it.brandName) },
     private val paymentResultListener: Airwallex.PaymentResultListener,
+    private val dialogHeight: Int? = null,
     private val paymentFlowProvider: Airwallex.PaymentFlowProvider? = null
 ) : BottomSheetDialog(activity), TrackablePage {
 
@@ -85,13 +86,16 @@ class AirwallexAddPaymentMethodDialog(
         setCancelable(false)
         setCanceledOnTouchOutside(false)
         val bottomSheet = findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-        val behavior = BottomSheetBehavior.from(bottomSheet!!)
-        val layoutParams = bottomSheet.layoutParams
-        layoutParams.height = (context.resources.displayMetrics.heightPixels * 0.9).toInt()
-        bottomSheet.layoutParams = layoutParams
+        bottomSheet?.apply {
+            val behavior = BottomSheetBehavior.from(this)
+            val layoutParams = this.layoutParams
+            layoutParams.height =
+                dialogHeight ?: (context.resources.displayMetrics.heightPixels * 0.9).toInt()
+            this.layoutParams = layoutParams
 
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        behavior.isDraggable = false
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            behavior.isDraggable = false
+        }
     }
 
     private fun initView() {

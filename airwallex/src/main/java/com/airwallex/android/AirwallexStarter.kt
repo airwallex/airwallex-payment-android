@@ -272,7 +272,6 @@ class AirwallexStarter {
             }
         }
 
-
         /**
          * Method to handle Activity results from Airwallex activities.
          *

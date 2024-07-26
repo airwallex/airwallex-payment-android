@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
-import com.airwallex.android.AirwallexAddPaymentMethodDialog
+import com.airwallex.android.AirwallexAddPaymentDialog
 import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -55,7 +55,7 @@ internal class PaymentCartViewModel(
     ): LiveData<AirwallexPaymentStatus> {
         val resultData = MutableLiveData<AirwallexPaymentStatus>()
         if (dialogMode) {
-            val dialog = AirwallexAddPaymentMethodDialog(
+            val dialog = AirwallexAddPaymentDialog(
                 activity = activity,
                 session = session,
                 paymentResultListener = object : Airwallex.PaymentResultListener {
