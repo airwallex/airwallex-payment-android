@@ -1,9 +1,10 @@
 package com.airwallex.paymentacceptance
 
-import android.app.Activity
 import android.app.Application
+import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
+import com.airwallex.android.AirwallexAddPaymentMethodDialog
 import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -48,20 +49,34 @@ internal class PaymentCartViewModel(
     }
 
     fun presentCardPaymentFlow(
-        activity: Activity,
+        activity: ComponentActivity,
         session: AirwallexSession,
+        dialogMode: Boolean = true
     ): LiveData<AirwallexPaymentStatus> {
         val resultData = MutableLiveData<AirwallexPaymentStatus>()
-        AirwallexStarter.presentCardPaymentFlow(
-            activity,
-            session,
-            paymentResultListener = object : Airwallex.PaymentResultListener {
-
-                override fun onCompleted(status: AirwallexPaymentStatus) {
-                    resultData.value = status
+        if (dialogMode) {
+            val dialog = AirwallexAddPaymentMethodDialog(
+                activity = activity,
+                session = session,
+                paymentResultListener = object : Airwallex.PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        resultData.value = status
+                    }
                 }
-            }
-        )
+            )
+            dialog.show()
+        } else {
+            AirwallexStarter.presentCardPaymentFlow(
+                activity,
+                session,
+                paymentResultListener = object : Airwallex.PaymentResultListener {
+
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        resultData.value = status
+                    }
+                }
+            )
+        }
         return resultData
     }
 
