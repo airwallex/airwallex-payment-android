@@ -426,7 +426,7 @@ class PaymentCartFragment : Fragment() {
             } else if (directCardCheckoutWithUI) {
                 // Direct payment flow with session，this method will open card page
                 activity?.let {
-                    viewModel.presentCardPaymentFlow(it, session)
+                    viewModel.presentCardPaymentFlow(it, session, true)
                         .observe(viewLifecycleOwner) { status ->
                             handleStatusUpdate(status)
                         }

@@ -179,4 +179,5 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         )
         finish()
     }
+
 }
