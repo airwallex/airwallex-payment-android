@@ -4,16 +4,11 @@ import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.airwallex.android.R
 import com.airwallex.android.core.*
-import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.model.*
 import io.mockk.*
-import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AddPaymentMethodViewModelTest {
@@ -23,24 +18,66 @@ class AddPaymentMethodViewModelTest {
     private val application = mockk<Application>()
     private val airwallex: Airwallex = mockk()
     private val visaCardNumber = "4242424242424242"
-    private val clientSecret = mockk<ClientSecret>(relaxed = true)
 
-    @Before
-    fun setUp() {
-        val clientSecretRepository = mockk<ClientSecretRepository>()
-        val clientSecretListener = slot<ClientSecretRepository.ClientSecretRetrieveListener>()
-
-        mockkObject(ClientSecretRepository)
-        every { ClientSecretRepository.getInstance() } returns clientSecretRepository
-        every {
-            clientSecretRepository.retrieveClientSecret(
-                any(),
-                capture(clientSecretListener)
-            )
-        } answers {
-            clientSecretListener.captured.onClientSecretRetrieve(clientSecret)
+    @Test
+    fun `test shipping for AirwallexPaymentSession`() {
+        val mockShipping = mockk<Shipping>(relaxed = true)
+        val mockPaymentIntent = mockk<PaymentIntent> {
+            every { order?.shipping } returns mockShipping
         }
-        coEvery { clientSecretRepository.retrieveClientSecret(any()) } answers { clientSecret }
+        val mockSession = mockk<AirwallexPaymentSession> {
+            every { paymentIntent } returns mockPaymentIntent
+        }
+        val viewModel = createViewModel(mockSession)
+        assertEquals(mockShipping, viewModel.shipping)
+    }
+
+    @Test
+    fun `test shipping for AirwallexRecurringWithIntentSession`() {
+        val mockShipping = mockk<Shipping>(relaxed = true)
+        val mockPaymentIntent = mockk<PaymentIntent> {
+            every { order?.shipping } returns mockShipping
+        }
+        val mockSession = mockk<AirwallexRecurringWithIntentSession> {
+            every { paymentIntent } returns mockPaymentIntent
+        }
+        val viewModel = createViewModel(mockSession)
+        assertEquals(mockShipping, viewModel.shipping)
+    }
+
+    @Test
+    fun `test shipping for AirwallexRecurringSession`() {
+        val mockShipping = mockk<Shipping>(relaxed = true)
+        val mockSession = mockk<AirwallexRecurringSession> {
+            every { shipping } returns mockShipping
+        }
+        val viewModel = createViewModel(mockSession)
+        assertEquals(mockShipping, viewModel.shipping)
+    }
+
+    @Test
+    fun `test canSaveCard is true for AirwallexPaymentSession with customerId`() {
+        val mockSession = mockk<AirwallexPaymentSession> {
+            every { customerId } returns "someCustomerId"
+        }
+        val viewModel = createViewModel(mockSession)
+        assertTrue(viewModel.canSaveCard)
+    }
+
+    @Test
+    fun `test canSaveCard is false for AirwallexPaymentSession without customerId`() {
+        val mockSession = mockk<AirwallexPaymentSession> {
+            every { customerId } returns null
+        }
+        val viewModel = createViewModel(mockSession)
+        assertTrue(!viewModel.canSaveCard)
+    }
+
+    @Test
+    fun `test canSaveCard is false for other session types`() {
+        val mockSession = mockk<AirwallexSession>()
+        val viewModel = createViewModel(mockSession)
+        assertTrue(!viewModel.canSaveCard)
     }
 
     @Test
@@ -48,194 +85,10 @@ class AddPaymentMethodViewModelTest {
         val card: PaymentMethod.Card = mockk()
         val billing: Billing = mockk()
         val session: AirwallexPaymentSession = mockk()
-
-        every { session.isBillingInformationRequired } returns true
-        every { card.cvc } returns "123"
-
+        every { airwallex.confirmPaymentIntent(any(), card, billing, true, any()) } just Runs
         val viewModel = createViewModel(session)
-        val payment = viewModel.createPaymentMethod(card, billing)
-        val result =
-            requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
-        val resultBilling = requireNotNull(result.paymentMethod.billing)
-
-        assertEquals(viewModel.ctaTitle, R.string.airwallex_pay_now)
-        assertEquals(resultBilling, billing)
-    }
-
-    @Test
-    fun `one off payment method does not include provided billing when information is not required by session`() {
-        val card: PaymentMethod.Card = mockk()
-        val billing: Billing = mockk()
-        val session: AirwallexPaymentSession = mockk()
-
-        every { session.isBillingInformationRequired } returns false
-        every { card.cvc } returns "123"
-
-        val viewModel = createViewModel(session)
-        val payment = viewModel.createPaymentMethod(card, billing)
-        val result =
-            requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
-        val resultBilling = result.paymentMethod.billing
-
-        assertNull(resultBilling)
-        assertNotEquals(resultBilling, billing)
-    }
-
-    @Test
-    fun `one off payment card missing cvc error`() {
-        val card: PaymentMethod.Card = mockk()
-        val billing: Billing = mockk()
-        val session: AirwallexPaymentSession = mockk()
-
-        every { session.isBillingInformationRequired } returns true
-        every { card.cvc } returns null
-
-        val viewModel = createViewModel(session)
-        val payment = viewModel.createPaymentMethod(card, billing)
-        val result =
-            requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Error)
-
-        val errorMessage = requireNotNull(result.exception.message)
-        assertTrue { errorMessage.contains("CVC missing") }
-    }
-
-    @Test
-    fun `stored payment method includes provided billing when information is required by session`() {
-        val paymentMethod = mockk<PaymentMethod>()
-        val paymentListener = slot<Airwallex.PaymentListener<PaymentMethod>>()
-
-        every { airwallex.createPaymentMethod(any(), capture(paymentListener)) } answers {
-            paymentListener.captured.onSuccess(paymentMethod)
-        }
-
-        val customerID = "Test_ID"
-        val card: PaymentMethod.Card = mockk()
-        val billing: Billing = mockk()
-        val session: AirwallexRecurringSession = mockk()
-
-        every { session.customerId } returns customerID
-        every { session.isBillingInformationRequired } returns true
-        every { card.cvc } returns "123"
-
-        val viewModel = createViewModel(session)
-        val payment = viewModel.createPaymentMethod(card, billing)
-        val result =
-            requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
-
-        assertEquals(viewModel.ctaTitle, R.string.airwallex_confirm)
-        assertEquals(result.paymentMethod, paymentMethod)
-
-        val params = CreatePaymentMethodParams(
-            clientSecret.value,
-            customerID,
-            card,
-            billing
-        )
-        verify { airwallex.createPaymentMethod(params, any()) }
-    }
-
-    @Test
-    fun `stored payment method does not include provided billing when information is not required by session`() {
-        val paymentMethod = mockk<PaymentMethod>()
-        val paymentListener = slot<Airwallex.PaymentListener<PaymentMethod>>()
-
-        every { airwallex.createPaymentMethod(any(), capture(paymentListener)) } answers {
-            paymentListener.captured.onSuccess(paymentMethod)
-        }
-
-        val customerID = "Test_ID"
-        val card: PaymentMethod.Card = mockk()
-        val billing: Billing = mockk()
-        val session: AirwallexRecurringWithIntentSession = mockk()
-
-        every { session.customerId } returns customerID
-        every { session.isBillingInformationRequired } returns false
-        every { card.cvc } returns "123"
-
-        val viewModel = createViewModel(session)
-        val payment = viewModel.createPaymentMethod(card, billing)
-        val result =
-            requireNotNull(payment.value as? AddPaymentMethodViewModel.PaymentMethodResult.Success)
-
-        assertEquals(viewModel.ctaTitle, R.string.airwallex_pay_now)
-        assertEquals(result.paymentMethod, paymentMethod)
-
-        val params = CreatePaymentMethodParams(
-            clientSecret.value,
-            customerID,
-            card,
-            null
-        )
-        verify { airwallex.createPaymentMethod(params, any()) }
-    }
-
-    @Test
-    fun `test check out with saved card when payment method creation fails`() = runTest {
-        val checkoutListener = slot<Airwallex.PaymentResultListener>()
-        val exception = AirwallexCheckoutException()
-
-        coEvery { airwallex.createPaymentMethod(any()) } throws exception
-
-        val session: AirwallexPaymentSession = mockk(relaxed = true)
-        val card: PaymentMethod.Card = mockk()
-        val billing: Billing = mockk()
-        val successResult = AirwallexPaymentStatus.Success("int_123")
-
-        every { airwallex.checkout(session, any(), any(), any(), any(), any(), capture(checkoutListener)) } answers {
-            checkoutListener.captured.onCompleted(successResult)
-        }
-        every { card.cvc } returns "123"
-
-        val viewModel = createViewModel(session)
-        val result = viewModel.checkoutWithSavedCard(card, billing)
-        assertEquals(result, successResult)
-    }
-
-    @Test
-    fun `test check out with saved card when consent creation fails`() = runTest {
-        val paymentMethod = mockk<PaymentMethod>()
-        val checkoutListener = slot<Airwallex.PaymentResultListener>()
-
-        coEvery { airwallex.createPaymentMethod(any()) } answers { paymentMethod }
-
-        val session: AirwallexPaymentSession = mockk(relaxed = true)
-        val card: PaymentMethod.Card = mockk()
-        val billing: Billing = mockk()
-        val successResult = AirwallexPaymentStatus.Success("int_123")
-
-        every { airwallex.checkout(session, any(), any(), any(), any(), any(), capture(checkoutListener)) } answers {
-            checkoutListener.captured.onCompleted(successResult)
-        }
-        every { card.cvc } returns "123"
-
-        val viewModel = createViewModel(session)
-        val result = viewModel.checkoutWithSavedCard(card, billing)
-        assertEquals(result, successResult)
-    }
-
-    @Test
-    fun `test check out with saved card when consent creation succeeds`() = runTest {
-        val checkoutListener = slot<Airwallex.PaymentResultListener>()
-        val paymentMethod = mockk<PaymentMethod>()
-        val consent = mockk<PaymentConsent>(relaxed = true)
-
-        every { paymentMethod.id } returns "pay_123"
-        coEvery { airwallex.createPaymentMethod(any()) } answers { paymentMethod }
-        coEvery { airwallex.createPaymentConsent(any()) } answers { consent }
-
-        val session: AirwallexPaymentSession = mockk(relaxed = true)
-        val card: PaymentMethod.Card = mockk(relaxed = true)
-        val billing: Billing = mockk()
-        val successResult = AirwallexPaymentStatus.Success("int_123")
-
-        every { airwallex.checkout(session, any(), any(), any(), any(), any(), capture(checkoutListener)) } answers {
-            checkoutListener.captured.onCompleted(successResult)
-        }
-        every { card.cvc } returns "123"
-
-        val viewModel = createViewModel(session)
-        val result = viewModel.checkoutWithSavedCard(card, billing)
-        assertEquals(result, successResult)
+        viewModel.confirmPayment(card, true, billing)
+        verify { airwallex.confirmPaymentIntent(any(), card, billing, true, any()) }
     }
 
     @Test
@@ -284,7 +137,10 @@ class AddPaymentMethodViewModelTest {
     private fun createViewModel(
         session: AirwallexSession,
         cardSchemes: List<CardScheme> = listOf()
-    ): AddPaymentMethodViewModel =
-        AddPaymentMethodViewModel.Factory(application, airwallex, session, cardSchemes)
+    ): AddPaymentMethodViewModel {
+        every { application.getString(R.string.airwallex_confirm) } returns "Confirm"
+        every { application.getString(R.string.airwallex_pay_now) } returns "Pay"
+        return AddPaymentMethodViewModel.Factory(application, airwallex, session, cardSchemes)
             .create(AddPaymentMethodViewModel::class.java)
+    }
 }

@@ -2,16 +2,23 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.annotation.StringRes
-import androidx.lifecycle.*
-import com.airwallex.android.core.exception.AirwallexCheckoutException
-import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.exception.InvalidParamsException
-import com.airwallex.android.core.model.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.R
-import com.airwallex.android.core.*
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.model.Billing
+import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.view.util.CardUtils
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 internal class AddPaymentMethodViewModel(
     application: Application,
