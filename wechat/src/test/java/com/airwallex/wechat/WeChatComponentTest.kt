@@ -157,7 +157,8 @@ class WeChatComponentTest {
                 dcc = null,
                 url = null,
                 method = "post",
-                data = actionData
+                data = actionData,
+                packageName = null
             ),
             activity = activity,
             applicationContext = context,

@@ -55,7 +55,8 @@ class RedirectComponentTest {
                 data = null,
                 dcc = null,
                 url = testUrl,
-                method = null
+                method = null,
+                packageName = null
             ),
             null,
             activity,
@@ -79,7 +80,8 @@ class RedirectComponentTest {
                 data = null,
                 dcc = null,
                 url = testUrl,
-                method = null
+                method = null,
+                packageName = null
             ),
             null,
             activity,

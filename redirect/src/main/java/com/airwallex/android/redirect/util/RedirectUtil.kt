@@ -18,8 +18,10 @@ object RedirectUtil {
 
     private const val RESOLVER_ACTIVITY_PACKAGE_NAME = "android"
 
-    private fun determineResolveResult(context: Context, uri: Uri): ResolveResultType {
-        val intent = Intent(Intent.ACTION_VIEW, uri)
+    private fun determineResolveResult(context: Context, uri: Uri, packageName: String?): ResolveResultType {
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            setPackage(packageName)
+        }
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://"))
         try {
             val packageManager = context.packageManager
@@ -49,9 +51,11 @@ object RedirectUtil {
 
     @Suppress("DEPRECATION")
     @VisibleForTesting
-    fun createRedirectIntent(context: Context, uri: Uri): Intent {
-        return if (determineResolveResult(context, uri) === ResolveResultType.APPLICATION) {
-            Intent(Intent.ACTION_VIEW, uri)
+    fun createRedirectIntent(context: Context, uri: Uri, packageName: String?): Intent {
+        return if (determineResolveResult(context, uri, packageName) === ResolveResultType.APPLICATION) {
+            Intent(Intent.ACTION_VIEW, uri).apply {
+                setPackage(packageName)
+            }
         } else {
             val customTabsIntent: CustomTabsIntent = CustomTabsIntent.Builder()
                 .setShowTitle(true)
@@ -63,9 +67,9 @@ object RedirectUtil {
     }
 
     @Throws(RedirectException::class)
-    fun makeRedirect(activity: Activity, redirectUrl: String) {
+    fun makeRedirect(activity: Activity, redirectUrl: String, packageName: String? = null) {
         val redirectUri = Uri.parse(redirectUrl)
-        val redirectIntent = createRedirectIntent(activity, redirectUri)
+        val redirectIntent = createRedirectIntent(activity, redirectUri, packageName)
         try {
             activity.startActivity(redirectIntent)
         } catch (e: ActivityNotFoundException) {

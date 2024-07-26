@@ -22,7 +22,6 @@ dependencies {
     testImplementation "androidx.test:core:$testCoreVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation 'io.mockk:mockk:1.13.3'
 }
 

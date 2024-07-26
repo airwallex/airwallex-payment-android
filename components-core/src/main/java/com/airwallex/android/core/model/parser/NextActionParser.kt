@@ -21,16 +21,18 @@ class NextActionParser : ModelJsonParser<NextAction> {
             },
             url = AirwallexJsonUtils.optString(json, FIELD_URL),
             method = AirwallexJsonUtils.optString(json, FIELD_METHOD),
+            packageName = AirwallexJsonUtils.optString(json, FIELD_PACKAGE_NAME)
         )
     }
 
-    private companion object {
+    companion object {
         private const val FIELD_STAGE = "stage"
         private const val FIELD_TYPE = "type"
         private const val FIELD_DATA = "data"
         private const val FIELD_DCC_DATA = "dcc_data"
         private const val FIELD_URL = "url"
         private const val FIELD_METHOD = "method"
+        private const val FIELD_PACKAGE_NAME = "package_name"
     }
 
     internal class DccDataParser : ModelJsonParser<NextAction.DccData> {

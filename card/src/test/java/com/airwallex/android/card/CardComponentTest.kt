@@ -50,7 +50,8 @@ class CardComponentTest {
             data = null,
             dcc = null,
             url = null,
-            method = null
+            method = null,
+            packageName = null
         )
         val cardModel = CardNextActionModel(
             paymentManager = AirwallexPaymentManager(AirwallexApiRepository()),

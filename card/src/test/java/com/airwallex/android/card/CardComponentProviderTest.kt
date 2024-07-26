@@ -51,7 +51,8 @@ class CardComponentProviderTest {
                     data = null,
                     dcc = null,
                     url = null,
-                    method = null
+                    method = null,
+                    packageName = null
                 )
             )
         )
@@ -64,7 +65,8 @@ class CardComponentProviderTest {
                     data = mapOf("1" to "2"),
                     dcc = null,
                     url = null,
-                    method = null
+                    method = null,
+                    packageName = null
                 )
             )
         )
@@ -77,7 +79,8 @@ class CardComponentProviderTest {
                     data = null,
                     dcc = null,
                     url = null,
-                    method = null
+                    method = null,
+                    packageName = null
                 )
             )
         )
@@ -87,12 +90,12 @@ class CardComponentProviderTest {
     fun canHandleSessionAndPaymentMethodTest() = runTest {
         val activity = mockk<Activity>()
         val session = mockk<AirwallexSession>()
-        val paymentMethodType = mockResponse.items?.first()
+        val paymentMethodType = mockResponse.items.first()
         val cardComponentProvider = CardComponentProvider()
         assertTrue(
             cardComponentProvider.canHandleSessionAndPaymentMethod(
                 session,
-                paymentMethodType!!,
+                paymentMethodType,
                 activity
             )
         )

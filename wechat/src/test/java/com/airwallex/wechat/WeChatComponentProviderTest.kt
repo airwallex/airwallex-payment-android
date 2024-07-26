@@ -8,7 +8,7 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.wechat.WeChatComponentProvider
-import com.nhaarman.mockitokotlin2.mock
+import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -32,7 +32,8 @@ class WeChatComponentProviderTest {
                     data = null,
                     dcc = null,
                     url = null,
-                    method = null
+                    method = null,
+                    packageName = null
                 )
             )
         )
@@ -44,7 +45,8 @@ class WeChatComponentProviderTest {
                     data = null,
                     dcc = null,
                     url = null,
-                    method = null
+                    method = null,
+                    packageName = null
                 )
             )
         )
@@ -58,7 +60,7 @@ class WeChatComponentProviderTest {
         val weChatComponentProvider = WeChatComponentProvider()
 
         var success = false
-        val activity: Activity = mock()
+        val activity: Activity = mockk()
         val latch = CountDownLatch(1)
         weChatComponentProvider.get().handlePaymentIntentResponse(
             "int_hkdmr7v9rg1j58ky8re",
@@ -73,7 +75,7 @@ class WeChatComponentProviderTest {
                     "sign" to "EDD7AFB573F30F4C131898D631AA5ED3DA8FE92289536A6BE43426E71F2A2798",
                     "timeStamp" to 1629872988
                 ),
-                dcc = null, url = null, method = null
+                dcc = null, url = null, method = null, packageName = null
             ),
             null,
             activity,

@@ -30,7 +30,7 @@ class NextActionTest {
             rateExpiry = "1"
         )
 
-        val nextAction = NextActionFixtures.NEXTACTION!!
+        val nextAction = NextActionFixtures.NEXTACTION
         assertEquals(NextAction.NextActionType.RENDER_QR_CODE, nextAction.type)
         assertEquals(null, nextAction.data)
         assertEquals(dccData, nextAction.dcc)
@@ -43,5 +43,6 @@ class NextActionTest {
         assertEquals("financialMarket", dccData.rateSource)
         assertEquals("1627881115", dccData.rateTimestamp)
         assertEquals("1", dccData.rateExpiry)
+        assertEquals(nextAction.packageName, "com.airwallex")
     }
 }

@@ -179,6 +179,7 @@ class PaymentCartFragment : Fragment() {
                         billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
                     )
                 )
+                    .setRequireBillingInformation(false)
                     .setRequireEmail(requiresEmail)
                     .setReturnUrl(Settings.returnUrl)
                     .setAutoCapture(autoCapture)
@@ -604,6 +605,7 @@ class PaymentCartFragment : Fragment() {
             is AirwallexPaymentStatus.InProgress -> {
                 // redirecting
                 Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
+                showPaymentInProgress()
             }
 
             is AirwallexPaymentStatus.Failure -> {
