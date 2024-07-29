@@ -58,7 +58,12 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     private val isValid: Boolean
         get() {
-            return viewBinding.cardWidget.isValid && viewBinding.billingWidget.isValid
+            val isCardValid = viewBinding.cardWidget.isValid
+            var isBillingValid = true
+            if (viewBinding.billingGroup.visibility == View.VISIBLE) {
+                isBillingValid = viewBinding.billingWidget.isValid
+            }
+            return isCardValid && isBillingValid
         }
 
     private var currentBrand: CardBrand? = null
@@ -79,7 +84,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         viewBinding.cardWidget.showEmail = viewModel.isEmailRequired
         viewBinding.billingWidget.shipping = viewModel.shipping
         viewBinding.btnSaveCard.text = viewModel.ctaTitle
-        viewBinding.btnSaveCard.isEnabled = isValid
+        viewBinding.btnSaveCard.isEnabled = false
         viewBinding.billingGroup.visibility =
             if (viewModel.isBillingRequired) View.VISIBLE else View.GONE
         viewBinding.saveCardWidget.visibility =
