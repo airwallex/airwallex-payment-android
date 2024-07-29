@@ -1,4 +1,4 @@
-package com.airwallex.android
+package com.airwallex.android.view
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
+import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -21,8 +22,6 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.databinding.DialogAddCardBinding
-import com.airwallex.android.view.AddPaymentMethodViewModel
-import com.airwallex.android.view.CardBrand
 import com.airwallex.risk.AirwallexRisk
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog

@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.*
+import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.model.*
@@ -460,47 +461,42 @@ class PaymentCartFragment : Fragment() {
     private fun startRecurringFlow() {
         viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
             (activity as? PaymentCartActivity)?.setLoadingProgress(true)
-            // Recurring flow require customer id
+            // Recurring flow require customer id and client secret
             var customerId: String?
             var clientSecret: String?
             withContext(Dispatchers.IO) {
-                if (TextUtils.isEmpty(Settings.cachedCustomerId) || TextUtils.isEmpty(Settings.token)) {
-                    val response = api.authentication(
-                        apiKey = Settings.apiKey,
-                        clientId = Settings.clientId
-                    )
-                    clientSecret = JSONObject(response.string())["token"].toString()
-                    Settings.token = clientSecret
-
-                    val customerResponse = api.createCustomer(
-                        mutableMapOf(
-                            "request_id" to UUID.randomUUID().toString(),
-                            "merchant_customer_id" to UUID.randomUUID().toString(),
-                            "first_name" to "John",
-                            "last_name" to "Doe",
-                            "email" to "john.doe@airwallex.com",
-                            "phone_number" to "13800000000",
-                            "additional_info" to mapOf(
-                                "registered_via_social_media" to false,
-                                "registration_date" to "2019-09-18",
-                                "first_successful_order_date" to "2019-09-18"
-                            ),
-                            "metadata" to mapOf(
-                                "id" to 1
-                            )
+                val response = api.authentication(
+                    apiKey = Settings.apiKey,
+                    clientId = Settings.clientId
+                )
+                clientSecret = JSONObject(response.string())["token"].toString()
+                Settings.token = clientSecret
+                val customerResponse = api.createCustomer(
+                    mutableMapOf(
+                        "request_id" to UUID.randomUUID().toString(),
+                        "merchant_customer_id" to UUID.randomUUID().toString(),
+                        "first_name" to "John",
+                        "last_name" to "Doe",
+                        "email" to "john.doe@airwallex.com",
+                        "phone_number" to "13800000000",
+                        "additional_info" to mapOf(
+                            "registered_via_social_media" to false,
+                            "registration_date" to "2019-09-18",
+                            "first_successful_order_date" to "2019-09-18"
+                        ),
+                        "metadata" to mapOf(
+                            "id" to 1
                         )
                     )
-                    customerId = JSONObject(customerResponse.string())["id"].toString()
-                    Settings.cachedCustomerId = customerId
-                } else {
-                    customerId =  Settings.cachedCustomerId
-                    clientSecret =  Settings.token
-                }
+                )
+                customerId = JSONObject(customerResponse.string())["id"].toString()
+                Settings.cachedCustomerId = customerId
             }
-
             (activity as? PaymentCartActivity)?.setLoadingProgress(false)
             val session = buildSession(customerId = customerId, clientSecret = clientSecret)
-            if (directCardCheckout) {
+            if (directGooglePayCheckout) {
+                handleStatusUpdate(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "recurring is not supported by Google Pay")))
+            } else if (!directCardCheckoutWithUI) {
                 // present payment flow with session，this method will open list page
                 viewModel.presentEntirePaymentFlow(this@PaymentCartFragment, session)
                     .observe(viewLifecycleOwner) {
@@ -525,38 +521,34 @@ class PaymentCartFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.safeLaunch(Dispatchers.Main, coroutineExceptionHandler) {
             (activity as? PaymentCartActivity)?.setLoadingProgress(true)
             // Recurring flow require customer id
+            var customerId: String? = null
             val paymentIntentResponse = withContext(Dispatchers.IO) {
-                val customerId = if (TextUtils.isEmpty(Settings.cachedCustomerId)) {
-                    val response = api.authentication(
-                        apiKey = Settings.apiKey,
-                        clientId = Settings.clientId
-                    )
-                    Settings.token = JSONObject(response.string())["token"].toString()
+                val response = api.authentication(
+                    apiKey = Settings.apiKey,
+                    clientId = Settings.clientId
+                )
+                Settings.token = JSONObject(response.string())["token"].toString()
 
-                    val customerResponse = api.createCustomer(
-                        mutableMapOf(
-                            "request_id" to UUID.randomUUID().toString(),
-                            "merchant_customer_id" to UUID.randomUUID().toString(),
-                            "first_name" to "John",
-                            "last_name" to "Doe",
-                            "email" to "john.doe@airwallex.com",
-                            "phone_number" to "13800000000",
-                            "additional_info" to mapOf(
-                                "registered_via_social_media" to false,
-                                "registration_date" to "2019-09-18",
-                                "first_successful_order_date" to "2019-09-18"
-                            ),
-                            "metadata" to mapOf(
-                                "id" to 1
-                            )
+                val customerResponse = api.createCustomer(
+                    mutableMapOf(
+                        "request_id" to UUID.randomUUID().toString(),
+                        "merchant_customer_id" to UUID.randomUUID().toString(),
+                        "first_name" to "John",
+                        "last_name" to "Doe",
+                        "email" to "john.doe@airwallex.com",
+                        "phone_number" to "13800000000",
+                        "additional_info" to mapOf(
+                            "registered_via_social_media" to false,
+                            "registration_date" to "2019-09-18",
+                            "first_successful_order_date" to "2019-09-18"
+                        ),
+                        "metadata" to mapOf(
+                            "id" to 1
                         )
                     )
-                    val customerId = JSONObject(customerResponse.string())["id"].toString()
-                    Settings.cachedCustomerId = customerId
-                    customerId
-                } else {
-                    Settings.cachedCustomerId
-                }
+                )
+                customerId = JSONObject(customerResponse.string())["id"].toString()
+                Settings.cachedCustomerId = customerId
 
                 val products = products
                 val shipping = shipping
@@ -586,9 +578,11 @@ class PaymentCartFragment : Fragment() {
             (activity as? PaymentCartActivity)?.setLoadingProgress(false)
             val paymentIntent =
                 PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
-            val session =  buildSession(paymentIntent = paymentIntent)
+            val session = buildSession(paymentIntent = paymentIntent)
 
-            if (directCardCheckout) {
+            if (directGooglePayCheckout) {
+                handleStatusUpdate(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "recurring is not supported by Google Pay")))
+            } else if (!directCardCheckoutWithUI) {
                 // present payment flow with session，this method will open list page
                 viewModel.presentEntirePaymentFlow(this@PaymentCartFragment, session)
                     .observe(viewLifecycleOwner) {
