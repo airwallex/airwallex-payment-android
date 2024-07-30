@@ -96,6 +96,7 @@ sonarqube {
                 '**/AirwallexStarter.kt',
                 '**/*InputLayout.kt',
                 '**/*EditText.kt',
+                '**/SessionUtils.kt',
                 '**/view/CardWidget.kt',
                 '**/paymentacceptance/**',
                 'security-3ds/**',
