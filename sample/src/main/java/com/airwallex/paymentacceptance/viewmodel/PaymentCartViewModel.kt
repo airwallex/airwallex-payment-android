@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.viewmodel
 
 import android.app.Application
 import androidx.activity.ComponentActivity
