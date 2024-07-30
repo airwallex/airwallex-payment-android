@@ -93,7 +93,7 @@ class AirwallexAddPaymentDialog(
             val behavior = BottomSheetBehavior.from(this)
             val layoutParams = this.layoutParams
             layoutParams.height =
-                dialogHeight ?: (context.resources.displayMetrics.heightPixels * 0.9).toInt()
+                dialogHeight ?: (context.resources.displayMetrics.heightPixels * 0.65).toInt()
             this.layoutParams = layoutParams
 
             behavior.state = BottomSheetBehavior.STATE_EXPANDED

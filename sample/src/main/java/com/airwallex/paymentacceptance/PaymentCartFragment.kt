@@ -18,6 +18,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.Address
+import com.airwallex.android.core.model.parser.ClientSecretParser
 import com.airwallex.android.core.model.parser.PaymentIntentParser
 import com.airwallex.paymentacceptance.databinding.CartItemBinding
 import com.airwallex.paymentacceptance.databinding.FragmentCartBinding
@@ -469,8 +470,7 @@ class PaymentCartFragment : Fragment() {
                     apiKey = Settings.apiKey,
                     clientId = Settings.clientId
                 )
-                clientSecret = JSONObject(response.string())["token"].toString()
-                Settings.token = clientSecret
+                Settings.token = JSONObject(response.string())["token"].toString()
                 val customerResponse = api.createCustomer(
                     mutableMapOf(
                         "request_id" to UUID.randomUUID().toString(),
@@ -491,6 +491,9 @@ class PaymentCartFragment : Fragment() {
                 )
                 customerId = JSONObject(customerResponse.string())["id"].toString()
                 Settings.cachedCustomerId = customerId
+                //get the clientSecret from your server. ensure that the server has called the /generate_client_secret API to generate the clientSecret.
+                val clientSecretResponse = api.createClientSecret(customerId?:"")
+                clientSecret = ClientSecretParser().parse(JSONObject(clientSecretResponse.string())).value
             }
             (activity as? PaymentCartActivity)?.setLoadingProgress(false)
             val session = buildSession(customerId = customerId, clientSecret = clientSecret)
