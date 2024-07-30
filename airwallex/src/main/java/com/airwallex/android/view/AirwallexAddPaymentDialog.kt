@@ -34,7 +34,6 @@ class AirwallexAddPaymentDialog(
         enumValues<AirwallexSupportedCard>().toList().map { CardScheme(it.brandName) },
     private val paymentResultListener: Airwallex.PaymentResultListener,
     private val dialogHeight: Int? = null,
-    private val paymentFlowProvider: Airwallex.PaymentFlowProvider? = null
 ) : BottomSheetDialog(activity), TrackablePage {
 
     private val viewBinding: DialogAddCardBinding by lazy {
