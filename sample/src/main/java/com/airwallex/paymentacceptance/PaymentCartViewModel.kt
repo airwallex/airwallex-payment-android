@@ -35,16 +35,18 @@ internal class PaymentCartViewModel(
         session: AirwallexSession,
     ): LiveData<AirwallexPaymentStatus> {
         val resultData = MutableLiveData<AirwallexPaymentStatus>()
-        AirwallexStarter.presentPaymentFlow(
-            fragment,
-            session,
-            object : Airwallex.PaymentResultListener {
+        fragment.activity?.apply {
+            AirwallexStarter.presentEntirePaymentFlow(
+                this,
+                session,
+                object : Airwallex.PaymentResultListener {
 
-                override fun onCompleted(status: AirwallexPaymentStatus) {
-                    resultData.value = status
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        resultData.value = status
+                    }
                 }
-            }
-        )
+            )
+        }
         return resultData
     }
 
