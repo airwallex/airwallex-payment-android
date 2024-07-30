@@ -1,8 +1,10 @@
 package com.airwallex.paymentacceptance
 
 import android.app.Application
+import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
+import com.airwallex.android.view.AirwallexAddPaymentDialog
 import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -28,21 +30,55 @@ internal class PaymentCartViewModel(
         return resultData
     }
 
-    fun presentPaymentFlow(
+    fun presentEntirePaymentFlow(
         fragment: Fragment,
         session: AirwallexSession,
     ): LiveData<AirwallexPaymentStatus> {
         val resultData = MutableLiveData<AirwallexPaymentStatus>()
-        AirwallexStarter.presentPaymentFlow(
-            fragment,
-            session,
-            object : Airwallex.PaymentResultListener {
+        fragment.activity?.apply {
+            AirwallexStarter.presentEntirePaymentFlow(
+                this,
+                session,
+                object : Airwallex.PaymentResultListener {
 
-                override fun onCompleted(status: AirwallexPaymentStatus) {
-                    resultData.value = status
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        resultData.value = status
+                    }
                 }
-            }
-        )
+            )
+        }
+        return resultData
+    }
+
+    fun presentCardPaymentFlow(
+        activity: ComponentActivity,
+        session: AirwallexSession,
+        dialogMode: Boolean = true
+    ): LiveData<AirwallexPaymentStatus> {
+        val resultData = MutableLiveData<AirwallexPaymentStatus>()
+        if (dialogMode) {
+            val dialog = AirwallexAddPaymentDialog(
+                activity = activity,
+                session = session,
+                paymentResultListener = object : Airwallex.PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        resultData.value = status
+                    }
+                }
+            )
+            dialog.show()
+        } else {
+            AirwallexStarter.presentCardPaymentFlow(
+                activity,
+                session,
+                paymentResultListener = object : Airwallex.PaymentResultListener {
+
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        resultData.value = status
+                    }
+                }
+            )
+        }
         return resultData
     }
 
