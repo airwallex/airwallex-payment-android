@@ -22,6 +22,7 @@ import com.airwallex.android.core.model.parser.ClientSecretParser
 import com.airwallex.android.core.model.parser.PaymentIntentParser
 import com.airwallex.paymentacceptance.databinding.CartItemBinding
 import com.airwallex.paymentacceptance.databinding.FragmentCartBinding
+import com.airwallex.paymentacceptance.viewmodel.PaymentCartViewModel
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import retrofit2.HttpException
