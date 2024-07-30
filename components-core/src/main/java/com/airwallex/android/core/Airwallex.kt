@@ -90,15 +90,6 @@ class Airwallex internal constructor(
         fun onCompleted(status: AirwallexPaymentStatus)
     }
 
-    interface PaymentFlowProvider {
-        /**
-         * This method is called when sdk need payment intent to complete payment
-         *
-         * @return PaymentIntent The payment intent of payment flow.
-         */
-        suspend fun providePaymentIntent(): PaymentIntent
-    }
-
     init {
         AnalyticsLogger.initialize(applicationContext)
     }
