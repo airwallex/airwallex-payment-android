@@ -1,24 +1,20 @@
 package com.airwallex.paymentacceptance
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.android.core.Airwallex.Companion.AIRWALLEX_CHECKOUT_SCHEMA
-import com.airwallex.paymentacceptance.databinding.ActivityPaymentCartBinding
-import com.airwallex.paymentacceptance.h5.H5DemoActivity
-import com.airwallex.paymentacceptance.wechat.WeChatDemoActivity
+import com.airwallex.paymentacceptance.databinding.ActivityApiIntegrationBinding
 
-class PaymentCartActivity : AppCompatActivity() {
+class PaymentAPIIntegrationActivity : AppCompatActivity() {
 
-    private val viewBinding: ActivityPaymentCartBinding by lazy {
-        ActivityPaymentCartBinding.inflate(layoutInflater)
+    private val viewBinding: ActivityApiIntegrationBinding by lazy {
+        ActivityApiIntegrationBinding.inflate(layoutInflater)
     }
 
     private var dialog: Dialog? = null
@@ -26,32 +22,28 @@ class PaymentCartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+        initView()
+        initListener()
+    }
 
-        setSupportActionBar(viewBinding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
+    private fun initView() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        if (savedInstanceState == null) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(
-                    R.id.container,
-                    PaymentCartFragment()
-                )
-                .commit()
+    }
+
+    private fun initListener() {
+        viewBinding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            val selectedOption = when (checkedId) {
+                R.id.radioPayment -> "Payment"
+                R.id.radioRecurring -> "Recurring"
+                R.id.radioRecurringAndPayment -> "Recurring and Payment"
+                else -> "None"
+            }
+            Toast.makeText(this, "Changed selection: $selectedOption", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-
-        if (intent.scheme == AIRWALLEX_CHECKOUT_SCHEMA) {
-            showAlert(
-                getString(R.string.payment_successful),
-                getString(R.string.payment_successful_message)
-            )
-        }
-    }
 
     fun showAlert(title: String, message: String) {
         AlertDialog.Builder(this)
@@ -98,12 +90,22 @@ class PaymentCartActivity : AppCompatActivity() {
         dialog = null
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     companion object {
-        private const val TAG = "PaymentCartActivity"
+        private const val TAG = "UIIntegrationActivity"
 
         fun startActivity(context: Context) {
-            context.startActivity(Intent(context, PaymentCartActivity::class.java))
-            (context as Activity).finish()
+            context.startActivity(Intent(context, PaymentAPIIntegrationActivity::class.java))
         }
     }
 }
