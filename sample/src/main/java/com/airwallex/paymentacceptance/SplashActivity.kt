@@ -10,7 +10,7 @@ class SplashActivity : AppCompatActivity() {
 
         window.decorView.postDelayed(
             {
-                PaymentCartActivity.startActivity(this@SplashActivity)
+                MainActivity.startActivity(this@SplashActivity)
                 overridePendingTransition(0, android.R.anim.fade_out)
             },
             1000

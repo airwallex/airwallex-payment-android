@@ -73,6 +73,24 @@
         </activity>
 
         <activity
+            android:name="com.airwallex.paymentacceptance.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityAnimTheme"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name="com.airwallex.paymentacceptance.PaymentUIIntegrationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityAnimTheme"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name="com.airwallex.paymentacceptance.PaymentAPIIntegrationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityAnimTheme"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
             android:name="com.airwallex.paymentacceptance.PaymentSettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ActivityAnimTheme"
