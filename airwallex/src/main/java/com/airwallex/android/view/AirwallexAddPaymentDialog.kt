@@ -5,6 +5,7 @@ import android.app.Application
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
@@ -34,7 +35,7 @@ class AirwallexAddPaymentDialog(
         enumValues<AirwallexSupportedCard>().toList().map { CardScheme(it.brandName) },
     private val paymentResultListener: Airwallex.PaymentResultListener,
     private val dialogHeight: Int? = null,
-) : BottomSheetDialog(activity), TrackablePage {
+) : BottomSheetDialog(activity, R.style.AirwallexBottomSheetDialog), TrackablePage {
 
     private val viewBinding: DialogAddCardBinding by lazy {
         val root = layoutInflater.inflate(R.layout.dialog_add_card, null, false)
@@ -99,6 +100,7 @@ class AirwallexAddPaymentDialog(
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.isDraggable = false
         }
+        window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     }
 
     private fun initView() {
