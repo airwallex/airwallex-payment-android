@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -20,8 +20,14 @@ import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.parser.ClientSecretParser
 import com.airwallex.android.core.model.parser.PaymentIntentParser
+import com.airwallex.paymentacceptance.R
+import com.airwallex.paymentacceptance.SampleApplication
+import com.airwallex.paymentacceptance.Settings
+import com.airwallex.paymentacceptance.api.Api
 import com.airwallex.paymentacceptance.databinding.CartItemBinding
 import com.airwallex.paymentacceptance.databinding.FragmentCartBinding
+import com.airwallex.paymentacceptance.api.ApiFactory
+import com.airwallex.paymentacceptance.safeLaunch
 import com.airwallex.paymentacceptance.viewmodel.PaymentCartViewModel
 import kotlinx.coroutines.*
 import org.json.JSONObject

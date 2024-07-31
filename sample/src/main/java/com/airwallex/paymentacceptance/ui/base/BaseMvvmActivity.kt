@@ -1,49 +1,47 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.ui.base
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.airwallex.paymentacceptance.databinding.ActivityApiIntegrationBinding
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.viewbinding.ViewBinding
+import com.airwallex.paymentacceptance.R
+import java.lang.reflect.ParameterizedType
 
-class PaymentAPIIntegrationActivity : AppCompatActivity() {
+abstract class BaseMvvmActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActivity() {
 
-    private val viewBinding: ActivityApiIntegrationBinding by lazy {
-        ActivityApiIntegrationBinding.inflate(layoutInflater)
-    }
-
+    open lateinit var mViewModel: VM
+    open lateinit var mBinding: VB
     private var dialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(viewBinding.root)
+        mViewModel = getViewModel()!!
+        mBinding = getViewBinding()
+        setContentView(mBinding.root)
         initView()
         initListener()
     }
 
-    private fun initView() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
+    abstract fun initView()
 
-    }
+    abstract fun initListener()
 
-    private fun initListener() {
-        viewBinding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
-            val selectedOption = when (checkedId) {
-                R.id.radioPayment -> "Payment"
-                R.id.radioRecurring -> "Recurring"
-                R.id.radioRecurringAndPayment -> "Recurring and Payment"
-                else -> "None"
-            }
-            Toast.makeText(this, "Changed selection: $selectedOption", Toast.LENGTH_SHORT).show()
+    abstract fun getViewBinding(): VB
+
+    protected open fun getViewModel(): VM? {
+        val type = javaClass.genericSuperclass
+        if (type != null && type is ParameterizedType) {
+            val actualTypeArguments = type.actualTypeArguments
+            val tClass = actualTypeArguments[1]
+            return ViewModelProvider(this)[tClass as Class<VM>]
         }
+        return null
     }
-
 
     fun showAlert(title: String, message: String) {
         AlertDialog.Builder(this)
@@ -78,7 +76,7 @@ class PaymentAPIIntegrationActivity : AppCompatActivity() {
                     show()
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "Failed to show loading dialog", e)
+                Log.d("", "Failed to show loading dialog", e)
             }
         } else {
             dialog = null
@@ -98,14 +96,6 @@ class PaymentAPIIntegrationActivity : AppCompatActivity() {
             }
 
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    companion object {
-        private const val TAG = "UIIntegrationActivity"
-
-        fun startActivity(context: Context) {
-            context.startActivity(Intent(context, PaymentAPIIntegrationActivity::class.java))
         }
     }
 }

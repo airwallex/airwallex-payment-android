@@ -33,7 +33,7 @@
                 android:paddingRight="24dp"
                 android:text="@string/shipping" />
 
-            <com.airwallex.paymentacceptance.ShippingItemView
+            <com.airwallex.paymentacceptance.ui.widget.ShippingItemView
                 android:id="@+id/shippingItemView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

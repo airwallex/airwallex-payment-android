@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.ui
 
 import android.app.Activity
 import android.content.Context
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ActivityMainBinding
 import com.airwallex.paymentacceptance.h5.H5DemoActivity
 import com.airwallex.paymentacceptance.wechat.WeChatDemoActivity
@@ -20,11 +21,11 @@ class MainActivity : AppCompatActivity() {
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
         viewBinding.btnAPI.setOnClickListener {
-            PaymentAPIIntegrationActivity.startActivity(this@MainActivity)
+            APIIntegrationActivity.startActivity(this@MainActivity)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
         viewBinding.btnUI.setOnClickListener {
-            PaymentUIIntegrationActivity.startActivity(this@MainActivity)
+            UIIntegrationActivity.startActivity(this@MainActivity)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }
