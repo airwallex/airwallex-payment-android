@@ -2,10 +2,13 @@ package com.airwallex.paymentacceptance.ui.base
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
@@ -105,6 +108,13 @@ abstract class BaseMvvmActivity<VB : ViewBinding, VM : ViewModel> : AppCompatAct
             try {
                 dialog = Dialog(this).apply {
                     setContentView(R.layout.airwallex_loading)
+                    val progressBar = findViewById<ProgressBar>(R.id.airwallex_progress_bar)
+                    progressBar.indeterminateTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.color_primary
+                        )
+                    )
                     window?.setBackgroundDrawableResource(android.R.color.transparent)
                     setCancelable(false)
                     show()

@@ -49,6 +49,9 @@ class UIIntegrationActivity :
         mViewModel.airwallexPaymentStatus.observe(this) { status ->
             handleStatusUpdate(status)
         }
+        mViewModel.dialogShowed.observe(this) {
+            setLoadingProgress(false)
+        }
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {

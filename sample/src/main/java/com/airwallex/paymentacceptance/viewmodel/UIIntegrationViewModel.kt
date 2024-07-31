@@ -29,6 +29,8 @@ class UIIntegrationViewModel : BaseViewModel() {
     private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
     val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
 
+    private val _dialogShowed = MutableLiveData<Boolean>()
+    val dialogShowed: LiveData<Boolean> = _dialogShowed
 
     fun updateCheckoutModel(mode: Int) {
         checkoutMode = when (mode) {
@@ -80,6 +82,7 @@ class UIIntegrationViewModel : BaseViewModel() {
                 }
             )
             dialog.show()
+            _dialogShowed.value = true
         }
     }
 
