@@ -48,7 +48,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/btnPaymentCard"
+        android:id="@+id/btn_card_payment"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
@@ -60,7 +60,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btnPaymentList" />
 
     <Button
-        android:id="@+id/btnPaymentCardDialog"
+        android:id="@+id/btn_card_dialog_payment"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
@@ -69,6 +69,6 @@
         android:textColor="@color/color_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPaymentCard" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_card_payment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
