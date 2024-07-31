@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.ui
 
 import android.app.AlarmManager
 import android.app.AlertDialog
@@ -16,6 +16,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.paymentacceptance.R
+import com.airwallex.paymentacceptance.Settings
+import com.airwallex.paymentacceptance.api.Api
+import com.airwallex.paymentacceptance.api.ApiFactory
+import com.airwallex.paymentacceptance.safeLaunch
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -286,8 +291,10 @@ class PaymentSettingsFragment :
             getString(R.string.requires_cvc) -> preference?.summary = Settings.requiresCVC
             getString(R.string.force_3ds) -> preference?.summary = Settings.force3DS
             getString(R.string.card_checkout) -> preference?.summary = Settings.directCardCheckout
-            getString(R.string.card_checkout_with_ui) -> preference?.summary = Settings.directCardCheckoutWithUI
-            getString(R.string.google_pay_checkout) -> preference?.summary = Settings.directGooglePayCheckout
+            getString(R.string.card_checkout_with_ui) -> preference?.summary =
+                Settings.directCardCheckoutWithUI
+            getString(R.string.google_pay_checkout) -> preference?.summary =
+                Settings.directGooglePayCheckout
             getString(R.string.auto_capture) -> preference?.summary = Settings.autoCapture
             getString(R.string.requires_email) -> preference?.summary = Settings.requiresEmail
         }

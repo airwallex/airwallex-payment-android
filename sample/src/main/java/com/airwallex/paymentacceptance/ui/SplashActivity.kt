@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

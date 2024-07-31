@@ -1,9 +1,11 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.ui
 
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.paymentacceptance.R
+import com.airwallex.paymentacceptance.SampleApplication
 
 class PaymentSettingsActivity : AppCompatActivity() {
 

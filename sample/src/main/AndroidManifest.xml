@@ -40,7 +40,7 @@
         </provider>
 
         <activity
-            android:name="com.airwallex.paymentacceptance.SplashActivity"
+            android:name="com.airwallex.paymentacceptance.ui.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme"
@@ -52,7 +52,7 @@
         </activity>
 
         <activity
-            android:name="com.airwallex.paymentacceptance.PaymentCartActivity"
+            android:name="com.airwallex.paymentacceptance.ui.PaymentCartActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -73,25 +73,25 @@
         </activity>
 
         <activity
-            android:name="com.airwallex.paymentacceptance.MainActivity"
+            android:name="com.airwallex.paymentacceptance.ui.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ActivityAnimTheme"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name="com.airwallex.paymentacceptance.PaymentUIIntegrationActivity"
+            android:name="com.airwallex.paymentacceptance.ui.UIIntegrationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ActivityAnimTheme"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name="com.airwallex.paymentacceptance.PaymentAPIIntegrationActivity"
+            android:name="com.airwallex.paymentacceptance.ui.APIIntegrationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ActivityAnimTheme"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name="com.airwallex.paymentacceptance.PaymentSettingsActivity"
+            android:name="com.airwallex.paymentacceptance.ui.PaymentSettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ActivityAnimTheme"
             tools:ignore="LockedOrientationActivity" />
