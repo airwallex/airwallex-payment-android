@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.ui
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -7,13 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.core.Airwallex.Companion.AIRWALLEX_CHECKOUT_SCHEMA
+import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ActivityPaymentCartBinding
-import com.airwallex.paymentacceptance.h5.H5DemoActivity
-import com.airwallex.paymentacceptance.wechat.WeChatDemoActivity
 
 class PaymentCartActivity : AppCompatActivity() {
 

@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.ui.widget
 
 import android.content.Context
 import android.util.AttributeSet
@@ -7,6 +7,7 @@ import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.model.Shipping
+import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ShippingItemBinding
 import java.util.*
 
