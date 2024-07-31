@@ -25,11 +25,14 @@ abstract class BaseMvvmActivity<VB : ViewBinding, VM : ViewModel> : AppCompatAct
         setContentView(mBinding.root)
         initView()
         initListener()
+        addObserver()
     }
 
     abstract fun initView()
 
     abstract fun initListener()
+
+    abstract fun addObserver()
 
     abstract fun getViewBinding(): VB
 
@@ -43,7 +46,46 @@ abstract class BaseMvvmActivity<VB : ViewBinding, VM : ViewModel> : AppCompatAct
         return null
     }
 
-    fun showAlert(title: String, message: String) {
+    fun setLoadingProgress(loading: Boolean) {
+        if (loading) {
+            startWait()
+        } else {
+            endWait()
+        }
+    }
+
+    fun showPaymentSuccess() {
+        showAlert(
+            getString(R.string.payment_successful),
+            getString(R.string.payment_successful_message)
+        )
+    }
+
+    fun showCreatePaymentIntentError(error: String? = null) {
+        showAlert(
+            getString(R.string.create_payment_intent_failed),
+            error ?: getString(R.string.payment_failed_message)
+        )
+    }
+
+    fun showPaymentError(error: String? = null) {
+        showAlert(
+            getString(R.string.payment_failed),
+            error ?: getString(R.string.payment_failed_message)
+        )
+    }
+
+    fun showPaymentCancelled(error: String? = null) {
+        showAlert(
+            getString(R.string.payment_cancelled),
+            error ?: getString(R.string.payment_cancelled_message)
+        )
+    }
+
+    fun showPaymentInProgress() {
+    }
+
+    private fun showAlert(title: String, message: String) {
         AlertDialog.Builder(this)
             .setTitle(title)
             .setMessage(message)
@@ -53,14 +95,6 @@ abstract class BaseMvvmActivity<VB : ViewBinding, VM : ViewModel> : AppCompatAct
             }
             .create()
             .show()
-    }
-
-    fun setLoadingProgress(loading: Boolean) {
-        if (loading) {
-            startWait()
-        } else {
-            endWait()
-        }
     }
 
     private fun startWait() {
