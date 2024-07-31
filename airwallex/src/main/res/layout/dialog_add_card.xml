@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/airwallex_ic_dialog">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -26,9 +27,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/airwallex_new_card"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/closeIcon"
@@ -36,9 +37,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.airwallex.android.view.CardWidget
@@ -70,6 +71,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:theme="@style/AirwallexDefaultTheme"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <com.airwallex.android.view.WarningView
@@ -118,13 +120,14 @@
         android:id="@+id/frLoading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="#80000000">
+        android:background="@drawable/airwallex_ic_loading"
+        android:visibility="gone">
 
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            app:theme="@style/AirwallexDefaultTheme" />
 
     </FrameLayout>
 
