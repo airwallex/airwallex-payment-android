@@ -9,7 +9,7 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:background="@drawable/btn_shape"
-        android:text="integrate with UI"
+        android:text="integrate with Airwallex UI"
         android:textColor="@color/color_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
