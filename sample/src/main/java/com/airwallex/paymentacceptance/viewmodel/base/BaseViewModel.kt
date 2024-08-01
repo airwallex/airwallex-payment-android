@@ -1,8 +1,14 @@
 package com.airwallex.paymentacceptance.viewmodel.base
 
+import android.app.Activity
 import android.text.TextUtils
 import androidx.lifecycle.ViewModel
+import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PurchaseOrder
 import com.airwallex.android.core.model.parser.ClientSecretParser
@@ -15,9 +21,11 @@ import com.airwallex.paymentacceptance.shipping
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.util.Collections
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicInteger
 
-open class BaseViewModel : ViewModel() {
+abstract class BaseViewModel : ViewModel() {
 
     private val api: Api
         get() {
@@ -28,13 +36,17 @@ open class BaseViewModel : ViewModel() {
                 .create(Api::class.java)
         }
 
+    abstract fun init(activity: Activity)
 
     private suspend fun login() {
         val response = api.authentication(Settings.apiKey, Settings.clientId)
         Settings.token = JSONObject(response.string())["token"].toString()
     }
 
-    suspend fun getPaymentIntentFromServer(customerId: String? = null): PaymentIntent {
+    suspend fun getPaymentIntentFromServer(
+        force3DS: Boolean = false,
+        customerId: String? = null
+    ): PaymentIntent {
         return withContext(Dispatchers.IO) {
             if (customerId == null) {
                 login()
@@ -55,6 +67,10 @@ open class BaseViewModel : ViewModel() {
                 "email" to "yimadangxian@airwallex.com",
                 "return_url" to Settings.returnUrl
             )
+            if (force3DS) {
+                body["payment_method_options"] =
+                    mapOf("card" to mapOf("three_ds_action" to "FORCE_3DS"))
+            }
             Settings.cachedCustomerId?.let { body.put("customer_id", it) }
             customerId?.let { body.put("customer_id", it) }
             val paymentIntentResponse = api.createPaymentIntent(body)
@@ -93,6 +109,30 @@ open class BaseViewModel : ViewModel() {
         return withContext(Dispatchers.IO) {
             val clientSecretResponse = api.createClientSecret(customerId)
             ClientSecretParser().parse(JSONObject(clientSecretResponse.string())).value
+        }
+    }
+
+    suspend fun <T> loadPagedItems(
+        items: MutableList<T> = Collections.synchronizedList(mutableListOf()),
+        pageNum: AtomicInteger = AtomicInteger(0),
+        loadPage: suspend (Int) -> Page<T>
+    ): List<T> {
+        val response = loadPage(pageNum.get())
+        pageNum.incrementAndGet()
+        items.addAll(response.items)
+        return if (response.hasMore) {
+            loadPagedItems(items, pageNum, loadPage)
+        } else {
+            items
+        }
+    }
+
+    internal fun getClientSecretFromSession(session: AirwallexSession): String {
+        return when (session) {
+            is AirwallexPaymentSession -> session.paymentIntent.clientSecret ?: ""
+            is AirwallexRecurringWithIntentSession -> session.paymentIntent.clientSecret ?: ""
+            is AirwallexRecurringSession -> session.clientSecret
+            else -> ""
         }
     }
 }

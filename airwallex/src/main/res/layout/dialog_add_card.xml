@@ -102,6 +102,7 @@
                     android:id="@+id/billingWidget"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:theme="@style/AirwallexDefaultTheme"
                     android:layout_marginBottom="32dp" />
             </LinearLayout>
         </LinearLayout>

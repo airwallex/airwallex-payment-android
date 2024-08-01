@@ -1,7 +1,9 @@
 package com.airwallex.paymentacceptance
 
+import android.media.audiofx.DynamicsProcessing.Stage
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PhysicalProduct
 import com.airwallex.android.core.model.Shipping
 
@@ -52,3 +54,36 @@ val nextTriggerBy: PaymentConsent.NextTriggeredBy
             else -> throw Exception("Unsupported NextTriggerBy: ${Settings.nextTriggerBy}")
         }
     }
+
+
+var stagingCard = PaymentMethod.Card.Builder()
+    .setNumber("4012000300000005")
+    .setName("John Citizen")
+    .setExpiryMonth("12")
+    .setExpiryYear("2029")
+    .setCvc("737")
+    .build()
+
+var stagingCard3DS = PaymentMethod.Card.Builder()
+    .setNumber("4012000300000088")
+    .setName("John Citizen")
+    .setExpiryMonth("12")
+    .setExpiryYear("2029")
+    .setCvc("737")
+    .build()
+
+var demoCard = PaymentMethod.Card.Builder()
+    .setNumber("4012000300001003")
+    .setName("John Citizen")
+    .setExpiryMonth("12")
+    .setExpiryYear("2029")
+    .setCvc("737")
+    .build()
+
+var demoCard3DS = PaymentMethod.Card.Builder()
+    .setNumber("4012000300000021")
+    .setName("John Citizen")
+    .setExpiryMonth("12")
+    .setExpiryYear("2029")
+    .setCvc("737")
+    .build()
