@@ -21,6 +21,10 @@ import com.airwallex.paymentacceptance.viewmodel.APIIntegrationViewModel
 import com.bumptech.glide.Glide
 import java.util.Locale
 
+/**
+ * this Activity demonstrates how to call the low-level APIs provided by the Airwallex SDK.
+ * you can flexibly organize your own UI based on these APIs.
+ */
 class APIIntegrationActivity :
     BaseMvvmActivity<ActivityApiIntegrationBinding, APIIntegrationViewModel>() {
 
