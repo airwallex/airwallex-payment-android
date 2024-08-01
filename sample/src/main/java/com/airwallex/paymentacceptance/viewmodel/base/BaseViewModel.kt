@@ -56,11 +56,21 @@ abstract class BaseViewModel : ViewModel() {
 
     abstract fun init(activity: Activity)
 
+    /**
+     * this method demonstrates how to log in using an apiKey and clientId.
+     * this process should be completed on your own server;
+     * do not copy this method.
+     */
     private suspend fun login() {
         val response = api.authentication(Settings.apiKey, Settings.clientId)
         Settings.token = JSONObject(response.string())["token"].toString()
     }
 
+    /**
+     * this method demonstrates how to retrieve a paymentIntent from the server.
+     * it is only a prerequisite method for initiating the payment flow in the demo.
+     * do not copy this method;instead, obtain the paymentIntent from your own server.
+     */
     suspend fun getPaymentIntentFromServer(
         force3DS: Boolean = false,
         customerId: String? = null
@@ -96,6 +106,11 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
+    /**
+     * this method demonstrates how to retrieve a customerId from the server.
+     * it is only a prerequisite method for initiating the payment flow in the demo.
+     * do not copy this method;instead, obtain the customerId from your own server.
+     */
     suspend fun getCustomerIdFromServer(): String {
         return withContext(Dispatchers.IO) {
             login()
@@ -123,6 +138,11 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
+    /**
+     * this method demonstrates how to retrieve a clientSecret from the server.
+     * it is only a prerequisite method for initiating the payment flow in the demo.
+     * do not copy this method;instead, obtain the clientSecret from your own server.
+     */
     suspend fun getClientSecretFromServer(customerId: String): String {
         return withContext(Dispatchers.IO) {
             val clientSecretResponse = api.createClientSecret(customerId)
