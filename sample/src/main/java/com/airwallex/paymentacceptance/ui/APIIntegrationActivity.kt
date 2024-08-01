@@ -101,6 +101,13 @@ class APIIntegrationActivity :
             setLoadingProgress(false)
             showPaymentConsentList(list)
         }
+        mViewModel.createPaymentIntentError.observe(this) { error ->
+            setLoadingProgress(false)
+            showAlert(
+                getString(R.string.create_payment_intent_failed),
+                error ?: getString(R.string.payment_failed_message)
+            )
+        }
     }
 
     var customerDialog: CustomerDialog<PaymentConsent>? = null
