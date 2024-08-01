@@ -1,5 +1,6 @@
 package com.airwallex.paymentacceptance.viewmodel
 
+import android.app.Activity
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -31,6 +32,9 @@ class UIIntegrationViewModel : BaseViewModel() {
 
     private val _dialogShowed = MutableLiveData<Boolean>()
     val dialogShowed: LiveData<Boolean> = _dialogShowed
+
+    override fun init(activity: Activity) {
+    }
 
     fun updateCheckoutModel(mode: Int) {
         checkoutMode = when (mode) {
@@ -102,7 +106,7 @@ class UIIntegrationViewModel : BaseViewModel() {
 
                 AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
                     val customerId = getCustomerIdFromServer()
-                    val paymentIntent = getPaymentIntentFromServer(customerId)
+                    val paymentIntent = getPaymentIntentFromServer(customerId = customerId)
                     callBack(buildAirwallexRecurringWithIntentSession(paymentIntent))
                 }
             }
@@ -114,7 +118,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             paymentIntent = paymentIntent,
             countryCode = Settings.countryCode,
         )
-            .setRequireBillingInformation(false)
+            .setRequireBillingInformation(true)
             .setRequireEmail(Settings.requiresEmail.toBoolean())
             .setReturnUrl(Settings.returnUrl)
             .setAutoCapture(Settings.autoCapture.toBoolean())

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="35dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@null"
+        android:scaleType="centerInside" />
+
+    <TextView
+        android:id="@+id/itemText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:textSize="16sp" />
+
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/btnPay"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_shape"
+        android:text="pay"
+        android:textColor="@color/color_primary" />
+
+</LinearLayout>

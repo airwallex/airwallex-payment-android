@@ -13,9 +13,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.airwallex.paymentacceptance.R
+import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
 import java.lang.reflect.ParameterizedType
 
-abstract class BaseMvvmActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActivity() {
+abstract class BaseMvvmActivity<VB : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
 
     open lateinit var mViewModel: VM
     open lateinit var mBinding: VB
@@ -24,6 +25,7 @@ abstract class BaseMvvmActivity<VB : ViewBinding, VM : ViewModel> : AppCompatAct
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewModel = getViewModel()!!
+        mViewModel.init(this)
         mBinding = getViewBinding()
         setContentView(mBinding.root)
         initView()
