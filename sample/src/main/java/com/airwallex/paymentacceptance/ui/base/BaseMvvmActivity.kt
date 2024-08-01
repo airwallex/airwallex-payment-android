@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.airwallex.paymentacceptance.R
@@ -90,7 +89,7 @@ abstract class BaseMvvmActivity<VB : ViewBinding, VM : BaseViewModel> : AppCompa
     fun showPaymentInProgress() {
     }
 
-    private fun showAlert(title: String, message: String) {
+    fun showAlert(title: String, message: String) {
         AlertDialog.Builder(this)
             .setTitle(title)
             .setMessage(message)

@@ -147,26 +147,6 @@ class PaymentSettingsFragment :
             requireEmailPref.setValueIndex(0)
         }
 
-        val force3DSPref: ListPreference? = findPreference(getString(R.string.force_3ds))
-        if (force3DSPref != null && force3DSPref.value == null) {
-            force3DSPref.setValueIndex(0)
-        }
-
-        val cardCheckoutPref: ListPreference? = findPreference(getString(R.string.card_checkout))
-        if (cardCheckoutPref != null && cardCheckoutPref.value == null) {
-            cardCheckoutPref.setValueIndex(0)
-        }
-
-        val cardCheckoutWithUIPref: ListPreference? = findPreference(getString(R.string.card_checkout_with_ui))
-        if (cardCheckoutWithUIPref != null && cardCheckoutWithUIPref.value == null) {
-            cardCheckoutWithUIPref.setValueIndex(0)
-        }
-
-        val googlePayCheckoutPref: ListPreference? = findPreference(getString(R.string.google_pay_checkout))
-        if (googlePayCheckoutPref != null && googlePayCheckoutPref.value == null) {
-            googlePayCheckoutPref.setValueIndex(0)
-        }
-
         val autoCapturePref: ListPreference? = findPreference(getString(R.string.auto_capture))
         if (autoCapturePref != null && autoCapturePref.value == null) {
             autoCapturePref.setValueIndex(0)
@@ -229,15 +209,10 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.country_code))
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_id))
         onSharedPreferenceChanged(preferences, getString(R.string.sdk_env_id))
-        onSharedPreferenceChanged(preferences, getString(R.string.checkout_mode))
         onSharedPreferenceChanged(preferences, getString(R.string.return_url))
         onSharedPreferenceChanged(preferences, getString(R.string.next_trigger_by))
         onSharedPreferenceChanged(preferences, getString(R.string.requires_cvc))
         onSharedPreferenceChanged(preferences, getString(R.string.requires_email))
-        onSharedPreferenceChanged(preferences, getString(R.string.force_3ds))
-        onSharedPreferenceChanged(preferences, getString(R.string.card_checkout))
-        onSharedPreferenceChanged(preferences, getString(R.string.card_checkout_with_ui))
-        onSharedPreferenceChanged(preferences, getString(R.string.google_pay_checkout))
         onSharedPreferenceChanged(preferences, getString(R.string.auto_capture))
         registerOnSharedPreferenceChangeListener()
     }
@@ -285,16 +260,9 @@ class PaymentSettingsFragment :
             }
             getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
             getString(R.string.sdk_env_id) -> preference?.summary = Settings.sdkEnv
-            getString(R.string.checkout_mode) -> preference?.summary = Settings.checkoutMode
             getString(R.string.return_url) -> preference?.summary = Settings.returnUrl
             getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy
             getString(R.string.requires_cvc) -> preference?.summary = Settings.requiresCVC
-            getString(R.string.force_3ds) -> preference?.summary = Settings.force3DS
-            getString(R.string.card_checkout) -> preference?.summary = Settings.directCardCheckout
-            getString(R.string.card_checkout_with_ui) -> preference?.summary =
-                Settings.directCardCheckoutWithUI
-            getString(R.string.google_pay_checkout) -> preference?.summary =
-                Settings.directGooglePayCheckout
             getString(R.string.auto_capture) -> preference?.summary = Settings.autoCapture
             getString(R.string.requires_email) -> preference?.summary = Settings.requiresEmail
         }
