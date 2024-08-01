@@ -176,7 +176,7 @@ class APIIntegrationViewModel : BaseViewModel() {
         googlePayOptions: GooglePayOptions? = null,
         callBack: (session: AirwallexSession) -> Unit
     ) {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
             when (forceCheckoutMode ?: checkoutMode) {
                 AirwallexCheckoutMode.PAYMENT -> {
                     val paymentIntent = getPaymentIntentFromServer(force3DS)

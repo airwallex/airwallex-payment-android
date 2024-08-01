@@ -59,6 +59,13 @@ class UIIntegrationActivity :
         mViewModel.airwallexShippingStatus.observe(this) {
 
         }
+        mViewModel.createPaymentIntentError.observe(this) { error ->
+            setLoadingProgress(false)
+            showAlert(
+                getString(R.string.create_payment_intent_failed),
+                error ?: getString(R.string.payment_failed_message)
+            )
+        }
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
