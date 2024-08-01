@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="@color/radio_button_color"
-            android:text="one-off Payment" />
+            android:text="One-off Payment" />
 
         <RadioButton
             android:id="@+id/radioRecurring"
@@ -40,7 +40,7 @@
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:background="@drawable/btn_shape"
-        android:text="launch payment List"
+        android:text="launch payment list"
         android:layout_marginTop="180dp"
         android:textColor="@color/color_primary"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,5 +70,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_card_payment" />
+
+    <Button
+        android:id="@+id/btnShipping"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/btn_shape"
+        android:text="launch shipping"
+        android:textColor="@color/color_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_card_dialog_payment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

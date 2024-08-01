@@ -1,6 +1,5 @@
 package com.airwallex.paymentacceptance
 
-import android.media.audiofx.DynamicsProcessing.Stage
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
@@ -52,6 +51,15 @@ val nextTriggerBy: PaymentConsent.NextTriggeredBy
             SampleApplication.instance.resources.getStringArray(R.array.array_next_trigger_by)[0] -> PaymentConsent.NextTriggeredBy.MERCHANT
             SampleApplication.instance.resources.getStringArray(R.array.array_next_trigger_by)[1] -> PaymentConsent.NextTriggeredBy.CUSTOMER
             else -> throw Exception("Unsupported NextTriggerBy: ${Settings.nextTriggerBy}")
+        }
+    }
+
+val autoCapture: Boolean
+    get() {
+        return when (Settings.autoCapture) {
+            SampleApplication.instance.resources.getStringArray(R.array.array_auto_capture)[0] -> true
+            SampleApplication.instance.resources.getStringArray(R.array.array_auto_capture)[1] -> false
+            else -> throw Exception("Unsupported autoCapture: ${Settings.autoCapture}")
         }
     }
 

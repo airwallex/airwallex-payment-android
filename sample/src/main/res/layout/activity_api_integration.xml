@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="@color/radio_button_color"
-            android:text="one-off Payment" />
+            android:text="One-off Payment" />
 
         <RadioButton
             android:id="@+id/radioRecurring"

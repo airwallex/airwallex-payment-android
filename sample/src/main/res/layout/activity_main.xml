@@ -8,13 +8,12 @@
         android:id="@+id/btnUI"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
         android:background="@drawable/btn_shape"
         android:text="integrate with Airwallex UI"
         android:textColor="@color/color_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="100dp"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
@@ -28,5 +27,41 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnUI" />
+
+    <Button
+        android:id="@+id/btnH5Demo"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/btn_shape"
+        android:text="H5Demo"
+        android:textColor="@color/color_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnAPI" />
+
+    <Button
+        android:id="@+id/btnWeChatDemo"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/btn_shape"
+        android:text="WeChat Demo"
+        android:textColor="@color/color_primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnH5Demo" />
+
+
+    <ImageView
+        android:id="@+id/imSetting"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="60dp"
+        android:contentDescription="setting"
+        android:src="@drawable/ic_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
