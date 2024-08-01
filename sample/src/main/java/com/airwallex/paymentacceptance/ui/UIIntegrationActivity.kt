@@ -10,6 +10,9 @@ import com.airwallex.paymentacceptance.databinding.ActivityUiIntegrationBinding
 import com.airwallex.paymentacceptance.ui.base.BaseMvvmActivity
 import com.airwallex.paymentacceptance.viewmodel.UIIntegrationViewModel
 
+/**
+ * This Activity demonstrates how to call the payment flow UI provided by Airwallex.
+ */
 class UIIntegrationActivity :
     BaseMvvmActivity<ActivityUiIntegrationBinding, UIIntegrationViewModel>() {
 
@@ -34,17 +37,21 @@ class UIIntegrationActivity :
         }
         mBinding.btnPaymentList.setOnClickListener {
             setLoadingProgress(true)
+            //launch the payment list page
             mViewModel.launchPaymentList(this)
         }
         mBinding.btnCardPayment.setOnClickListener {
             setLoadingProgress(true)
+            //launch the card payment page
             mViewModel.launchCardPage(this)
         }
         mBinding.btnCardDialogPayment.setOnClickListener {
             setLoadingProgress(true)
+            //launch the card payment dialog
             mViewModel.launchCardDialog(this)
         }
         mBinding.btnShipping.setOnClickListener {
+            //launch the shipping page
             mViewModel.launchShipping(this)
         }
     }
