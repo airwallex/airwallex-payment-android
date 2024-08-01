@@ -29,7 +29,10 @@ import java.math.BigDecimal
 
 class UIIntegrationViewModel : BaseViewModel() {
 
+    //our SDK offers three modes of payment flow.
     private var checkoutMode = AirwallexCheckoutMode.PAYMENT
+
+    //AirwallexPaymentStatus is the result returned by the payment flow. You can add your own handling logic based on the final result.
     private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
     val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
 
@@ -50,11 +53,14 @@ class UIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * launch the payment list page
+     */
     fun launchPaymentList(activity: ComponentActivity) {
         createSession {
             AirwallexStarter.presentEntirePaymentFlow(
-                activity,
-                it,
+                activity = activity,
+                session = it,
                 paymentResultListener = object : Airwallex.PaymentResultListener {
 
                     override fun onCompleted(status: AirwallexPaymentStatus) {
@@ -65,6 +71,9 @@ class UIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * launch the card payment page
+     */
     fun launchCardPage(activity: ComponentActivity) {
         createSession {
             AirwallexStarter.presentCardPaymentFlow(
@@ -80,6 +89,9 @@ class UIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * launch the card payment dialog
+     */
     fun launchCardDialog(activity: ComponentActivity) {
         createSession {
             val dialog = AirwallexAddPaymentDialog(
@@ -96,6 +108,9 @@ class UIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * launch the shipping page
+     */
     fun launchShipping(activity: AppCompatActivity) {
         AirwallexStarter.presentShippingFlow(
             activity = activity,
@@ -107,22 +122,35 @@ class UIIntegrationViewModel : BaseViewModel() {
             })
     }
 
+
+    /**
+     * this method will create different types of Sessions based on the different modes.
+     */
     private fun createSession(callBack: (session: AirwallexSession) -> Unit) {
         viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
             when (checkoutMode) {
                 AirwallexCheckoutMode.PAYMENT -> {
+                    //get the paymentIntent object from your server
+                    //please do not directly copy this method!
                     val paymentIntent = getPaymentIntentFromServer()
+                    // build an AirwallexPaymentSession based on the paymentIntent
                     callBack(buildAirwallexPaymentSession(paymentIntent))
                 }
 
                 AirwallexCheckoutMode.RECURRING -> {
+                    //get the customerId and clientSecret from your server
+                    //please do not directly copy these method!
                     val customerId = getCustomerIdFromServer()
                     val clientSecret = getClientSecretFromServer(customerId)
+                    //build an AirwallexRecurringSession based on the customerId and clientSecret
                     callBack(buildAirwallexRecurringSession(customerId, clientSecret))
                 }
 
                 AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                    //get the customerId and paymentIntent from your server
+                    //please do not directly copy these method!
                     val customerId = getCustomerIdFromServer()
+                    //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                     val paymentIntent = getPaymentIntentFromServer(customerId = customerId)
                     callBack(buildAirwallexRecurringWithIntentSession(paymentIntent))
                 }
@@ -130,6 +158,10 @@ class UIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * build an AirwallexPaymentSession based on the paymentIntent
+     * @param paymentIntent get this from your sever
+     */
     private fun buildAirwallexPaymentSession(paymentIntent: PaymentIntent) =
         AirwallexPaymentSession.Builder(
             paymentIntent = paymentIntent,
@@ -143,6 +175,11 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setPaymentMethods(listOf())
             .build()
 
+    /**
+     * build an AirwallexRecurringSession based on the customerId and clientSecret
+     * @param customerId get this from your sever
+     * @param clientSecret get this from your sever
+     */
     private fun buildAirwallexRecurringSession(customerId: String, clientSecret: String) =
         AirwallexRecurringSession.Builder(
             customerId = customerId,
@@ -160,6 +197,10 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setPaymentMethods(listOf())
             .build()
 
+    /**
+     * build an AirwallexRecurringWithIntentSession based on the customerId and paymentIntent
+     * @param paymentIntent get this from your sever
+     */
     private fun buildAirwallexRecurringWithIntentSession(paymentIntent: PaymentIntent) =
         AirwallexRecurringWithIntentSession.Builder(
             paymentIntent = paymentIntent,

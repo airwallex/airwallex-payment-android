@@ -36,9 +36,11 @@ import java.math.BigDecimal
 
 class APIIntegrationViewModel : BaseViewModel() {
 
+    //our SDK offers three modes of payment flow.
     private var checkoutMode = AirwallexCheckoutMode.PAYMENT
+    //create your own Airwallex instance to call the APIs.
     private var airwallex: Airwallex? = null
-
+    //AirwallexPaymentStatus is the result returned by the payment flow. You can add your own handling logic based on the final result.
     private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
     val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
 
@@ -77,6 +79,12 @@ class APIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * use the Airwallex instance to perform card payment.
+     * @param card to complete this API call, you must provide a Card instance.
+     * @param force3DS set force3DS to true to trigger the 3DS process during the payment flow.
+     * @param saveCard set saveCard to true to save the card information while making the payment.
+     */
     fun startPayWithCardDetail(
         card: PaymentMethod.Card,
         force3DS: Boolean = false,
@@ -97,7 +105,11 @@ class APIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * start GooglePay
+     */
     fun startGooglePay() {
+        //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
         val googlePayOptions = GooglePayOptions(
             billingAddressRequired = true,
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
@@ -114,6 +126,10 @@ class APIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * use the Airwallex instance to perform card payment.
+     * @param paymentConsent to complete this API call, you must provide a PaymentConsent instance.
+     */
     fun startPayWithConsent(paymentConsent: PaymentConsent) {
         if (paymentConsent.id == null || paymentConsent.id == "") return
         createSession(AirwallexCheckoutMode.PAYMENT) {
@@ -129,6 +145,9 @@ class APIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * retrieve the list of payment methods you have.
+     */
     fun getPaymentMethodsList() {
         createSession { session ->
             viewModelScope.launch(Dispatchers.Main) {
@@ -150,6 +169,9 @@ class APIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * retrieve your list of saved cards.
+     */
     fun getPaymentConsentList() {
         createSession { session ->
             viewModelScope.launch(Dispatchers.Main) {
@@ -170,6 +192,9 @@ class APIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * this method will create different types of Sessions based on the different modes.
+     */
     private fun createSession(
         forceCheckoutMode: AirwallexCheckoutMode? = null,
         force3DS: Boolean = false,
@@ -198,6 +223,10 @@ class APIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    /**
+     * build an AirwallexPaymentSession based on the paymentIntent and googlePayOptions
+     * @param paymentIntent get this from your sever
+     */
     private fun buildAirwallexPaymentSession(
         googlePayOptions: GooglePayOptions? = null,
         paymentIntent: PaymentIntent
@@ -215,6 +244,11 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setPaymentMethods(listOf())
             .build()
 
+    /**
+     * build an AirwallexRecurringSession based on the customerId and clientSecret
+     * @param customerId get this from your sever
+     * @param clientSecret get this from your sever
+     */
     private fun buildAirwallexRecurringSession(customerId: String, clientSecret: String) =
         AirwallexRecurringSession.Builder(
             customerId = customerId,
@@ -232,6 +266,10 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setPaymentMethods(listOf())
             .build()
 
+    /**
+     * build an AirwallexRecurringWithIntentSession based on the customerId and paymentIntent
+     * @param paymentIntent get this from your sever
+     */
     private fun buildAirwallexRecurringWithIntentSession(paymentIntent: PaymentIntent) =
         AirwallexRecurringWithIntentSession.Builder(
             paymentIntent = paymentIntent,
