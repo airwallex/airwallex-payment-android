@@ -2,6 +2,7 @@ package com.airwallex.paymentacceptance.viewmodel
 
 import android.app.Activity
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -13,10 +14,12 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
 import com.airwallex.paymentacceptance.Settings
+import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.nextTriggerBy
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
@@ -29,6 +32,9 @@ class UIIntegrationViewModel : BaseViewModel() {
     private var checkoutMode = AirwallexCheckoutMode.PAYMENT
     private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
     val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
+
+    private val _airwallexShippingStatus = MutableLiveData<AirwallexShippingStatus>()
+    val airwallexShippingStatus: LiveData<AirwallexShippingStatus> = _airwallexShippingStatus
 
     private val _dialogShowed = MutableLiveData<Boolean>()
     val dialogShowed: LiveData<Boolean> = _dialogShowed
@@ -90,6 +96,17 @@ class UIIntegrationViewModel : BaseViewModel() {
         }
     }
 
+    fun launchShipping(activity: AppCompatActivity) {
+        AirwallexStarter.presentShippingFlow(
+            activity = activity,
+            shipping = shipping,
+            shippingResultListener = object : Airwallex.ShippingResultListener {
+                override fun onCompleted(status: AirwallexShippingStatus) {
+                    _airwallexShippingStatus.value = status
+                }
+            })
+    }
+
     private fun createSession(callBack: (session: AirwallexSession) -> Unit) {
         viewModelScope.launch(Dispatchers.Main) {
             when (checkoutMode) {
@@ -121,7 +138,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setRequireBillingInformation(true)
             .setRequireEmail(Settings.requiresEmail.toBoolean())
             .setReturnUrl(Settings.returnUrl)
-            .setAutoCapture(Settings.autoCapture.toBoolean())
+            .setAutoCapture(autoCapture)
             .setHidePaymentConsents(false)
             .setPaymentMethods(listOf())
             .build()
@@ -157,7 +174,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setRequireCvc(Settings.requiresCVC.toBoolean())
             .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
             .setReturnUrl(Settings.returnUrl)
-            .setAutoCapture(Settings.autoCapture.toBoolean())
+            .setAutoCapture(autoCapture)
             .setPaymentMethods(listOf())
             .build()
 

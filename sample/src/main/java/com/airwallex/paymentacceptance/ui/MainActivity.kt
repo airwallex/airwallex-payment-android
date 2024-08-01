@@ -28,29 +28,19 @@ class MainActivity : AppCompatActivity() {
             UIIntegrationActivity.startActivity(this@MainActivity)
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
-    }
+        viewBinding.btnH5Demo.setOnClickListener {
+            startActivity(Intent(this, H5DemoActivity::class.java))
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_cart, menu)
-        return true
-    }
+        viewBinding.btnWeChatDemo.setOnClickListener {
+            startActivity(Intent(this, WeChatDemoActivity::class.java))
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.settings -> {
-                startActivity(Intent(this, PaymentSettingsActivity::class.java))
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                true
-            }
-            R.id.h5demo -> {
-                startActivity(Intent(this, H5DemoActivity::class.java))
-                true
-            }
-            R.id.weChat_demo -> {
-                startActivity(Intent(this, WeChatDemoActivity::class.java))
-                true
-            }
-            else -> false
+        viewBinding.imSetting.setOnClickListener {
+            startActivity(Intent(this, PaymentSettingsActivity::class.java))
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }
 

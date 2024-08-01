@@ -3,6 +3,7 @@ package com.airwallex.paymentacceptance.ui
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.airwallex.android.core.Airwallex.Companion.AIRWALLEX_CHECKOUT_SCHEMA
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ActivityUiIntegrationBinding
@@ -43,6 +44,9 @@ class UIIntegrationActivity :
             setLoadingProgress(true)
             mViewModel.launchCardDialog(this)
         }
+        mBinding.btnShipping.setOnClickListener {
+            mViewModel.launchShipping(this)
+        }
     }
 
     override fun addObserver() {
@@ -51,6 +55,9 @@ class UIIntegrationActivity :
         }
         mViewModel.dialogShowed.observe(this) {
             setLoadingProgress(false)
+        }
+        mViewModel.airwallexShippingStatus.observe(this) {
+
         }
     }
 
@@ -76,6 +83,17 @@ class UIIntegrationActivity :
                 Log.d(TAG, "User cancel the payment")
                 showPaymentCancelled()
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        if (intent.scheme == AIRWALLEX_CHECKOUT_SCHEMA) {
+            showAlert(
+                getString(R.string.payment_successful),
+                getString(R.string.payment_successful_message)
+            )
         }
     }
 

@@ -63,17 +63,6 @@ object Settings {
                 ?: defaultSdkEnv
         }
 
-    val checkoutMode: String
-        get() {
-            val defaultCheckoutMode =
-                SampleApplication.instance.resources.getStringArray(R.array.array_checkout_mode)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.checkout_mode),
-                defaultCheckoutMode
-            )
-                ?: defaultCheckoutMode
-        }
-
     val returnUrl: String
         get() {
             return sharedPreferences.getString(context.getString(R.string.return_url), getMetadata(METADATA_KEY_RETURN_URL))
@@ -113,16 +102,6 @@ object Settings {
                 ?: defaultRequiresEmail
         }
 
-    val force3DS: String
-        get() {
-            val defaultForce3DS =
-                SampleApplication.instance.resources.getStringArray(R.array.array_force_3ds)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.force_3ds),
-                defaultForce3DS
-            )
-                ?: defaultForce3DS
-        }
 
     val autoCapture: String
         get() {
@@ -133,40 +112,6 @@ object Settings {
                 defaultAutoCapture
             )
                 ?: defaultAutoCapture
-        }
-
-    val directCardCheckout: String
-        get() {
-            val defaultDirectCardCheckout =
-                SampleApplication.instance.resources.getStringArray(R.array.array_card_checkout)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.card_checkout),
-                defaultDirectCardCheckout
-            )
-                ?: defaultDirectCardCheckout
-        }
-
-    val directCardCheckoutWithUI: String
-        get() {
-            val defaultDirectCardCheckout =
-                SampleApplication.instance.resources.getStringArray(R.array.array_card_checkout_with_ui)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.card_checkout_with_ui),
-                defaultDirectCardCheckout
-            )
-                ?: defaultDirectCardCheckout
-        }
-
-
-    val directGooglePayCheckout: String
-        get() {
-            val defaultDirectGooglePayCheckout =
-                SampleApplication.instance.resources.getStringArray(R.array.array_google_pay_checkout)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.google_pay_checkout),
-                defaultDirectGooglePayCheckout
-            )
-                ?: defaultDirectGooglePayCheckout
         }
 
     val apiKey: String

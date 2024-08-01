@@ -22,6 +22,7 @@ import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Settings
+import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.demoCard
 import com.airwallex.paymentacceptance.demoCard3DS
 import com.airwallex.paymentacceptance.nextTriggerBy
@@ -209,7 +210,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setRequireBillingInformation(true)
             .setRequireEmail(Settings.requiresEmail.toBoolean())
             .setReturnUrl(Settings.returnUrl)
-            .setAutoCapture(Settings.autoCapture.toBoolean())
+            .setAutoCapture(autoCapture)
             .setHidePaymentConsents(false)
             .setPaymentMethods(listOf())
             .build()
@@ -245,7 +246,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setRequireCvc(Settings.requiresCVC.toBoolean())
             .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
             .setReturnUrl(Settings.returnUrl)
-            .setAutoCapture(Settings.autoCapture.toBoolean())
+            .setAutoCapture(autoCapture)
             .setPaymentMethods(listOf())
             .build()
 
