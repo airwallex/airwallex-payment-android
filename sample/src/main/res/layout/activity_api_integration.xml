@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginTop="20dp"
-        app:layout_constraintStart_toStartOf="@+id/btnPayWithCardDetail"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="vertical">
 
         <RadioButton
             android:id="@+id/radioPayment"
@@ -35,76 +34,72 @@
             android:text="Recurring and Payment" />
     </RadioGroup>
 
-    <Button
-        android:id="@+id/btnPayWithCardDetail"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn_shape"
-        android:text="pay with card detail"
-        android:layout_marginTop="180dp"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp">
 
-    <Button
-        android:id="@+id/btnPayWithCardDetail3DS"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/btn_shape"
-        android:text="pay with card detail (3ds)"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPayWithCardDetail" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnPayWithConsent"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/btn_shape"
-        android:text="pay with card consent"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPayWithCardDetail3DS" />
+            <Button
+                android:id="@+id/btnPayWithCardDetail"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_shape"
+                android:text="pay with card detail"
+                android:textColor="@color/color_primary" />
 
-    <Button
-        android:id="@+id/btnGooglePay"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/btn_shape"
-        android:text="google pay"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPayWithConsent" />
+            <Button
+                android:id="@+id/btnPayWithCardDetailSaveCard"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/btn_shape"
+                android:text="pay with card detail and save"
+                android:textColor="@color/color_primary" />
 
-    <Button
-        android:id="@+id/btnPaymentMethodsList"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/btn_shape"
-        android:text="get payment methods"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnGooglePay" />
+            <Button
+                android:id="@+id/btnPayWithCardDetail3DS"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/btn_shape"
+                android:text="pay with card detail trigger 3ds"
+                android:textColor="@color/color_primary" />
 
-    <Button
-        android:id="@+id/btnPaymentConsentsList"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/btn_shape"
-        android:text="get consents"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPaymentMethodsList" />
+            <Button
+                android:id="@+id/btnGooglePay"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/btn_shape"
+                android:text="google pay"
+                android:textColor="@color/color_primary" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/btnPaymentMethodsList"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/btn_shape"
+                android:text="get payment methods"
+                android:textColor="@color/color_primary" />
+
+            <Button
+                android:id="@+id/btnPaymentConsentsList"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/btn_shape"
+                android:text="get saved cards"
+                android:textColor="@color/color_primary" />
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>
