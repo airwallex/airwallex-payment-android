@@ -108,7 +108,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     }
 
     private fun createSession(callBack: (session: AirwallexSession) -> Unit) {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
             when (checkoutMode) {
                 AirwallexCheckoutMode.PAYMENT -> {
                     val paymentIntent = getPaymentIntentFromServer()

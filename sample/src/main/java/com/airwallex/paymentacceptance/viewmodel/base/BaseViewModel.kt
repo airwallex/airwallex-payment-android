@@ -2,8 +2,11 @@ package com.airwallex.paymentacceptance.viewmodel.base
 
 import android.app.Activity
 import android.text.TextUtils
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
@@ -18,9 +21,11 @@ import com.airwallex.paymentacceptance.api.Api
 import com.airwallex.paymentacceptance.api.ApiFactory
 import com.airwallex.paymentacceptance.products
 import com.airwallex.paymentacceptance.shipping
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import retrofit2.HttpException
 import java.util.Collections
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
@@ -35,6 +40,19 @@ abstract class BaseViewModel : ViewModel() {
             return ApiFactory(AirwallexPlugins.environment.baseUrl()).buildRetrofit()
                 .create(Api::class.java)
         }
+
+    private val _createPaymentIntentError = MutableLiveData<String>()
+    val createPaymentIntentError: LiveData<String> = _createPaymentIntentError
+
+    val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        if (throwable is HttpException) {
+            _createPaymentIntentError.postValue(
+                throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
+            )
+        } else {
+            _createPaymentIntentError.postValue(throwable.localizedMessage)
+        }
+    }
 
     abstract fun init(activity: Activity)
 
