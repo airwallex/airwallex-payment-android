@@ -123,24 +123,21 @@ class PaymentSettingsFragment :
             sdkEnvPref.setValueIndex(0)
         }
 
-        val checkoutModePref: ListPreference? = findPreference(getString(R.string.checkout_mode))
-        if (checkoutModePref != null && checkoutModePref.value == null) {
-            checkoutModePref.setValueIndex(0)
-        }
-
         val nextTriggerByPref: ListPreference? = findPreference(getString(R.string.next_trigger_by))
-        if (nextTriggerByPref != null && nextTriggerByPref.value == null) {
-            nextTriggerByPref.setValueIndex(0)
+        nextTriggerByPref?.let {
+            if (it.value == null || Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
+                it.setValueIndex(1)
+            }
+            it.isEnabled = Settings.checkoutMode != AirwallexCheckoutMode.PAYMENT
         }
-        nextTriggerByPref?.isEnabled =
-            !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
 
         val requireCVCPref: ListPreference? = findPreference(getString(R.string.requires_cvc))
-        if (requireCVCPref != null && requireCVCPref.value == null) {
-            requireCVCPref.setValueIndex(0)
+        requireCVCPref?.let {
+            if (it.value == null || Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
+                it.setValueIndex(0)
+            }
+            it.isEnabled = Settings.checkoutMode != AirwallexCheckoutMode.PAYMENT
         }
-        requireCVCPref?.isEnabled =
-            !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && requireCVCPref != null)
 
         val requireEmailPref: ListPreference? = findPreference(getString(R.string.requires_email))
         if (requireEmailPref != null && requireEmailPref.value == null) {
@@ -199,8 +196,6 @@ class PaymentSettingsFragment :
             Toast.makeText(context, R.string.customer_cleared, Toast.LENGTH_SHORT).show()
             true
         }
-
-        toggleNextTriggerByStatus()
 
         onSharedPreferenceChanged(preferences, getString(R.string.api_key))
         onSharedPreferenceChanged(preferences, getString(R.string.client_id))
@@ -266,20 +261,6 @@ class PaymentSettingsFragment :
             getString(R.string.auto_capture) -> preference?.summary = Settings.autoCapture
             getString(R.string.requires_email) -> preference?.summary = Settings.requiresEmail
         }
-        toggleNextTriggerByStatus()
-    }
-
-    private fun toggleNextTriggerByStatus() {
-        val checkoutModePref: ListPreference? =
-            findPreference(getString(R.string.checkout_mode)) as? ListPreference?
-        val nextTriggerByPref: ListPreference? =
-            findPreference(getString(R.string.next_trigger_by)) as? ListPreference?
-        val requireCVCByPref: ListPreference? =
-            findPreference(getString(R.string.requires_cvc)) as? ListPreference?
-        nextTriggerByPref?.isEnabled =
-            !(checkoutModePref?.value?.uppercase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
-        requireCVCByPref?.isEnabled =
-            !(checkoutModePref?.value?.uppercase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && requireCVCByPref != null)
     }
 
     private fun registerOnSharedPreferenceChangeListener() {

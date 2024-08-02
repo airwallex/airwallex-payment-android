@@ -38,8 +38,10 @@ class APIIntegrationViewModel : BaseViewModel() {
 
     //our SDK offers three modes of payment flow.
     private var checkoutMode = AirwallexCheckoutMode.PAYMENT
+
     //create your own Airwallex instance to call the APIs.
     private var airwallex: Airwallex? = null
+
     //AirwallexPaymentStatus is the result returned by the payment flow. You can add your own handling logic based on the final result.
     private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
     val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
@@ -77,6 +79,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             2 -> AirwallexCheckoutMode.RECURRING_WITH_INTENT
             else -> AirwallexCheckoutMode.PAYMENT
         }
+        Settings.checkoutMode = checkoutMode
     }
 
     /**
@@ -132,7 +135,7 @@ class APIIntegrationViewModel : BaseViewModel() {
      */
     fun startPayWithConsent(paymentConsent: PaymentConsent) {
         if (paymentConsent.id == null || paymentConsent.id == "") return
-        createSession(AirwallexCheckoutMode.PAYMENT) {
+        createSession {
             airwallex?.confirmPaymentIntent(
                 session = it as AirwallexPaymentSession,
                 paymentConsentId = paymentConsent.id!!,
@@ -178,22 +181,25 @@ class APIIntegrationViewModel : BaseViewModel() {
      * retrieve your list of saved cards.
      */
     fun getPaymentConsentList() {
-        createSession { session ->
-            viewModelScope.launch(Dispatchers.Main) {
-                val paymentConsents = loadPagedItems { pageNum ->
-                    airwallex!!.retrieveAvailablePaymentConsents(
-                        RetrieveAvailablePaymentConsentsParams.Builder(
-                            clientSecret = getClientSecretFromSession(session),
-                            customerId = session.customerId ?: "",
-                            pageNum = pageNum
-                        )
-                            .setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
-                            .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED)
-                            .build()
+        viewModelScope.launch(Dispatchers.Main) {
+            //get the customerId and clientSecret from your server
+            //please do not directly copy these two methods!
+            val customerId = getCustomerIdFromServer()
+            val clientSecret = getClientSecretFromServer(customerId)
+
+            val paymentConsents = loadPagedItems { pageNum ->
+                airwallex!!.retrieveAvailablePaymentConsents(
+                    RetrieveAvailablePaymentConsentsParams.Builder(
+                        clientSecret = clientSecret,
+                        customerId = customerId,
+                        pageNum = pageNum
                     )
-                }
-                _paymentConsentList.value = paymentConsents
+                        .setNextTriggeredBy(nextTriggerBy)
+                        .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED)
+                        .build()
+                )
             }
+            _paymentConsentList.value = paymentConsents
         }
     }
 
@@ -201,27 +207,34 @@ class APIIntegrationViewModel : BaseViewModel() {
      * this method will create different types of Sessions based on the different modes.
      */
     private fun createSession(
-        forceCheckoutMode: AirwallexCheckoutMode? = null,
         force3DS: Boolean = false,
         googlePayOptions: GooglePayOptions? = null,
         callBack: (session: AirwallexSession) -> Unit
     ) {
         viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
-            when (forceCheckoutMode ?: checkoutMode) {
+            when (checkoutMode) {
                 AirwallexCheckoutMode.PAYMENT -> {
+                    //get the paymentIntent object from your server
+                    //please do not directly copy this method!
                     val paymentIntent = getPaymentIntentFromServer(force3DS)
                     callBack(buildAirwallexPaymentSession(googlePayOptions, paymentIntent))
                 }
 
                 AirwallexCheckoutMode.RECURRING -> {
+                    //get the customerId and clientSecret from your server
+                    //please do not directly copy these method!
                     val customerId = getCustomerIdFromServer()
                     val clientSecret = getClientSecretFromServer(customerId)
+                    //build an AirwallexRecurringSession based on the customerId and clientSecret
                     callBack(buildAirwallexRecurringSession(customerId, clientSecret))
                 }
 
                 AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                    //get the customerId and paymentIntent from your server
+                    //please do not directly copy these method!
                     val customerId = getCustomerIdFromServer()
                     val paymentIntent = getPaymentIntentFromServer(customerId = customerId)
+                    //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                     callBack(buildAirwallexRecurringWithIntentSession(paymentIntent))
                 }
             }
