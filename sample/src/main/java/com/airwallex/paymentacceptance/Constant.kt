@@ -89,7 +89,7 @@ var demoCard = PaymentMethod.Card.Builder()
     .build()
 
 var demoCard3DS = PaymentMethod.Card.Builder()
-    .setNumber("4012000300000021")
+    .setNumber("4012000300000088")
     .setName("John Citizen")
     .setExpiryMonth("12")
     .setExpiryYear("2029")
