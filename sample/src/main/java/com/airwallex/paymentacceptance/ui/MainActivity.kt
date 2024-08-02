@@ -37,11 +37,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, WeChatDemoActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
-
-        viewBinding.imSetting.setOnClickListener {
-            startActivity(Intent(this, PaymentSettingsActivity::class.java))
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        }
     }
 
     companion object {

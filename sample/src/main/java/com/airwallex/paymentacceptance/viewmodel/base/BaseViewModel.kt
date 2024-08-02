@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.airwallex.android.core.AirwallexPaymentSession
-import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
@@ -114,27 +113,31 @@ abstract class BaseViewModel : ViewModel() {
     suspend fun getCustomerIdFromServer(): String {
         return withContext(Dispatchers.IO) {
             login()
-            val customerResponse = api.createCustomer(
-                mutableMapOf(
-                    "request_id" to UUID.randomUUID().toString(),
-                    "merchant_customer_id" to UUID.randomUUID().toString(),
-                    "first_name" to "John",
-                    "last_name" to "Doe",
-                    "email" to "john.doe@airwallex.com",
-                    "phone_number" to "13800000000",
-                    "additional_info" to mapOf(
-                        "registered_via_social_media" to false,
-                        "registration_date" to "2019-09-18",
-                        "first_successful_order_date" to "2019-09-18"
-                    ),
-                    "metadata" to mapOf(
-                        "id" to 1
+            if (Settings.cachedCustomerId.isNullOrEmpty()) {
+                val customerResponse = api.createCustomer(
+                    mutableMapOf(
+                        "request_id" to UUID.randomUUID().toString(),
+                        "merchant_customer_id" to UUID.randomUUID().toString(),
+                        "first_name" to "John",
+                        "last_name" to "Doe",
+                        "email" to "john.doe@airwallex.com",
+                        "phone_number" to "13800000000",
+                        "additional_info" to mapOf(
+                            "registered_via_social_media" to false,
+                            "registration_date" to "2019-09-18",
+                            "first_successful_order_date" to "2019-09-18"
+                        ),
+                        "metadata" to mapOf(
+                            "id" to 1
+                        )
                     )
                 )
-            )
-            val customerId = JSONObject(customerResponse.string())["id"].toString()
-            Settings.cachedCustomerId = customerId
-            customerId
+                val customerId = JSONObject(customerResponse.string())["id"].toString()
+                Settings.cachedCustomerId = customerId
+                customerId
+            } else {
+                Settings.cachedCustomerId!!
+            }
         }
     }
 
