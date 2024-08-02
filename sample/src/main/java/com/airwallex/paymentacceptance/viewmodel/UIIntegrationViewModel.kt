@@ -15,6 +15,8 @@ import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
+import com.airwallex.android.core.BillingAddressParameters
+import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
@@ -57,7 +59,12 @@ class UIIntegrationViewModel : BaseViewModel() {
      * launch the payment list page
      */
     fun launchPaymentList(activity: ComponentActivity) {
-        createSession {
+        //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
+        val googlePayOptions = GooglePayOptions(
+            billingAddressRequired = true,
+            billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
+        )
+        createSession(googlePayOptions) {
             AirwallexStarter.presentEntirePaymentFlow(
                 activity = activity,
                 session = it,
@@ -126,7 +133,10 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * this method will create different types of Sessions based on the different modes.
      */
-    private fun createSession(callBack: (session: AirwallexSession) -> Unit) {
+    private fun createSession(
+        googlePayOptions: GooglePayOptions? = null,
+        callBack: (session: AirwallexSession) -> Unit
+    ) {
         viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
             when (checkoutMode) {
                 AirwallexCheckoutMode.PAYMENT -> {
@@ -134,7 +144,7 @@ class UIIntegrationViewModel : BaseViewModel() {
                     //please do not directly copy this method!
                     val paymentIntent = getPaymentIntentFromServer()
                     // build an AirwallexPaymentSession based on the paymentIntent
-                    callBack(buildAirwallexPaymentSession(paymentIntent))
+                    callBack(buildAirwallexPaymentSession(googlePayOptions, paymentIntent))
                 }
 
                 AirwallexCheckoutMode.RECURRING -> {
@@ -162,10 +172,14 @@ class UIIntegrationViewModel : BaseViewModel() {
      * build an AirwallexPaymentSession based on the paymentIntent
      * @param paymentIntent get this from your sever
      */
-    private fun buildAirwallexPaymentSession(paymentIntent: PaymentIntent) =
+    private fun buildAirwallexPaymentSession(
+        googlePayOptions: GooglePayOptions? = null,
+        paymentIntent: PaymentIntent
+    ) =
         AirwallexPaymentSession.Builder(
             paymentIntent = paymentIntent,
             countryCode = Settings.countryCode,
+            googlePayOptions = googlePayOptions
         )
             .setRequireBillingInformation(true)
             .setRequireEmail(Settings.requiresEmail.toBoolean())

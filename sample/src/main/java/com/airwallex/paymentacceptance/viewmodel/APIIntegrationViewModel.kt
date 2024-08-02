@@ -149,7 +149,12 @@ class APIIntegrationViewModel : BaseViewModel() {
      * retrieve the list of payment methods you have.
      */
     fun getPaymentMethodsList() {
-        createSession { session ->
+        //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
+        val googlePayOptions = GooglePayOptions(
+            billingAddressRequired = true,
+            billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
+        )
+        createSession(googlePayOptions = googlePayOptions) { session ->
             viewModelScope.launch(Dispatchers.Main) {
                 val paymentMethods = loadPagedItems { pageNum ->
                     airwallex!!.retrieveAvailablePaymentMethods(
