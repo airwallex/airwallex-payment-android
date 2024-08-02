@@ -54,6 +54,10 @@ class UIIntegrationActivity :
             //launch the shipping page
             mViewModel.launchShipping(this)
         }
+        mBinding.imSetting.setOnClickListener {
+            startActivity(Intent(this, PaymentSettingsActivity::class.java))
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+        }
     }
 
     override fun addObserver() {
