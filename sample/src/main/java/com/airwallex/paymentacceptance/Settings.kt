@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import androidx.preference.PreferenceManager
+import com.airwallex.android.core.AirwallexCheckoutMode
+import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.risk.AirwallexRisk
+import kotlin.properties.Delegates
 
 object Settings {
 
@@ -31,6 +35,12 @@ object Settings {
      * `IMPORTANT` Token cannot appear on the merchant side, this is just for Demo purposes only
      */
     var token: String? = null
+
+    var checkoutMode: AirwallexCheckoutMode by Delegates.observable(AirwallexCheckoutMode.PAYMENT) { _, _, newValue ->
+       if(newValue == AirwallexCheckoutMode.PAYMENT){
+           nextTriggerBy = SampleApplication.instance.resources.getStringArray(R.array.array_next_trigger_by)[1]
+       }
+    }
 
     private val sharedPreferences: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(SampleApplication.instance)
@@ -65,11 +75,18 @@ object Settings {
 
     val returnUrl: String
         get() {
-            return sharedPreferences.getString(context.getString(R.string.return_url), getMetadata(METADATA_KEY_RETURN_URL))
+            return sharedPreferences.getString(
+                context.getString(R.string.return_url),
+                getMetadata(METADATA_KEY_RETURN_URL)
+            )
                 ?: RETURN_URL
         }
 
-    val nextTriggerBy: String
+    var nextTriggerBy: String
+        set(value) {
+            sharedPreferences.edit().putString(context.getString(R.string.next_trigger_by), value)
+                .apply()
+        }
         get() {
             val defaultNextTriggeredBy =
                 SampleApplication.instance.resources.getStringArray(R.array.array_next_trigger_by)[0]
@@ -79,6 +96,7 @@ object Settings {
             )
                 ?: defaultNextTriggeredBy
         }
+
 
     val requiresCVC: String
         get() {
@@ -116,7 +134,10 @@ object Settings {
 
     val apiKey: String
         get() {
-            val value = sharedPreferences.getString(context.getString(R.string.api_key), getMetadata(METADATA_KEY_API_KEY))
+            val value = sharedPreferences.getString(
+                context.getString(R.string.api_key),
+                getMetadata(METADATA_KEY_API_KEY)
+            )
                 ?: API_KEY
 
             return value.cleaned()
@@ -124,7 +145,10 @@ object Settings {
 
     val clientId: String
         get() {
-            val value = sharedPreferences.getString(context.getString(R.string.client_id), getMetadata(METADATA_KEY_CLIENT_ID_KEY))
+            val value = sharedPreferences.getString(
+                context.getString(R.string.client_id),
+                getMetadata(METADATA_KEY_CLIENT_ID_KEY)
+            )
                 ?: CLIENT_ID
 
             return value.cleaned()
@@ -132,7 +156,10 @@ object Settings {
 
     val weChatAppId: String
         get() {
-            val value = sharedPreferences.getString(context.getString(R.string.wechat_app_id), getMetadata(METADATA_KEY_WECHAT_APP_ID_KEY))
+            val value = sharedPreferences.getString(
+                context.getString(R.string.wechat_app_id),
+                getMetadata(METADATA_KEY_WECHAT_APP_ID_KEY)
+            )
                 ?: WECHAT_APP_ID
 
             return value.cleaned()

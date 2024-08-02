@@ -53,6 +53,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             2 -> AirwallexCheckoutMode.RECURRING_WITH_INTENT
             else -> AirwallexCheckoutMode.PAYMENT
         }
+        Settings.checkoutMode = checkoutMode
     }
 
     /**
@@ -129,7 +130,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             })
     }
 
-
     /**
      * this method will create different types of Sessions based on the different modes.
      */
@@ -160,8 +160,8 @@ class UIIntegrationViewModel : BaseViewModel() {
                     //get the customerId and paymentIntent from your server
                     //please do not directly copy these method!
                     val customerId = getCustomerIdFromServer()
-                    //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                     val paymentIntent = getPaymentIntentFromServer(customerId = customerId)
+                    //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                     callBack(buildAirwallexRecurringWithIntentSession(paymentIntent))
                 }
             }

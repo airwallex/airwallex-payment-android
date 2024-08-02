@@ -52,6 +52,7 @@ class APIIntegrationActivity :
             }
             mViewModel.updateCheckoutModel(selectedOption)
             setBtnEnabled(mBinding.btnGooglePay, selectedOption == 0)
+            setBtnEnabled(mBinding.btnPayWithCardDetailSaveCard, selectedOption != 1)
         }
 
         mBinding.btnPayWithCardDetail.setOnClickListener {
@@ -89,6 +90,10 @@ class APIIntegrationActivity :
         mBinding.btnPaymentConsentsList.setOnClickListener {
             setLoadingProgress(true)
             mViewModel.getPaymentConsentList()
+        }
+        mBinding.imSetting.setOnClickListener {
+            startActivity(Intent(this, PaymentSettingsActivity::class.java))
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }
 
