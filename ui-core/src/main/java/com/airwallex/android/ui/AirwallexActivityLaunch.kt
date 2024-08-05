@@ -94,7 +94,12 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
     )
 
     fun startForResult(args: ArgsType) {
-        val intent = Intent(originalActivity, targetActivity).putExtra(Args.AIRWALLEX_EXTRA, args)
+        val bundle = Bundle().apply {
+            putParcelable(Args.AIRWALLEX_EXTRA, args)
+        }
+        val intent = Intent(originalActivity, targetActivity).apply {
+            putExtras(bundle)
+        }
         if (fragment != null) {
             fragment.startActivityForResult(intent, requestCode)
         } else {
@@ -106,7 +111,12 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         args: ArgsType,
         resultCallBack: (requestCode: Int, result: ActivityResult) -> Unit
     ) {
-        val intent = Intent(originalActivity, targetActivity).putExtra(Args.AIRWALLEX_EXTRA, args)
+        val bundle = Bundle().apply {
+            putParcelable(Args.AIRWALLEX_EXTRA, args)
+        }
+        val intent = Intent(originalActivity, targetActivity).apply {
+            putExtras(bundle)
+        }
         setResultCallBack(originalActivity, requestCode, resultCallBack)
         getActivityResultLauncher(originalActivity)?.launch(intent)
     }
