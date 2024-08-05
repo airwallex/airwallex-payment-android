@@ -3,7 +3,6 @@ package com.airwallex.paymentacceptance.viewmodel
 import android.app.Activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -24,8 +23,6 @@ import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.nextTriggerBy
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 class APIIntegrationViewModel : BaseViewModel() {
@@ -48,6 +45,7 @@ class APIIntegrationViewModel : BaseViewModel() {
 
     override fun init(activity: Activity) {
         airwallex = Airwallex(activity)
+        updateCheckoutModel(0)
     }
 
     fun updateCheckoutModel(mode: Int) {
@@ -132,22 +130,20 @@ class APIIntegrationViewModel : BaseViewModel() {
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
         )
         val session = createSession(googlePayOptions = googlePayOptions)
-        viewModelScope.launch(Dispatchers.Main) {
-            val paymentMethods = loadPagedItems { pageNum ->
-                airwallex!!.retrieveAvailablePaymentMethods(
-                    session = session,
-                    params = RetrieveAvailablePaymentMethodParams.Builder(
-                        clientSecret = getClientSecretFromSession(session),
-                        pageNum = pageNum
-                    )
-                        .setActive(true)
-                        .setTransactionCurrency(session.currency)
-                        .setCountryCode(session.countryCode)
-                        .build()
+        val paymentMethods = loadPagedItems { pageNum ->
+            airwallex!!.retrieveAvailablePaymentMethods(
+                session = session,
+                params = RetrieveAvailablePaymentMethodParams.Builder(
+                    clientSecret = getClientSecretFromSession(session),
+                    pageNum = pageNum
                 )
-            }
-            _paymentMethodList.value = paymentMethods
+                    .setActive(true)
+                    .setTransactionCurrency(session.currency)
+                    .setCountryCode(session.countryCode)
+                    .build()
+            )
         }
+        _paymentMethodList.value = paymentMethods
     }
 
     /**
