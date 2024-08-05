@@ -31,7 +31,7 @@ import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
 import com.airwallex.android.core.model.TransactionMode
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -174,7 +174,7 @@ internal class PaymentMethodsViewModel(
 
             else -> null
         }?.let { clientSecret ->
-            coroutineScope {
+            supervisorScope {
                 val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
                 AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
                 val retrieveConsents = async {
