@@ -74,10 +74,10 @@ abstract class BaseViewModel : ViewModel() {
         force3DS: Boolean = false,
         customerId: String? = null
     ): PaymentIntent {
+        if (customerId == null) {
+            login()
+        }
         return withContext(Dispatchers.IO) {
-            if (customerId == null) {
-                login()
-            }
             val body = mutableMapOf(
                 "request_id" to UUID.randomUUID().toString(),
                 "amount" to Settings.price.toDouble(),

@@ -15,6 +15,9 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.view.CardBrand
 import com.airwallex.paymentacceptance.R
+import com.airwallex.paymentacceptance.Settings
+import com.airwallex.paymentacceptance.card
+import com.airwallex.paymentacceptance.card3DS
 import com.airwallex.paymentacceptance.databinding.ActivityApiIntegrationBinding
 import com.airwallex.paymentacceptance.ui.base.BaseMvvmActivity
 import com.airwallex.paymentacceptance.viewmodel.APIIntegrationViewModel
@@ -39,7 +42,7 @@ class APIIntegrationActivity :
         mBinding.radioGroup.check(R.id.radioPayment)
         setBtnEnabled(
             mBinding.btnPayWithCardDetail3DS,
-            mViewModel.environment != Environment.PRODUCTION
+            Settings.environment != Environment.PRODUCTION
         )
     }
 
@@ -57,26 +60,26 @@ class APIIntegrationActivity :
 
         mBinding.btnPayWithCardDetail.setOnClickListener {
             DemoCardDialog(this)
-                .setCardInfo(mViewModel.card)
-                .setPayCallBack {
+                .setCardInfo(card)
+                .setPayCallBack { card ->
                     setLoadingProgress(true)
-                    mViewModel.startPayWithCardDetail(it, saveCard = false)
+                    mViewModel.startPayWithCardDetail(card, saveCard = false)
                 }.show()
         }
         mBinding.btnPayWithCardDetailSaveCard.setOnClickListener {
             DemoCardDialog(this)
-                .setCardInfo(mViewModel.card)
-                .setPayCallBack {
+                .setCardInfo(card)
+                .setPayCallBack { card ->
                     setLoadingProgress(true)
-                    mViewModel.startPayWithCardDetail(it, saveCard = true)
+                    mViewModel.startPayWithCardDetail(card, saveCard = true)
                 }.show()
         }
         mBinding.btnPayWithCardDetail3DS.setOnClickListener {
             DemoCardDialog(this)
-                .setCardInfo(mViewModel.card3DS, false)
-                .setPayCallBack {
+                .setCardInfo(card3DS, false)
+                .setPayCallBack { card ->
                     setLoadingProgress(true)
-                    mViewModel.startPayWithCardDetail(it, force3DS = true)
+                    mViewModel.startPayWithCardDetail(card, force3DS = true)
                 }.show()
         }
         mBinding.btnGooglePay.setOnClickListener {
