@@ -12,7 +12,6 @@ import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.BillingAddressParameters
-import com.airwallex.android.core.Environment
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
@@ -20,15 +19,10 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
-import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
-import com.airwallex.paymentacceptance.demoCard
-import com.airwallex.paymentacceptance.demoCard3DS
 import com.airwallex.paymentacceptance.nextTriggerBy
 import com.airwallex.paymentacceptance.shipping
-import com.airwallex.paymentacceptance.stagingCard
-import com.airwallex.paymentacceptance.stagingCard3DS
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,25 +46,8 @@ class APIIntegrationViewModel : BaseViewModel() {
     private val _paymentConsentList = MutableLiveData<List<PaymentConsent>>()
     val paymentConsentList: LiveData<List<PaymentConsent>> = _paymentConsentList
 
-    var environment = Environment.STAGING
-    var card = stagingCard
-    var card3DS = stagingCard3DS
-
     override fun init(activity: Activity) {
         airwallex = Airwallex(activity)
-        environment = when (Settings.sdkEnv) {
-            activity.resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
-            activity.resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-            activity.resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
-            else -> Environment.STAGING
-        }
-        if (environment == Environment.STAGING) {
-            card = stagingCard
-            card3DS = stagingCard3DS
-        } else {
-            card = demoCard
-            card3DS = demoCard3DS
-        }
     }
 
     fun updateCheckoutModel(mode: Int) {
@@ -93,7 +70,7 @@ class APIIntegrationViewModel : BaseViewModel() {
         force3DS: Boolean = false,
         saveCard: Boolean = true
     ) {
-        createSession(force3DS = force3DS) {
+        createSession(force3DS = force3DS, saveCard = saveCard) {
             airwallex?.confirmPaymentIntent(
                 session = it,
                 card = card,
@@ -208,15 +185,21 @@ class APIIntegrationViewModel : BaseViewModel() {
      */
     private fun createSession(
         force3DS: Boolean = false,
+        saveCard: Boolean = false,
         googlePayOptions: GooglePayOptions? = null,
         callBack: (session: AirwallexSession) -> Unit
     ) {
         viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
             when (checkoutMode) {
                 AirwallexCheckoutMode.PAYMENT -> {
+                    //get the customerId from your server.
+                    //if you want to save card , customerId is required
+                    val customerId = if (saveCard) {
+                        getCustomerIdFromServer()
+                    } else null
                     //get the paymentIntent object from your server
                     //please do not directly copy this method!
-                    val paymentIntent = getPaymentIntentFromServer(force3DS)
+                    val paymentIntent = getPaymentIntentFromServer(force3DS, customerId)
                     callBack(buildAirwallexPaymentSession(googlePayOptions, paymentIntent))
                 }
 
@@ -233,7 +216,7 @@ class APIIntegrationViewModel : BaseViewModel() {
                     //get the customerId and paymentIntent from your server
                     //please do not directly copy these method!
                     val customerId = getCustomerIdFromServer()
-                    val paymentIntent = getPaymentIntentFromServer(customerId = customerId)
+                    val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
                     //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                     callBack(buildAirwallexRecurringWithIntentSession(paymentIntent))
                 }

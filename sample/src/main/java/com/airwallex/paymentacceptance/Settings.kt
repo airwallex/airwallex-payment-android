@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import androidx.preference.PreferenceManager
 import com.airwallex.android.core.AirwallexCheckoutMode
+import com.airwallex.android.core.Environment
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.risk.AirwallexRisk
 import kotlin.properties.Delegates
@@ -72,6 +73,13 @@ object Settings {
             )
                 ?: defaultSdkEnv
         }
+
+    var environment = when (sdkEnv) {
+        context.resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
+        context.resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
+        context.resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
+        else -> throw Exception("No environment")
+    }
 
     val returnUrl: String
         get() {
