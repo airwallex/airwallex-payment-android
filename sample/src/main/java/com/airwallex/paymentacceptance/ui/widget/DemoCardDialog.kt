@@ -12,13 +12,6 @@ import com.airwallex.paymentacceptance.databinding.DialogDemoBinding
 class DemoCardDialog(context: Context) : Dialog(context) {
 
     private lateinit var binding: DialogDemoBinding
-    private val environment = when (Settings.sdkEnv) {
-        context.resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
-        context.resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-        context.resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
-        else -> Environment.STAGING
-    }
-
     private var cardInfo: PaymentMethod.Card? = null
     private var isEnabled: Boolean = true
     private var payCallback: ((card: PaymentMethod.Card) -> Unit)? = null
@@ -40,7 +33,7 @@ class DemoCardDialog(context: Context) : Dialog(context) {
     }
 
     private fun applyCardInfo(card: PaymentMethod.Card) {
-        when (environment) {
+        when (Settings.environment) {
             Environment.PRODUCTION -> {
                 binding.tvEnvironment.text = "PRODUCTION"
             }
@@ -57,7 +50,7 @@ class DemoCardDialog(context: Context) : Dialog(context) {
                 binding.etExpiresMM.isEnabled = this.isEnabled
                 binding.etCVC.isEnabled = this.isEnabled
                 binding.tvEnvironment.text =
-                    if (environment == Environment.STAGING) "STAGING" else "DEMO"
+                    if (Settings.environment == Environment.STAGING) "STAGING" else "DEMO"
             }
         }
     }

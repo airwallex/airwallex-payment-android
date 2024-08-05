@@ -1,5 +1,7 @@
 package com.airwallex.paymentacceptance
 
+import com.airwallex.android.core.AirwallexCheckoutMode
+import com.airwallex.android.core.Environment
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
@@ -63,35 +65,44 @@ val autoCapture: Boolean
         }
     }
 
+val card: PaymentMethod.Card
+    get() {
+        val stagingCardNumber = when (Settings.checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> "4012000300000005"
+            AirwallexCheckoutMode.RECURRING -> "4012000300000021"
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> "4012000300000005"
+        }
+        val demoCardNumber = when (Settings.checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> "4012000300001003"
+            AirwallexCheckoutMode.RECURRING -> "4035501000000008"
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> "4012000300001003"
+        }
+        return PaymentMethod.Card.Builder()
+            .setNumber(if (Settings.environment == Environment.STAGING) stagingCardNumber else demoCardNumber)
+            .setName("John Citizen")
+            .setExpiryMonth("12")
+            .setExpiryYear("2029")
+            .setCvc("737")
+            .build()
+    }
 
-var stagingCard = PaymentMethod.Card.Builder()
-    .setNumber("4012000300000005")
-    .setName("John Citizen")
-    .setExpiryMonth("12")
-    .setExpiryYear("2029")
-    .setCvc("737")
-    .build()
-
-var stagingCard3DS = PaymentMethod.Card.Builder()
-    .setNumber("4012000300000088")
-    .setName("John Citizen")
-    .setExpiryMonth("12")
-    .setExpiryYear("2029")
-    .setCvc("737")
-    .build()
-
-var demoCard = PaymentMethod.Card.Builder()
-    .setNumber("4012000300001003")
-    .setName("John Citizen")
-    .setExpiryMonth("12")
-    .setExpiryYear("2029")
-    .setCvc("737")
-    .build()
-
-var demoCard3DS = PaymentMethod.Card.Builder()
-    .setNumber("4012000300000088")
-    .setName("John Citizen")
-    .setExpiryMonth("12")
-    .setExpiryYear("2029")
-    .setCvc("737")
-    .build()
+val card3DS: PaymentMethod.Card
+    get() {
+        val stagingCardNumber = when (Settings.checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> "4012000300000088"
+            AirwallexCheckoutMode.RECURRING -> "5425233430109903"
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> "4012000300000088"
+        }
+        val demoCardNumber = when (Settings.checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> "4012000300000088"
+            AirwallexCheckoutMode.RECURRING -> "5307837360544518"
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> "4012000300000088"
+        }
+        return PaymentMethod.Card.Builder()
+            .setNumber(if (Settings.environment == Environment.STAGING) stagingCardNumber else demoCardNumber)
+            .setName("John Citizen")
+            .setExpiryMonth("12")
+            .setExpiryYear("2029")
+            .setCvc("737")
+            .build()
+    }
