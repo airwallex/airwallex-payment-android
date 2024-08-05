@@ -42,6 +42,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     val dialogShowed: LiveData<Boolean> = _dialogShowed
 
     override fun init(activity: Activity) {
+        updateCheckoutModel(0)
     }
 
     fun updateCheckoutModel(mode: Int) {
