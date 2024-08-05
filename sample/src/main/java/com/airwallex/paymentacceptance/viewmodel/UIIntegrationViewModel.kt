@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexCheckoutMode
@@ -25,8 +24,6 @@ import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.nextTriggerBy
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 class UIIntegrationViewModel : BaseViewModel() {
@@ -59,61 +56,58 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * launch the payment list page
      */
-    fun launchPaymentList(activity: ComponentActivity) {
+    fun launchPaymentList(activity: ComponentActivity) = run {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
         val googlePayOptions = GooglePayOptions(
             billingAddressRequired = true,
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
         )
-        createSession(googlePayOptions) {
-            AirwallexStarter.presentEntirePaymentFlow(
-                activity = activity,
-                session = it,
-                paymentResultListener = object : Airwallex.PaymentResultListener {
+        val session = createSession(googlePayOptions)
+        AirwallexStarter.presentEntirePaymentFlow(
+            activity = activity,
+            session = session,
+            paymentResultListener = object : Airwallex.PaymentResultListener {
 
-                    override fun onCompleted(status: AirwallexPaymentStatus) {
-                        _airwallexPaymentStatus.value = status
-                    }
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    _airwallexPaymentStatus.value = status
                 }
-            )
-        }
+            }
+        )
     }
 
     /**
      * launch the card payment page
      */
-    fun launchCardPage(activity: ComponentActivity) {
-        createSession {
-            AirwallexStarter.presentCardPaymentFlow(
-                activity = activity,
-                session = it,
-                paymentResultListener = object : Airwallex.PaymentResultListener {
+    fun launchCardPage(activity: ComponentActivity) = run {
+        val session = createSession()
+        AirwallexStarter.presentCardPaymentFlow(
+            activity = activity,
+            session = session,
+            paymentResultListener = object : Airwallex.PaymentResultListener {
 
-                    override fun onCompleted(status: AirwallexPaymentStatus) {
-                        _airwallexPaymentStatus.value = status
-                    }
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    _airwallexPaymentStatus.value = status
                 }
-            )
-        }
+            }
+        )
     }
 
     /**
      * launch the card payment dialog
      */
-    fun launchCardDialog(activity: ComponentActivity) {
-        createSession {
-            val dialog = AirwallexAddPaymentDialog(
-                activity = activity,
-                session = it,
-                paymentResultListener = object : Airwallex.PaymentResultListener {
-                    override fun onCompleted(status: AirwallexPaymentStatus) {
-                        _airwallexPaymentStatus.value = status
-                    }
+    fun launchCardDialog(activity: ComponentActivity) = run {
+        val session = createSession()
+        val dialog = AirwallexAddPaymentDialog(
+            activity = activity,
+            session = session,
+            paymentResultListener = object : Airwallex.PaymentResultListener {
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    _airwallexPaymentStatus.value = status
                 }
-            )
-            dialog.show()
-            _dialogShowed.value = true
-        }
+            }
+        )
+        dialog.show()
+        _dialogShowed.value = true
     }
 
     /**
@@ -133,37 +127,32 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * this method will create different types of Sessions based on the different modes.
      */
-    private fun createSession(
-        googlePayOptions: GooglePayOptions? = null,
-        callBack: (session: AirwallexSession) -> Unit
-    ) {
-        viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
-            when (checkoutMode) {
-                AirwallexCheckoutMode.PAYMENT -> {
-                    //get the paymentIntent object from your server
-                    //please do not directly copy this method!
-                    val paymentIntent = getPaymentIntentFromServer()
-                    // build an AirwallexPaymentSession based on the paymentIntent
-                    callBack(buildAirwallexPaymentSession(googlePayOptions, paymentIntent))
-                }
+    private suspend fun createSession(googlePayOptions: GooglePayOptions? = null): AirwallexSession {
+        return when (checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> {
+                //get the paymentIntent object from your server
+                //please do not directly copy this method!
+                val paymentIntent = getPaymentIntentFromServer()
+                // build an AirwallexPaymentSession based on the paymentIntent
+                buildAirwallexPaymentSession(googlePayOptions, paymentIntent)
+            }
 
-                AirwallexCheckoutMode.RECURRING -> {
-                    //get the customerId and clientSecret from your server
-                    //please do not directly copy these method!
-                    val customerId = getCustomerIdFromServer()
-                    val clientSecret = getClientSecretFromServer(customerId)
-                    //build an AirwallexRecurringSession based on the customerId and clientSecret
-                    callBack(buildAirwallexRecurringSession(customerId, clientSecret))
-                }
+            AirwallexCheckoutMode.RECURRING -> {
+                //get the customerId and clientSecret from your server
+                //please do not directly copy these method!
+                val customerId = getCustomerIdFromServer()
+                val clientSecret = getClientSecretFromServer(customerId)
+                //build an AirwallexRecurringSession based on the customerId and clientSecret
+                buildAirwallexRecurringSession(customerId, clientSecret)
+            }
 
-                AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                    //get the customerId and paymentIntent from your server
-                    //please do not directly copy these method!
-                    val customerId = getCustomerIdFromServer()
-                    val paymentIntent = getPaymentIntentFromServer(customerId = customerId)
-                    //build an AirwallexRecurringWithIntentSession based on the paymentIntent
-                    callBack(buildAirwallexRecurringWithIntentSession(paymentIntent))
-                }
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                //get the customerId and paymentIntent from your server
+                //please do not directly copy these method!
+                val customerId = getCustomerIdFromServer()
+                val paymentIntent = getPaymentIntentFromServer(customerId = customerId)
+                //build an AirwallexRecurringWithIntentSession based on the paymentIntent
+                buildAirwallexRecurringWithIntentSession(paymentIntent)
             }
         }
     }
