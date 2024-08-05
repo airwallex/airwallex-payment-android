@@ -5,6 +5,7 @@ import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.AirwallexRecurringSession
@@ -22,6 +23,7 @@ import com.airwallex.paymentacceptance.products
 import com.airwallex.paymentacceptance.shipping
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -43,7 +45,7 @@ abstract class BaseViewModel : ViewModel() {
     private val _createPaymentIntentError = MutableLiveData<String>()
     val createPaymentIntentError: LiveData<String> = _createPaymentIntentError
 
-    val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (throwable is HttpException) {
             _createPaymentIntentError.postValue(
                 throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
@@ -174,6 +176,12 @@ abstract class BaseViewModel : ViewModel() {
             is AirwallexRecurringWithIntentSession -> session.paymentIntent.clientSecret ?: ""
             is AirwallexRecurringSession -> session.clientSecret
             else -> ""
+        }
+    }
+
+    fun run(block: suspend () -> Unit) {
+        viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
+            block.invoke()
         }
     }
 }
