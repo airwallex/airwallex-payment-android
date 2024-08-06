@@ -98,7 +98,7 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
             putParcelable(Args.AIRWALLEX_EXTRA, args)
         }
         val intent = Intent(originalActivity, targetActivity).apply {
-            putExtras(bundle)
+            putExtra(Args.AIRWALLEX_BUNDLE_EXTRA, bundle)
         }
         if (fragment != null) {
             fragment.startActivityForResult(intent, requestCode)
@@ -115,7 +115,7 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
             putParcelable(Args.AIRWALLEX_EXTRA, args)
         }
         val intent = Intent(originalActivity, targetActivity).apply {
-            putExtras(bundle)
+            putExtra(Args.AIRWALLEX_BUNDLE_EXTRA, bundle)
         }
         setResultCallBack(originalActivity, requestCode, resultCallBack)
         getActivityResultLauncher(originalActivity)?.launch(intent)
@@ -123,6 +123,7 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
 
     interface Args : Parcelable {
         companion object {
+            const val AIRWALLEX_BUNDLE_EXTRA: String = "airwallex_bundle_args"
             const val AIRWALLEX_EXTRA: String = "airwallex_activity_args"
         }
     }
