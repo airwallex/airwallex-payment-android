@@ -20,7 +20,6 @@ import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.BankResponse
 import com.airwallex.android.core.model.Billing
-import com.airwallex.android.core.model.ClientSecret
 import com.airwallex.android.core.model.ConfirmPaymentIntentParams
 import com.airwallex.android.core.model.ContinuePaymentIntentParams
 import com.airwallex.android.core.model.CreatePaymentConsentParams
@@ -52,7 +51,6 @@ import com.airwallex.android.core.model.RetrievePaymentMethodTypeInfoParams
 import com.airwallex.android.core.model.ThreeDSecure
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.core.model.VerifyPaymentConsentParams
-import com.airwallex.android.core.model.*
 import com.airwallex.risk.AirwallexRisk
 import com.airwallex.risk.RiskConfiguration
 import com.airwallex.risk.Tenant
@@ -616,56 +614,33 @@ class Airwallex internal constructor(
 
             is AirwallexRecurringSession -> {
                 val customerId = session.customerId
-                try {
-                    ClientSecretRepository.getInstance().retrieveClientSecret(
-                        customerId,
-                        object : ClientSecretRepository.ClientSecretRetrieveListener {
-                            override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                                createPaymentConsent(
-                                    clientSecret = clientSecret.value,
-                                    customerId = customerId,
-                                    paymentMethod = paymentMethod,
-                                    nextTriggeredBy = session.nextTriggerBy,
-                                    requiresCvc = session.requiresCVC,
-                                    merchantTriggerReason = session.merchantTriggerReason,
-                                    listener = object : PaymentListener<PaymentConsent> {
-                                        override fun onFailed(exception: AirwallexException) {
-                                            listener.onCompleted(
-                                                AirwallexPaymentStatus.Failure(exception)
-                                            )
-                                        }
-
-                                        override fun onSuccess(response: PaymentConsent) {
-                                            verifyPaymentConsent(
-                                                paymentConsent = response,
-                                                currency = session.currency,
-                                                amount = session.amount,
-                                                cvc = cvc,
-                                                returnUrl = if (paymentMethod.type
-                                                    == PaymentMethodType.CARD.value
-                                                ) AirwallexPlugins.environment.threeDsReturnUrl()
-                                                else session.returnUrl,
-                                                listener = listener
-                                            )
-                                        }
-                                    }
-                                )
-                            }
-
-                            override fun onClientSecretError(errorMessage: String) {
-                                listener.onCompleted(
-                                    AirwallexPaymentStatus.Failure(
-                                        AirwallexCheckoutException(
-                                            message = errorMessage
-                                        )
-                                    )
-                                )
-                            }
+                val clientSecret = session.clientSecret
+                createPaymentConsent(
+                    clientSecret = clientSecret,
+                    customerId = customerId,
+                    paymentMethod = paymentMethod,
+                    nextTriggeredBy = session.nextTriggerBy,
+                    requiresCvc = session.requiresCVC,
+                    merchantTriggerReason = session.merchantTriggerReason,
+                    listener = object : PaymentListener<PaymentConsent> {
+                        override fun onFailed(exception: AirwallexException) {
+                            listener.onCompleted(
+                                AirwallexPaymentStatus.Failure(exception)
+                            )
                         }
-                    )
-                } catch (e: AirwallexCheckoutException) {
-                    listener.onCompleted(AirwallexPaymentStatus.Failure(e))
-                }
+
+                        override fun onSuccess(response: PaymentConsent) {
+                            verifyPaymentConsent(
+                                paymentConsent = response,
+                                currency = session.currency,
+                                amount = session.amount,
+                                cvc = cvc,
+                                returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
+                                listener = listener
+                            )
+                        }
+                    }
+                )
             }
 
             is AirwallexRecurringWithIntentSession -> {
@@ -1213,27 +1188,15 @@ class Airwallex internal constructor(
 
     companion object {
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout"
-
-        /**
-         * Initialize some global configurations, better to be called on Application
-         */
-        fun initialize(application: Application, configuration: AirwallexConfiguration) {
-            initialize(application, configuration, null)
-        }
-
         /**
          * Initialize some global configurations, better to be called on Application
          */
         fun initialize(
             application: Application,
-            configuration: AirwallexConfiguration,
-            clientSecretProvider: ClientSecretProvider? = null
+            configuration: AirwallexConfiguration
         ) {
             AirwallexPlugins.initialize(application, configuration)
             AirwallexLogger.initialize(application, configuration.enableLogging, configuration.saveLogToLocal)
-            clientSecretProvider?.let {
-                ClientSecretRepository.init(it)
-            }
             AirwallexRisk.start(
                 applicationContext = application,
                 accountId = null,

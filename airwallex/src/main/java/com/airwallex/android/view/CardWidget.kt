@@ -9,11 +9,12 @@ import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.databinding.WidgetCardBinding
 import com.airwallex.android.view.inputs.AirwallexTextInputLayout
 import com.airwallex.android.view.inputs.ValidatedInput
+import com.airwallex.risk.AirwallexRisk
 
 /**
  * A widget used to collect the card info
  */
-class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
+open class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
 
     private val viewBinding = WidgetCardBinding.inflate(
         LayoutInflater.from(context),
@@ -49,10 +50,6 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
         }
 
     var cardChangeCallback: () -> Unit = {}
-    var cardNumberClickCallback: () -> Unit = {}
-    var holderNameClickCallback: () -> Unit = {}
-    var expiresClickCallback: () -> Unit = {}
-    var cvcClickCallback: () -> Unit = {}
 
     val paymentMethodCard: PaymentMethod.Card?
         get() {
@@ -105,16 +102,16 @@ class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(context,
 
     private fun listenClick() {
         cardNumberTextInputLayout.setOnInputEditTextClickListener {
-            cardNumberClickCallback.invoke()
+            AirwallexRisk.log(event = "input_card_number", screen = "page_create_card")
         }
         cardNameTextInputLayout.setOnInputEditTextClickListener {
-            holderNameClickCallback.invoke()
+            AirwallexRisk.log(event = "input_card_holder_name", screen = "page_create_card")
         }
         expiryTextInputLayout.setOnInputEditTextClickListener {
-            expiresClickCallback.invoke()
+            AirwallexRisk.log(event = "input_card_expiry", screen = "page_create_card")
         }
         cvcTextInputLayout.setOnInputEditTextClickListener {
-            cvcClickCallback.invoke()
+            AirwallexRisk.log(event = "input_card_cvc", screen = "page_create_card")
         }
     }
 

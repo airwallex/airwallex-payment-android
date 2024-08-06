@@ -11,15 +11,13 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.core.ClientSecretRepository
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.putIfNotNull
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.model.ClientSecret
 import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.Page
@@ -79,6 +77,22 @@ internal class PaymentMethodsViewModel(
 
             else -> {
                 throw Exception("Not supported session $session")
+            }
+        }
+    }
+
+    private val clientSecret: String? by lazy {
+        when (session) {
+            is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
+                paymentIntent?.clientSecret
+            }
+
+            is AirwallexRecurringSession -> {
+                session.clientSecret
+            }
+
+            else -> {
+                null
             }
         }
     }
@@ -157,43 +171,30 @@ internal class PaymentMethodsViewModel(
 
     suspend fun fetchAvailablePaymentMethodsAndConsents():
             Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>? {
-        return when (session) {
-            is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
-                paymentIntent?.clientSecret
+        val secret = clientSecret.takeIf { !it.isNullOrBlank() }
+            ?: return Result.failure(AirwallexCheckoutException(message = "Client secret is empty or blank"))
+        return supervisorScope {
+            val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
+            AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
+            val retrieveConsents = async {
+                customerId?.takeIf { needRequestConsent() }
+                    ?.let { retrieveAvailablePaymentConsents(secret, it) }
+                    ?: emptyList()
             }
-
-            is AirwallexRecurringSession -> {
-                try {
-                    ClientSecretRepository.getInstance()
-                        .retrieveClientSecret(requireNotNull(session.customerId))
-                        .value
-                } catch (e: AirwallexCheckoutException) {
-                    return Result.failure(e)
-                }
-            }
-
-            else -> null
-        }?.let { clientSecret ->
-            supervisorScope {
-                val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
-                AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
-                val retrieveConsents = async {
-                    customerId?.takeIf { needRequestConsent() }
-                        ?.let { retrieveAvailablePaymentConsents(clientSecret, it) }
-                        ?: emptyList()
-                }
-                val retrieveMethods = async { retrieveAvailablePaymentMethods(clientSecret) }
-                try {
-                    val methods = filterPaymentMethodsBySession(
-                        retrieveMethods.await(),
-                        session.paymentMethods
-                    )
-                    val consents = retrieveConsents.await()
-                    Result.success(Pair(methods, consents))
-                } catch (exception: AirwallexException) {
-                    AirwallexLogger.error("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: failed ", exception)
-                    Result.failure(exception)
-                }
+            val retrieveMethods = async { retrieveAvailablePaymentMethods(secret) }
+            try {
+                val methods = filterPaymentMethodsBySession(
+                    retrieveMethods.await(),
+                    session.paymentMethods
+                )
+                val consents = retrieveConsents.await()
+                Result.success(Pair(methods, consents))
+            } catch (exception: AirwallexException) {
+                AirwallexLogger.error(
+                    "PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: failed ",
+                    exception
+                )
+                Result.failure(exception)
             }
         }
     }
@@ -275,34 +276,27 @@ internal class PaymentMethodsViewModel(
     fun deletePaymentConsent(paymentConsent: PaymentConsent): LiveData<Result<PaymentConsent>> {
         val resultData = MutableLiveData<Result<PaymentConsent>>()
         try {
-            ClientSecretRepository.getInstance().retrieveClientSecret(
-                requireNotNull(session.customerId),
-                object : ClientSecretRepository.ClientSecretRetrieveListener {
-                    override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                        airwallex.disablePaymentConsent(
-                            DisablePaymentConsentParams(
-                                clientSecret = clientSecret.value,
-                                paymentConsentId = requireNotNull(paymentConsent.id),
-                            ),
-                            object : Airwallex.PaymentListener<PaymentConsent> {
+            clientSecret?.let {
+                airwallex.disablePaymentConsent(
+                    DisablePaymentConsentParams(
+                        clientSecret = it,
+                        paymentConsentId = requireNotNull(paymentConsent.id),
+                    ),
+                    object : Airwallex.PaymentListener<PaymentConsent> {
 
-                                override fun onFailed(exception: AirwallexException) {
-                                    resultData.value = Result.failure(exception)
-                                }
+                        override fun onFailed(exception: AirwallexException) {
+                            resultData.value = Result.failure(exception)
+                        }
 
-                                override fun onSuccess(response: PaymentConsent) {
-                                    resultData.value = Result.success(paymentConsent)
-                                }
-                            }
-                        )
+                        override fun onSuccess(response: PaymentConsent) {
+                            resultData.value = Result.success(paymentConsent)
+                        }
                     }
-
-                    override fun onClientSecretError(errorMessage: String) {
-                        resultData.value =
-                            Result.failure(AirwallexCheckoutException(message = errorMessage))
-                    }
-                }
-            )
+                )
+            } ?: {
+                resultData.value =
+                    Result.failure(AirwallexCheckoutException(message = "clientSecret is null"))
+            }
         } catch (e: AirwallexCheckoutException) {
             resultData.value = Result.failure(e)
         }
