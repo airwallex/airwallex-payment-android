@@ -23,6 +23,8 @@ interface ActionComponent {
         consentId: String? = null,
     )
 
+    fun <T, R> handlePaymentData(param: T?, callBack: (result: R?) -> Unit)
+
     fun handleActivityResult(
         requestCode: Int,
         resultCode: Int,

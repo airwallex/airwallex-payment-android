@@ -73,6 +73,9 @@ class RedirectComponent : ActionComponent {
         }
     }
 
+    override fun <T, R> handlePaymentData(param: T?, callBack: (result: R?) -> Unit) {
+    }
+
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         return false
     }

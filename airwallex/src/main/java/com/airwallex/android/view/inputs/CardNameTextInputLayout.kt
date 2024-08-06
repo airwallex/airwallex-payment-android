@@ -4,6 +4,8 @@ import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
 import com.airwallex.android.R
+import com.airwallex.android.ui.widget.AirwallexTextInputLayout
+import com.airwallex.android.ui.widget.ValidatedInput
 
 internal class CardNameTextInputLayout constructor(
     context: Context,

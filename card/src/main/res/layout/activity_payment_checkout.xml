@@ -11,7 +11,7 @@
         style="@style/AirwallexPaymentHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/airwallex_enter_cvv"
+        android:text="@string/airwallex_card_enter_cvv"
         tools:ignore="RtlSymmetry" />
 
     <TextView
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/header" />
 
-    <com.airwallex.android.view.inputs.CardCvcTextInputLayout
+    <com.airwallex.android.card.view.widget.CvcTextInputLayout
         android:id="@+id/atlCardCvc"
         android:layout_width="124dp"
         android:layout_height="wrap_content"
@@ -35,6 +35,6 @@
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_marginVertical="24dp"
-        android:text="@string/airwallex_pay_now" />
+        android:text="@string/airwallex_card_pay_now" />
 
 </RelativeLayout>

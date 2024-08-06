@@ -1,11 +1,11 @@
-package com.airwallex.android.view
+package com.airwallex.android.card.view.cvc
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
-import com.airwallex.android.view.PaymentCheckoutActivityLaunch.Args
+import com.airwallex.android.card.view.cvc.PaymentCheckoutActivityLaunch.Args
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.ObjectBuilder
@@ -16,7 +16,7 @@ import com.airwallex.android.ui.extension.getExtraResult
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
-internal class PaymentCheckoutActivityLaunch :
+class PaymentCheckoutActivityLaunch :
     AirwallexActivityLaunch<PaymentCheckoutActivity, Args> {
 
     constructor(activity: Activity) : super(
@@ -27,7 +27,7 @@ internal class PaymentCheckoutActivityLaunch :
 
     constructor(fragment: Fragment) : super(
         fragment,
-        PaymentCheckoutActivity::class.java,
+       PaymentCheckoutActivity::class.java,
         REQUEST_CODE
     )
 

@@ -7,7 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.Airwallex.PaymentResultListener
 import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
@@ -106,6 +108,26 @@ internal class PaymentMethodsViewModel(
                 false
             }
         }
+    }
+
+    fun confirmPaymentIntent(
+        paymentConsent: PaymentConsent
+    ): LiveData<AirwallexPaymentStatus> {
+        val resultData = MutableLiveData<AirwallexPaymentStatus>()
+        if (session is AirwallexPaymentSession) {
+            airwallex.confirmPaymentIntent(
+                session, paymentConsent,
+                object : PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        resultData.value = status
+                    }
+                }
+            )
+        } else {
+            resultData.value =
+                AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession"))
+        }
+        return resultData
     }
 
     fun trackCardPaymentSuccess() {

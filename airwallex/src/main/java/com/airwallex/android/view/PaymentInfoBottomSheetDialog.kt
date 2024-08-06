@@ -13,7 +13,7 @@ import com.airwallex.android.core.extension.parcelable
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.*
-import com.airwallex.android.view.inputs.AirwallexTextInputLayout
+import com.airwallex.android.ui.widget.AirwallexTextInputLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class PaymentInfoBottomSheetDialog : BottomSheetDialog<DialogPaymentInfoBinding>(), TrackablePage {

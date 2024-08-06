@@ -7,8 +7,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.databinding.WidgetCardBinding
-import com.airwallex.android.view.inputs.AirwallexTextInputLayout
-import com.airwallex.android.view.inputs.ValidatedInput
+import com.airwallex.android.ui.widget.AirwallexTextInputLayout
+import com.airwallex.android.ui.widget.ValidatedInput
 import com.airwallex.risk.AirwallexRisk
 
 /**

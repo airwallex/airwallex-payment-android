@@ -21,6 +21,7 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.*
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
+import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.util.findWithType
@@ -270,26 +271,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
         when (paymentMethod.type) {
             PaymentMethodType.CARD.value -> {
-                setLoadingProgress(false)
-                // Start `PaymentCheckoutActivity` to confirm `PaymentIntent`
-                if (paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN) {
-                    PaymentCheckoutActivityLaunch(this@PaymentMethodsActivity)
-                        .startForResult(
-                            PaymentCheckoutActivityLaunch.Args.Builder()
-                                .setAirwallexSession(session)
-                                .setPaymentMethod(paymentMethod)
-                                .setPaymentConsentId(paymentConsent.id)
-                                .setCvc(cvc)
-                                .build()
-                        )
-                } else {
-                    startCheckout(
-                        paymentMethod = paymentMethod,
-                        paymentConsentId = paymentConsent.id,
-                        observer = observer
-                    )
-                }
+                setLoadingProgress(true)
+                viewModel.confirmPaymentIntent(paymentConsent).observe(this, observer)
             }
+
             PaymentMethodType.GOOGLEPAY.value -> {
                 setLoadingProgress(false)
                 startCheckout(
@@ -447,18 +432,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                             setResult(Activity.RESULT_CANCELED)
                             finish()
                         }
-                    }
-                }
-            }
-
-            PaymentCheckoutActivityLaunch.REQUEST_CODE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    val result = PaymentCheckoutActivityLaunch.Result.fromIntent(data)
-                    result?.let {
-                        finishWithPaymentIntent(
-                            paymentIntentId = it.paymentIntentId,
-                            exception = it.exception
-                        )
                     }
                 }
             }
