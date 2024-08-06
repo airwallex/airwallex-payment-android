@@ -29,7 +29,7 @@ import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
 import com.airwallex.android.core.model.TransactionMode
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -173,7 +173,7 @@ internal class PaymentMethodsViewModel(
             Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>? {
         val secret = clientSecret.takeIf { !it.isNullOrBlank() }
             ?: return Result.failure(AirwallexCheckoutException(message = "Client secret is empty or blank"))
-        return coroutineScope {
+        return supervisorScope {
             val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
             AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
             val retrieveConsents = async {
