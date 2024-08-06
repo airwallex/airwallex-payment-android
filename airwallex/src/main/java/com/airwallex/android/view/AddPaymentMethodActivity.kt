@@ -15,6 +15,7 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.databinding.ActivityAddCardBinding
+import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.risk.AirwallexRisk
 

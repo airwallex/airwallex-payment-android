@@ -1,6 +1,6 @@
-package com.airwallex.android.view.inputs
+package com.airwallex.android.ui.widget
 
-internal interface ValidatedInput {
+interface ValidatedInput {
     val isValid: Boolean
     val emptyErrorMessage: String
     val invalidErrorMessage: String

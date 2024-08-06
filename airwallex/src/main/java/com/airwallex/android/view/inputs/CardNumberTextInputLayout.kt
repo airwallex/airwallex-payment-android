@@ -3,6 +3,7 @@ package com.airwallex.android.view.inputs
 import android.content.Context
 import android.util.AttributeSet
 import com.airwallex.android.R
+import com.airwallex.android.ui.widget.AirwallexTextInputLayout
 import com.airwallex.android.view.CardBrand
 
 /**

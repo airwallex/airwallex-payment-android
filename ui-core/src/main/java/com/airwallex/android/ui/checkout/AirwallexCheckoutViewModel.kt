@@ -1,4 +1,4 @@
-package com.airwallex.android.view
+package com.airwallex.android.ui.checkout
 
 import android.app.Application
 import androidx.lifecycle.*

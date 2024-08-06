@@ -193,11 +193,12 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param paymentConsentId the customerId of [PaymentConsent], optional.
          * @param returnUrl optional
          */
+        @Suppress("LongParameterList")
         fun createCardParams(
             paymentIntentId: String,
             clientSecret: String,
-            paymentMethod: PaymentMethod?,
-            cvc: String?,
+            paymentMethod: PaymentMethod? = null,
+            cvc: String? = null,
             customerId: String? = null,
             paymentConsentId: String? = null,
             returnUrl: String? = null,

@@ -1,4 +1,4 @@
-package com.airwallex.android.view
+package com.airwallex.android.ui.checkout
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
