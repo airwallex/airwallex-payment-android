@@ -1,4 +1,4 @@
-package com.airwallex.android.card.view
+package com.airwallex.android.card.view.dcc
 
 import android.app.Activity
 import android.content.Intent

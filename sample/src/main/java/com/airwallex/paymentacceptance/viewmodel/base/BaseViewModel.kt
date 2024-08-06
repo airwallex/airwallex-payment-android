@@ -1,36 +1,24 @@
 package com.airwallex.paymentacceptance.viewmodel.base
 
 import android.app.Activity
-import android.text.TextUtils
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.AirwallexPaymentSession
-import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentIntent
-import com.airwallex.android.core.model.PurchaseOrder
-import com.airwallex.android.core.model.parser.ClientSecretParser
-import com.airwallex.android.core.model.parser.PaymentIntentParser
-import com.airwallex.paymentacceptance.Settings
-import com.airwallex.paymentacceptance.api.Api
-import com.airwallex.paymentacceptance.api.ApiFactory
-import com.airwallex.paymentacceptance.products
 import com.airwallex.paymentacceptance.repo.BaseRepository
 import com.airwallex.paymentacceptance.repo.LocalMockRepository
-import com.airwallex.paymentacceptance.shipping
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.util.Collections
-import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class BaseViewModel : ViewModel() {
@@ -48,7 +36,7 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
-    abstract fun init(activity: Activity)
+    abstract fun init(activity: ComponentActivity)
 
     private val repository: BaseRepository by lazy {
         LocalMockRepository()

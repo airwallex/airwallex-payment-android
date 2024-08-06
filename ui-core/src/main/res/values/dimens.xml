@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="airwallex_button_height">44dp</dimen>
+    <dimen name="airwallex_input_layout_border_width_default">1dp</dimen>
+    <dimen name="airwallex_input_layout_border_width_focused">2dp</dimen>
 </resources>

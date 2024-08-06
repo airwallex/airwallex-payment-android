@@ -1,11 +1,11 @@
-package com.airwallex.android.card.view
+package com.airwallex.android.card.view.dcc
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
-import com.airwallex.android.card.view.DccActivityLaunch.Args
+import com.airwallex.android.card.view.dcc.DccActivityLaunch.Args
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.ui.AirwallexActivityLaunch

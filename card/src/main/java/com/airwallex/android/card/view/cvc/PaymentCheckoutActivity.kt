@@ -1,29 +1,30 @@
-package com.airwallex.android.view
+package com.airwallex.android.card.view.cvc
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
+import com.airwallex.android.card.R
+import com.airwallex.android.card.databinding.ActivityPaymentCheckoutBinding
 import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.core.util.CurrencyUtils.formatPrice
-import com.airwallex.android.databinding.ActivityPaymentCheckoutBinding
-import com.airwallex.android.R
-import com.airwallex.android.core.AirwallexPaymentStatus
-import com.airwallex.android.core.extension.putIfNotNull
-import com.airwallex.android.core.log.AirwallexLogger
-import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.extension.getExtraArgs
 import java.util.*
 
 /**
  * Activity to confirm payment intent
  */
-internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
+class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     private val viewBinding: ActivityPaymentCheckoutBinding by lazy {
         viewStub.layoutResource = R.layout.activity_payment_checkout
@@ -64,7 +65,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding.header.text = getString(
-            R.string.airwallex_enter_cvv,
+            R.string.airwallex_card_enter_cvv,
             String.format(
                 "%s •••• %s",
                 paymentMethod.card?.brand?.replaceFirstChar {
@@ -78,7 +79,7 @@ internal class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             )
         )
         viewBinding.tvTotalPrice.text =
-            getString(R.string.airwallex_total, formatPrice(session.currency, session.amount))
+            getString(R.string.airwallex_card_total, formatPrice(session.currency, session.amount))
 
         viewBinding.atlCardCvc.afterTextChanged {
             updateButtonStatus()

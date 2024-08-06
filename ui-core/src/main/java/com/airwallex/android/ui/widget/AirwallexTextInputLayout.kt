@@ -1,4 +1,4 @@
-package com.airwallex.android.view.inputs
+package com.airwallex.android.ui.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -12,8 +12,8 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
-import com.airwallex.android.R
-import com.airwallex.android.R.styleable
+import com.airwallex.android.ui.R
+import com.airwallex.android.ui.R.styleable
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 

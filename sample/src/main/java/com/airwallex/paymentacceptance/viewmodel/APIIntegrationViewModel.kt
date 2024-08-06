@@ -1,6 +1,7 @@
 package com.airwallex.paymentacceptance.viewmodel
 
 import android.app.Activity
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.airwallex.android.core.Airwallex
@@ -43,7 +44,7 @@ class APIIntegrationViewModel : BaseViewModel() {
     private val _paymentConsentList = MutableLiveData<List<PaymentConsent>>()
     val paymentConsentList: LiveData<List<PaymentConsent>> = _paymentConsentList
 
-    override fun init(activity: Activity) {
+    override fun init(activity: ComponentActivity) {
         airwallex = Airwallex(activity)
         updateCheckoutModel(0)
     }
@@ -111,7 +112,7 @@ class APIIntegrationViewModel : BaseViewModel() {
         val session = createSession()
         airwallex?.confirmPaymentIntent(
             session = session as AirwallexPaymentSession,
-            paymentConsentId = paymentConsent.id!!,
+            paymentConsent = paymentConsent,
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     _airwallexPaymentStatus.value = status
