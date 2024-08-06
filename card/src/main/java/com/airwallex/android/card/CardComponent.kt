@@ -5,8 +5,10 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import com.airwallex.android.card.view.cvc.PaymentCheckoutActivityLaunch
 
 import com.airwallex.android.core.*
+import com.airwallex.android.core.data.AirwallexCVCParam
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
@@ -63,6 +65,23 @@ class CardComponent : ActionComponent {
         }
     }
 
+    override fun <T, R> handlePaymentData(param: T?, callBack: (result: R?) -> Unit) {
+        if (param is AirwallexCVCParam) {
+            PaymentCheckoutActivityLaunch(param.activity)
+                .launchForResult(
+                    PaymentCheckoutActivityLaunch.Args.Builder()
+                        .setAirwallexSession(param.session)
+                        .setPaymentMethod(param.paymentMethod)
+                        .setPaymentConsentId(param.paymentConsentId)
+                        .build()
+                ) { _, result ->
+                    val paymentStatus = handleCVCActivityResult(param.paymentConsentId, result.resultCode, result.data)
+                    @Suppress("UNCHECKED_CAST")
+                    callBack(paymentStatus as R)
+                }
+        }
+    }
+
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (requestCode == ThreeDSecurityActivityLaunch.REQUEST_CODE) {
             listener?.let {
@@ -77,6 +96,33 @@ class CardComponent : ActionComponent {
             } ?: return false
         }
         return false
+    }
+
+    private fun handleCVCActivityResult(
+        paymentConsentId: String?,
+        resultCode: Int,
+        data: Intent?
+    ): AirwallexPaymentStatus {
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                val result = PaymentCheckoutActivityLaunch.Result.fromIntent(data)
+                when {
+                    result == null -> return AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(message = "cvc result is null")
+                    )
+                    result.exception != null -> return AirwallexPaymentStatus.Failure(result.exception)
+                    result.paymentIntentId != null -> return AirwallexPaymentStatus.Success(
+                        result.paymentIntentId,
+                        paymentConsentId
+                    )
+                }
+            }
+
+            Activity.RESULT_CANCELED -> {
+                return AirwallexPaymentStatus.Cancel
+            }
+        }
+        return AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "unknown cvc error"))
     }
 
     override fun retrieveSecurityToken(

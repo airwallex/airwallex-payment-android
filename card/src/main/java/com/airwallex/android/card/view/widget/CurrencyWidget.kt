@@ -1,4 +1,4 @@
-package com.airwallex.android.card.view
+package com.airwallex.android.card.view.widget
 
 import android.content.Context
 import android.util.AttributeSet

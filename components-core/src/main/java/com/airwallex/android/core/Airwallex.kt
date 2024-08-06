@@ -1,21 +1,22 @@
 package com.airwallex.android.core
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.airwallex.android.core.data.AirwallexCVCParam
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.extension.confirmGooglePayIntent
 import com.airwallex.android.core.extension.createCardPaymentMethod
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.BankResponse
@@ -61,7 +62,7 @@ import java.util.UUID
 
 class Airwallex internal constructor(
     private val fragment: Fragment?,
-    private val activity: Activity,
+    private val activity: ComponentActivity,
     private val paymentManager: PaymentManager,
     private val applicationContext: Context,
 ) {
@@ -113,7 +114,7 @@ class Airwallex internal constructor(
         fragment.requireContext().applicationContext
     )
 
-    constructor(activity: Activity) : this(
+    constructor(activity: ComponentActivity) : this(
         null,
         activity,
         AirwallexPaymentManager(AirwallexApiRepository()),
@@ -121,7 +122,7 @@ class Airwallex internal constructor(
     )
 
     @VisibleForTesting
-    constructor(activity: Activity, applicationContext: Context) : this(
+    constructor(activity: ComponentActivity, applicationContext: Context) : this(
         null,
         activity,
         AirwallexPaymentManager(AirwallexApiRepository()),
@@ -192,10 +193,57 @@ class Airwallex internal constructor(
      * Confirm a payment intent with payment consent ID
      *
      * @param session a [AirwallexPaymentSession] used to start the payment flow
-     * @param paymentConsentId the ID of the [PaymentConsent]
+     * @param paymentConsent a [PaymentConsent] used to start the payment flow
      * @param listener The callback of the payment flow
      */
     @UiThread
+    fun confirmPaymentIntent(
+        session: AirwallexPaymentSession,
+        paymentConsent: PaymentConsent,
+        listener: PaymentResultListener
+    ) {
+        val paymentMethod = paymentConsent.paymentMethod
+        val paymentConsentId = paymentConsent.id
+        if (paymentMethod == null) {
+            AirwallexLogger.info("confirmPaymentIntent, paymentMethod == null")
+            listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentMethod is required")))
+            return
+        }
+        if (paymentConsentId.isNullOrEmpty()) {
+            AirwallexLogger.info("confirmPaymentIntent, paymentConsentId isNullOrEmpty")
+            listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentConsentId is required")))
+            return
+        }
+        if (paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN) {
+            AirwallexLogger.info("confirmPaymentIntent, need cvc")
+            val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
+            provider?.get()?.handlePaymentData(
+                AirwallexCVCParam(
+                    activity,
+                    paymentMethod,
+                    session,
+                    paymentConsentId
+                )
+            ) { status: AirwallexPaymentStatus? ->
+                listener.onCompleted(
+                    status ?: AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(message = "cvc unknown error")
+                    )
+                )
+            }
+        } else {
+            AirwallexLogger.info("confirmPaymentIntent, skip cvc")
+            confirmPaymentIntent(session, paymentConsentId, listener)
+        }
+    }
+
+    /**
+     * Confirm a payment intent with payment consent ID
+     *
+     * @param session a [AirwallexPaymentSession] used to start the payment flow
+     * @param paymentConsentId the ID of the [PaymentConsent]
+     * @param listener The callback of the payment flow
+     */
     fun confirmPaymentIntent(
         session: AirwallexPaymentSession,
         paymentConsentId: String,
@@ -1197,6 +1245,7 @@ class Airwallex internal constructor(
 
     companion object {
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout"
+
         /**
          * Initialize some global configurations, better to be called on Application
          */
@@ -1205,7 +1254,11 @@ class Airwallex internal constructor(
             configuration: AirwallexConfiguration
         ) {
             AirwallexPlugins.initialize(application, configuration)
-            AirwallexLogger.initialize(application, configuration.enableLogging, configuration.saveLogToLocal)
+            AirwallexLogger.initialize(
+                application,
+                configuration.enableLogging,
+                configuration.saveLogToLocal
+            )
             AirwallexRisk.start(
                 applicationContext = application,
                 accountId = null,

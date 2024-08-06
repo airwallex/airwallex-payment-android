@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tlInput"
+    style="@style/AirwallexTextInputLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.airwallex.android.card.view.widget.CvcEditText
+        android:id="@+id/teInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:textColor="@color/airwallex_color_grey_100"
+        android:textColorHint="@color/airwallex_color_grey_50"
+        android:textSize="16sp" />
+</com.google.android.material.textfield.TextInputLayout>

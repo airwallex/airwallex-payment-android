@@ -58,6 +58,10 @@ class AirwallexPluginsTest {
             // no-op
         }
 
+        override fun <T, R> handlePaymentData(param: T?, callBack: (result: R?) -> Unit) {
+
+        }
+
         override fun handleActivityResult(
             requestCode: Int,
             resultCode: Int,
