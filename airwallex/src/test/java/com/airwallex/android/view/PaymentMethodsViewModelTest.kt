@@ -169,6 +169,46 @@ class PaymentMethodsViewModelTest {
     }
 
     @Test
+    fun `test confirmPaymentIntent with invalid session`() {
+        val viewModel = mockViewModel(TransactionMode.RECURRING)
+        val paymentConsent = mockk<PaymentConsent>(relaxed = true)
+        val observer = mockk<Observer<AirwallexPaymentStatus>>(relaxed = true)
+        val liveData = viewModel.confirmPaymentIntent(paymentConsent)
+        liveData.observeForever(observer)
+        val expectedFailureStatus = AirwallexPaymentStatus.Failure(
+            AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession")
+        )
+        viewModel.confirmPaymentIntent(paymentConsent)
+        verify {
+            observer.onChanged(
+                match { status ->
+                    status is AirwallexPaymentStatus.Failure &&
+                            status.exception.message == expectedFailureStatus.exception.message
+                }
+            )
+        }
+        liveData.removeObserver(observer)
+    }
+
+    @Test
+    fun `test confirmPaymentIntent with valid session`() {
+        val paymentConsent = mockk<PaymentConsent>(relaxed = true)
+        val observer: Observer<AirwallexPaymentStatus> = mockk(relaxed = true)
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+        val status = AirwallexPaymentStatus.Success(
+            paymentIntentId = "test_payment_intent_id",
+            consentId = "test_consent_id",
+            additionalInfo = mapOf("key" to "value")
+        )
+        every { airwallex.confirmPaymentIntent(session = any(), paymentConsent = any(), any()) } answers {
+            thirdArg<Airwallex.PaymentResultListener>().onCompleted(status)
+        }
+        val liveData = viewModel.confirmPaymentIntent(paymentConsent)
+        liveData.observeForever(observer)
+        verify { observer.onChanged(status) }
+    }
+
+    @Test
     fun `test fetchAvailablePaymentMethodsAndConsents handles AirwallexException`() = runBlocking {
         val viewModel = mockViewModel(TransactionMode.ONE_OFF)
         val spyViewModel = spyk(viewModel)
