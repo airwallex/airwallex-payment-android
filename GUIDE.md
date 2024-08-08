@@ -30,7 +30,11 @@ Our demo application is available open source on [Github](https://github.com/air
     * [Step 1: Set up SDK](#step-1-set-up-sdk)
     * [Step 2: Configuration and preparation](#step-2-configuration-and-preparation)
     * [Step 3: Create AirwallexSession and Airwallex object](#step-3-create-airwallexsession-and-airwallex-object)
-    * [Confirm card payment with card and billing details or payment consent ID](#confirm-card-payment-with-card-and-billing-details-or-payment-consent-id)
+    * [Confirm payment with card and billing details](#confirm-payment-with-card-and-billing-details)
+    * [Confirm payment with Consent ID](#confirm-payment-with-consent-id)
+    * [Confirm payment with PaymentConsent](#confirm-payment-with-paymentconsent)
+    * [Retrieve the list of payment methods](#retrieve-the-list-of-payment-methods)
+    * [Retrieve the list of saved cards](#retrieve-the-list-of-saved-cards)
     * [Launch payment via Google Pay](#launch-payment-via-google-pay)
 * [SDK Example](#sdk-example)
 * [Test Card Numbers](#test-card-numbers)
@@ -90,22 +94,22 @@ After setting up the SDK, you are required to config your SDK with some paramete
 
 We provide some parameters that can be used to debug the SDK, you can call it in Application
 ```kotlin
-    AirwallexStarter.initialize(
-        application,
-        AirwallexConfiguration.Builder()
-            .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
-            .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
-            .setSupportComponentProviders(
-                listOf(
-                    CardComponent.PROVIDER,
-                    WeChatComponent.PROVIDER,
-                    RedirectComponent.PROVIDER,
-                    GooglePayComponent.PROVIDER
-                )
+   AirwallexStarter.initialize(
+      application,
+      AirwallexConfiguration.Builder()
+          .enableLogging(true) // Enable log in sdk, best set to false in release version
+          .saveLogToLocal(false)// Save the Airwallex logs locally. If you have your own saving strategy, please set this to false.
+          .setEnvironment(environment)
+          .setSupportComponentProviders(
+            listOf(
+              CardComponent.PROVIDER,
+              WeChatComponent.PROVIDER,
+              RedirectComponent.PROVIDER,
+              GooglePayComponent.PROVIDER
             )
-            .build(),
-        ExampleClientSecretProvider()           // If you need to support recurring, you must provide your custom ClientSecretProvider
-    )
+          )
+          .build()
+   )
 ```
 
 #### Create Payment Intent (On the Merchant’s server)
@@ -126,12 +130,14 @@ After creating the payment intent, you can use Airwallex SDK to confirm payment 
 ### Edit shipping info
 Use `presentShippingFlow` to allow users to provide a shipping address as well as select a shipping method. `shipping` parameter is optional.
 ```kotlin
-    AirwallexStarter.presentShippingFlow(this, shipping,
-        object : Airwallex.ShippingResultListener {
-            override fun onCompleted(status: AirwallexShippingStatus) {
-
-            }
-        }
+    AirwallexStarter.presentShippingFlow(
+       activity = activity,
+       shipping = shipping,
+       shippingResultListener = object : Airwallex.ShippingResultListener {
+           override fun onCompleted(status: AirwallexShippingStatus) {
+               
+           }
+       }
     )
 ```
 
@@ -146,74 +152,95 @@ Use `presentShippingFlow` to allow users to provide a shipping address as well a
             android:scheme="airwallexcheckout" />
     </intent-filter>
 ```
-
-- Use `presentPaymentFlow` to complete the entire payment flow. Needs to pass in a `AirwallexSession` object
+- Before invoking Airwallex's UI components, you need to create an AirwallexSession object
+#### Create an AirwallexSession object
 ```kotlin
-    private fun buildSession(
-        paymentIntent: PaymentIntent? = null,
-        customerId: String? = null
-    ): AirwallexSession {
-        return when (checkoutMode) {
-            AirwallexCheckoutMode.PAYMENT -> {
-                AirwallexPaymentSession.Builder(
-                    paymentIntent = requireNotNull(
-                        paymentIntent,
-                        { "PaymentIntent is required" }
-                    ),
-                    countryCode = Settings.countryCode,
-                    googlePayOptions = GooglePayOptions(
-                        billingAddressRequired = true,
-                        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
-                    )
-                )
-                    .setReturnUrl(Settings.returnUrl)
-                    .build()
-            }
-            AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(
-                    customerId = requireNotNull(customerId, { "CustomerId is required" }),
-                    currency = Settings.currency,
-                    amount = BigDecimal.valueOf(Settings.price.toDouble()),
-                    nextTriggerBy = nextTriggerBy,
-                    countryCode = Settings.countryCode
-                )
-                    .setShipping(shipping)
-                    .setRequireCvc(requiresCVC)
-                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-                    .setReturnUrl(Settings.returnUrl)
-                    .build()
-            }
-            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                AirwallexRecurringWithIntentSession.Builder(
-                    paymentIntent = requireNotNull(
-                        paymentIntent,
-                        { "PaymentIntent is required" }
-                    ),
-                    customerId = requireNotNull(
-                        paymentIntent.customerId,
-                        { "CustomerId is required" }
-                    ),
-                    nextTriggerBy = nextTriggerBy,
-                    countryCode = Settings.countryCode
-                )
-                    .setRequireCvc(requiresCVC)
-                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-                    .setReturnUrl(Settings.returnUrl)
-                    .build()
-            }
-        }
-    }
-
-    val session = buildSession(paymentIntent, customerId)
-    AirwallexStarter.presentPaymentFlow(this, session,
-        object : Airwallex.PaymentResultListener {
-    
-            override fun onCompleted(status: AirwallexPaymentStatus) {
-                
-            }
-        }
-    )
+    private fun buildAirwallexPaymentSession(googlePayOptions: GooglePayOptions? = null, paymentIntent: PaymentIntent) = 
+        AirwallexPaymentSession.Builder(
+          paymentIntent = paymentIntent,
+          countryCode = Settings.countryCode,
+          googlePayOptions = googlePayOptions
+        )
+            .setRequireBillingInformation(true)
+            .setRequireEmail(Settings.requiresEmail.toBoolean())
+            .setReturnUrl(Settings.returnUrl)
+            .setAutoCapture(autoCapture)
+            .setHidePaymentConsents(false)
+            .setPaymentMethods(listOf())
+            .build()
 ```
+```kotlin
+    private fun buildAirwallexRecurringSession(customerId: String, clientSecret: String) = 
+        AirwallexRecurringSession.Builder(
+          customerId = customerId,
+          clientSecret = clientSecret,
+          currency = Settings.currency,
+          amount = BigDecimal.valueOf(Settings.price.toDouble()),
+          nextTriggerBy = nextTriggerBy,
+          countryCode = Settings.countryCode
+        )
+            .setRequireEmail(Settings.requiresEmail.toBoolean())
+            .setShipping(shipping)
+            .setRequireCvc(Settings.requiresCVC.toBoolean())
+            .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+            .setReturnUrl(Settings.returnUrl)
+            .setPaymentMethods(listOf())
+            .build()
+```
+```kotlin
+    private fun buildAirwallexRecurringWithIntentSession(paymentIntent: PaymentIntent) = 
+        AirwallexRecurringWithIntentSession.Builder(
+          paymentIntent = paymentIntent, 
+          customerId = requireNotNull(paymentIntent.customerId, { "CustomerId is required" }), 
+          nextTriggerBy = nextTriggerBy,
+          countryCode = Settings.countryCode
+        )
+            .setRequireEmail(Settings.requiresEmail.toBoolean())
+            .setRequireCvc(Settings.requiresCVC.toBoolean())
+            .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+            .setReturnUrl(Settings.returnUrl)
+            .setAutoCapture(autoCapture)
+            .setPaymentMethods(listOf())
+            .build()
+```
+- Use `presentEntirePaymentFlow` to launch the payment list page and complete the entire payment process
+```kotlin
+   AirwallexStarter.presentEntirePaymentFlow(
+       activity = activity,
+       session = session,
+       paymentResultListener = object : Airwallex.PaymentResultListener { 
+           override fun onCompleted(status: AirwallexPaymentStatus) {
+              //Handle the payment result
+           }
+       }
+   )
+```
+- Use `presentCardPaymentFlow` to launch the card payment page and complete the entire payment process.
+```kotlin
+   AirwallexStarter.presentCardPaymentFlow(
+       activity = activity,
+       session = session,
+       paymentResultListener = object : Airwallex.PaymentResultListener { 
+           override fun onCompleted(status: AirwallexPaymentStatus) {
+               //Handle the payment result
+           }
+       }
+   )
+```
+- The card payment page supports dialog mode, and you can also directly create an `AirwallexAddPaymentDialog`
+```kotlin
+   val dialog = AirwallexAddPaymentDialog(
+       activity = activity,
+       session = session,
+       paymentResultListener = object : Airwallex.PaymentResultListener {
+           override fun onCompleted(status: AirwallexPaymentStatus) {
+               //Handle the payment result
+           }
+       }
+   )
+   dialog.show()
+```
+
 - To obtain the payment result, you can use the `retrievePaymentIntent` method and check the latest status. Then you can prompt the shopper with the result.
 ```kotlin
     airwallex.retrievePaymentIntent(
@@ -289,34 +316,34 @@ After setting up the SDK, you are required to config your SDK with some paramete
 
 We provide some parameters that can be used to debug the SDK, you can call it in Application
 ```kotlin
-    Airwallex.initialize(
-        application,
-        AirwallexConfiguration.Builder()
-            .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
-            .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
-            .setSupportComponentProviders(
-                listOf(
-                    CardComponent.PROVIDER,
-                    WeChatComponent.PROVIDER,
-                    RedirectComponent.PROVIDER,
-                    GooglePayComponent.PROVIDER
-                )
-            )
-            .build(),
-        ExampleClientSecretProvider()           // If you need to support recurring, you must provide your custom ClientSecretProvider
-    )
+     Airwallex.initialize(
+         this,
+         AirwallexConfiguration.Builder()
+             .enableLogging(true) // Enable log in sdk, best set to false in release version
+             .saveLogToLocal(false)// Save the Airwallex logs locally. If you have your own saving strategy, please set this to false.
+             .setEnvironment(environment)
+             .setSupportComponentProviders(
+               listOf(
+                 CardComponent.PROVIDER, 
+                 WeChatComponent.PROVIDER,
+                 RedirectComponent.PROVIDER,
+                 GooglePayComponent.PROVIDER
+               )
+             )
+             .build()
+     )
 ```
 
 #### Create Payment Intent
 [Create Payment Intent (On the Merchant’s server)](#create-payment-intent-on-the-merchants-server)
 
 ### Step 3: Create AirwallexSession and Airwallex object
+[Create an AirwallexSession object](#create-an-airwallexSession-object)
+#### Create an Airwallex object
 ```kotlin
-val session = buildSession(paymentIntent, customerId)
-val airwallex = Airwallex(this@PaymentCartFragment)
+val airwallex = Airwallex(activity)
 ```
-
-### Confirm card payment with card and billing details or payment consent ID
+### Confirm payment with card and billing details
 ```kotlin
 // Confirm intent with card and billing
 airwallex.confirmPaymentIntent(
@@ -329,17 +356,7 @@ airwallex.confirmPaymentIntent(
         .setCvc("737")
         .build(),
     billing = null,
-    listener = object : Airwallex.PaymentResultListener {
-        override fun onCompleted(status: AirwallexPaymentStatus) {
-            // You can handle different payment statuses and perform UI action respectively here
-        }
-    }
-)
-
-// Or to confirm intent with a valid payment consent ID
-airwallex.confirmPaymentIntent(
-    session = session,
-    paymentConsentId = "cst_xxxxxxxxxx",
+    saveCard = false,//set saveCard to true to save the card information while making the payment.
     listener = object : Airwallex.PaymentResultListener {
         override fun onCompleted(status: AirwallexPaymentStatus) {
             // You can handle different payment statuses and perform UI action respectively here
@@ -347,7 +364,57 @@ airwallex.confirmPaymentIntent(
     }
 )
 ```
-
+### Confirm payment with Consent ID
+```kotlin
+     airwallex.confirmPaymentIntent(
+        session = session,
+        paymentConsentId = "cst_xxxxxxxxxx",
+        listener = object : Airwallex.PaymentResultListener { 
+            override fun onCompleted(status: AirwallexPaymentStatus) {
+              // You can handle different payment statuses and perform UI action respectively here 
+            } 
+        }
+     )
+```
+### Confirm payment with PaymentConsent
+```kotlin
+     airwallex.confirmPaymentIntent(
+        session = session as AirwallexPaymentSession,
+        paymentConsent = paymentConsent,
+        listener = object : Airwallex.PaymentResultListener {
+            override fun onCompleted(status: AirwallexPaymentStatus) {
+              // You can handle different payment statuses and perform UI action respectively here
+            }
+        }
+     )
+```
+### Retrieve the list of payment methods
+```kotlin
+     val methods = airwallex.retrieveAvailablePaymentMethods(
+        session = session,
+        params = RetrieveAvailablePaymentMethodParams.Builder(
+           clientSecret = getClientSecretFromSession(session),
+           pageNum = 1
+        )
+            .setActive(true)
+            .setTransactionCurrency(session.currency)
+            .setCountryCode(session.countryCode)
+            .build()
+     )
+```
+### Retrieve the list of saved cards
+```kotlin
+     val consents = airwallex.retrieveAvailablePaymentConsents(
+        RetrieveAvailablePaymentConsentsParams.Builder(
+           clientSecret = clientSecret,
+           customerId = customerId,
+           pageNum = 1
+        )
+            .setNextTriggeredBy(nextTriggerBy)
+            .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED)
+            .build()
+     )
+```
 ### Launch payment via Google Pay
 Before invoking the payment API, you need to follow the steps to[Set up Google Pay](#set-up-google-pay)
 ```kotlin
