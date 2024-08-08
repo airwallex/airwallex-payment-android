@@ -2,6 +2,7 @@ package com.airwallex.paymentacceptance.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.airwallex.paymentacceptance.ui.base.startActivity
 
 class SplashActivity : AppCompatActivity() {
 
@@ -10,7 +11,7 @@ class SplashActivity : AppCompatActivity() {
 
         window.decorView.postDelayed(
             {
-                MainActivity.startActivity(this@SplashActivity)
+                startActivity(MainActivity::class)
                 overridePendingTransition(0, android.R.anim.fade_out)
             },
             1000

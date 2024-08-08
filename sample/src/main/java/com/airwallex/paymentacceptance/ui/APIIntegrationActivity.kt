@@ -2,7 +2,6 @@ package com.airwallex.paymentacceptance.ui
 
 import CustomerDialog
 import DemoCardDialog
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.View
@@ -19,7 +18,7 @@ import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.card
 import com.airwallex.paymentacceptance.card3DS
 import com.airwallex.paymentacceptance.databinding.ActivityApiIntegrationBinding
-import com.airwallex.paymentacceptance.ui.base.BaseMvvmActivity
+import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity
 import com.airwallex.paymentacceptance.viewmodel.APIIntegrationViewModel
 import com.bumptech.glide.Glide
 import java.util.Locale
@@ -29,7 +28,7 @@ import java.util.Locale
  * you can flexibly organize your own UI based on these APIs.
  */
 class APIIntegrationActivity :
-    BaseMvvmActivity<ActivityApiIntegrationBinding, APIIntegrationViewModel>() {
+    BasePaymentActivity<ActivityApiIntegrationBinding, APIIntegrationViewModel>() {
 
     override fun getViewBinding(): ActivityApiIntegrationBinding {
         return ActivityApiIntegrationBinding.inflate(layoutInflater)
@@ -215,8 +214,5 @@ class APIIntegrationActivity :
 
     companion object {
         private const val TAG = "APIIntegrationActivity"
-        fun startActivity(context: Context) {
-            context.startActivity(Intent(context, APIIntegrationActivity::class.java))
-        }
     }
 }
