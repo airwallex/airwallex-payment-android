@@ -70,7 +70,7 @@ class LocalMockRepository: BaseRepository {
     override suspend fun getCustomerIdFromServer(): String {
         return withContext(Dispatchers.IO) {
             login()
-            if (Settings.cachedCustomerId.isNullOrEmpty()) {
+            Settings.cachedCustomerId.takeIf { !it.isNullOrEmpty() } ?: run {
                 val customerResponse = api.createCustomer(
                     mutableMapOf(
                         "request_id" to UUID.randomUUID().toString(),
@@ -92,8 +92,6 @@ class LocalMockRepository: BaseRepository {
                 val customerId = JSONObject(customerResponse.string())["id"].toString()
                 Settings.cachedCustomerId = customerId
                 customerId
-            } else {
-                Settings.cachedCustomerId!!
             }
         }
     }

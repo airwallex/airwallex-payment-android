@@ -8,7 +8,7 @@ import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PhysicalProduct
 import com.airwallex.android.core.model.Shipping
 
-val products = mutableListOf(
+val products = listOf(
     PhysicalProduct.Builder()
         .setCode("123")
         .setName("AirPods")
