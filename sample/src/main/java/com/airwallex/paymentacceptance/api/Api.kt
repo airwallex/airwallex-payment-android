@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.api
 
 import okhttp3.ResponseBody
 import retrofit2.http.Body

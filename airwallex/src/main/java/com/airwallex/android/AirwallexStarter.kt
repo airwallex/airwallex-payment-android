@@ -3,6 +3,7 @@ package com.airwallex.android
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexConfiguration
@@ -46,7 +47,7 @@ class AirwallexStarter {
          * @param paymentResultListener The callback of present entire payment flow
          */
         fun presentCardPaymentFlow(
-            activity: Activity,
+            activity: ComponentActivity,
             session: AirwallexSession,
             supportedCards: List<AirwallexSupportedCard> = enumValues<AirwallexSupportedCard>().toList(),
             paymentResultListener: Airwallex.PaymentResultListener,
@@ -91,7 +92,7 @@ class AirwallexStarter {
          * @param shippingResultListener The callback of present the shipping flow
          */
         fun presentShippingFlow(
-            activity: Activity,
+            activity: ComponentActivity,
             shipping: Shipping?,
             shippingResultListener: Airwallex.ShippingResultListener
         ) {
@@ -145,7 +146,7 @@ class AirwallexStarter {
          */
         @Deprecated(message = "Use presentEntirePaymentFlow() instead")
         fun presentPaymentFlow(
-            activity: Activity,
+            activity: ComponentActivity,
             session: AirwallexSession,
             paymentResultListener: Airwallex.PaymentResultListener
         ) {
@@ -164,7 +165,7 @@ class AirwallexStarter {
          * @param paymentResultListener The callback of present entire payment flow
          */
         fun presentEntirePaymentFlow(
-            activity: Activity,
+            activity: ComponentActivity,
             session: AirwallexSession,
             paymentResultListener: Airwallex.PaymentResultListener
         ) {

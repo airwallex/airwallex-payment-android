@@ -1,5 +1,6 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.api
 
+import com.airwallex.paymentacceptance.Settings
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
