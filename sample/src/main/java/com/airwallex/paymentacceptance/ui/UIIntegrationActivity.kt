@@ -1,20 +1,19 @@
 package com.airwallex.paymentacceptance.ui
 
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.airwallex.android.core.Airwallex.Companion.AIRWALLEX_CHECKOUT_SCHEMA
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ActivityUiIntegrationBinding
-import com.airwallex.paymentacceptance.ui.base.BaseMvvmActivity
+import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity
 import com.airwallex.paymentacceptance.viewmodel.UIIntegrationViewModel
 
 /**
  * This Activity demonstrates how to call the payment flow UI provided by Airwallex.
  */
 class UIIntegrationActivity :
-    BaseMvvmActivity<ActivityUiIntegrationBinding, UIIntegrationViewModel>() {
+    BasePaymentActivity<ActivityUiIntegrationBinding, UIIntegrationViewModel>() {
 
     override fun getViewBinding(): ActivityUiIntegrationBinding {
         return ActivityUiIntegrationBinding.inflate(layoutInflater)
@@ -117,9 +116,5 @@ class UIIntegrationActivity :
 
     companion object {
         private const val TAG = "UIIntegrationActivity"
-
-        fun startActivity(context: Context) {
-            context.startActivity(Intent(context, UIIntegrationActivity::class.java))
-        }
     }
 }

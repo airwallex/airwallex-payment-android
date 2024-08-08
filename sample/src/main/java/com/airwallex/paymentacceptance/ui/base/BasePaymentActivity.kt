@@ -15,7 +15,7 @@ import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
 import java.lang.reflect.ParameterizedType
 
-abstract class BaseMvvmActivity<VB : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
+abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
 
     open lateinit var mViewModel: VM
     open lateinit var mBinding: VB
