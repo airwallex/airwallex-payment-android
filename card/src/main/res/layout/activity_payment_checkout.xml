@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingHorizontal="24dp">
+
+    <TextView
+        android:id="@+id/header"
+        style="@style/AirwallexPaymentHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/airwallex_card_enter_cvv"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:id="@+id/tvTotalPrice"
+        style="@style/AirwallexPaymentBodyGrey50"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header" />
+
+    <com.airwallex.android.card.view.widget.CvcTextInputLayout
+        android:id="@+id/atlCardCvc"
+        android:layout_width="124dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTotalPrice"
+        android:layout_marginTop="16dp"
+        android:imeOptions="actionDone" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/rlPayNow"
+        style="@style/AirwallexPaymentButton"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginVertical="24dp"
+        android:text="@string/airwallex_card_pay_now" />
+
+</RelativeLayout>

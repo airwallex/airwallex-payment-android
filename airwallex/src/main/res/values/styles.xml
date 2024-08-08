@@ -1,19 +1,4 @@
 <resources>
-
-    <style name="AirwallexTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
-        <item name="boxStrokeColor">@color/airwallex_text_input_layout_stroke_color</item>
-        <item name="boxStrokeWidthFocused">@dimen/airwallex_input_layout_border_width_focused</item>
-        <item name="boxStrokeWidth">@dimen/airwallex_input_layout_border_width_default</item>
-        <item name="boxCornerRadiusBottomEnd">8dp</item>
-        <item name="boxCornerRadiusBottomStart">8dp</item>
-        <item name="boxCornerRadiusTopEnd">8dp</item>
-        <item name="boxCornerRadiusTopStart">8dp</item>
-        <item name="errorTextColor">@color/airwallex_color_red</item>
-        <item name="hintTextColor">@color/airwallex_text_input_hint_color</item>
-        <item name="boxStrokeErrorColor">@color/airwallex_color_red</item>
-        <item name="errorIconDrawable">@null</item>
-    </style>
-
     <style name="AirwallexCountryTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="boxStrokeColor">@color/airwallex_text_input_layout_stroke_color</item>
         <item name="boxStrokeWidthFocused">@dimen/airwallex_input_layout_border_width_focused</item>
@@ -36,12 +21,6 @@
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-    <style name="AirwallexPaymentHeader">
-        <item name="android:textSize">28sp</item>
-        <item name="android:textColor">@color/airwallex_color_grey_100</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="AirwallexPaymentSubHeaderBold">
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/airwallex_color_grey_100</item>
@@ -54,9 +33,11 @@
         <item name="android:textStyle">normal</item>
     </style>
 
-    <style name="AirwallexPaymentBodyGrey50">
-        <item name="android:textSize">15sp</item>
-        <item name="android:textColor">@color/airwallex_color_grey_50</item>
+    <style name="AirwallexBottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AirwallexBottomSheetStyleWrapper</item>
+    </style>
+    <style name="AirwallexBottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
 </resources>

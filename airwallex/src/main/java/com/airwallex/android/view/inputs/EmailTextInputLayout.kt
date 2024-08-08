@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Patterns
 import com.airwallex.android.R
+import com.airwallex.android.ui.widget.AirwallexTextInputLayout
+import com.airwallex.android.ui.widget.ValidatedInput
 
 internal class EmailTextInputLayout constructor(
     context: Context,

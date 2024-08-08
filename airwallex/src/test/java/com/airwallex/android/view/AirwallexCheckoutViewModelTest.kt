@@ -4,6 +4,7 @@ import android.app.Application
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import io.mockk.*
 import org.junit.Before
 import org.junit.Test
