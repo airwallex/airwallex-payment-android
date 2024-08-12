@@ -4,6 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import androidx.preference.PreferenceManager
+import com.airwallex.android.core.AirwallexCheckoutMode
+import com.airwallex.android.core.Environment
+import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.risk.AirwallexRisk
+import kotlin.properties.Delegates
 
 object Settings {
 
@@ -31,6 +36,12 @@ object Settings {
      * `IMPORTANT` Token cannot appear on the merchant side, this is just for Demo purposes only
      */
     var token: String? = null
+
+    var checkoutMode: AirwallexCheckoutMode by Delegates.observable(AirwallexCheckoutMode.PAYMENT) { _, _, newValue ->
+       if(newValue == AirwallexCheckoutMode.PAYMENT){
+           nextTriggerBy = SampleApplication.instance.resources.getStringArray(R.array.array_next_trigger_by)[1]
+       }
+    }
 
     private val sharedPreferences: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(SampleApplication.instance)
@@ -63,24 +74,27 @@ object Settings {
                 ?: defaultSdkEnv
         }
 
-    val checkoutMode: String
-        get() {
-            val defaultCheckoutMode =
-                SampleApplication.instance.resources.getStringArray(R.array.array_checkout_mode)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.checkout_mode),
-                defaultCheckoutMode
-            )
-                ?: defaultCheckoutMode
-        }
+    var environment = when (sdkEnv) {
+        context.resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
+        context.resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
+        context.resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
+        else -> throw Exception("No environment")
+    }
 
     val returnUrl: String
         get() {
-            return sharedPreferences.getString(context.getString(R.string.return_url), getMetadata(METADATA_KEY_RETURN_URL))
+            return sharedPreferences.getString(
+                context.getString(R.string.return_url),
+                getMetadata(METADATA_KEY_RETURN_URL)
+            )
                 ?: RETURN_URL
         }
 
-    val nextTriggerBy: String
+    var nextTriggerBy: String
+        set(value) {
+            sharedPreferences.edit().putString(context.getString(R.string.next_trigger_by), value)
+                .apply()
+        }
         get() {
             val defaultNextTriggeredBy =
                 SampleApplication.instance.resources.getStringArray(R.array.array_next_trigger_by)[0]
@@ -90,6 +104,7 @@ object Settings {
             )
                 ?: defaultNextTriggeredBy
         }
+
 
     val requiresCVC: String
         get() {
@@ -113,16 +128,6 @@ object Settings {
                 ?: defaultRequiresEmail
         }
 
-    val force3DS: String
-        get() {
-            val defaultForce3DS =
-                SampleApplication.instance.resources.getStringArray(R.array.array_force_3ds)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.force_3ds),
-                defaultForce3DS
-            )
-                ?: defaultForce3DS
-        }
 
     val autoCapture: String
         get() {
@@ -135,43 +140,12 @@ object Settings {
                 ?: defaultAutoCapture
         }
 
-    val directCardCheckout: String
-        get() {
-            val defaultDirectCardCheckout =
-                SampleApplication.instance.resources.getStringArray(R.array.array_card_checkout)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.card_checkout),
-                defaultDirectCardCheckout
-            )
-                ?: defaultDirectCardCheckout
-        }
-
-    val directCardCheckoutWithUI: String
-        get() {
-            val defaultDirectCardCheckout =
-                SampleApplication.instance.resources.getStringArray(R.array.array_card_checkout_with_ui)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.card_checkout_with_ui),
-                defaultDirectCardCheckout
-            )
-                ?: defaultDirectCardCheckout
-        }
-
-
-    val directGooglePayCheckout: String
-        get() {
-            val defaultDirectGooglePayCheckout =
-                SampleApplication.instance.resources.getStringArray(R.array.array_google_pay_checkout)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.google_pay_checkout),
-                defaultDirectGooglePayCheckout
-            )
-                ?: defaultDirectGooglePayCheckout
-        }
-
     val apiKey: String
         get() {
-            val value = sharedPreferences.getString(context.getString(R.string.api_key), getMetadata(METADATA_KEY_API_KEY))
+            val value = sharedPreferences.getString(
+                context.getString(R.string.api_key),
+                getMetadata(METADATA_KEY_API_KEY)
+            )
                 ?: API_KEY
 
             return value.cleaned()
@@ -179,7 +153,10 @@ object Settings {
 
     val clientId: String
         get() {
-            val value = sharedPreferences.getString(context.getString(R.string.client_id), getMetadata(METADATA_KEY_CLIENT_ID_KEY))
+            val value = sharedPreferences.getString(
+                context.getString(R.string.client_id),
+                getMetadata(METADATA_KEY_CLIENT_ID_KEY)
+            )
                 ?: CLIENT_ID
 
             return value.cleaned()
@@ -187,7 +164,10 @@ object Settings {
 
     val weChatAppId: String
         get() {
-            val value = sharedPreferences.getString(context.getString(R.string.wechat_app_id), getMetadata(METADATA_KEY_WECHAT_APP_ID_KEY))
+            val value = sharedPreferences.getString(
+                context.getString(R.string.wechat_app_id),
+                getMetadata(METADATA_KEY_WECHAT_APP_ID_KEY)
+            )
                 ?: WECHAT_APP_ID
 
             return value.cleaned()

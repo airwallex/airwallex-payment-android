@@ -1,4 +1,4 @@
-package com.airwallex.paymentacceptance
+package com.airwallex.paymentacceptance.ui
 
 import android.app.AlarmManager
 import android.app.AlertDialog
@@ -16,6 +16,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.paymentacceptance.R
+import com.airwallex.paymentacceptance.Settings
+import com.airwallex.paymentacceptance.api.Api
+import com.airwallex.paymentacceptance.api.ApiFactory
+import com.airwallex.paymentacceptance.safeLaunch
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -118,48 +123,25 @@ class PaymentSettingsFragment :
             sdkEnvPref.setValueIndex(0)
         }
 
-        val checkoutModePref: ListPreference? = findPreference(getString(R.string.checkout_mode))
-        if (checkoutModePref != null && checkoutModePref.value == null) {
-            checkoutModePref.setValueIndex(0)
-        }
-
         val nextTriggerByPref: ListPreference? = findPreference(getString(R.string.next_trigger_by))
-        if (nextTriggerByPref != null && nextTriggerByPref.value == null) {
-            nextTriggerByPref.setValueIndex(0)
+        nextTriggerByPref?.let {
+            if (it.value == null || Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
+                it.setValueIndex(1)
+            }
+            it.isEnabled = Settings.checkoutMode != AirwallexCheckoutMode.PAYMENT
         }
-        nextTriggerByPref?.isEnabled =
-            !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
 
         val requireCVCPref: ListPreference? = findPreference(getString(R.string.requires_cvc))
-        if (requireCVCPref != null && requireCVCPref.value == null) {
-            requireCVCPref.setValueIndex(0)
+        requireCVCPref?.let {
+            if (it.value == null || Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
+                it.setValueIndex(0)
+            }
+            it.isEnabled = Settings.checkoutMode != AirwallexCheckoutMode.PAYMENT
         }
-        requireCVCPref?.isEnabled =
-            !(checkoutModePref?.value == AirwallexCheckoutMode.PAYMENT.name && requireCVCPref != null)
 
         val requireEmailPref: ListPreference? = findPreference(getString(R.string.requires_email))
         if (requireEmailPref != null && requireEmailPref.value == null) {
             requireEmailPref.setValueIndex(0)
-        }
-
-        val force3DSPref: ListPreference? = findPreference(getString(R.string.force_3ds))
-        if (force3DSPref != null && force3DSPref.value == null) {
-            force3DSPref.setValueIndex(0)
-        }
-
-        val cardCheckoutPref: ListPreference? = findPreference(getString(R.string.card_checkout))
-        if (cardCheckoutPref != null && cardCheckoutPref.value == null) {
-            cardCheckoutPref.setValueIndex(0)
-        }
-
-        val cardCheckoutWithUIPref: ListPreference? = findPreference(getString(R.string.card_checkout_with_ui))
-        if (cardCheckoutWithUIPref != null && cardCheckoutWithUIPref.value == null) {
-            cardCheckoutWithUIPref.setValueIndex(0)
-        }
-
-        val googlePayCheckoutPref: ListPreference? = findPreference(getString(R.string.google_pay_checkout))
-        if (googlePayCheckoutPref != null && googlePayCheckoutPref.value == null) {
-            googlePayCheckoutPref.setValueIndex(0)
         }
 
         val autoCapturePref: ListPreference? = findPreference(getString(R.string.auto_capture))
@@ -215,8 +197,6 @@ class PaymentSettingsFragment :
             true
         }
 
-        toggleNextTriggerByStatus()
-
         onSharedPreferenceChanged(preferences, getString(R.string.api_key))
         onSharedPreferenceChanged(preferences, getString(R.string.client_id))
         onSharedPreferenceChanged(preferences, getString(R.string.price))
@@ -224,15 +204,10 @@ class PaymentSettingsFragment :
         onSharedPreferenceChanged(preferences, getString(R.string.country_code))
         onSharedPreferenceChanged(preferences, getString(R.string.wechat_app_id))
         onSharedPreferenceChanged(preferences, getString(R.string.sdk_env_id))
-        onSharedPreferenceChanged(preferences, getString(R.string.checkout_mode))
         onSharedPreferenceChanged(preferences, getString(R.string.return_url))
         onSharedPreferenceChanged(preferences, getString(R.string.next_trigger_by))
         onSharedPreferenceChanged(preferences, getString(R.string.requires_cvc))
         onSharedPreferenceChanged(preferences, getString(R.string.requires_email))
-        onSharedPreferenceChanged(preferences, getString(R.string.force_3ds))
-        onSharedPreferenceChanged(preferences, getString(R.string.card_checkout))
-        onSharedPreferenceChanged(preferences, getString(R.string.card_checkout_with_ui))
-        onSharedPreferenceChanged(preferences, getString(R.string.google_pay_checkout))
         onSharedPreferenceChanged(preferences, getString(R.string.auto_capture))
         registerOnSharedPreferenceChangeListener()
     }
@@ -280,31 +255,12 @@ class PaymentSettingsFragment :
             }
             getString(R.string.wechat_app_id) -> preference?.summary = Settings.weChatAppId
             getString(R.string.sdk_env_id) -> preference?.summary = Settings.sdkEnv
-            getString(R.string.checkout_mode) -> preference?.summary = Settings.checkoutMode
             getString(R.string.return_url) -> preference?.summary = Settings.returnUrl
             getString(R.string.next_trigger_by) -> preference?.summary = Settings.nextTriggerBy
             getString(R.string.requires_cvc) -> preference?.summary = Settings.requiresCVC
-            getString(R.string.force_3ds) -> preference?.summary = Settings.force3DS
-            getString(R.string.card_checkout) -> preference?.summary = Settings.directCardCheckout
-            getString(R.string.card_checkout_with_ui) -> preference?.summary = Settings.directCardCheckoutWithUI
-            getString(R.string.google_pay_checkout) -> preference?.summary = Settings.directGooglePayCheckout
             getString(R.string.auto_capture) -> preference?.summary = Settings.autoCapture
             getString(R.string.requires_email) -> preference?.summary = Settings.requiresEmail
         }
-        toggleNextTriggerByStatus()
-    }
-
-    private fun toggleNextTriggerByStatus() {
-        val checkoutModePref: ListPreference? =
-            findPreference(getString(R.string.checkout_mode)) as? ListPreference?
-        val nextTriggerByPref: ListPreference? =
-            findPreference(getString(R.string.next_trigger_by)) as? ListPreference?
-        val requireCVCByPref: ListPreference? =
-            findPreference(getString(R.string.requires_cvc)) as? ListPreference?
-        nextTriggerByPref?.isEnabled =
-            !(checkoutModePref?.value?.uppercase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && nextTriggerByPref != null)
-        requireCVCByPref?.isEnabled =
-            !(checkoutModePref?.value?.uppercase(Locale.getDefault()) == AirwallexCheckoutMode.PAYMENT.name && requireCVCByPref != null)
     }
 
     private fun registerOnSharedPreferenceChangeListener() {
