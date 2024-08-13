@@ -63,8 +63,9 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
             AirwallexLogger.error("GooglePayComponentProvider requestIsReadyToPay: resultCode = $resultCode")
             return false
         }
-        AirwallexLogger.info("GooglePayComponentProvider requestIsReadyToPay: skipIsReadyToPay = ${options.skipIsReadyToPay}")
-        if (options.skipIsReadyToPay == true) return true
+        val skipIsReadyToPay = session.googlePayOptions?.skipIsReadyToPay ?: false
+        AirwallexLogger.info("GooglePayComponentProvider requestIsReadyToPay: skipIsReadyToPay = $skipIsReadyToPay")
+        if (skipIsReadyToPay) return true
         val request = IsReadyToPayRequest.fromJson(isReadyToPayJson.toString())
         val task = paymentsClient.isReadyToPay(request)
         return suspendCoroutine { cont ->
