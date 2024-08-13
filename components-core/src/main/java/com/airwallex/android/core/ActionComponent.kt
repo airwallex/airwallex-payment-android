@@ -31,7 +31,6 @@ interface ActionComponent {
 
     fun retrieveSecurityToken(
         sessionId: String,
-        applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     )
 }

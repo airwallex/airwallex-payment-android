@@ -79,7 +79,6 @@ class RedirectComponent : ActionComponent {
 
     override fun retrieveSecurityToken(
         sessionId: String,
-        applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
         // Since only card payments require a device ID, this will not be executed
