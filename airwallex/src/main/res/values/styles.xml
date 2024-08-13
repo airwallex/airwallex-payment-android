@@ -40,4 +40,11 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="AirwallexBottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AirwallexBottomSheetStyleWrapper</item>
+    </style>
+    <style name="AirwallexBottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
 </resources>

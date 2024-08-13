@@ -72,7 +72,15 @@ data class GooglePayOptions(
     /**
      * If shippingAddressParameters is set to true, specify shipping address restrictions.
      */
-    val shippingAddressParameters: ShippingAddressParameters? = null
+    val shippingAddressParameters: ShippingAddressParameters? = null,
+
+    /**
+     * Setting skipIsReadyToPay to true will skip the IsReadyToPay check before invoking Google Pay.
+     * On certain models from brands like Xiaomi and Honor, the IsReadyToPay check always returns false, which can block Google Pay.
+     * Skipping this check will directly invoke the payment process.
+     * We advise you to carefully consider whether to skip this step.
+     */
+    val skipIsReadyToPay: Boolean? = false
 ) : Parcelable
 
 @Parcelize
