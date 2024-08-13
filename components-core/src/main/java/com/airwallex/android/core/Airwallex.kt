@@ -55,8 +55,10 @@ import com.airwallex.android.core.model.VerifyPaymentConsentParams
 import com.airwallex.risk.AirwallexRisk
 import com.airwallex.risk.RiskConfiguration
 import com.airwallex.risk.Tenant
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -368,6 +370,30 @@ class Airwallex internal constructor(
     }
 
     /**
+     * Retrieve available payment consents
+     *
+     * @param params [RetrieveAvailablePaymentConsentsParams] used to retrieve all [PaymentConsent]
+     * @param callback [AirwallexCallback] A callback interface to handle the success or failure of the network request.
+     */
+    fun retrieveAvailablePaymentConsents(
+        params: RetrieveAvailablePaymentConsentsParams,
+        callback: AirwallexCallback<Page<PaymentConsent>>
+    ) {
+        activity.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val result = retrieveAvailablePaymentConsents(params)
+                withContext(Dispatchers.Main) {
+                    callback.onSuccess(result)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    callback.onFailure(e)
+                }
+            }
+        }
+    }
+
+    /**
      * Retrieve available payment methods
      *
      * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve all [AvailablePaymentMethodType]
@@ -403,6 +429,32 @@ class Airwallex internal constructor(
         }
         AirwallexLogger.info("Airwallex retrieveAvailablePaymentMethods[${(session as? AirwallexPaymentSession)?.paymentIntent?.id}]: response.items.size = ${response.items.size}")
         return response
+    }
+
+    /**
+     * Retrieve available payment methods
+     *
+     * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve all [AvailablePaymentMethodType]
+     * @param session The [AirwallexSession] which contains session information for retrieving payment methods.
+     * @param params [RetrieveAvailablePaymentMethodParams] Parameters used to retrieve all [AvailablePaymentMethodType].
+     */
+    fun retrieveAvailablePaymentMethodsAsync(
+        session: AirwallexSession,
+        params: RetrieveAvailablePaymentMethodParams,
+        callback: AirwallexCallback<Page<AvailablePaymentMethodType>>
+    ) {
+        activity.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val result = retrieveAvailablePaymentMethods(session, params)
+                withContext(Dispatchers.Main) {
+                    callback.onSuccess(result)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    callback.onFailure(e)
+                }
+            }
+        }
     }
 
     /**
