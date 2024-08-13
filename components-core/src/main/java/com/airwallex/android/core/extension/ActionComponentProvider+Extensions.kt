@@ -23,7 +23,7 @@ internal fun ActionComponent.confirmGooglePayIntent(
     listener: Airwallex.PaymentResultListener
 ) {
     retrieveSecurityToken(
-        AirwallexRisk.sessionId.toString(), applicationContext,
+        AirwallexRisk.sessionId.toString(),
         object : SecurityTokenListener {
             @Suppress("LongMethod")
             override fun onResponse(deviceId: String) {

@@ -34,6 +34,7 @@ class GooglePayComponent : ActionComponent {
 
     override fun initialize(application: Application) {
         AirwallexActivityLaunch.initialize(application)
+        AirwallexSecurityConnector().initialize(application)
     }
 
     override fun handlePaymentIntentResponse(
@@ -129,12 +130,10 @@ class GooglePayComponent : ActionComponent {
 
     override fun retrieveSecurityToken(
         sessionId: String,
-        applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
         AirwallexSecurityConnector().retrieveSecurityToken(
             sessionId,
-            applicationContext,
             securityTokenListener
         )
     }

@@ -197,9 +197,9 @@ class GooglePayComponentTest {
         val connector = MockKGateway.implementation().constructorMockFactory.mockPlaceholder(
             AirwallexSecurityConnector::class
         )
-        every { connector.retrieveSecurityToken(any(), context, securityListener) } just runs
-        component.retrieveSecurityToken("id", context, securityListener)
-        verify(exactly = 1) { connector.retrieveSecurityToken(any(), context, securityListener) }
+        every { connector.retrieveSecurityToken(any(), securityListener) } just runs
+        component.retrieveSecurityToken("id", securityListener)
+        verify(exactly = 1) { connector.retrieveSecurityToken(any(), securityListener) }
     }
 
     private fun handlePaymentIntentResponse(

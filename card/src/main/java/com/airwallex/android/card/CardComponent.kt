@@ -24,6 +24,7 @@ class CardComponent : ActionComponent {
 
     override fun initialize(application: Application) {
         AirwallexActivityLaunch.initialize(application)
+        AirwallexSecurityConnector().initialize(application)
     }
 
     override fun handlePaymentIntentResponse(
@@ -80,12 +81,10 @@ class CardComponent : ActionComponent {
 
     override fun retrieveSecurityToken(
         sessionId: String,
-        applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
         AirwallexSecurityConnector().retrieveSecurityToken(
             sessionId,
-            applicationContext,
             securityTokenListener
         )
     }

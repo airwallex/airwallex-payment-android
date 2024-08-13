@@ -818,7 +818,7 @@ class Airwallex internal constructor(
                     return
                 }
                 provider.get().retrieveSecurityToken(
-                    AirwallexRisk.sessionId.toString(), applicationContext,
+                    AirwallexRisk.sessionId.toString(),
                     object : SecurityTokenListener {
                         override fun onResponse(deviceId: String) {
                             val device = paymentManager.buildDeviceInfo(deviceId)

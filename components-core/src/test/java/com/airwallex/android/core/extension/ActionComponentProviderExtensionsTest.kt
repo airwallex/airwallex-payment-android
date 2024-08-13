@@ -27,7 +27,7 @@ class ActionComponentProviderExtensionsTest {
 
     @Before
     fun setUp() {
-        every { actionComponent.retrieveSecurityToken(any(), context, capture(securityListener)) } answers {
+        every { actionComponent.retrieveSecurityToken(any(), capture(securityListener)) } answers {
             securityListener.captured.onResponse("device id")
         }
     }

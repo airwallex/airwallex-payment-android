@@ -25,8 +25,8 @@ dependencies {
     api project(':ui-core')
 
     // fingerprinting
-    implementation 'io.github.airwallex:TrustDefender-Profiling:7.0-59'
-    implementation 'io.github.airwallex:TrustDefender-Profiling-Connections:7.0-59'
+    implementation 'io.github.airwallex:TrustDefender-Profiling:7.3-42'
+    implementation 'io.github.airwallex:TrustDefender-Profiling-Connections:7.3-42'
 
     // test
     testImplementation "junit:junit:$junitVersion"
