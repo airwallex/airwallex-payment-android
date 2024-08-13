@@ -78,13 +78,13 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment:5.0.2'
+        implementation 'io.github.airwallex:payment:5.0.3'
         
         // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:5.0.2'
-        implementation 'io.github.airwallex:payment-redirect:5.0.2'
-        implementation 'io.github.airwallex:payment-wechat:5.0.2'
-        implementation 'io.github.airwallex:payment-googlepay:5.0.2'
+        implementation 'io.github.airwallex:payment-card:5.0.3'
+        implementation 'io.github.airwallex:payment-redirect:5.0.3'
+        implementation 'io.github.airwallex:payment-wechat:5.0.3'
+        implementation 'io.github.airwallex:payment-googlepay:5.0.3'
     }
 ```
 
@@ -302,11 +302,11 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment-components-core:5.0.2'
+        implementation 'io.github.airwallex:payment-components-core:5.0.3'
         
         // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:5.0.2'
-        implementation 'io.github.airwallex:payment-googlepay:5.0.2'
+        implementation 'io.github.airwallex:payment-card:5.0.3'
+        implementation 'io.github.airwallex:payment-googlepay:5.0.3'
     }
 ```
 

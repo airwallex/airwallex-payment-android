@@ -75,12 +75,13 @@ data class GooglePayOptions(
     val shippingAddressParameters: ShippingAddressParameters? = null,
 
     /**
-     * Setting skipIsReadyToPay to true will skip the IsReadyToPay check before invoking Google Pay.
-     * On certain models from brands like Xiaomi and Honor, the IsReadyToPay check always returns false, which can block Google Pay.
-     * Skipping this check will directly invoke the payment process.
+     * Setting skipReadinessCheck to true will skip the IsReadyToPay check before invoking Google Pay.
+     * @see [IsReadyToPay](https://developers.google.com/pay/api/android/reference/client#isReadyToPay)
+     * On certain models from brands like Xiaomi and Honor, IsReadyToPay always returns false, which can block Google Pay.
+     * Skipping this check will try to launch Google Pay sheet directly.
      * We advise you to carefully consider whether to skip this step.
      */
-    val skipIsReadyToPay: Boolean? = false
+    val skipReadinessCheck: Boolean? = false
 ) : Parcelable
 
 @Parcelize
