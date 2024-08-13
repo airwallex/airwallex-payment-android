@@ -20,27 +20,34 @@ class AirwallexSecurityConnector : SecurityConnector {
     private var profilingHandle: TMXProfilingHandle? = null
 
     /**
-     *  Retrieve the SecurityToken from Cardinals under the ID of Airwallex session
+     *  Initialize Signifyd with context
      *
-     *  @param sessionId ID of an Airwallex session
      *  @param applicationContext The Context of Application
-     *  @param securityTokenListener The listener of when retrieved the SecurityToken
      */
-    override fun retrieveSecurityToken(
-        sessionId: String,
-        applicationContext: Context,
-        securityTokenListener: SecurityTokenListener
-    ) {
+    override fun initialize(applicationContext: Context) {
         AirwallexLogger.debug("Start init TrustDefender")
         val profilingConnections: TMXProfilingConnectionsInterface = TMXProfilingConnections()
             .setConnectionTimeout(20, TimeUnit.SECONDS)
             .setRetryTimes(3)
         val config = TMXConfig().setOrgId(BuildConfigHelper.deviceFingerprintOrgId)
             .setContext(applicationContext)
+            .setRegisterForLocationServices(false)
         config.setProfilingConnections(profilingConnections)
         getInstance().init(config)
 
         AirwallexLogger.debug("Successfully init init-ed")
+    }
+
+    /**
+     *  Retrieve the SecurityToken from Signifyd under the ID of Airwallex session
+     *
+     *  @param sessionId ID of an Airwallex session
+     *  @param securityTokenListener The listener of when retrieved the SecurityToken
+     */
+    override fun retrieveSecurityToken(
+        sessionId: String,
+        securityTokenListener: SecurityTokenListener
+    ) {
         doProfile(sessionId, securityTokenListener)
     }
 
