@@ -132,6 +132,21 @@ class APIIntegrationViewModel : BaseViewModel() {
         )
         val session = createSession(googlePayOptions = googlePayOptions)
         val paymentMethods = loadPagedItems { pageNum ->
+            // If you are using Java and cannot directly call the suspend function,
+            // you can use the overloaded method `retrieveAvailablePaymentMethods` with a callback.
+            // To use, call:
+            // retrieveAvailablePaymentMethods(
+            //     session = <AirwallexSession>,
+            //     params = RetrieveAvailablePaymentMethodParams(<params>),
+            //     callback = object : AirwallexCallback<Page<AvailablePaymentMethodType>> {
+            //         override fun onSuccess(result: Page<AvailablePaymentMethodType>) {
+            //             // Handle success
+            //         }
+            //         override fun onFailure(error: Throwable) {
+            //             // Handle failure
+            //         }
+            //     }
+            // )
             airwallex!!.retrieveAvailablePaymentMethods(
                 session = session,
                 params = RetrieveAvailablePaymentMethodParams.Builder(
@@ -156,6 +171,20 @@ class APIIntegrationViewModel : BaseViewModel() {
         val customerId = getCustomerIdFromServer()
         val clientSecret = getClientSecretFromServer(customerId)
         val paymentConsents = loadPagedItems { pageNum ->
+            // If you are using Java and cannot directly call the suspend function,
+            // you can use the overloaded method `retrieveAvailablePaymentConsents` with a callback.
+            // To use, call:
+            // retrieveAvailablePaymentConsents(
+            //     params = RetrieveAvailablePaymentConsentsParams(<params>),
+            //     callback = object : AirwallexCallback<Page<PaymentConsent>> {
+            //         override fun onSuccess(result: Page<PaymentConsent>) {
+            //             // Handle success
+            //         }
+            //         override fun onFailure(error: Throwable) {
+            //             // Handle failure
+            //         }
+            //     }
+            // )
             airwallex!!.retrieveAvailablePaymentConsents(
                 RetrieveAvailablePaymentConsentsParams.Builder(
                     clientSecret = clientSecret,
