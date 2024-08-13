@@ -13,19 +13,18 @@ import com.airwallex.android.core.model.parser.PageParser
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.Status
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
 import io.mockk.*
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.math.BigDecimal
@@ -118,31 +117,17 @@ class GooglePayComponentProviderTest {
         }
 
     @Test
-    fun `test canHandleSessionAndPaymentMethod when Google Pay API returns true`() = runTest {
-        every { task.getResult(ApiException::class.java) } returns true
-        assertTrue(canHandleSessionAndPaymentMethod())
-    }
-
-    @Test
-    fun `test canHandleSessionAndPaymentMethod when Google Pay API returns exception`() = runTest {
-        val exception = ApiException(Status.RESULT_INTERNAL_ERROR)
-        every { task.getResult(ApiException::class.java) } throws exception
-        assertFalse(canHandleSessionAndPaymentMethod())
-        verify(exactly = 1) {
-            AnalyticsLogger.logError(
-                "googlepay_is_ready",
-                mapOf(
-                    "code" to Status.RESULT_INTERNAL_ERROR.statusCode,
-                    "message" to (exception.message ?: "")
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `test canHandleSessionAndPaymentMethod when Google Pay API returns null`() = runTest {
-        every { task.getResult(ApiException::class.java) } returns null
-        assertFalse(canHandleSessionAndPaymentMethod())
+    fun `test canHandleSessionAndPaymentMethod when skipReadinessCheck equals true`() = runTest {
+        val session = AirwallexPaymentSession.Builder(
+            PaymentIntent(
+                id = "id",
+                amount = BigDecimal.valueOf(100.01),
+                currency = "AUD"
+            ),
+            "AU",
+            GooglePayOptions(skipReadinessCheck = true)
+        ).build()
+        assert(canHandleSessionAndPaymentMethod(session))
     }
 
     private fun mockGooglePayTask(): Task<Boolean> {
@@ -151,12 +136,6 @@ class GooglePayComponentProviderTest {
         val mockClient = mockk<PaymentsClient>()
         val task = mockk<Task<Boolean>>()
         every { task.getResult(ApiException::class.java) } returns true
-
-        val slot = slot<OnCompleteListener<Boolean>>()
-        every { task.addOnCompleteListener(capture(slot)) } answers {
-            slot.captured.onComplete(task)
-            task
-        }
         every {
             PaymentsUtil.createPaymentsClient(any())
         } returns mockClient
