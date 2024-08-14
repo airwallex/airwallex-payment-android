@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.airwallex.android.core.data.AirwallexCVCParam
+import com.airwallex.android.core.data.AirwallexCheckoutParam
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.InvalidParamsException
@@ -55,10 +55,8 @@ import com.airwallex.android.core.model.VerifyPaymentConsentParams
 import com.airwallex.risk.AirwallexRisk
 import com.airwallex.risk.RiskConfiguration
 import com.airwallex.risk.Tenant
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -91,15 +89,6 @@ class Airwallex internal constructor(
          * @param status The status of checkout result.
          */
         fun onCompleted(status: AirwallexPaymentStatus)
-    }
-
-    interface PaymentFlowProvider {
-        /**
-         * This method is called when sdk need payment intent to complete payment
-         *
-         * @return PaymentIntent The payment intent of payment flow.
-         */
-        suspend fun providePaymentIntent(): PaymentIntent
     }
 
     init {
@@ -219,17 +208,28 @@ class Airwallex internal constructor(
         if (paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN) {
             AirwallexLogger.info("confirmPaymentIntent, need cvc")
             val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
-            provider?.get()?.handlePaymentData(
-                AirwallexCVCParam(
-                    activity,
-                    paymentMethod,
-                    session,
-                    paymentConsentId
-                )
-            ) { status: AirwallexPaymentStatus? ->
+            provider?.get()?.let { paymentProvider ->
+                paymentProvider.handlePaymentData(
+                    AirwallexCheckoutParam(
+                        activity,
+                        paymentMethod,
+                        session,
+                        paymentConsentId
+                    )
+                ) { status: AirwallexPaymentStatus? ->
+                    listener.onCompleted(
+                        status ?: AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(message = "cvc unknown error")
+                        )
+                    )
+                }
+            } ?: run {
+                AirwallexLogger.error("confirmPaymentIntent, Provider is null, unable to handle payment data")
                 listener.onCompleted(
-                    status ?: AirwallexPaymentStatus.Failure(
-                        AirwallexCheckoutException(message = "cvc unknown error")
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(
+                            message = "Cannot find a ComponentProvider with the type ActionComponentProviderType.CARD"
+                        )
                     )
                 )
             }
@@ -400,16 +400,12 @@ class Airwallex internal constructor(
         params: RetrieveAvailablePaymentConsentsParams,
         callback: AirwallexCallback<Page<PaymentConsent>>
     ) {
-        activity.lifecycleScope.launch(Dispatchers.IO) {
+        activity.lifecycleScope.launch {
             try {
                 val result = retrieveAvailablePaymentConsents(params)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
+                callback.onSuccess(result)
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
+                callback.onFailure(AirwallexCheckoutException(e = e))
             }
         }
     }
@@ -459,21 +455,17 @@ class Airwallex internal constructor(
      * @param session The [AirwallexSession] which contains session information for retrieving payment methods.
      * @param params [RetrieveAvailablePaymentMethodParams] Parameters used to retrieve all [AvailablePaymentMethodType].
      */
-    fun retrieveAvailablePaymentMethodsAsync(
+    fun retrieveAvailablePaymentMethods(
         session: AirwallexSession,
         params: RetrieveAvailablePaymentMethodParams,
         callback: AirwallexCallback<Page<AvailablePaymentMethodType>>
     ) {
-        activity.lifecycleScope.launch(Dispatchers.IO) {
+        activity.lifecycleScope.launch {
             try {
                 val result = retrieveAvailablePaymentMethods(session, params)
-                withContext(Dispatchers.Main) {
-                    callback.onSuccess(result)
-                }
+                callback.onSuccess(result)
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback.onFailure(e)
-                }
+                callback.onFailure(AirwallexCheckoutException(e = e))
             }
         }
     }

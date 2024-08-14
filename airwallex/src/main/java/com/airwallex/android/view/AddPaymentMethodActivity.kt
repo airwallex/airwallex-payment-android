@@ -69,12 +69,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     private var currentBrand: CardBrand? = null
 
-    private var paymentFlowProvider: Airwallex.PaymentFlowProvider? = null
-
-    fun setPaymentFlowProvider(paymentFlowProvider: Airwallex.PaymentFlowProvider?) {
-        this.paymentFlowProvider = paymentFlowProvider
-    }
-
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_close
     }
