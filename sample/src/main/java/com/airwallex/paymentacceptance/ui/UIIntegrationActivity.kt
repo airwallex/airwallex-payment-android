@@ -39,6 +39,10 @@ class UIIntegrationActivity :
             //launch the payment list page
             mViewModel.launchPaymentList(this)
         }
+        mBinding.btnCustomPaymentList.setOnClickListener {
+            setLoadingProgress(true)
+            mViewModel.launchCustomPaymentList(this)
+        }
         mBinding.btnCardPayment.setOnClickListener {
             setLoadingProgress(true)
             //launch the card payment page

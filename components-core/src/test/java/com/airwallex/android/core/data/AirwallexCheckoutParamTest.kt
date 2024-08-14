@@ -10,7 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class AirwallexCVCParamTest {
+class AirwallexCheckoutParamTest {
 
     private lateinit var activity: ComponentActivity
     private lateinit var paymentMethod: PaymentMethod
@@ -33,7 +33,7 @@ class AirwallexCVCParamTest {
     fun `test AirwallexCVCParam creation`() {
         val paymentConsentId = "12345"
 
-        val airwallexCVCParam = AirwallexCVCParam(
+        val airwallexCVCParam = AirwallexCheckoutParam(
             activity = activity,
             paymentMethod = paymentMethod,
             session = session,

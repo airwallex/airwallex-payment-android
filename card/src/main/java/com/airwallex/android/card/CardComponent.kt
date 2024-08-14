@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.card.view.cvc.PaymentCheckoutActivityLaunch
 
 import com.airwallex.android.core.*
-import com.airwallex.android.core.data.AirwallexCVCParam
+import com.airwallex.android.core.data.AirwallexCheckoutParam
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
@@ -65,7 +65,7 @@ class CardComponent : ActionComponent {
     }
 
     override fun <T, R> handlePaymentData(param: T?, callBack: (result: R?) -> Unit) {
-        if (param is AirwallexCVCParam) {
+        if (param is AirwallexCheckoutParam) {
             PaymentCheckoutActivityLaunch(param.activity)
                 .launchForResult(
                     PaymentCheckoutActivityLaunch.Args.Builder()
