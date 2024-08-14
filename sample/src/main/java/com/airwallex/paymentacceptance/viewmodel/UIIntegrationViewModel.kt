@@ -1,6 +1,5 @@
 package com.airwallex.paymentacceptance.viewmodel
 
-import android.app.Activity
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
@@ -77,6 +76,32 @@ class UIIntegrationViewModel : BaseViewModel() {
     }
 
     /**
+     * launch the payment list page
+     * You can customize the payment methods and their order in the payment list through parameters.
+     */
+    fun launchCustomPaymentList(activity: ComponentActivity) = run {
+        //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
+        val googlePayOptions = GooglePayOptions(
+            billingAddressRequired = true,
+            billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
+        )
+        val session = createSession(
+            googlePayOptions,
+            listOf("paypal", "card", "Googlepay", "fps", "alipayhk",)//customize the payment methods and their order
+        )
+        AirwallexStarter.presentEntirePaymentFlow(
+            activity = activity,
+            session = session,
+            paymentResultListener = object : Airwallex.PaymentResultListener {
+
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    _airwallexPaymentStatus.value = status
+                }
+            }
+        )
+    }
+
+    /**
      * launch the card payment page
      */
     fun launchCardPage(activity: ComponentActivity) = run {
@@ -128,14 +153,14 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * this method will create different types of Sessions based on the different modes.
      */
-    private suspend fun createSession(googlePayOptions: GooglePayOptions? = null): AirwallexSession {
+    private suspend fun createSession(googlePayOptions: GooglePayOptions? = null,  paymentMethods: List<String>? = listOf()): AirwallexSession {
         return when (checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
                 //get the paymentIntent object from your server
                 //please do not directly copy this method!
                 val paymentIntent = getPaymentIntentFromServer()
                 // build an AirwallexPaymentSession based on the paymentIntent
-                buildAirwallexPaymentSession(googlePayOptions, paymentIntent)
+                buildAirwallexPaymentSession(googlePayOptions, paymentIntent, paymentMethods)
             }
 
             AirwallexCheckoutMode.RECURRING -> {
@@ -144,7 +169,7 @@ class UIIntegrationViewModel : BaseViewModel() {
                 val customerId = getCustomerIdFromServer()
                 val clientSecret = getClientSecretFromServer(customerId)
                 //build an AirwallexRecurringSession based on the customerId and clientSecret
-                buildAirwallexRecurringSession(customerId, clientSecret)
+                buildAirwallexRecurringSession(customerId, clientSecret, paymentMethods)
             }
 
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
@@ -153,7 +178,7 @@ class UIIntegrationViewModel : BaseViewModel() {
                 val customerId = getCustomerIdFromServer()
                 val paymentIntent = getPaymentIntentFromServer(customerId = customerId)
                 //build an AirwallexRecurringWithIntentSession based on the paymentIntent
-                buildAirwallexRecurringWithIntentSession(paymentIntent)
+                buildAirwallexRecurringWithIntentSession(paymentIntent, paymentMethods)
             }
         }
     }
@@ -164,7 +189,8 @@ class UIIntegrationViewModel : BaseViewModel() {
      */
     private fun buildAirwallexPaymentSession(
         googlePayOptions: GooglePayOptions? = null,
-        paymentIntent: PaymentIntent
+        paymentIntent: PaymentIntent,
+        paymentMethods: List<String>? = listOf()
     ) =
         AirwallexPaymentSession.Builder(
             paymentIntent = paymentIntent,
@@ -176,7 +202,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setReturnUrl(Settings.returnUrl)
             .setAutoCapture(autoCapture)
             .setHidePaymentConsents(false)
-            .setPaymentMethods(listOf())
+            .setPaymentMethods(paymentMethods)
             .build()
 
     /**
@@ -184,7 +210,7 @@ class UIIntegrationViewModel : BaseViewModel() {
      * @param customerId get this from your sever
      * @param clientSecret get this from your sever
      */
-    private fun buildAirwallexRecurringSession(customerId: String, clientSecret: String) =
+    private fun buildAirwallexRecurringSession(customerId: String, clientSecret: String, paymentMethods: List<String>? = listOf()) =
         AirwallexRecurringSession.Builder(
             customerId = customerId,
             clientSecret = clientSecret,
@@ -198,14 +224,14 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setRequireCvc(Settings.requiresCVC.toBoolean())
             .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
             .setReturnUrl(Settings.returnUrl)
-            .setPaymentMethods(listOf())
+            .setPaymentMethods(paymentMethods)
             .build()
 
     /**
      * build an AirwallexRecurringWithIntentSession based on the customerId and paymentIntent
      * @param paymentIntent get this from your sever
      */
-    private fun buildAirwallexRecurringWithIntentSession(paymentIntent: PaymentIntent) =
+    private fun buildAirwallexRecurringWithIntentSession(paymentIntent: PaymentIntent, paymentMethods: List<String>? = listOf()) =
         AirwallexRecurringWithIntentSession.Builder(
             paymentIntent = paymentIntent,
             customerId = requireNotNull(
@@ -220,7 +246,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
             .setReturnUrl(Settings.returnUrl)
             .setAutoCapture(autoCapture)
-            .setPaymentMethods(listOf())
+            .setPaymentMethods(paymentMethods)
             .build()
 
 }

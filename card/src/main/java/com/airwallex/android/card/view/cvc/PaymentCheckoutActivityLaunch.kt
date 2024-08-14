@@ -27,7 +27,7 @@ class PaymentCheckoutActivityLaunch :
 
     constructor(fragment: Fragment) : super(
         fragment,
-       PaymentCheckoutActivity::class.java,
+        PaymentCheckoutActivity::class.java,
         REQUEST_CODE
     )
 

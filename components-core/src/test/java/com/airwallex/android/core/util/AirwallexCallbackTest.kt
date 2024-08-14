@@ -1,6 +1,7 @@
 package com.airwallex.android.core.util
 
 import com.airwallex.android.core.AirwallexCallback
+import com.airwallex.android.core.exception.AirwallexCheckoutException
 import io.mockk.Runs
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -33,9 +34,9 @@ class AirwallexCallbackTest {
     @Test
     fun testOnFailure() = runTest {
         every { callback.onFailure(any()) } just Runs
-        val sampleError = Exception("Test error")
-        callback.onFailure(sampleError)
-        verify { callback.onFailure(sampleError) }
+        val exception = AirwallexCheckoutException(e = Exception("Test error"))
+        callback.onFailure(exception)
+        verify { callback.onFailure(exception) }
         confirmVerified(callback)
     }
 }
