@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.data.AirwallexCheckoutParam
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.exception.AirwallexComponentDependencyException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.extension.confirmGooglePayIntent
@@ -227,9 +228,7 @@ class Airwallex internal constructor(
                 AirwallexLogger.error("confirmPaymentIntent, Provider is null, unable to handle payment data")
                 listener.onCompleted(
                     AirwallexPaymentStatus.Failure(
-                        AirwallexCheckoutException(
-                            message = "Cannot find a ComponentProvider with the type ActionComponentProviderType.CARD"
-                        )
+                        AirwallexComponentDependencyException(dependency = Dependency.CARD)
                     )
                 )
             }
@@ -323,7 +322,9 @@ class Airwallex internal constructor(
             }
         } else {
             listener.onCompleted(
-                AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing ${Dependency.GOOGLEPAY.value} dependency!"))
+                AirwallexPaymentStatus.Failure(
+                    AirwallexComponentDependencyException(dependency = Dependency.GOOGLEPAY)
+                )
             )
         }
     }
@@ -932,9 +933,7 @@ class Airwallex internal constructor(
                 if (provider == null) {
                     listener.onCompleted(
                         AirwallexPaymentStatus.Failure(
-                            AirwallexCheckoutException(
-                                message = "Missing ${Dependency.CARD.value} dependency!"
-                            )
+                            AirwallexComponentDependencyException(dependency = Dependency.CARD)
                         )
                     )
                     return
@@ -954,7 +953,7 @@ class Airwallex internal constructor(
                 )
             } catch (e: Exception) {
                 listener.onCompleted(
-                    AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Please add card dependency"))
+                    AirwallexPaymentStatus.Failure(AirwallexCheckoutException(e = e))
                 )
             }
         } else {
