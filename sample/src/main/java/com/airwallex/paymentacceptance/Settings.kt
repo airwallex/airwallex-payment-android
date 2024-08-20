@@ -148,7 +148,7 @@ object Settings {
             )
                 ?: API_KEY
 
-            return value.cleaned()
+            return value.cleaned().nullIfReplaceWithApiKey()
         }
 
     val clientId: String
@@ -159,7 +159,7 @@ object Settings {
             )
                 ?: CLIENT_ID
 
-            return value.cleaned()
+            return value.cleaned().nullIfReplaceWithClientID()
         }
 
     val weChatAppId: String
@@ -214,4 +214,12 @@ private fun String.cleaned() =
         .trim()
         .removePrefix("\"")
         .removeSuffix("\"")
+
+private fun String.nullIfReplaceWithApiKey(): String {
+    return if (this == "replace_with_api_key") "" else this
+}
+
+private fun String.nullIfReplaceWithClientID(): String {
+    return if (this == "replace_with_client_id") "" else this
+}
 

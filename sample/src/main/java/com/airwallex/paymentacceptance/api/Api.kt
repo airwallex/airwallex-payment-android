@@ -6,6 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface Api {
 
@@ -23,4 +24,11 @@ interface Api {
 
     @GET("/api/v1/pa/customers/{id}/generate_client_secret")
     suspend fun createClientSecret(@Path("id") customId: String): ResponseBody
+
+    @GET("/api/v1/pa/customers/{id}/generate_client_secret")
+    suspend fun createClientSecret(
+        @Path("id") customId: String,
+        @Query("apiKey") apiKey: String,
+        @Query("clientId") clientId: String
+    ): ResponseBody
 }
