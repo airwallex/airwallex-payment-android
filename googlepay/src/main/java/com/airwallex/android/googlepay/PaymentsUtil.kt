@@ -84,7 +84,7 @@ object PaymentsUtil {
                 )
                 put(
                     "allowedCardNetworks",
-                    JSONArray(cardList ?: Constants.DEFAULT_SUPPORTED_CARD_NETWORKS)
+                    JSONArray(cardList.takeIf { !it.isNullOrEmpty() } ?: Constants.DEFAULT_SUPPORTED_CARD_NETWORKS)
                 )
                 googlePayOptions.allowPrepaidCards?.let {
                     put("allowPrepaidCards", it)

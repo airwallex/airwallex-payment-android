@@ -8,6 +8,7 @@ import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.NextAction
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -53,9 +54,12 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
     ): Boolean {
         val options = session.googlePayOptions ?: return false
         val paymentsClient = PaymentsUtil.createPaymentsClient(activity)
+
+        val cardSchemes = filterCardSchemes(paymentMethodType.cardSchemes, options.allowedCardNetworks)
+        if (cardSchemes.isNullOrEmpty()) return false
         val isReadyToPayJson = PaymentsUtil.isReadyToPayRequest(
             options,
-            paymentMethodType.cardSchemes
+            cardSchemes
         ) ?: return false
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(activity)
@@ -87,5 +91,33 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
                 }
             }
         }
+    }
+
+    private fun filterCardSchemes(
+        cardSchemes: List<CardScheme>?,
+        allowedCardNetworks: List<String>
+    ): List<CardScheme>? {
+        AirwallexLogger.info("GooglePayComponentProvider filterCardSchemes: cardSchemes = $cardSchemes, allowedCardNetworks = $allowedCardNetworks")
+        val cards = if (allowedCardNetworks.isEmpty()) {
+            cardSchemes
+        } else {
+            cardSchemes?.filter { scheme ->
+                allowedCardNetworks.any { network ->
+                    scheme.name.equals(network, ignoreCase = true)
+                }
+            }
+        }
+        AirwallexLogger.info("GooglePayComponentProvider filterCardSchemes: cards = $cards")
+        if (cards.isNullOrEmpty()) {
+            AnalyticsLogger.logError(
+                "error_allowed_card_networks",
+                mapOf(
+                    "cardSchemes" to cardSchemes.toString(),
+                    "allowedCardNetworks" to allowedCardNetworks.toString()
+                )
+            )
+            AirwallexLogger.error("GooglePayComponentProvider allowed card networks is empty")
+        }
+        return cards
     }
 }

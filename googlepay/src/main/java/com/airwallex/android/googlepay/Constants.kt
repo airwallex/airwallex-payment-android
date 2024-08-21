@@ -6,10 +6,8 @@ object Constants {
         "CRYPTOGRAM_3DS"
     )
 
-    val DEFAULT_SUPPORTED_CARD_NETWORKS = listOf(
-        "MASTERCARD",
-        "VISA"
-    )
+    val DEFAULT_SUPPORTED_CARD_NETWORKS = com.airwallex.android.core.DEFAULT_SUPPORTED_CARD_NETWORKS
 
     const val PAYMENT_GATEWAY_TOKENIZATION_NAME = "airwallex"
+
 }

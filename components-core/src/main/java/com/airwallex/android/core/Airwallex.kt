@@ -228,11 +228,15 @@ class Airwallex internal constructor(
                 }
 
             coroutineScope.launch {
+                val cardSchemes =
+                    (session.googlePayOptions?.allowedCardNetworks.takeIf { !it.isNullOrEmpty() }
+                        ?: DEFAULT_SUPPORTED_CARD_NETWORKS)
+                        .map {
+                            CardScheme(it.uppercase())
+                        }
                 val canMakePayment = googlePayProvider.canHandleSessionAndPaymentMethod(
                     session,
-                    AvailablePaymentMethodType(
-                        "googlepay"
-                    ),
+                    AvailablePaymentMethodType("googlepay", cardSchemes = cardSchemes),
                     activity
                 )
                 if (canMakePayment) {
