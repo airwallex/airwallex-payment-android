@@ -99,6 +99,7 @@ class GooglePayComponent : ActionComponent {
                 result?.exception?.let { exception ->
                     it.onCompleted(AirwallexPaymentStatus.Failure(exception))
                 }
+                listener = null
                 return true
             } ?: return false
         } else if (requestCode == GooglePayActivityLaunch.REQUEST_CODE) {
@@ -122,6 +123,7 @@ class GooglePayComponent : ActionComponent {
                     AirwallexLogger.info("GooglePayComponent handleActivityResult: unknown result")
                 }
             }
+            listener = null
             return true
         }
         return false
