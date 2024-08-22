@@ -240,7 +240,20 @@ class Airwallex internal constructor(
                     activity
                 )
                 if (canMakePayment) {
-                    checkoutGooglePay(session = session, listener = listener)
+                    checkoutGooglePay(session = session, listener = object : PaymentResultListener {
+                        override fun onCompleted(status: AirwallexPaymentStatus) {
+                            if (status is AirwallexPaymentStatus.Success) {
+                                AnalyticsLogger.logAction(
+                                    "payment_success",
+                                    mapOf(
+                                        "payment_method" to PaymentMethodType.GOOGLEPAY.value,
+                                        "skipReadinessCheck" to (session.googlePayOptions?.skipReadinessCheck == true)
+                                    )
+                                )
+                            }
+                            listener.onCompleted(status)
+                        }
+                    })
                 } else {
                     listener.onCompleted(
                         AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Payment not supported via Google Pay."))

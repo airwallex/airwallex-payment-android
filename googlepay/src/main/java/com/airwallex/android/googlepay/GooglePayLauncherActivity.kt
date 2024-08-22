@@ -57,7 +57,8 @@ class GooglePayLauncherActivity : ComponentActivity() {
                         )
                         AnalyticsLogger.logError(
                             "googlepay_payment_data_retrieve",
-                            exception = exception
+                            exception = exception,
+                            additionalInfo = mapOf("skipReadinessCheck" to viewModel.getSkipReadinessCheck())
                         )
                         finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
                     }
@@ -66,7 +67,8 @@ class GooglePayLauncherActivity : ComponentActivity() {
                         AirwallexCheckoutException(message = "Google Pay missing result data")
                     AnalyticsLogger.logError(
                         "googlepay_payment_data_retrieve",
-                        exception = exception
+                        exception = exception,
+                        additionalInfo = mapOf("skipReadinessCheck" to viewModel.getSkipReadinessCheck())
                     )
                     finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
                 }
@@ -82,7 +84,10 @@ class GooglePayLauncherActivity : ComponentActivity() {
                 val statusCode = status.statusCode.toString()
                 AnalyticsLogger.logError(
                     "googlepay_payment_data_retrieve",
-                    mutableMapOf("code" to statusCode).apply {
+                    mutableMapOf(
+                        "code" to statusCode,
+                        "skipReadinessCheck" to viewModel.getSkipReadinessCheck()
+                    ).apply {
                         putIfNotNull("message", statusMessage)
                     }
                 )
@@ -96,7 +101,11 @@ class GooglePayLauncherActivity : ComponentActivity() {
             else -> {
                 val exception =
                     AirwallexCheckoutException(message = "Google Pay returned an unexpected result code.")
-                AnalyticsLogger.logError("googlepay_payment_data_retrieve", exception = exception)
+                AnalyticsLogger.logError(
+                    "googlepay_payment_data_retrieve",
+                    exception = exception,
+                    additionalInfo = mapOf("skipReadinessCheck" to viewModel.getSkipReadinessCheck())
+                )
                 finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
             }
         }

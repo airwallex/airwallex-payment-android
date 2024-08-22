@@ -49,11 +49,21 @@ object AnalyticsLogger {
         tracker?.error(eventName, additionalInfo)
     }
 
-    fun logError(eventName: String, url: String? = null, exception: AirwallexException) {
+    fun logError(
+        eventName: String,
+        url: String? = null,
+        exception: AirwallexException,
+        additionalInfo: Map<String, Any>? = null
+    ) {
         val extraInfo = mutableMapOf<String, Any>("eventType" to "pa_api_request")
         url?.takeIf { it.isNotEmpty() }?.let { extraInfo["url"] = it }
-        exception.getAirwallexCodeOrStatusCode().takeIf { it.isNotEmpty() }?.let { extraInfo["code"] = it }
-        exception.getAirwallexMessageOrMessage()?.takeIf { it.isNotEmpty() }?.let { extraInfo["message"] = it }
+        exception.getAirwallexCodeOrStatusCode().takeIf { it.isNotEmpty() }
+            ?.let { extraInfo["code"] = it }
+        exception.getAirwallexMessageOrMessage()?.takeIf { it.isNotEmpty() }
+            ?.let { extraInfo["message"] = it }
+        additionalInfo?.let {
+            extraInfo.putAll(it)
+        }
         tracker?.error(eventName, extraInfo)
     }
 

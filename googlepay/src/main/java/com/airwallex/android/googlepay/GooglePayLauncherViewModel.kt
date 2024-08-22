@@ -33,6 +33,10 @@ internal class GooglePayLauncherViewModel(
         return paymentsClient.loadPaymentData(request)
     }
 
+    fun getSkipReadinessCheck(): Boolean {
+        return googlePayOptions.skipReadinessCheck == true
+    }
+
     internal class Factory(
         private val application: Application,
         private val args: GooglePayActivityLaunch.Args
