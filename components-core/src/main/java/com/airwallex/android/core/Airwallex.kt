@@ -230,7 +230,7 @@ class Airwallex internal constructor(
             coroutineScope.launch {
                 val cardSchemes = (
                         session.googlePayOptions?.allowedCardNetworks.takeIf { !it.isNullOrEmpty() }
-                            ?: DEFAULT_SUPPORTED_CARD_NETWORKS
+                            ?: googlePaySupportedNetworks()
                         )
                     .map {
                         CardScheme(it.uppercase())

@@ -42,6 +42,14 @@ class GooglePayLauncherActivity : ComponentActivity() {
 
     @Suppress("LongMethod")
     private fun onGooglePayResult(taskResult: ApiTaskResult<PaymentData>) {
+        fun logError(exception: AirwallexCheckoutException) {
+            AnalyticsLogger.logError(
+                "googlepay_payment_data_retrieve",
+                exception = exception,
+                additionalInfo = mapOf("skipReadinessCheck" to viewModel.getSkipReadinessCheck())
+            )
+        }
+
         when (taskResult.status.statusCode) {
             CommonStatusCodes.SUCCESS -> {
                 val result = taskResult.result
@@ -56,21 +64,13 @@ class GooglePayLauncherActivity : ComponentActivity() {
                             message = "Google Pay missing token data",
                             e = e
                         )
-                        AnalyticsLogger.logError(
-                            "googlepay_payment_data_retrieve",
-                            exception = exception,
-                            additionalInfo = mapOf("skipReadinessCheck" to viewModel.getSkipReadinessCheck())
-                        )
+                        logError(exception)
                         finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
                     }
                 } else {
                     val exception =
                         AirwallexCheckoutException(message = "Google Pay missing result data")
-                    AnalyticsLogger.logError(
-                        "googlepay_payment_data_retrieve",
-                        exception = exception,
-                        additionalInfo = mapOf("skipReadinessCheck" to viewModel.getSkipReadinessCheck())
-                    )
+                    logError(exception)
                     finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
                 }
             }
@@ -83,30 +83,16 @@ class GooglePayLauncherActivity : ComponentActivity() {
                 val status = taskResult.status
                 val statusMessage = status.statusMessage.orEmpty()
                 val statusCode = status.statusCode.toString()
-                AnalyticsLogger.logError(
-                    "googlepay_payment_data_retrieve",
-                    mutableMapOf(
-                        "code" to statusCode,
-                        "skipReadinessCheck" to viewModel.getSkipReadinessCheck()
-                    ).apply {
-                        putIfNotNull("message", statusMessage)
-                    }
-                )
-                finishWithResult(
-                    GooglePayActivityLaunch.Result.Failure(
-                        AirwallexCheckoutException(message = "Google Pay failed with error $statusCode: $statusMessage")
-                    )
-                )
+                val exception =
+                    AirwallexCheckoutException(message = "Google Pay failed with error $statusCode: $statusMessage")
+                logError(exception)
+                finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
             }
 
             else -> {
                 val exception =
                     AirwallexCheckoutException(message = "Google Pay returned an unexpected result code.")
-                AnalyticsLogger.logError(
-                    "googlepay_payment_data_retrieve",
-                    exception = exception,
-                    additionalInfo = mapOf("skipReadinessCheck" to viewModel.getSkipReadinessCheck())
-                )
+                logError(exception)
                 finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
             }
         }

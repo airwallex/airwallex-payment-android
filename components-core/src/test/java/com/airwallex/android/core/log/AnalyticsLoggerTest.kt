@@ -54,7 +54,7 @@ class AnalyticsLoggerTest {
         }
 
         val exception = mockk<AirwallexException>(relaxed = true)
-        AnalyticsLogger.logError("error_name", "http://example.com", exception)
+        AnalyticsLogger.logApiError("error_name", "http://example.com", exception)
 
         verify(exactly = 1) {
             anyConstructed<Tracker>().error(
@@ -71,7 +71,7 @@ class AnalyticsLoggerTest {
         verify(exactly = 1) {
             anyConstructed<Tracker>().error(
                 "error_name",
-                mapOf("eventType" to "pa_api_request", "code" to "code", "message" to "message")
+                mapOf("code" to "code", "message" to "message")
             )
         }
 

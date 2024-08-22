@@ -82,7 +82,7 @@ data class GooglePayOptions(
      * If you want to support MAESTRO, set the value for allowedCardNetworks. Note that if you add MAESTRO, your countryCode must include BR.
      * If you include types that we do not support, the payment process will fail.
      */
-    val allowedCardNetworks: List<String> = DEFAULT_SUPPORTED_CARD_NETWORKS,
+    val allowedCardNetworks: List<String> = googlePaySupportedNetworks(),
 
     /**
      * Setting skipReadinessCheck to true will skip the IsReadyToPay check before invoking Google Pay.
@@ -110,12 +110,3 @@ data class ShippingAddressParameters(
     val allowedCountryCodes: List<String>? = null,
     val phoneNumberRequired: Boolean? = false
 ) : Parcelable
-
-val DEFAULT_SUPPORTED_CARD_NETWORKS = listOf(
-    "AMEX",
-    "DISCOVER",
-    "JCB",
-    "MASTERCARD",
-    "VISA",
-   // "MAESTRO"
-)
