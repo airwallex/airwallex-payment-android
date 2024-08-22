@@ -26,7 +26,7 @@ class PaymentsUtilTest {
             request.toString(),
             "{\"apiVersionMinor\":0,\"apiVersion\":2,\"allowedPaymentMethods\":" +
                     "[{\"type\":\"CARD\",\"parameters\":{\"cvcRequired\":true,\"allowedAuthMethods\":[\"PAN_ONLY\"," +
-                    "\"CRYPTOGRAM_3DS\"],\"allowedCardNetworks\":[\"MASTERCARD\",\"VISA\"]}}]}"
+                    "\"CRYPTOGRAM_3DS\"],\"allowedCardNetworks\":[\"AMEX\",\"DISCOVER\",\"JCB\",\"MASTERCARD\",\"VISA\"]}}]}"
         )
     }
 
@@ -64,7 +64,7 @@ class PaymentsUtilTest {
                     "[{\"type\":\"CARD\",\"parameters\":{\"cvcRequired\":true,\"assuranceDetailsRequired\":true," +
                     "\"allowedAuthMethods\":[\"PAN_ONLY\",\"CRYPTOGRAM_3DS\"],\"billingAddressRequired\":true," +
                     "\"billingAddressParameters\":{\"format\":\"FULL\",\"phoneNumberRequired\":true}," +
-                    "\"allowedCardNetworks\":[\"MASTERCARD\",\"VISA\"],\"allowCreditCards\":false," +
+                    "\"allowedCardNetworks\":[\"AMEX\",\"DISCOVER\",\"JCB\",\"MASTERCARD\",\"VISA\"],\"allowCreditCards\":false," +
                     "\"allowPrepaidCards\":false}}]}"
         )
     }

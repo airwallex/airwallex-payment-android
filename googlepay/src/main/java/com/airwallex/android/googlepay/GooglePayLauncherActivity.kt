@@ -40,6 +40,7 @@ class GooglePayLauncherActivity : ComponentActivity() {
         task.addOnCompleteListener(googlePayLauncher::launch)
     }
 
+    @Suppress("LongMethod")
     private fun onGooglePayResult(taskResult: ApiTaskResult<PaymentData>) {
         when (taskResult.status.statusCode) {
             CommonStatusCodes.SUCCESS -> {

@@ -228,32 +228,36 @@ class Airwallex internal constructor(
                 }
 
             coroutineScope.launch {
-                val cardSchemes =
-                    (session.googlePayOptions?.allowedCardNetworks.takeIf { !it.isNullOrEmpty() }
-                        ?: DEFAULT_SUPPORTED_CARD_NETWORKS)
-                        .map {
-                            CardScheme(it.uppercase())
-                        }
+                val cardSchemes = (
+                        session.googlePayOptions?.allowedCardNetworks.takeIf { !it.isNullOrEmpty() }
+                            ?: DEFAULT_SUPPORTED_CARD_NETWORKS
+                        )
+                    .map {
+                        CardScheme(it.uppercase())
+                    }
                 val canMakePayment = googlePayProvider.canHandleSessionAndPaymentMethod(
                     session,
                     AvailablePaymentMethodType("googlepay", cardSchemes = cardSchemes),
                     activity
                 )
                 if (canMakePayment) {
-                    checkoutGooglePay(session = session, listener = object : PaymentResultListener {
-                        override fun onCompleted(status: AirwallexPaymentStatus) {
-                            if (status is AirwallexPaymentStatus.Success) {
-                                AnalyticsLogger.logAction(
-                                    "payment_success",
-                                    mapOf(
-                                        "payment_method" to PaymentMethodType.GOOGLEPAY.value,
-                                        "skipReadinessCheck" to (session.googlePayOptions?.skipReadinessCheck == true)
+                    checkoutGooglePay(
+                        session = session,
+                        listener = object : PaymentResultListener {
+                            override fun onCompleted(status: AirwallexPaymentStatus) {
+                                if (status is AirwallexPaymentStatus.Success) {
+                                    AnalyticsLogger.logAction(
+                                        "payment_success",
+                                        mapOf(
+                                            "payment_method" to PaymentMethodType.GOOGLEPAY.value,
+                                            "skipReadinessCheck" to (session.googlePayOptions?.skipReadinessCheck == true)
+                                        )
                                     )
-                                )
+                                }
+                                listener.onCompleted(status)
                             }
-                            listener.onCompleted(status)
                         }
-                    })
+                    )
                 } else {
                     listener.onCompleted(
                         AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Payment not supported via Google Pay."))
