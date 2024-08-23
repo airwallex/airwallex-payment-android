@@ -138,7 +138,7 @@ class GooglePayComponentTest {
         every { intent.getExtraResult<ThreeDSecurityActivityLaunch.Result>() } returns result
 
         handlePaymentIntentResponse()
-        assert(component.handleActivityResult(1006, RESULT_OK, intent))
+        assert(component.handleActivityResult(1006, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Success("intentId")) }
     }
 
@@ -151,7 +151,7 @@ class GooglePayComponentTest {
         every { intent.getExtraResult<ThreeDSecurityActivityLaunch.Result>() } returns result
 
         handlePaymentIntentResponse()
-        assert(component.handleActivityResult(1006, RESULT_OK, intent))
+        assert(component.handleActivityResult(1006, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Failure(exception)) }
     }
 
@@ -161,7 +161,7 @@ class GooglePayComponentTest {
         every { intent.getExtraResult<GooglePayActivityLaunch.Result>() } returns GooglePayActivityLaunch.Result.Cancel
 
         handlePaymentIntentResponse()
-        assert(component.handleActivityResult(1007, RESULT_OK, intent))
+        assert(component.handleActivityResult(1007, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Cancel) }
     }
 
@@ -174,7 +174,7 @@ class GooglePayComponentTest {
         )
 
         handlePaymentIntentResponse()
-        assert(component.handleActivityResult(1007, RESULT_OK, intent))
+        assert(component.handleActivityResult(1007, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Failure(exception)) }
     }
 
@@ -187,7 +187,7 @@ class GooglePayComponentTest {
         )
 
         handlePaymentIntentResponse()
-        assert(component.handleActivityResult(1007, RESULT_OK, intent))
+        assert(component.handleActivityResult(1007, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Success("id", null, map)) }
     }
 

@@ -408,8 +408,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        airwallex.handlePaymentData(requestCode, resultCode, data)
-
         when (requestCode) {
             AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK) {

@@ -41,10 +41,6 @@ class AirwallexPluginsTest {
 
     private class TestComponnent : ActionComponent {
 
-        override fun initialize(application: Application) {
-
-        }
-
         override fun handlePaymentIntentResponse(
             paymentIntentId: String,
             nextAction: NextAction?,
@@ -58,14 +54,11 @@ class AirwallexPluginsTest {
             // no-op
         }
 
-        override fun <T, R> handlePaymentData(param: T?, callBack: (result: R?) -> Unit) {
-
-        }
-
         override fun handleActivityResult(
             requestCode: Int,
             resultCode: Int,
-            data: Intent?
+            data: Intent?,
+            listener: Airwallex.PaymentResultListener?
         ): Boolean {
             return false
         }

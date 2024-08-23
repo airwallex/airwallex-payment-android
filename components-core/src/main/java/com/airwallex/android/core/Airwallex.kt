@@ -22,6 +22,7 @@ import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.BankResponse
 import com.airwallex.android.core.model.Billing
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.ConfirmPaymentIntentParams
 import com.airwallex.android.core.model.ContinuePaymentIntentParams
 import com.airwallex.android.core.model.CreatePaymentConsentParams
@@ -132,6 +133,7 @@ class Airwallex internal constructor(
      * @return `true` if the activity result was handled by this function,
      * otherwise `false`
      */
+    @Deprecated("This method will be removed in future versions")
     fun handlePaymentData(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         val providers = listOf(
             AirwallexPlugins.getProvider(ActionComponentProviderType.CARD),
@@ -145,7 +147,6 @@ class Airwallex internal constructor(
         }
         return false
     }
-
     /**
      * Confirm a payment intent with card and billing details
      *
