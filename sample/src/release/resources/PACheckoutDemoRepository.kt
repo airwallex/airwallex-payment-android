@@ -22,7 +22,7 @@ object PACheckoutEnvironment {
         get() = when (AirwallexPlugins.environment) {
             Environment.STAGING -> "https://staging-pacheckoutdemo.airwallex.com/"
             Environment.DEMO -> "https://demo-pacheckoutdemo.airwallex.com/"
-            else -> ""//Our demo does not support PRODUCTION. Please validate it within your own app.
+            else -> AirwallexPlugins.environment.baseUrl()
         }
 }
 
@@ -37,10 +37,18 @@ class PACheckoutDemoRepository : BaseRepository {
                 .create(Api::class.java)
         }
 
+    private suspend fun login() {
+        if (AirwallexPlugins.environment == Environment.PRODUCTION) {
+            val response = api.authentication(Settings.apiKey, Settings.clientId)
+            Settings.token = JSONObject(response.string())["token"].toString()
+        }
+    }
+
     override suspend fun getPaymentIntentFromServer(
         force3DS: Boolean?,
         customerId: String?
     ): PaymentIntent = checkToken {
+        login()
         val body = mutableMapOf(
             "apiKey" to Settings.apiKey,
             "clientId" to Settings.clientId,
@@ -70,6 +78,7 @@ class PACheckoutDemoRepository : BaseRepository {
     }
 
     override suspend fun getCustomerIdFromServer(): String = checkToken {
+        login()
         Settings.cachedCustomerId.takeIf { !it.isNullOrEmpty() } ?: run {
             val customerResponse = api.createCustomer(
                 mutableMapOf(

@@ -1,0 +1,67 @@
+tasks.register('backupAndReplaceFile') {
+    doLast {
+        def sourceFile = file('src/main/java/com/airwallex/paymentacceptance/repo/PACheckoutDemoRepository.kt')
+        def backupDir = file("${buildDir}/tempBackup")
+        def backupFile = file("${backupDir}/PACheckoutDemoRepository.kt")
+        def replacementFile = file('src/release/resources/PACheckoutDemoRepository.kt')
+
+        if (!sourceFile.exists()) {
+            throw new GradleException("Source file not found: $sourceFile")
+        }
+        if (!replacementFile.exists()) {
+            throw new GradleException("Replacement file not found: $replacementFile")
+        }
+
+        if (!backupDir.exists()) {
+            backupDir.mkdirs()
+        }
+
+        println("Backing up original file to ${backupFile}")
+        copy {
+            from sourceFile
+            into backupDir
+            rename {
+                sourceFile.name
+            }
+        }
+
+        println("Replacing ${sourceFile} with contents of ${replacementFile}")
+        sourceFile.text = replacementFile.text
+    }
+}
+
+tasks.register('restoreOriginalFile') {
+    doLast {
+        def sourceFile = file('src/main/java/com/airwallex/paymentacceptance/repo/PACheckoutDemoRepository.kt')
+        def backupDir = file("${buildDir}/tempBackup")
+        def backupFile = file("${backupDir}/PACheckoutDemoRepository.kt")
+
+        if (!backupFile.exists()) {
+            throw new GradleException("Backup file not found: $backupFile")
+        }
+
+        println("Restoring original file from ${backupFile}")
+        sourceFile.text = backupFile.text
+
+        if (backupFile.delete()) {
+            println("Deleted backup file ${backupFile}")
+        } else {
+            println("Failed to delete backup file ${backupFile}")
+        }
+    }
+}
+
+tasks.configureEach { task ->
+    if (task.name.startsWith('assembleRelease') || task.name.startsWith('bundleRelease')) {
+        task.dependsOn backupAndReplaceFile
+        task.finalizedBy restoreOriginalFile
+    }
+}
+
+clean.doLast {
+    def backupDir = file("${buildDir}/tempBackup")
+    if (backupDir.exists()) {
+        backupDir.deleteDir()
+        println("Deleted backup directory: ${backupDir}")
+    }
+}

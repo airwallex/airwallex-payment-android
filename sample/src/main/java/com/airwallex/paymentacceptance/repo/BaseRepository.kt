@@ -4,8 +4,6 @@ import com.airwallex.android.core.model.PaymentIntent
 
 interface BaseRepository {
 
-    suspend fun login() = Unit
-
     suspend fun getPaymentIntentFromServer(
         force3DS: Boolean? = false,
         customerId: String? = null

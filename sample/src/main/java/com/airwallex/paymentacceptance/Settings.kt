@@ -77,8 +77,7 @@ object Settings {
     var environment = when (sdkEnv) {
         context.resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
         context.resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-        context.resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
-        else -> throw Exception("No environment")
+        else -> Environment.PRODUCTION
     }
 
     val returnUrl: String
