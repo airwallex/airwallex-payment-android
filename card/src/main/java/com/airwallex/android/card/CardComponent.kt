@@ -22,8 +22,6 @@ class CardComponent : ActionComponent {
         val PROVIDER: ActionComponentProvider<CardComponent> = CardComponentProvider()
     }
 
-    private var listener: Airwallex.PaymentResultListener? = null
-
     override fun initialize(application: Application) {
         AirwallexActivityLaunch.initialize(application)
         AirwallexSecurityConnector().initialize(application)
@@ -39,7 +37,6 @@ class CardComponent : ActionComponent {
         listener: Airwallex.PaymentResultListener,
         consentId: String?,
     ) {
-        this.listener = listener
         if (cardNextActionModel == null) {
             listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Card payment info not found")))
             return
@@ -55,7 +52,7 @@ class CardComponent : ActionComponent {
                     cardNextActionModel = cardNextActionModel,
                     listener = listener
                 ) { requestCode, resultCode, data ->
-                    handleActivityResult(requestCode, resultCode, data)
+                    handleActivityResult(requestCode, resultCode, data, listener)
                 }
             }
             // payPayment
@@ -82,7 +79,12 @@ class CardComponent : ActionComponent {
         }
     }
 
-    override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+    override fun handleActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        listener: Airwallex.PaymentResultListener?
+    ): Boolean {
         if (requestCode == ThreeDSecurityActivityLaunch.REQUEST_CODE) {
             listener?.let {
                 val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)

@@ -124,10 +124,4 @@ class DccActivity : AirwallexActivity() {
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_close
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        airwallex.handlePaymentData(requestCode, resultCode, data)
-    }
 }

@@ -1,7 +1,6 @@
 package com.airwallex.android.wechat
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
@@ -57,14 +56,11 @@ class WeChatComponent : ActionComponent {
                         }
                     }
                     listener?.onCompleted(status)
+                    listener = null
                     onCompletion()
                 }
             }
         )
-    }
-
-    override fun initialize(application: Application) {
-
     }
 
     override fun handlePaymentIntentResponse(
@@ -139,10 +135,12 @@ class WeChatComponent : ActionComponent {
         }
     }
 
-    override fun <T, R> handlePaymentData(param: T?, callBack: (result: R?) -> Unit) {
-    }
-
-    override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+    override fun handleActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        listener: Airwallex.PaymentResultListener?
+    ): Boolean {
         return false
     }
 
