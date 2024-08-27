@@ -9,8 +9,8 @@ To accept online payments with Airwallex Android SDK, please complete preparatio
 1. [Before you start](#before-you-start)
 
 *Integration options*
-1. [Airwallex Native UI integration](#airwallex-native-ui-integration)You can choose to use this SDK with our prebuilt UI page, this is **recommended usage**. 
-2. [Low-level API Integration](#low-level-api-integration)You can build your own custom UI and use our low-level APIs.
+1. [Airwallex Native UI integration](#airwallex-native-ui-integration) You can choose to use this SDK with our prebuilt UI page, this is **recommended usage**. 
+2. [Low-level API Integration](#low-level-api-integration) You can build your own custom UI and use our low-level APIs.
 
 Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to integrate Airwallex Android SDK in your Android App.
 
@@ -349,7 +349,7 @@ airwallex.confirmPaymentIntent(
 ```
 
 ### Launch payment via Google Pay
-Before invoking the payment API, you need to follow the steps to[Set up Google Pay](#set-up-google-pay)
+Before invoking the payment API, you need to follow the steps to [Set up Google Pay](#set-up-google-pay)
 ```kotlin
 // NOTE: We only support AirwallexPaymentSession (one off session), no recurring session for Google Pay at the moment.
 // Also make sure you pass GooglePayOptions to the session. Refer to [Set up Google Pay].
