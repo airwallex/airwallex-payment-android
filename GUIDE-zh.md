@@ -9,8 +9,8 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
 1. [准备集成](#准备集成)
 
 *集成选项*
-1. [UI集成](#UI集成)你可以使用我们SDK提供的已构建好的用户UI, 这是**推荐用法**。
-2. [低层API集成](#低层API集成)你可以构建你自定义的UI，并使用我们的低层API。
+1. [UI集成](#UI集成)：你可以使用我们SDK提供的已构建好的用户UI，这是**推荐用法**。
+2. [低层API集成](#低层API集成)：你可以构建你自定义的UI，并使用我们的低层API。
 
 我们的Demo开源在 [Github](https://github.com/airwallex/airwallex-payment-android)，可以帮助你更好地了解如何在你的Android项目中集成Airwallex Android SDK。
 
@@ -24,8 +24,8 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
     * [UI集成配置SDK](#UI集成配置SDK)
     * [Edit Shipping Info](#edit-shipping-info)
     * [Use the entire Native UI in one flow](#use-the-entire-native-ui-in-one-flow)
-    * [Set up Google Pay](#set-up-google-pay)
-    * [Custom Theme](#custom-theme)
+    * [设置Google Pay](#设置google-pay)
+    * [自定义主题](#自定义主题)
 * [低层API集成](#低层API集成)
     * [低层API集成添加依赖](#低层API集成添加依赖)
     * [低层API集成配置SDK](#低层API集成配置SDK)
@@ -259,7 +259,7 @@ Airwallex Android SDK 支持Android API 21及以上版本。
     )
 ```
 
-### Set up Google Pay
+### 设置Google Pay
 Airwallex Android SDK可以通过以下步骤允许商户给顾客提供Google Pay作为支付方式：
 - 确认Google Pay在您的Airwallex账号上已开通
 - 根据[UI集成添加依赖](#UI集成添加依赖)在安装SDK时添加Google Pay模块
@@ -288,7 +288,7 @@ val recurringSession = AirwallexRecurringSession.Builder(
 ```
 - 我们现在支持`AMEX`、`DISCOVER`、`JCB`、`MASTERCARD`、`VISA`和`MAESTRO`来进行Google Pay支付。注意，当你选择使用`MAESTRO`进行支付时，`countryCode`必须是`BR`。
 
-### Custom Theme
+### 自定义主题
 您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格。 https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
 ```
     <color name="airwallex_tint_color">@color/airwallex_color_red</color>
@@ -423,7 +423,7 @@ airwallex.confirmPaymentIntent(
      )
 ```
 ### 通过Google Pay来发起支付
-调用支付API之前，需要按照如下步骤[Set up Google Pay](#set-up-google-pay)进行配置
+调用支付API之前，需要按照如下步骤[设置Google Pay](#设置google-pay)进行配置
 ```kotlin
 // 注意：我们目前仅支持AirwallexPaymentSession（一次性付款），暂不支持对于Google Pay的recurring session。
 // 同时保证将GooglePayOptions传给该session。参考[Set up Google Pay]。
