@@ -89,6 +89,15 @@
                 android:textColor="@color/color_primary" />
 
             <Button
+                android:id="@+id/btnGooglePay3DS"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/btn_shape"
+                android:text="google pay trigger 3ds"
+                android:textColor="@color/color_primary" />
+
+            <Button
                 android:id="@+id/btnPaymentMethodsList"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"

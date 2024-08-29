@@ -2,12 +2,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.paymentacceptance.R
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class CustomerDialog<T>(
@@ -59,7 +59,7 @@ class CustomerDialog<T>(
         class CustomerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val itemImage: ImageView = itemView.findViewById(R.id.itemImage)
             val itemText: TextView = itemView.findViewById(R.id.itemText)
-            val btnPay: TextView = itemView.findViewById(R.id.btnPay)
+            val btnPay: Button = itemView.findViewById(R.id.btnPay)
         }
     }
 }

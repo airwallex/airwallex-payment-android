@@ -85,6 +85,10 @@ class APIIntegrationActivity :
             setLoadingProgress(true)
             mViewModel.startGooglePay()
         }
+        mBinding.btnGooglePay3DS.setOnClickListener {
+            setLoadingProgress(true)
+            mViewModel.startGooglePay(true)
+        }
         mBinding.btnPaymentMethodsList.setOnClickListener {
             setLoadingProgress(true)
             mViewModel.getPaymentMethodsList()
@@ -152,6 +156,7 @@ class APIIntegrationActivity :
                             setLoadingProgress(true)
                             customerDialog?.dismiss()
                         }
+                        setBtnEnabled(holder.btnPay, mBinding.radioGroup.checkedRadioButtonId == R.id.radioPayment)
                     }
                 }
             })
