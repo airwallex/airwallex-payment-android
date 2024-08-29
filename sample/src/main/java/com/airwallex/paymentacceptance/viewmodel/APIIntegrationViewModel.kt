@@ -85,13 +85,14 @@ class APIIntegrationViewModel : BaseViewModel() {
     /**
      * start GooglePay
      */
-    fun startGooglePay() = run {
+    fun startGooglePay(force3DS: Boolean = false) = run {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
         val googlePayOptions = GooglePayOptions(
+            allowedCardAuthMethods = if (force3DS) listOf("PAN_ONLY") else null,
             billingAddressRequired = true,
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
         )
-        val session = createSession(googlePayOptions = googlePayOptions)
+        val session = createSession(force3DS = force3DS, googlePayOptions = googlePayOptions)
         airwallex?.startGooglePay(
             session = session as AirwallexPaymentSession,
             listener = object : Airwallex.PaymentResultListener {
