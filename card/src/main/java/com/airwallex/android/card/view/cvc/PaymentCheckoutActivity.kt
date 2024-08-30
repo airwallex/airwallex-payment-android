@@ -78,6 +78,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                 paymentMethod.card?.last4
             )
         )
+        viewBinding.atlCardCvc.setCardNumber(paymentMethod.card?.number)
         viewBinding.tvTotalPrice.text =
             getString(R.string.airwallex_card_total, formatPrice(session.currency, session.amount))
 

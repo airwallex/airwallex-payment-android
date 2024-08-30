@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
+import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.databinding.WidgetCardBinding
 import com.airwallex.android.ui.widget.AirwallexTextInputLayout
@@ -44,10 +45,6 @@ open class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(con
         }
 
     var brandChangeCallback: (CardBrand) -> Unit = {}
-        set(value) {
-            cardNumberTextInputLayout.brandChangeCallback = value
-            field = value
-        }
 
     var cardChangeCallback: () -> Unit = {}
 
@@ -98,6 +95,10 @@ open class CardWidget(context: Context, attrs: AttributeSet?) : LinearLayout(con
         listenFocusChanged()
         listenCompletionCallback()
         listenClick()
+        cardNumberTextInputLayout.brandChangeCallback = { brand ->
+            cvcTextInputLayout.setCardBrand(brand)
+            brandChangeCallback(brand)
+        }
     }
 
     private fun listenClick() {

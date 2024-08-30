@@ -12,7 +12,7 @@ import com.airwallex.android.core.Environment
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.view.CardBrand
+import com.airwallex.android.core.CardBrand
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.card

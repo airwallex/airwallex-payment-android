@@ -1,6 +1,5 @@
-package com.airwallex.android.view
+package com.airwallex.android.core
 
-import com.airwallex.android.R
 import org.junit.Test
 import kotlin.test.assertEquals
 

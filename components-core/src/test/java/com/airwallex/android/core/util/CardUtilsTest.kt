@@ -1,6 +1,6 @@
-package com.airwallex.android.view
+package com.airwallex.android.core.util
 
-import com.airwallex.android.view.util.CardUtils
+import com.airwallex.android.core.CardBrand
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
