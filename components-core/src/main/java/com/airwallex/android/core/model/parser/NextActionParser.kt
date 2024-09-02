@@ -21,7 +21,8 @@ class NextActionParser : ModelJsonParser<NextAction> {
             },
             url = AirwallexJsonUtils.optString(json, FIELD_URL),
             method = AirwallexJsonUtils.optString(json, FIELD_METHOD),
-            packageName = AirwallexJsonUtils.optString(json, FIELD_PACKAGE_NAME)
+            packageName = AirwallexJsonUtils.optString(json, FIELD_PACKAGE_NAME),
+            fallbackUrl = AirwallexJsonUtils.optString(json, FIELD_FALLBACK_URL),
         )
     }
 
@@ -33,6 +34,7 @@ class NextActionParser : ModelJsonParser<NextAction> {
         private const val FIELD_URL = "url"
         private const val FIELD_METHOD = "method"
         private const val FIELD_PACKAGE_NAME = "package_name"
+        private const val FIELD_FALLBACK_URL = "fallback_url"
     }
 
     internal class DccDataParser : ModelJsonParser<NextAction.DccData> {

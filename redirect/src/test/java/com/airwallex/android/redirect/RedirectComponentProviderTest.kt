@@ -32,6 +32,7 @@ class RedirectComponentProviderTest {
                     dcc = null,
                     url = null,
                     method = null,
+                    fallbackUrl = null,
                     packageName = null
                 )
             )
@@ -45,6 +46,7 @@ class RedirectComponentProviderTest {
                     dcc = null,
                     url = null,
                     method = null,
+                    fallbackUrl = null,
                     packageName = null
                 )
             )
@@ -70,6 +72,7 @@ class RedirectComponentProviderTest {
                     dcc = null,
                     url = "https://cdn-psp.marmot-cloud.com/acwallet/alipayconnectcode?code=golcashier1629873426081sandbox&golSandbox=true&pspName=ALIPAY_CN",
                     method = "GET",
+                    fallbackUrl = null,
                     packageName = null
                 ),
                 null,

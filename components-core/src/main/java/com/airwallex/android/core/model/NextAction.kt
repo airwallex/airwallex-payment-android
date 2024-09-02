@@ -26,6 +26,8 @@ data class NextAction(
 
     val url: String?,
 
+    val fallbackUrl: String?,
+
     val method: String?,
 
     val packageName: String?

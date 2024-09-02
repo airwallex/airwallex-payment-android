@@ -67,13 +67,22 @@ object RedirectUtil {
     }
 
     @Throws(RedirectException::class)
-    fun makeRedirect(activity: Activity, redirectUrl: String, packageName: String? = null) {
+    fun makeRedirect(
+        activity: Activity,
+        redirectUrl: String,
+        fallBackUrl: String? = null,
+        packageName: String? = null
+    ) {
         val redirectUri = Uri.parse(redirectUrl)
         val redirectIntent = createRedirectIntent(activity, redirectUri, packageName)
         try {
             activity.startActivity(redirectIntent)
         } catch (e: ActivityNotFoundException) {
-            throw RedirectException(message = "Redirect to app failed. ${e.localizedMessage}")
+            if (!fallBackUrl.isNullOrEmpty()) {
+                makeRedirect(activity, fallBackUrl, null, packageName)
+            } else {
+                throw RedirectException(message = "Redirect to app failed. ${e.localizedMessage}")
+            }
         }
     }
 }

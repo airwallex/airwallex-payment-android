@@ -51,6 +51,7 @@ class CardComponentTest {
             dcc = null,
             url = null,
             method = null,
+            fallbackUrl = null,
             packageName = null
         )
         val cardModel = CardNextActionModel(

@@ -81,6 +81,7 @@ class GooglePayComponentTest {
             dcc = null,
             url = null,
             method = null,
+            fallbackUrl = null,
             packageName = null
         )
         handlePaymentIntentResponse(action = redirectAction)
@@ -95,6 +96,7 @@ class GooglePayComponentTest {
             dcc = null,
             url = null,
             method = null,
+            fallbackUrl = null,
             packageName = null
         )
         val cardModel = CardNextActionModel(
