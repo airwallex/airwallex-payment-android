@@ -52,6 +52,7 @@ class CardComponentProviderTest {
                     dcc = null,
                     url = null,
                     method = null,
+                    fallbackUrl = null,
                     packageName = null
                 )
             )
@@ -66,6 +67,7 @@ class CardComponentProviderTest {
                     dcc = null,
                     url = null,
                     method = null,
+                    fallbackUrl = null,
                     packageName = null
                 )
             )
@@ -80,6 +82,7 @@ class CardComponentProviderTest {
                     dcc = null,
                     url = null,
                     method = null,
+                    fallbackUrl = null,
                     packageName = null
                 )
             )

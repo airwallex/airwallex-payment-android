@@ -132,6 +132,7 @@ class PaymentIntentTest {
                         url = "https://www.airwallex.com",
                         method = "post",
                         data = null,
+                        fallbackUrl = null,
                         packageName = null
                     ),
                     clientSecret = "faqCACD3TAaeVjaltPa-Ig"
