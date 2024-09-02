@@ -9,6 +9,7 @@ import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.log.AirwallexLogger

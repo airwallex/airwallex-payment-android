@@ -6,6 +6,7 @@ import android.text.InputType
 import android.util.AttributeSet
 import android.view.View
 import com.airwallex.android.card.R
+import com.airwallex.android.core.CardBrand
 
 import com.airwallex.android.core.util.BuildHelper
 import com.google.android.material.textfield.TextInputEditText
@@ -19,7 +20,7 @@ class CvcEditText @JvmOverloads constructor(
     defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
 ) : TextInputEditText(context, attrs, defStyleAttr) {
 
-    private val validCvcLengthScope = listOf(3, 4)
+    private var validCvcLength = 3
 
     /**
      * Return the cvc value if valid, otherwise null.
@@ -39,18 +40,23 @@ class CvcEditText @JvmOverloads constructor(
      */
     internal val isValid: Boolean
         get() {
-            return validCvcLengthScope.contains(rawCvcValue.length)
+            return validCvcLength == rawCvcValue.length
         }
 
     init {
         setHint(R.string.airwallex_card_cvc_hint)
         maxLines = 1
-        filters = arrayOf(InputFilter.LengthFilter(validCvcLengthScope.last()))
+        filters = arrayOf(InputFilter.LengthFilter(validCvcLength))
 
         inputType = InputType.TYPE_CLASS_NUMBER
 
         if (BuildHelper.isVersionAtLeastO()) {
             setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE)
         }
+    }
+
+    fun setCardBrand(brand: CardBrand) {
+        validCvcLength = if (brand == CardBrand.Amex) 4 else 3
+        filters = arrayOf(InputFilter.LengthFilter(validCvcLength))
     }
 }

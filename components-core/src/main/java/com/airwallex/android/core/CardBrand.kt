@@ -1,7 +1,6 @@
-package com.airwallex.android.view
+package com.airwallex.android.core
 
 import androidx.annotation.DrawableRes
-import com.airwallex.android.R
 
 /**
  * All card brands supported by Airwallex. Only support Visa, Mastercard & American Express

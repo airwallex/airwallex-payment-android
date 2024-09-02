@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.R
+import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.CardScheme

@@ -14,11 +14,12 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.Shipping
-import com.airwallex.android.view.util.CardUtils
+import com.airwallex.android.core.util.CardUtils
 
 internal class AddPaymentMethodViewModel(
     application: Application,

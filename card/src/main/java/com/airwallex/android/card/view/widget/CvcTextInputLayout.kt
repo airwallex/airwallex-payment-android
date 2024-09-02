@@ -3,6 +3,7 @@ package com.airwallex.android.card.view.widget
 import android.content.Context
 import android.util.AttributeSet
 import com.airwallex.android.card.R
+import com.airwallex.android.core.util.CardUtils
 
 import com.airwallex.android.ui.widget.AirwallexTextInputLayout
 import com.airwallex.android.ui.widget.ValidatedInput
@@ -32,4 +33,9 @@ internal class CvcTextInputLayout constructor(
      */
     internal val cvcValue: String?
         get() = (teInput as CvcEditText).cvcValue
+
+    fun setCardNumber(cardNumber: String?) {
+        val brand = CardUtils.getPossibleCardBrand(cardNumber = cardNumber, shouldNormalize = true)
+        (teInput as CvcEditText).setCardBrand(brand)
+    }
 }

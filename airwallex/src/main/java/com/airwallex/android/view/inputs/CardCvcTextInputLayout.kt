@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import com.airwallex.android.R
 import com.airwallex.android.ui.widget.AirwallexTextInputLayout
 import com.airwallex.android.ui.widget.ValidatedInput
+import com.airwallex.android.core.CardBrand
 
 /**
  * A [AirwallexTextInputLayout] to format the credit card cvc, display errors and support callback interface
@@ -31,4 +32,8 @@ internal class CardCvcTextInputLayout constructor(
      */
     internal val cvcValue: String?
         get() = (teInput as CardCvcEditText).cvcValue
+
+    fun setCardBrand(brand: CardBrand) {
+        (teInput as? CardCvcEditText)?.setCardBrand(brand)
+    }
 }

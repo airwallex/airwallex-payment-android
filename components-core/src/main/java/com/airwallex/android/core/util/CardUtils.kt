@@ -1,7 +1,7 @@
-package com.airwallex.android.view.util
+package com.airwallex.android.core.util
 
-import com.airwallex.android.view.CardBrand
-import com.airwallex.android.view.CardBrand.Companion.fromCardNumber
+import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.CardBrand.Companion.fromCardNumber
 
 object CardUtils {
     /**
@@ -20,7 +20,7 @@ object CardUtils {
     /**
      * Check if number is a valid luhn number
      */
-    internal fun isValidLuhnNumber(number: String?): Boolean {
+    fun isValidLuhnNumber(number: String?): Boolean {
         if (number == null) {
             return false
         }
@@ -53,7 +53,7 @@ object CardUtils {
     /**
      * Check if card length is valid
      */
-    internal fun isValidCardLength(cardNumber: String?, shouldNormalize: Boolean = false): Boolean {
+    fun isValidCardLength(cardNumber: String?, shouldNormalize: Boolean = false): Boolean {
         if (cardNumber == null) {
             return false
         }
