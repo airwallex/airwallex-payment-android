@@ -37,13 +37,13 @@ class AirwallexHttpClient {
             try {
                 val response = it.response
                 AirwallexLogger.info(
-                    "AirwallexHttpClient response: success, url = ${request.url}",
+                    "AirwallexHttpClient response: success, url = ${request.url} ",
                     sensitiveMessage = response.toString()
                 )
                 return response
             } catch (e: IOException) {
                 AirwallexLogger.error(
-                    "AirwallexHttpClient response: failed, url = ${request.url}",
+                    "AirwallexHttpClient response: failed, url = ${request.url} ",
                     e
                 )
                 throw APIConnectionException.create(e, request.url)

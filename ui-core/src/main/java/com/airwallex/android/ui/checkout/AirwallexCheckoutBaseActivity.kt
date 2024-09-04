@@ -38,22 +38,4 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
             paymentMethod, paymentConsentId, cvc, additionalInfo, flow
         ).observe(this, observer)
     }
-
-    fun retrieveBanks(
-        paymentMethodTypeName: String,
-        observer: Observer<Result<BankResponse>>
-    ) {
-        setLoadingProgress(loading = true, cancelable = false)
-        viewModel.retrieveBanks(paymentMethodTypeName).observe(this, observer)
-    }
-
-    fun retrievePaymentMethodTypeInfo(
-        paymentMethodTypeName: String,
-        observer: Observer<Result<PaymentMethodTypeInfo>>
-    ) {
-        setLoadingProgress(loading = true, cancelable = false)
-        viewModel.retrievePaymentMethodTypeInfo(
-            paymentMethodTypeName
-        ).observe(this, observer)
-    }
 }
