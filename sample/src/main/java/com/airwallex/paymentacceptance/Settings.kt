@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import androidx.preference.PreferenceManager
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.Environment
-import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.risk.AirwallexRisk
 import kotlin.properties.Delegates
 
 object Settings {
@@ -147,7 +145,7 @@ object Settings {
             )
                 ?: API_KEY
 
-            return value.cleaned().nullIfReplaceWithApiKey()
+            return value.cleaned().emptyIfReplaceWithApiKey()
         }
 
     val clientId: String
@@ -158,7 +156,7 @@ object Settings {
             )
                 ?: CLIENT_ID
 
-            return value.cleaned().nullIfReplaceWithClientID()
+            return value.cleaned().emptyIfReplaceWithClientID()
         }
 
     val weChatAppId: String
@@ -214,11 +212,11 @@ private fun String.cleaned() =
         .removePrefix("\"")
         .removeSuffix("\"")
 
-private fun String.nullIfReplaceWithApiKey(): String {
+private fun String.emptyIfReplaceWithApiKey(): String {
     return if (this == "replace_with_api_key") "" else this
 }
 
-private fun String.nullIfReplaceWithClientID(): String {
+private fun String.emptyIfReplaceWithClientID(): String {
     return if (this == "replace_with_client_id") "" else this
 }
 

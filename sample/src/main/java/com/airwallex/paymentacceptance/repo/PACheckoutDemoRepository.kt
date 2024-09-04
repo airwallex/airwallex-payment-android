@@ -1,6 +1,5 @@
 package com.airwallex.paymentacceptance.repo
 
-import android.text.TextUtils
 import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.Environment
 import com.airwallex.android.core.model.PaymentIntent
@@ -12,17 +11,15 @@ import com.airwallex.paymentacceptance.api.Api
 import com.airwallex.paymentacceptance.api.ApiFactory
 import com.airwallex.paymentacceptance.products
 import com.airwallex.paymentacceptance.shipping
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.UUID
 
 object PACheckoutEnvironment {
-    val baseUrl: String
+    val baseUrl: String?
         get() = when (AirwallexPlugins.environment) {
             Environment.STAGING -> "https://staging-pacheckoutdemo.airwallex.com/"
             Environment.DEMO -> "https://demo-pacheckoutdemo.airwallex.com/"
-            else -> ""//Our demo does not support PRODUCTION. Please validate it within your own app.
+            else -> null // Our demo does not support PRODUCTION. Please validate it within your own app.
         }
 }
 
@@ -30,17 +27,15 @@ class PACheckoutDemoRepository : BaseRepository {
 
     private val api: Api
         get() {
-            if (TextUtils.isEmpty(PACheckoutEnvironment.baseUrl)) {
-                throw IllegalArgumentException("Base url should not be null or empty")
-            }
-            return ApiFactory(PACheckoutEnvironment.baseUrl).buildRetrofit()
-                .create(Api::class.java)
+            return PACheckoutEnvironment.baseUrl?.let { baseUrl ->
+                ApiFactory(baseUrl).buildRetrofit().create(Api::class.java)
+            } ?: throw IllegalArgumentException("Base url should not be null or empty")
         }
 
     override suspend fun getPaymentIntentFromServer(
         force3DS: Boolean?,
         customerId: String?
-    ): PaymentIntent = checkToken {
+    ): PaymentIntent {
         val body = mutableMapOf(
             "apiKey" to Settings.apiKey,
             "clientId" to Settings.clientId,
@@ -66,11 +61,11 @@ class PACheckoutDemoRepository : BaseRepository {
         Settings.cachedCustomerId?.let { body.put("customer_id", it) }
         customerId?.let { body.put("customer_id", it) }
         val paymentIntentResponse = api.createPaymentIntent(body)
-        PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
+        return PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
     }
 
-    override suspend fun getCustomerIdFromServer(): String = checkToken {
-        Settings.cachedCustomerId.takeIf { !it.isNullOrEmpty() } ?: run {
+    override suspend fun getCustomerIdFromServer(): String {
+        return Settings.cachedCustomerId.takeIf { !it.isNullOrEmpty() } ?: run {
             val customerResponse = api.createCustomer(
                 mutableMapOf(
                     "apiKey" to Settings.apiKey,
@@ -98,19 +93,8 @@ class PACheckoutDemoRepository : BaseRepository {
     }
 
     override suspend fun getClientSecretFromServer(customerId: String): String {
-        return withContext(Dispatchers.IO) {
-            val clientSecretResponse = api.createClientSecret(customerId, Settings.apiKey, Settings.clientId)
-            ClientSecretParser().parse(JSONObject(clientSecretResponse.string())).value
-        }
-    }
-
-    private suspend fun <T> checkToken(method: suspend PACheckoutDemoRepository.() -> T): T {
-        return withContext(Dispatchers.IO) {
-            if (AirwallexPlugins.environment == Environment.PRODUCTION) {
-                val response = api.authentication(Settings.apiKey, Settings.clientId)
-                Settings.token = JSONObject(response.string())["token"].toString()
-            }
-            method()
-        }
+        val clientSecretResponse =
+            api.createClientSecret(customerId, Settings.apiKey, Settings.clientId)
+        return ClientSecretParser().parse(JSONObject(clientSecretResponse.string())).value
     }
 }
