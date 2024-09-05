@@ -21,7 +21,6 @@ internal class ApiFactory internal constructor(private val baseUrl: String) {
             Interceptor { chain ->
                 val builder = chain.request().newBuilder()
                 builder.addHeader("Accept", "application/json")
-                builder.addHeader("Content-Type", "application/json")
                 Settings.token?.let {
                     builder.addHeader("Authorization", "Bearer $it")
                 }

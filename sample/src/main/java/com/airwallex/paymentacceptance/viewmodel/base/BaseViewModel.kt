@@ -11,8 +11,7 @@ import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentIntent
-import com.airwallex.paymentacceptance.repo.BaseRepository
-import com.airwallex.paymentacceptance.repo.LocalMockRepository
+import com.airwallex.paymentacceptance.repo.RepositoryProvider
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,18 +36,7 @@ abstract class BaseViewModel : ViewModel() {
 
     abstract fun init(activity: ComponentActivity)
 
-    private val repository: BaseRepository by lazy {
-        LocalMockRepository()
-    }
-
-    /**
-     * this method demonstrates how to log in using an apiKey and clientId.
-     * this process should be completed on your own server;
-     * do not copy this method.
-     */
-    private suspend fun login() {
-        repository.login()
-    }
+    private val repository = RepositoryProvider.get()
 
     /**
      * this method demonstrates how to retrieve a paymentIntent from the server.

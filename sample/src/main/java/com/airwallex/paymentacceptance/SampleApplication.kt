@@ -32,8 +32,7 @@ class SampleApplication : Application() {
         val environment = when (Settings.sdkEnv) {
             resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
             resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-            resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
-            else -> throw Exception("No environment")
+            else -> Environment.PRODUCTION
         }
         Airwallex.initialize(
             this,
@@ -60,8 +59,7 @@ class SampleApplication : Application() {
         val environment = when (Settings.sdkEnv) {
             resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
             resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-            resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
-            else -> throw Exception("No environment")
+            else -> Environment.PRODUCTION
         }
         AirwallexStarter.initialize(
             this,

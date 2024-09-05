@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import androidx.preference.PreferenceManager
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.Environment
-import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.risk.AirwallexRisk
 import kotlin.properties.Delegates
 
 object Settings {
@@ -77,8 +75,7 @@ object Settings {
     var environment = when (sdkEnv) {
         context.resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
         context.resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-        context.resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
-        else -> throw Exception("No environment")
+        else -> Environment.PRODUCTION
     }
 
     val returnUrl: String
@@ -148,7 +145,7 @@ object Settings {
             )
                 ?: API_KEY
 
-            return value.cleaned()
+            return value.cleaned().emptyIfReplaceWithApiKey()
         }
 
     val clientId: String
@@ -159,7 +156,7 @@ object Settings {
             )
                 ?: CLIENT_ID
 
-            return value.cleaned()
+            return value.cleaned().emptyIfReplaceWithClientID()
         }
 
     val weChatAppId: String
@@ -214,4 +211,12 @@ private fun String.cleaned() =
         .trim()
         .removePrefix("\"")
         .removeSuffix("\"")
+
+private fun String.emptyIfReplaceWithApiKey(): String {
+    return if (this == "replace_with_api_key") "" else this
+}
+
+private fun String.emptyIfReplaceWithClientID(): String {
+    return if (this == "replace_with_client_id") "" else this
+}
 
