@@ -49,6 +49,7 @@ class PACheckoutDemoRepository : BaseRepository {
                 .setType("physical_goods")
                 .build()
                 .toParamMap(),
+            "referrer_data" to mapOf("type" to "android_sdk_sample"),
             "descriptor" to "Airwallex - T-sh  irt",
             "metadata" to mapOf("id" to 1),
             "email" to "yimadangxian@airwallex.com",
