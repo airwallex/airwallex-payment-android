@@ -33,10 +33,10 @@ import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
-import com.airwallex.android.view.util.fetchPaymentFlow
+import com.airwallex.android.view.util.toPaymentFlow
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.findWithType
-import com.airwallex.android.view.util.hasSinglePaymentMethod
+import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -155,7 +155,7 @@ internal class PaymentMethodsViewModel(
         additionalInfo: Map<String, String>,
         typeInfo: PaymentMethodTypeInfo
     ) = viewModelScope.launch {
-        checkout(paymentMethod, additionalInfo, typeInfo.fetchPaymentFlow())
+        checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow())
             .also {
                 trackPaymentSuccess(it, paymentMethod.type)
                 _airwallexPaymentStatus.value = it
@@ -190,15 +190,13 @@ internal class PaymentMethodsViewModel(
                 val availablePaymentConsents = methodsAndConsents.second
                 AirwallexLogger.info("PaymentMethodsViewModel fetchPaymentMethodsAndConsents availableMethodTypes = $availableMethodTypes, availablePaymentConsents = $availablePaymentConsents")
 
-                val cardPaymentMethod = availableMethodTypes.findWithType(PaymentMethodType.CARD)
                 // skip straight to the individual card screen?
-                val hasSinglePaymentMethod = availableMethodTypes.hasSinglePaymentMethod(
-                    desiredPaymentMethodType = cardPaymentMethod,
-                    consents = availablePaymentConsents
-                )
-                if (hasSinglePaymentMethod) {
-                    // only one payment method and it's Card.
-                    _skipPaymentMethodList.value = cardPaymentMethod?.cardSchemes ?: emptyList()
+                val singleCardPaymentMethod =
+                    availableMethodTypes.getSinglePaymentMethodOrNull(availablePaymentConsents)
+                // only one payment method and it's Card.
+                if (singleCardPaymentMethod != null) {
+                    _skipPaymentMethodList.value =
+                        singleCardPaymentMethod.cardSchemes ?: emptyList()
                 } else {
                     _showPaymentMethodList.value =
                         Pair(availableMethodTypes, availablePaymentConsents)
@@ -248,13 +246,9 @@ internal class PaymentMethodsViewModel(
 
     private suspend fun checkoutWithSchemaFields(paymentMethod: PaymentMethod, type: String) {
         // 1.Retrieve all required schema fields of the payment method
-        val typeInfoResult = retrievePaymentMethodTypeInfo(type)
-
-        if (handleError(typeInfoResult) { _showErrorAlert.value = it }) return
-
-        val typeInfo = typeInfoResult.getOrNull() ?: run {
-            _showErrorAlert.value = "PaymentMethodTypeInfo is null"
-            return
+        val typeInfo = retrievePaymentMethodTypeInfo(type).getOrElse {
+            _showErrorAlert.value = it.message
+            return@checkoutWithSchemaFields
         }
         val fields = typeInfo.filterRequiredFields()
         AirwallexLogger.info("checkoutWithSchemaFields: filterRequiredFields = $fields")
@@ -275,10 +269,10 @@ internal class PaymentMethodsViewModel(
             return
         }
         // 3.If the bank is needed, need to retrieve the bank list.
-        val banksResult = retrieveBanks(type)
-        if (handleError(banksResult) { _showErrorAlert.value = it }) return
-
-        val banks = banksResult.getOrNull()?.items
+        val banks = retrieveBanks(type).getOrElse {
+            _showErrorAlert.value = it.message
+            return@checkoutWithSchemaFields
+        }.items
         AirwallexLogger.info("checkoutWithSchemaFields: banks = $banks")
         // 4.If the bank is not needed or bank list is empty, then show the schema fields dialog.
         _showSchemaFieldsDialog.value = if (banks.isNullOrEmpty()) {
@@ -387,18 +381,6 @@ internal class PaymentMethodsViewModel(
             )
         }
     )
-
-    private fun handleError(
-        result: Result<*>,
-        onFailure: (String) -> Unit
-    ): Boolean {
-        return if (result.isFailure) {
-            val exception =
-                result.exceptionOrNull() ?: AirwallexCheckoutException(message = "unknown error")
-            onFailure(exception.message ?: exception.toString())
-            true
-        } else false
-    }
 
     private suspend fun <T> loadPagedItems(
         loadPage: suspend (Int) -> Page<T>,

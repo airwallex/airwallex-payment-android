@@ -14,7 +14,7 @@ fun PaymentMethodTypeInfo.filterRequiredFields(): List<DynamicSchemaField>? {
         ?.filter { !it.hidden }
 }
 
-fun PaymentMethodTypeInfo.fetchPaymentFlow(): AirwallexPaymentRequestFlow {
+fun PaymentMethodTypeInfo.toPaymentFlow(): AirwallexPaymentRequestFlow {
     val flowField = this
         .fieldSchemas
         ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }

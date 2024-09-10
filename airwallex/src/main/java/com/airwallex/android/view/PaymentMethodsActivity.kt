@@ -309,8 +309,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             is AirwallexPaymentStatus.Cancel -> {
                 setLoadingProgress(false)
             }
-
-            else -> Unit
         }
     }
 

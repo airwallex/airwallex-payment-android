@@ -4,8 +4,8 @@ import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.DynamicSchemaFieldType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TransactionMode
-import com.airwallex.android.view.util.fetchPaymentFlow
 import com.airwallex.android.view.util.filterRequiredFields
+import com.airwallex.android.view.util.toPaymentFlow
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
@@ -181,7 +181,7 @@ class PaymentMethodTypeInfoExtensionsTest {
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
 
-        val result = paymentMethodTypeInfo.fetchPaymentFlow()
+        val result = paymentMethodTypeInfo.toPaymentFlow()
         assertEquals(AirwallexPaymentRequestFlow.IN_APP, result)
     }
 
@@ -218,7 +218,7 @@ class PaymentMethodTypeInfoExtensionsTest {
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
 
-        val result = paymentMethodTypeInfo.fetchPaymentFlow()
+        val result = paymentMethodTypeInfo.toPaymentFlow()
         assertEquals(AirwallexPaymentRequestFlow.M_WEB, result)
     }
 
@@ -253,7 +253,7 @@ class PaymentMethodTypeInfoExtensionsTest {
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
 
-        val result = paymentMethodTypeInfo.fetchPaymentFlow()
+        val result = paymentMethodTypeInfo.toPaymentFlow()
         assertEquals(AirwallexPaymentRequestFlow.IN_APP, result)
     }
 
@@ -288,7 +288,7 @@ class PaymentMethodTypeInfoExtensionsTest {
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
 
-        val result = paymentMethodTypeInfo.fetchPaymentFlow()
+        val result = paymentMethodTypeInfo.toPaymentFlow()
         assertEquals(AirwallexPaymentRequestFlow.IN_APP, result)
     }
 
@@ -323,7 +323,7 @@ class PaymentMethodTypeInfoExtensionsTest {
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
 
-        val result = paymentMethodTypeInfo.fetchPaymentFlow()
+        val result = paymentMethodTypeInfo.toPaymentFlow()
         assertEquals(AirwallexPaymentRequestFlow.IN_APP, result)
     }
 

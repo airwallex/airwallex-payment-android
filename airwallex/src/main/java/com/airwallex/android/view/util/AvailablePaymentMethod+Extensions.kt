@@ -8,14 +8,12 @@ fun List<AvailablePaymentMethodType>.findWithType(type: PaymentMethodType): Avai
     return find { it.name == type.value }
 }
 
-fun List<AvailablePaymentMethodType>.hasSinglePaymentMethod(
-    desiredPaymentMethodType: AvailablePaymentMethodType?,
+fun List<AvailablePaymentMethodType>.getSinglePaymentMethodOrNull(
     consents: List<PaymentConsent>
-): Boolean {
-    if (desiredPaymentMethodType == null) return false
-
-    val hasPaymentConsents = consents.isNotEmpty()
-    val availablePaymentMethodsSize = this.size
-
-    return !hasPaymentConsents && availablePaymentMethodsSize == 1
+): AvailablePaymentMethodType? {
+    return if (consents.isEmpty() && this.size == 1) {
+        this.findWithType(PaymentMethodType.CARD)
+    } else {
+        null
+    }
 }
