@@ -527,8 +527,15 @@ class Airwallex internal constructor(
                         )
                         return
                     }
-
-                    val paymentIntentId = requireNotNull(response.initialPaymentIntentId)
+                    val paymentIntentId = response.initialPaymentIntentId
+                    if (paymentIntentId.isNullOrEmpty()) {
+                        listener.onCompleted(
+                            AirwallexPaymentStatus.Failure(
+                                AirwallexCheckoutException(message = "Unsupported payment method")
+                            )
+                        )
+                        return
+                    }
                     val cardNextActionModel = when (params.paymentMethodType) {
                         PaymentMethodType.CARD.value -> CardNextActionModel(
                             paymentManager = paymentManager,
