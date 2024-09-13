@@ -33,3 +33,4 @@ dependencies {
 }
 
 apply from: rootProject.file("publish-module.gradle")
+apply from: "${rootProject.projectDir}/gradle/scripts/publish-snapshot.gradle"

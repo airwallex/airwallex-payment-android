@@ -1,0 +1,45 @@
+apply plugin: 'maven-publish'
+
+def repositoryDir = file("${rootProject.projectDir}/build/repos/maven")
+
+if (project.gradle.startParameter.taskNames.any { it.contains('publishLocalAll') }) {
+    rootProject.ext.isLocalPublish = true
+}
+
+tasks.register('publishLocalAll') {
+    allprojects.each { proj ->
+        if (proj.tasks.findByName('publishLocal') != null) {
+            dependsOn "${proj.path}:publishLocal"
+        }
+    }
+}
+
+tasks.register('createMavenLocalDir') {
+    doLast {
+        if (!repositoryDir.exists()) {
+            repositoryDir.mkdirs()
+        }
+    }
+}
+
+tasks.register('publishLocal') {
+    group = 'publishing'
+    description = 'Publish the module to the local repository'
+    dependsOn 'createMavenLocalDir', 'publishReleasePublicationToLocalRepository'
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                name 'Local'
+                url repositoryDir.toURI().toString()
+                println("Publishing to: ${repositoryDir.absolutePath}")
+            }
+        }
+    }
+}
+
+tasks.withType(AbstractPublishToMaven).configureEach {
+    dependsOn createMavenLocalDir
+}

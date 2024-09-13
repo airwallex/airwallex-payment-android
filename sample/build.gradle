@@ -103,11 +103,11 @@ dependencies {
     api project(':redirect')
     api project(':googlepay')
 
-//    implementation 'io.github.airwallex:payment:4.1.0'
-//    implementation 'io.github.airwallex:payment-card:4.1.0'
-//    implementation 'io.github.airwallex:payment-redirect:4.1.0'
-//    implementation 'io.github.airwallex:payment-wechat:4.1.0'
-//    implementation 'io.github.airwallex:payment-googlepay:4.1.0'
+//    implementation 'io.github.airwallex:payment:6.0.1'
+//    implementation 'io.github.airwallex:payment-card:6.0.1'
+//    implementation 'io.github.airwallex:payment-redirect:6.0.1'
+//    implementation 'io.github.airwallex:payment-wechat:6.0.1'
+//    implementation 'io.github.airwallex:payment-googlepay:6.0.1'
 
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
