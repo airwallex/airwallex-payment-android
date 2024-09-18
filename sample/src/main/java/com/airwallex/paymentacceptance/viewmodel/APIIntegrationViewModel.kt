@@ -104,6 +104,31 @@ class APIIntegrationViewModel : BaseViewModel() {
     }
 
     /**
+     * pay by redirection
+     *
+     * We do not support all redirection payment methods.
+     * Before invoking this method, please ensure that the paymentType you provide is one that we support.
+     * Below are some of the methods we currently support.
+     * 'poli', 'fpx', 'online_banking', 'permatanet', 'bank_transfer', 'alfamart', 'indomaret', 'doku_ewallet', 'enets', 'payeasy', 'payeasy_atm',
+     * 'seven_eleven', 'konbini', 'tesco_lotus', 'grabpay', 'skrill', 'eps', 'giropay', 'ideal', 'multibanco', 'p24', 'sofort', 'trustly', 'bancontact',
+     * 'dragonpay', 'blik', 'mybank', 'paybybankapp', 'verkkopankki', 'maxima', 'narvesen', 'paypost', 'perlas_terminals', 'paysafecash', 'paysafecard',
+     * 'paysera', 'satispay', 'family_mart', 'hi_life', 'sam_kiosk', 'axs_kiosk', 'bigc', 'esun', 'permata_atm', 'boost', 'shopee_pay', 'paypal', 'payu',
+     * 'ovo', 'bitpay', 'atome', 'duit_now', 'pay_now', 'prompt_pay', 'go_pay', 'linkaja', 'jenius_pay', 'klarna', 'spei', 'afterpay'
+     */
+    fun startPayByRedirection() = run {
+        val session = createSession()
+        airwallex?.checkout(
+            session = session,
+            paymentType = "alipayhk",
+            listener = object : Airwallex.PaymentResultListener {
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    _airwallexPaymentStatus.value = status
+                }
+            }
+        )
+    }
+
+    /**
      * use the Airwallex instance to perform card payment.
      * @param paymentConsent to complete this API call, you must provide a PaymentConsent instance.
      */

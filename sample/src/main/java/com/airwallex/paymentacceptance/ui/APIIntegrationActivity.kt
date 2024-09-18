@@ -55,6 +55,7 @@ class APIIntegrationActivity :
             mViewModel.updateCheckoutModel(selectedOption)
             setBtnEnabled(mBinding.btnGooglePay, selectedOption == 0)
             setBtnEnabled(mBinding.btnGooglePay3DS, selectedOption == 0)
+            setBtnEnabled(mBinding.btnRedirect, selectedOption == 0)
             setBtnEnabled(mBinding.btnPayWithCardDetailSaveCard, selectedOption != 1)
         }
 
@@ -89,6 +90,10 @@ class APIIntegrationActivity :
         mBinding.btnGooglePay3DS.setOnClickListener {
             setLoadingProgress(true)
             mViewModel.startGooglePay(true)
+        }
+        mBinding.btnRedirect.setOnClickListener{
+            setLoadingProgress(true)
+            mViewModel.startPayByRedirection()
         }
         mBinding.btnPaymentMethodsList.setOnClickListener {
             setLoadingProgress(true)

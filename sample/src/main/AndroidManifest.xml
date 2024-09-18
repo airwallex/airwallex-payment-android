@@ -48,17 +48,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
-        <activity
-            android:name="com.airwallex.paymentacceptance.ui.UIIntegrationActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/ActivityAnimTheme"
-            tools:ignore="LockedOrientationActivity">
-
-            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -69,6 +59,15 @@
                     android:host="${applicationId}"
                     android:scheme="airwallexcheckout" />
             </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name="com.airwallex.paymentacceptance.ui.UIIntegrationActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityAnimTheme"
+            tools:ignore="LockedOrientationActivity">
 
         </activity>
 

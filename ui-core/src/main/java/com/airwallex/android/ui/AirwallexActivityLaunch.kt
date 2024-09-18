@@ -99,6 +99,7 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         this.also { launcher -> launchInstanceMap[targetActivity] = launcher }
     }
 
+    @Deprecated(message = "Use launchForResult() instead")
     fun startForResult(args: ArgsType) {
         val bundle = Bundle().apply {
             putParcelable(Args.AIRWALLEX_EXTRA, args)
