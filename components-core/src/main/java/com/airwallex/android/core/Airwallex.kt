@@ -529,6 +529,10 @@ class Airwallex internal constructor(
                     }
                     val paymentIntentId = response.initialPaymentIntentId
                     if (paymentIntentId.isNullOrEmpty()) {
+                        AnalyticsLogger.logError(
+                            "initialPaymentIntentId_null_or_empty",
+                            mapOf("type" to params.paymentMethodType)
+                        )
                         listener.onCompleted(
                             AirwallexPaymentStatus.Failure(
                                 AirwallexCheckoutException(message = "Unsupported payment method")

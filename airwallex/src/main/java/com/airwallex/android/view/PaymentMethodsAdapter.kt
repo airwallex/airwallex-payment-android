@@ -12,7 +12,6 @@ import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.PaymentMethodConsentItemBinding
 import com.airwallex.android.databinding.PaymentMethodDynamicItemBinding
@@ -172,34 +171,21 @@ internal class PaymentMethodsAdapter(
                 .into(viewBinding.paymentMethodIcon)
             itemView.setOnSingleClickListener {
                 if (paymentMethodType.name == PaymentMethodType.CARD.value) {
-                    val supportedCardSchemes = paymentMethodType.cardSchemes
-                    if (supportedCardSchemes != null) {
-                        listener?.onAddCardClick(supportedCardSchemes)
-                    }
+                   paymentMethodType.cardSchemes?.apply {
+                       listener?.onAddCardClick(this)
+                   }
                 } else {
-                    selectedPaymentConsent = PaymentConsent(
-                        paymentMethod = PaymentMethod.Builder()
-                            .setType(paymentMethodType.name)
-                            .build()
-                    )
                     notifyDataSetChanged()
-
-                    selectedPaymentConsent?.let {
-                        listener?.onPaymentConsentClick(
-                            it,
-                            paymentMethodType
-                        )
-                    }
+                    listener?.onPaymentMethodClick(paymentMethodType)
                 }
             }
         }
     }
 
     internal interface Listener {
-        fun onPaymentConsentClick(
-            paymentConsent: PaymentConsent,
-            paymentMethodType: AvailablePaymentMethodType? = null
-        )
+        fun onPaymentConsentClick(paymentConsent: PaymentConsent)
+
+        fun onPaymentMethodClick(paymentMethodType: AvailablePaymentMethodType)
 
         fun onAddCardClick(supportedCardSchemes: List<CardScheme>)
     }

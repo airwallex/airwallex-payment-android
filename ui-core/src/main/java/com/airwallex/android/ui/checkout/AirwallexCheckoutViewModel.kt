@@ -6,8 +6,10 @@ import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
-class AirwallexCheckoutViewModel(
+open class AirwallexCheckoutViewModel(
     application: Application,
     private val airwallex: Airwallex,
     private val session: AirwallexSession
@@ -40,69 +42,94 @@ class AirwallexCheckoutViewModel(
         return resultData
     }
 
-    fun retrieveBanks(paymentMethodTypeName: String): LiveData<Result<BankResponse>> {
-        val resultData = MutableLiveData<Result<BankResponse>>()
-        when (session) {
-            is AirwallexPaymentSession -> {
-                val paymentIntent = session.paymentIntent
-                airwallex.retrieveBanks(
-                    RetrieveBankParams.Builder(
-                        clientSecret = requireNotNull(paymentIntent.clientSecret),
-                        paymentMethodType = paymentMethodTypeName
-                    )
-                        .setCountryCode(session.countryCode)
-                        .build(),
-                    object : Airwallex.PaymentListener<BankResponse> {
-                        override fun onFailed(exception: AirwallexException) {
-                            resultData.value = Result.failure(exception)
-                        }
-
-                        override fun onSuccess(response: BankResponse) {
-                            resultData.value = Result.success(response)
-                        }
+    suspend fun checkout(
+        paymentMethod: PaymentMethod,
+        additionalInfo: Map<String, String>? = null,
+        flow: AirwallexPaymentRequestFlow? = null
+    ): AirwallexPaymentStatus {
+        return suspendCancellableCoroutine { continuation ->
+            airwallex.checkout(
+                session = session,
+                paymentMethod = paymentMethod,
+                additionalInfo = additionalInfo,
+                flow = flow,
+                listener = object : Airwallex.PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        continuation.resume(status)
                     }
-                )
-            }
-            else -> {
-                resultData.value =
-                    Result.failure(AirwallexCheckoutException(message = "$paymentMethodTypeName just support one-off payment"))
-            }
+                }
+            )
         }
-        return resultData
     }
 
-    fun retrievePaymentMethodTypeInfo(
-        paymentMethodTypeName: String
-    ): LiveData<Result<PaymentMethodTypeInfo>> {
-        val resultData = MutableLiveData<Result<PaymentMethodTypeInfo>>()
-        when (session) {
-            is AirwallexPaymentSession -> {
-                val paymentIntent = session.paymentIntent
-                airwallex.retrievePaymentMethodTypeInfo(
-                    RetrievePaymentMethodTypeInfoParams.Builder(
-                        clientSecret = requireNotNull(paymentIntent.clientSecret),
-                        paymentMethodType = paymentMethodTypeName
-                    )
-                        .setFlow(AirwallexPaymentRequestFlow.IN_APP)
-                        .build(),
-                    object : Airwallex.PaymentListener<PaymentMethodTypeInfo> {
-                        override fun onFailed(exception: AirwallexException) {
-                            resultData.value = Result.failure(exception)
-                        }
+    suspend fun retrieveBanks(paymentMethodTypeName: String): Result<BankResponse> {
+        return suspendCancellableCoroutine { continuation ->
+            when (session) {
+                is AirwallexPaymentSession -> {
+                    val paymentIntent = session.paymentIntent
+                    airwallex.retrieveBanks(
+                        RetrieveBankParams.Builder(
+                            clientSecret = requireNotNull(paymentIntent.clientSecret),
+                            paymentMethodType = paymentMethodTypeName
+                        )
+                            .setCountryCode(session.countryCode)
+                            .build(),
+                        object : Airwallex.PaymentListener<BankResponse> {
+                            override fun onFailed(exception: AirwallexException) {
+                                continuation.resume(Result.failure(exception))
+                            }
 
-                        override fun onSuccess(response: PaymentMethodTypeInfo) {
-                            resultData.value = Result.success(response)
+                            override fun onSuccess(response: BankResponse) {
+                                continuation.resume(Result.success(response))
+                            }
                         }
-                    }
-                )
-            }
-            else -> {
-                resultData.value =
-                    Result.failure(AirwallexCheckoutException(message = "$paymentMethodTypeName just support one-off payment"))
+                    )
+                }
+
+                else -> {
+                    continuation.resume(
+                        Result.failure(AirwallexCheckoutException(message = "$paymentMethodTypeName just support one-off payment"))
+                    )
+                }
             }
         }
+    }
 
-        return resultData
+    suspend fun retrievePaymentMethodTypeInfo(
+        paymentMethodTypeName: String
+    ): Result<PaymentMethodTypeInfo> {
+        return suspendCancellableCoroutine { continuation ->
+            when (session) {
+                is AirwallexPaymentSession -> {
+                    val paymentIntent = session.paymentIntent
+                    airwallex.retrievePaymentMethodTypeInfo(
+                        RetrievePaymentMethodTypeInfoParams.Builder(
+                            clientSecret = requireNotNull(paymentIntent.clientSecret),
+                            paymentMethodType = paymentMethodTypeName
+                        )
+                            .setFlow(AirwallexPaymentRequestFlow.IN_APP)
+                            .build(),
+                        object : Airwallex.PaymentListener<PaymentMethodTypeInfo> {
+                            override fun onFailed(exception: AirwallexException) {
+                                continuation.resume(Result.failure(exception))
+                            }
+
+                            override fun onSuccess(response: PaymentMethodTypeInfo) {
+                                continuation.resume(Result.success(response))
+                            }
+                        }
+                    )
+                }
+
+                else -> {
+                    continuation.resume(
+                        Result.failure(
+                            AirwallexCheckoutException(message = "$paymentMethodTypeName just support one-off payment")
+                        )
+                    )
+                }
+            }
+        }
     }
 
     internal class Factory(

@@ -60,11 +60,14 @@ abstract class AirwallexActivity : AppCompatActivity() {
         )
     }
 
+    open fun addObserver() = Unit
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
         initView()
         addListener()
+        addObserver()
     }
 
     override fun onDestroy() {

@@ -1,11 +1,11 @@
 package com.airwallex.android.view
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.Airwallex.PaymentResultListener
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -18,19 +18,27 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.Bank
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.DynamicSchemaField
+import com.airwallex.android.core.model.DynamicSchemaFieldType
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
-import com.airwallex.android.core.model.TransactionMode
+import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
+import com.airwallex.android.view.util.toPaymentFlow
+import com.airwallex.android.view.util.filterRequiredFields
+import com.airwallex.android.view.util.findWithType
+import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
@@ -39,9 +47,24 @@ internal class PaymentMethodsViewModel(
     application: Application,
     private val airwallex: Airwallex,
     private val session: AirwallexSession
-) : AndroidViewModel(application) {
+) : AirwallexCheckoutViewModel(application, airwallex, session) {
 
     val pageName: String = "payment_method_list"
+
+    private val _showErrorAlert = MutableLiveData<String>()
+    val showErrorAlert: LiveData<String> = _showErrorAlert
+
+    private val _showSchemaFieldsDialog = MutableLiveData<SchemaFields>()
+    val showSchemaFieldsDialog: LiveData<SchemaFields> = _showSchemaFieldsDialog
+
+    private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
+    val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
+
+    private val _showPaymentMethodList = MutableLiveData<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>()
+    val showPaymentMethodList: LiveData<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>> = _showPaymentMethodList
+
+    private val _skipPaymentMethodList = MutableLiveData<List<CardScheme>>()
+    val skipPaymentMethodList: LiveData<List<CardScheme>> = _skipPaymentMethodList
 
     private val paymentIntent: PaymentIntent? by lazy {
         when (session) {
@@ -110,39 +133,92 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    fun confirmPaymentIntent(
-        paymentConsent: PaymentConsent
-    ): LiveData<AirwallexPaymentStatus> {
-        val resultData = MutableLiveData<AirwallexPaymentStatus>()
+    fun confirmPaymentIntent(paymentConsent: PaymentConsent) {
         if (session is AirwallexPaymentSession) {
             airwallex.confirmPaymentIntent(
                 session, paymentConsent,
                 object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
-                        resultData.value = status
+                        _airwallexPaymentStatus.value = status
+                        trackPaymentSuccess(status, paymentConsent.paymentMethod?.type)
                     }
                 }
             )
         } else {
-            resultData.value =
+            _airwallexPaymentStatus.value =
                 AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession"))
         }
-        return resultData
+    }
+
+    fun startCheckout(
+        paymentMethod: PaymentMethod,
+        additionalInfo: Map<String, String>,
+        typeInfo: PaymentMethodTypeInfo
+    ) = viewModelScope.launch {
+        checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow())
+            .also {
+                trackPaymentSuccess(it, paymentMethod.type)
+                _airwallexPaymentStatus.value = it
+            }
+    }
+
+    fun startCheckout(paymentMethodType: AvailablePaymentMethodType) = viewModelScope.launch {
+        AirwallexLogger.info("startCheckout, name = ${paymentMethodType.name}")
+        val paymentMethod = PaymentMethod.Builder()
+            .setType(paymentMethodType.name)
+            .build()
+        paymentMethod.type?.let { type ->
+            // Have required schema fields
+            if (requireHandleSchemaFields(paymentMethodType)) {
+                AirwallexLogger.info("Get more payment Info fields on one-off flow.")
+                checkoutWithSchemaFields(paymentMethod, type)
+            } else {
+                AirwallexLogger.info("start checkout directly, type = ${paymentMethod.type}")
+                checkout(paymentMethod).also {
+                    trackPaymentSuccess(it, paymentMethod.type)
+                    _airwallexPaymentStatus.value = it
+                }
+            }
+        }
+    }
+
+    fun fetchPaymentMethodsAndConsents() = viewModelScope.launch {
+        val result = fetchAvailablePaymentMethodsAndConsents()
+        result.fold(
+            onSuccess = { methodsAndConsents ->
+                val availableMethodTypes = methodsAndConsents.first
+                val availablePaymentConsents = methodsAndConsents.second
+                AirwallexLogger.info("PaymentMethodsViewModel fetchPaymentMethodsAndConsents availableMethodTypes = $availableMethodTypes, availablePaymentConsents = $availablePaymentConsents")
+
+                // skip straight to the individual card screen?
+                val singleCardPaymentMethod =
+                    availableMethodTypes.getSinglePaymentMethodOrNull(availablePaymentConsents)
+                // only one payment method and it's Card.
+                if (singleCardPaymentMethod != null) {
+                    _skipPaymentMethodList.value =
+                        singleCardPaymentMethod.cardSchemes ?: emptyList()
+                } else {
+                    _showPaymentMethodList.value =
+                        Pair(availableMethodTypes, availablePaymentConsents)
+                }
+            },
+            onFailure = {
+                _showErrorAlert.value = it.message ?: it.toString()
+            }
+        )
+
+    }
+
+    fun trackPaymentSuccess(status: AirwallexPaymentStatus, paymentType: String?) {
+        if (status is AirwallexPaymentStatus.Success) {
+            trackPaymentSuccess(paymentType)
+        }
     }
 
     fun trackCardPaymentSuccess() {
         AnalyticsLogger.logAction(
             PAYMENT_SUCCESS,
             mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
-        )
-    }
-
-    fun trackPaymentSuccess(paymentConsent: PaymentConsent) {
-        AnalyticsLogger.logAction(
-            PAYMENT_SUCCESS,
-            mutableMapOf<String, String>().apply {
-                putIfNotNull(PAYMENT_METHOD, paymentConsent.paymentMethod?.type)
-            }
         )
     }
 
@@ -153,46 +229,61 @@ internal class PaymentMethodsViewModel(
         )
     }
 
-    fun trackPaymentSelection(paymentConsent: PaymentConsent) {
-        paymentConsent.paymentMethod?.type?.takeIf { it.isNotEmpty() }?.let { type ->
+    fun trackPaymentSuccess(paymentType: String?) {
+        AnalyticsLogger.logAction(
+            PAYMENT_SUCCESS,
+            mutableMapOf<String, String>().apply {
+                putIfNotNull(PAYMENT_METHOD, paymentType)
+            }
+        )
+    }
+
+    fun trackPaymentSelection(paymentMethodType: String?) {
+        paymentMethodType?.takeIf { it.isNotEmpty() }?.let { type ->
             AnalyticsLogger.logAction(PAYMENT_SELECT, mapOf(PAYMENT_METHOD to type))
         }
     }
 
-    fun filterRequiredFields(info: PaymentMethodTypeInfo): List<DynamicSchemaField>? {
-        return info
-            .fieldSchemas
-            ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
-            ?.fields
-            ?.filter { !it.hidden }
-    }
-
-    fun fetchPaymentFlow(info: PaymentMethodTypeInfo): AirwallexPaymentRequestFlow {
-        val flowField = info
-            .fieldSchemas
-            ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
-            ?.fields
-            ?.firstOrNull { it.name == FLOW }
-
-        val candidates = flowField?.candidates
-        return when {
-            candidates?.find { it.value == AirwallexPaymentRequestFlow.IN_APP.value } != null -> {
-                AirwallexPaymentRequestFlow.IN_APP
+    private suspend fun checkoutWithSchemaFields(paymentMethod: PaymentMethod, type: String) {
+        // 1.Retrieve all required schema fields of the payment method
+        val typeInfo = retrievePaymentMethodTypeInfo(type).getOrElse {
+            _showErrorAlert.value = it.message
+            return@checkoutWithSchemaFields
+        }
+        val fields = typeInfo.filterRequiredFields()
+        AirwallexLogger.info("checkoutWithSchemaFields: filterRequiredFields = $fields")
+        // 2.If all fields are hidden, start checkout directly
+        if (fields.isNullOrEmpty()) {
+            checkout(paymentMethod).also {
+                trackPaymentSuccess(it, paymentMethod.type)
+                _airwallexPaymentStatus.value = it
             }
-
-            candidates != null && candidates.isNotEmpty() -> {
-                AirwallexPaymentRequestFlow.fromValue(candidates[0].value)
-                    ?: AirwallexPaymentRequestFlow.IN_APP
-            }
-
-            else -> {
-                AirwallexPaymentRequestFlow.IN_APP
-            }
+            return
+        }
+        val bankField =
+            fields.find { field -> field.type == DynamicSchemaFieldType.BANKS }
+        AirwallexLogger.info("checkoutWithSchemaFields: bankField = $bankField")
+        if (bankField == null) {
+            // show the schema fields dialog.
+            _showSchemaFieldsDialog.value = SchemaFields(paymentMethod, typeInfo)
+            return
+        }
+        // 3.If the bank is needed, need to retrieve the bank list.
+        val banks = retrieveBanks(type).getOrElse {
+            _showErrorAlert.value = it.message
+            return@checkoutWithSchemaFields
+        }.items
+        AirwallexLogger.info("checkoutWithSchemaFields: banks = $banks")
+        // 4.If the bank is not needed or bank list is empty, then show the schema fields dialog.
+        _showSchemaFieldsDialog.value = if (banks.isNullOrEmpty()) {
+            SchemaFields(paymentMethod, typeInfo)
+        } else {
+            SchemaFields(paymentMethod, typeInfo, bankField, banks)
         }
     }
 
     suspend fun fetchAvailablePaymentMethodsAndConsents():
-            Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>? {
+            Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>> {
         val secret = clientSecret.takeIf { !it.isNullOrBlank() }
             ?: return Result.failure(AirwallexCheckoutException(message = "Client secret is empty or blank"))
         return supervisorScope {
@@ -210,7 +301,7 @@ internal class PaymentMethodsViewModel(
                     session.paymentMethods
                 )
                 val consents = retrieveConsents.await()
-                Result.success(Pair(methods, consents))
+                Result.success(Pair(methods, filterPaymentConsentsBySession(methods, consents)))
             } catch (exception: AirwallexException) {
                 AirwallexLogger.error(
                     "PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: failed ",
@@ -220,6 +311,9 @@ internal class PaymentMethodsViewModel(
             }
         }
     }
+
+    private fun requireHandleSchemaFields(paymentMethodType: AvailablePaymentMethodType) =
+        paymentMethodType.resources?.hasSchema == true && session is AirwallexPaymentSession
 
     private fun needRequestConsent(): Boolean {
         // if the customerId is null or empty ,there is no need to request consents
@@ -237,6 +331,18 @@ internal class PaymentMethodsViewModel(
         if (filterList.isNullOrEmpty()) return sourceList
         return filterList.mapNotNull { name ->
             sourceList.find { it.name.equals(name, ignoreCase = true) }
+        }
+    }
+
+    private fun filterPaymentConsentsBySession(
+        paymentMethodList: List<AvailablePaymentMethodType>,
+        paymentConsentList: List<PaymentConsent>
+    ): List<PaymentConsent> {
+        val cardPaymentMethod = paymentMethodList.findWithType(PaymentMethodType.CARD)
+        return if (cardPaymentMethod != null && session is AirwallexPaymentSession) {
+            paymentConsentList.filter { it.paymentMethod?.type == PaymentMethodType.CARD.value }
+        } else {
+            emptyList()
         }
     }
 
@@ -325,19 +431,6 @@ internal class PaymentMethodsViewModel(
         return resultData
     }
 
-    fun hasSinglePaymentMethod(
-        desiredPaymentMethodType: AvailablePaymentMethodType?,
-        paymentMethods: List<AvailablePaymentMethodType>,
-        consents: List<PaymentConsent>
-    ): Boolean {
-        if (desiredPaymentMethodType == null) return false
-
-        val hasPaymentConsents = consents.isNotEmpty()
-        val availablePaymentMethodsSize = paymentMethods.size
-
-        return !hasPaymentConsents && availablePaymentMethodsSize == 1
-    }
-
     internal class Factory(
         private val application: Application,
         private val airwallex: Airwallex,
@@ -352,6 +445,13 @@ internal class PaymentMethodsViewModel(
             ) as T
         }
     }
+
+    internal data class SchemaFields(
+        val paymentMethod: PaymentMethod,
+        val typeInfo: PaymentMethodTypeInfo,
+        val bankField: DynamicSchemaField? = null,
+        val banks: List<Bank>? = null
+    )
 
     companion object {
         const val COUNTRY_CODE = "country_code"

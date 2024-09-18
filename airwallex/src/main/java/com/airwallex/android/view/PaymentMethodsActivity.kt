@@ -5,9 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.R
@@ -16,17 +14,21 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.Bank
+import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.model.DynamicSchemaField
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
-import com.airwallex.android.view.util.findWithType
 import com.airwallex.risk.AirwallexRisk
-import kotlinx.coroutines.launch
 
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
@@ -35,8 +37,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         val root = viewStub.inflate() as ViewGroup
         ActivityPaymentMethodsBinding.bind(root)
     }
-
-    private lateinit var paymentMethodsAdapter: PaymentMethodsAdapter
 
     private val args: PaymentMethodsActivityLaunch.Args by lazy {
         intent.getExtraArgs()
@@ -64,13 +64,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         Airwallex(this)
     }
 
-    private var availablePaymentMethodTypes: List<AvailablePaymentMethodType>? = null
-    private var availablePaymentConsents: List<PaymentConsent>? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        fetchPaymentMethodsAndConsents()
+        setLoadingProgress(loading = true, cancelable = false)
+        viewModel.fetchPaymentMethodsAndConsents()
     }
 
     override fun onBackButtonPressed() {
@@ -79,40 +76,75 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         finish()
     }
 
-    private fun initView(
+    override fun addObserver() {
+        viewModel.showErrorAlert.observe(this) { message ->
+            setLoadingProgress(loading = false)
+            alert(message = message)
+        }
+        viewModel.showSchemaFieldsDialog.observe(this) { schemaFields ->
+            setLoadingProgress(loading = false)
+            if (schemaFields.banks != null) {
+                showPaymentBankDialog(
+                    schemaFields.paymentMethod,
+                    schemaFields.typeInfo,
+                    schemaFields.bankField,
+                    schemaFields.banks
+                )
+            } else {
+                showSchemaFieldsDialog(schemaFields.typeInfo, schemaFields.paymentMethod)
+            }
+        }
+        viewModel.showPaymentMethodList.observe(this) { pair ->
+            setLoadingProgress(loading = false)
+            initAdapter(pair.first, pair.second)
+        }
+        viewModel.skipPaymentMethodList.observe(this) { cardSchemes ->
+            setLoadingProgress(loading = false)
+            startAddPaymentMethod(cardSchemes, true)
+        }
+        viewModel.airwallexPaymentStatus.observe(this) { status ->
+            handlePaymentStatus(status)
+        }
+    }
+
+    override fun homeAsUpIndicatorResId(): Int {
+        return R.drawable.airwallex_ic_close
+    }
+
+    private val paymentMethodsAdapterListener = object : PaymentMethodsAdapter.Listener {
+
+        override fun onPaymentConsentClick(paymentConsent: PaymentConsent) {
+            setLoadingProgress(true)
+            viewModel.trackPaymentSelection(paymentConsent.paymentMethod?.type)
+            viewModel.confirmPaymentIntent(paymentConsent)
+        }
+
+        override fun onPaymentMethodClick(paymentMethodType: AvailablePaymentMethodType) {
+            setLoadingProgress(true)
+            viewModel.trackPaymentSelection(paymentMethodType.name)
+            viewModel.startCheckout(paymentMethodType)
+        }
+
+        override fun onAddCardClick(supportedCardSchemes: List<CardScheme>) {
+            viewModel.trackCardPaymentSelection()
+            startAddPaymentMethod(supportedCardSchemes, isSinglePaymentMethod = false)
+        }
+    }
+
+    private fun initAdapter(
         availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
         availablePaymentConsents: List<PaymentConsent>
     ) {
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
         val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        paymentMethodsAdapter = PaymentMethodsAdapter(
+        val paymentAdapter = PaymentMethodsAdapter(
             availablePaymentMethodTypes = availablePaymentMethodTypes,
             availablePaymentConsents = availablePaymentConsents,
-            listener = object : PaymentMethodsAdapter.Listener {
-                override fun onPaymentConsentClick(
-                    paymentConsent: PaymentConsent,
-                    paymentMethodType: AvailablePaymentMethodType?
-                ) {
-                    viewModel.trackPaymentSelection(paymentConsent)
-
-                    handleProcessPaymentMethod(
-                        paymentConsent = paymentConsent,
-                        paymentMethodType = paymentMethodType
-                    )
-                }
-
-                override fun onAddCardClick(supportedCardSchemes: List<CardScheme>) {
-                    viewModel.trackCardPaymentSelection()
-
-                    startAddPaymentMethod(supportedCardSchemes, isSinglePaymentMethod = false)
-                }
-            }
+            listener = paymentMethodsAdapterListener
         )
-
         viewBinding.rvPaymentMethods.apply {
             layoutManager = viewManager
-            adapter = paymentMethodsAdapter
-
+            adapter = paymentAdapter
             addItemDecoration(
                 PaymentMethodsDividerItemDecoration(
                     this@PaymentMethodsActivity,
@@ -120,28 +152,13 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 )
             )
         }
+        initPaymentMethodSwipeCallback(paymentAdapter, createFactory(paymentAdapter))
+    }
 
-        val deletePaymentMethodDialogFactory = DeletePaymentMethodDialogFactory(
-            this,
-            paymentMethodsAdapter,
-        ) { paymentConsent ->
-            setLoadingProgress(loading = true, cancelable = false)
-            viewModel.deletePaymentConsent(paymentConsent).observe(
-                this
-            ) { result ->
-                result.fold(
-                    onSuccess = {
-                        setLoadingProgress(false)
-                        paymentMethodsAdapter.deletePaymentConsent(it)
-                    },
-                    onFailure = {
-                        setLoadingProgress(false)
-                        alert(message = it.message ?: it.toString())
-                    }
-                )
-            }
-        }
-
+    private fun initPaymentMethodSwipeCallback(
+        adapter: PaymentMethodsAdapter,
+        factory: DeletePaymentMethodDialogFactory
+    ) {
         object :
             PaymentMethodSwipeCallback(this@PaymentMethodsActivity, viewBinding.rvPaymentMethods) {
             override fun instantiateUnderlayButton(
@@ -152,19 +169,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     UnderlayButton(
                         text = resources.getString(R.string.airwallex_delete_payment_method_positive),
                         textSize = resources.getDimensionPixelSize(R.dimen.swipe_size),
-                        color = ContextCompat.getColor(
-                            baseContext,
-                            R.color.airwallex_color_red
-                        ),
+                        color = ContextCompat.getColor(baseContext, R.color.airwallex_color_red),
                         clickListener = object : UnderlayButtonClickListener {
                             override fun onClick(position: Int) {
-                                deletePaymentMethodDialogFactory
-                                    .create(
-                                        paymentMethodsAdapter.getPaymentConsentAtPosition(
-                                            position
-                                        )
-                                    )
-                                    .show()
+                                factory.create(adapter.getPaymentConsentAtPosition(position)).show()
                             }
                         }
                     )
@@ -173,54 +181,22 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         }
     }
 
-    private fun fetchPaymentMethodsAndConsents() {
-        lifecycleScope.launch {
+    private fun createFactory(adapter: PaymentMethodsAdapter): DeletePaymentMethodDialogFactory {
+        return DeletePaymentMethodDialogFactory(this, adapter) { paymentConsent ->
             setLoadingProgress(loading = true, cancelable = false)
-            val result = viewModel.fetchAvailablePaymentMethodsAndConsents()
-            result?.fold(
-                onSuccess = { methodsAndConsents ->
-                    setLoadingProgress(loading = false)
-                    // Complete load available payment method type and consents
-                    val availableMethodTypes = methodsAndConsents.first
-                    this@PaymentMethodsActivity.availablePaymentMethodTypes = availableMethodTypes
-
-                    val cardPaymentMethod = availablePaymentMethodTypes?.findWithType(PaymentMethodType.CARD)
-                    val availablePaymentConsents =
-                        if (cardPaymentMethod != null && session is AirwallexPaymentSession) {
-                            methodsAndConsents.second.filter { it.paymentMethod?.type == PaymentMethodType.CARD.value }
-                        } else {
-                            emptyList()
-                        }
-                    this@PaymentMethodsActivity.availablePaymentConsents = availablePaymentConsents
-
-                    // skip straight to the individual card screen?
-                    val hasSinglePaymentMethod = viewModel.hasSinglePaymentMethod(
-                        desiredPaymentMethodType = cardPaymentMethod,
-                        paymentMethods = availableMethodTypes,
-                        consents = availablePaymentConsents
-                    )
-
-                    if (hasSinglePaymentMethod && cardPaymentMethod != null) {
-                        // only one payment method and it's Card.
-                        val cardSchemes = cardPaymentMethod.cardSchemes ?: emptyList()
-                        startAddPaymentMethod(cardSchemes, isSinglePaymentMethod = true)
-                    } else {
-                        initView(
-                            availablePaymentMethodTypes = availableMethodTypes,
-                            availablePaymentConsents = availablePaymentConsents
-                        )
+            viewModel.deletePaymentConsent(paymentConsent).observe(this) { result ->
+                result.fold(
+                    onSuccess = {
+                        setLoadingProgress(false)
+                        adapter.deletePaymentConsent(it)
+                    },
+                    onFailure = {
+                        setLoadingProgress(false)
+                        alert(message = it.message ?: it.toString())
                     }
-                },
-                onFailure = {
-                    setLoadingProgress(loading = false)
-                    alert(message = it.message ?: it.toString())
-                }
-            )
+                )
+            }
         }
-    }
-
-    override fun homeAsUpIndicatorResId(): Int {
-        return R.drawable.airwallex_ic_close
     }
 
     private fun startAddPaymentMethod(
@@ -228,152 +204,33 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         isSinglePaymentMethod: Boolean
     ) {
         AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity)
-            .startForResult(
+            .launchForResult(
                 AddPaymentMethodActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
                     .setSupportedCardSchemes(cardSchemes)
                     .setSinglePaymentMethod(isSinglePaymentMethod)
                     .build()
-            )
+            ) { _, result ->
+                handleAddPaymentMethodActivityResult(result.resultCode, result.data)
+            }
     }
 
-    private fun handleProcessPaymentMethod(
-        paymentConsent: PaymentConsent,
-        paymentMethodType: AvailablePaymentMethodType?,
-        cvc: String? = null
+    private fun showPaymentBankDialog(
+        paymentMethod: PaymentMethod,
+        typeInfo: PaymentMethodTypeInfo,
+        bankField: DynamicSchemaField? = null,
+        banks: List<Bank>
     ) {
-        val paymentMethod = requireNotNull(paymentConsent.paymentMethod)
-        val observer = Observer<AirwallexPaymentStatus> { result ->
-
-            when (result) {
-                is AirwallexPaymentStatus.Success -> {
-                    viewModel.trackPaymentSuccess(paymentConsent)
-                    finishWithPaymentIntent(
-                        paymentIntentId = result.paymentIntentId,
-                        isRedirecting = false
-                    )
-                }
-                is AirwallexPaymentStatus.Failure -> {
-                    finishWithPaymentIntent(exception = result.exception)
-                }
-                is AirwallexPaymentStatus.InProgress -> {
-                    finishWithPaymentIntent(
-                        paymentIntentId = result.paymentIntentId,
-                        isRedirecting = true
-                    )
-                }
-                is AirwallexPaymentStatus.Cancel -> {
-                    setLoadingProgress(false)
-                }
-                else -> Unit
-            }
+        val bankDialog = PaymentBankBottomSheetDialog.newInstance(
+            paymentMethod,
+            getString(R.string.airwallex_select_your_bank),
+            banks
+        )
+        bankDialog.onCompleted = { bank ->
+            AnalyticsLogger.logAction("select_bank", mapOf("bankName" to bank.name))
+            showSchemaFieldsDialog(typeInfo, paymentMethod, bankField, bank.name)
         }
-
-        when (paymentMethod.type) {
-            PaymentMethodType.CARD.value -> {
-                setLoadingProgress(true)
-                viewModel.confirmPaymentIntent(paymentConsent).observe(this, observer)
-            }
-
-            PaymentMethodType.GOOGLEPAY.value -> {
-                setLoadingProgress(false)
-                startCheckout(
-                    paymentMethod = paymentMethod,
-                    paymentConsentId = paymentConsent.id,
-                    observer = observer
-                )
-            }
-            else -> {
-                if (paymentMethodType?.resources?.hasSchema == true && session is AirwallexPaymentSession) {
-                    // Have required schema fields
-                    // 1. Retrieve all required schema fields of the payment method
-                    // 2. If the bank is needed, need to retrieve the bank list.
-                    // 3. If the bank is not needed or bank list is empty, then show the schema fields dialog.
-                    AirwallexLogger.debug("Get more payment Info fields on one-off flow.")
-                    paymentMethod.type?.let { type ->
-                        retrievePaymentMethodTypeInfo(type) { result ->
-                            result.fold(
-                                onSuccess = { info ->
-                                    val fields = viewModel.filterRequiredFields(info)
-                                    if (fields == null || fields.isEmpty()) {
-                                        // If all fields are hidden, start checkout directly
-                                        startCheckout(
-                                            paymentMethod = paymentMethod,
-                                            paymentConsentId = paymentConsent.id,
-                                            observer = observer
-                                        )
-                                        return@fold
-                                    }
-
-                                    val bankField =
-                                        fields.find { field -> field.type == DynamicSchemaFieldType.BANKS }
-                                    if (bankField != null) {
-                                        retrieveBanks(type) { result ->
-                                            result.fold(
-                                                onSuccess = {
-                                                    setLoadingProgress(loading = false)
-                                                    val banks = it.items
-                                                    if (!banks.isNullOrEmpty()) {
-                                                        val bankDialog =
-                                                            PaymentBankBottomSheetDialog.newInstance(
-                                                                paymentMethod,
-                                                                getString(R.string.airwallex_select_your_bank),
-                                                                banks
-                                                            )
-                                                        bankDialog.onCompleted = { bank ->
-                                                            AnalyticsLogger.logAction(
-                                                                "select_bank",
-                                                                mapOf(
-                                                                    "bankName" to bank.name
-                                                                )
-                                                            )
-                                                            showSchemaFieldsDialog(
-                                                                info = info,
-                                                                paymentMethod = paymentMethod,
-                                                                bankField = bankField,
-                                                                bankName = bank.name,
-                                                                observer = observer
-                                                            )
-                                                        }
-                                                        bankDialog.show(
-                                                            supportFragmentManager,
-                                                            info.name
-                                                        )
-                                                    } else {
-                                                        showSchemaFieldsDialog(info, paymentMethod, observer = observer)
-                                                    }
-                                                },
-                                                onFailure = {
-                                                    setLoadingProgress(loading = false)
-                                                    alert(message = it.message ?: it.toString())
-                                                }
-                                            )
-                                        }
-                                    } else {
-                                        setLoadingProgress(loading = false)
-                                        showSchemaFieldsDialog(
-                                            info = info,
-                                            paymentMethod = paymentMethod,
-                                            observer = observer
-                                        )
-                                    }
-                                },
-                                onFailure = {
-                                    setLoadingProgress(loading = false)
-                                    alert(message = it.message ?: it.toString())
-                                }
-                            )
-                        }
-                    }
-                } else {
-                    startCheckout(
-                        paymentMethod = paymentMethod,
-                        paymentConsentId = paymentConsent.id,
-                        observer = observer
-                    )
-                }
-            }
-        }
+        bankDialog.show(supportFragmentManager, typeInfo.name)
     }
 
     private fun showSchemaFieldsDialog(
@@ -381,7 +238,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         paymentMethod: PaymentMethod,
         bankField: DynamicSchemaField? = null,
         bankName: String? = null,
-        observer: Observer<AirwallexPaymentStatus>
     ) {
         val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(paymentMethod, info)
         paymentInfoDialog.onCompleted = { fieldMap ->
@@ -392,11 +248,11 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             if (session is AirwallexPaymentSession) {
                 fieldMap[COUNTRY_CODE] = (session as AirwallexPaymentSession).countryCode
             }
-            startCheckout(
+            setLoadingProgress(loading = true, cancelable = false)
+            viewModel.startCheckout(
                 paymentMethod = paymentMethod,
                 additionalInfo = fieldMap,
-                flow = viewModel.fetchPaymentFlow(info),
-                observer = observer
+                typeInfo = info
             )
         }
         paymentInfoDialog.show(
@@ -405,33 +261,53 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         )
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-            AddPaymentMethodActivityLaunch.REQUEST_CODE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
-                    result?.let {
-                        if (it.exception == null) {
-                            viewModel.trackCardPaymentSuccess()
-                        }
-                        finishWithPaymentIntent(
-                            paymentIntentId = result.paymentIntentId,
-                            exception = result.exception,
-                            consentId = it.consentId
-                        )
-                    }
-                } else if (resultCode == Activity.RESULT_CANCELED) {
-                    val result = AddPaymentMethodActivityLaunch.CancellationResult.fromIntent(data)
-                    AirwallexLogger.info("PaymentMethodsActivity onActivityResult: result_canceled")
-                    result?.let {
-                        if (it.isSinglePaymentMethod) {
-                            setResult(Activity.RESULT_CANCELED)
-                            finish()
-                        }
-                    }
+    private fun handleAddPaymentMethodActivityResult(resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
+            result?.let {
+                if (it.exception == null) {
+                    viewModel.trackCardPaymentSuccess()
                 }
+                finishWithPaymentIntent(
+                    paymentIntentId = result.paymentIntentId,
+                    exception = result.exception,
+                    consentId = it.consentId
+                )
+            }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            val result = AddPaymentMethodActivityLaunch.CancellationResult.fromIntent(data)
+            AirwallexLogger.info("PaymentMethodsActivity onActivityResult: result_canceled")
+            result?.let {
+                if (it.isSinglePaymentMethod) {
+                    setResult(Activity.RESULT_CANCELED)
+                    finish()
+                }
+            }
+        }
+    }
+
+    private fun handlePaymentStatus(status: AirwallexPaymentStatus) {
+        when (status) {
+            is AirwallexPaymentStatus.Success -> {
+                finishWithPaymentIntent(
+                    paymentIntentId = status.paymentIntentId,
+                    isRedirecting = false
+                )
+            }
+
+            is AirwallexPaymentStatus.Failure -> {
+                finishWithPaymentIntent(exception = status.exception)
+            }
+
+            is AirwallexPaymentStatus.InProgress -> {
+                finishWithPaymentIntent(
+                    paymentIntentId = status.paymentIntentId,
+                    isRedirecting = true
+                )
+            }
+
+            is AirwallexPaymentStatus.Cancel -> {
+                setLoadingProgress(false)
             }
         }
     }
@@ -462,6 +338,3 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         private const val TAG = "PaymentMethodsActivity"
     }
 }
-
-private fun List<AvailablePaymentMethodType>.findCardPaymentType(): AvailablePaymentMethodType? =
-    find { it.name == PaymentMethodType.CARD.value }
