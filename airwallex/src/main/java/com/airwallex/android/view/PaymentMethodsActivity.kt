@@ -77,33 +77,42 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     override fun addObserver() {
-        viewModel.showErrorAlert.observe(this) { message ->
+        viewModel.paymentMethodResult.observe(this) { result ->
             setLoadingProgress(loading = false)
-            alert(message = message)
-        }
-        viewModel.showSchemaFieldsDialog.observe(this) { schemaFields ->
-            setLoadingProgress(loading = false)
-            if (schemaFields.banks != null) {
-                showPaymentBankDialog(
-                    schemaFields.paymentMethod,
-                    schemaFields.typeInfo,
-                    schemaFields.bankField,
-                    schemaFields.banks
-                )
-            } else {
-                showSchemaFieldsDialog(schemaFields.typeInfo, schemaFields.paymentMethod)
+            when (result) {
+                is PaymentMethodsViewModel.PaymentMethodResult.Show -> {
+                    initAdapter(result.methods.first, result.methods.second)
+                }
+
+                is PaymentMethodsViewModel.PaymentMethodResult.Skip -> {
+                    startAddPaymentMethod(result.schemes, true)
+                }
             }
         }
-        viewModel.showPaymentMethodList.observe(this) { pair ->
+        viewModel.paymentFlowStatus.observe(this) { flowStatus ->
             setLoadingProgress(loading = false)
-            initAdapter(pair.first, pair.second)
-        }
-        viewModel.skipPaymentMethodList.observe(this) { cardSchemes ->
-            setLoadingProgress(loading = false)
-            startAddPaymentMethod(cardSchemes, true)
-        }
-        viewModel.airwallexPaymentStatus.observe(this) { status ->
-            handlePaymentStatus(status)
+            when (flowStatus) {
+                is PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus -> {
+                    handlePaymentStatus(flowStatus.status)
+                }
+
+                is PaymentMethodsViewModel.PaymentFlowStatus.ErrorAlert -> {
+                    alert(message = flowStatus.message)
+                }
+
+                is PaymentMethodsViewModel.PaymentFlowStatus.SchemaFieldsDialog -> {
+                    showSchemaFieldsDialog(flowStatus.typeInfo, flowStatus.paymentMethod)
+                }
+
+                is PaymentMethodsViewModel.PaymentFlowStatus.BankDialog -> {
+                    showPaymentBankDialog(
+                        flowStatus.paymentMethod,
+                        flowStatus.typeInfo,
+                        flowStatus.bankField,
+                        flowStatus.banks
+                    )
+                }
+            }
         }
     }
 

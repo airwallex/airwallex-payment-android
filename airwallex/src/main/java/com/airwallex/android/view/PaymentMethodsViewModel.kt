@@ -51,20 +51,11 @@ internal class PaymentMethodsViewModel(
 
     val pageName: String = "payment_method_list"
 
-    private val _showErrorAlert = MutableLiveData<String>()
-    val showErrorAlert: LiveData<String> = _showErrorAlert
+    private val _paymentFlowStatus = MutableLiveData<PaymentFlowStatus>()
+    val paymentFlowStatus: LiveData<PaymentFlowStatus> = _paymentFlowStatus
 
-    private val _showSchemaFieldsDialog = MutableLiveData<SchemaFields>()
-    val showSchemaFieldsDialog: LiveData<SchemaFields> = _showSchemaFieldsDialog
-
-    private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
-    val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
-
-    private val _showPaymentMethodList = MutableLiveData<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>()
-    val showPaymentMethodList: LiveData<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>> = _showPaymentMethodList
-
-    private val _skipPaymentMethodList = MutableLiveData<List<CardScheme>>()
-    val skipPaymentMethodList: LiveData<List<CardScheme>> = _skipPaymentMethodList
+    private val _paymentMethodResult = MutableLiveData<PaymentMethodResult>()
+    val paymentMethodResult: LiveData<PaymentMethodResult> = _paymentMethodResult
 
     private val paymentIntent: PaymentIntent? by lazy {
         when (session) {
@@ -139,14 +130,15 @@ internal class PaymentMethodsViewModel(
                 session, paymentConsent,
                 object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
-                        _airwallexPaymentStatus.value = status
+                        _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(status)
                         trackPaymentSuccess(status, paymentConsent.paymentMethod?.type)
                     }
                 }
             )
         } else {
-            _airwallexPaymentStatus.value =
+            _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(
                 AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession"))
+            )
         }
     }
 
@@ -158,7 +150,7 @@ internal class PaymentMethodsViewModel(
         checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow())
             .also {
                 trackPaymentSuccess(it, paymentMethod.type)
-                _airwallexPaymentStatus.value = it
+                _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
             }
     }
 
@@ -176,7 +168,7 @@ internal class PaymentMethodsViewModel(
                 AirwallexLogger.info("PaymentMethodsViewModel start checkout directly, type = ${paymentMethod.type}")
                 checkout(paymentMethod).also {
                     trackPaymentSuccess(it, paymentMethod.type)
-                    _airwallexPaymentStatus.value = it
+                    _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
                 }
             }
         }
@@ -195,15 +187,15 @@ internal class PaymentMethodsViewModel(
                     availableMethodTypes.getSinglePaymentMethodOrNull(availablePaymentConsents)
                 // only one payment method and it's Card.
                 if (singleCardPaymentMethod != null) {
-                    _skipPaymentMethodList.value =
-                        singleCardPaymentMethod.cardSchemes ?: emptyList()
+                    _paymentMethodResult.value =
+                        PaymentMethodResult.Skip(singleCardPaymentMethod.cardSchemes ?: emptyList())
                 } else {
-                    _showPaymentMethodList.value =
-                        Pair(availableMethodTypes, availablePaymentConsents)
+                    _paymentMethodResult.value =
+                        PaymentMethodResult.Show(Pair(availableMethodTypes, availablePaymentConsents))
                 }
             },
             onFailure = {
-                _showErrorAlert.value = it.message ?: it.toString()
+                _paymentFlowStatus.value = PaymentFlowStatus.ErrorAlert(it.message ?: it.toString())
             }
         )
 
@@ -247,7 +239,7 @@ internal class PaymentMethodsViewModel(
     private suspend fun checkoutWithSchemaFields(paymentMethod: PaymentMethod, type: String) {
         // 1.Retrieve all required schema fields of the payment method
         val typeInfo = retrievePaymentMethodTypeInfo(type).getOrElse {
-            _showErrorAlert.value = it.message
+            _paymentFlowStatus.value = PaymentFlowStatus.ErrorAlert(it.message ?: "")
             return@checkoutWithSchemaFields
         }
         val fields = typeInfo.filterRequiredFields()
@@ -256,7 +248,7 @@ internal class PaymentMethodsViewModel(
         if (fields.isNullOrEmpty()) {
             checkout(paymentMethod).also {
                 trackPaymentSuccess(it, paymentMethod.type)
-                _airwallexPaymentStatus.value = it
+                _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
             }
             return
         }
@@ -265,20 +257,21 @@ internal class PaymentMethodsViewModel(
         AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchemaFields: bankField = $bankField")
         if (bankField == null) {
             // show the schema fields dialog.
-            _showSchemaFieldsDialog.value = SchemaFields(paymentMethod, typeInfo)
+            _paymentFlowStatus.value =
+                PaymentFlowStatus.SchemaFieldsDialog(paymentMethod, typeInfo)
             return
         }
         // 3.If the bank is needed, need to retrieve the bank list.
         val banks = retrieveBanks(type).getOrElse {
-            _showErrorAlert.value = it.message
+            _paymentFlowStatus.value = PaymentFlowStatus.ErrorAlert(it.message ?: "")
             return@checkoutWithSchemaFields
         }.items
         AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchemaFields: banks = $banks")
         // 4.If the bank is not needed or bank list is empty, then show the schema fields dialog.
-        _showSchemaFieldsDialog.value = if (banks.isNullOrEmpty()) {
-            SchemaFields(paymentMethod, typeInfo)
+        _paymentFlowStatus.value = if (banks.isNullOrEmpty()) {
+            PaymentFlowStatus.SchemaFieldsDialog(paymentMethod, typeInfo)
         } else {
-            SchemaFields(paymentMethod, typeInfo, bankField, banks)
+            PaymentFlowStatus.BankDialog(paymentMethod, typeInfo, bankField, banks)
         }
     }
 
@@ -446,12 +439,28 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    internal data class SchemaFields(
-        val paymentMethod: PaymentMethod,
-        val typeInfo: PaymentMethodTypeInfo,
-        val bankField: DynamicSchemaField? = null,
-        val banks: List<Bank>? = null
-    )
+    internal sealed class PaymentMethodResult {
+        data class Show(val methods: Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>) : PaymentMethodResult()
+        data class Skip(val schemes: List<CardScheme>) : PaymentMethodResult()
+    }
+
+    internal sealed class PaymentFlowStatus {
+        data class ErrorAlert(val message: String) : PaymentFlowStatus()
+
+        data class SchemaFieldsDialog(
+            val paymentMethod: PaymentMethod,
+            val typeInfo: PaymentMethodTypeInfo
+        ) : PaymentFlowStatus()
+
+        data class BankDialog(
+            val paymentMethod: PaymentMethod,
+            val typeInfo: PaymentMethodTypeInfo,
+            val bankField: DynamicSchemaField,
+            val banks: List<Bank>
+        ) : PaymentFlowStatus()
+
+        data class PaymentStatus(val status: AirwallexPaymentStatus) : PaymentFlowStatus()
+    }
 
     companion object {
         const val COUNTRY_CODE = "country_code"

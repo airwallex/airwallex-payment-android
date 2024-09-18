@@ -114,6 +114,7 @@ class APIIntegrationViewModel : BaseViewModel() {
      * 'dragonpay', 'blik', 'mybank', 'paybybankapp', 'verkkopankki', 'maxima', 'narvesen', 'paypost', 'perlas_terminals', 'paysafecash', 'paysafecard',
      * 'paysera', 'satispay', 'family_mart', 'hi_life', 'sam_kiosk', 'axs_kiosk', 'bigc', 'esun', 'permata_atm', 'boost', 'shopee_pay', 'paypal', 'payu',
      * 'ovo', 'bitpay', 'atome', 'duit_now', 'pay_now', 'prompt_pay', 'go_pay', 'linkaja', 'jenius_pay', 'klarna', 'spei', 'afterpay'
+     * You can check all methods by API reference: https://www.airwallex.com/docs/api#/Payment_Acceptance/Config/_api_v1_pa_config_payment_method_types/get JSON Object field: items.name
      */
     fun startPayByRedirection() = run {
         val session = createSession()

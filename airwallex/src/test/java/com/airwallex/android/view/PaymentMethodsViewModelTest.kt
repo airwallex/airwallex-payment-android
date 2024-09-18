@@ -155,32 +155,38 @@ class PaymentMethodsViewModelTest {
     @Test
     fun `test confirmPaymentIntent with invalid session`() {
         val viewModel = mockViewModel(TransactionMode.RECURRING)
+
         val paymentConsent = mockk<PaymentConsent>(relaxed = true)
-        val observer = mockk<Observer<AirwallexPaymentStatus>>(relaxed = true)
+        val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
 
-        viewModel.airwallexPaymentStatus.observeForever(observer)
+        viewModel.paymentFlowStatus.observeForever(observer)
 
-        val expectedFailureStatus = AirwallexPaymentStatus.Failure(
-            AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession")
+        val expectedFailureStatus = PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus(
+            AirwallexPaymentStatus.Failure(
+                AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession")
+            )
         )
 
         viewModel.confirmPaymentIntent(paymentConsent)
+
         verify {
             observer.onChanged(
                 match { status ->
-                    status is AirwallexPaymentStatus.Failure &&
-                            status.exception.message == expectedFailureStatus.exception.message
+                    status is PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus &&
+                            status.status is AirwallexPaymentStatus.Failure &&
+                            (status.status).exception.message == (expectedFailureStatus.status as AirwallexPaymentStatus.Failure).exception.message
                 }
             )
         }
-        viewModel.airwallexPaymentStatus.removeObserver(observer)
+        viewModel.paymentFlowStatus.removeObserver(observer)
     }
 
     @Test
     fun `test confirmPaymentIntent with valid session`() {
         val paymentConsent = mockk<PaymentConsent>(relaxed = true)
         val viewModel = mockViewModel(TransactionMode.ONE_OFF)
-        val observer: Observer<AirwallexPaymentStatus> = mockk(relaxed = true)
+        val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
+
         val status = AirwallexPaymentStatus.Success(
             paymentIntentId = "test_payment_intent_id",
             consentId = "test_consent_id",
@@ -195,45 +201,59 @@ class PaymentMethodsViewModelTest {
         } answers {
             thirdArg<Airwallex.PaymentResultListener>().onCompleted(status)
         }
-        viewModel.airwallexPaymentStatus.observeForever(observer)
+
+        viewModel.paymentFlowStatus.observeForever(observer)
         viewModel.confirmPaymentIntent(paymentConsent)
-        verify { observer.onChanged(status) }
-        viewModel.airwallexPaymentStatus.removeObserver(observer)
+
+        verify {
+            observer.onChanged(
+                match { result ->
+                    result is PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus &&
+                            result.status is AirwallexPaymentStatus.Success &&
+                            result.status.paymentIntentId == status.paymentIntentId &&
+                            result.status.consentId == status.consentId &&
+                            result.status.additionalInfo == status.additionalInfo
+                }
+            )
+        }
+        viewModel.paymentFlowStatus.removeObserver(observer)
     }
 
     @Test
-    fun `test startCheckout calls trackPaymentSuccess and updates airwallexPaymentStatus`() = runTest {
+    fun `test startCheckout calls trackPaymentSuccess and updates paymentFlowStatus`() = runTest {
         val paymentMethod = createPaymentMethod("card")
         val additionalInfo = mapOf("key" to "value")
         val paymentMethodTypeInfo = createPaymentMethodTypeInfo()
         val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
+        val expectedPaymentFlowStatus = PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus(expectedStatus)
 
-            val viewModel = mockViewModel(TransactionMode.ONE_OFF)
-            val listenerSlot = slot<Airwallex.PaymentResultListener>()
-            coEvery {
-                airwallex.checkout(
-                    session = any(),
-                    paymentMethod = any(),
-                    additionalInfo = any(),
-                    flow = any(),
-                    listener = capture(listenerSlot)
-                )
-            } answers {
-                listenerSlot.captured.onCompleted(expectedStatus)
-            }
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+        val listenerSlot = slot<Airwallex.PaymentResultListener>()
 
-            every { viewModel.trackPaymentSuccess(expectedStatus, paymentMethod.type) } just runs
-            val observer = mockk<Observer<AirwallexPaymentStatus>>(relaxed = true)
-            viewModel.airwallexPaymentStatus.observeForever(observer)
-            viewModel.startCheckout(paymentMethod, additionalInfo, paymentMethodTypeInfo)
-            advanceUntilIdle()
-
-            coVerify(exactly = 1) {
-                viewModel.trackPaymentSuccess(expectedStatus, paymentMethod.type)
-            }
-            verify(exactly = 1) { observer.onChanged(expectedStatus) }
-            viewModel.airwallexPaymentStatus.removeObserver(observer)
+        coEvery {
+            airwallex.checkout(
+                session = any(),
+                paymentMethod = any(),
+                additionalInfo = any(),
+                flow = any(),
+                listener = capture(listenerSlot)
+            )
+        } answers {
+            listenerSlot.captured.onCompleted(expectedStatus)
         }
+
+        every { viewModel.trackPaymentSuccess(expectedStatus, paymentMethod.type) } just runs
+        val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
+        viewModel.paymentFlowStatus.observeForever(observer)
+        viewModel.startCheckout(paymentMethod, additionalInfo, paymentMethodTypeInfo)
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) {
+            viewModel.trackPaymentSuccess(expectedStatus, paymentMethod.type)
+        }
+        verify(exactly = 1) { observer.onChanged(expectedPaymentFlowStatus) }
+        viewModel.paymentFlowStatus.removeObserver(observer)
+    }
 
     @Test
     fun `test startCheckout invokes checkout directly when requireHandleSchemaFields is true`() =
@@ -256,78 +276,90 @@ class PaymentMethodsViewModelTest {
         }
 
     @Test
-    fun `test checkoutWithSchemaFields when fields is null`() =
-        runTest {
-            val availablePaymentMethodType = createAvailablePaymentMethodType()
-            val paymentMethodTypeInfo = createPaymentMethodTypeInfo()
-            val viewModel = mockViewModel(TransactionMode.ONE_OFF)
-            val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
+    fun `test checkoutWithSchemaFields when fields is null`() = runTest {
+        val availablePaymentMethodType = createAvailablePaymentMethodType()
+        val paymentMethodTypeInfo = createPaymentMethodTypeInfo()
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+        val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
+        val expectedPaymentFlowStatus = PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus(expectedStatus)
 
-            val mockListener = slot<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+        val mockListener = slot<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
 
-            every {
-                airwallex.retrievePaymentMethodTypeInfo(any(), capture(mockListener))
-            } answers {
-                mockListener.captured.onSuccess(paymentMethodTypeInfo)
-            }
-
-            val listenerSlot = slot<Airwallex.PaymentResultListener>()
-            coEvery {
-                airwallex.checkout(
-                    session = any(),
-                    paymentMethod = any(),
-                    additionalInfo = any(),
-                    flow = any(),
-                    listener = capture(listenerSlot)
-                )
-            } answers {
-                listenerSlot.captured.onCompleted(expectedStatus)
-            }
-
-            viewModel.startCheckout(availablePaymentMethodType)
-
-            advanceUntilIdle()
-
-            assertEquals(viewModel.airwallexPaymentStatus.value, expectedStatus)
-            unmockkObject(AirwallexLogger)
+        every {
+            airwallex.retrievePaymentMethodTypeInfo(any(), capture(mockListener))
+        } answers {
+            mockListener.captured.onSuccess(paymentMethodTypeInfo)
         }
+
+        val listenerSlot = slot<Airwallex.PaymentResultListener>()
+        coEvery {
+            airwallex.checkout(
+                session = any(),
+                paymentMethod = any(),
+                additionalInfo = any(),
+                flow = any(),
+                listener = capture(listenerSlot)
+            )
+        } answers {
+            listenerSlot.captured.onCompleted(expectedStatus)
+        }
+
+        val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
+        viewModel.paymentFlowStatus.observeForever(observer)
+
+        viewModel.startCheckout(availablePaymentMethodType)
+
+        advanceUntilIdle()
+
+        assertEquals(viewModel.paymentFlowStatus.value, expectedPaymentFlowStatus)
+
+        viewModel.paymentFlowStatus.removeObserver(observer)
+        unmockkObject(AirwallexLogger)
+    }
 
     @Test
-    fun `test checkoutWithSchemaFields when bankField is null`() =
-        runTest {
-            val availablePaymentMethodType = createAvailablePaymentMethodType()
-            val paymentMethodTypeInfo = createPaymentMethodTypeInfo(SAMPLE_ENUM_FIELD)
-            val viewModel = mockViewModel(TransactionMode.ONE_OFF)
-            val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
+    fun `test checkoutWithSchemaFields when bankField is null`() = runTest {
+        val availablePaymentMethodType = createAvailablePaymentMethodType()
+        val paymentMethodTypeInfo = createPaymentMethodTypeInfo(SAMPLE_ENUM_FIELD)
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+        val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
 
-            val mockListener = slot<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+        val mockListener = slot<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
 
-            every {
-                airwallex.retrievePaymentMethodTypeInfo(any(), capture(mockListener))
-            } answers {
-                mockListener.captured.onSuccess(paymentMethodTypeInfo)
-            }
-
-            val listenerSlot = slot<Airwallex.PaymentResultListener>()
-            coEvery {
-                airwallex.checkout(
-                    session = any(),
-                    paymentMethod = any(),
-                    additionalInfo = any(),
-                    flow = any(),
-                    listener = capture(listenerSlot)
-                )
-            } answers {
-                listenerSlot.captured.onCompleted(expectedStatus)
-            }
-
-            viewModel.startCheckout(availablePaymentMethodType)
-
-            advanceUntilIdle()
-
-            assertEquals(viewModel.showSchemaFieldsDialog.value?.typeInfo, paymentMethodTypeInfo)
-            unmockkObject(AirwallexLogger)
+        every {
+            airwallex.retrievePaymentMethodTypeInfo(any(), capture(mockListener))
+        } answers {
+            mockListener.captured.onSuccess(paymentMethodTypeInfo)
         }
+
+        val listenerSlot = slot<Airwallex.PaymentResultListener>()
+        coEvery {
+            airwallex.checkout(
+                session = any(),
+                paymentMethod = any(),
+                additionalInfo = any(),
+                flow = any(),
+                listener = capture(listenerSlot)
+            )
+        } answers {
+            listenerSlot.captured.onCompleted(expectedStatus)
+        }
+
+        val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
+        viewModel.paymentFlowStatus.observeForever(observer)
+
+        viewModel.startCheckout(availablePaymentMethodType)
+
+        advanceUntilIdle()
+
+        assertEquals(
+            (viewModel.paymentFlowStatus.value as? PaymentMethodsViewModel.PaymentFlowStatus.SchemaFieldsDialog)?.typeInfo,
+            paymentMethodTypeInfo
+        )
+
+        viewModel.paymentFlowStatus.removeObserver(observer)
+        unmockkObject(AirwallexLogger)
+    }
 
     @Test
     fun `test checkoutWithSchemaFields when banks is empty`() =
@@ -370,7 +402,10 @@ class PaymentMethodsViewModelTest {
 
             advanceUntilIdle()
 
-            assertEquals(viewModel.showSchemaFieldsDialog.value?.banks, null)
+            assertEquals(
+                (viewModel.paymentFlowStatus.value as? PaymentMethodsViewModel.PaymentFlowStatus.BankDialog)?.banks,
+                null
+            )
             unmockkObject(AirwallexLogger)
         }
 
@@ -415,7 +450,10 @@ class PaymentMethodsViewModelTest {
 
             advanceUntilIdle()
 
-            assertEquals(viewModel.showSchemaFieldsDialog.value?.banks, bankResponse.items)
+            assertEquals(
+                (viewModel.paymentFlowStatus.value as? PaymentMethodsViewModel.PaymentFlowStatus.BankDialog)?.banks,
+                bankResponse.items
+            )
             unmockkObject(AirwallexLogger)
         }
 
@@ -446,9 +484,11 @@ class PaymentMethodsViewModelTest {
                 AirwallexLogger.info(eq("PaymentMethodsViewModel startCheckout, type = card"), isNull())
             }
             coVerify { viewModel["trackPaymentSuccess"](expectedStatus, "card") }
+            val flowStatus =
+                viewModel.paymentFlowStatus.value as PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus
             assertEquals(
                 "test_payment_intent_id",
-                (viewModel.airwallexPaymentStatus.value as AirwallexPaymentStatus.Success).paymentIntentId
+                (flowStatus.status as AirwallexPaymentStatus.Success).paymentIntentId
             )
             unmockkObject(AirwallexLogger)
         }
@@ -475,7 +515,7 @@ class PaymentMethodsViewModelTest {
         }
 
         assertEquals(
-            viewModel.skipPaymentMethodList.value,
+            (viewModel.paymentMethodResult.value as? PaymentMethodsViewModel.PaymentMethodResult.Skip)?.schemes,
             availableMethodTypes.items[0].cardSchemes ?: emptyList()
         )
 
@@ -503,7 +543,9 @@ class PaymentMethodsViewModelTest {
         }
 
         assertEquals(
-            viewModel.showPaymentMethodList.value?.first?.get(0),
+            (viewModel.paymentMethodResult.value as? PaymentMethodsViewModel.PaymentMethodResult.Show)?.methods?.first?.get(
+                0
+            ),
             availableMethodTypes.items[0]
         )
         unmockkObject(AirwallexLogger)
@@ -519,7 +561,7 @@ class PaymentMethodsViewModelTest {
 
         assertEquals(
             "Client secret is empty or blank",
-            viewModel.showErrorAlert.value
+            (viewModel.paymentFlowStatus.value as? PaymentMethodsViewModel.PaymentFlowStatus.ErrorAlert)?.message
         )
         unmockkObject(AirwallexLogger)
     }
