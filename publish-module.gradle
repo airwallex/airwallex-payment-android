@@ -123,10 +123,12 @@ project.afterEvaluate {
     }
 
     signing {
-        useInMemoryPgpKeys(
-                rootProject.ext["signing.key"],
-                rootProject.ext["signing.password"]
-        )
-        sign publishing.publications
+        if (!rootProject.ext.isLocalPublish) {
+            useInMemoryPgpKeys(
+                    rootProject.ext["signing.key"],
+                    rootProject.ext["signing.password"]
+            )
+            sign publishing.publications
+        }
     }
 }
