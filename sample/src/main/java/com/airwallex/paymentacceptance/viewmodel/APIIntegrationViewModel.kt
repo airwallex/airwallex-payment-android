@@ -118,9 +118,9 @@ class APIIntegrationViewModel : BaseViewModel() {
      */
     fun startPayByRedirection() = run {
         val session = createSession()
-        airwallex?.checkout(
-            session = session,
-            paymentType = "alipayhk",
+        airwallex?.startRedirectPay(
+            session = session as AirwallexPaymentSession,
+            paymentMethodName = "alipayhk",
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     _airwallexPaymentStatus.value = status

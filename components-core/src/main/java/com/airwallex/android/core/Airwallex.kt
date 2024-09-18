@@ -630,22 +630,30 @@ class Airwallex internal constructor(
     /**
      * Checkout the payment by paymentType and session
      *
-     * @param session a [AirwallexSession] used to present the Checkout flow, required.
-     * @param paymentType a [String] representing one of the redirect payment type names, required.
+     * @param session a [AirwallexPaymentSession] used to present the Checkout flow, required.
+     * @param paymentMethodName a [String] representing one of the redirect payment type names, required. check all methods by API reference: https://www.airwallex.com/docs/api#/Payment_Acceptance/Config/_api_v1_pa_config_payment_method_types/get JSON Object field: items.name
      * @param additionalInfo a [Map] containing extra information needed for certain payment types, such as phone number, email, bank details, etc., optional.
      * @param flow an [AirwallexPaymentRequestFlow], currently only supporting [AirwallexPaymentRequestFlow.IN_APP], optional.
      * @param listener the callback for the checkout result.
      */
     @UiThread
-    fun checkout(
-        session: AirwallexSession,
-        paymentType: String,
+    fun startRedirectPay(
+        session: AirwallexPaymentSession,
+        paymentMethodName: String,
         additionalInfo: Map<String, String>? = null,
         flow: AirwallexPaymentRequestFlow? = AirwallexPaymentRequestFlow.IN_APP,
         listener: PaymentResultListener,
     ) {
+        if (AirwallexPlugins.getProvider(ActionComponentProviderType.REDIRECT) == null) {
+            listener.onCompleted(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexComponentDependencyException(dependency = Dependency.REDIRECT)
+                )
+            )
+            return
+        }
         val paymentMethod = PaymentMethod.Builder()
-            .setType(paymentType)
+            .setType(paymentMethodName)
             .build()
         checkout(
             session = session,

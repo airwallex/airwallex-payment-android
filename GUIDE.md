@@ -304,10 +304,11 @@ To install the SDK, in your app-level `build.gradle`, add the following:
     dependencies {
         // It's required
         implementation 'io.github.airwallex:payment-components-core:6.0.1'
-        
-        // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:6.0.1'
-        implementation 'io.github.airwallex:payment-googlepay:6.0.1'
+
+       // Select the payment method you want to support, ignore the components you don't need.
+       implementation 'io.github.airwallex:payment-card:6.0.1'//only support card
+       implementation 'io.github.airwallex:payment-googlepay:6.0.1'//only support google pay
+       implementation 'io.github.airwallex:payment-redirect:6.0.1'//only support redirect
     }
 ```
 
@@ -432,7 +433,7 @@ airwallex.startGooglePay(
 ```
 ### Pay by redirection
 ```kotlin
-airwallex?.checkout(
+airwallex.startRedirectPay(
     session = session,
     paymentType = "alipayhk",
     listener = object : Airwallex.PaymentResultListener {

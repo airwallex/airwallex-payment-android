@@ -301,9 +301,10 @@ Airwallex Android SDK 支持Android API 21及以上版本。
         // It's required
         implementation 'io.github.airwallex:payment-components-core:6.0.1'
         
-        // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:6.0.1'
-        implementation 'io.github.airwallex:payment-googlepay:6.0.1'
+        // Select the payment method you want to support, ignore the components you don't need.
+        implementation 'io.github.airwallex:payment-card:6.0.1'//only support card
+        implementation 'io.github.airwallex:payment-googlepay:6.0.1'//only support google pay
+        implementation 'io.github.airwallex:payment-redirect:6.0.1'//only support redirect
     }
 ```
 
@@ -428,7 +429,7 @@ airwallex.startGooglePay(
 ```
 ### 通过重定向确认支付
 ```kotlin
-airwallex?.checkout(
+airwallex.startRedirectPay(
     session = session,
     paymentType = "alipayhk",
     listener = object : Airwallex.PaymentResultListener {
