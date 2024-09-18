@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.redirect.exception.RedirectException
@@ -32,6 +33,7 @@ class RedirectComponent : ActionComponent {
             NextAction.NextActionType.REDIRECT -> {
                 val redirectUrl = nextAction.url
                 if (redirectUrl.isNullOrEmpty()) {
+                    AirwallexLogger.error("RedirectComponent handlePaymentIntentResponse: redirectUrl is null or empty")
                     listener.onCompleted(
                         AirwallexPaymentStatus.Failure(
                             AirwallexCheckoutException(
@@ -42,10 +44,12 @@ class RedirectComponent : ActionComponent {
                     return
                 }
                 try {
+                    AirwallexLogger.info("RedirectComponent handlePaymentIntentResponse makeRedirect")
                     RedirectUtil.makeRedirect(activity = activity, redirectUrl = redirectUrl, fallBackUrl = nextAction.fallbackUrl, packageName = nextAction.packageName)
                     listener.onCompleted(AirwallexPaymentStatus.InProgress(paymentIntentId))
                     AnalyticsLogger.logPageView("payment_redirect", mapOf("url" to redirectUrl))
                 } catch (e: RedirectException) {
+                    AirwallexLogger.error("RedirectComponent handlePaymentIntentResponse error: ${e.message}")
                     listener.onCompleted(AirwallexPaymentStatus.Failure(e))
                     AnalyticsLogger.logError(
                         "payment_redirect",
@@ -57,6 +61,7 @@ class RedirectComponent : ActionComponent {
                 }
             }
             else -> {
+                AirwallexLogger.error("RedirectComponent handlePaymentIntentResponse error: unsupported next action ${nextAction?.type}")
                 listener.onCompleted(
                     AirwallexPaymentStatus.Failure(
                         AirwallexCheckoutException(

@@ -251,7 +251,7 @@ class PaymentMethodsViewModelTest {
 
             viewModel.startCheckout(availablePaymentMethodType)
             advanceUntilIdle()
-            verify(exactly = 1) { AirwallexLogger.info("Get more payment Info fields on one-off flow.") }
+            verify(exactly = 1) { AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.") }
             unmockkObject(AirwallexLogger)
         }
 
@@ -443,7 +443,7 @@ class PaymentMethodsViewModelTest {
             viewModel.startCheckout(availablePaymentMethodType)
             advanceUntilIdle()
             verify {
-                AirwallexLogger.info(eq("start checkout directly, type = card"), isNull())
+                AirwallexLogger.info(eq("PaymentMethodsViewModel startCheckout, type = card"), isNull())
             }
             coVerify { viewModel["trackPaymentSuccess"](expectedStatus, "card") }
             assertEquals(

@@ -120,6 +120,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         }
 
         override fun onPaymentMethodClick(paymentMethodType: AvailablePaymentMethodType) {
+            AirwallexLogger.info("PaymentMethodsActivity onPaymentMethodClick: type = ${paymentMethodType.name}")
             setLoadingProgress(true)
             viewModel.trackPaymentSelection(paymentMethodType.name)
             viewModel.startCheckout(paymentMethodType)

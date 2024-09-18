@@ -163,17 +163,17 @@ internal class PaymentMethodsViewModel(
     }
 
     fun startCheckout(paymentMethodType: AvailablePaymentMethodType) = viewModelScope.launch {
-        AirwallexLogger.info("startCheckout, name = ${paymentMethodType.name}")
+        AirwallexLogger.info("PaymentMethodsViewModel startCheckout, type = ${paymentMethodType.name}")
         val paymentMethod = PaymentMethod.Builder()
             .setType(paymentMethodType.name)
             .build()
         paymentMethod.type?.let { type ->
             // Have required schema fields
             if (requireHandleSchemaFields(paymentMethodType)) {
-                AirwallexLogger.info("Get more payment Info fields on one-off flow.")
+                AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
                 checkoutWithSchemaFields(paymentMethod, type)
             } else {
-                AirwallexLogger.info("start checkout directly, type = ${paymentMethod.type}")
+                AirwallexLogger.info("PaymentMethodsViewModel start checkout directly, type = ${paymentMethod.type}")
                 checkout(paymentMethod).also {
                     trackPaymentSuccess(it, paymentMethod.type)
                     _airwallexPaymentStatus.value = it
@@ -251,7 +251,7 @@ internal class PaymentMethodsViewModel(
             return@checkoutWithSchemaFields
         }
         val fields = typeInfo.filterRequiredFields()
-        AirwallexLogger.info("checkoutWithSchemaFields: filterRequiredFields = $fields")
+        AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchemaFields: filterRequiredFields = $fields")
         // 2.If all fields are hidden, start checkout directly
         if (fields.isNullOrEmpty()) {
             checkout(paymentMethod).also {
@@ -262,7 +262,7 @@ internal class PaymentMethodsViewModel(
         }
         val bankField =
             fields.find { field -> field.type == DynamicSchemaFieldType.BANKS }
-        AirwallexLogger.info("checkoutWithSchemaFields: bankField = $bankField")
+        AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchemaFields: bankField = $bankField")
         if (bankField == null) {
             // show the schema fields dialog.
             _showSchemaFieldsDialog.value = SchemaFields(paymentMethod, typeInfo)
@@ -273,7 +273,7 @@ internal class PaymentMethodsViewModel(
             _showErrorAlert.value = it.message
             return@checkoutWithSchemaFields
         }.items
-        AirwallexLogger.info("checkoutWithSchemaFields: banks = $banks")
+        AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchemaFields: banks = $banks")
         // 4.If the bank is not needed or bank list is empty, then show the schema fields dialog.
         _showSchemaFieldsDialog.value = if (banks.isNullOrEmpty()) {
             SchemaFields(paymentMethod, typeInfo)
