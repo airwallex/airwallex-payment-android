@@ -36,6 +36,7 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
     * [获取支付方式列表](#获取支付方式列表)
     * [获取已存卡列表](#获取已存卡列表)
     * [通过Google Pay来发起支付](#通过google-pay来发起支付)
+    * [通过重定向确认支付](#通过重定向确认支付)
 * [SDK Example](#sdk-example)
 * [测试卡号](#测试卡号)
 * [贡献](#贡献)
@@ -300,9 +301,10 @@ Airwallex Android SDK 支持Android API 21及以上版本。
         // It's required
         implementation 'io.github.airwallex:payment-components-core:6.0.1'
         
-        // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:6.0.1'
-        implementation 'io.github.airwallex:payment-googlepay:6.0.1'
+        // Select the payment method you want to support, ignore the components you don't need.
+        implementation 'io.github.airwallex:payment-card:6.0.1'//only support card
+        implementation 'io.github.airwallex:payment-googlepay:6.0.1'//only support google pay
+        implementation 'io.github.airwallex:payment-redirect:6.0.1'//only support redirect
     }
 ```
 
@@ -423,6 +425,18 @@ airwallex.startGooglePay(
             // You can handle different payment statuses and perform UI action respectively here
         }
     }
+)
+```
+### 通过重定向确认支付
+```kotlin
+airwallex.startRedirectPay(
+    session = session,
+    paymentType = "alipayhk",
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+           // You can handle different payment statuses and perform UI action respectively here
+        }
+  }
 )
 ```
 

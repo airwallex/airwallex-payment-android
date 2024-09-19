@@ -11,7 +11,6 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
-import com.airwallex.android.core.PaymentResultManager
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.CardScheme
@@ -183,7 +182,6 @@ class AirwallexStarter {
         ) {
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentPaymentFlow[$intentId]")
-            PaymentResultManager.getInstance(paymentResultListener)
             launch.launchForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)

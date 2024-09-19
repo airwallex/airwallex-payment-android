@@ -36,6 +36,7 @@ Our demo application is available open source on [Github](https://github.com/air
     * [Retrieve the list of payment methods](#retrieve-the-list-of-payment-methods)
     * [Retrieve the list of saved cards](#retrieve-the-list-of-saved-cards)
     * [Launch payment via Google Pay](#launch-payment-via-google-pay)
+    * [Pay by redirection](#pay-by-redirection)
 * [SDK Example](#sdk-example)
 * [Test Card Numbers](#test-card-numbers)
 * [Contributing](#Contributing)
@@ -303,10 +304,11 @@ To install the SDK, in your app-level `build.gradle`, add the following:
     dependencies {
         // It's required
         implementation 'io.github.airwallex:payment-components-core:6.0.1'
-        
-        // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:6.0.1'
-        implementation 'io.github.airwallex:payment-googlepay:6.0.1'
+
+       // Select the payment method you want to support, ignore the components you don't need.
+       implementation 'io.github.airwallex:payment-card:6.0.1'//only support card
+       implementation 'io.github.airwallex:payment-googlepay:6.0.1'//only support google pay
+       implementation 'io.github.airwallex:payment-redirect:6.0.1'//only support redirect
     }
 ```
 
@@ -425,6 +427,18 @@ airwallex.startGooglePay(
     listener = object : Airwallex.PaymentResultListener {
         override fun onCompleted(status: AirwallexPaymentStatus) {
             // You can handle different payment statuses and perform UI action respectively here
+        }
+    }
+)
+```
+### Pay by redirection
+```kotlin
+airwallex.startRedirectPay(
+    session = session,
+    paymentType = "alipayhk",
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+           // You can handle different payment statuses and perform UI action respectively here
         }
     }
 )

@@ -483,7 +483,7 @@ class Airwallex internal constructor(
         params: VerifyPaymentConsentParams,
         listener: PaymentResultListener
     ) {
-
+        AirwallexLogger.info("Airwallex verifyPaymentConsent: type = ${params.paymentMethodType}")
         val verificationOptions = when (val paymentMethodType = params.paymentMethodType) {
             PaymentMethodType.CARD.value -> PaymentConsentVerifyRequest.VerificationOptions(
                 type = paymentMethodType,
@@ -533,6 +533,7 @@ class Airwallex internal constructor(
                             "initialPaymentIntentId_null_or_empty",
                             mapOf("type" to params.paymentMethodType)
                         )
+                        AirwallexLogger.error("Airwallex verifyPaymentConsent: type = ${params.paymentMethodType}, paymentIntentId isNullOrEmpty")
                         listener.onCompleted(
                             AirwallexPaymentStatus.Failure(
                                 AirwallexCheckoutException(message = "Unsupported payment method")
@@ -623,6 +624,43 @@ class Airwallex internal constructor(
                 openId = params.openId
             ),
             listener
+        )
+    }
+
+    /**
+     * Checkout the payment by paymentType and session
+     *
+     * @param session a [AirwallexPaymentSession] used to present the Checkout flow, required.
+     * @param paymentMethodName a [String] representing one of the redirect payment type names, required. check all methods by API reference: https://www.airwallex.com/docs/api#/Payment_Acceptance/Config/_api_v1_pa_config_payment_method_types/get JSON Object field: items.name
+     * @param additionalInfo a [Map] containing extra information needed for certain payment types, such as phone number, email, bank details, etc., optional.
+     * @param flow an [AirwallexPaymentRequestFlow], currently only supporting [AirwallexPaymentRequestFlow.IN_APP], optional.
+     * @param listener the callback for the checkout result.
+     */
+    @UiThread
+    fun startRedirectPay(
+        session: AirwallexPaymentSession,
+        paymentMethodName: String,
+        additionalInfo: Map<String, String>? = null,
+        flow: AirwallexPaymentRequestFlow? = AirwallexPaymentRequestFlow.IN_APP,
+        listener: PaymentResultListener,
+    ) {
+        if (AirwallexPlugins.getProvider(ActionComponentProviderType.REDIRECT) == null) {
+            listener.onCompleted(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexComponentDependencyException(dependency = Dependency.REDIRECT)
+                )
+            )
+            return
+        }
+        val paymentMethod = PaymentMethod.Builder()
+            .setType(paymentMethodName)
+            .build()
+        checkout(
+            session = session,
+            paymentMethod = paymentMethod,
+            additionalInfo = additionalInfo,
+            flow = flow,
+            listener = listener
         )
     }
 
@@ -994,6 +1032,7 @@ class Airwallex internal constructor(
             options,
             object : PaymentListener<PaymentIntent> {
                 override fun onFailed(exception: AirwallexException) {
+                    AirwallexLogger.error("Airwallex confirmPaymentIntentWithDevice fail: type = ${params.paymentMethodType}, onFailed = ${exception.message}")
                     listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
                 }
 
@@ -1012,11 +1051,13 @@ class Airwallex internal constructor(
                     }
                     val provider = AirwallexPlugins.getProvider(response.nextAction)
                     if (provider == null) {
+                        AirwallexLogger.error("Airwallex confirmPaymentIntentWithDevice: type = ${params.paymentMethodType}, Provider is null")
                         listener.onCompleted(
                             AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing dependency!"))
                         )
                         return
                     }
+                    AirwallexLogger.info("Airwallex confirmPaymentIntentWithDevice success: type = ${params.paymentMethodType}, nextAction = ${response.nextAction?.type}")
                     provider.get().handlePaymentIntentResponse(
                         response.id,
                         response.nextAction,
