@@ -48,7 +48,7 @@ tasks.register('clean', Delete) {
 }
 
 // Update the version field when a new version is released
-version = '6.0.1'
+version = '6.0.2'
 
 ext {
     compileSdkVersion = 34
