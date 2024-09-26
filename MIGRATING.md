@@ -1,6 +1,6 @@
 # Migration Guide
 
-## Migrating from versions < 6.6.0
+## Migrating from versions < 6.0.0
 
 - Changes to `Airwallex`:
     * `ClientSecretProvider` has been removed as a parameter on `Airwallex.Companion#initialize`
