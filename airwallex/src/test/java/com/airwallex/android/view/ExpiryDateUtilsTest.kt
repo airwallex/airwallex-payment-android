@@ -10,7 +10,7 @@ class ExpiryDateUtilsTest {
 
     @Test
     fun isExpiryDataValidTest() {
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         calendar.set(Calendar.YEAR, 2018)
         calendar.set(Calendar.MONTH, Calendar.JANUARY)
 
