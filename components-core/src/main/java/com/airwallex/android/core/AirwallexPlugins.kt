@@ -1,6 +1,5 @@
 package com.airwallex.android.core
 
-import android.app.Application
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 
@@ -14,11 +13,8 @@ object AirwallexPlugins {
     private var configuration: AirwallexConfiguration =
         AirwallexConfiguration(false, Environment.PRODUCTION, emptyList(), true)
 
-    fun initialize(application: Application, configuration: AirwallexConfiguration) {
+    fun initialize(configuration: AirwallexConfiguration) {
         this.configuration = configuration
-        configuration.supportComponentProviders.forEach {
-            it.get().initialize(application)
-        }
     }
 
     /**

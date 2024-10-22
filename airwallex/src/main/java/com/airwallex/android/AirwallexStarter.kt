@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.Airwallex.Companion.initialize
 import com.airwallex.android.core.AirwallexConfiguration
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
@@ -34,8 +35,15 @@ class AirwallexStarter {
             application: Application,
             configuration: AirwallexConfiguration,
         ) {
-            AirwallexActivityLaunch.initialize(application)
+            initializeActivityLaunch(application)
             Airwallex.initialize(application, configuration)
+        }
+
+        /**
+         * Initialize Airwallex Launch, if you have invoked [initialize] before, no need to call this method
+         */
+        fun initializeActivityLaunch(application: Application) {
+            AirwallexActivityLaunch.initialize(application)
         }
 
         /**
