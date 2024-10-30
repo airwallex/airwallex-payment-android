@@ -79,13 +79,13 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment:6.0.3'
+        implementation 'io.github.airwallex:payment:6.0.4'
         
         // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:6.0.3'
-        implementation 'io.github.airwallex:payment-redirect:6.0.3'
-        implementation 'io.github.airwallex:payment-wechat:6.0.3'
-        implementation 'io.github.airwallex:payment-googlepay:6.0.3'
+        implementation 'io.github.airwallex:payment-card:6.0.4'
+        implementation 'io.github.airwallex:payment-redirect:6.0.4'
+        implementation 'io.github.airwallex:payment-wechat:6.0.4'
+        implementation 'io.github.airwallex:payment-googlepay:6.0.4'
     }
 ```
 
@@ -303,12 +303,12 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment-components-core:6.0.3'
+        implementation 'io.github.airwallex:payment-components-core:6.0.4'
 
        // Select the payment method you want to support, ignore the components you don't need.
-       implementation 'io.github.airwallex:payment-card:6.0.3'//only support card
-       implementation 'io.github.airwallex:payment-googlepay:6.0.3'//only support google pay
-       implementation 'io.github.airwallex:payment-redirect:6.0.3'//only support redirect
+       implementation 'io.github.airwallex:payment-card:6.0.4'//only support card
+       implementation 'io.github.airwallex:payment-googlepay:6.0.4'//only support google pay
+       implementation 'io.github.airwallex:payment-redirect:6.0.4'//only support redirect
     }
 ```
 
