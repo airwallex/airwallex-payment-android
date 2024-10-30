@@ -1370,7 +1370,8 @@ class Airwallex internal constructor(
             application: Application,
             configuration: AirwallexConfiguration
         ) {
-            AirwallexPlugins.initialize(application, configuration)
+            AirwallexPlugins.initialize(configuration)
+            initializeComponents(application, configuration.supportComponentProviders)
             AirwallexLogger.initialize(
                 application,
                 configuration.enableLogging,
@@ -1385,6 +1386,18 @@ class Airwallex internal constructor(
                     bufferTimeMillis = 5_000L
                 )
             )
+        }
+
+        /**
+         * Initialize Airwallex Components, if you have invoked [initialize] before, no need to call this method
+         */
+        fun initializeComponents(
+            application: Application,
+            supportComponentProviders: List<ActionComponentProvider<out ActionComponent>>
+        ) {
+            supportComponentProviders.forEach {
+                it.get().initialize(application)
+            }
         }
     }
 }

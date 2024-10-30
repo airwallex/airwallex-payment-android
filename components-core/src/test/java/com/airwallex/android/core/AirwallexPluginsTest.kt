@@ -74,7 +74,6 @@ class AirwallexPluginsTest {
     @Test
     fun `test REST client`() {
         AirwallexPlugins.initialize(
-            application,
             AirwallexConfiguration.Builder()
                 .enableLogging(true)
                 .setEnvironment(Environment.DEMO)
@@ -87,7 +86,6 @@ class AirwallexPluginsTest {
     @Test
     fun `test get Google Pay action component provider`() {
         AirwallexPlugins.initialize(
-            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
@@ -109,7 +107,6 @@ class AirwallexPluginsTest {
     @Test
     fun `test get wechat action component provider`() {
         AirwallexPlugins.initialize(
-            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
@@ -131,7 +128,6 @@ class AirwallexPluginsTest {
     @Test
     fun `test get redirect action component provider when hasSchema is true`() {
         AirwallexPlugins.initialize(
-            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
@@ -154,7 +150,6 @@ class AirwallexPluginsTest {
     @Test
     fun `test get redirect action component provider when hasSchema is false`() {
         AirwallexPlugins.initialize(
-            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
