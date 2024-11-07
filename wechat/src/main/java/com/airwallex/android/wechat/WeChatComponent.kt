@@ -50,7 +50,7 @@ class WeChatComponent : ActionComponent {
                             AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "WeChat Pay has been cancelled!"))
                         else -> {
                             val exception =
-                                AirwallexCheckoutException(message = "Failed to process WeChat Pay, errCode ${resp.errCode}, errStr ${resp.errStr}")
+                                AirwallexCheckoutException(message = "Failed to process WeChat Pay, errCode ${resp.errCode}, errStr ${resp.errStr}, transaction ${resp.transaction}, openId ${resp.openId}")
                             AnalyticsLogger.logError(EVENT_NAME, exception = exception)
                             AirwallexPaymentStatus.Failure(exception)
                         }
