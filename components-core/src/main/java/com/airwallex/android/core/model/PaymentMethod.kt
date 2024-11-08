@@ -406,6 +406,10 @@ data class PaymentMethod internal constructor(
                 this.cardType = cardType
             }
 
+            fun setNumberType(numberType: NumberType?): Builder = apply {
+                this.numberType = numberType
+            }
+
             override fun build(): Card {
                 return Card(
                     cvc = cvc,
