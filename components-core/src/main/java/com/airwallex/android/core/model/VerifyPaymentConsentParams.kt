@@ -103,6 +103,29 @@ data class VerifyPaymentConsentParams constructor(
                 .build()
         }
 
+        /**
+         * Return the [CreatePaymentConsentParams] for Google Pay
+         */
+        fun createGoogleParams(
+            clientSecret: String,
+            paymentConsentId: String,
+            amount: BigDecimal?,
+            currency: String?,
+            cvc: String?,
+            returnUrl: String?
+        ): VerifyPaymentConsentParams {
+            return Builder(
+                clientSecret = clientSecret,
+                paymentConsentId = paymentConsentId,
+                paymentMethodType = PaymentMethodType.GOOGLEPAY.value
+            )
+                .setAmount(amount = amount)
+                .setCurrency(currency = currency)
+                .setCvc(cvc)
+                .setReturnUrl(returnUrl)
+                .build()
+        }
+
         fun createThirdPartParams(
             paymentMethodType: String,
             clientSecret: String,

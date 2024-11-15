@@ -20,7 +20,7 @@ import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
-import com.airwallex.android.view.util.SessionUtils.getIntentId
+import com.airwallex.android.core.util.SessionUtils.getIntentId
 
 /**
  *  Entry-point to the Airwallex Payment Flow. Create a AirwallexStarter attached to the given host Activity.

@@ -90,11 +90,12 @@ class APIIntegrationViewModel : BaseViewModel() {
         val googlePayOptions = GooglePayOptions(
             allowedCardAuthMethods = if (force3DS) listOf("PAN_ONLY") else null,
             billingAddressRequired = true,
-            billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
+            billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+            skipReadinessCheck = true
         )
         val session = createSession(force3DS = force3DS, googlePayOptions = googlePayOptions)
         airwallex?.startGooglePay(
-            session = session as AirwallexPaymentSession,
+            session = session,
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     _airwallexPaymentStatus.value = status
@@ -252,7 +253,7 @@ class APIIntegrationViewModel : BaseViewModel() {
                 val customerId = getCustomerIdFromServer()
                 val clientSecret = getClientSecretFromServer(customerId)
                 //build an AirwallexRecurringSession based on the customerId and clientSecret
-                return buildAirwallexRecurringSession(customerId, clientSecret)
+                return buildAirwallexRecurringSession(googlePayOptions, customerId, clientSecret)
             }
 
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
@@ -262,7 +263,7 @@ class APIIntegrationViewModel : BaseViewModel() {
                 val paymentIntent =
                     getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
                 //build an AirwallexRecurringWithIntentSession based on the paymentIntent
-                return buildAirwallexRecurringWithIntentSession(paymentIntent)
+                return buildAirwallexRecurringWithIntentSession(googlePayOptions, paymentIntent)
             }
         }
     }
@@ -293,14 +294,18 @@ class APIIntegrationViewModel : BaseViewModel() {
      * @param customerId get this from your sever
      * @param clientSecret get this from your sever
      */
-    private fun buildAirwallexRecurringSession(customerId: String, clientSecret: String) =
+    private fun buildAirwallexRecurringSession(
+        googlePayOptions: GooglePayOptions? = null,
+        customerId: String,
+        clientSecret: String
+    ) =
         AirwallexRecurringSession.Builder(
             customerId = customerId,
             clientSecret = clientSecret,
             currency = Settings.currency,
             amount = BigDecimal.valueOf(Settings.price.toDouble()),
             nextTriggerBy = nextTriggerBy,
-            countryCode = Settings.countryCode
+            countryCode = Settings.countryCode,
         )
             .setRequireEmail(Settings.requiresEmail.toBoolean())
             .setShipping(shipping)
@@ -308,13 +313,17 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
             .setReturnUrl(Settings.returnUrl)
             .setPaymentMethods(listOf())
+            .setGooglePayOptions(googlePayOptions)
             .build()
 
     /**
      * build an AirwallexRecurringWithIntentSession based on the customerId and paymentIntent
      * @param paymentIntent get this from your sever
      */
-    private fun buildAirwallexRecurringWithIntentSession(paymentIntent: PaymentIntent) =
+    private fun buildAirwallexRecurringWithIntentSession(
+        googlePayOptions: GooglePayOptions? = null,
+        paymentIntent: PaymentIntent
+    ) =
         AirwallexRecurringWithIntentSession.Builder(
             paymentIntent = paymentIntent,
             customerId = requireNotNull(
@@ -330,6 +339,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setReturnUrl(Settings.returnUrl)
             .setAutoCapture(autoCapture)
             .setPaymentMethods(listOf())
+            .setGooglePayOptions(googlePayOptions)
             .build()
 
 }

@@ -116,9 +116,12 @@ class GooglePayComponent : ActionComponent {
 
                 is GooglePayActivityLaunch.Result.Success -> {
                     AirwallexLogger.info("GooglePayComponent handleActivityResult: success, paymentIntentId =$paymentIntentId")
-                    paymentIntentId?.let {
-                        listener?.onCompleted(AirwallexPaymentStatus.Success(it, additionalInfo = result.info))
-                    }
+                    listener?.onCompleted(
+                        AirwallexPaymentStatus.Success(
+                            paymentIntentId ?: "",
+                            additionalInfo = result.info
+                        )
+                    )
                 }
                 else -> {
                     // no op

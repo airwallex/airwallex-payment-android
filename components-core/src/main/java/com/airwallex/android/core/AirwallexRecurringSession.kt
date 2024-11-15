@@ -101,6 +101,7 @@ class AirwallexRecurringSession internal constructor(
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
         private var returnUrl: String? = null
         private var paymentMethods: List<String>? = null
+        private var googlePayOptions: GooglePayOptions? = null
 
         init {
             TokenManager.updateClientSecret(clientSecret)
@@ -135,6 +136,10 @@ class AirwallexRecurringSession internal constructor(
             this.paymentMethods = paymentMethods
         }
 
+        fun setGooglePayOptions(googlePayOptions: GooglePayOptions?): Builder = apply {
+            this.googlePayOptions = googlePayOptions
+        }
+
         override fun build(): AirwallexRecurringSession {
             return AirwallexRecurringSession(
                 nextTriggerBy = nextTriggerBy,
@@ -150,6 +155,7 @@ class AirwallexRecurringSession internal constructor(
                 returnUrl = returnUrl,
                 paymentMethods = paymentMethods,
                 clientSecret = clientSecret,
+                googlePayOptions = googlePayOptions
             )
         }
     }

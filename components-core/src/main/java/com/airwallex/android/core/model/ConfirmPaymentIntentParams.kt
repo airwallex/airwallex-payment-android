@@ -217,5 +217,41 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setReturnUrl(returnUrl)
                 .build()
         }
+
+        /**
+         * Return the [ConfirmPaymentIntentParams] for Credit Card Pay
+         *
+         * @param paymentIntentId the ID of the [PaymentIntent], required.
+         * @param clientSecret the clientSecret of [PaymentIntent], required.
+         * @param paymentMethod the object of the [PaymentMethod], required.
+         * @param cvc optional.
+         * @param customerId the customerId of [PaymentIntent], optional.
+         * @param paymentConsentId the customerId of [PaymentConsent], optional.
+         * @param returnUrl optional
+         */
+        @Suppress("LongParameterList")
+        fun createGooglePayParams(
+            paymentIntentId: String,
+            clientSecret: String,
+            paymentMethod: PaymentMethod? = null,
+            cvc: String? = null,
+            customerId: String? = null,
+            paymentConsentId: String? = null,
+            returnUrl: String? = null,
+            autoCapture: Boolean = true
+        ): ConfirmPaymentIntentParams {
+            return Builder(
+                paymentIntentId = paymentIntentId,
+                clientSecret = clientSecret,
+                paymentMethodType = PaymentMethodType.GOOGLEPAY.value
+            )
+                .setCustomerId(customerId)
+                .setPaymentMethod(paymentMethod)
+                .setCVC(cvc)
+                .setAutoCapture(autoCapture)
+                .setPaymentConsentId(paymentConsentId)
+                .setReturnUrl(returnUrl)
+                .build()
+        }
     }
 }

@@ -53,8 +53,6 @@ class APIIntegrationActivity :
                 else -> 0
             }
             mViewModel.updateCheckoutModel(selectedOption)
-            setBtnEnabled(mBinding.btnGooglePay, selectedOption == 0)
-            setBtnEnabled(mBinding.btnGooglePay3DS, selectedOption == 0)
             setBtnEnabled(mBinding.btnRedirect, selectedOption == 0)
             setBtnEnabled(mBinding.btnPayWithCardDetailSaveCard, selectedOption != 1)
         }
