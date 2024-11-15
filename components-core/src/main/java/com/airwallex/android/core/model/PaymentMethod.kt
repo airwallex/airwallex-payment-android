@@ -181,7 +181,15 @@ data class PaymentMethod internal constructor(
          */
         val encryptedPaymentToken: String? = null,
 
+        val flow: AirwallexPaymentRequestFlow? = null,
+
         ) : AirwallexModel, AirwallexRequestModel, Parcelable {
+
+        private companion object {
+            private const val FIELD_FLOW = "flow"
+            private const val FIELD_OS_TYPE = "os_type"
+        }
+
         override fun toParamMap(): Map<String, Any> {
             return mapOf<String, Any>()
                 .plus(
@@ -198,6 +206,13 @@ data class PaymentMethod internal constructor(
                     encryptedPaymentToken?.let {
                         mapOf(PaymentMethodParser.GooglePayParser.FIELD_ENCRYPTED_PAYMENT_TOKEN to it)
                     }.orEmpty()
+                ).plus(
+                    //just for alipay, delete it when update api version
+                    mapOf(FIELD_FLOW to (flow ?: AirwallexPaymentRequestFlow.IN_APP).value)
+                )
+                .plus(
+                    //just for alipay, delete it when update api version
+                    mapOf(FIELD_OS_TYPE to "android")
                 )
         }
 
@@ -205,6 +220,7 @@ data class PaymentMethod internal constructor(
             private var billing: Billing? = null
             private var paymentDataType: String? = null
             private var encryptedPaymentToken: String? = null
+            private var flow: AirwallexPaymentRequestFlow? = null
 
             fun setBilling(billing: Billing?): Builder = apply {
                 this.billing = billing
@@ -218,11 +234,16 @@ data class PaymentMethod internal constructor(
                 this.encryptedPaymentToken = encryptedPaymentToken
             }
 
+            fun setFlow(flow: AirwallexPaymentRequestFlow?): Builder = apply {
+                this.flow = flow
+            }
+
             override fun build(): GooglePay {
                 return GooglePay(
                     billing = billing,
                     paymentDataType = paymentDataType,
-                    encryptedPaymentToken = encryptedPaymentToken
+                    encryptedPaymentToken = encryptedPaymentToken,
+                    flow = flow
                 )
             }
         }

@@ -62,6 +62,19 @@ open class AirwallexCheckoutViewModel(
         }
     }
 
+    suspend fun checkoutGooglePay(): AirwallexPaymentStatus {
+        return suspendCancellableCoroutine { continuation ->
+            airwallex.startGooglePay(
+                session = session,
+                listener = object : Airwallex.PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        continuation.resume(status)
+                    }
+                }
+            )
+        }
+    }
+
     suspend fun retrieveBanks(paymentMethodTypeName: String): Result<BankResponse> {
         return suspendCancellableCoroutine { continuation ->
             when (session) {

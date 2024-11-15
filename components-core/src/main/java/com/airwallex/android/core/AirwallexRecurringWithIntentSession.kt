@@ -169,7 +169,8 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 returnUrl = returnUrl,
                 autoCapture = autoCapture,
                 paymentMethods = paymentMethods,
-                googlePayOptions = googlePayOptions
+                googlePayOptions = googlePayOptions,
+                merchantTriggerReason = merchantTriggerReason
             )
         }
     }

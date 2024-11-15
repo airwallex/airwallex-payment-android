@@ -91,7 +91,6 @@ class APIIntegrationViewModel : BaseViewModel() {
             allowedCardAuthMethods = if (force3DS) listOf("PAN_ONLY") else null,
             billingAddressRequired = true,
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
-            skipReadinessCheck = true
         )
         val session = createSession(force3DS = force3DS, googlePayOptions = googlePayOptions)
         airwallex?.startGooglePay(
@@ -310,7 +309,8 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setRequireEmail(Settings.requiresEmail.toBoolean())
             .setShipping(shipping)
             .setRequireCvc(Settings.requiresCVC.toBoolean())
-            .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+            //only nextTriggerBy is merchant, merchantTriggerReason is required
+            .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
             .setReturnUrl(Settings.returnUrl)
             .setPaymentMethods(listOf())
             .setGooglePayOptions(googlePayOptions)
@@ -335,7 +335,8 @@ class APIIntegrationViewModel : BaseViewModel() {
         )
             .setRequireEmail(Settings.requiresEmail.toBoolean())
             .setRequireCvc(Settings.requiresCVC.toBoolean())
-            .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+            //only nextTriggerBy is merchant, merchantTriggerReason is required
+            .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
             .setReturnUrl(Settings.returnUrl)
             .setAutoCapture(autoCapture)
             .setPaymentMethods(listOf())
