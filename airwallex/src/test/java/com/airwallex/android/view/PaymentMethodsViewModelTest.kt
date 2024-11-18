@@ -27,6 +27,7 @@ import com.airwallex.android.view.Constants.SAMPLE_BANK_RESPONSE
 import com.airwallex.android.view.Constants.SAMPLE_ENUM_FIELD
 import com.airwallex.android.view.Constants.createAvailablePaymentMethodType
 import com.airwallex.android.view.Constants.createBankResponse
+import com.airwallex.android.view.Constants.createGooglePayPaymentMethodType
 import com.airwallex.android.view.Constants.createPaymentConsents
 import com.airwallex.android.view.Constants.createPaymentMethod
 import com.airwallex.android.view.Constants.createPaymentMethodTypeInfo
@@ -494,6 +495,39 @@ class PaymentMethodsViewModelTest {
         }
 
     @Test
+    fun `test startCheckout checkoutGooglePay when paymentMethod type is google pay`() =
+        runTest {
+            val availablePaymentMethodType = createGooglePayPaymentMethodType()
+            val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+            val listenerSlot = slot<Airwallex.PaymentResultListener>()
+            val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
+
+            mockkObject(AirwallexLogger)
+            coEvery {
+                airwallex.startGooglePay(
+                    session = any(),
+                    listener = capture(listenerSlot)
+                )
+            } answers {
+                listenerSlot.captured.onCompleted(expectedStatus)
+            }
+
+            viewModel.startCheckout(availablePaymentMethodType)
+            advanceUntilIdle()
+            verify {
+                AirwallexLogger.info(eq("PaymentMethodsViewModel start checkout checkoutGooglePay, type = googlepay"), isNull())
+            }
+            coVerify { viewModel["trackPaymentSuccess"](expectedStatus, "googlepay") }
+            val flowStatus =
+                viewModel.paymentFlowStatus.value as PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus
+            assertEquals(
+                "test_payment_intent_id",
+                (flowStatus.status as AirwallexPaymentStatus.Success).paymentIntentId
+            )
+            unmockkObject(AirwallexLogger)
+        }
+
+    @Test
     fun `test fetchPaymentMethodsAndConsents fails when hasSinglePaymentMethod is true`() = runTest {
         val availablePaymentConsents =
             createPaymentConsents("""{"items":[], "has_more":false}""".trimIndent())
@@ -645,7 +679,7 @@ class PaymentMethodsViewModelTest {
                     paymentMethods = listOf("card")
                 )
             viewModel.fetchAvailablePaymentMethodsAndConsents()
-            val result = viewModel.fetchAvailablePaymentMethodsAndConsents()?.getOrNull()
+            val result = viewModel.fetchAvailablePaymentMethodsAndConsents().getOrNull()
             assertEquals(result?.first?.first()?.name, "card")
         }
 

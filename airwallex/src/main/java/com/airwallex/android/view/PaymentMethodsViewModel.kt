@@ -166,7 +166,7 @@ internal class PaymentMethodsViewModel(
                     trackPaymentSuccess(it, paymentMethod.type)
                     _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
                 }
-            } else if (requireHandleSchemaFields(paymentMethodType)) {// Have required schema fields
+            } else if (requireHandleSchemaFields(paymentMethodType)) { // Have required schema fields
                 AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
                 checkoutWithSchemaFields(paymentMethod, type)
             } else {

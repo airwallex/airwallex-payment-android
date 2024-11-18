@@ -51,11 +51,12 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
 
     internal class GooglePayParser : ModelJsonParser<PaymentMethod.GooglePay> {
         override fun parse(json: JSONObject): PaymentMethod.GooglePay {
-            return  PaymentMethod.GooglePay(
+            return PaymentMethod.GooglePay(
                 billing = json.optJSONObject(FIELD_BILLING)?.let {
                     BillingParser().parse(it)
                 },
                 paymentDataType = json.optString(FIELD_PAYMENT_DATA_TYPE),
+                encryptedPaymentToken = json.optString(FIELD_ENCRYPTED_PAYMENT_TOKEN)
             )
         }
 

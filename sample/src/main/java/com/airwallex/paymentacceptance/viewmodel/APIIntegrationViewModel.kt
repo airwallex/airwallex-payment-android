@@ -91,6 +91,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             allowedCardAuthMethods = if (force3DS) listOf("PAN_ONLY") else null,
             billingAddressRequired = true,
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+            skipReadinessCheck = true
         )
         val session = createSession(force3DS = force3DS, googlePayOptions = googlePayOptions)
         airwallex?.startGooglePay(

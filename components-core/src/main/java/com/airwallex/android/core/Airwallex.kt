@@ -487,7 +487,7 @@ class Airwallex internal constructor(
         AirwallexLogger.info("Airwallex verifyPaymentConsent: type = ${params.paymentMethodType}")
         val paymentMethodType = params.paymentMethodType
         val verificationOptions = when (paymentMethodType) {
-            //The backend requires passing parameters using the card field in verification_options, even if the payment type is Google Pay.
+            // The backend requires passing parameters using the card field in verification_options, even if the payment type is Google Pay.
             PaymentMethodType.CARD.value, PaymentMethodType.GOOGLEPAY.value -> PaymentConsentVerifyRequest.VerificationOptions(
                 type = PaymentMethodType.CARD.value,
                 cardOptions = PaymentConsentVerifyRequest.CardVerificationOptions(
@@ -521,14 +521,14 @@ class Airwallex internal constructor(
                 }
 
                 override fun onSuccess(response: PaymentConsent) {
-                    //for redirect, initialPaymentIntentId is empty now. so we don support recurring in redirect flow
+                    // for redirect, initialPaymentIntentId is empty now. so we don support recurring in redirect flow
                     val paymentIntentId = response.initialPaymentIntentId
                     if (paymentIntentId.isNullOrEmpty()) {
                         AnalyticsLogger.logError(
                             "initialPaymentIntentId_null_or_empty",
                             mapOf("type" to paymentMethodType)
                         )
-                        AirwallexLogger.error("Airwallex verifyPaymentConsent: type = ${paymentMethodType}, paymentIntentId isNullOrEmpty")
+                        AirwallexLogger.error("Airwallex verifyPaymentConsent: type = $paymentMethodType, paymentIntentId isNullOrEmpty")
                         listener.onCompleted(
                             AirwallexPaymentStatus.Failure(
                                 AirwallexCheckoutException(message = "Unsupported payment method")
@@ -915,7 +915,7 @@ class Airwallex internal constructor(
         googlePay: PaymentMethod.GooglePay
     ) {
 
-        val paymentMethod =  PaymentMethod.Builder()
+        val paymentMethod = PaymentMethod.Builder()
             .setType(PaymentMethodType.GOOGLEPAY.value)
             .setGooglePay(googlePay)
             .build()
@@ -1132,7 +1132,7 @@ class Airwallex internal constructor(
         listener: PaymentResultListener
     ) {
         val options = when (params.paymentMethodType) {
-            //The backend requires passing parameters using the card field in payment_method_options, even if the payment type is Google Pay.
+            // The backend requires passing parameters using the card field in payment_method_options, even if the payment type is Google Pay.
             PaymentMethodType.CARD.value, PaymentMethodType.GOOGLEPAY.value -> {
                 buildCardPaymentIntentOptions(params, device)
             }
@@ -1212,10 +1212,10 @@ class Airwallex internal constructor(
                 .setCustomerId(params.customerId)
                 .setPaymentMethodRequest(
                     PaymentMethodRequest(
-                        //for googlePay, id is null
+                        // for googlePay, id is null
                         id = params.paymentMethodId,
                         type = params.paymentMethodType,
-                        //provide either id or googlePay
+                        // provide either id or googlePay
                         googlePay = params.googlePay,
                     )
                 )

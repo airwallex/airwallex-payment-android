@@ -207,11 +207,11 @@ data class PaymentMethod internal constructor(
                         mapOf(PaymentMethodParser.GooglePayParser.FIELD_ENCRYPTED_PAYMENT_TOKEN to it)
                     }.orEmpty()
                 ).plus(
-                    //just for alipay, delete it when update api version
+                    // just for alipay, delete it when update api version
                     mapOf(FIELD_FLOW to (flow ?: AirwallexPaymentRequestFlow.IN_APP).value)
                 )
                 .plus(
-                    //just for alipay, delete it when update api version
+                    // just for alipay, delete it when update api version
                     mapOf(FIELD_OS_TYPE to "android")
                 )
         }
