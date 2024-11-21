@@ -7,6 +7,7 @@ import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.parser.PaymentIntentParser
 import io.mockk.*
 import org.json.JSONObject
@@ -23,6 +24,11 @@ class ActionComponentProviderExtensionsTest {
         firstName = "John",
         lastName = "Citizen"
     )
+    private val googlePay = PaymentMethod.GooglePay.Builder()
+        .setBilling(billing)
+        .setPaymentDataType("payment_data_type")
+        .setEncryptedPaymentToken("encrypted_payment_token")
+        .build()
     private val securityListener = slot<SecurityTokenListener>()
 
     @Before
@@ -48,8 +54,7 @@ class ActionComponentProviderExtensionsTest {
             applicationContext = context,
             paymentIntentId = "paymentIntent id",
             clientSecret = "secret",
-            additionalInfo = mapOf(),
-            billing = billing,
+            googlePay = googlePay,
             autoCapture = true,
             listener = listener
         )
@@ -93,8 +98,7 @@ class ActionComponentProviderExtensionsTest {
             applicationContext = context,
             paymentIntentId = "paymentIntent id",
             clientSecret = "secret",
-            additionalInfo = mapOf(),
-            billing = billing,
+            googlePay = googlePay,
             autoCapture = true,
             listener = listener
         )
@@ -118,8 +122,7 @@ class ActionComponentProviderExtensionsTest {
             applicationContext = context,
             paymentIntentId = "paymentIntent id",
             clientSecret = "secret",
-            additionalInfo = mapOf(),
-            billing = billing,
+            googlePay = googlePay,
             autoCapture = true,
             listener = listener
         )

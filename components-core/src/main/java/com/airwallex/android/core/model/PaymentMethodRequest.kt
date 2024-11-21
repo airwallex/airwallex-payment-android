@@ -28,6 +28,11 @@ class PaymentMethodRequest(
     val card: PaymentMethod.Card? = null,
 
     /**
+     * Google Pay information for the payment method
+     */
+    val googlePay: PaymentMethod.GooglePay? = null,
+
+    /**
      * Billing information for the payment method
      */
     val billing: Billing? = null
@@ -65,6 +70,12 @@ class PaymentMethodRequest(
                         )
                     )
                 }.orEmpty()
+            ).plus(
+                googlePay?.let { googlePay ->
+                    mapOf(
+                        PaymentMethodParser.FIELD_GOOGLE_PAY to googlePay.toParamMap()
+                    )
+                }.orEmpty()
             )
     }
 
@@ -77,11 +88,13 @@ class PaymentMethodRequest(
 
         private var billing: Billing? = null
 
+        private var googlePay: PaymentMethod.GooglePay? = null
+
         fun setThirdPartyPaymentMethodRequest(
             additionalInfo: Map<String, String>? = null,
             flow: AirwallexPaymentRequestFlow? = null
         ): Builder = apply {
-            if (type != PaymentMethodType.CARD.value) {
+            if (type != PaymentMethodType.CARD.value && type != PaymentMethodType.GOOGLEPAY.value) {
                 paymentRequest = AirwallexPaymentRequest(
                     additionalInfo,
                     flow
@@ -98,11 +111,9 @@ class PaymentMethodRequest(
         }
 
         fun setGooglePayPaymentMethodRequest(
-            additionalInfo: Map<String, String>?,
-            billing: Billing?
+            googlePay: PaymentMethod.GooglePay?
         ): Builder = apply {
-            this.billing = billing
-            paymentRequest = AirwallexPaymentRequest(additionalInfo = additionalInfo)
+            this.googlePay = googlePay
         }
 
         override fun build(): PaymentMethodRequest {
@@ -110,6 +121,7 @@ class PaymentMethodRequest(
                 type = type,
                 paymentRequest = paymentRequest,
                 card = card,
+                googlePay = googlePay,
                 billing = billing
             )
         }

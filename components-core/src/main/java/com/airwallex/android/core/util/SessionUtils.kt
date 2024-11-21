@@ -1,10 +1,10 @@
-package com.airwallex.android.view.util
+package com.airwallex.android.core.util
 
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 
-internal object SessionUtils {
+object SessionUtils {
 
     fun getIntentId(session: AirwallexSession): String {
         return when (session) {

@@ -109,6 +109,31 @@ class AirwallexCheckoutViewModelTest {
     }
 
     @Test
+    fun `test suspend function checkoutGooglePay`() = runTest {
+        val listenerSlot = slot<Airwallex.PaymentResultListener>()
+        val expectedStatus = mockk<AirwallexPaymentStatus>()
+
+        coEvery {
+            airwallex.startGooglePay(
+                session = session,
+                listener = capture(listenerSlot)
+            )
+        } answers {
+            listenerSlot.captured.onCompleted(expectedStatus)
+        }
+
+        val result = viewModel.checkoutGooglePay()
+
+        assertEquals(expectedStatus, result)
+        coVerify(exactly = 1) {
+            airwallex.startGooglePay(
+                session = session,
+                listener = any()
+            )
+        }
+    }
+
+    @Test
     fun `test suspend function retrieveBanks success`() = runTest {
         val airwallexPaymentSession = mockk<AirwallexPaymentSession>()
         val paymentIntent = mockk<PaymentIntent>()

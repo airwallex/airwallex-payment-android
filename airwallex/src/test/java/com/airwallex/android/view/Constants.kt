@@ -28,6 +28,17 @@ object Constants {
         }
     """
 
+    private const val GOOGLE_PAYMENT_METHOD_TYPE_JSON = """
+        {
+            "name": "googlepay",
+            "displayName": "Credit/Debit Card",
+            "transactionMode": "ONE_OFF",
+            "resources": {
+                "hasSchema": true
+            }
+        }
+    """
+
     private const val AVAILABLE_PAYMENT_METHODS_JSON = """
         {
             "items":[ 
@@ -132,6 +143,11 @@ object Constants {
     fun createAvailablePaymentMethodType(): AvailablePaymentMethodType {
         val gson = Gson()
         return gson.fromJson(AVAILABLE_PAYMENT_METHOD_TYPE_JSON, AvailablePaymentMethodType::class.java)
+    }
+
+    fun createGooglePayPaymentMethodType(): AvailablePaymentMethodType {
+        val gson = Gson()
+        return gson.fromJson(GOOGLE_PAYMENT_METHOD_TYPE_JSON, AvailablePaymentMethodType::class.java)
     }
 
     fun createPaymentMethodTypeInfo(fieldSchemas: String? = null): PaymentMethodTypeInfo {

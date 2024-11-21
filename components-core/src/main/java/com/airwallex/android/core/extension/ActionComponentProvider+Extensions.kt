@@ -17,8 +17,7 @@ internal fun ActionComponent.confirmGooglePayIntent(
     applicationContext: Context,
     paymentIntentId: String,
     clientSecret: String,
-    additionalInfo: Map<String, String>,
-    billing: Billing?,
+    googlePay: PaymentMethod.GooglePay,
     autoCapture: Boolean,
     listener: Airwallex.PaymentResultListener
 ) {
@@ -43,7 +42,7 @@ internal fun ActionComponent.confirmGooglePayIntent(
                     .setDevice(device)
                     .setPaymentMethodRequest(
                         PaymentMethodRequest.Builder(PaymentMethodType.GOOGLEPAY.value)
-                            .setGooglePayPaymentMethodRequest(additionalInfo, billing)
+                            .setGooglePayPaymentMethodRequest(googlePay)
                             .build()
                     )
                     .build()

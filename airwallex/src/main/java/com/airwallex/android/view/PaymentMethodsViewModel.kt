@@ -160,8 +160,13 @@ internal class PaymentMethodsViewModel(
             .setType(paymentMethodType.name)
             .build()
         paymentMethod.type?.let { type ->
-            // Have required schema fields
-            if (requireHandleSchemaFields(paymentMethodType)) {
+            if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
+                AirwallexLogger.info("PaymentMethodsViewModel start checkout checkoutGooglePay, type = ${paymentMethod.type}")
+                checkoutGooglePay().also {
+                    trackPaymentSuccess(it, paymentMethod.type)
+                    _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
+                }
+            } else if (requireHandleSchemaFields(paymentMethodType)) { // Have required schema fields
                 AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
                 checkoutWithSchemaFields(paymentMethod, type)
             } else {
