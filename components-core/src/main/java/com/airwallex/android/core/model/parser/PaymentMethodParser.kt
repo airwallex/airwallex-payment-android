@@ -49,7 +49,7 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
         const val FIELD_UPDATED_AT = "updated_at"
     }
 
-    internal class GooglePayParser : ModelJsonParser<PaymentMethod.GooglePay> {
+    class GooglePayParser : ModelJsonParser<PaymentMethod.GooglePay> {
         override fun parse(json: JSONObject): PaymentMethod.GooglePay {
             return PaymentMethod.GooglePay(
                 billing = json.optJSONObject(FIELD_BILLING)?.let {
@@ -66,7 +66,7 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
         }
     }
 
-    internal class CardParser : ModelJsonParser<PaymentMethod.Card> {
+    class CardParser : ModelJsonParser<PaymentMethod.Card> {
 
         override fun parse(json: JSONObject): PaymentMethod.Card {
             return PaymentMethod.Card(
