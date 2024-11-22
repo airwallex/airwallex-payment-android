@@ -274,14 +274,24 @@ val googlePayOptions = GooglePayOptions(
     billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
     shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
 )
+// Pass googlePayOptions as a parameter when creating an AirwallexPaymentSession.
 val paymentSession = AirwallexPaymentSession.Builder(
-    paymentIntent = ...,
-    countryCode = ...,
-    googlePayOptions = googlePayOptions
-)
+  paymentIntent = ...,
+  countryCode = ...,
+  googlePayOptions = googlePayOptions
+).build()
+
+// Similarly, you can pass googlePayOptions when creating a recurring-related session.
+// Here's an example with the creation of an AirwallexRecurringSession.
+val recurringSession = AirwallexRecurringSession.Builder(
+  customerId = ...,
+  clientSecret = ...,
+  currency = ...,
+  amount = ...
+).setGooglePayOptions(googlePayOptions)
+  .build()
 ```
-- We currently only support Visa and MasterCard for Google Pay, customers will only be able to select the cards of these payment networks during Google Pay.
-> Please note that our Google Pay module only supports `AirwallexPaymentSession` at the moment. We'll add support for recurring payment sessions in the future.
+- We now support `AMEX`, `DISCOVER`, `JCB`, `MASTERCARD`, `VISA`and `MAESTRO` for Google Pay payments. Note that when you choose to use `MAESTRO`, `countryCode` must be `BR`.
 
 ### Custom Theme
 You can overwrite these color values in your app. https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme

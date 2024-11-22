@@ -270,14 +270,23 @@ val googlePayOptions = GooglePayOptions(
     billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
     shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
 )
+// 创建AirwallexPaymentSession时，传递googlePayOptions
 val paymentSession = AirwallexPaymentSession.Builder(
     paymentIntent = ...,
     countryCode = ...,
     googlePayOptions = googlePayOptions
-)
+).build()
+
+// 同样的，您也可以在创建Recurring相关的Session时，传递googlePayOptions，这里以AirwallexRecurringSession为例
+val recurringSession = AirwallexRecurringSession.Builder(
+  customerId = ...,
+  clientSecret = ...,
+  currency = ...,
+  amount = ...
+).setGooglePayOptions(googlePayOptions)
+  .build()
 ```
-- 我们现在暂时只支持Visa和MasterCard来进行Google Pay支付，用户在通过Google Pay付款时只能选择这两种卡。
-> 请注意我们的Google Pay模块目前只支持`AirwallexPaymentSession`。我们会在以后添加对recurring payment sessions的支持。
+- 我们现在支持`AMEX`、`DISCOVER`、`JCB`、`MASTERCARD`、`VISA`和`MAESTRO`来进行Google Pay支付。注意，当你选择使用`MAESTRO`进行支付时，`countryCode`必须是`BR`。
 
 ### Custom Theme
 您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格。 https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
