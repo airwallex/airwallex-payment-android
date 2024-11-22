@@ -20,6 +20,11 @@ data class PaymentConsentVerifyRequest internal constructor(
     val verificationOptions: VerificationOptions? = null,
 
     /**
+     * Device info
+     */
+    val device: Device? = null,
+
+    /**
      * The URL to which your customer will be redirected after they verify PaymentConsent on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively provide an application URI scheme.
      */
     val returnUrl: String? = null,
@@ -35,6 +40,7 @@ data class PaymentConsentVerifyRequest internal constructor(
         private const val FIELD_VERIFICATION_OPTIONS = "verification_options"
         private const val FIELD_RETURN_URL = "return_url"
         private const val FIELD_INTEGRATION_DATA = "integration_data"
+        private const val FIELD_DEVICE = "device_data"
     }
 
     override fun toParamMap(): Map<String, Any> {
@@ -47,6 +53,11 @@ data class PaymentConsentVerifyRequest internal constructor(
             .plus(
                 verificationOptions?.let {
                     mapOf(FIELD_VERIFICATION_OPTIONS to verificationOptions.toParamMap())
+                }.orEmpty()
+            )
+            .plus(
+                device?.let {
+                    mapOf(FIELD_DEVICE to it.toParamMap())
                 }.orEmpty()
             )
             .plus(
@@ -179,6 +190,7 @@ data class PaymentConsentVerifyRequest internal constructor(
         private var verificationOptions: VerificationOptions? = null
         private var returnUrl: String? = null
         private var integrationData: IntegrationData? = null
+        private var device: Device? = null
 
         fun setRequestId(requestId: String?): Builder = apply {
             this.requestId = requestId
@@ -196,12 +208,17 @@ data class PaymentConsentVerifyRequest internal constructor(
             this.integrationData = integrationData
         }
 
+        fun setDevice(device: Device?): Builder = apply {
+            this.device = device
+        }
+
         override fun build(): PaymentConsentVerifyRequest {
             return PaymentConsentVerifyRequest(
                 requestId = requestId,
                 verificationOptions = verificationOptions,
                 returnUrl = returnUrl,
-                integrationData = integrationData
+                integrationData = integrationData,
+                device = device
             )
         }
     }

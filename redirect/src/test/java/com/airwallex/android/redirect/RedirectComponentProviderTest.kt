@@ -129,6 +129,6 @@ class RedirectComponentProviderTest {
             }
         )
         latch.await()
-        assertEquals("", device)
+        assertEquals("11", device)
     }
 }

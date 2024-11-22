@@ -12,7 +12,7 @@ android {
 
 dependencies {
     api project(':ui-core')
-
+    api project(':security-3ds')
     implementation 'androidx.browser:browser:1.4.0'
 
     // test
