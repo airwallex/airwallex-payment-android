@@ -10,6 +10,11 @@ class PaymentConsentVerifyRequestTest {
     private val cardRequest = PaymentConsentVerifyRequest.Builder()
         .setRequestId("aaaa")
         .setReturnUrl("https://www.airwallex.com")
+        .setDevice(
+            Device
+                .Builder().setDeviceId("device_id").setOsType("android")
+                .build()
+        )
         .setVerificationOptions(
             PaymentConsentVerifyRequest.VerificationOptions(
                 type = "card",
@@ -31,6 +36,11 @@ class PaymentConsentVerifyRequestTest {
     private val thirdPartRequest = PaymentConsentVerifyRequest.Builder()
         .setRequestId("aaaa")
         .setReturnUrl("https://www.airwallex.com")
+        .setDevice(
+            Device
+                .Builder().setDeviceId("device_id").setOsType("android")
+                .build()
+        )
         .setVerificationOptions(
             PaymentConsentVerifyRequest.VerificationOptions(
                 type = "alipaycn",
@@ -51,6 +61,7 @@ class PaymentConsentVerifyRequestTest {
     @Test
     fun testParams() {
         assertEquals("aaaa", cardRequest.requestId)
+        assertEquals("device_id", cardRequest.device?.deviceId)
         assertEquals("https://www.airwallex.com", cardRequest.returnUrl)
         assertEquals(
             JSONObject(
@@ -73,6 +84,12 @@ class PaymentConsentVerifyRequestTest {
             JSONObject(
                 mapOf(
                     "request_id" to "aaaa",
+                    "device_data" to mapOf(
+                        "device_id" to "device_id",
+                        "mobile" to mapOf(
+                            "os_type" to "android"
+                        )
+                    ),
                     "return_url" to "https://www.airwallex.com",
                     "verification_options" to mapOf(
                         "card" to mapOf(
@@ -95,6 +112,12 @@ class PaymentConsentVerifyRequestTest {
             JSONObject(
                 mapOf(
                     "request_id" to "aaaa",
+                    "device_data" to mapOf(
+                        "device_id" to "device_id",
+                        "mobile" to mapOf(
+                            "os_type" to "android"
+                        )
+                    ),
                     "return_url" to "https://www.airwallex.com",
                     "verification_options" to mapOf(
                         "alipaycn" to mapOf(
