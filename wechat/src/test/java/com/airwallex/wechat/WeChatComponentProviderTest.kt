@@ -116,9 +116,9 @@ class WeChatComponentProviderTest {
         val weChatComponentProvider = WeChatComponentProvider()
 
         val latch = CountDownLatch(1)
-        var device = "11"
+        var device = ""
         weChatComponentProvider.get().retrieveSecurityToken(
-            "11",
+            "session_id",
             object :
                 SecurityTokenListener {
                 override fun onResponse(deviceId: String) {
@@ -128,6 +128,6 @@ class WeChatComponentProviderTest {
             }
         )
         latch.await()
-        assertEquals("", device)
+        assertEquals("session_id", device)
     }
 }
