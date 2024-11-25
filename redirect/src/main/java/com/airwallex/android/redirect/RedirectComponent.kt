@@ -12,6 +12,7 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.redirect.exception.RedirectException
 import com.airwallex.android.redirect.util.RedirectUtil
+import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
 
 class RedirectComponent : ActionComponent {
 
@@ -86,7 +87,9 @@ class RedirectComponent : ActionComponent {
         sessionId: String,
         securityTokenListener: SecurityTokenListener
     ) {
-        // Since only card payments require a device ID, this will not be executed
-        securityTokenListener.onResponse("")
+        AirwallexSecurityConnector().retrieveSecurityToken(
+            sessionId,
+            securityTokenListener
+        )
     }
 }

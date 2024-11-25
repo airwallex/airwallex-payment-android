@@ -80,10 +80,48 @@ data class VerifyPaymentConsentParams constructor(
 
     companion object {
 
+        @Suppress("LongParameterList")
+        fun createParamsByMethodType(
+            paymentMethodType: String,
+            clientSecret: String,
+            paymentConsentId: String,
+            amount: BigDecimal?,
+            currency: String?,
+            cvc: String?,
+            returnUrl: String?
+        ): VerifyPaymentConsentParams {
+            return when (paymentMethodType) {
+                PaymentMethodType.CARD.value -> createCardParams(
+                    clientSecret = clientSecret,
+                    paymentConsentId = paymentConsentId,
+                    amount = amount,
+                    currency = currency,
+                    cvc = cvc,
+                    returnUrl = returnUrl
+                )
+
+                PaymentMethodType.GOOGLEPAY.value -> createGoogleParams(
+                    clientSecret = clientSecret,
+                    paymentConsentId = paymentConsentId,
+                    amount = amount,
+                    currency = currency,
+                    cvc = cvc,
+                    returnUrl = returnUrl
+                )
+
+                else -> createThirdPartParams(
+                    paymentMethodType = paymentMethodType,
+                    clientSecret = clientSecret,
+                    paymentConsentId = paymentConsentId,
+                    returnUrl = returnUrl
+                )
+            }
+        }
+
         /**
          * Return the [CreatePaymentConsentParams] for Card
          */
-        fun createCardParams(
+        private fun createCardParams(
             clientSecret: String,
             paymentConsentId: String,
             amount: BigDecimal?,
@@ -106,7 +144,7 @@ data class VerifyPaymentConsentParams constructor(
         /**
          * Return the [CreatePaymentConsentParams] for Google Pay
          */
-        fun createGoogleParams(
+        private fun createGoogleParams(
             clientSecret: String,
             paymentConsentId: String,
             amount: BigDecimal?,
@@ -126,7 +164,7 @@ data class VerifyPaymentConsentParams constructor(
                 .build()
         }
 
-        fun createThirdPartParams(
+        private fun createThirdPartParams(
             paymentMethodType: String,
             clientSecret: String,
             paymentConsentId: String,
