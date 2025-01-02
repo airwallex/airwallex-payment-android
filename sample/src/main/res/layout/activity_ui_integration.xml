@@ -4,106 +4,104 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
+    <FrameLayout
+        android:id="@+id/flArrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="20dp"
-        app:layout_constraintStart_toStartOf="@+id/btnPaymentList"
+        android:padding="20dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <RadioButton
-            android:id="@+id/radioPayment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="@color/radio_button_color"
-            android:text="One-off Payment" />
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/airwallex_ic_back" />
+    </FrameLayout>
 
-        <RadioButton
-            android:id="@+id/radioRecurring"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="@color/radio_button_color"
-            android:text="Recurring" />
-
-        <RadioButton
-            android:id="@+id/radioRecurringAndPayment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="@color/radio_button_color"
-            android:text="Recurring and Payment" />
-    </RadioGroup>
-
-    <Button
-        android:id="@+id/btnPaymentList"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn_shape"
-        android:text="launch payment list"
-        android:layout_marginTop="180dp"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btn_custom_payment_list"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/btn_shape"
-        android:text="custom payment list"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPaymentList" />
-
-    <Button
-        android:id="@+id/btn_card_payment"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/btn_shape"
-        android:text="launch card payment"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_custom_payment_list" />
-
-    <Button
-        android:id="@+id/btn_card_dialog_payment"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/btn_shape"
-        android:text="launch card payment (dialog)"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_card_payment" />
-
-    <Button
-        android:id="@+id/btnShipping"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:background="@drawable/btn_shape"
-        android:text="launch shipping"
-        android:textColor="@color/color_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_card_dialog_payment" />
 
     <ImageView
         android:id="@+id/imSetting"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="60dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="12dp"
         android:contentDescription="setting"
         android:src="@drawable/ic_menu"
+        app:layout_constraintBottom_toBottomOf="@+id/titleView"
+        app:layout_constraintEnd_toEndOf="@+id/titleView"
+        app:layout_constraintTop_toTopOf="@+id/titleView" />
+
+    <com.airwallex.paymentacceptance.ui.widget.TitleView
+        android:id="@+id/titleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        app:buttonHeight="40dp"
+        app:buttonWidth="40dp"
+        app:layout_constraintTop_toBottomOf="@+id/flArrow"
+        app:titleText="Integrate with Airwallex UI" />
+
+    <com.airwallex.paymentacceptance.ui.widget.DropdownView
+        android:id="@+id/dropdownView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/titleView" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="180dp"
+        android:background="#D7D8E0"
+        app:layout_constraintTop_toBottomOf="@+id/dropdownView" />
+
+    <!--ScrollView added here to encapsulate buttons-->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/line">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingBottom="20dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnPaymentList"
+                style="@style/AppButton"
+                android:layout_marginTop="28dp"
+                android:text="Launch payment list" />
+
+            <Button
+                android:id="@+id/btn_custom_payment_list"
+                style="@style/AppButton"
+                android:layout_marginTop="28dp"
+                android:text="Launch custom payment list" />
+
+            <Button
+                android:id="@+id/btn_card_payment"
+                style="@style/AppButton"
+                android:layout_marginTop="28dp"
+                android:text="Launch card payment" />
+
+            <Button
+                android:id="@+id/btn_card_dialog_payment"
+                style="@style/AppButton"
+                android:layout_marginTop="28dp"
+                android:text="Launch card payment (dialog)" />
+
+            <Button
+                android:id="@+id/btnShipping"
+                style="@style/AppButton"
+                android:layout_marginTop="28dp"
+                android:text="Launch shipping address(dialog)" />
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

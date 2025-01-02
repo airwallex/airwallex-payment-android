@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TitleView">
+        <attr name="titleText" format="string" />
+        <attr name="buttonText" format="string" />
+        <attr name="buttonWidth" format="dimension" />
+        <attr name="buttonHeight" format="dimension" />
+        <attr name="showRightBtn" format="boolean" />
+    </declare-styleable>
+</resources>

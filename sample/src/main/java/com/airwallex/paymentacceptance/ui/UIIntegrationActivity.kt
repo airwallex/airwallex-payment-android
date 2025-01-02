@@ -22,14 +22,16 @@ class UIIntegrationActivity :
     override fun initView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        mBinding.radioGroup.check(R.id.radioPayment)
     }
 
     override fun initListener() {
-        mBinding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            val selectedOption = when (checkedId) {
-                R.id.radioRecurring -> 1
-                R.id.radioRecurringAndPayment -> 2
+        mBinding.flArrow.setOnClickListener {
+            finish()
+        }
+        mBinding.dropdownView.setOnOptionSelectedCallback {mode->
+            val selectedOption = when (mode) {
+                "Recurring payment" -> 1
+                "Recurring and Payment"-> 2
                 else -> 0
             }
             mViewModel.updateCheckoutModel(selectedOption)
@@ -58,8 +60,10 @@ class UIIntegrationActivity :
             mViewModel.launchShipping(this)
         }
         mBinding.imSetting.setOnClickListener {
-            startActivity(Intent(this, PaymentSettingsActivity::class.java))
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            openSettingPage()
+        }
+        mBinding.titleView.setOnButtonClickListener {
+            openSettingPage()
         }
     }
 
@@ -116,6 +120,11 @@ class UIIntegrationActivity :
                 getString(R.string.payment_successful_message)
             )
         }
+    }
+
+    private fun openSettingPage() {
+        startActivity(Intent(this, PaymentSettingsActivity::class.java))
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     companion object {

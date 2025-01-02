@@ -37,8 +37,6 @@ class APIIntegrationActivity :
     override fun initView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        mBinding.radioGroup.check(R.id.radioPayment)
-        mBinding.radioGroup.check(R.id.radioPayment)
         setBtnEnabled(
             mBinding.btnPayWithCardDetail3DS,
             Settings.environment != Environment.PRODUCTION
@@ -46,17 +44,19 @@ class APIIntegrationActivity :
     }
 
     override fun initListener() {
-        mBinding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            val selectedOption = when (checkedId) {
-                R.id.radioRecurring -> 1
-                R.id.radioRecurringAndPayment -> 2
+        mBinding.dropdownView.setOnOptionSelectedCallback { mode ->
+            val selectedOption = when (mode) {
+                "Recurring" -> 1
+                "Recurring and Payment" -> 2
                 else -> 0
             }
             mViewModel.updateCheckoutModel(selectedOption)
             setBtnEnabled(mBinding.btnRedirect, selectedOption == 0)
             setBtnEnabled(mBinding.btnPayWithCardDetailSaveCard, selectedOption != 1)
         }
-
+        mBinding.flArrow.setOnClickListener {
+            finish()
+        }
         mBinding.btnPayWithCardDetail.setOnClickListener {
             DemoCardDialog(this)
                 .setCardInfo(card)
@@ -102,8 +102,10 @@ class APIIntegrationActivity :
             mViewModel.getPaymentConsentList()
         }
         mBinding.imSetting.setOnClickListener {
-            startActivity(Intent(this, PaymentSettingsActivity::class.java))
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            openSettingPage()
+        }
+        mBinding.titleView.setOnButtonClickListener {
+            openSettingPage()
         }
     }
 
@@ -160,7 +162,7 @@ class APIIntegrationActivity :
                             setLoadingProgress(true)
                             customerDialog?.dismiss()
                         }
-                        setBtnEnabled(holder.btnPay, mBinding.radioGroup.checkedRadioButtonId == R.id.radioPayment)
+                        setBtnEnabled(holder.btnPay, mBinding.dropdownView.currentOption == "One-off payment")
                     }
                 }
             })
@@ -219,6 +221,11 @@ class APIIntegrationActivity :
             ContextCompat.getColor(this, R.color.airwallex_color_grey_30)
         }
         btn.setTextColor(textColor)
+    }
+
+    private fun openSettingPage() {
+        startActivity(Intent(this, PaymentSettingsActivity::class.java))
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     companion object {

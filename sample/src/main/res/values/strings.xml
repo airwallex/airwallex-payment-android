@@ -45,8 +45,8 @@
     <string name="clear_customer">Clear Customer</string>
     <string name="customer_cleared">Customer cleared successfully</string>
     <string name="h5demo">H5DEMO</string>
-    <string name="payment_url">PAYMENT URL</string>
-    <string name="referer_url">REFERER URL</string>
+    <string name="payment_url">Payment URL</string>
+    <string name="referer_url">Referrer URL</string>
     <string name="pay_success">Pay success</string>
 
     <string name="wechat_demo">WeChat DEMO</string>
@@ -59,7 +59,7 @@
     <string name="wechat_demo_timestamp">TimeStamp</string>
     <string name="wechat_demo_sign">Sign</string>
     <string name="generate_customer">Generate Customer</string>
-    <string name="next">NEXT</string>
+    <string name="next">Next</string>
     <string name="generate_customer_failed">Generate customer failed</string>
     <string name="generate_customer_failed_message">There was an error while generate customer. Please try again.</string>
     <string name="requires_cvc">Requires CVC</string>
