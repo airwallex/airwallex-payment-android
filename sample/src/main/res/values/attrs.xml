@@ -7,4 +7,17 @@
         <attr name="buttonHeight" format="dimension" />
         <attr name="showRightBtn" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="SwitchView">
+        <attr name="labelText" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="ActionEditText">
+        <attr name="etHint" format="string"/>
+        <attr name="actionLabel" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="DropdownSelectView">
+        <attr name="titleContent" format="string" />
+    </declare-styleable>
 </resources>

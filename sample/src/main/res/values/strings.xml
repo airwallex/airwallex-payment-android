@@ -60,6 +60,7 @@
     <string name="wechat_demo_sign">Sign</string>
     <string name="generate_customer">Generate Customer</string>
     <string name="next">Next</string>
+    <string name="save">Save</string>
     <string name="generate_customer_failed">Generate customer failed</string>
     <string name="generate_customer_failed_message">There was an error while generate customer. Please try again.</string>
     <string name="requires_cvc">Requires CVC</string>
@@ -72,4 +73,6 @@
     <string name="shipping">Shipping</string>
     <string name="item">Item</string>
     <string name="total">Total</string>
+
+    <string name="setting_environment_desc">If you switch environment, you will need to restart the app for it to take effect.</string>
 </resources>

@@ -89,13 +89,14 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
     fun showPaymentInProgress() {
     }
 
-    fun showAlert(title: String, message: String) {
+    fun showAlert(title: String, message: String, callback: (() -> Unit)? = null) {
         AlertDialog.Builder(this)
             .setTitle(title)
             .setMessage(message)
             .setCancelable(false)
             .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
                 dialogInterface.dismiss()
+                callback?.invoke()
             }
             .create()
             .show()

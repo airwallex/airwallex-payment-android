@@ -6,9 +6,10 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.core.content.withStyledAttributes
 import com.airwallex.paymentacceptance.R
 
-class DropdownView @JvmOverloads constructor(
+class DropdownSelectView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -16,9 +17,9 @@ class DropdownView @JvmOverloads constructor(
 
     private var selectedTextView: SelectedView
     private var dropdownPopup: PopupWindow? = null
-    private var options = listOf("One-off payment", "Recurring", "Recurring and Payment")
+    private var options = emptyList<String>()
     private var callback: ((String) -> Unit)? = null
-    var currentOption: String = options[0]
+    var currentOption: String = ""
 
     init {
         orientation = VERTICAL
@@ -28,6 +29,27 @@ class DropdownView @JvmOverloads constructor(
             setOnClickListener { showDropdown() }
         }
         addView(selectedTextView)
+
+        context.withStyledAttributes(attrs, R.styleable.DropdownSelectView) {
+            val titleText = getString(R.styleable.DropdownSelectView_titleContent)
+            titleText?.let {
+                selectedTextView.setTitleText(it)
+            }
+        }
+    }
+
+    fun setOptions(options: List<String>) {
+        this.options = options
+        currentOption = options[0]
+        selectedTextView.setSelectedText(currentOption)
+    }
+
+    fun setTitleText(text: String) {
+        selectedTextView.setTitleText(text)
+    }
+
+    fun setSelectOption(option: String) {
+        selectedTextView.setSelectedText(option)
     }
 
     private fun showDropdown() {
@@ -57,7 +79,7 @@ class DropdownView @JvmOverloads constructor(
                 }
                 contentView = container
                 width = selectedTextView.width
-                showAsDropDown(this@DropdownView)
+                showAsDropDown(this@DropdownSelectView)
             }
         }
     }

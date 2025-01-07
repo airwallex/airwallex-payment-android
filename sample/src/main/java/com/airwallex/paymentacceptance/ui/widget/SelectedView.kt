@@ -21,7 +21,7 @@ class SelectedView @JvmOverloads constructor(
     init {
         orientation = VERTICAL
 
-        LayoutInflater.from(context).inflate(R.layout.selected_view, this, true)
+        LayoutInflater.from(context).inflate(R.layout.view_selected, this, true)
 
         titleTextView = findViewById(R.id.titleText)
         selectedTextView = findViewById(R.id.selectedText)
@@ -30,5 +30,9 @@ class SelectedView @JvmOverloads constructor(
 
     fun setSelectedText(text: String) {
         selectedTextView.text = text
+    }
+
+    fun setTitleText(text: String) {
+        titleTextView.text = text
     }
 }

@@ -41,13 +41,21 @@ class APIIntegrationActivity :
             mBinding.btnPayWithCardDetail3DS,
             Settings.environment != Environment.PRODUCTION
         )
+        mBinding.dropdownView.setOptions(
+            listOf(
+                "One-off payment",
+                "Recurring",
+                "Recurring and payment"
+            )
+        )
+        mBinding.dropdownView.setTitleText("Payment type")
     }
 
     override fun initListener() {
         mBinding.dropdownView.setOnOptionSelectedCallback { mode ->
             val selectedOption = when (mode) {
                 "Recurring" -> 1
-                "Recurring and Payment" -> 2
+                "Recurring and payment" -> 2
                 else -> 0
             }
             mViewModel.updateCheckoutModel(selectedOption)
@@ -224,7 +232,7 @@ class APIIntegrationActivity :
     }
 
     private fun openSettingPage() {
-        startActivity(Intent(this, PaymentSettingsActivity::class.java))
+        startActivity(Intent(this, SettingActivity::class.java))
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 

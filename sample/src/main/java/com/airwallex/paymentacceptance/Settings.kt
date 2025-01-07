@@ -22,7 +22,7 @@ object Settings {
     // Return url
     private const val RETURN_URL = ""
 
-    private const val CUSTOMER_ID = "customerId"
+    const val CUSTOMER_ID = "customerId"
     private val context: Context by lazy { SampleApplication.instance }
 
     private const val METADATA_KEY_API_KEY = "com.airwallex.sample.metadata.api_key"
@@ -61,7 +61,12 @@ object Settings {
         }
 
     // Default Staging
-    val sdkEnv: String
+    var sdkEnv: String
+        set(value) {
+            sharedPreferences.edit()
+                .putString(context.getString(R.string.sdk_env_id), value)
+                .apply()
+        }
         get() {
             val defaultSdkEnv =
                 SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0]
@@ -103,7 +108,12 @@ object Settings {
         }
 
 
-    val requiresCVC: String
+    var requiresCVC: String
+        set(value) {
+            sharedPreferences.edit()
+                .putString(context.getString(R.string.requires_cvc), value)
+                .apply()
+        }
         get() {
             val defaultRequireCVC =
                 SampleApplication.instance.resources.getStringArray(R.array.array_requires_cvc)[0]
@@ -114,7 +124,12 @@ object Settings {
                 ?: defaultRequireCVC
         }
 
-    val requiresEmail: String
+    var requiresEmail: String
+        set(value) {
+            sharedPreferences.edit()
+                .putString(context.getString(R.string.requires_email), value)
+                .apply()
+        }
         get() {
             val defaultRequiresEmail =
                 SampleApplication.instance.resources.getStringArray(R.array.array_requires_email)[0]
@@ -126,7 +141,12 @@ object Settings {
         }
 
 
-    val autoCapture: String
+    var autoCapture: String
+        set(value) {
+            sharedPreferences.edit()
+                .putString(context.getString(R.string.auto_capture), value)
+                .apply()
+        }
         get() {
             val defaultAutoCapture =
                 SampleApplication.instance.resources.getStringArray(R.array.array_auto_capture)[0]
@@ -137,7 +157,10 @@ object Settings {
                 ?: defaultAutoCapture
         }
 
-    val apiKey: String
+    var apiKey: String
+        set(value) {
+            sharedPreferences.edit().putString(context.getString(R.string.api_key), value).apply()
+        }
         get() {
             val value = sharedPreferences.getString(
                 context.getString(R.string.api_key),
@@ -148,7 +171,10 @@ object Settings {
             return value.cleaned().emptyIfReplaceWithApiKey()
         }
 
-    val clientId: String
+    var clientId: String
+        set(value) {
+            sharedPreferences.edit().putString(context.getString(R.string.client_id), value).apply()
+        }
         get() {
             val value = sharedPreferences.getString(
                 context.getString(R.string.client_id),
@@ -159,7 +185,10 @@ object Settings {
             return value.cleaned().emptyIfReplaceWithClientID()
         }
 
-    val weChatAppId: String
+    var weChatAppId: String
+        set(value) {
+            sharedPreferences.edit().putString(context.getString(R.string.wechat_app_id), value).apply()
+        }
         get() {
             val value = sharedPreferences.getString(
                 context.getString(R.string.wechat_app_id),
@@ -170,14 +199,20 @@ object Settings {
             return value.cleaned()
         }
 
-    val price: String
+    var price: String
+        set(value) {
+            sharedPreferences.edit().putString(context.getString(R.string.price), value).apply()
+        }
         get() {
             val defaultPrice = SampleApplication.instance.getString(R.string.price_value)
             return sharedPreferences.getString(context.getString(R.string.price), defaultPrice)
                 ?: defaultPrice
         }
 
-    val currency: String
+    var currency: String
+        set(value) {
+            sharedPreferences.edit().putString(context.getString(R.string.currency), value).apply()
+        }
         get() {
             val defaultCurrency =
                 SampleApplication.instance.getString(R.string.currency_value)
@@ -187,7 +222,10 @@ object Settings {
             ) ?: defaultCurrency
         }
 
-    val countryCode: String
+    var countryCode: String
+        set(value) {
+            sharedPreferences.edit().putString(context.getString(R.string.country_code), value).apply()
+        }
         get() {
             val defaultCountryCode =
                 SampleApplication.instance.getString(R.string.country_code_value)
