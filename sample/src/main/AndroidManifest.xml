@@ -78,11 +78,6 @@
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name="com.airwallex.paymentacceptance.ui.PaymentSettingsActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
             android:name="com.airwallex.paymentacceptance.h5.H5WebViewActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
