@@ -118,5 +118,6 @@ class SettingViewModel : BaseViewModel() {
         Settings.requiresCVC = "False"
         Settings.sdkEnv = "DEMO"
         Settings.nextTriggerBy = "Merchant"
+        Settings.returnUrl = ""
     }
 }

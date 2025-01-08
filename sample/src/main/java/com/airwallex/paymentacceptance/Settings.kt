@@ -83,7 +83,11 @@ object Settings {
         else -> Environment.PRODUCTION
     }
 
-    val returnUrl: String
+    var returnUrl: String
+        set(value) {
+            sharedPreferences.edit().putString(context.getString(R.string.return_url), value)
+                .apply()
+        }
         get() {
             return sharedPreferences.getString(
                 context.getString(R.string.return_url),

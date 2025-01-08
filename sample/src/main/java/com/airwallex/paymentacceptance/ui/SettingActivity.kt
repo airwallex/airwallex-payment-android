@@ -1,5 +1,6 @@
 package com.airwallex.paymentacceptance.ui
 
+import android.view.View
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Settings
@@ -15,6 +16,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         var triggerOptions = resources.getStringArray(R.array.array_next_trigger_by).toList()
         if (Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
             triggerOptions = arrayListOf("Customer")
+            mBinding.swCVC.visibility = View.GONE
         }
         mBinding.selectViewEnvironment.setOptions(environmentOptions)
         mBinding.selectViewTrigger.setOptions(triggerOptions)
@@ -38,6 +40,8 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.swAutoCapture.setChecked(Settings.autoCapture == "Enabled")
         mBinding.swEmail.setChecked(Settings.requiresEmail == "True")
         mBinding.swCVC.setChecked(Settings.requiresCVC == "True")
+
+        mBinding.etReturnUrl.setText(Settings.returnUrl)
     }
 
     override fun initListener() {
@@ -63,6 +67,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             Settings.apiKey = mBinding.etAPIKey.getText()
             Settings.clientId = mBinding.etClientId.getText()
             Settings.weChatAppId = mBinding.etWeChatAppId.getText()
+            Settings.returnUrl = mBinding.etReturnUrl.getText()
 
             Settings.autoCapture = if (mBinding.swAutoCapture.isChecked()) "Enabled" else "Disabled"
             Settings.requiresEmail = if (mBinding.swEmail.isChecked()) "True" else "False"
@@ -86,6 +91,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             mBinding.swCVC.setChecked(false)
             mBinding.selectViewEnvironment.setSelectOption("DEMO")
             mBinding.selectViewTrigger.setSelectOption("Merchant")
+            mBinding.etReturnUrl.setText("")
             showAlert("", "settings cleared") {
                 finish()
             }
