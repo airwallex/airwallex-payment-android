@@ -1,6 +1,7 @@
 package com.airwallex.paymentacceptance.ui
 
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Settings
@@ -56,6 +57,10 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             finish()
         }
         mBinding.etCustomerId.setActionClickListener {
+            if(mBinding.etAPIKey.getText().isEmpty() || mBinding.etClientId.getText().isEmpty()) {
+                showApiClientInputDialog()
+                return@setActionClickListener
+            }
             mViewModel.generateCustomerId()
         }
         mBinding.btnSave.setOnClickListener {
@@ -79,9 +84,9 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
 
         mBinding.titleView.setOnButtonClickListener {
             mViewModel.clearSetting()
-            mBinding.etPrice.setText("")
-            mBinding.etCurrency.setText("")
-            mBinding.etCountryCode.setText("")
+            mBinding.etPrice.setText("1")
+            mBinding.etCurrency.setText("HKD")
+            mBinding.etCountryCode.setText("HK")
             mBinding.etCustomerId.setText("")
             mBinding.etAPIKey.setText("")
             mBinding.etClientId.setText("")
@@ -113,5 +118,15 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
 
     override fun getViewBinding(): ActivitySettingBinding {
         return ActivitySettingBinding.inflate(layoutInflater)
+    }
+
+    private fun showApiClientInputDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Enter Required Information")
+            .setMessage("Please enter API Key and Client ID")
+            .setPositiveButton("OK") { _, _ ->
+            }
+            .setCancelable(false)
+            .show()
     }
 }

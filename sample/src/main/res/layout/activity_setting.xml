@@ -110,7 +110,7 @@
                 android:id="@+id/etPrice"
                 style="@style/AppEditText"
                 android:layout_marginTop="25dp"
-                app:etHint="Price" />
+                app:etHint="Amount" />
 
             <com.airwallex.paymentacceptance.ui.widget.ActionEditText
                 android:id="@+id/etCurrency"
