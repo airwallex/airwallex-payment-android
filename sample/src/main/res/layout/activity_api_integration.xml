@@ -42,7 +42,7 @@
         app:layout_constraintTop_toBottomOf="@+id/flArrow"
         app:titleText="Integrate with low-level API" />
 
-    <com.airwallex.paymentacceptance.ui.widget.DropdownSelectView
+    <com.airwallex.paymentacceptance.ui.widget.DropdownPickerView
         android:id="@+id/dropdownView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -45,7 +45,7 @@
             android:orientation="vertical"
             android:paddingBottom="20dp">
 
-            <com.airwallex.paymentacceptance.ui.widget.DropdownSelectView
+            <com.airwallex.paymentacceptance.ui.widget.DropdownPickerView
                 android:id="@+id/selectViewEnvironment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                 android:textColor="#A0A0A0"
                 android:textSize="14sp" />
 
-            <com.airwallex.paymentacceptance.ui.widget.DropdownSelectView
+            <com.airwallex.paymentacceptance.ui.widget.DropdownPickerView
                 android:id="@+id/selectViewTrigger"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

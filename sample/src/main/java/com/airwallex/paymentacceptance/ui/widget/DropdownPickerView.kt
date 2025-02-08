@@ -9,13 +9,13 @@ import android.widget.TextView
 import androidx.core.content.withStyledAttributes
 import com.airwallex.paymentacceptance.R
 
-class DropdownSelectView @JvmOverloads constructor(
+class DropdownPickerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    private var selectedTextView: SelectedView
+    private var selectedTextView: DropdownLabelView
     private var dropdownPopup: PopupWindow? = null
     private var options = emptyList<String>()
     private var callback: ((String) -> Unit)? = null
@@ -25,7 +25,7 @@ class DropdownSelectView @JvmOverloads constructor(
         orientation = VERTICAL
         setBackgroundResource(android.R.color.transparent)
         setWillNotDraw(false)
-        selectedTextView = SelectedView(context).apply {
+        selectedTextView = DropdownLabelView(context).apply {
             setOnClickListener { showDropdown() }
         }
         addView(selectedTextView)
@@ -79,7 +79,7 @@ class DropdownSelectView @JvmOverloads constructor(
                 }
                 contentView = container
                 width = selectedTextView.width
-                showAsDropDown(this@DropdownSelectView)
+                showAsDropDown(this@DropdownPickerView)
             }
         }
     }

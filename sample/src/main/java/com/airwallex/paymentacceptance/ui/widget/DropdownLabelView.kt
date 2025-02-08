@@ -8,7 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.airwallex.paymentacceptance.R
 
-class SelectedView @JvmOverloads constructor(
+class DropdownLabelView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
