@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -20,7 +21,7 @@ class ActionEditText @JvmOverloads constructor(
 
     private var editText: EditText
     private var actionText: TextView
-    private var deleteIcon: ImageView
+    private var deleteIcon: View
 
     init {
         LayoutInflater.from(context).inflate(R.layout.view_action_edit_text, this, true)

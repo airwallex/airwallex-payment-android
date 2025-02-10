@@ -24,6 +24,7 @@
         <item name="android:layout_height">52dp</item>
         <item name="android:background">@drawable/btn_shape</item>
         <item name="android:textColor">@color/color_primary</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="AppEditText" parent="Widget.AppCompat.EditText">

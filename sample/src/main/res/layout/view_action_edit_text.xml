@@ -12,36 +12,43 @@
             style="@style/AppEditText"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:background="@null"
             android:hint="Customer ID"
             android:paddingEnd="38dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@null" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <FrameLayout
             android:id="@+id/deleteIcon"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintTop_toTopOf="@+id/editText"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/editText"
             app:layout_constraintEnd_toEndOf="@+id/editText"
-            android:visibility="gone"
-            android:src="@mipmap/ic_delete" />
+            app:layout_constraintTop_toTopOf="@+id/editText">
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="16dp"
+                android:src="@mipmap/ic_delete" />
+        </FrameLayout>
+
 
         <TextView
             android:id="@+id/actionText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#612FFF"
             android:layout_marginEnd="16dp"
+            android:textColor="#612FFF"
             android:textSize="17sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="@+id/editText"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/editText"
             app:layout_constraintEnd_toEndOf="@+id/editText"
-            android:visibility="gone" />
+            app:layout_constraintTop_toTopOf="@+id/editText" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
