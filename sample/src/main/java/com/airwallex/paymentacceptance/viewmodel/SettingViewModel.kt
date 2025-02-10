@@ -30,15 +30,6 @@ class SettingViewModel : BaseViewModel() {
     private val _customerId = MutableLiveData<Pair<Boolean, String?>>()
     val customerId: LiveData<Pair<Boolean, String?>> = _customerId
 
-    private val api: Api
-        get() {
-            if (TextUtils.isEmpty(AirwallexPlugins.environment.baseUrl())) {
-                throw IllegalArgumentException("Base url should not be null or empty")
-            }
-            return ApiFactory(AirwallexPlugins.environment.baseUrl()).buildRetrofit()
-                .create(Api::class.java)
-        }
-
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (throwable is HttpException) {
             _customerId.value = Pair(
@@ -64,33 +55,8 @@ class SettingViewModel : BaseViewModel() {
 
     fun generateCustomerId() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            // Authenticate and get token
-            val response = api.authentication(
-                apiKey = Settings.apiKey,
-                clientId = Settings.clientId
-            )
-            Settings.token = JSONObject(response.string())["token"].toString()
-
-            // Create customer and retrieve customer ID
-            val customerResponse = api.createCustomer(
-                mutableMapOf(
-                    "request_id" to UUID.randomUUID().toString(),
-                    "merchant_customer_id" to UUID.randomUUID().toString(),
-                    "first_name" to "John",
-                    "last_name" to "Doe",
-                    "email" to "john.doe@airwallex.com",
-                    "phone_number" to "13800000000",
-                    "additional_info" to mapOf(
-                        "registered_via_social_media" to false,
-                        "registration_date" to "2019-09-18",
-                        "first_successful_order_date" to "2019-09-18"
-                    ),
-                    "metadata" to mapOf(
-                        "id" to 1
-                    )
-                )
-            )
-            val customerId = JSONObject(customerResponse.string())["id"].toString()
+            Settings.cachedCustomerId = ""
+            val customerId = getCustomerIdFromServer()
             Settings.cachedCustomerId = customerId
             withContext(Dispatchers.Main) {
                 _customerId.value = Pair(true, customerId)

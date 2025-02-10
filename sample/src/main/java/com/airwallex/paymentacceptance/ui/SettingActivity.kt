@@ -57,10 +57,10 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             finish()
         }
         mBinding.etCustomerId.setActionClickListener {
-            if(mBinding.etAPIKey.getText().isEmpty() || mBinding.etClientId.getText().isEmpty()) {
-                showApiClientInputDialog()
-                return@setActionClickListener
-            }
+//            if(mBinding.etAPIKey.getText().isEmpty() || mBinding.etClientId.getText().isEmpty()) {
+//                showApiClientInputDialog()
+//                return@setActionClickListener
+//            }
             mViewModel.generateCustomerId()
         }
         mBinding.btnSave.setOnClickListener {
