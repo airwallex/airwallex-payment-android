@@ -54,7 +54,7 @@
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="180dp"
+        android:layout_marginTop="20dp"
         android:background="#F6F7F8"
         app:layout_constraintTop_toBottomOf="@+id/dropdownView" />
 
@@ -70,52 +70,52 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:paddingBottom="20dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnPayWithCardDetail"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
                 android:text="Pay with card" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnPayWithCardDetailSaveCard"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
                 android:text="Pay with card and save card" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnPayWithCardDetail3DS"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
                 android:text="Pay with card and trigger 3DS" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnGooglePay"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
                 android:text="Pay with Google Pay" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnGooglePay3DS"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
                 android:text="Pay with Google Pay trigger 3ds" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnRedirect"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
                 android:text="Pay by redirection" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnPaymentMethodsList"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
                 android:text="Get payment methods" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnPaymentConsentsList"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"

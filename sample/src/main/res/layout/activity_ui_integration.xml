@@ -52,7 +52,7 @@
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="180dp"
+        android:layout_marginTop="20dp"
         android:background="#F6F7F8"
         app:layout_constraintTop_toBottomOf="@+id/dropdownView" />
 
@@ -69,34 +69,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:paddingBottom="20dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnPaymentList"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
+                android:backgroundTint="@null"
+                android:stateListAnimator="@null"
                 android:text="Launch payment list" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_custom_payment_list"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
                 android:text="Launch custom payment list" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_card_payment"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
                 android:text="Launch card payment" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_card_dialog_payment"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
                 android:text="Launch card payment (dialog)" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnShipping"
                 style="@style/AppButton"
                 android:layout_marginTop="28dp"
