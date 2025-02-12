@@ -209,8 +209,10 @@ object Settings {
         }
         get() {
             val defaultPrice = SampleApplication.instance.getString(R.string.price_value)
-            return sharedPreferences.getString(context.getString(R.string.price), defaultPrice)
-                ?: defaultPrice
+            return sharedPreferences.getString(
+                context.getString(R.string.price),
+                defaultPrice
+            )?.takeIf { it.isNotBlank() } ?: defaultPrice
         }
 
     var currency: String
@@ -223,7 +225,7 @@ object Settings {
             return sharedPreferences.getString(
                 context.getString(R.string.currency),
                 defaultCurrency
-            ) ?: defaultCurrency
+            )?.takeIf { it.isNotBlank() } ?: defaultCurrency
         }
 
     var countryCode: String
@@ -236,7 +238,7 @@ object Settings {
             return sharedPreferences.getString(
                 context.getString(R.string.country_code),
                 defaultCountryCode
-            ) ?: defaultCountryCode
+            )?.takeIf { it.isNotBlank() } ?: defaultCountryCode
         }
 
     private fun getMetadata(key: String): String? {

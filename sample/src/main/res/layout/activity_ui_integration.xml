@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="20dp">
 
     <FrameLayout
         android:id="@+id/flArrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:padding="20dp">
 
         <ImageView
             android:layout_width="20dp"
@@ -18,92 +18,47 @@
             android:src="@drawable/airwallex_ic_back" />
     </FrameLayout>
 
-
-    <ImageView
-        android:id="@+id/imSetting"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="12dp"
-        android:contentDescription="setting"
-        android:src="@drawable/ic_menu"
-        app:layout_constraintBottom_toBottomOf="@+id/titleView"
-        app:layout_constraintEnd_toEndOf="@+id/titleView"
-        app:layout_constraintTop_toTopOf="@+id/titleView" />
-
-    <com.airwallex.paymentacceptance.ui.widget.TitleView
-        android:id="@+id/titleView"
+    <FrameLayout
+        android:id="@+id/titleContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        app:buttonHeight="40dp"
-        app:buttonWidth="40dp"
-        app:layout_constraintTop_toBottomOf="@+id/flArrow"
-        app:titleText="Integrate with Airwallex UI" />
+        android:layout_marginHorizontal="20dp">
+
+        <com.airwallex.paymentacceptance.ui.widget.TitleView
+            android:id="@+id/titleView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:buttonHeight="40dp"
+            app:buttonWidth="40dp"
+            app:titleText="Integrate with Airwallex UI" />
+
+        <ImageView
+            android:id="@+id/imSetting"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="12dp"
+            android:layout_gravity="end|center_vertical"
+            android:contentDescription="setting"
+            android:src="@drawable/ic_menu" />
+    </FrameLayout>
 
     <com.airwallex.paymentacceptance.ui.widget.DropdownPickerView
         android:id="@+id/dropdownView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/titleView" />
+        android:layout_marginTop="20dp" />
 
     <View
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="20dp"
-        android:background="#F6F7F8"
-        app:layout_constraintTop_toBottomOf="@+id/dropdownView" />
+        android:layout_marginTop="180dp"
+        android:background="#F6F7F8" />
 
-    <!--ScrollView added here to encapsulate buttons-->
-    <ScrollView
-        android:layout_width="0dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvContent"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/line">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:paddingBottom="20dp">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnPaymentList"
-                style="@style/AppButton"
-                android:layout_marginTop="28dp"
-                android:backgroundTint="@null"
-                android:stateListAnimator="@null"
-                android:text="Launch payment list" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_custom_payment_list"
-                style="@style/AppButton"
-                android:layout_marginTop="28dp"
-                android:text="Launch custom payment list" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_card_payment"
-                style="@style/AppButton"
-                android:layout_marginTop="28dp"
-                android:text="Launch card payment" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_card_dialog_payment"
-                style="@style/AppButton"
-                android:layout_marginTop="28dp"
-                android:text="Launch card payment (dialog)" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnShipping"
-                style="@style/AppButton"
-                android:layout_marginTop="28dp"
-                android:text="Launch shipping address(dialog)" />
-        </LinearLayout>
-    </ScrollView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_weight="1" />
+</LinearLayout>

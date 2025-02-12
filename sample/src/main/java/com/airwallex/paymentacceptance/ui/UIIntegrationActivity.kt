@@ -2,11 +2,14 @@ package com.airwallex.paymentacceptance.ui
 
 import android.content.Intent
 import android.util.Log
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.airwallex.android.core.Airwallex.Companion.AIRWALLEX_CHECKOUT_SCHEMA
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ActivityUiIntegrationBinding
 import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity
+import com.airwallex.paymentacceptance.ui.bean.ButtonItem
+import com.airwallex.paymentacceptance.ui.widget.ButtonAdapter
 import com.airwallex.paymentacceptance.viewmodel.UIIntegrationViewModel
 
 /**
@@ -14,6 +17,7 @@ import com.airwallex.paymentacceptance.viewmodel.UIIntegrationViewModel
  */
 class UIIntegrationActivity :
     BasePaymentActivity<ActivityUiIntegrationBinding, UIIntegrationViewModel>() {
+    private lateinit var adapter: ButtonAdapter
 
     override fun getViewBinding(): ActivityUiIntegrationBinding {
         return ActivityUiIntegrationBinding.inflate(layoutInflater)
@@ -22,6 +26,11 @@ class UIIntegrationActivity :
     override fun initView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+        val recyclerView = mBinding.rvContent
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        adapter = ButtonAdapter(getAllButtons()) { id -> handleBtnClick(id) }
+        recyclerView.adapter = adapter
         mBinding.dropdownView.setOptions(
             listOf(
                 "One-off payment",
@@ -36,36 +45,13 @@ class UIIntegrationActivity :
         mBinding.flArrow.setOnClickListener {
             finish()
         }
-        mBinding.dropdownView.setOnOptionSelectedCallback {mode->
+        mBinding.dropdownView.setOnOptionSelectedCallback { mode ->
             val selectedOption = when (mode) {
                 "Recurring" -> 1
-                "Recurring and payment"-> 2
+                "Recurring and payment" -> 2
                 else -> 0
             }
             mViewModel.updateCheckoutModel(selectedOption)
-        }
-        mBinding.btnPaymentList.setOnClickListener {
-            setLoadingProgress(true)
-            //launch the payment list page
-            mViewModel.launchPaymentList(this)
-        }
-        mBinding.btnCustomPaymentList.setOnClickListener {
-            setLoadingProgress(true)
-            mViewModel.launchCustomPaymentList(this)
-        }
-        mBinding.btnCardPayment.setOnClickListener {
-            setLoadingProgress(true)
-            //launch the card payment page
-            mViewModel.launchCardPage(this)
-        }
-        mBinding.btnCardDialogPayment.setOnClickListener {
-            setLoadingProgress(true)
-            //launch the card payment dialog
-            mViewModel.launchCardDialog(this)
-        }
-        mBinding.btnShipping.setOnClickListener {
-            //launch the shipping page
-            mViewModel.launchShipping(this)
         }
         mBinding.imSetting.setOnClickListener {
             openSettingPage()
@@ -93,6 +79,45 @@ class UIIntegrationActivity :
             )
         }
     }
+
+    private fun getAllButtons(): List<ButtonItem> {
+        return listOf(
+            ButtonItem(1, "Launch payment list"),
+            ButtonItem(2, "Launch custom payment list"),
+            ButtonItem(3, "Launch card payment"),
+            ButtonItem(4, "Launch card payment (dialog)"),
+            ButtonItem(5, "Launch shipping address (dialog)")
+        )
+    }
+
+    private fun handleBtnClick(id: Int) {
+        when (id) {
+            1 -> {
+                setLoadingProgress(true)
+                mViewModel.launchPaymentList(this)
+            }
+
+            2 -> {
+                setLoadingProgress(true)
+                mViewModel.launchCustomPaymentList(this)
+            }
+
+            3 -> {
+                setLoadingProgress(true)
+                mViewModel.launchCardPage(this)
+            }
+
+            4 -> {
+                setLoadingProgress(true)
+                mViewModel.launchCardDialog(this)
+            }
+
+            5 -> {
+                mViewModel.launchShipping(this)
+            }
+        }
+    }
+
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
         setLoadingProgress(false)

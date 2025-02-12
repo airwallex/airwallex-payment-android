@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.Environment
 import com.airwallex.android.core.model.AvailablePaymentMethodType
@@ -19,6 +20,8 @@ import com.airwallex.paymentacceptance.card
 import com.airwallex.paymentacceptance.card3DS
 import com.airwallex.paymentacceptance.databinding.ActivityApiIntegrationBinding
 import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity
+import com.airwallex.paymentacceptance.ui.bean.ButtonItem
+import com.airwallex.paymentacceptance.ui.widget.ButtonAdapter
 import com.airwallex.paymentacceptance.viewmodel.APIIntegrationViewModel
 import com.bumptech.glide.Glide
 import java.util.Locale
@@ -29,6 +32,7 @@ import java.util.Locale
  */
 class APIIntegrationActivity :
     BasePaymentActivity<ActivityApiIntegrationBinding, APIIntegrationViewModel>() {
+    private lateinit var adapter: ButtonAdapter
 
     override fun getViewBinding(): ActivityApiIntegrationBinding {
         return ActivityApiIntegrationBinding.inflate(layoutInflater)
@@ -37,10 +41,11 @@ class APIIntegrationActivity :
     override fun initView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-        setBtnEnabled(
-            mBinding.btnPayWithCardDetail3DS,
-            Settings.environment != Environment.PRODUCTION
-        )
+        val recyclerView = mBinding.rvContent
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = ButtonAdapter(emptyList()) { id -> handleBtnClick(id) }
+        recyclerView.adapter = adapter
+        refreshButtons(0)
         mBinding.dropdownView.setOptions(
             listOf(
                 "One-off payment",
@@ -59,55 +64,10 @@ class APIIntegrationActivity :
                 else -> 0
             }
             mViewModel.updateCheckoutModel(selectedOption)
-            setBtnEnabled(mBinding.btnRedirect, selectedOption == 0)
-            setBtnEnabled(mBinding.btnPayWithCardDetailSaveCard, selectedOption != 1)
+            refreshButtons(selectedOption)
         }
         mBinding.flArrow.setOnClickListener {
             finish()
-        }
-        mBinding.btnPayWithCardDetail.setOnClickListener {
-            DemoCardDialog(this)
-                .setCardInfo(card)
-                .setPayCallBack { card ->
-                    setLoadingProgress(true)
-                    mViewModel.startPayWithCardDetail(card, saveCard = false)
-                }.show()
-        }
-        mBinding.btnPayWithCardDetailSaveCard.setOnClickListener {
-            DemoCardDialog(this)
-                .setCardInfo(card)
-                .setPayCallBack { card ->
-                    setLoadingProgress(true)
-                    mViewModel.startPayWithCardDetail(card, saveCard = true)
-                }.show()
-        }
-        mBinding.btnPayWithCardDetail3DS.setOnClickListener {
-            DemoCardDialog(this)
-                .setCardInfo(card3DS, false)
-                .setPayCallBack { card ->
-                    setLoadingProgress(true)
-                    mViewModel.startPayWithCardDetail(card, force3DS = true)
-                }.show()
-        }
-        mBinding.btnGooglePay.setOnClickListener {
-            setLoadingProgress(true)
-            mViewModel.startGooglePay()
-        }
-        mBinding.btnGooglePay3DS.setOnClickListener {
-            setLoadingProgress(true)
-            mViewModel.startGooglePay(true)
-        }
-        mBinding.btnRedirect.setOnClickListener{
-            setLoadingProgress(true)
-            mViewModel.startPayByRedirection()
-        }
-        mBinding.btnPaymentMethodsList.setOnClickListener {
-            setLoadingProgress(true)
-            mViewModel.getPaymentMethodsList()
-        }
-        mBinding.btnPaymentConsentsList.setOnClickListener {
-            setLoadingProgress(true)
-            mViewModel.getPaymentConsentList()
         }
         mBinding.imSetting.setOnClickListener {
             openSettingPage()
@@ -170,7 +130,10 @@ class APIIntegrationActivity :
                             setLoadingProgress(true)
                             customerDialog?.dismiss()
                         }
-                        setBtnEnabled(holder.btnPay, mBinding.dropdownView.currentOption == "One-off payment")
+                        setBtnEnabled(
+                            holder.btnPay,
+                            mBinding.dropdownView.currentOption == "One-off payment"
+                        )
                     }
                 }
             })
@@ -234,6 +197,85 @@ class APIIntegrationActivity :
     private fun openSettingPage() {
         startActivity(Intent(this, SettingActivity::class.java))
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+    }
+
+    private fun handleBtnClick(id: Int) {
+        when (id) {
+            1 -> {
+                DemoCardDialog(this)
+                    .setCardInfo(card)
+                    .setPayCallBack { card ->
+                        setLoadingProgress(true)
+                        mViewModel.startPayWithCardDetail(card, saveCard = false)
+                    }.show()
+            }
+
+            2 -> {
+                DemoCardDialog(this)
+                    .setCardInfo(card)
+                    .setPayCallBack { card ->
+                        setLoadingProgress(true)
+                        mViewModel.startPayWithCardDetail(card, saveCard = true)
+                    }.show()
+            }
+
+            3 -> {
+                DemoCardDialog(this)
+                    .setCardInfo(card3DS, false)
+                    .setPayCallBack { card ->
+                        setLoadingProgress(true)
+                        mViewModel.startPayWithCardDetail(card, force3DS = true)
+                    }.show()
+            }
+
+            4 -> {
+                setLoadingProgress(true)
+                mViewModel.startGooglePay()
+            }
+
+            5 -> {
+                setLoadingProgress(true)
+                mViewModel.startGooglePay(true)
+            }
+
+            6 -> {
+                setLoadingProgress(true)
+                mViewModel.startPayByRedirection()
+            }
+
+            7 -> {
+                setLoadingProgress(true)
+                mViewModel.getPaymentMethodsList()
+            }
+
+            8 -> {
+                setLoadingProgress(true)
+                mViewModel.getPaymentConsentList()
+            }
+        }
+    }
+
+    private fun refreshButtons(selectedOption: Int) {
+        val fullButtonList = listOf(
+            ButtonItem(1, "Pay with card"),
+            ButtonItem(2, "Pay with card and save"),
+            ButtonItem(3, "Pay with 3DS"), // Available only in non-production environments
+            ButtonItem(4, "Pay with Google Pay"),
+            ButtonItem(5, "Google Pay 3DS"),
+            ButtonItem(6, "Redirect Payment"), // Only visible for "One-off payment"
+            ButtonItem(7, "Get payment methods"),
+            ButtonItem(8, "Get saved cards")
+        )
+
+        val filteredButtons = fullButtonList.filter { item ->
+            when (item.id) {
+                3 -> Settings.environment != Environment.PRODUCTION// Hide "3DS" in PRODUCTION
+                6 -> selectedOption == 0 // Show "Redirect Payment" only for "One-off payment"
+                2 -> selectedOption != 1 // Hide "Pay with card and save" in "Recurring" mode
+                else -> true
+            }
+        }
+        adapter.updateButtons(filteredButtons)
     }
 
     companion object {
