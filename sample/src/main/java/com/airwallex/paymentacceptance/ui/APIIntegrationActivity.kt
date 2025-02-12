@@ -2,26 +2,20 @@ package com.airwallex.paymentacceptance.ui
 
 import CustomerDialog
 import DemoCardDialog
-import android.content.Intent
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.Environment
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.core.CardBrand
-import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.card
 import com.airwallex.paymentacceptance.card3DS
-import com.airwallex.paymentacceptance.databinding.ActivityApiIntegrationBinding
-import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity
+import com.airwallex.paymentacceptance.ui.base.BasePaymentTypeActivity
 import com.airwallex.paymentacceptance.ui.bean.ButtonItem
-import com.airwallex.paymentacceptance.ui.widget.ButtonAdapter
 import com.airwallex.paymentacceptance.viewmodel.APIIntegrationViewModel
 import com.bumptech.glide.Glide
 import java.util.Locale
@@ -30,54 +24,108 @@ import java.util.Locale
  * this Activity demonstrates how to call the low-level APIs provided by the Airwallex SDK.
  * you can flexibly organize your own UI based on these APIs.
  */
-class APIIntegrationActivity :
-    BasePaymentActivity<ActivityApiIntegrationBinding, APIIntegrationViewModel>() {
-    private lateinit var adapter: ButtonAdapter
-
-    override fun getViewBinding(): ActivityApiIntegrationBinding {
-        return ActivityApiIntegrationBinding.inflate(layoutInflater)
-    }
+class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>() {
 
     override fun initView() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        val recyclerView = mBinding.rvContent
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = ButtonAdapter(emptyList()) { id -> handleBtnClick(id) }
-        recyclerView.adapter = adapter
-        refreshButtons(0)
-        mBinding.dropdownView.setOptions(
-            listOf(
-                "One-off payment",
-                "Recurring",
-                "Recurring and payment"
-            )
-        )
-        mBinding.dropdownView.setTitleText("Payment type")
+        super.initView()
+        mBinding.titleView.setTitle("Integrate with low-level API")
     }
 
-    override fun initListener() {
-        mBinding.dropdownView.setOnOptionSelectedCallback { mode ->
-            val selectedOption = when (mode) {
-                "Recurring" -> 1
-                "Recurring and payment" -> 2
-                else -> 0
+    override fun getViewModelClass(): Class<APIIntegrationViewModel> {
+        return APIIntegrationViewModel::class.java
+    }
+
+    override fun getButtonList(): List<ButtonItem> {
+        return emptyList()
+    }
+
+    override fun refreshButtons(selectedOption: Int) {
+        val fullButtonList = listOf(
+            ButtonItem(PAY_WITH_CARD, "Pay with card"),
+            ButtonItem(PAY_WITH_CARD_AND_SAVE, "Pay with card and save card"),
+            ButtonItem(PAY_WITH_3DS, "Pay with card and trigger 3DS"), // Available only in non-production environments
+            ButtonItem(PAY_WITH_GOOGLE_PAY, "Pay with Google Pay"),
+            ButtonItem(GOOGLE_PAY_3DS, "Google Pay 3DS"),
+            ButtonItem(REDIRECT_PAYMENT, "Redirect Payment"), // Only visible for "One-off payment"
+            ButtonItem(GET_PAYMENT_METHODS, "Get payment methods"),
+            ButtonItem(GET_SAVED_CARDS, "Get saved cards")
+        )
+
+        val filteredButtons = fullButtonList.filter { item ->
+            when (item.id) {
+                PAY_WITH_3DS -> Settings.environment != Environment.PRODUCTION// Hide "3DS" in PRODUCTION
+                REDIRECT_PAYMENT -> selectedOption == 0 // Show "Redirect Payment" only for "One-off payment"
+                PAY_WITH_CARD_AND_SAVE -> selectedOption != 1 // Hide "Pay with card and save" in "Recurring" mode
+                else -> true
             }
-            mViewModel.updateCheckoutModel(selectedOption)
-            refreshButtons(selectedOption)
         }
-        mBinding.flArrow.setOnClickListener {
-            finish()
-        }
-        mBinding.imSetting.setOnClickListener {
-            openSettingPage()
-        }
-        mBinding.titleView.setOnButtonClickListener {
-            openSettingPage()
+        adapter.updateButtons(filteredButtons)
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                adjustLineMargin()
+            }
+        })
+        mBinding.rvContent.post { adjustLineMargin() }
+    }
+
+    override fun handleBtnClick(id: Int) {
+        when (id) {
+            PAY_WITH_CARD -> {
+                DemoCardDialog(this)
+                    .setCardInfo(card)
+                    .setPayCallBack { card ->
+                        setLoadingProgress(true)
+                        mViewModel.startPayWithCardDetail(card, saveCard = false)
+                    }.show()
+            }
+
+            PAY_WITH_CARD_AND_SAVE -> {
+                DemoCardDialog(this)
+                    .setCardInfo(card)
+                    .setPayCallBack { card ->
+                        setLoadingProgress(true)
+                        mViewModel.startPayWithCardDetail(card, saveCard = true)
+                    }.show()
+            }
+
+            PAY_WITH_3DS -> {
+                DemoCardDialog(this)
+                    .setCardInfo(card3DS, false)
+                    .setPayCallBack { card ->
+                        setLoadingProgress(true)
+                        mViewModel.startPayWithCardDetail(card, force3DS = true)
+                    }.show()
+            }
+
+            PAY_WITH_GOOGLE_PAY -> {
+                setLoadingProgress(true)
+                mViewModel.startGooglePay()
+            }
+
+            GOOGLE_PAY_3DS -> {
+                setLoadingProgress(true)
+                mViewModel.startGooglePay(true)
+            }
+
+            REDIRECT_PAYMENT -> {
+                setLoadingProgress(true)
+                mViewModel.startPayByRedirection()
+            }
+
+            GET_PAYMENT_METHODS -> {
+                setLoadingProgress(true)
+                mViewModel.getPaymentMethodsList()
+            }
+
+            GET_SAVED_CARDS -> {
+                setLoadingProgress(true)
+                mViewModel.getPaymentConsentList()
+            }
         }
     }
 
     override fun addObserver() {
+        super.addObserver()
         mViewModel.airwallexPaymentStatus.observe(this) { status ->
             handleStatusUpdate(status)
         }
@@ -89,13 +137,6 @@ class APIIntegrationActivity :
         mViewModel.paymentConsentList.observe(this) { list ->
             setLoadingProgress(false)
             showPaymentConsentList(list)
-        }
-        mViewModel.createPaymentIntentError.observe(this) { error ->
-            setLoadingProgress(false)
-            showAlert(
-                getString(R.string.create_payment_intent_failed),
-                error ?: getString(R.string.payment_failed_message)
-            )
         }
     }
 
@@ -184,101 +225,15 @@ class APIIntegrationActivity :
         }
     }
 
-    private fun setBtnEnabled(btn: Button, isEnabled: Boolean) {
-        btn.isEnabled = isEnabled
-        val textColor = if (isEnabled) {
-            ContextCompat.getColor(this, R.color.color_primary)
-        } else {
-            ContextCompat.getColor(this, R.color.airwallex_color_grey_30)
-        }
-        btn.setTextColor(textColor)
-    }
-
-    private fun openSettingPage() {
-        startActivity(Intent(this, SettingActivity::class.java))
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-    }
-
-    private fun handleBtnClick(id: Int) {
-        when (id) {
-            1 -> {
-                DemoCardDialog(this)
-                    .setCardInfo(card)
-                    .setPayCallBack { card ->
-                        setLoadingProgress(true)
-                        mViewModel.startPayWithCardDetail(card, saveCard = false)
-                    }.show()
-            }
-
-            2 -> {
-                DemoCardDialog(this)
-                    .setCardInfo(card)
-                    .setPayCallBack { card ->
-                        setLoadingProgress(true)
-                        mViewModel.startPayWithCardDetail(card, saveCard = true)
-                    }.show()
-            }
-
-            3 -> {
-                DemoCardDialog(this)
-                    .setCardInfo(card3DS, false)
-                    .setPayCallBack { card ->
-                        setLoadingProgress(true)
-                        mViewModel.startPayWithCardDetail(card, force3DS = true)
-                    }.show()
-            }
-
-            4 -> {
-                setLoadingProgress(true)
-                mViewModel.startGooglePay()
-            }
-
-            5 -> {
-                setLoadingProgress(true)
-                mViewModel.startGooglePay(true)
-            }
-
-            6 -> {
-                setLoadingProgress(true)
-                mViewModel.startPayByRedirection()
-            }
-
-            7 -> {
-                setLoadingProgress(true)
-                mViewModel.getPaymentMethodsList()
-            }
-
-            8 -> {
-                setLoadingProgress(true)
-                mViewModel.getPaymentConsentList()
-            }
-        }
-    }
-
-    private fun refreshButtons(selectedOption: Int) {
-        val fullButtonList = listOf(
-            ButtonItem(1, "Pay with card"),
-            ButtonItem(2, "Pay with card and save"),
-            ButtonItem(3, "Pay with 3DS"), // Available only in non-production environments
-            ButtonItem(4, "Pay with Google Pay"),
-            ButtonItem(5, "Google Pay 3DS"),
-            ButtonItem(6, "Redirect Payment"), // Only visible for "One-off payment"
-            ButtonItem(7, "Get payment methods"),
-            ButtonItem(8, "Get saved cards")
-        )
-
-        val filteredButtons = fullButtonList.filter { item ->
-            when (item.id) {
-                3 -> Settings.environment != Environment.PRODUCTION// Hide "3DS" in PRODUCTION
-                6 -> selectedOption == 0 // Show "Redirect Payment" only for "One-off payment"
-                2 -> selectedOption != 1 // Hide "Pay with card and save" in "Recurring" mode
-                else -> true
-            }
-        }
-        adapter.updateButtons(filteredButtons)
-    }
-
     companion object {
         private const val TAG = "APIIntegrationActivity"
+        const val PAY_WITH_CARD = 1
+        const val PAY_WITH_CARD_AND_SAVE = 2
+        const val PAY_WITH_3DS = 3
+        const val PAY_WITH_GOOGLE_PAY = 4
+        const val GOOGLE_PAY_3DS = 5
+        const val REDIRECT_PAYMENT = 6
+        const val GET_PAYMENT_METHODS = 7
+        const val GET_SAVED_CARDS = 8
     }
 }

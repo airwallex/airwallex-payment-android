@@ -45,16 +45,6 @@ class APIIntegrationViewModel : BaseViewModel() {
 
     override fun init(activity: ComponentActivity) {
         airwallex = Airwallex(activity)
-        updateCheckoutModel(0)
-    }
-
-    fun updateCheckoutModel(mode: Int) {
-        checkoutMode = when (mode) {
-            1 -> AirwallexCheckoutMode.RECURRING
-            2 -> AirwallexCheckoutMode.RECURRING_WITH_INTENT
-            else -> AirwallexCheckoutMode.PAYMENT
-        }
-        Settings.checkoutMode = checkoutMode
     }
 
     /**
@@ -309,7 +299,6 @@ class APIIntegrationViewModel : BaseViewModel() {
         )
             .setRequireEmail(Settings.requiresEmail.toBoolean())
             .setShipping(shipping)
-            .setRequireCvc(Settings.requiresCVC.toBoolean())
             //only nextTriggerBy is merchant, merchantTriggerReason is required
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
             .setReturnUrl(Settings.returnUrl)
@@ -335,7 +324,6 @@ class APIIntegrationViewModel : BaseViewModel() {
             countryCode = Settings.countryCode
         )
             .setRequireEmail(Settings.requiresEmail.toBoolean())
-            .setRequireCvc(Settings.requiresCVC.toBoolean())
             //only nextTriggerBy is merchant, merchantTriggerReason is required
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
             .setReturnUrl(Settings.returnUrl)

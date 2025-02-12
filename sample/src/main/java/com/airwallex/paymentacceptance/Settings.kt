@@ -111,23 +111,6 @@ object Settings {
                 ?: defaultNextTriggeredBy
         }
 
-
-    var requiresCVC: String
-        set(value) {
-            sharedPreferences.edit()
-                .putString(context.getString(R.string.requires_cvc), value)
-                .apply()
-        }
-        get() {
-            val defaultRequireCVC =
-                SampleApplication.instance.resources.getStringArray(R.array.array_requires_cvc)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.requires_cvc),
-                defaultRequireCVC
-            )
-                ?: defaultRequireCVC
-        }
-
     var requiresEmail: String
         set(value) {
             sharedPreferences.edit()

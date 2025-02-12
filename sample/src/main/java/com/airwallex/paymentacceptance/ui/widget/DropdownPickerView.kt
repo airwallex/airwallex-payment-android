@@ -66,13 +66,13 @@ class DropdownPickerView @JvmOverloads constructor(
                 val container = LinearLayout(context)
                 container.orientation = LinearLayout.VERTICAL
                 options.forEach { option ->
-                    currentOption = option
                     val itemView = inflater.inflate(R.layout.dropdown_item, container, false)
                     val textView = itemView.findViewById<TextView>(R.id.itemText)
                     textView.text = option
                     textView.setOnClickListener {
                         selectedTextView.setSelectedText(option)
                         dismiss()
+                        currentOption = option
                         callback?.invoke(option)
                     }
                     container.addView(itemView)

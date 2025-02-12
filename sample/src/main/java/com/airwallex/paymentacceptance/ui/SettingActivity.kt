@@ -1,7 +1,5 @@
 package com.airwallex.paymentacceptance.ui
 
-import android.view.View
-import androidx.appcompat.app.AlertDialog
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Settings
@@ -17,7 +15,6 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         var triggerOptions = resources.getStringArray(R.array.array_next_trigger_by).toList()
         if (Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
             triggerOptions = arrayListOf("Customer")
-            mBinding.swCVC.visibility = View.GONE
         }
         mBinding.selectViewEnvironment.setOptions(environmentOptions)
         mBinding.selectViewTrigger.setOptions(triggerOptions)
@@ -40,30 +37,21 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
 
         mBinding.swAutoCapture.setChecked(Settings.autoCapture == "Enabled")
         mBinding.swEmail.setChecked(Settings.requiresEmail == "True")
-        mBinding.swCVC.setChecked(Settings.requiresCVC == "True")
 
         mBinding.etReturnUrl.setText(Settings.returnUrl)
     }
 
     override fun initListener() {
-        mBinding.selectViewEnvironment.setOnOptionSelectedCallback {
-            Settings.sdkEnv = it
-        }
-        mBinding.selectViewTrigger.setOnOptionSelectedCallback {
-            Settings.nextTriggerBy = it
-        }
-
         mBinding.flBack.setOnClickListener {
             finish()
         }
         mBinding.etCustomerId.setActionClickListener {
-//            if(mBinding.etAPIKey.getText().isEmpty() || mBinding.etClientId.getText().isEmpty()) {
-//                showApiClientInputDialog()
-//                return@setActionClickListener
-//            }
             mViewModel.generateCustomerId()
         }
         mBinding.btnSave.setOnClickListener {
+            Settings.sdkEnv = mBinding.selectViewEnvironment.currentOption
+            Settings.nextTriggerBy = mBinding.selectViewTrigger.currentOption
+
             Settings.price = mBinding.etPrice.getText()
             Settings.currency = mBinding.etCurrency.getText()
             Settings.countryCode = mBinding.etCountryCode.getText()
@@ -76,7 +64,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
 
             Settings.autoCapture = if (mBinding.swAutoCapture.isChecked()) "Enabled" else "Disabled"
             Settings.requiresEmail = if (mBinding.swEmail.isChecked()) "True" else "False"
-            Settings.requiresCVC = if (mBinding.swCVC.isChecked()) "True" else "False"
+            Settings.cachedCustomerId = mBinding.etCustomerId.getText()
             showAlert("", "settings saved") {
                 finish()
             }
@@ -93,7 +81,6 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             mBinding.etWeChatAppId.setText("")
             mBinding.swAutoCapture.setChecked(false)
             mBinding.swEmail.setChecked(false)
-            mBinding.swCVC.setChecked(false)
             mBinding.selectViewEnvironment.setSelectOption("DEMO")
             mBinding.selectViewTrigger.setSelectOption("Merchant")
             mBinding.etReturnUrl.setText("")
@@ -120,13 +107,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         return ActivitySettingBinding.inflate(layoutInflater)
     }
 
-    private fun showApiClientInputDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Enter Required Information")
-            .setMessage("Please enter API Key and Client ID")
-            .setPositiveButton("OK") { _, _ ->
-            }
-            .setCancelable(false)
-            .show()
+    override fun getViewModelClass(): Class<SettingViewModel> {
+        return SettingViewModel::class.java
     }
 }

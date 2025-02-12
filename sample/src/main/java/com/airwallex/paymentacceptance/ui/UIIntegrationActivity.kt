@@ -2,66 +2,26 @@ package com.airwallex.paymentacceptance.ui
 
 import android.content.Intent
 import android.util.Log
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.airwallex.android.core.Airwallex.Companion.AIRWALLEX_CHECKOUT_SCHEMA
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.paymentacceptance.R
-import com.airwallex.paymentacceptance.databinding.ActivityUiIntegrationBinding
-import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity
+import com.airwallex.paymentacceptance.ui.base.BasePaymentTypeActivity
 import com.airwallex.paymentacceptance.ui.bean.ButtonItem
-import com.airwallex.paymentacceptance.ui.widget.ButtonAdapter
 import com.airwallex.paymentacceptance.viewmodel.UIIntegrationViewModel
 
 /**
  * This Activity demonstrates how to call the payment flow UI provided by Airwallex.
  */
 class UIIntegrationActivity :
-    BasePaymentActivity<ActivityUiIntegrationBinding, UIIntegrationViewModel>() {
-    private lateinit var adapter: ButtonAdapter
-
-    override fun getViewBinding(): ActivityUiIntegrationBinding {
-        return ActivityUiIntegrationBinding.inflate(layoutInflater)
-    }
+    BasePaymentTypeActivity<UIIntegrationViewModel>() {
 
     override fun initView() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        val recyclerView = mBinding.rvContent
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        adapter = ButtonAdapter(getAllButtons()) { id -> handleBtnClick(id) }
-        recyclerView.adapter = adapter
-        mBinding.dropdownView.setOptions(
-            listOf(
-                "One-off payment",
-                "Recurring",
-                "Recurring and payment"
-            )
-        )
-        mBinding.dropdownView.setTitleText("Payment type")
-    }
-
-    override fun initListener() {
-        mBinding.flArrow.setOnClickListener {
-            finish()
-        }
-        mBinding.dropdownView.setOnOptionSelectedCallback { mode ->
-            val selectedOption = when (mode) {
-                "Recurring" -> 1
-                "Recurring and payment" -> 2
-                else -> 0
-            }
-            mViewModel.updateCheckoutModel(selectedOption)
-        }
-        mBinding.imSetting.setOnClickListener {
-            openSettingPage()
-        }
-        mBinding.titleView.setOnButtonClickListener {
-            openSettingPage()
-        }
+        super.initView()
+        mBinding.titleView.setTitle("Integrate with Airwallex UI")
     }
 
     override fun addObserver() {
+        super.addObserver()
         mViewModel.airwallexPaymentStatus.observe(this) { status ->
             handleStatusUpdate(status)
         }
@@ -71,48 +31,41 @@ class UIIntegrationActivity :
         mViewModel.airwallexShippingStatus.observe(this) {
 
         }
-        mViewModel.createPaymentIntentError.observe(this) { error ->
-            setLoadingProgress(false)
-            showAlert(
-                getString(R.string.create_payment_intent_failed),
-                error ?: getString(R.string.payment_failed_message)
-            )
-        }
     }
 
-    private fun getAllButtons(): List<ButtonItem> {
+    override fun getButtonList(): List<ButtonItem> {
         return listOf(
-            ButtonItem(1, "Launch payment list"),
-            ButtonItem(2, "Launch custom payment list"),
-            ButtonItem(3, "Launch card payment"),
-            ButtonItem(4, "Launch card payment (dialog)"),
-            ButtonItem(5, "Launch shipping address (dialog)")
+            ButtonItem(LAUNCH_PAYMENT_LIST, "Launch payment list"),
+            ButtonItem(LAUNCH_CUSTOM_PAYMENT_LIST, "Launch custom payment list"),
+            ButtonItem(LAUNCH_CARD_PAYMENT, "Launch card payment"),
+            ButtonItem(LAUNCH_CARD_PAYMENT_DIALOG, "Launch card payment (dialog)"),
+            ButtonItem(LAUNCH_SHIPPING_ADDRESS_DIALOG, "Launch shipping address (dialog)")
         )
     }
 
-    private fun handleBtnClick(id: Int) {
+    override fun handleBtnClick(id: Int) {
         when (id) {
-            1 -> {
+            LAUNCH_PAYMENT_LIST -> {
                 setLoadingProgress(true)
                 mViewModel.launchPaymentList(this)
             }
 
-            2 -> {
+            LAUNCH_CUSTOM_PAYMENT_LIST -> {
                 setLoadingProgress(true)
                 mViewModel.launchCustomPaymentList(this)
             }
 
-            3 -> {
+            LAUNCH_CARD_PAYMENT -> {
                 setLoadingProgress(true)
                 mViewModel.launchCardPage(this)
             }
 
-            4 -> {
+            LAUNCH_CARD_PAYMENT_DIALOG -> {
                 setLoadingProgress(true)
                 mViewModel.launchCardDialog(this)
             }
 
-            5 -> {
+            LAUNCH_SHIPPING_ADDRESS_DIALOG -> {
                 mViewModel.launchShipping(this)
             }
         }
@@ -144,6 +97,14 @@ class UIIntegrationActivity :
         }
     }
 
+    override fun getViewModelClass(): Class<UIIntegrationViewModel> {
+        return UIIntegrationViewModel::class.java
+    }
+
+    override fun refreshButtons(selectedOption: Int) {
+
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
@@ -155,12 +116,12 @@ class UIIntegrationActivity :
         }
     }
 
-    private fun openSettingPage() {
-        startActivity(Intent(this, SettingActivity::class.java))
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-    }
-
     companion object {
         private const val TAG = "UIIntegrationActivity"
+        const val LAUNCH_PAYMENT_LIST = 1
+        const val LAUNCH_CUSTOM_PAYMENT_LIST = 2
+        const val LAUNCH_CARD_PAYMENT = 3
+        const val LAUNCH_CARD_PAYMENT_DIALOG = 4
+        const val LAUNCH_SHIPPING_ADDRESS_DIALOG = 5
     }
 }

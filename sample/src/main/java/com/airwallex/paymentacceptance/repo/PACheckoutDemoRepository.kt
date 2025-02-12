@@ -65,7 +65,7 @@ class PACheckoutDemoRepository : BaseRepository {
         return PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
     }
 
-    override suspend fun getCustomerIdFromServer(): String {
+    override suspend fun getCustomerIdFromServer(saveCustomerIdToSetting: Boolean): String {
         return Settings.cachedCustomerId.takeIf { !it.isNullOrEmpty() } ?: run {
             val customerResponse = api.createCustomer(
                 mutableMapOf(
@@ -88,7 +88,9 @@ class PACheckoutDemoRepository : BaseRepository {
                 )
             )
             val customerId = JSONObject(customerResponse.string())["id"].toString()
-            Settings.cachedCustomerId = customerId
+            if (saveCustomerIdToSetting) {
+                Settings.cachedCustomerId = customerId
+            }
             customerId
         }
     }
