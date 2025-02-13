@@ -56,6 +56,7 @@ class RedirectComponentTest {
                 dcc = null,
                 url = testUrl,
                 method = null,
+                fallbackUrl = null,
                 packageName = null
             ),
             null,
@@ -81,6 +82,7 @@ class RedirectComponentTest {
                 dcc = null,
                 url = testUrl,
                 method = null,
+                fallbackUrl = null,
                 packageName = null
             ),
             null,

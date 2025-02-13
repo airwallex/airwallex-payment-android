@@ -29,6 +29,7 @@ class WeChatDemoActivity : AppCompatActivity() {
         viewBinding.partnerId.setText("353449704")
         viewBinding.packageStr.setText("Sign=WXPay")
 
+        viewBinding.flArrow.setOnClickListener { finish() }
         viewBinding.buttonNext.setOnSingleClickListener {
 
             if (viewBinding.partnerId.text.toString().isEmpty()) {

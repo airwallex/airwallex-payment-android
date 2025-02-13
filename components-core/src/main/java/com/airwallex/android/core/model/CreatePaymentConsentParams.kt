@@ -13,6 +13,12 @@ data class CreatePaymentConsentParams constructor(
     val paymentMethodId: String? = null,
 
     /**
+     * googlePay of the PaymentMethod attached for subsequent payments. Must be set when type is GooglePay.
+     */
+
+    val googlePay: PaymentMethod.GooglePay? = null,
+
+    /**
      * Type of the PaymentMethod
      */
     val paymentMethodType: String,
@@ -43,6 +49,7 @@ data class CreatePaymentConsentParams constructor(
     ) : ObjectBuilder<CreatePaymentConsentParams> {
 
         private var paymentMethodId: String? = null
+        private var googlePay: PaymentMethod.GooglePay? = null
 
         private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason? =
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
@@ -51,6 +58,10 @@ data class CreatePaymentConsentParams constructor(
 
         fun setPaymentMethodId(paymentMethodId: String?): Builder = apply {
             this.paymentMethodId = paymentMethodId
+        }
+
+        fun setGooglePay(googlePay: PaymentMethod.GooglePay?): Builder = apply {
+            this.googlePay = googlePay
         }
 
         fun setMerchantTriggerReason(merchantTriggerReason: PaymentConsent.MerchantTriggerReason?): Builder =
@@ -67,6 +78,7 @@ data class CreatePaymentConsentParams constructor(
                 clientSecret = clientSecret,
                 customerId = customerId,
                 paymentMethodId = paymentMethodId,
+                googlePay = googlePay,
                 paymentMethodType = paymentMethodType,
                 nextTriggeredBy = nextTriggeredBy,
                 merchantTriggerReason = merchantTriggerReason,
@@ -92,6 +104,27 @@ data class CreatePaymentConsentParams constructor(
             )
                 .setMerchantTriggerReason(merchantTriggerReason = merchantTriggerReason)
                 .setPaymentMethodId(paymentMethodId)
+                .setRequiresCvc(requiresCvc)
+                .build()
+        }
+
+        @Suppress("LongParameterList")
+        fun createGooglePayParams(
+            clientSecret: String,
+            customerId: String,
+            googlePay: PaymentMethod.GooglePay?,
+            nextTriggeredBy: PaymentConsent.NextTriggeredBy,
+            merchantTriggerReason: PaymentConsent.MerchantTriggerReason?,
+            requiresCvc: Boolean
+        ): CreatePaymentConsentParams {
+            return Builder(
+                clientSecret = clientSecret,
+                customerId = customerId,
+                paymentMethodType = PaymentMethodType.GOOGLEPAY.value,
+                nextTriggeredBy = nextTriggeredBy
+            )
+                .setMerchantTriggerReason(merchantTriggerReason = merchantTriggerReason)
+                .setGooglePay(googlePay)
                 .setRequiresCvc(requiresCvc)
                 .build()
         }

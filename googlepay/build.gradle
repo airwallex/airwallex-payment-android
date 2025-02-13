@@ -16,6 +16,7 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.9.0'
     implementation 'androidx.fragment:fragment-ktx:1.8.1'
     implementation 'com.google.android.gms:play-services-wallet:19.4.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0'
 
     testImplementation 'org.json:json:20231013'
     testImplementation "junit:junit:$junitVersion"
@@ -24,3 +25,4 @@ dependencies {
 }
 
 apply from: rootProject.file("publish-module.gradle")
+apply from: "${rootProject.projectDir}/gradle/scripts/publish-snapshot.gradle"

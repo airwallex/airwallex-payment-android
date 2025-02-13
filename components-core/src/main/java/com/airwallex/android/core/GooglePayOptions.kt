@@ -72,7 +72,26 @@ data class GooglePayOptions(
     /**
      * If shippingAddressParameters is set to true, specify shipping address restrictions.
      */
-    val shippingAddressParameters: ShippingAddressParameters? = null
+    val shippingAddressParameters: ShippingAddressParameters? = null,
+
+    /**
+     * The card networks that your application accepts
+     * @see [allowedCardNetworks](https://developers.google.com/pay/api/android/reference/request-objects#CardParameters)
+     * So far, we have supported the following types: AMEX, DISCOVER, JCB, MASTERCARD, VISA, MAESTRO.
+     * If you do not set this list, we will default to supporting these types: AMEX, DISCOVER, JCB, MASTERCARD, VISA.
+     * If you want to support MAESTRO, set the value for allowedCardNetworks. Note that if you add MAESTRO, your countryCode must include BR.
+     * If you include types that we do not support, the payment process will fail.
+     */
+    val allowedCardNetworks: List<String> = googlePaySupportedNetworks(),
+
+    /**
+     * Setting skipReadinessCheck to true will skip the IsReadyToPay check before invoking Google Pay.
+     * @see [IsReadyToPay](https://developers.google.com/pay/api/android/reference/client#isReadyToPay)
+     * On certain models from brands like Xiaomi and Honor, IsReadyToPay always returns false, which can block Google Pay.
+     * Skipping this check will try to launch Google Pay sheet directly.
+     * We advise you to carefully consider whether to skip this step.
+     */
+    val skipReadinessCheck: Boolean? = false
 ) : Parcelable
 
 @Parcelize

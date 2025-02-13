@@ -26,14 +26,13 @@ class GooglePayComponent : ActionComponent {
     companion object {
         val PROVIDER: ActionComponentProvider<GooglePayComponent> = GooglePayComponentProvider()
     }
-
-    private var listener: Airwallex.PaymentResultListener? = null
     private var paymentIntentId: String? = null
     lateinit var paymentMethodType: AvailablePaymentMethodType
     lateinit var session: AirwallexSession
 
     override fun initialize(application: Application) {
         AirwallexActivityLaunch.initialize(application)
+        AirwallexSecurityConnector().initialize(application)
     }
 
     override fun handlePaymentIntentResponse(
@@ -46,7 +45,6 @@ class GooglePayComponent : ActionComponent {
         listener: Airwallex.PaymentResultListener,
         consentId: String?
     ) {
-        this.listener = listener
         if (nextAction?.type == NextAction.NextActionType.REDIRECT_FORM) {
             if (cardNextActionModel == null) {
                 listener.onCompleted(
@@ -65,7 +63,7 @@ class GooglePayComponent : ActionComponent {
                 cardNextActionModel = cardNextActionModel,
                 listener = listener
             ) { requestCode, resultCode, data ->
-                handleActivityResult(requestCode, resultCode, data)
+                handleActivityResult(requestCode, resultCode, data, listener)
             }
         } else {
             this.paymentIntentId = paymentIntentId
@@ -83,12 +81,17 @@ class GooglePayComponent : ActionComponent {
                     paymentMethodType = paymentMethodType
                 )
             ) { requestCode: Int, result: ActivityResult ->
-                handleActivityResult(requestCode, result.resultCode, result.data)
+                handleActivityResult(requestCode, result.resultCode, result.data, listener)
             }
         }
     }
 
-    override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+    override fun handleActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        listener: Airwallex.PaymentResultListener?
+    ): Boolean {
         AirwallexLogger.info("GooglePayComponent handleActivityResult: requestCode =$requestCode")
         if (requestCode == ThreeDSecurityActivityLaunch.REQUEST_CODE) {
             listener?.let {
@@ -113,9 +116,12 @@ class GooglePayComponent : ActionComponent {
 
                 is GooglePayActivityLaunch.Result.Success -> {
                     AirwallexLogger.info("GooglePayComponent handleActivityResult: success, paymentIntentId =$paymentIntentId")
-                    paymentIntentId?.let {
-                        listener?.onCompleted(AirwallexPaymentStatus.Success(it, additionalInfo = result.info))
-                    }
+                    listener?.onCompleted(
+                        AirwallexPaymentStatus.Success(
+                            paymentIntentId ?: "",
+                            additionalInfo = result.info
+                        )
+                    )
                 }
                 else -> {
                     // no op
@@ -129,12 +135,10 @@ class GooglePayComponent : ActionComponent {
 
     override fun retrieveSecurityToken(
         sessionId: String,
-        applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
         AirwallexSecurityConnector().retrieveSecurityToken(
             sessionId,
-            applicationContext,
             securityTokenListener
         )
     }

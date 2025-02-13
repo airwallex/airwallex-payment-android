@@ -16,6 +16,9 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
             card = json.optJSONObject(FIELD_CARD)?.let {
                 CardParser().parse(it)
             },
+            googlePay = json.optJSONObject(FIELD_GOOGLE_PAY)?.let {
+                GooglePayParser().parse(it)
+            },
             billing = json.optJSONObject(FIELD_BILLING)?.let {
                 BillingParser().parse(it)
             },
@@ -38,6 +41,7 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
         const val FIELD_CUSTOMER_ID = "customer_id"
         const val FIELD_TYPE = "type"
         const val FIELD_CARD = "card"
+        const val FIELD_GOOGLE_PAY = "googlepay"
         const val FIELD_BILLING = "billing"
         const val FIELD_STATUS = "status"
         const val FIELD_METADATA = "metadata"
@@ -45,7 +49,24 @@ class PaymentMethodParser : ModelJsonParser<PaymentMethod> {
         const val FIELD_UPDATED_AT = "updated_at"
     }
 
-    internal class CardParser : ModelJsonParser<PaymentMethod.Card> {
+    class GooglePayParser : ModelJsonParser<PaymentMethod.GooglePay> {
+        override fun parse(json: JSONObject): PaymentMethod.GooglePay {
+            return PaymentMethod.GooglePay(
+                billing = json.optJSONObject(FIELD_BILLING)?.let {
+                    BillingParser().parse(it)
+                },
+                paymentDataType = json.optString(FIELD_PAYMENT_DATA_TYPE),
+                encryptedPaymentToken = json.optString(FIELD_ENCRYPTED_PAYMENT_TOKEN)
+            )
+        }
+
+        companion object {
+            const val FIELD_PAYMENT_DATA_TYPE = "payment_data_type"
+            const val FIELD_ENCRYPTED_PAYMENT_TOKEN = "encrypted_payment_token"
+        }
+    }
+
+    class CardParser : ModelJsonParser<PaymentMethod.Card> {
 
         override fun parse(json: JSONObject): PaymentMethod.Card {
             return PaymentMethod.Card(

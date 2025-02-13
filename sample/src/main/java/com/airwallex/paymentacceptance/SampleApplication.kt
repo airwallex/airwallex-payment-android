@@ -23,7 +23,6 @@ class SampleApplication : Application() {
         configAirwallexStarter()
         //If you have already called the initialization method of AirwallexStarter, this process does not need to be called.
         //configAirwallex()
-
     }
 
     /**
@@ -33,8 +32,7 @@ class SampleApplication : Application() {
         val environment = when (Settings.sdkEnv) {
             resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
             resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-            resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
-            else -> throw Exception("No environment")
+            else -> Environment.PRODUCTION
         }
         Airwallex.initialize(
             this,
@@ -50,8 +48,7 @@ class SampleApplication : Application() {
                         GooglePayComponent.PROVIDER
                     )
                 )
-                .build(),
-            ExampleClientSecretProvider()
+                .build()
         )
     }
 
@@ -62,8 +59,7 @@ class SampleApplication : Application() {
         val environment = when (Settings.sdkEnv) {
             resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
             resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-            resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PRODUCTION
-            else -> throw Exception("No environment")
+            else -> Environment.PRODUCTION
         }
         AirwallexStarter.initialize(
             this,
@@ -79,8 +75,7 @@ class SampleApplication : Application() {
                         GooglePayComponent.PROVIDER
                     )
                 )
-                .build(),
-            ExampleClientSecretProvider()
+                .build()
         )
     }
 }

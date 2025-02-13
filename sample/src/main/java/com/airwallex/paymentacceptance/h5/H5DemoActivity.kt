@@ -23,7 +23,10 @@ class H5DemoActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setTitle(R.string.h5demo)
 
-        viewBinding.buttonFirst.setOnSingleClickListener {
+        viewBinding.flArrow.setOnClickListener {
+            finish()
+        }
+        viewBinding.btnNext.setOnSingleClickListener {
             val url = viewBinding.airwallexUrl.text.toString()
             if (url.isEmpty()) {
                 Toast.makeText(this, "Url should not be empty!", Toast.LENGTH_SHORT)

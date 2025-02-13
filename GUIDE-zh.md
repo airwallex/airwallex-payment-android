@@ -9,8 +9,8 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
 1. [准备集成](#准备集成)
 
 *集成选项*
-1. [UI集成](#UI集成)你可以使用我们SDK提供的已构建好的用户UI, 这是**推荐用法**。
-2. [低层API集成](#低层API集成)你可以构建你自定义的UI，并使用我们的低层API。
+1. [UI集成](#UI集成)：你可以使用我们SDK提供的已构建好的用户UI，这是**推荐用法**。
+2. [低层API集成](#低层API集成)：你可以构建你自定义的UI，并使用我们的低层API。
 
 我们的Demo开源在 [Github](https://github.com/airwallex/airwallex-payment-android)，可以帮助你更好地了解如何在你的Android项目中集成Airwallex Android SDK。
 
@@ -24,14 +24,19 @@ Airwallex Android SDK是一种灵活的工具，可让您将付款方式集成�
     * [UI集成配置SDK](#UI集成配置SDK)
     * [Edit Shipping Info](#edit-shipping-info)
     * [Use the entire Native UI in one flow](#use-the-entire-native-ui-in-one-flow)
-    * [Set up Google Pay](#set-up-google-pay)
-    * [Custom Theme](#custom-theme)
+    * [设置Google Pay](#设置google-pay)
+    * [自定义主题](#自定义主题)
 * [低层API集成](#低层API集成)
     * [低层API集成添加依赖](#低层API集成添加依赖)
     * [低层API集成配置SDK](#低层API集成配置SDK)
     * [创建AirwallexSession和Airwallex对象](#创建AirwallexSession和Airwallex对象)
-    * [用卡和账单详情或者consent ID来确认卡支付](#用卡和账单详情或者consent-id来确认卡支付)
+    * [用卡和账单详情确认支付](#用卡和账单详情确认支付)
+    * [用Consent ID确认支付](#用consent-id确认支付)
+    * [用PaymentConsent确认支付](#用PaymentConsent确认支付)
+    * [获取支付方式列表](#获取支付方式列表)
+    * [获取已存卡列表](#获取已存卡列表)
     * [通过Google Pay来发起支付](#通过google-pay来发起支付)
+    * [通过重定向确认支付](#通过重定向确认支付)
 * [SDK Example](#sdk-example)
 * [测试卡号](#测试卡号)
 * [贡献](#贡献)
@@ -72,13 +77,13 @@ Airwallex Android SDK 支持Android API 21及以上版本。
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment:5.0.1'
+        implementation 'io.github.airwallex:payment:6.0.6'
         
         // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:5.0.1'
-        implementation 'io.github.airwallex:payment-redirect:5.0.1'
-        implementation 'io.github.airwallex:payment-wechat:5.0.1'
-        implementation 'io.github.airwallex:payment-googlepay:5.0.1'
+        implementation 'io.github.airwallex:payment-card:6.0.6'
+        implementation 'io.github.airwallex:payment-redirect:6.0.6'
+        implementation 'io.github.airwallex:payment-wechat:6.0.6'
+        implementation 'io.github.airwallex:payment-googlepay:6.0.6'
     }
 ```
 
@@ -88,22 +93,22 @@ Airwallex Android SDK 支持Android API 21及以上版本。
 
 我们提供了一些可用于调试SDK的参数，你可以在Application中调用
 ```kotlin
-    AirwallexStarter.initialize(
-        application,
-        AirwallexConfiguration.Builder()
-            .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
-            .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
-            .setSupportComponentProviders(
-                listOf(
-                    CardComponent.PROVIDER,
-                    WeChatComponent.PROVIDER,
-                    RedirectComponent.PROVIDER,
-                    GooglePayComponent.PROVIDER
-                )
+   AirwallexStarter.initialize(
+      application,
+      AirwallexConfiguration.Builder()
+          .enableLogging(true) // Enable log in sdk, best set to false in release version
+          .saveLogToLocal(false)// Save the Airwallex logs locally. If you have your own saving strategy, please set this to false.
+          .setEnvironment(environment)
+          .setSupportComponentProviders(
+            listOf(
+              CardComponent.PROVIDER, 
+              WeChatComponent.PROVIDER, 
+              RedirectComponent.PROVIDER, 
+              GooglePayComponent.PROVIDER
             )
-            .build(),
-        ExampleClientSecretProvider()           // If you need to support recurring, you must to support your custom ClientSecretProvider
-    )
+          )
+          .build()
+   )
 ```
 
 #### 创建PaymentIntent
@@ -124,12 +129,14 @@ Airwallex Android SDK 支持Android API 21及以上版本。
 ### Edit shipping info
 使用 `presentShippingFlow` 允许用户提供送货地址以及选择送货方式. `shipping` 字段是可选的
 ```kotlin
-    AirwallexStarter.presentShippingFlow(this, shipping,
-        object : Airwallex.ShippingResultListener {
-            override fun onCompleted(status: AirwallexShippingStatus) {
-                
-            }
-        }
+    AirwallexStarter.presentShippingFlow(
+       activity = activity,
+       shipping = shipping,
+       shippingResultListener = object : Airwallex.ShippingResultListener {
+           override fun onCompleted(status: AirwallexShippingStatus) {
+               //处理shipping结果
+           }
+       }
     )
 ```
 
@@ -143,72 +150,93 @@ Airwallex Android SDK 支持Android API 21及以上版本。
             android:scheme="airwallexcheckout" />
     </intent-filter>
 ```
-
-- 使用 `presentPaymentFlow` 来完成整个支付流程. 需要传入一个 `AirwallexSession`对象
+- 在调起Airwallex的UI组件前. 需要创建一个 `AirwallexSession`对象
+#### 创建一个AirwallexSession对象
 ```kotlin
-    private fun buildSession(
-        paymentIntent: PaymentIntent? = null,
-        customerId: String? = null
-    ): AirwallexSession {
-        return when (checkoutMode) {
-            AirwallexCheckoutMode.PAYMENT -> {
-                AirwallexPaymentSession.Builder(
-                    paymentIntent = requireNotNull(
-                        paymentIntent,
-                        { "PaymentIntent is required" }
-                    ),
-                    countryCode = Settings.countryCode,
-                    googlePayOptions = GooglePayOptions(
-                        billingAddressRequired = true,
-                        billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL)
-                    )
-                )
-                    .setReturnUrl(Settings.returnUrl)
-                    .build()
-            }
-            AirwallexCheckoutMode.RECURRING -> {
-                AirwallexRecurringSession.Builder(
-                    customerId = requireNotNull(customerId, { "CustomerId is required" }),
-                    currency = Settings.currency,
-                    amount = BigDecimal.valueOf(Settings.price.toDouble()),
-                    nextTriggerBy = nextTriggerBy,
-                    countryCode = Settings.countryCode
-                )
-                    .setShipping(shipping)
-                    .setRequireCvc(requiresCVC)
-                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-                    .setReturnUrl(Settings.returnUrl)
-                    .build()
-            }
-            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                AirwallexRecurringWithIntentSession.Builder(
-                    paymentIntent = requireNotNull(
-                        paymentIntent,
-                        { "PaymentIntent is required" }
-                    ),
-                    customerId = requireNotNull(
-                        paymentIntent.customerId,
-                        { "CustomerId is required" }
-                    ),
-                    nextTriggerBy = nextTriggerBy,
-                    countryCode = Settings.countryCode
-                )
-                    .setRequireCvc(requiresCVC)
-                    .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-                    .setReturnUrl(Settings.returnUrl)
-                    .build()
-            }
-        }
-    }
-    val session = buildSession(paymentIntent, customerId)
-    AirwallexStarter.presentPaymentFlow(this, session,
-        object : Airwallex.PaymentResultListener {
-    
-            override fun onCompleted(status: AirwallexPaymentStatus) {
-    
-            }
-        }
-    )
+    private fun buildAirwallexPaymentSession(googlePayOptions: GooglePayOptions? = null, paymentIntent: PaymentIntent) = 
+        AirwallexPaymentSession.Builder(
+          paymentIntent = paymentIntent,
+          countryCode = Settings.countryCode,
+          googlePayOptions = googlePayOptions
+        )
+            .setRequireBillingInformation(true)
+            .setRequireEmail(Settings.requiresEmail.toBoolean())
+            .setReturnUrl(Settings.returnUrl)
+            .setAutoCapture(autoCapture)
+            .setHidePaymentConsents(false)
+            .setPaymentMethods(listOf())
+            .build()
+```
+```kotlin
+    private fun buildAirwallexRecurringSession(customerId: String, clientSecret: String) = 
+        AirwallexRecurringSession.Builder(
+          customerId = customerId,
+          clientSecret = clientSecret,
+          currency = Settings.currency,
+          amount = BigDecimal.valueOf(Settings.price.toDouble()),
+          nextTriggerBy = nextTriggerBy,
+          countryCode = Settings.countryCode
+        )
+            .setRequireEmail(Settings.requiresEmail.toBoolean())
+            .setShipping(shipping)
+            .setRequireCvc(Settings.requiresCVC.toBoolean())
+            .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+            .setReturnUrl(Settings.returnUrl)
+            .setPaymentMethods(listOf())
+            .build()
+```
+```kotlin
+    private fun buildAirwallexRecurringWithIntentSession(paymentIntent: PaymentIntent) = 
+        AirwallexRecurringWithIntentSession.Builder(
+          paymentIntent = paymentIntent, 
+          customerId = requireNotNull(paymentIntent.customerId, { "CustomerId is required" }), 
+          nextTriggerBy = nextTriggerBy,
+          countryCode = Settings.countryCode
+        )
+            .setRequireEmail(Settings.requiresEmail.toBoolean())
+            .setRequireCvc(Settings.requiresCVC.toBoolean())
+            .setMerchantTriggerReason(if (nextTriggerBy == PaymentConsent.NextTriggeredBy.MERCHANT) PaymentConsent.MerchantTriggerReason.SCHEDULED else PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+            .setReturnUrl(Settings.returnUrl)
+            .setAutoCapture(autoCapture)
+            .setPaymentMethods(listOf())
+            .build()
+```
+- 使用 `presentEntirePaymentFlow` 调起支付列表页面，来完成整个支付流程
+```kotlin
+   AirwallexStarter.presentEntirePaymentFlow(
+       activity = activity,
+       session = session,
+       paymentResultListener = object : Airwallex.PaymentResultListener { 
+           override fun onCompleted(status: AirwallexPaymentStatus) {
+              //处理支付结果
+           }
+       }
+   )
+```
+- 使用 `presentCardPaymentFlow` 调起卡支付页面，来完成整个支付流程
+```kotlin
+   AirwallexStarter.presentCardPaymentFlow(
+       activity = activity,
+       session = session,
+       paymentResultListener = object : Airwallex.PaymentResultListener { 
+           override fun onCompleted(status: AirwallexPaymentStatus) {
+               //处理支付结果
+           }
+       }
+   )
+```
+- 卡支付页面支持弹窗模式，你也可以直接创建 `AirwallexAddPaymentDialog`
+```kotlin
+   val dialog = AirwallexAddPaymentDialog(
+       activity = activity,
+       session = session,
+       paymentResultListener = object : Airwallex.PaymentResultListener {
+           override fun onCompleted(status: AirwallexPaymentStatus) {
+               //处理支付结果
+           }
+       }
+   )
+   dialog.show()
 ```
 - 获取支付结果, 你可以通过调用 `retrievePaymentIntent` 方法检查最新的状态，并提供用户结果
 ```kotlin
@@ -231,7 +259,7 @@ Airwallex Android SDK 支持Android API 21及以上版本。
     )
 ```
 
-### Set up Google Pay
+### 设置Google Pay
 Airwallex Android SDK可以通过以下步骤允许商户给顾客提供Google Pay作为支付方式：
 - 确认Google Pay在您的Airwallex账号上已开通
 - 根据[UI集成添加依赖](#UI集成添加依赖)在安装SDK时添加Google Pay模块
@@ -242,16 +270,25 @@ val googlePayOptions = GooglePayOptions(
     billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
     shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
 )
+// 创建AirwallexPaymentSession时，传递googlePayOptions
 val paymentSession = AirwallexPaymentSession.Builder(
     paymentIntent = ...,
     countryCode = ...,
     googlePayOptions = googlePayOptions
-)
-```
-- 我们现在暂时只支持Visa和MasterCard来进行Google Pay支付，用户在通过Google Pay付款时只能选择这两种卡。
-> 请注意我们的Google Pay模块目前只支持`AirwallexPaymentSession`。我们会在以后添加对recurring payment sessions的支持。
+).build()
 
-### Custom Theme
+// 同样的，您也可以在创建Recurring相关的Session时，传递googlePayOptions，这里以AirwallexRecurringSession为例
+val recurringSession = AirwallexRecurringSession.Builder(
+  customerId = ...,
+  clientSecret = ...,
+  currency = ...,
+  amount = ...
+).setGooglePayOptions(googlePayOptions)
+  .build()
+```
+- 我们现在支持`AMEX`、`DISCOVER`、`JCB`、`MASTERCARD`、`VISA`和`MAESTRO`来进行Google Pay支付。注意，当你选择使用`MAESTRO`进行支付时，`countryCode`必须是`BR`。
+
+### 自定义主题
 您可以在应用程序中覆盖这些颜色值, 用来适配您的应用风格。 https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
 ```
     <color name="airwallex_tint_color">@color/airwallex_color_red</color>
@@ -271,11 +308,12 @@ Airwallex Android SDK 支持Android API 21及以上版本。
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment-components-core:5.0.1'
+        implementation 'io.github.airwallex:payment-components-core:6.0.6'
         
-        // Select the payment method you want to support.
-        implementation 'io.github.airwallex:payment-card:5.0.1'
-        implementation 'io.github.airwallex:payment-googlepay:5.0.1'
+        // Select the payment method you want to support, ignore the components you don't need.
+        implementation 'io.github.airwallex:payment-card:6.0.6'//only support card
+        implementation 'io.github.airwallex:payment-googlepay:6.0.6'//only support google pay
+        implementation 'io.github.airwallex:payment-redirect:6.0.6'//only support redirect
     }
 ```
 
@@ -286,33 +324,33 @@ Airwallex Android SDK 支持Android API 21及以上版本。
 我们提供了一些可用于调试SDK的参数，你可以在Application中调用
 ```kotlin
      Airwallex.initialize(
-        application,
+        this,
         AirwallexConfiguration.Builder()
-            .enableLogging(true)                // Enable log in sdk, and don’t forogt to set to false when it is ready to release
-            .setEnvironment(Environment.DEMO)   // You can change the environment to STAGING, DEMO or PRODUCTION. It must be set to PRODUCTION when it is ready to release.
+            .enableLogging(true) // Enable log in sdk, best set to false in release version
+            .saveLogToLocal(false)// Save the Airwallex logs locally. If you have your own saving strategy, please set this to false.
+            .setEnvironment(environment)
             .setSupportComponentProviders(
-                listOf(
-                    CardComponent.PROVIDER,
-                    WeChatComponent.PROVIDER,
-                    RedirectComponent.PROVIDER,
-                    GooglePayComponent.PROVIDER
-                )
+              listOf(
+                CardComponent.PROVIDER, 
+                WeChatComponent.PROVIDER, 
+                RedirectComponent.PROVIDER, 
+                GooglePayComponent.PROVIDER
+              )
             )
-            .build(),
-        ExampleClientSecretProvider()           // If you need to support recurring, you must to support your custom ClientSecretProvider
-    )
+            .build()
+     )
 ```
 
 #### 创建PaymentIntent(低层API)
 [创建PaymentIntent](#创建PaymentIntent)
 
 ### 创建AirwallexSession和Airwallex对象
+[创建一个AirwallexSession对象](#创建一个AirwallexSession对象)
+#### 创建一个Airwallex对象
 ```kotlin
-val session = buildSession(paymentIntent, customerId)
-val airwallex = Airwallex(this@PaymentCartFragment)
+val airwallex = Airwallex(activity)
 ```
-
-### 用卡和账单详情或者consent ID来确认卡支付
+### 用卡和账单详情确认支付
 ```kotlin
 // Confirm intent with card and billing
 airwallex.confirmPaymentIntent(
@@ -325,17 +363,7 @@ airwallex.confirmPaymentIntent(
         .setCvc("737")
         .build(),
     billing = null,
-    listener = object : Airwallex.PaymentResultListener {
-        override fun onCompleted(status: AirwallexPaymentStatus) {
-            // You can handle different payment statuses and perform UI action respectively here
-        }
-    }
-)
-
-// Or to confirm intent with a valid payment consent ID
-airwallex.confirmPaymentIntent(
-    session = session,
-    paymentConsentId = "cst_xxxxxxxxxx",
+    saveCard = false,//set saveCard to true to save the card information while making the payment.
     listener = object : Airwallex.PaymentResultListener {
         override fun onCompleted(status: AirwallexPaymentStatus) {
             // You can handle different payment statuses and perform UI action respectively here
@@ -343,9 +371,59 @@ airwallex.confirmPaymentIntent(
     }
 )
 ```
-
+### 用Consent ID确认支付
+```kotlin
+     airwallex.confirmPaymentIntent(
+        session = session,
+        paymentConsentId = "cst_xxxxxxxxxx",
+        listener = object : Airwallex.PaymentResultListener { 
+            override fun onCompleted(status: AirwallexPaymentStatus) {
+              // You can handle different payment statuses and perform UI action respectively here 
+            } 
+        }
+     )
+```
+### 用PaymentConsent确认支付
+```kotlin
+     airwallex.confirmPaymentIntent(
+        session = session as AirwallexPaymentSession,
+        paymentConsent = paymentConsent,
+        listener = object : Airwallex.PaymentResultListener {
+            override fun onCompleted(status: AirwallexPaymentStatus) {
+              // You can handle different payment statuses and perform UI action respectively here
+            }
+        }
+     )
+```
+### 获取支付方式列表
+```kotlin
+     val methods = airwallex.retrieveAvailablePaymentMethods(
+        session = session,
+        params = RetrieveAvailablePaymentMethodParams.Builder(
+           clientSecret = getClientSecretFromSession(session),
+           pageNum = 1
+        )
+            .setActive(true)
+            .setTransactionCurrency(session.currency)
+            .setCountryCode(session.countryCode)
+            .build()
+     )
+```
+### 获取已存卡列表
+```kotlin
+     val consents = airwallex.retrieveAvailablePaymentConsents(
+        RetrieveAvailablePaymentConsentsParams.Builder(
+           clientSecret = clientSecret,
+           customerId = customerId,
+           pageNum = 1
+        )
+            .setNextTriggeredBy(nextTriggerBy)
+            .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED)
+            .build()
+     )
+```
 ### 通过Google Pay来发起支付
-调用支付API之前，需要按照如下步骤[Set up Google Pay](#set-up-google-pay)进行配置
+调用支付API之前，需要按照如下步骤[设置Google Pay](#设置google-pay)进行配置
 ```kotlin
 // 注意：我们目前仅支持AirwallexPaymentSession（一次性付款），暂不支持对于Google Pay的recurring session。
 // 同时保证将GooglePayOptions传给该session。参考[Set up Google Pay]。
@@ -356,6 +434,18 @@ airwallex.startGooglePay(
             // You can handle different payment statuses and perform UI action respectively here
         }
     }
+)
+```
+### 通过重定向确认支付
+```kotlin
+airwallex.startRedirectPay(
+    session = session,
+    paymentType = "alipayhk",
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+           // You can handle different payment statuses and perform UI action respectively here
+        }
+  }
 )
 ```
 

@@ -81,6 +81,7 @@ class GooglePayComponentTest {
             dcc = null,
             url = null,
             method = null,
+            fallbackUrl = null,
             packageName = null
         )
         handlePaymentIntentResponse(action = redirectAction)
@@ -95,6 +96,7 @@ class GooglePayComponentTest {
             dcc = null,
             url = null,
             method = null,
+            fallbackUrl = null,
             packageName = null
         )
         val cardModel = CardNextActionModel(
@@ -138,7 +140,7 @@ class GooglePayComponentTest {
         every { intent.getExtraResult<ThreeDSecurityActivityLaunch.Result>() } returns result
 
         handlePaymentIntentResponse()
-        assert(component.handleActivityResult(1006, RESULT_OK, intent))
+        assert(component.handleActivityResult(1006, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Success("intentId")) }
     }
 
@@ -151,7 +153,7 @@ class GooglePayComponentTest {
         every { intent.getExtraResult<ThreeDSecurityActivityLaunch.Result>() } returns result
 
         handlePaymentIntentResponse()
-        assert(component.handleActivityResult(1006, RESULT_OK, intent))
+        assert(component.handleActivityResult(1006, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Failure(exception)) }
     }
 
@@ -161,7 +163,7 @@ class GooglePayComponentTest {
         every { intent.getExtraResult<GooglePayActivityLaunch.Result>() } returns GooglePayActivityLaunch.Result.Cancel
 
         handlePaymentIntentResponse()
-        assert(component.handleActivityResult(1007, RESULT_OK, intent))
+        assert(component.handleActivityResult(1007, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Cancel) }
     }
 
@@ -174,7 +176,7 @@ class GooglePayComponentTest {
         )
 
         handlePaymentIntentResponse()
-        assert(component.handleActivityResult(1007, RESULT_OK, intent))
+        assert(component.handleActivityResult(1007, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Failure(exception)) }
     }
 
@@ -187,7 +189,7 @@ class GooglePayComponentTest {
         )
 
         handlePaymentIntentResponse()
-        assert(component.handleActivityResult(1007, RESULT_OK, intent))
+        assert(component.handleActivityResult(1007, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Success("id", null, map)) }
     }
 
@@ -197,9 +199,9 @@ class GooglePayComponentTest {
         val connector = MockKGateway.implementation().constructorMockFactory.mockPlaceholder(
             AirwallexSecurityConnector::class
         )
-        every { connector.retrieveSecurityToken(any(), context, securityListener) } just runs
-        component.retrieveSecurityToken("id", context, securityListener)
-        verify(exactly = 1) { connector.retrieveSecurityToken(any(), context, securityListener) }
+        every { connector.retrieveSecurityToken(any(), securityListener) } just runs
+        component.retrieveSecurityToken("id", securityListener)
+        verify(exactly = 1) { connector.retrieveSecurityToken(any(), securityListener) }
     }
 
     private fun handlePaymentIntentResponse(

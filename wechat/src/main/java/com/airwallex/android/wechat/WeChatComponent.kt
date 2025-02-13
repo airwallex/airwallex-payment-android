@@ -1,7 +1,6 @@
 package com.airwallex.android.wechat
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
@@ -10,6 +9,7 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.core.model.WeChat
+import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
 import com.tencent.mm.opensdk.modelbase.BaseReq
 import com.tencent.mm.opensdk.modelbase.BaseResp
 import com.tencent.mm.opensdk.modelpay.PayReq
@@ -57,14 +57,11 @@ class WeChatComponent : ActionComponent {
                         }
                     }
                     listener?.onCompleted(status)
+                    listener = null
                     onCompletion()
                 }
             }
         )
-    }
-
-    override fun initialize(application: Application) {
-
     }
 
     override fun handlePaymentIntentResponse(
@@ -139,17 +136,23 @@ class WeChatComponent : ActionComponent {
         }
     }
 
-    override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+    override fun handleActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        listener: Airwallex.PaymentResultListener?
+    ): Boolean {
         return false
     }
 
     override fun retrieveSecurityToken(
         sessionId: String,
-        applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     ) {
-        // Since only card payments require a device ID, this will not be executed
-        securityTokenListener.onResponse("")
+        AirwallexSecurityConnector().retrieveSecurityToken(
+            sessionId,
+            securityTokenListener
+        )
     }
 
     private fun initiateWeChatPay(

@@ -2,16 +2,24 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.annotation.StringRes
-import androidx.lifecycle.*
-import com.airwallex.android.core.exception.AirwallexCheckoutException
-import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.exception.InvalidParamsException
-import com.airwallex.android.core.model.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.R
-import com.airwallex.android.core.*
-import com.airwallex.android.view.util.CardUtils
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.model.Billing
+import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.Shipping
+import com.airwallex.android.core.util.CardUtils
 
 internal class AddPaymentMethodViewModel(
     application: Application,
@@ -23,12 +31,38 @@ internal class AddPaymentMethodViewModel(
     val additionalInfo: Map<String, List<String>> =
         mapOf("supportedSchemes" to supportedCardSchemes.map { it.name })
 
-    @StringRes
     val ctaTitle = if (session is AirwallexRecurringSession) {
-        R.string.airwallex_confirm
+        application.getString(R.string.airwallex_confirm)
     } else {
-        R.string.airwallex_pay_now
+        application.getString(R.string.airwallex_pay_now)
     }
+
+    val shipping: Shipping? by lazy {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                session.paymentIntent.order?.shipping
+            }
+
+            is AirwallexRecurringWithIntentSession -> {
+                session.paymentIntent.order?.shipping
+            }
+
+            is AirwallexRecurringSession -> {
+                session.shipping
+            }
+
+            else -> null
+        }
+    }
+
+    val canSaveCard: Boolean by lazy { session is AirwallexPaymentSession && session.customerId != null }
+
+    val isBillingRequired: Boolean by lazy { session.isBillingInformationRequired }
+
+    val isEmailRequired: Boolean by lazy { session.isEmailRequired }
+
+    private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
+    val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
 
     fun getValidationResult(cardNumber: String): ValidationResult {
         if (cardNumber.isEmpty()) {
@@ -46,157 +80,18 @@ internal class AddPaymentMethodViewModel(
         return ValidationResult.Error(R.string.airwallex_invalid_card_number)
     }
 
-    fun createPaymentMethod(
-        card: PaymentMethod.Card,
-        billing: Billing?
-    ): LiveData<PaymentMethodResult> {
-        val resolvedBilling = if (session.isBillingInformationRequired) billing else null
-        return if (session is AirwallexPaymentSession) {
-            createOneOffCardPaymentMethod(card, resolvedBilling)
-        } else {
-            createStoredCardPaymentMethod(card, resolvedBilling)
-        }
-    }
-
-    suspend fun checkoutWithSavedCard(
-        card: PaymentMethod.Card,
-        billing: Billing?
-    ): AirwallexPaymentStatus {
-        val billingOrNull = if (session.isBillingInformationRequired) billing else null
-        val oneOffPaymentMethod = PaymentMethod.Builder()
-            .setType(PaymentMethodType.CARD.value)
-            .setCard(card)
-            .setBilling(billingOrNull)
-            .build()
-        val customerId = requireNotNull(session.customerId)
-        val clientSecret = try {
-            ClientSecretRepository.getInstance().retrieveClientSecret(customerId)
-        } catch (e: AirwallexCheckoutException) {
-            return AirwallexPaymentStatus.Failure(e)
-        }
-        val paymentMethod = try {
-            airwallex.createPaymentMethod(
-                CreatePaymentMethodParams(
-                    clientSecret = clientSecret.value,
-                    customerId = customerId,
-                    card = card,
-                    billing = billingOrNull
-                )
-            )
-        } catch (_: Throwable) {
-            oneOffPaymentMethod
-        }
-        try {
-            val consent = airwallex.createPaymentConsent(
-                CreatePaymentConsentParams.createCardParams(
-                    clientSecret = clientSecret.value,
-                    customerId = customerId,
-                    paymentMethodId = requireNotNull(paymentMethod.id),
-                    nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
-                    requiresCvc = true,
-                    merchantTriggerReason = null
-                )
-            )
-            return suspendCoroutine { cont ->
-                airwallex.checkout(
-                    session = session,
-                    paymentMethod = paymentMethod,
-                    paymentConsentId = consent.id,
-                    cvc = card.cvc,
-                    listener = object : Airwallex.PaymentResultListener {
-                        override fun onCompleted(status: AirwallexPaymentStatus) {
-                            cont.resume(status)
-                        }
-                    }
-                )
-            }
-        } catch (_: Throwable) {
-            return suspendCoroutine { cont ->
-                airwallex.checkout(
-                    session = session,
-                    paymentMethod = oneOffPaymentMethod,
-                    cvc = card.cvc,
-                    listener = object : Airwallex.PaymentResultListener {
-                        override fun onCompleted(status: AirwallexPaymentStatus) {
-                            cont.resume(status)
-                        }
-                    }
-                )
-            }
-        }
-    }
-
-    private fun createOneOffCardPaymentMethod(
-        card: PaymentMethod.Card,
-        billing: Billing?
-    ): LiveData<PaymentMethodResult> {
-        val resultData = MutableLiveData<PaymentMethodResult>()
-
-        try {
-            resultData.value = PaymentMethodResult.Success(
-                PaymentMethod.Builder()
-                    .setType(PaymentMethodType.CARD.value)
-                    .setCard(card)
-                    .setBilling(billing)
-                    .build(),
-                requireNotNull(card.cvc)
-            )
-        } catch (e: IllegalArgumentException) {
-            val exception = InvalidParamsException("Card CVC missing")
-            resultData.value = PaymentMethodResult.Error(exception)
-        }
-
-        return resultData
-    }
-
-    private fun createStoredCardPaymentMethod(
-        card: PaymentMethod.Card,
-        billing: Billing?,
-    ): LiveData<PaymentMethodResult> {
-        val resultData = MutableLiveData<PaymentMethodResult>()
-
-        try {
-            ClientSecretRepository.getInstance().retrieveClientSecret(
-                requireNotNull(session.customerId),
-                object : ClientSecretRepository.ClientSecretRetrieveListener {
-                    override fun onClientSecretRetrieve(clientSecret: ClientSecret) {
-                        airwallex.createPaymentMethod(
-                            CreatePaymentMethodParams(
-                                clientSecret = clientSecret.value,
-                                customerId = requireNotNull(session.customerId),
-                                card = card,
-                                billing = billing
-                            ),
-                            object : Airwallex.PaymentListener<PaymentMethod> {
-                                override fun onSuccess(response: PaymentMethod) {
-                                    resultData.value = PaymentMethodResult.Success(response, requireNotNull(card.cvc))
-                                }
-
-                                override fun onFailed(exception: AirwallexException) {
-                                    resultData.value = PaymentMethodResult.Error(exception)
-                                }
-                            }
-                        )
-                    }
-
-                    override fun onClientSecretError(errorMessage: String) {
-                        resultData.value =
-                            PaymentMethodResult.Error(AirwallexCheckoutException(message = errorMessage))
-                    }
+    fun confirmPayment(card: PaymentMethod.Card, saveCard: Boolean, billing: Billing?) {
+        airwallex.confirmPaymentIntent(
+            session = session,
+            card,
+            billing = billing,
+            saveCard = saveCard,
+            listener = object : Airwallex.PaymentResultListener {
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    _airwallexPaymentStatus.value = status
                 }
-            )
-        } catch (e: AirwallexCheckoutException) {
-            resultData.value = PaymentMethodResult.Error(e)
-        }
-
-        return resultData
-    }
-
-    sealed class PaymentMethodResult {
-        data class Success(val paymentMethod: PaymentMethod, val cvc: String) :
-            PaymentMethodResult()
-
-        data class Error(val exception: AirwallexException) : PaymentMethodResult()
+            }
+        )
     }
 
     internal class Factory(

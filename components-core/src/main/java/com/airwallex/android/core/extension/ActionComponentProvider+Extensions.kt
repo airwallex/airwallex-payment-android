@@ -17,13 +17,12 @@ internal fun ActionComponent.confirmGooglePayIntent(
     applicationContext: Context,
     paymentIntentId: String,
     clientSecret: String,
-    additionalInfo: Map<String, String>,
-    billing: Billing?,
+    googlePay: PaymentMethod.GooglePay,
     autoCapture: Boolean,
     listener: Airwallex.PaymentResultListener
 ) {
     retrieveSecurityToken(
-        AirwallexRisk.sessionId.toString(), applicationContext,
+        AirwallexRisk.sessionId.toString(),
         object : SecurityTokenListener {
             @Suppress("LongMethod")
             override fun onResponse(deviceId: String) {
@@ -43,7 +42,7 @@ internal fun ActionComponent.confirmGooglePayIntent(
                     .setDevice(device)
                     .setPaymentMethodRequest(
                         PaymentMethodRequest.Builder(PaymentMethodType.GOOGLEPAY.value)
-                            .setGooglePayPaymentMethodRequest(additionalInfo, billing)
+                            .setGooglePayPaymentMethodRequest(googlePay)
                             .build()
                     )
                     .build()

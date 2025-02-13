@@ -158,6 +158,7 @@ class WeChatComponentTest {
                 url = null,
                 method = "post",
                 data = actionData,
+                fallbackUrl = null,
                 packageName = null
             ),
             activity = activity,

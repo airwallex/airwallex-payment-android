@@ -2,6 +2,7 @@ package com.airwallex.android.card.view
 
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
+import com.airwallex.android.card.view.widget.CurrencyWidget
 import com.airwallex.android.ui.R
 import org.junit.Test
 import org.junit.runner.RunWith

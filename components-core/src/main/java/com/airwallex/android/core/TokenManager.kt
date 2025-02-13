@@ -1,6 +1,7 @@
 package com.airwallex.android.core
 
 import android.util.Base64
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +18,7 @@ object TokenManager {
     }
 
     fun updateClientSecret(clientSecret: String) {
+        AirwallexLogger.debug("updateClientSecret: $clientSecret")
         CoroutineScope(Dispatchers.Main).launch {
             if (clientSecret != this@TokenManager.clientSecret) {
                 this@TokenManager.clientSecret = clientSecret

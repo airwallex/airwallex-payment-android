@@ -9,7 +9,7 @@ import com.airwallex.android.core.model.NextAction
 
 interface ActionComponent {
 
-    fun initialize(application: Application)
+    fun initialize(application: Application) = Unit
 
     @Suppress("LongParameterList")
     fun handlePaymentIntentResponse(
@@ -23,15 +23,17 @@ interface ActionComponent {
         consentId: String? = null,
     )
 
+    fun <T, R> handlePaymentData(param: T?, callBack: (result: R?) -> Unit) = Unit
+
     fun handleActivityResult(
         requestCode: Int,
         resultCode: Int,
-        data: Intent?
+        data: Intent?,
+        listener: Airwallex.PaymentResultListener? = null
     ): Boolean
 
     fun retrieveSecurityToken(
         sessionId: String,
-        applicationContext: Context,
         securityTokenListener: SecurityTokenListener
     )
 }

@@ -45,8 +45,8 @@
     <string name="clear_customer">Clear Customer</string>
     <string name="customer_cleared">Customer cleared successfully</string>
     <string name="h5demo">H5DEMO</string>
-    <string name="payment_url">PAYMENT URL</string>
-    <string name="referer_url">REFERER URL</string>
+    <string name="payment_url">Payment URL</string>
+    <string name="referer_url">Referrer URL</string>
     <string name="pay_success">Pay success</string>
 
     <string name="wechat_demo">WeChat DEMO</string>
@@ -59,7 +59,8 @@
     <string name="wechat_demo_timestamp">TimeStamp</string>
     <string name="wechat_demo_sign">Sign</string>
     <string name="generate_customer">Generate Customer</string>
-    <string name="next">NEXT</string>
+    <string name="next">Next</string>
+    <string name="save">Save</string>
     <string name="generate_customer_failed">Generate customer failed</string>
     <string name="generate_customer_failed_message">There was an error while generate customer. Please try again.</string>
     <string name="requires_cvc">Requires CVC</string>
@@ -67,8 +68,11 @@
     <string name="force_3ds">Force 3DS</string>
     <string name="auto_capture">Auto Capture</string>
     <string name="card_checkout">Direct Card Checkout</string>
+    <string name="card_checkout_with_ui">Direct Card Checkout with ui</string>
     <string name="google_pay_checkout">Direct Google Pay Checkout</string>
     <string name="shipping">Shipping</string>
     <string name="item">Item</string>
     <string name="total">Total</string>
+
+    <string name="setting_environment_desc">If you switch environment, you will need to restart the app for it to take effect.</string>
 </resources>

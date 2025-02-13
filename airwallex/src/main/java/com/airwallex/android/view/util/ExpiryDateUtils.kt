@@ -27,7 +27,11 @@ object ExpiryDateUtils {
     }
 
     internal fun isExpiryDateValid(expiryMonth: Int, expiryYear: Int): Boolean {
-        return isExpiryDateValid(expiryMonth, expiryYear, Calendar.getInstance())
+        return isExpiryDateValid(
+            expiryMonth,
+            expiryYear,
+            Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        )
     }
 
     internal fun isExpiryDateValid(expiryMonth: Int, expiryYear: Int, calendar: Calendar): Boolean {

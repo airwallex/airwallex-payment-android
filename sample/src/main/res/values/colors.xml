@@ -7,6 +7,7 @@
     <color name="color_accent">#1A1D21</color>
     <color name="color_primary">#612FFF</color>
     <color name="color_primary_dark">#3711AE</color>
+    <color name="color_white">#FFFFFF</color>
 
 
 </resources>

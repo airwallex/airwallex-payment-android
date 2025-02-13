@@ -40,6 +40,10 @@ data class PaymentMethod internal constructor(
     val card: Card? = null,
 
     /**
+     * Google Pay information for the payment method
+     */
+    val googlePay: GooglePay? = null,
+    /**
      * Billing information for the payment method
      */
     val billing: Billing? = null,
@@ -72,6 +76,7 @@ data class PaymentMethod internal constructor(
         private var customerId: String? = null
         private var type: String? = null
         private var card: Card? = null
+        private var googlePay: GooglePay? = null
         private var billing: Billing? = null
         private var metadata: Map<String, Any?>? = null
         private var createdAt: Date? = null
@@ -102,6 +107,10 @@ data class PaymentMethod internal constructor(
             this.card = card
         }
 
+        fun setGooglePay(googlePay: GooglePay?): Builder = apply {
+            this.googlePay = googlePay
+        }
+
         fun setType(type: String): Builder = apply {
             this.type = type
         }
@@ -129,7 +138,8 @@ data class PaymentMethod internal constructor(
                 metadata = metadata,
                 createdAt = createdAt,
                 updatedAt = updatedAt,
-                status = status
+                status = status,
+                googlePay = googlePay
             )
         }
     }
@@ -151,6 +161,90 @@ data class PaymentMethod internal constructor(
         internal companion object {
             internal fun fromValue(value: String?): PaymentMethodStatus? {
                 return values().firstOrNull { it.value == value }
+            }
+        }
+    }
+
+    @Parcelize
+    data class GooglePay internal constructor(
+        /**
+         * Billing information for the payment method
+         */
+        val billing: Billing? = null,
+        /**
+         * Type of the payment data details. One of tokenized_card or encrypted_payment_token.
+         * Only encrypted_payment_token is currently supported.
+         */
+        val paymentDataType: String? = null,
+        /**
+         * Encrypted payment token depends on the payment data type.
+         */
+        val encryptedPaymentToken: String? = null,
+
+        val flow: AirwallexPaymentRequestFlow? = null,
+
+        ) : AirwallexModel, AirwallexRequestModel, Parcelable {
+
+        private companion object {
+            private const val FIELD_FLOW = "flow"
+            private const val FIELD_OS_TYPE = "os_type"
+        }
+
+        override fun toParamMap(): Map<String, Any> {
+            return mapOf<String, Any>()
+                .plus(
+                    billing?.let {
+                        mapOf(PaymentMethodParser.FIELD_BILLING to it.toParamMap())
+                    }.orEmpty()
+                )
+                .plus(
+                    paymentDataType?.let {
+                        mapOf(PaymentMethodParser.GooglePayParser.FIELD_PAYMENT_DATA_TYPE to it)
+                    }.orEmpty()
+                )
+                .plus(
+                    encryptedPaymentToken?.let {
+                        mapOf(PaymentMethodParser.GooglePayParser.FIELD_ENCRYPTED_PAYMENT_TOKEN to it)
+                    }.orEmpty()
+                ).plus(
+                    // just for alipay, delete it when update api version
+                    mapOf(FIELD_FLOW to (flow ?: AirwallexPaymentRequestFlow.IN_APP).value)
+                )
+                .plus(
+                    // just for alipay, delete it when update api version
+                    mapOf(FIELD_OS_TYPE to "android")
+                )
+        }
+
+        class Builder : ObjectBuilder<GooglePay> {
+            private var billing: Billing? = null
+            private var paymentDataType: String? = null
+            private var encryptedPaymentToken: String? = null
+            private var flow: AirwallexPaymentRequestFlow? = null
+
+            fun setBilling(billing: Billing?): Builder = apply {
+                this.billing = billing
+            }
+
+            fun setPaymentDataType(paymentDataType: String?): Builder = apply {
+                this.paymentDataType = paymentDataType
+            }
+
+            fun setEncryptedPaymentToken(encryptedPaymentToken: String?): Builder = apply {
+                this.encryptedPaymentToken = encryptedPaymentToken
+            }
+
+            fun setFlow(flow: AirwallexPaymentRequestFlow?): Builder = apply {
+                this.flow = flow
+            }
+
+            override fun build(): GooglePay {
+                return GooglePay(
+                    billing = billing,
+                    paymentDataType = paymentDataType,
+                    encryptedPaymentToken = encryptedPaymentToken,
+                    flow = flow
+                )
             }
         }
     }
@@ -404,6 +498,10 @@ data class PaymentMethod internal constructor(
 
             fun setCardType(cardType: String?): Builder = apply {
                 this.cardType = cardType
+            }
+
+            fun setNumberType(numberType: NumberType?): Builder = apply {
+                this.numberType = numberType
             }
 
             override fun build(): Card {

@@ -131,7 +131,7 @@ class AirwallexPaymentManager(
             },
             onFailure = {
                 val exception = handleError(it)
-                AnalyticsLogger.logError(
+                AnalyticsLogger.logApiError(
                     eventName = options.getEventName(),
                     url = options.getUrl(),
                     exception = exception

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_sdk_env">
+        <item>STAGING</item>
+        <item>DEMO</item>
+        <item>PRODUCTION</item>
+    </string-array>
+
+    <string-array name="array_checkout_mode">
+        <item>Payment</item>
+        <item>Recurring</item>
+        <item>Recurring with intent</item>
+    </string-array>
+
+    <string-array name="array_next_trigger_by">
+        <item>Merchant</item>
+        <item>Customer</item>
+    </string-array>
+
+    <string-array name="array_requires_cvc">
+        <item>False</item>
+        <item>True</item>
+    </string-array>
+
+    <string-array name="array_requires_email">
+        <item>False</item>
+        <item>True</item>
+    </string-array>
+
+    <string-array name="array_force_3ds">
+        <item>False</item>
+        <item>True</item>
+    </string-array>
+
+    <string-array name="array_auto_capture">
+        <item>Enabled</item>
+        <item>Disabled</item>
+    </string-array>
+
+    <string-array name="array_google_pay_checkout">
+        <item>False</item>
+        <item>True</item>
+    </string-array>
+
+    <string-array name="array_card_checkout">
+        <item>False</item>
+        <item>True</item>
+    </string-array>
+
+    <string-array name="array_card_checkout_with_ui">
+        <item>False</item>
+        <item>True</item>
+    </string-array>
+</resources>

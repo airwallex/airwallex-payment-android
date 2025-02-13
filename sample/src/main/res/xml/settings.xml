@@ -13,13 +13,6 @@
             android:title="@string/sdk_env_id" />
 
         <ListPreference
-            android:dialogTitle="@string/checkout_mode"
-            android:entries="@array/array_checkout_mode"
-            android:entryValues="@array/array_checkout_mode"
-            android:key="@string/checkout_mode"
-            android:title="@string/checkout_mode" />
-
-        <ListPreference
             android:dialogTitle="@string/next_trigger_by"
             android:entries="@array/array_next_trigger_by"
             android:entryValues="@array/array_next_trigger_by"
@@ -41,32 +34,11 @@
             android:title="@string/requires_email" />
 
         <ListPreference
-            android:dialogTitle="@string/force_3ds"
-            android:entries="@array/array_force_3ds"
-            android:entryValues="@array/array_force_3ds"
-            android:key="@string/force_3ds"
-            android:title="@string/force_3ds" />
-
-        <ListPreference
             android:dialogTitle="@string/auto_capture"
             android:entries="@array/array_auto_capture"
             android:entryValues="@array/array_auto_capture"
             android:key="@string/auto_capture"
             android:title="@string/auto_capture" />
-
-        <ListPreference
-            android:dialogTitle="@string/card_checkout"
-            android:entries="@array/array_card_checkout"
-            android:entryValues="@array/array_card_checkout"
-            android:key="@string/card_checkout"
-            android:title="@string/card_checkout" />
-
-        <ListPreference
-            android:dialogTitle="@string/google_pay_checkout"
-            android:entries="@array/array_google_pay_checkout"
-            android:entryValues="@array/array_google_pay_checkout"
-            android:key="@string/google_pay_checkout"
-            android:title="@string/google_pay_checkout" />
 
         <EditTextPreference
             android:key="@string/return_url"

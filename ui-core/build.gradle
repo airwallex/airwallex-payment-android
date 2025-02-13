@@ -18,7 +18,10 @@ dependencies {
     testImplementation "androidx.test:core:$testCoreVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-annotations-common:$kotlinVersion"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
+    testImplementation 'io.mockk:mockk:1.13.3'
     implementation 'androidx.activity:activity-ktx:1.9.0'
 }
 
 apply from: rootProject.file("publish-module.gradle")
+apply from: "${rootProject.projectDir}/gradle/scripts/publish-snapshot.gradle"

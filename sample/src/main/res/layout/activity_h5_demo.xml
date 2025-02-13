@@ -4,42 +4,84 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <FrameLayout
+        android:id="@+id/flArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/airwallex_ic_back" />
+    </FrameLayout>
+
+    <com.airwallex.paymentacceptance.ui.widget.TitleView
+        android:id="@+id/titleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        app:buttonHeight="40dp"
+        app:buttonWidth="40dp"
+        app:layout_constraintTop_toBottomOf="@+id/flArrow"
+        app:showRightBtn="false"
+        app:titleText="Launch HTML 5 Demo" />
+
+
     <EditText
         android:id="@+id/airwallex_url"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="100dp"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/border_background"
         android:hint="@string/payment_url"
         android:imeOptions="actionNext"
         android:inputType="textUri"
+        android:paddingStart="20dp"
         android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/titleView" />
 
     <EditText
         android:id="@+id/referer_url"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="60dp"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/border_background"
         android:hint="@string/referer_url"
         android:imeOptions="actionDone"
         android:inputType="textUri"
+        android:paddingStart="20dp"
         android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/airwallex_url" />
 
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="180dp"
+        android:background="#D7D8E0"
+        android:layout_marginBottom="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnNext" />
 
     <Button
-        android:id="@+id/button_first"
-        android:layout_width="160dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="100dp"
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/btn_solid_shape"
         android:text="@string/next"
-        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:textSize="17sp"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

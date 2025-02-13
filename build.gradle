@@ -37,6 +37,9 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url uri("${rootProject.projectDir}/build/repos/maven")
+        }
     }
 }
 
@@ -45,7 +48,7 @@ tasks.register('clean', Delete) {
 }
 
 // Update the version field when a new version is released
-version = '5.0.1'
+version = '6.0.6'
 
 ext {
     compileSdkVersion = 34
@@ -61,6 +64,7 @@ ext {
 
     versionCode = System.getenv("AIRWALLEX_VERSION_CODE") as Integer ?: 1
     versionName = version
+    isLocalPublish = false
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -86,5 +90,5 @@ subprojects {
     }
 }
 
-apply from: "${rootDir}/gradle/scripts/publish-root.gradle"
 apply from: "${rootDir}/sonar.gradle"
+apply from: "${rootDir}/gradle/scripts/publish-root.gradle"

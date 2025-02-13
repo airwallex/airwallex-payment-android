@@ -41,10 +41,6 @@ class AirwallexPluginsTest {
 
     private class TestComponnent : ActionComponent {
 
-        override fun initialize(application: Application) {
-
-        }
-
         override fun handlePaymentIntentResponse(
             paymentIntentId: String,
             nextAction: NextAction?,
@@ -61,14 +57,14 @@ class AirwallexPluginsTest {
         override fun handleActivityResult(
             requestCode: Int,
             resultCode: Int,
-            data: Intent?
+            data: Intent?,
+            listener: Airwallex.PaymentResultListener?
         ): Boolean {
             return false
         }
 
         override fun retrieveSecurityToken(
             sessionId: String,
-            applicationContext: Context,
             securityTokenListener: SecurityTokenListener
         ) {
             // no-op
@@ -78,7 +74,6 @@ class AirwallexPluginsTest {
     @Test
     fun `test REST client`() {
         AirwallexPlugins.initialize(
-            application,
             AirwallexConfiguration.Builder()
                 .enableLogging(true)
                 .setEnvironment(Environment.DEMO)
@@ -91,7 +86,6 @@ class AirwallexPluginsTest {
     @Test
     fun `test get Google Pay action component provider`() {
         AirwallexPlugins.initialize(
-            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
@@ -113,7 +107,6 @@ class AirwallexPluginsTest {
     @Test
     fun `test get wechat action component provider`() {
         AirwallexPlugins.initialize(
-            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
@@ -135,7 +128,6 @@ class AirwallexPluginsTest {
     @Test
     fun `test get redirect action component provider when hasSchema is true`() {
         AirwallexPlugins.initialize(
-            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
@@ -158,7 +150,6 @@ class AirwallexPluginsTest {
     @Test
     fun `test get redirect action component provider when hasSchema is false`() {
         AirwallexPlugins.initialize(
-            application,
             AirwallexConfiguration.Builder()
                 .setSupportComponentProviders(
                     listOf(
