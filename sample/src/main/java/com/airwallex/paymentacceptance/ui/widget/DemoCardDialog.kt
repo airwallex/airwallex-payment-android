@@ -33,7 +33,7 @@ class DemoCardDialog(context: Context) : Dialog(context) {
     }
 
     private fun applyCardInfo(card: PaymentMethod.Card) {
-        when (Settings.environment) {
+        when (Settings.getEnvironment()) {
             Environment.PRODUCTION -> {
                 binding.tvEnvironment.text = "PRODUCTION"
             }
@@ -50,7 +50,7 @@ class DemoCardDialog(context: Context) : Dialog(context) {
                 binding.etExpiresMM.isEnabled = this.isEnabled
                 binding.etCVC.isEnabled = this.isEnabled
                 binding.tvEnvironment.text =
-                    if (Settings.environment == Environment.STAGING) "STAGING" else "DEMO"
+                    if (Settings.getEnvironment() == Environment.STAGING) "STAGING" else "DEMO"
             }
         }
     }

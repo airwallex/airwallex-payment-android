@@ -1,6 +1,5 @@
 package com.airwallex.paymentacceptance.repo
 
-import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.Environment
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PurchaseOrder
@@ -16,7 +15,7 @@ import java.util.UUID
 
 object PACheckoutEnvironment {
     val baseUrl: String?
-        get() = when (AirwallexPlugins.environment) {
+        get() = when (Settings.getEnvironment()) {
             Environment.STAGING -> "https://staging-pacheckoutdemo.airwallex.com/"
             Environment.DEMO -> "https://demo-pacheckoutdemo.airwallex.com/"
             else -> null // Our demo does not support PRODUCTION. Please validate it within your own app.

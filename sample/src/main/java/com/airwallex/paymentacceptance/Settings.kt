@@ -36,9 +36,10 @@ object Settings {
     var token: String? = null
 
     var checkoutMode: AirwallexCheckoutMode by Delegates.observable(AirwallexCheckoutMode.PAYMENT) { _, _, newValue ->
-       if(newValue == AirwallexCheckoutMode.PAYMENT){
-           nextTriggerBy = SampleApplication.instance.resources.getStringArray(R.array.array_next_trigger_by)[1]
-       }
+        if (newValue == AirwallexCheckoutMode.PAYMENT) {
+            nextTriggerBy =
+                SampleApplication.instance.resources.getStringArray(R.array.array_next_trigger_by)[1]
+        }
     }
 
     private val sharedPreferences: SharedPreferences by lazy {
@@ -77,10 +78,13 @@ object Settings {
                 ?: defaultSdkEnv
         }
 
-    var environment = when (sdkEnv) {
-        context.resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
-        context.resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-        else -> Environment.PRODUCTION
+    fun getEnvironment(): Environment {
+        val sdkEnvArray = context.resources.getStringArray(R.array.array_sdk_env)
+        return when (sdkEnv) {
+            sdkEnvArray.getOrNull(0) -> Environment.STAGING
+            sdkEnvArray.getOrNull(1) -> Environment.DEMO
+            else -> Environment.PRODUCTION
+        }
     }
 
     var returnUrl: String
@@ -174,7 +178,8 @@ object Settings {
 
     var weChatAppId: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.wechat_app_id), value).apply()
+            sharedPreferences.edit().putString(context.getString(R.string.wechat_app_id), value)
+                .apply()
         }
         get() {
             val value = sharedPreferences.getString(
@@ -213,7 +218,8 @@ object Settings {
 
     var countryCode: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.country_code), value).apply()
+            sharedPreferences.edit().putString(context.getString(R.string.country_code), value)
+                .apply()
         }
         get() {
             val defaultCountryCode =

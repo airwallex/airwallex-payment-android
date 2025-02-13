@@ -2,6 +2,7 @@ package com.airwallex.paymentacceptance.ui
 
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.paymentacceptance.R
+import com.airwallex.paymentacceptance.SampleApplication
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.databinding.ActivitySettingBinding
 import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity
@@ -109,5 +110,10 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
 
     override fun getViewModelClass(): Class<SettingViewModel> {
         return SettingViewModel::class.java
+    }
+
+    override fun onDestroy() {
+        SampleApplication.instance.configAirwallex()
+        super.onDestroy()
     }
 }

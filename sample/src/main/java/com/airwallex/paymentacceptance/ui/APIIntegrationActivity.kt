@@ -53,7 +53,7 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
 
         val filteredButtons = fullButtonList.filter { item ->
             when (item.id) {
-                PAY_WITH_3DS -> Settings.environment != Environment.PRODUCTION// Hide "3DS" in PRODUCTION
+                PAY_WITH_3DS -> Settings.getEnvironment() != Environment.PRODUCTION// Hide "3DS" in PRODUCTION
                 REDIRECT_PAYMENT -> selectedOption == 0 // Show "Redirect Payment" only for "One-off payment"
                 PAY_WITH_CARD_AND_SAVE -> selectedOption != 1 // Hide "Pay with card and save" in "Recurring" mode
                 else -> true
