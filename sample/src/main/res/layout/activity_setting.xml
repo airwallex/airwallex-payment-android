@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/flBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/airwallex_ic_back" />
+    </FrameLayout>
+
+    <com.airwallex.paymentacceptance.ui.widget.TitleView
+        android:id="@+id/titleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        app:buttonHeight="40dp"
+        app:buttonText="Reset"
+        app:buttonWidth="74dp"
+        app:layout_constraintTop_toBottomOf="@+id/flArrow"
+        app:showRightBtn="true"
+        app:titleText="Settings" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
+
+            <com.airwallex.paymentacceptance.ui.widget.DropdownPickerView
+                android:id="@+id/selectViewEnvironment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:titleContent="Environment"
+                app:layout_constraintTop_toBottomOf="@+id/titleView" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/setting_environment_desc"
+                android:textColor="#A0A0A0"
+                android:textSize="14sp" />
+
+            <com.airwallex.paymentacceptance.ui.widget.DropdownPickerView
+                android:id="@+id/selectViewTrigger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:titleContent="Next trigger by"
+                app:layout_constraintTop_toBottomOf="@+id/titleView" />
+
+            <com.airwallex.paymentacceptance.ui.widget.SwitchView
+                android:id="@+id/swEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:labelText="Requires email" />
+
+            <com.airwallex.paymentacceptance.ui.widget.SwitchView
+                android:id="@+id/swAutoCapture"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:labelText="Auto capture" />
+
+            <com.airwallex.paymentacceptance.ui.widget.ActionEditText
+                android:id="@+id/etCustomerId"
+                style="@style/AppEditText"
+                android:layout_marginTop="25dp"
+                app:actionLabel="Generate"
+                app:etHint="Customer ID" />
+
+            <com.airwallex.paymentacceptance.ui.widget.ActionEditText
+                android:id="@+id/etAPIKey"
+                style="@style/AppEditText"
+                android:layout_marginTop="25dp"
+                app:etHint="API key" />
+
+            <com.airwallex.paymentacceptance.ui.widget.ActionEditText
+                android:id="@+id/etClientId"
+                style="@style/AppEditText"
+                android:layout_marginTop="25dp"
+                app:etHint="Client ID" />
+
+            <com.airwallex.paymentacceptance.ui.widget.ActionEditText
+                android:id="@+id/etPrice"
+                style="@style/AppEditText"
+                android:layout_marginTop="25dp"
+                app:etHint="Amount" />
+
+            <com.airwallex.paymentacceptance.ui.widget.ActionEditText
+                android:id="@+id/etCurrency"
+                style="@style/AppEditText"
+                android:layout_marginTop="25dp"
+                app:etHint="Currency" />
+
+            <com.airwallex.paymentacceptance.ui.widget.ActionEditText
+                android:id="@+id/etCountryCode"
+                style="@style/AppEditText"
+                android:layout_marginTop="25dp"
+                app:etHint="Country Code" />
+
+            <com.airwallex.paymentacceptance.ui.widget.ActionEditText
+                android:id="@+id/etWeChatAppId"
+                style="@style/AppEditText"
+                android:layout_marginTop="25dp"
+                app:etHint="WeChat APP ID" />
+
+            <com.airwallex.paymentacceptance.ui.widget.ActionEditText
+                android:id="@+id/etReturnUrl"
+                style="@style/AppEditText"
+                android:layout_marginTop="25dp"
+                app:etHint="Return URL" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="25dp"
+        android:background="#F6F7F8"/>
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/btn_solid_shape"
+        android:text="@string/save"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</LinearLayout>

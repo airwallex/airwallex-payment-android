@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TitleView">
+        <attr name="titleText" format="string" />
+        <attr name="buttonText" format="string" />
+        <attr name="buttonWidth" format="dimension" />
+        <attr name="buttonHeight" format="dimension" />
+        <attr name="showRightBtn" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SwitchView">
+        <attr name="labelText" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="ActionEditText">
+        <attr name="etHint" format="string"/>
+        <attr name="actionLabel" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="DropdownSelectView">
+        <attr name="titleContent" format="string" />
+    </declare-styleable>
+</resources>

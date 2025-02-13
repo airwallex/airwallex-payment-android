@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
-import java.lang.reflect.ParameterizedType
 
 abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCompatActivity() {
 
@@ -23,7 +22,7 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mViewModel = getViewModel()!!
+        mViewModel = ViewModelProvider(this)[getViewModelClass()]
         mViewModel.init(this)
         mBinding = getViewBinding()
         setContentView(mBinding.root)
@@ -40,15 +39,7 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
 
     abstract fun getViewBinding(): VB
 
-    protected open fun getViewModel(): VM? {
-        val type = javaClass.genericSuperclass
-        if (type != null && type is ParameterizedType) {
-            val actualTypeArguments = type.actualTypeArguments
-            val tClass = actualTypeArguments[1]
-            return ViewModelProvider(this)[tClass as Class<VM>]
-        }
-        return null
-    }
+    abstract fun getViewModelClass(): Class<VM>
 
     fun setLoadingProgress(loading: Boolean) {
         if (loading) {
@@ -89,13 +80,14 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
     fun showPaymentInProgress() {
     }
 
-    fun showAlert(title: String, message: String) {
+    fun showAlert(title: String, message: String, callback: (() -> Unit)? = null) {
         AlertDialog.Builder(this)
             .setTitle(title)
             .setMessage(message)
             .setCancelable(false)
             .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
                 dialogInterface.dismiss()
+                callback?.invoke()
             }
             .create()
             .show()

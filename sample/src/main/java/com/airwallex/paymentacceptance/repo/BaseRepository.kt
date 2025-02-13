@@ -9,7 +9,7 @@ interface BaseRepository {
         customerId: String? = null
     ): PaymentIntent
 
-    suspend fun getCustomerIdFromServer(): String
+    suspend fun getCustomerIdFromServer(saveCustomerIdToSetting: Boolean): String
 
     suspend fun getClientSecretFromServer(customerId: String): String
 }

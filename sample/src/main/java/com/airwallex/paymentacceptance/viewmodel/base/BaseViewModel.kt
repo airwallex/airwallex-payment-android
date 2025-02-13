@@ -55,8 +55,8 @@ abstract class BaseViewModel : ViewModel() {
      * it is only a prerequisite method for initiating the payment flow in the demo.
      * do not copy this method;instead, obtain the customerId from your own server.
      */
-    suspend fun getCustomerIdFromServer(): String {
-        return repository.getCustomerIdFromServer()
+    suspend fun getCustomerIdFromServer(saveCustomerIdToSetting: Boolean = true): String {
+        return repository.getCustomerIdFromServer(saveCustomerIdToSetting)
     }
 
     /**
