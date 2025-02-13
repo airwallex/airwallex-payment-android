@@ -78,7 +78,7 @@ val card: PaymentMethod.Card
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> "4012000300001003"
         }
         return PaymentMethod.Card.Builder()
-            .setNumber(if (Settings.environment == Environment.STAGING) stagingCardNumber else demoCardNumber)
+            .setNumber(if (Settings.getEnvironment() == Environment.STAGING) stagingCardNumber else demoCardNumber)
             .setName("John Citizen")
             .setExpiryMonth("12")
             .setExpiryYear("2029")
@@ -99,7 +99,7 @@ val card3DS: PaymentMethod.Card
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> "4012000300000088"
         }
         return PaymentMethod.Card.Builder()
-            .setNumber(if (Settings.environment == Environment.STAGING) stagingCardNumber else demoCardNumber)
+            .setNumber(if (Settings.getEnvironment() == Environment.STAGING) stagingCardNumber else demoCardNumber)
             .setName("John Citizen")
             .setExpiryMonth("12")
             .setExpiryYear("2029")
