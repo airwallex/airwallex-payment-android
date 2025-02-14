@@ -92,7 +92,7 @@ class PACheckoutDemoRepository : BaseRepository {
         PaymentIntentParser().parse(JSONObject(paymentIntentResponse.string()))
     }
 
-    override suspend fun getCustomerIdFromServer(): String = checkToken {
+    override suspend fun getCustomerIdFromServer(saveCustomerIdToSetting: Boolean): String = checkToken {
         Settings.cachedCustomerId.takeIf { !it.isNullOrEmpty() } ?: run {
             val customerResponse = api.createCustomer(
                 mutableMapOf(
