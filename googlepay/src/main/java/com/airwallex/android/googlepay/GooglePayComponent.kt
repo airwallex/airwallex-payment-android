@@ -12,12 +12,10 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardNextActionModel
-import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
-import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
 import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
 import com.airwallex.android.ui.AirwallexActivityLaunch
@@ -32,7 +30,6 @@ class GooglePayComponent : ActionComponent {
 
     override fun initialize(application: Application) {
         AirwallexActivityLaunch.initialize(application)
-        AirwallexSecurityConnector().initialize(application)
     }
 
     override fun handlePaymentIntentResponse(
@@ -131,15 +128,5 @@ class GooglePayComponent : ActionComponent {
             return true
         }
         return false
-    }
-
-    override fun retrieveSecurityToken(
-        sessionId: String,
-        securityTokenListener: SecurityTokenListener
-    ) {
-        AirwallexSecurityConnector().retrieveSecurityToken(
-            sessionId,
-            securityTokenListener
-        )
     }
 }

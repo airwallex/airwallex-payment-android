@@ -5,7 +5,6 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
-import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.wechat.WeChatComponentProvider
 import io.mockk.mockk
@@ -109,25 +108,5 @@ class WeChatComponentProviderTest {
     fun onActivityResultTest() {
         val weChatComponentProvider = WeChatComponentProvider()
         assertEquals(false, weChatComponentProvider.get().handleActivityResult(1, 1, null))
-    }
-
-    @Test
-    fun retrieveSecurityTokenTest() {
-        val weChatComponentProvider = WeChatComponentProvider()
-
-        val latch = CountDownLatch(1)
-        var device = ""
-        weChatComponentProvider.get().retrieveSecurityToken(
-            "session_id",
-            object :
-                SecurityTokenListener {
-                override fun onResponse(deviceId: String) {
-                    device = deviceId
-                    latch.countDown()
-                }
-            }
-        )
-        latch.await()
-        assertEquals("session_id", device)
     }
 }

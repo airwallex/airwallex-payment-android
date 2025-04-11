@@ -31,9 +31,4 @@ interface ActionComponent {
         data: Intent?,
         listener: Airwallex.PaymentResultListener? = null
     ): Boolean
-
-    fun retrieveSecurityToken(
-        sessionId: String,
-        securityTokenListener: SecurityTokenListener
-    )
 }

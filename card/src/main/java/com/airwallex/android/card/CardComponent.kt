@@ -11,7 +11,6 @@ import com.airwallex.android.core.*
 import com.airwallex.android.core.data.AirwallexCheckoutParam
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.model.*
-import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
 import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
 import com.airwallex.android.ui.AirwallexActivityLaunch
@@ -24,7 +23,6 @@ class CardComponent : ActionComponent {
 
     override fun initialize(application: Application) {
         AirwallexActivityLaunch.initialize(application)
-        AirwallexSecurityConnector().initialize(application)
     }
 
     override fun handlePaymentIntentResponse(
@@ -125,15 +123,5 @@ class CardComponent : ActionComponent {
             }
         }
         return AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "unknown cvc error"))
-    }
-
-    override fun retrieveSecurityToken(
-        sessionId: String,
-        securityTokenListener: SecurityTokenListener
-    ) {
-        AirwallexSecurityConnector().retrieveSecurityToken(
-            sessionId,
-            securityTokenListener
-        )
     }
 }
