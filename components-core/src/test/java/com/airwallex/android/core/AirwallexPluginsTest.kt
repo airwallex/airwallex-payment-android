@@ -62,13 +62,6 @@ class AirwallexPluginsTest {
         ): Boolean {
             return false
         }
-
-        override fun retrieveSecurityToken(
-            sessionId: String,
-            securityTokenListener: SecurityTokenListener
-        ) {
-            // no-op
-        }
     }
 
     @Test
