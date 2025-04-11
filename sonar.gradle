@@ -92,7 +92,6 @@ sonarqube {
                 '**/*ActivityLaunch*.*',
                 '**/core/Airwallex.kt',
                 '**/AirwallexHttpClient.kt',
-                '**/card/AirwallexSecurityConnector.kt',
                 '**/AirwallexStarter.kt',
                 '**/*InputLayout.kt',
                 '**/*EditText.kt',

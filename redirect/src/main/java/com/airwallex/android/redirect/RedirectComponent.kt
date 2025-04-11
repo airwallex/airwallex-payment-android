@@ -12,7 +12,6 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.redirect.exception.RedirectException
 import com.airwallex.android.redirect.util.RedirectUtil
-import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
 
 class RedirectComponent : ActionComponent {
 
@@ -81,15 +80,5 @@ class RedirectComponent : ActionComponent {
         listener: Airwallex.PaymentResultListener?
     ): Boolean {
         return false
-    }
-
-    override fun retrieveSecurityToken(
-        sessionId: String,
-        securityTokenListener: SecurityTokenListener
-    ) {
-        AirwallexSecurityConnector().retrieveSecurityToken(
-            sessionId,
-            securityTokenListener
-        )
     }
 }

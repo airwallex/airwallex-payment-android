@@ -114,7 +114,6 @@ project.afterEvaluate { project ->
                 '**/*ViewModelFactory.*',
                 '**/*ScreenEvent.*',
                 '**/core/Airwallex.kt',
-                '**/card/AirwallexSecurityConnector.kt',
                 '**/AirwallexStarter.kt',
                 '**/*InputLayout.kt',
                 '**/*EditText.kt',

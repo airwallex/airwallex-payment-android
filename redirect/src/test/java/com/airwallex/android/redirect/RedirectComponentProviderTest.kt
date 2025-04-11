@@ -5,7 +5,6 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
-import com.airwallex.android.core.SecurityTokenListener
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.redirect.util.ThemeUtil
 import io.mockk.*
@@ -110,25 +109,5 @@ class RedirectComponentProviderTest {
     fun onActivityResultTest() {
         val redirectComponentProvider = RedirectComponentProvider()
         assertEquals(false, redirectComponentProvider.get().handleActivityResult(1, 1, null))
-    }
-
-    @Test
-    fun retrieveSecurityTokenTest() {
-        val redirectComponentProvider = RedirectComponentProvider()
-
-        val latch = CountDownLatch(1)
-        var device = "11"
-        redirectComponentProvider.get().retrieveSecurityToken(
-            "11",
-            object :
-                SecurityTokenListener {
-                override fun onResponse(deviceId: String) {
-                    device = deviceId
-                    latch.countDown()
-                }
-            }
-        )
-        latch.await()
-        assertEquals("11", device)
     }
 }

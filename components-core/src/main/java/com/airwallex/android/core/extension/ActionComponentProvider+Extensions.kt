@@ -21,68 +21,60 @@ internal fun ActionComponent.confirmGooglePayIntent(
     autoCapture: Boolean,
     listener: Airwallex.PaymentResultListener
 ) {
-    retrieveSecurityToken(
-        AirwallexRisk.sessionId.toString(),
-        object : SecurityTokenListener {
-            @Suppress("LongMethod")
-            override fun onResponse(deviceId: String) {
-                val device = paymentManager.buildDeviceInfo(deviceId)
-                val threeDSecure = ThreeDSecure.Builder()
-                    .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl()).build()
-                val request = PaymentIntentConfirmRequest.Builder(UUID.randomUUID().toString())
-                    .setPaymentMethodOptions(
-                        PaymentMethodOptions.Builder()
-                            .setCardOptions(
-                                PaymentMethodOptions.CardOptions.Builder()
-                                    .setAutoCapture(autoCapture)
-                                    .setThreeDSecure(threeDSecure).build()
-                            )
-                            .build()
-                    )
-                    .setDevice(device)
-                    .setPaymentMethodRequest(
-                        PaymentMethodRequest.Builder(PaymentMethodType.GOOGLEPAY.value)
-                            .setGooglePayPaymentMethodRequest(googlePay)
-                            .build()
-                    )
-                    .build()
-                val options = Options.ConfirmPaymentIntentOptions(
-                    clientSecret = clientSecret,
-                    paymentIntentId = paymentIntentId,
-                    request = request
+    val device = paymentManager.buildDeviceInfo(AirwallexRisk.sessionId.toString())
+    val threeDSecure = ThreeDSecure.Builder()
+        .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl()).build()
+    val request = PaymentIntentConfirmRequest.Builder(UUID.randomUUID().toString())
+        .setPaymentMethodOptions(
+            PaymentMethodOptions.Builder()
+                .setCardOptions(
+                    PaymentMethodOptions.CardOptions.Builder()
+                        .setAutoCapture(autoCapture)
+                        .setThreeDSecure(threeDSecure).build()
                 )
-                paymentManager.startOperation(
-                    options,
-                    object : Airwallex.PaymentListener<PaymentIntent> {
-                        override fun onSuccess(response: PaymentIntent) {
-                            if (response.nextAction != null) {
-                                val cardNextActionModel = CardNextActionModel(
-                                    paymentManager = paymentManager,
-                                    clientSecret = clientSecret,
-                                    device = device,
-                                    paymentIntentId = response.id,
-                                    currency = response.currency,
-                                    amount = response.amount
-                                )
-                                handlePaymentIntentResponse(
-                                    response.id,
-                                    response.nextAction,
-                                    fragment,
-                                    activity,
-                                    applicationContext,
-                                    cardNextActionModel,
-                                    listener
-                                )
-                            } else {
-                                listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
-                            }
-                        }
+                .build()
+        )
+        .setDevice(device)
+        .setPaymentMethodRequest(
+            PaymentMethodRequest.Builder(PaymentMethodType.GOOGLEPAY.value)
+                .setGooglePayPaymentMethodRequest(googlePay)
+                .build()
+        )
+        .build()
+    val options = Options.ConfirmPaymentIntentOptions(
+        clientSecret = clientSecret,
+        paymentIntentId = paymentIntentId,
+        request = request
+    )
+    paymentManager.startOperation(
+        options,
+        object : Airwallex.PaymentListener<PaymentIntent> {
+            override fun onSuccess(response: PaymentIntent) {
+                if (response.nextAction != null) {
+                    val cardNextActionModel = CardNextActionModel(
+                        paymentManager = paymentManager,
+                        clientSecret = clientSecret,
+                        device = device,
+                        paymentIntentId = response.id,
+                        currency = response.currency,
+                        amount = response.amount
+                    )
+                    handlePaymentIntentResponse(
+                        response.id,
+                        response.nextAction,
+                        fragment,
+                        activity,
+                        applicationContext,
+                        cardNextActionModel,
+                        listener
+                    )
+                } else {
+                    listener.onCompleted(AirwallexPaymentStatus.Success(response.id))
+                }
+            }
 
-                        override fun onFailed(exception: AirwallexException) {
-                            listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
-                        }
-                    }
-                )
+            override fun onFailed(exception: AirwallexException) {
+                listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
             }
         }
     )

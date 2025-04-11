@@ -11,7 +11,6 @@ import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.parser.PaymentIntentParser
 import io.mockk.*
 import org.json.JSONObject
-import org.junit.Before
 import org.junit.Test
 
 class ActionComponentProviderExtensionsTest {
@@ -29,14 +28,6 @@ class ActionComponentProviderExtensionsTest {
         .setPaymentDataType("payment_data_type")
         .setEncryptedPaymentToken("encrypted_payment_token")
         .build()
-    private val securityListener = slot<SecurityTokenListener>()
-
-    @Before
-    fun setUp() {
-        every { actionComponent.retrieveSecurityToken(any(), capture(securityListener)) } answers {
-            securityListener.captured.onResponse("device id")
-        }
-    }
 
     @Test
     fun `test confirmGooglePayIntent with next action`() {

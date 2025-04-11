@@ -9,7 +9,6 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
 import com.airwallex.android.core.model.parser.PageParser
-import com.airwallex.android.threedsecurity.AirwallexSecurityConnector
 import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
 import com.airwallex.android.ui.extension.getExtraResult
@@ -51,7 +50,6 @@ class GooglePayComponentTest {
     @Before
     fun setUp() {
         mockkObject(ThreeDSecurityManager)
-        mockkConstructor(AirwallexSecurityConnector::class)
         mockkConstructor(GooglePayActivityLaunch::class)
         component = GooglePayComponent()
 
@@ -69,7 +67,6 @@ class GooglePayComponentTest {
     @After
     fun unmockStatics() {
         unmockkObject(ThreeDSecurityManager)
-        unmockkConstructor(AirwallexSecurityConnector::class)
         unmockkConstructor(GooglePayActivityLaunch::class)
     }
 
@@ -191,17 +188,6 @@ class GooglePayComponentTest {
         handlePaymentIntentResponse()
         assert(component.handleActivityResult(1007, RESULT_OK, intent, listener))
         verify(exactly = 1) { listener.onCompleted(AirwallexPaymentStatus.Success("id", null, map)) }
-    }
-
-    @Test
-    fun `test retrieveSecurityToken`() {
-        val securityListener = mockk<SecurityTokenListener>()
-        val connector = MockKGateway.implementation().constructorMockFactory.mockPlaceholder(
-            AirwallexSecurityConnector::class
-        )
-        every { connector.retrieveSecurityToken(any(), securityListener) } just runs
-        component.retrieveSecurityToken("id", securityListener)
-        verify(exactly = 1) { connector.retrieveSecurityToken(any(), securityListener) }
     }
 
     private fun handlePaymentIntentResponse(
