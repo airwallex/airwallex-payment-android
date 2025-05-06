@@ -4,7 +4,6 @@ plugins {
 }
 
 apply from: "$rootProject.projectDir/android-module.gradle"
-apply from: "$rootProject.projectDir/android-shared-compose.gradle"
 
 android {
     namespace 'com.airwallex.android.googlepay'
