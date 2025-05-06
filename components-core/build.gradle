@@ -5,6 +5,7 @@ plugins {
 }
 
 apply from: "$rootProject.projectDir/android-module.gradle"
+apply from: "$rootProject.projectDir/android-shared-compose.gradle"
 
 def API_VERSION = '"2021-11-25"'
 
