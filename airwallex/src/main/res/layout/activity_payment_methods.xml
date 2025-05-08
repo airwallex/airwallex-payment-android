@@ -14,9 +14,8 @@
         android:paddingHorizontal="24dp"
         android:text="@string/airwallex_payment_methods" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvPaymentMethods"
-        android:layout_marginTop="16dp"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/compose_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
