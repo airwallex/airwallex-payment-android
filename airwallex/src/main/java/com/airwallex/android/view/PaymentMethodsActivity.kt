@@ -184,7 +184,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         Spacer(modifier = Modifier.height(24.dp))
 
                         PaymentMethodsHorizontalList(
-                            availablePaymentConsents = availablePaymentConsents,
                             availablePaymentMethodTypes = availablePaymentMethodTypes.filterNot { paymentMethodType ->
                                 paymentMethodType.name == GooglePayConstants.GOOGLE_PAY_NAME
                             },
