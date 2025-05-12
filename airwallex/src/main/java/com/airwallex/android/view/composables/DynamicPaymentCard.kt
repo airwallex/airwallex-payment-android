@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +38,7 @@ internal fun DynamicPaymentCard(
 ) {
     var isSelected by rememberSaveable { mutableStateOf(false) }
 
-    val borderColor = if (isSelected) AirwallexColor.Interactive else AirwallexColor.Gray20
+    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiaryContainer
     val overlayColor = AirwallexColor.Transparent
 
     Card(

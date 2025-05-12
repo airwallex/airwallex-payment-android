@@ -26,6 +26,7 @@ import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
@@ -34,7 +35,6 @@ import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.composables.GooglePaySection
 import com.airwallex.android.view.composables.PaymentMethodsHorizontalList
-import com.airwallex.android.view.util.GooglePayConstants
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.risk.AirwallexRisk
 
@@ -156,7 +156,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
         val allowedPaymentMethods = session.googlePayOptions?.let { googlePayOptions ->
             availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
-                paymentMethodType.name == GooglePayConstants.GOOGLE_PAY_NAME
+                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
             }?.let { paymentMethodType ->
                 GooglePayUtil.retrieveAllowedPaymentMethods(
                     googlePayOptions,
@@ -185,7 +185,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
                         PaymentMethodsHorizontalList(
                             availablePaymentMethodTypes = availablePaymentMethodTypes.filterNot { paymentMethodType ->
-                                paymentMethodType.name == GooglePayConstants.GOOGLE_PAY_NAME
+                                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
                             },
                         )
                     }

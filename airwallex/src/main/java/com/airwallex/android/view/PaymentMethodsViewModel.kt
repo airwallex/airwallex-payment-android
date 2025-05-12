@@ -181,7 +181,7 @@ internal class PaymentMethodsViewModel(
 
     fun checkoutWithGooglePay() {
         viewModelScope.launch {
-            AirwallexLogger.info("PaymentMethodsViewModel start checkout checkoutGooglePay, type = ${PaymentMethodType.GOOGLEPAY}")
+            AirwallexLogger.info("PaymentMethodsViewModel checkoutWithGooglePay")
             checkoutGooglePay().also {
                 trackPaymentSuccess(it, PaymentMethodType.GOOGLEPAY.value)
                 _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)

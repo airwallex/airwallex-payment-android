@@ -106,8 +106,6 @@ object GooglePayUtil {
 }
 
 object GooglePayConstants {
-    const val GOOGLE_PAY_NAME = "googlepay"
-
     val DEFAULT_SUPPORTED_METHODS = listOf(
         "PAN_ONLY",
         "CRYPTOGRAM_3DS"
