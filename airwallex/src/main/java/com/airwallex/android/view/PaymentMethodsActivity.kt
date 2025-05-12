@@ -1,13 +1,16 @@
 package com.airwallex.android.view
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -23,11 +26,16 @@ import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
+import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
+import com.airwallex.android.view.composables.GooglePaySection
+import com.airwallex.android.view.composables.PaymentMethodsHorizontalList
+import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.risk.AirwallexRisk
 
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
@@ -81,7 +89,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             setLoadingProgress(loading = false)
             when (result) {
                 is PaymentMethodsViewModel.PaymentMethodResult.Show -> {
-                    initAdapter(result.methods.first, result.methods.second)
+                    initView(result.methods.first, result.methods.second)
                 }
 
                 is PaymentMethodsViewModel.PaymentMethodResult.Skip -> {
@@ -141,55 +149,86 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         }
     }
 
-    private fun initAdapter(
+    private fun initView(
         availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
         availablePaymentConsents: List<PaymentConsent>
     ) {
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
-        val viewManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        val paymentAdapter = PaymentMethodsAdapter(
-            availablePaymentMethodTypes = availablePaymentMethodTypes,
-            availablePaymentConsents = availablePaymentConsents,
-            listener = paymentMethodsAdapterListener
-        )
-        viewBinding.rvPaymentMethods.apply {
-            layoutManager = viewManager
-            adapter = paymentAdapter
-            addItemDecoration(
-                PaymentMethodsDividerItemDecoration(
-                    this@PaymentMethodsActivity,
-                    R.drawable.airwallex_line_divider
-                )
-            )
-        }
-        initPaymentMethodSwipeCallback(paymentAdapter, createFactory(paymentAdapter))
-    }
-
-    private fun initPaymentMethodSwipeCallback(
-        adapter: PaymentMethodsAdapter,
-        factory: DeletePaymentMethodDialogFactory
-    ) {
-        object :
-            PaymentMethodSwipeCallback(this@PaymentMethodsActivity, viewBinding.rvPaymentMethods) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: ArrayList<UnderlayButton>
-            ) {
-                underlayButtons.add(
-                    UnderlayButton(
-                        text = resources.getString(R.string.airwallex_delete_payment_method_positive),
-                        textSize = resources.getDimensionPixelSize(R.dimen.swipe_size),
-                        color = ContextCompat.getColor(baseContext, R.color.airwallex_color_red),
-                        clickListener = object : UnderlayButtonClickListener {
-                            override fun onClick(position: Int) {
-                                factory.create(adapter.getPaymentConsentAtPosition(position)).show()
-                            }
-                        }
-                    )
+        val allowedPaymentMethods = session.googlePayOptions?.let { googlePayOptions ->
+            availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
+                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
+            }?.let { paymentMethodType ->
+                GooglePayUtil.retrieveAllowedPaymentMethods(
+                    googlePayOptions,
+                    paymentMethodType.cardSchemes,
                 )
             }
         }
+        AirwallexLogger.debug("allowedPaymentMethods: ${allowedPaymentMethods.toString()}")
+        viewBinding.composeView.apply {
+            setContent {
+                AirwallexTheme {
+                    Column {
+                        allowedPaymentMethods?.let { allowedPaymentMethods ->
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            GooglePaySection(
+                                modifier = Modifier
+                                    .padding(horizontal = 24.dp)
+                                    .fillMaxWidth(),
+                                allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
+                                onClick = viewModel::checkoutWithGooglePay,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        PaymentMethodsHorizontalList(
+                            availablePaymentMethodTypes = availablePaymentMethodTypes.filterNot { paymentMethodType ->
+                                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
+                            },
+                        )
+                    }
+                }
+            }
+
+//            layoutManager = viewManager
+//            adapter = paymentAdapter
+//            addItemDecoration(
+//                PaymentMethodsDividerItemDecoration(
+//                    this@PaymentMethodsActivity,
+//                    R.drawable.airwallex_line_divider
+//                )
+//            )
+        }
+//        initPaymentMethodSwipeCallback(paymentAdapter, createFactory(paymentAdapter))
     }
+
+//    private fun initPaymentMethodSwipeCallback(
+//        adapter: PaymentMethodsAdapter,
+//        factory: DeletePaymentMethodDialogFactory
+//    ) {
+//        object :
+//            PaymentMethodSwipeCallback(this@PaymentMethodsActivity, viewBinding.rvPaymentMethods) {
+//            override fun instantiateUnderlayButton(
+//                viewHolder: RecyclerView.ViewHolder?,
+//                underlayButtons: ArrayList<UnderlayButton>
+//            ) {
+//                underlayButtons.add(
+//                    UnderlayButton(
+//                        text = resources.getString(R.string.airwallex_delete_payment_method_positive),
+//                        textSize = resources.getDimensionPixelSize(R.dimen.swipe_size),
+//                        color = ContextCompat.getColor(baseContext, R.color.airwallex_color_red),
+//                        clickListener = object : UnderlayButtonClickListener {
+//                            override fun onClick(position: Int) {
+//                                factory.create(adapter.getPaymentConsentAtPosition(position)).show()
+//                            }
+//                        }
+//                    )
+//                )
+//            }
+//        }
+//    }
 
     private fun createFactory(adapter: PaymentMethodsAdapter): DeletePaymentMethodDialogFactory {
         return DeletePaymentMethodDialogFactory(this, adapter) { paymentConsent ->
@@ -272,7 +311,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     private fun handleAddPaymentMethodActivityResult(resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
             result?.let {
                 if (it.exception == null) {
@@ -284,12 +323,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     consentId = it.consentId
                 )
             }
-        } else if (resultCode == Activity.RESULT_CANCELED) {
+        } else if (resultCode == RESULT_CANCELED) {
             val result = AddPaymentMethodActivityLaunch.CancellationResult.fromIntent(data)
             AirwallexLogger.info("PaymentMethodsActivity onActivityResult: result_canceled")
             result?.let {
                 if (it.isSinglePaymentMethod) {
-                    setResult(Activity.RESULT_CANCELED)
+                    setResult(RESULT_CANCELED)
                     finish()
                 }
             }
@@ -331,7 +370,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         setLoadingProgress(false)
         AirwallexLogger.info("PaymentMethodsActivity finishWithPaymentIntent")
         setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtras(
                 PaymentMethodsActivityLaunch.Result(
                     paymentIntentId = paymentIntentId,
