@@ -203,6 +203,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                             availablePaymentMethodTypes = availablePaymentMethodTypes.filterNot { paymentMethodType ->
                                 paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
                             },
+                            onAddCard = {}, // TODO
                         )
                     }
                 }

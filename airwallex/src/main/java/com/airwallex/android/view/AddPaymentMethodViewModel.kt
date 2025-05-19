@@ -151,14 +151,14 @@ class AddPaymentMethodViewModel(
     fun confirmPayment(card: PaymentMethod.Card, saveCard: Boolean, billing: Billing?) {
         airwallex.confirmPaymentIntent(
             session = session,
-            card,
+            card = card,
             billing = billing,
             saveCard = saveCard,
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     _airwallexPaymentStatus.value = status
                 }
-            }
+            },
         )
     }
 

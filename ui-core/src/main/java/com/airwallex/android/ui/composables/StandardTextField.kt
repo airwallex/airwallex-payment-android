@@ -43,7 +43,7 @@ fun StandardTextField(
     trailingAccessory: @Composable (() -> Unit)? = null,
     onFocusChanged: ((Boolean) -> Unit)? = null,
     onComplete: (() -> Unit)? = null,
-    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
 ) {
     AirwallexTheme {
         OutlinedTextField(
@@ -51,8 +51,8 @@ fun StandardTextField(
             onValueChange = onTextChanged,
             modifier = modifier
                 .fillMaxWidth()
-                .onFocusChanged {
-                    onFocusChanged?.invoke(it.isFocused)
+                .onFocusChanged { focusState ->
+                    onFocusChanged?.invoke(focusState.isFocused)
                 },
             enabled = enabled,
             readOnly = readOnly,
@@ -65,6 +65,7 @@ fun StandardTextField(
             keyboardOptions = options.makeKeyboardOptions(),
             keyboardActions = options.returnType.makeKeyboardAction(onComplete),
             singleLine = options.singleLine,
+            maxLines = 1,
             textStyle = textStyle,
             colors = textFieldColors(),
         )
@@ -140,7 +141,7 @@ private fun Hint(
             val text = "$hint *"
             append(text)
 
-            val baseStyle = MaterialTheme.typography.bodyLarge
+            val baseStyle = MaterialTheme.typography.bodyMedium
                 .toSpanStyle()
                 .copy(color = MaterialTheme.colorScheme.error)
             addStyle(style = baseStyle, start = text.length - 1, end = text.length)
@@ -150,7 +151,7 @@ private fun Hint(
             text = hint,
             textAlign = TextAlign.Left,
             color = AirwallexColor.Gray50,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }

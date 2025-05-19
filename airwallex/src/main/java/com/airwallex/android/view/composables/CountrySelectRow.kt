@@ -32,6 +32,7 @@ internal fun CountrySelectRow(
 ) {
     val focusManager = LocalFocusManager.current
     var selectedValue by remember { mutableStateOf(default) }
+    selectedValue = default
     var selectedLabel by remember { mutableStateOf<String?>(null) }
     selectedLabel = options.firstOrNull { it.second == selectedValue }?.first ?: selectedLabel
 

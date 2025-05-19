@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 internal fun PaymentMethodsSection(
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
+    onAddCard: () -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { availablePaymentMethodTypes.size })
     val coroutineScope = rememberCoroutineScope()
@@ -63,6 +64,7 @@ internal fun PaymentMethodsSection(
                     AddCardScreen(
                         viewModel = addPaymentMethodViewModel,
                         type = type,
+                        onConfirm = onAddCard,
                     )
                 }
                 else -> {

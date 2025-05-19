@@ -3,7 +3,6 @@ package com.airwallex.android.view.composables
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,6 +22,7 @@ private const val CARD_BRAND_SWITCH_INTERVAL = 2000L
 @Suppress("ComplexMethod", "LongMethod")
 @Composable
 internal fun CardBrandTrailingAccessory(
+    modifier: Modifier = Modifier,
     schemes: List<CardScheme>,
     brand: CardBrand = CardBrand.Unknown,
     displayAllSchemes: Boolean,
@@ -33,7 +33,7 @@ internal fun CardBrandTrailingAccessory(
                 Image(
                     painter = painterResource(id = icon),
                     contentDescription = "card",
-                    modifier = Modifier.padding(horizontal = 2.dp),
+                    modifier = modifier,
                 )
             }
             if (schemes.size > MAX_FIXED_SCHEMES) {
@@ -51,8 +51,7 @@ internal fun CardBrandTrailingAccessory(
                     Image(
                         painter = painterResource(id = cardBrandImages[currentImageIndex.intValue]),
                         contentDescription = "card",
-                        modifier = Modifier
-                            .padding(horizontal = 2.dp),
+                        modifier = modifier,
                     )
                 }
             }
@@ -63,42 +62,42 @@ internal fun CardBrandTrailingAccessory(
             CardBrand.Visa -> Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_visa),
                 contentDescription = "card",
-                modifier = Modifier.padding(horizontal = 2.dp),
+                modifier = modifier,
             )
             CardBrand.MasterCard -> Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_mastercard),
                 contentDescription = "card",
-                modifier = Modifier.padding(horizontal = 2.dp),
+                modifier = modifier,
             )
             CardBrand.Amex -> Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_amex),
                 contentDescription = "card",
-                modifier = Modifier.padding(horizontal = 2.dp),
+                modifier = modifier,
             )
             CardBrand.UnionPay -> Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_unionpay),
                 contentDescription = "card",
-                modifier = Modifier.padding(horizontal = 2.dp),
+                modifier = modifier,
             )
             CardBrand.JCB -> Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_jcb),
                 contentDescription = "card",
-                modifier = Modifier.padding(horizontal = 2.dp),
+                modifier = modifier,
             )
             CardBrand.DISCOVER -> Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_discover),
                 contentDescription = "card",
-                modifier = Modifier.padding(horizontal = 2.dp),
+                modifier = modifier,
             )
             CardBrand.DINERS -> Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_diners),
                 contentDescription = "card",
-                modifier = Modifier.padding(horizontal = 2.dp),
+                modifier = modifier,
             )
             CardBrand.Unknown -> Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_unsupported),
                 contentDescription = "card",
-                modifier = Modifier.padding(horizontal = 2.dp),
+                modifier = modifier,
             )
         }
     }
