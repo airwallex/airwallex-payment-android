@@ -120,7 +120,7 @@ object CardUtils {
         return spacePositions
     }
 
-    fun formatCardNumber(input: String, brand: CardBrand, onComplete: ((String) -> Unit)): String {
+    fun formatCardNumber(input: String, brand: CardBrand): String {
         val maxCardLength = brand.lengths.max() + brand.spacingPattern.size - 1
         var formattedText = input.take(maxCardLength)
         val spacePositions = getSpacePositions(brand)
@@ -129,10 +129,6 @@ object CardUtils {
             if (formattedText.length > index && formattedText[index] != ' ') {
                 formattedText = formattedText.substring(0, index) + ' ' + formattedText.substring(index)
             }
-        }
-
-        if (formattedText.length == maxCardLength) {
-            onComplete(formattedText)
         }
 
         return formattedText

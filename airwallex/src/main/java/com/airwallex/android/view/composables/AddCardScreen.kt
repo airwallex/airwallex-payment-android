@@ -14,12 +14,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
@@ -34,8 +37,12 @@ import com.airwallex.android.view.util.CountryUtils
 internal fun AddCardScreen(
     viewModel: AddPaymentMethodViewModel,
     type: AvailablePaymentMethodType,
+    onConfirm: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
+    val expiryFocusRequester = remember { FocusRequester() }
+    val cvvFocusRequester = remember { FocusRequester() }
+    val nameFocusRequest = remember { FocusRequester() }
 
     var brand by remember { mutableStateOf(CardBrand.Unknown) }
     var cardNumber by remember { mutableStateOf("") }
@@ -85,7 +92,10 @@ internal fun AddCardScreen(
                 .padding(horizontal = 24.dp),
             onComplete = { input ->
                 cardNumberErrorMessage = viewModel.validateCardNumber(input)
-                focusManager.moveFocus(FocusDirection.Down)
+                expiryFocusRequester.requestFocus()
+            },
+            onFocusLost = { input ->
+                cardNumberErrorMessage = viewModel.validateCardNumber(input)
             },
             isError = cardNumberErrorMessage != null,
         )
@@ -97,14 +107,17 @@ internal fun AddCardScreen(
                 },
                 onComplete = { input ->
                     expiryDateErrorMessage = viewModel.validateExpiryDate(input)
-                    focusManager.moveFocus(FocusDirection.Right)
+                    cvvFocusRequester.requestFocus()
                 },
                 modifier = Modifier
+                    .focusRequester(expiryFocusRequester)
                     .padding(start = 24.dp)
                     .weight(1f),
+                onFocusLost = { input ->
+                    expiryDateErrorMessage = viewModel.validateExpiryDate(input)
+                },
                 isError = expiryDateErrorMessage != null,
             )
-
             CardCvcTextField(
                 cardBrand = brand,
                 onTextChanged = { value ->
@@ -112,9 +125,13 @@ internal fun AddCardScreen(
                 },
                 onComplete = { input ->
                     cvvErrorMessage = viewModel.validateCvv(input, brand)
-                    focusManager.moveFocus(FocusDirection.Down)
+                    nameFocusRequest.requestFocus()
+                },
+                onFocusLost = { input ->
+                    cvvErrorMessage = viewModel.validateCvv(input, brand)
                 },
                 modifier = Modifier
+                    .focusRequester(cvvFocusRequester)
                     .padding(end = 24.dp)
                     .weight(1f),
                 isError = cvvErrorMessage != null,
@@ -154,10 +171,15 @@ internal fun AddCardScreen(
             },
             onComplete = { input ->
                 cardHolderNameErrorMessage = viewModel.validateCardHolderName(input)
-                focusManager.moveFocus(FocusDirection.Down)
+                if (isEditEnabled || viewModel.isEmailRequired) {
+                    focusManager.moveFocus(FocusDirection.Down)
+                } else {
+                    focusManager.clearFocus()
+                }
             },
             errorText = cardHolderNameErrorMessage?.let { stringResource(id = it) },
             modifier = Modifier
+                .focusRequester(nameFocusRequest)
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
         )
@@ -183,7 +205,7 @@ internal fun AddCardScreen(
                 },
                 onComplete = { input ->
                     cardHolderEmailErrorMessage = viewModel.validateEmail(input)
-                    focusManager.moveFocus(FocusDirection.Down)
+                    focusManager.clearFocus()
                 },
                 errorText = cardHolderEmailErrorMessage?.let { stringResource(id = it) },
                 modifier = Modifier
@@ -214,6 +236,12 @@ internal fun AddCardScreen(
                     modifier = Modifier.padding(horizontal = 24.dp),
                     onCheckedChange = {
                         isEditEnabled = !it
+                        selectedCountryCode = viewModel.countryCode
+                        street = viewModel.shipping?.address?.street.orEmpty()
+                        state = viewModel.shipping?.address?.state.orEmpty()
+                        city = viewModel.shipping?.address?.city.orEmpty()
+                        zipCode = viewModel.shipping?.address?.postcode.orEmpty()
+                        phoneNumber = viewModel.shipping?.phoneNumber.orEmpty()
                     },
                 )
 
@@ -232,7 +260,7 @@ internal fun AddCardScreen(
 
                 BillingTextField(
                     hint = stringResource(id = R.string.airwallex_shipping_street_hint),
-                    text = if (isEditEnabled) street else viewModel.shipping?.address?.street.orEmpty(),
+                    text = street,
                     onTextChanged = {
                         street = it.text
                     },
@@ -248,7 +276,7 @@ internal fun AddCardScreen(
                 Row {
                     BillingTextField(
                         hint = stringResource(id = R.string.airwallex_shipping_state_name_hint),
-                        text = if (isEditEnabled) state else viewModel.shipping?.address?.state.orEmpty(),
+                        text = state,
                         onTextChanged = {
                             state = it.text
                         },
@@ -264,7 +292,7 @@ internal fun AddCardScreen(
                     )
                     BillingTextField(
                         hint = stringResource(id = R.string.airwallex_shipping_city_name_hint),
-                        text = if (isEditEnabled) city else viewModel.shipping?.address?.city.orEmpty(),
+                        text = city,
                         onTextChanged = {
                             city = it.text
                         },
@@ -282,7 +310,7 @@ internal fun AddCardScreen(
 
                 BillingTextField(
                     hint = stringResource(id = R.string.airwallex_shipping_zip_code_hint),
-                    text = if (isEditEnabled) zipCode else viewModel.shipping?.address?.postcode.orEmpty(),
+                    text = zipCode,
                     onTextChanged = {
                         zipCode = it.text
                     },
@@ -297,7 +325,7 @@ internal fun AddCardScreen(
 
                 BillingTextField(
                     hint = stringResource(id = R.string.airwallex_contact_phone_number_hint),
-                    text = if (isEditEnabled) phoneNumber else viewModel.shipping?.phoneNumber.orEmpty(),
+                    text = phoneNumber,
                     onTextChanged = {
                         phoneNumber = it.text
                     },
@@ -334,7 +362,9 @@ internal fun AddCardScreen(
                 expiryDateErrorMessage = viewModel.validateExpiryDate(expiryDate)
                 cvvErrorMessage = viewModel.validateCvv(cvv, brand)
                 cardHolderNameErrorMessage = viewModel.validateCardHolderName(cardHolderName)
-                cardHolderEmailErrorMessage = viewModel.validateEmail(email)
+                if (viewModel.isEmailRequired) {
+                    cardHolderEmailErrorMessage = viewModel.validateEmail(email)
+                }
                 if (viewModel.isBillingRequired) {
                     streetErrorMessage = viewModel.validateBillingField(street, AddPaymentMethodViewModel.BillingFieldType.STREET)
                     stateErrorMessage = viewModel.validateBillingField(state, AddPaymentMethodViewModel.BillingFieldType.STATE)
@@ -342,7 +372,23 @@ internal fun AddCardScreen(
                     zipCodeErrorMessage = viewModel.validateBillingField(zipCode, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
                     phoneNumberErrorMessage = viewModel.validateBillingField(phoneNumber, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
                 }
-                // TODO: navigation
+                val allValidated = listOfNotNull(
+                    cardNumberErrorMessage,
+                    expiryDateErrorMessage,
+                    cvvErrorMessage,
+                    cardHolderNameErrorMessage,
+                    cardHolderEmailErrorMessage,
+                    streetErrorMessage,
+                    stateErrorMessage,
+                    cityErrorMessage,
+                    zipCodeErrorMessage,
+                    phoneNumberErrorMessage,
+                ).isEmpty()
+                if (allValidated) {
+                    // TODO: navigation
+                    AirwallexLogger.info("AddPaymentMethodActivity startCheckout")
+                    onConfirm()
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
