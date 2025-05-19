@@ -18,8 +18,8 @@ import com.airwallex.android.core.CardBrand
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
 
-private const val AmexCvvLength = 4
-private const val DefaultCvvLength = 3
+private const val AMEX_CVV_LENGTH = 4
+private const val DEFAULT_CVV_LENGTH = 3
 
 @Composable
 fun CardCvcTextField(
@@ -36,8 +36,8 @@ fun CardCvcTextField(
         text = textFieldValue,
         onTextChanged = { newText ->
             val cvcLength = when (cardBrand) {
-                CardBrand.Amex -> AmexCvvLength
-                else -> DefaultCvvLength
+                CardBrand.Amex -> AMEX_CVV_LENGTH
+                else -> DEFAULT_CVV_LENGTH
             }
             val newTextLength = newText.text.length
             val newCursorPosition = if (newTextLength > cvcLength) {

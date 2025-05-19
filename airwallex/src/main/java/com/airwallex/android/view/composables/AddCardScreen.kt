@@ -29,6 +29,7 @@ import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.util.CountryUtils
 
+@Suppress("ComplexMethod", "LongMethod")
 @Composable
 internal fun AddCardScreen(
     viewModel: AddPaymentMethodViewModel,
