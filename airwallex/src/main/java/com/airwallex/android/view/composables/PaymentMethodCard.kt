@@ -32,7 +32,7 @@ import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 
 @Composable
-internal fun DynamicPaymentCard(
+internal fun PaymentMethodCard(
     paymentMethodType: AvailablePaymentMethodType,
     onClick: () -> Unit,
 ) {
@@ -45,11 +45,9 @@ internal fun DynamicPaymentCard(
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, borderColor),
         onClick = {
-            if (!isSelected) {
-                isSelected = true
-                // TODO
-                onClick()
-            }
+            isSelected = true
+            // TODO
+            onClick()
         },
     ) {
         Box(
@@ -77,8 +75,8 @@ internal fun DynamicPaymentCard(
 
                 StandardText(
                     text = paymentMethodType.displayName ?: paymentMethodType.name,
-                    color = AirwallexColor.TextPrimary,
-                    typography = AirwallexTypography.Caption100,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else AirwallexColor.TextPrimary,
+                    typography = if (isSelected) AirwallexTypography.Caption100Bold else AirwallexTypography.Caption100,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()

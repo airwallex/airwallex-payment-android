@@ -106,7 +106,7 @@ object CardUtils {
      * e.g. spacing pattern 4-4-4-4 is correlated to space position 4-9-14
      */
     fun getSpacePositions(cardBrand: CardBrand): Set<Int> {
-        val spacePostions = mutableSetOf<Int>()
+        val spacePositions = mutableSetOf<Int>()
         var spaceIndex = 0
         var lastPosition = 0
         while (spaceIndex < cardBrand.spacingPattern.size - 1) {
@@ -114,9 +114,27 @@ object CardUtils {
             if (spaceIndex > 0) {
                 lastPosition++
             }
-            spacePostions.add(lastPosition)
+            spacePositions.add(lastPosition)
             spaceIndex++
         }
-        return spacePostions
+        return spacePositions
+    }
+
+    fun formatCardNumber(input: String, brand: CardBrand, onComplete: ((String) -> Unit)): String {
+        val maxCardLength = brand.lengths.max() + brand.spacingPattern.size - 1
+        var formattedText = input.take(maxCardLength)
+        val spacePositions = getSpacePositions(brand)
+
+        spacePositions.forEach { index ->
+            if (formattedText.length > index && formattedText[index] != ' ') {
+                formattedText = formattedText.substring(0, index) + ' ' + formattedText.substring(index)
+            }
+        }
+
+        if (formattedText.length == maxCardLength) {
+            onComplete(formattedText)
+        }
+
+        return formattedText
     }
 }

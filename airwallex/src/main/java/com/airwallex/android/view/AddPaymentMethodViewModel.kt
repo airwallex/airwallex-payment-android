@@ -1,6 +1,7 @@
 package com.airwallex.android.view
 
 import android.app.Application
+import android.util.Patterns
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -20,8 +21,10 @@ import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.core.util.CardUtils
+import com.airwallex.android.view.util.ExpiryDateUtils
+import com.airwallex.android.view.util.isValidCvc
 
-internal class AddPaymentMethodViewModel(
+class AddPaymentMethodViewModel(
     application: Application,
     private val airwallex: Airwallex,
     private val session: AirwallexSession,
@@ -61,6 +64,18 @@ internal class AddPaymentMethodViewModel(
 
     val isEmailRequired: Boolean by lazy { session.isEmailRequired }
 
+    val cardHolderName: String by lazy {
+        if (shipping == null) {
+            ""
+        } else {
+            listOfNotNull(shipping?.firstName, shipping?.lastName)
+                .joinToString(" ")
+                .ifEmpty { "" }
+        }
+    }
+
+    val countryCode: String by lazy { session.countryCode }
+
     private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
     val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
 
@@ -78,6 +93,59 @@ internal class AddPaymentMethodViewModel(
             }
         }
         return ValidationResult.Error(R.string.airwallex_invalid_card_number)
+    }
+
+    fun validateCardNumber(cardNumber: String): Int? {
+        return when {
+            cardNumber.isBlank() -> R.string.airwallex_empty_card_number
+            !CardUtils.isValidCardNumber(cardNumber) -> R.string.airwallex_invalid_card_number
+            supportedCardSchemes.none { CardBrand.fromType(it.name) == CardUtils.getPossibleCardBrand(cardNumber, true) } -> R.string.airwallex_unsupported_card_number
+            else -> null
+        }
+    }
+
+    fun validateExpiryDate(expiryDate: String): Int? {
+        return when {
+            expiryDate.isBlank() -> R.string.airwallex_empty_expiry
+            !ExpiryDateUtils.isValidExpiryDate(expiryDate) -> R.string.airwallex_invalid_expiry_date
+            else -> null
+        }
+    }
+
+    fun validateCvv(cvv: String, brand: CardBrand): Int? {
+        return when {
+            cvv.isBlank() -> R.string.airwallex_empty_cvc
+            !cvv.isValidCvc(brand) -> R.string.airwallex_invalid_cvc
+            else -> null
+        }
+    }
+
+    fun validateCardHolderName(cardHolderName: String): Int? {
+        return when {
+            cardHolderName.isBlank() -> R.string.airwallex_empty_card_name
+            else -> null
+        }
+    }
+
+    fun validateEmail(email: String): Int? {
+        return when {
+            email.isBlank() -> R.string.airwallex_empty_email
+            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> R.string.airwallex_invalid_email
+            else -> null
+        }
+    }
+
+    fun validateBillingField(input: String, type: BillingFieldType): Int? {
+        return when {
+            input.isBlank() -> when (type) {
+                BillingFieldType.STREET -> type.errorMessage
+                BillingFieldType.CITY -> type.errorMessage
+                BillingFieldType.STATE -> type.errorMessage
+                BillingFieldType.POSTAL_CODE -> type.errorMessage
+                BillingFieldType.PONE_NUMBER -> type.errorMessage
+            }
+            else -> null
+        }
     }
 
     fun confirmPayment(card: PaymentMethod.Card, saveCard: Boolean, billing: Billing?) {
@@ -111,5 +179,13 @@ internal class AddPaymentMethodViewModel(
     sealed class ValidationResult {
         object Success : ValidationResult()
         data class Error(@StringRes val message: Int) : ValidationResult()
+    }
+
+    enum class BillingFieldType(val errorMessage: Int) {
+        STREET(R.string.airwallex_empty_street),
+        CITY(R.string.airwallex_empty_city),
+        STATE(R.string.airwallex_empty_state),
+        POSTAL_CODE(R.string.airwallex_empty_postal_code),
+        PONE_NUMBER(R.string.airwallex_empty_phone_number),
     }
 }

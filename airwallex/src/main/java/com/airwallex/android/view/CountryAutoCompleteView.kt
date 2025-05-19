@@ -32,7 +32,7 @@ class CountryAutoCompleteView constructor(
         }
 
     private val countryAdapter: CountryAdapter by lazy {
-        CountryAdapter(getContext(), CountryUtils.COUNTRIES)
+        CountryAdapter(getContext(), CountryUtils.countryList)
     }
 
     /**

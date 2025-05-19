@@ -43,11 +43,14 @@
     <string name="airwallex_empty_email">Please enter your email address</string>
     <string name="airwallex_card_number_label">Card number</string>
     <string name="airwallex_card_number_placeholder">1234 1234 1234 1234</string>
-    <string name="airwallex_expires_hint">Expires MM/YY</string>
+    <string name="airwallex_expires_hint">MM/YY</string>
     <string name="airwallex_invalid_email">Please enter valid email</string>
     <string name="airwallex_select_your_bank">Select your bank</string>
     <string name="airwallex_enter_cvv">Enter CVC/CVV for \n%s</string>
     <string name="airwallex_invalid_field">Invalid %s</string>
     <string name="airwallex_or_pay_with">Or pay with</string>
+    <string name="airwallex_card_information_title">Card information</string>
+    <string name="airwallex_empty_postal_code">Please enter your zip code</string>
+    <string name="airwallex_empty_phone_number">Please enter your phone number</string>
 
 </resources>
