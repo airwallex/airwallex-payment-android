@@ -1,0 +1,353 @@
+package com.airwallex.android.view.composables
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.airwallex.android.R
+import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.ui.composables.AirwallexColor
+import com.airwallex.android.ui.composables.AirwallexTypography
+import com.airwallex.android.ui.composables.StandardCheckBox
+import com.airwallex.android.ui.composables.StandardSolidButton
+import com.airwallex.android.ui.composables.StandardText
+import com.airwallex.android.view.AddPaymentMethodViewModel
+import com.airwallex.android.view.util.CountryUtils
+
+@Composable
+internal fun AddCardScreen(
+    viewModel: AddPaymentMethodViewModel,
+    type: AvailablePaymentMethodType,
+) {
+    val focusManager = LocalFocusManager.current
+
+    var brand by remember { mutableStateOf(CardBrand.Unknown) }
+    var cardNumber by remember { mutableStateOf("") }
+    var expiryDate by remember { mutableStateOf("") }
+    var cvv by remember { mutableStateOf("") }
+    var cardHolderName by remember { mutableStateOf(viewModel.cardHolderName) }
+    var email by remember { mutableStateOf(viewModel.shipping?.email.orEmpty()) }
+    var cardNumberErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var expiryDateErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var cvvErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var cardHolderNameErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var cardHolderEmailErrorMessage by remember { mutableStateOf<Int?>(null) }
+
+    // Billing info
+    var isEditEnabled by remember { mutableStateOf(viewModel.shipping == null) }
+    var selectedCountryCode by remember { mutableStateOf(viewModel.countryCode) }
+    var street by remember { mutableStateOf(viewModel.shipping?.address?.street.orEmpty()) }
+    var state by remember { mutableStateOf(viewModel.shipping?.address?.state.orEmpty()) }
+    var city by remember { mutableStateOf(viewModel.shipping?.address?.city.orEmpty()) }
+    var zipCode by remember { mutableStateOf(viewModel.shipping?.address?.postcode.orEmpty()) }
+    var phoneNumber by remember { mutableStateOf(viewModel.shipping?.phoneNumber.orEmpty()) }
+    var streetErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var stateErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var cityErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var zipCodeErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var phoneNumberErrorMessage by remember { mutableStateOf<Int?>(null) }
+
+    Column {
+        StandardText(
+            text = stringResource(R.string.airwallex_card_information_title),
+            textAlign = TextAlign.Left,
+            typography = AirwallexTypography.Body200,
+            color = AirwallexColor.TextPrimary,
+            modifier = Modifier.padding(
+                horizontal = 24.dp,
+                vertical = 12.dp,
+            ),
+        )
+
+        CardNumberTextField(
+            type = type,
+            onValueChange = { value, cardBrand ->
+                cardNumber = value.text
+                brand = cardBrand
+            },
+            modifier = Modifier
+                .padding(horizontal = 24.dp),
+            onComplete = { input ->
+                cardNumberErrorMessage = viewModel.validateCardNumber(input)
+                focusManager.moveFocus(FocusDirection.Down)
+            },
+            isError = cardNumberErrorMessage != null,
+        )
+
+        Row {
+            CardExpiryTextField(
+                onTextChanged = { value ->
+                    expiryDate = value.text
+                },
+                onComplete = { input ->
+                    expiryDateErrorMessage = viewModel.validateExpiryDate(input)
+                    focusManager.moveFocus(FocusDirection.Right)
+                },
+                modifier = Modifier
+                    .padding(start = 24.dp)
+                    .weight(1f),
+                isError = expiryDateErrorMessage != null,
+            )
+
+            CardCvcTextField(
+                cardBrand = brand,
+                onTextChanged = { value ->
+                    cvv = value.text
+                },
+                onComplete = { input ->
+                    cvvErrorMessage = viewModel.validateCvv(input, brand)
+                    focusManager.moveFocus(FocusDirection.Down)
+                },
+                modifier = Modifier
+                    .padding(end = 24.dp)
+                    .weight(1f),
+                isError = cvvErrorMessage != null,
+            )
+        }
+
+        val errorMessage = cardNumberErrorMessage ?: expiryDateErrorMessage ?: cvvErrorMessage
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(4.dp))
+
+            StandardText(
+                text = stringResource(id = errorMessage),
+                textAlign = TextAlign.Left,
+                typography = AirwallexTypography.Caption100,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(start = 40.dp),
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        StandardText(
+            text = stringResource(R.string.airwallex_card_name_hint),
+            textAlign = TextAlign.Left,
+            typography = AirwallexTypography.Body200,
+            color = AirwallexColor.TextPrimary,
+            modifier = Modifier.padding(
+                horizontal = 24.dp,
+                vertical = 12.dp,
+            ),
+        )
+
+        AddCardTextField(
+            text = cardHolderName,
+            onTextChanged = { value ->
+                cardHolderName = value.text
+            },
+            onComplete = { input ->
+                cardHolderNameErrorMessage = viewModel.validateCardHolderName(input)
+                focusManager.moveFocus(FocusDirection.Down)
+            },
+            errorText = cardHolderNameErrorMessage?.let { stringResource(id = it) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+        )
+
+        if (viewModel.isEmailRequired) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            StandardText(
+                text = stringResource(R.string.airwallex_email_hint),
+                textAlign = TextAlign.Left,
+                typography = AirwallexTypography.Body200,
+                color = AirwallexColor.TextPrimary,
+                modifier = Modifier.padding(
+                    horizontal = 24.dp,
+                    vertical = 12.dp,
+                ),
+            )
+
+            AddCardTextField(
+                text = email,
+                onTextChanged = { value ->
+                    email = value.text
+                },
+                onComplete = { input ->
+                    cardHolderEmailErrorMessage = viewModel.validateEmail(input)
+                    focusManager.moveFocus(FocusDirection.Down)
+                },
+                errorText = cardHolderEmailErrorMessage?.let { stringResource(id = it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+            )
+        }
+
+        if (viewModel.isBillingRequired) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Column {
+                Spacer(modifier = Modifier.height(12.dp))
+
+                StandardText(
+                    text = stringResource(R.string.airwallex_billing_info),
+                    textAlign = TextAlign.Left,
+                    typography = AirwallexTypography.Body200,
+                    color = AirwallexColor.TextPrimary,
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                StandardCheckBox(
+                    checked = !isEditEnabled,
+                    text = stringResource(id = R.string.airwallex_same_as_shipping),
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    onCheckedChange = {
+                        isEditEnabled = !it
+                    },
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                CountrySelectRow(
+                    options = CountryUtils.countryList.map { it.name to it.code },
+                    label = stringResource(id = R.string.airwallex_shipping_country_name_hint),
+                    default = selectedCountryCode,
+                    onOptionSelected = {
+                        selectedCountryCode = it.second
+                    },
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    enabled = isEditEnabled,
+                )
+
+                BillingTextField(
+                    hint = stringResource(id = R.string.airwallex_shipping_street_hint),
+                    text = if (isEditEnabled) street else viewModel.shipping?.address?.street.orEmpty(),
+                    onTextChanged = {
+                        street = it.text
+                    },
+                    onComplete = { input ->
+                        streetErrorMessage = viewModel.validateBillingField(input, AddPaymentMethodViewModel.BillingFieldType.STREET)
+                        focusManager.moveFocus(FocusDirection.Down)
+                    },
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    enabled = isEditEnabled,
+                    isError = streetErrorMessage != null,
+                )
+
+                Row {
+                    BillingTextField(
+                        hint = stringResource(id = R.string.airwallex_shipping_state_name_hint),
+                        text = if (isEditEnabled) state else viewModel.shipping?.address?.state.orEmpty(),
+                        onTextChanged = {
+                            state = it.text
+                        },
+                        onComplete = { input ->
+                            stateErrorMessage = viewModel.validateBillingField(input, AddPaymentMethodViewModel.BillingFieldType.STATE)
+                            focusManager.moveFocus(FocusDirection.Right)
+                        },
+                        modifier = Modifier
+                            .padding(start = 24.dp)
+                            .weight(1f),
+                        enabled = isEditEnabled,
+                        isError = stateErrorMessage != null,
+                    )
+                    BillingTextField(
+                        hint = stringResource(id = R.string.airwallex_shipping_city_name_hint),
+                        text = if (isEditEnabled) city else viewModel.shipping?.address?.city.orEmpty(),
+                        onTextChanged = {
+                            city = it.text
+                        },
+                        onComplete = { input ->
+                            cityErrorMessage = viewModel.validateBillingField(input, AddPaymentMethodViewModel.BillingFieldType.CITY)
+                            focusManager.moveFocus(FocusDirection.Down)
+                        },
+                        modifier = Modifier
+                            .padding(end = 24.dp)
+                            .weight(1f),
+                        enabled = isEditEnabled,
+                        isError = cityErrorMessage != null,
+                    )
+                }
+
+                BillingTextField(
+                    hint = stringResource(id = R.string.airwallex_shipping_zip_code_hint),
+                    text = if (isEditEnabled) zipCode else viewModel.shipping?.address?.postcode.orEmpty(),
+                    onTextChanged = {
+                        zipCode = it.text
+                    },
+                    onComplete = { input ->
+                        zipCodeErrorMessage = viewModel.validateBillingField(input, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
+                        focusManager.moveFocus(FocusDirection.Down)
+                    },
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    enabled = isEditEnabled,
+                    isError = zipCodeErrorMessage != null,
+                )
+
+                BillingTextField(
+                    hint = stringResource(id = R.string.airwallex_contact_phone_number_hint),
+                    text = if (isEditEnabled) phoneNumber else viewModel.shipping?.phoneNumber.orEmpty(),
+                    onTextChanged = {
+                        phoneNumber = it.text
+                    },
+                    onComplete = { input ->
+                        phoneNumberErrorMessage = viewModel.validateBillingField(input, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
+                        focusManager.clearFocus()
+                    },
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    enabled = isEditEnabled,
+                    isError = phoneNumberErrorMessage != null,
+                )
+
+                val billingErrorMessage = streetErrorMessage ?: stateErrorMessage ?: cityErrorMessage ?: zipCodeErrorMessage ?: phoneNumberErrorMessage
+                if (billingErrorMessage != null) {
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    StandardText(
+                        text = stringResource(id = billingErrorMessage),
+                        textAlign = TextAlign.Left,
+                        typography = AirwallexTypography.Caption100,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(start = 40.dp),
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(48.dp))
+
+        StandardSolidButton(
+            text = viewModel.ctaTitle,
+            onClick = {
+                cardNumberErrorMessage = viewModel.validateCardNumber(cardNumber)
+                expiryDateErrorMessage = viewModel.validateExpiryDate(expiryDate)
+                cvvErrorMessage = viewModel.validateCvv(cvv, brand)
+                cardHolderNameErrorMessage = viewModel.validateCardHolderName(cardHolderName)
+                cardHolderEmailErrorMessage = viewModel.validateEmail(email)
+                if (viewModel.isBillingRequired) {
+                    streetErrorMessage = viewModel.validateBillingField(street, AddPaymentMethodViewModel.BillingFieldType.STREET)
+                    stateErrorMessage = viewModel.validateBillingField(state, AddPaymentMethodViewModel.BillingFieldType.STATE)
+                    cityErrorMessage = viewModel.validateBillingField(city, AddPaymentMethodViewModel.BillingFieldType.CITY)
+                    zipCodeErrorMessage = viewModel.validateBillingField(zipCode, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
+                    phoneNumberErrorMessage = viewModel.validateBillingField(phoneNumber, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
+                }
+                // TODO: navigation
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+        )
+
+        Spacer(modifier = Modifier.height(36.dp))
+    }
+}

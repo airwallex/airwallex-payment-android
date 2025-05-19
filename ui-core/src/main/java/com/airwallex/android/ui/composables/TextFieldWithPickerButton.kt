@@ -1,0 +1,82 @@
+package com.airwallex.android.ui.composables
+
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import com.airwallex.android.ui.R
+
+@Composable
+fun TextFieldWithPickerButton(
+    modifier: Modifier = Modifier,
+    hint: String? = null,
+    supportText: String? = null,
+    errorText: String? = null,
+    title: String?,
+    isFieldRequired: Boolean = false,
+    enabled: Boolean = true,
+    onPresentRequested: () -> Unit
+) {
+    TextFieldWithPickerButton(
+        hint = hint,
+        supportText = supportText,
+        errorText = errorText,
+        title = title,
+        modifier = modifier,
+        isFieldRequired = isFieldRequired,
+        enabled = enabled,
+        onPresentRequested = onPresentRequested,
+        trailingAccessory = {
+            StandardIcon(
+                drawableRes = R.drawable.airwallex_ic_chevron_down,
+                size = 12.dp,
+                padding = 0.dp,
+            )
+        },
+    )
+}
+
+@Composable
+private fun TextFieldWithPickerButton(
+    modifier: Modifier = Modifier,
+    hint: String?,
+    supportText: String? = null,
+    errorText: String?,
+    title: String?,
+    onPresentRequested: () -> Unit,
+    isFieldRequired: Boolean = false,
+    enabled: Boolean = true,
+    leadingAccessory: (@Composable () -> Unit)? = null,
+    trailingAccessory: (@Composable () -> Unit)? = null
+) {
+    StandardTextField(
+        hint = hint,
+        text = TextFieldValue(text = title.orEmpty()),
+        onTextChanged = {
+            // no op
+        },
+        isFieldRequired = isFieldRequired,
+        modifier = modifier,
+        enabled = enabled,
+        readOnly = true,
+        interactionSource = remember { MutableInteractionSource() }
+            .also { interactionSource ->
+                // Add a launch effect to observe tapping on text field in order to show the picker sheet.
+                LaunchedEffect(interactionSource) {
+                    interactionSource.interactions.collect {
+                        if (it is PressInteraction.Release) {
+                            onPresentRequested()
+                        }
+                    }
+                }
+            },
+        supportText = supportText,
+        errorText = errorText,
+        leadingAccessory = leadingAccessory,
+        trailingAccessory = trailingAccessory,
+    )
+}
