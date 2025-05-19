@@ -11,6 +11,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
 
+@Suppress("LongParameterList")
 @Composable
 fun BillingTextField(
     text: String,

@@ -17,9 +17,10 @@ import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.CardScheme
 import kotlinx.coroutines.delay
 
-private const val MaximumFixedSchemes = 3
-private const val CardBrandSwitchInterval = 2000L
+private const val MAX_FIXED_SCHEMES = 3
+private const val CARD_BRAND_SWITCH_INTERVAL = 2000L
 
+@Suppress("ComplexMethod", "LongMethod")
 @Composable
 internal fun CardBrandTrailingAccessory(
     schemes: List<CardScheme>,
@@ -28,22 +29,22 @@ internal fun CardBrandTrailingAccessory(
 ) {
     if (displayAllSchemes) {
         Row {
-            schemes.take(MaximumFixedSchemes).map { CardBrand.fromType(it.name)?.icon ?: R.drawable.airwallex_ic_card_default }.forEach { icon ->
+            schemes.take(MAX_FIXED_SCHEMES).map { CardBrand.fromType(it.name)?.icon ?: R.drawable.airwallex_ic_card_default }.forEach { icon ->
                 Image(
                     painter = painterResource(id = icon),
                     contentDescription = "card",
                     modifier = Modifier.padding(horizontal = 2.dp),
                 )
             }
-            if (schemes.size > MaximumFixedSchemes) {
+            if (schemes.size > MAX_FIXED_SCHEMES) {
                 val cardBrandImages = remember(schemes) {
-                    schemes.drop(MaximumFixedSchemes).map { CardBrand.fromType(it.name)?.icon ?: R.drawable.airwallex_ic_card_default }
+                    schemes.drop(MAX_FIXED_SCHEMES).map { CardBrand.fromType(it.name)?.icon ?: R.drawable.airwallex_ic_card_default }
                 }
                 if (cardBrandImages.isNotEmpty()) {
                     val currentImageIndex = remember { mutableIntStateOf(0) }
                     LaunchedEffect(currentImageIndex.intValue) {
                         while (true) {
-                            delay(CardBrandSwitchInterval)
+                            delay(CARD_BRAND_SWITCH_INTERVAL)
                             currentImageIndex.intValue = (currentImageIndex.intValue + 1) % cardBrandImages.size
                         }
                     }

@@ -20,6 +20,7 @@ import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.composables.TextFieldWithPickerButton
 import com.airwallex.android.view.util.getFlagEmoji
 
+@Suppress("LongParameterList")
 @Composable
 internal fun CountrySelectRow(
     modifier: Modifier = Modifier,
