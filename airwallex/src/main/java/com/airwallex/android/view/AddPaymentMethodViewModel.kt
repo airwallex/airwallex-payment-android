@@ -97,7 +97,7 @@ class AddPaymentMethodViewModel(
         return ValidationResult.Error(R.string.airwallex_invalid_card_number)
     }
 
-    fun validateCardNumber(cardNumber: String): Int? {
+    fun getCardNumberValidationMessage(cardNumber: String): Int? {
         return when {
             cardNumber.isBlank() -> R.string.airwallex_empty_card_number
             !CardUtils.isValidCardNumber(cardNumber) -> R.string.airwallex_invalid_card_number
@@ -106,7 +106,7 @@ class AddPaymentMethodViewModel(
         }
     }
 
-    fun validateExpiryDate(expiryDate: String): Int? {
+    fun getExpiryValidationMessage(expiryDate: String): Int? {
         return when {
             expiryDate.isBlank() -> R.string.airwallex_empty_expiry
             !ExpiryDateUtils.isValidExpiryDate(expiryDate) -> R.string.airwallex_invalid_expiry_date
@@ -114,7 +114,7 @@ class AddPaymentMethodViewModel(
         }
     }
 
-    fun validateCvv(cvv: String, brand: CardBrand): Int? {
+    fun getCvvValidationMessage(cvv: String, brand: CardBrand): Int? {
         return when {
             cvv.isBlank() -> R.string.airwallex_empty_cvc
             !cvv.isValidCvc(brand) -> R.string.airwallex_invalid_cvc
@@ -122,14 +122,14 @@ class AddPaymentMethodViewModel(
         }
     }
 
-    fun validateCardHolderName(cardHolderName: String): Int? {
+    fun getCardHolderNameValidationMessage(cardHolderName: String): Int? {
         return when {
             cardHolderName.isBlank() -> R.string.airwallex_empty_card_name
             else -> null
         }
     }
 
-    fun validateEmail(email: String): Int? {
+    fun getEmailValidationMessage(email: String): Int? {
         return when {
             email.isBlank() -> R.string.airwallex_empty_email
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> R.string.airwallex_invalid_email
@@ -137,7 +137,7 @@ class AddPaymentMethodViewModel(
         }
     }
 
-    fun validateBillingField(input: String, type: BillingFieldType): Int? {
+    fun getBillingValidationMessage(input: String, type: BillingFieldType): Int? {
         return when {
             input.isBlank() -> when (type) {
                 BillingFieldType.STREET -> type.errorMessage
@@ -213,7 +213,7 @@ class AddPaymentMethodViewModel(
         data class Error(@StringRes val message: Int) : ValidationResult()
     }
 
-    enum class BillingFieldType(val errorMessage: Int) {
+    enum class BillingFieldType(@StringRes val errorMessage: Int) {
         STREET(R.string.airwallex_empty_street),
         CITY(R.string.airwallex_empty_city),
         STATE(R.string.airwallex_empty_state),
