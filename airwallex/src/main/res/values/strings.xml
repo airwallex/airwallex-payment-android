@@ -52,5 +52,12 @@
     <string name="airwallex_card_information_title">Card information</string>
     <string name="airwallex_empty_postal_code">Please enter your zip code</string>
     <string name="airwallex_empty_phone_number">Please enter your phone number</string>
+    <string name="airwallex_add_card_screen_title">Add new</string>
+    <string name="airwallex_add_card_button_title">Keep using saved cards</string>
+    <string name="airwallex_consent_list_screen_title">Choose a card</string>
+    <string name="airwallex_consent_list_button_title">Add new</string>
+    <string name="airwallex_consent_detail_button_title">Change</string>
+    <string name="airwallex_delete_consent_alert_title">Remove %s?</string>
+    <string name="airwallex_delete_consent_alert_content">This option will be permanently removed from your saved payment methods.</string>
 
 </resources>

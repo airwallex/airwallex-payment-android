@@ -44,6 +44,28 @@ open class AirwallexCheckoutViewModel(
 
     suspend fun checkout(
         paymentMethod: PaymentMethod,
+        paymentConsentId: String?,
+        cvc: String,
+        flow: AirwallexPaymentRequestFlow = AirwallexPaymentRequestFlow.IN_APP,
+    ): AirwallexPaymentStatus {
+        return suspendCancellableCoroutine { continuation ->
+            airwallex.checkout(
+                session = session,
+                paymentMethod = paymentMethod,
+                paymentConsentId = paymentConsentId,
+                cvc = cvc,
+                flow = flow,
+                listener = object : Airwallex.PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        continuation.resume(status)
+                    }
+                }
+            )
+        }
+    }
+
+    suspend fun checkout(
+        paymentMethod: PaymentMethod,
         additionalInfo: Map<String, String>? = null,
         flow: AirwallexPaymentRequestFlow? = null
     ): AirwallexPaymentStatus {

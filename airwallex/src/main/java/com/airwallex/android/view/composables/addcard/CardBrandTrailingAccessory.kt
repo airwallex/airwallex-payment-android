@@ -1,4 +1,4 @@
-package com.airwallex.android.view.composables
+package com.airwallex.android.view.composables.addcard
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.view.composables.common.CardBrandIcon
 import kotlinx.coroutines.delay
 
 private const val MAX_FIXED_SCHEMES = 3
@@ -58,48 +59,9 @@ internal fun CardBrandTrailingAccessory(
             Spacer(modifier = Modifier.width(4.dp))
         }
     } else {
-        when (brand) {
-            CardBrand.Visa -> Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_visa),
-                contentDescription = "card",
-                modifier = modifier,
-            )
-            CardBrand.MasterCard -> Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_mastercard),
-                contentDescription = "card",
-                modifier = modifier,
-            )
-            CardBrand.Amex -> Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_amex),
-                contentDescription = "card",
-                modifier = modifier,
-            )
-            CardBrand.UnionPay -> Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_unionpay),
-                contentDescription = "card",
-                modifier = modifier,
-            )
-            CardBrand.JCB -> Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_jcb),
-                contentDescription = "card",
-                modifier = modifier,
-            )
-            CardBrand.DISCOVER -> Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_discover),
-                contentDescription = "card",
-                modifier = modifier,
-            )
-            CardBrand.DINERS -> Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_diners),
-                contentDescription = "card",
-                modifier = modifier,
-            )
-            CardBrand.Unknown -> Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_unsupported),
-                contentDescription = "card",
-                modifier = modifier,
-            )
-        }
+        CardBrandIcon(
+            brand = brand,
+            modifier = modifier,
+        )
     }
-
 }

@@ -19,12 +19,17 @@ import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.core.util.CardUtils
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
 import com.airwallex.android.view.util.isValidCvc
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class AddPaymentMethodViewModel(
     application: Application,
@@ -80,6 +85,9 @@ class AddPaymentMethodViewModel(
 
     private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
     val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
+
+    private val _deleteCardEvent = MutableStateFlow<PaymentConsent?>(null)
+    val deleteCardEvent: StateFlow<PaymentConsent?> = _deleteCardEvent.asStateFlow()
 
     fun getValidationResult(cardNumber: String): ValidationResult {
         if (cardNumber.isEmpty()) {
@@ -193,6 +201,12 @@ class AddPaymentMethodViewModel(
             .setEmail(email)
             .build()
     }
+
+    fun deleteCard(consent: PaymentConsent) {
+        _deleteCardEvent.update { consent }
+    }
+
+    fun isCvcRequired(paymentConsent: PaymentConsent) = paymentConsent.paymentMethod?.card?.numberType == PaymentMethod.Card.NumberType.PAN
 
     internal class Factory(
         private val application: Application,
