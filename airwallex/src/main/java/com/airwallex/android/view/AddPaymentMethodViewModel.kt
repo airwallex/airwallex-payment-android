@@ -16,12 +16,14 @@ import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.core.util.CardUtils
 import com.airwallex.android.view.util.ExpiryDateUtils
+import com.airwallex.android.view.util.createExpiryMonthAndYear
 import com.airwallex.android.view.util.isValidCvc
 
 class AddPaymentMethodViewModel(
@@ -160,6 +162,36 @@ class AddPaymentMethodViewModel(
                 }
             },
         )
+    }
+
+    fun createCard(cardNumber: String, name: String, expiryDate: String, cvv: String): PaymentMethod.Card? {
+        if (cardNumber.isBlank() || name.isBlank() || expiryDate.isBlank() || cvv.isBlank()) {
+            return null
+        }
+        val (month, year) = expiryDate.createExpiryMonthAndYear() ?: return null
+        return PaymentMethod.Card.Builder()
+            .setNumber(CardUtils.removeSpacesAndHyphens(cardNumber))
+            .setName(name.trim())
+            .setExpiryMonth(if (month < 10) "0$month" else month.toString())
+            .setExpiryYear(year.toString())
+            .setCvc(cvv.trim())
+            .build()
+    }
+
+    fun createBillingWithShipping(countryCode: String, state: String, city: String, street: String, postcode: String, phoneNumber: String, email: String): Billing {
+        return Billing.Builder()
+            .setAddress(
+                Address.Builder()
+                    .setCountryCode(countryCode)
+                    .setState(state)
+                    .setCity(city)
+                    .setStreet(street)
+                    .setPostcode(postcode)
+                    .build()
+            )
+            .setPhone(phoneNumber)
+            .setEmail(email)
+            .build()
     }
 
     internal class Factory(

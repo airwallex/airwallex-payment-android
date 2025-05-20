@@ -88,3 +88,17 @@ object ExpiryDateUtils {
         }
     }
 }
+
+fun String.createExpiryMonthAndYear(): Pair<Int, Int>? {
+    val rawNumericInput = this.replace("/".toRegex(), "")
+    val dateFields = ExpiryDateUtils.separateDateInput(rawNumericInput)
+
+    return try {
+        Pair(
+            dateFields[0].toInt(),
+            "20${dateFields[1]}".toInt()
+        )
+    } catch (numEx: NumberFormatException) {
+        null
+    }
+}

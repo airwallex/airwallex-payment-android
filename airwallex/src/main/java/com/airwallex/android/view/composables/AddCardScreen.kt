@@ -1,5 +1,6 @@
 package com.airwallex.android.view.composables
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +23,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
-import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
@@ -45,6 +45,7 @@ internal fun AddCardScreen(
     val nameFocusRequest = remember { FocusRequester() }
 
     var brand by remember { mutableStateOf(CardBrand.Unknown) }
+    var isSaveCardChecked by remember { mutableStateOf(viewModel.canSaveCard) }
     var cardNumber by remember { mutableStateOf("") }
     var expiryDate by remember { mutableStateOf("") }
     var cvv by remember { mutableStateOf("") }
@@ -56,8 +57,8 @@ internal fun AddCardScreen(
     var cardHolderNameErrorMessage by remember { mutableStateOf<Int?>(null) }
     var cardHolderEmailErrorMessage by remember { mutableStateOf<Int?>(null) }
 
-    // Billing info
-    var isEditEnabled by remember { mutableStateOf(viewModel.shipping == null) }
+    // Billing info section
+    var isSameAddressChecked by remember { mutableStateOf(viewModel.shipping != null) }
     var selectedCountryCode by remember { mutableStateOf(viewModel.countryCode) }
     var street by remember { mutableStateOf(viewModel.shipping?.address?.street.orEmpty()) }
     var state by remember { mutableStateOf(viewModel.shipping?.address?.state.orEmpty()) }
@@ -171,7 +172,7 @@ internal fun AddCardScreen(
             },
             onComplete = { input ->
                 cardHolderNameErrorMessage = viewModel.validateCardHolderName(input)
-                if (isEditEnabled || viewModel.isEmailRequired) {
+                if (!isSameAddressChecked || viewModel.isEmailRequired) {
                     focusManager.moveFocus(FocusDirection.Down)
                 } else {
                     focusManager.clearFocus()
@@ -231,11 +232,11 @@ internal fun AddCardScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 StandardCheckBox(
-                    checked = !isEditEnabled,
+                    checked = isSameAddressChecked,
                     text = stringResource(id = R.string.airwallex_same_as_shipping),
                     modifier = Modifier.padding(horizontal = 24.dp),
                     onCheckedChange = {
-                        isEditEnabled = !it
+                        isSameAddressChecked = it
                         selectedCountryCode = viewModel.countryCode
                         street = viewModel.shipping?.address?.street.orEmpty()
                         state = viewModel.shipping?.address?.state.orEmpty()
@@ -255,7 +256,7 @@ internal fun AddCardScreen(
                         selectedCountryCode = it.second
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
-                    enabled = isEditEnabled,
+                    enabled = !isSameAddressChecked,
                 )
 
                 BillingTextField(
@@ -269,7 +270,7 @@ internal fun AddCardScreen(
                         focusManager.moveFocus(FocusDirection.Down)
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
-                    enabled = isEditEnabled,
+                    enabled = !isSameAddressChecked,
                     isError = streetErrorMessage != null,
                 )
 
@@ -287,7 +288,7 @@ internal fun AddCardScreen(
                         modifier = Modifier
                             .padding(start = 24.dp)
                             .weight(1f),
-                        enabled = isEditEnabled,
+                        enabled = !isSameAddressChecked,
                         isError = stateErrorMessage != null,
                     )
                     BillingTextField(
@@ -303,7 +304,7 @@ internal fun AddCardScreen(
                         modifier = Modifier
                             .padding(end = 24.dp)
                             .weight(1f),
-                        enabled = isEditEnabled,
+                        enabled = !isSameAddressChecked,
                         isError = cityErrorMessage != null,
                     )
                 }
@@ -319,7 +320,7 @@ internal fun AddCardScreen(
                         focusManager.moveFocus(FocusDirection.Down)
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
-                    enabled = isEditEnabled,
+                    enabled = !isSameAddressChecked,
                     isError = zipCodeErrorMessage != null,
                 )
 
@@ -334,7 +335,7 @@ internal fun AddCardScreen(
                         focusManager.clearFocus()
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
-                    enabled = isEditEnabled,
+                    enabled = !isSameAddressChecked,
                     isError = phoneNumberErrorMessage != null,
                 )
 
@@ -350,6 +351,26 @@ internal fun AddCardScreen(
                         modifier = Modifier.padding(start = 40.dp),
                     )
                 }
+            }
+        }
+
+        if (viewModel.canSaveCard) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            StandardCheckBox(
+                checked = isSaveCardChecked,
+                text = stringResource(id = R.string.airwallex_save_card),
+                modifier = Modifier.padding(horizontal = 24.dp),
+                onCheckedChange = {
+                    isSaveCardChecked = it
+                },
+            )
+
+            AnimatedVisibility(
+                visible = isSaveCardChecked && brand == CardBrand.UnionPay,
+                modifier = Modifier.padding(top = 12.dp),
+            ) {
+                WarningBanner(message = stringResource(id = R.string.airwallex_save_union_pay_card))
             }
         }
 
@@ -372,6 +393,7 @@ internal fun AddCardScreen(
                     zipCodeErrorMessage = viewModel.validateBillingField(zipCode, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
                     phoneNumberErrorMessage = viewModel.validateBillingField(phoneNumber, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
                 }
+
                 val allValidated = listOfNotNull(
                     cardNumberErrorMessage,
                     expiryDateErrorMessage,
@@ -385,10 +407,24 @@ internal fun AddCardScreen(
                     phoneNumberErrorMessage,
                 ).isEmpty()
                 if (allValidated) {
-                    // TODO: navigation
-                    AirwallexLogger.info("AddPaymentMethodActivity startCheckout")
+                    // All fields are valid, so proceed to confirm payment.
+                    val card = viewModel.createCard(cardNumber, cardHolderName, expiryDate, cvv) ?: return@StandardSolidButton
+                    viewModel.confirmPayment(
+                        card = card,
+                        saveCard = isSaveCardChecked,
+                        billing = viewModel.createBillingWithShipping(
+                            countryCode = selectedCountryCode,
+                            state = state,
+                            city = city,
+                            street = street,
+                            postcode = zipCode,
+                            phoneNumber = phoneNumber,
+                            email = email,
+                        ),
+                    )
                     onConfirm()
                 }
+                // Otherwise do nothing
             },
             modifier = Modifier
                 .fillMaxWidth()

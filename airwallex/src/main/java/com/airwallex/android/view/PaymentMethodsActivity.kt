@@ -178,6 +178,20 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             )
         )[AddPaymentMethodViewModel::class.java]
 
+        addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
+            when (result) {
+                is AirwallexPaymentStatus.Success -> {
+                    finishWithPaymentIntent(
+                        paymentIntentId = result.paymentIntentId, consentId = result.consentId
+                    )
+                }
+                is AirwallexPaymentStatus.Failure -> {
+                    finishWithPaymentIntent(exception = result.exception)
+                }
+                else -> Unit
+            }
+        }
+
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
@@ -203,7 +217,9 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                             availablePaymentMethodTypes = availablePaymentMethodTypes.filterNot { paymentMethodType ->
                                 paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
                             },
-                            onAddCard = {}, // TODO
+                            onAddCard = {
+                                onAddCard()
+                            },
                         )
                     }
                 }
@@ -398,6 +414,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             )
         )
         finish()
+    }
+
+    private fun onAddCard() {
+        AnalyticsLogger.logAction("tap_pay_button")
+        AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
+        setLoadingProgress(loading = true, cancelable = false)
     }
 
     companion object {
