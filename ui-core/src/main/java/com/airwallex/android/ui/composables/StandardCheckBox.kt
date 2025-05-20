@@ -34,7 +34,7 @@ fun StandardCheckBox(
         Checkbox(
             checked = checked,
             onCheckedChange = null,
-            colors = CheckboxDefaults.colors(uncheckedColor = MaterialTheme.colorScheme.primary),
+            colors = CheckboxDefaults.colors(uncheckedColor = MaterialTheme.colorScheme.tertiaryContainer),
         )
 
         Spacer(modifier = Modifier.width(8.dp))
