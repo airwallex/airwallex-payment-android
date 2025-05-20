@@ -1,4 +1,4 @@
-package com.airwallex.android.view.composables
+package com.airwallex.android.view.composables.common
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

@@ -1,4 +1,4 @@
-package com.airwallex.android.view.composables
+package com.airwallex.android.view.composables.addcard
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

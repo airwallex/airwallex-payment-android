@@ -17,19 +17,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
+import com.airwallex.android.view.composables.common.PaymentMethodCard
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun PaymentMethodsSection(
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
+    availablePaymentConsents: List<PaymentConsent>,
     onAddCard: () -> Unit,
+    onDeleteCard: (PaymentConsent) -> Unit,
+    onPaymentConsentClicked: (PaymentConsent) -> Unit,
+    onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { availablePaymentMethodTypes.size })
     val coroutineScope = rememberCoroutineScope()
+
     var type by remember { mutableStateOf(availablePaymentMethodTypes.first()) }
 
     Column {
@@ -61,10 +68,14 @@ internal fun PaymentMethodsSection(
         ) {
             when (type.name) {
                 PaymentMethodType.CARD.value -> {
-                    AddCardScreen(
-                        viewModel = addPaymentMethodViewModel,
+                    CardSection(
+                        addPaymentMethodViewModel = addPaymentMethodViewModel,
                         type = type,
-                        onConfirm = onAddCard,
+                        availablePaymentConsents = availablePaymentConsents,
+                        onAddCard = onAddCard,
+                        onDeleteCard = onDeleteCard,
+                        onPaymentConsentClicked = onPaymentConsentClicked,
+                        onCheckoutWithCvc = onCheckoutWithCvc,
                     )
                 }
                 else -> {

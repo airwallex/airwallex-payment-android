@@ -3,15 +3,6 @@ package com.airwallex.android.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
@@ -35,8 +26,7 @@ import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
-import com.airwallex.android.view.composables.GooglePaySection
-import com.airwallex.android.view.composables.PaymentMethodsSection
+import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.risk.AirwallexRisk
 
@@ -153,7 +143,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
     private fun initView(
         availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
-        availablePaymentConsents: List<PaymentConsent>
+        availablePaymentConsents: List<PaymentConsent>,
     ) {
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
         val allowedPaymentMethods = session.googlePayOptions?.let { googlePayOptions ->
@@ -195,88 +185,22 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
-                    Column(
-                        modifier = Modifier.verticalScroll(rememberScrollState()),
-                    ) {
-                        allowedPaymentMethods?.let { allowedPaymentMethods ->
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            GooglePaySection(
-                                modifier = Modifier
-                                    .padding(horizontal = 24.dp)
-                                    .fillMaxWidth(),
-                                allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
-                                onClick = viewModel::checkoutWithGooglePay,
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        PaymentMethodsSection(
-                            addPaymentMethodViewModel = addPaymentMethodViewModel,
-                            availablePaymentMethodTypes = availablePaymentMethodTypes.filterNot { paymentMethodType ->
-                                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
-                            },
-                            onAddCard = {
-                                onAddCard()
-                            },
-                        )
-                    }
+                    PaymentScreen(
+                        paymentMethodsViewModel = viewModel,
+                        addPaymentMethodViewModel = addPaymentMethodViewModel,
+                        allowedPaymentMethods = allowedPaymentMethods,
+                        availablePaymentMethodTypes = availablePaymentMethodTypes,
+                        availablePaymentConsents = availablePaymentConsents,
+                        onAddCard = ::onAddCard,
+                        onDeleteCard = { consent ->
+                            onDeleteCard(consent) {
+                                addPaymentMethodViewModel.deleteCard(consent)
+                            }
+                        },
+                        onPaymentConsentClicked = ::onPaymentConsentClicked,
+                        onCheckoutWithCvc = ::onCheckoutWithCvc,
+                    )
                 }
-            }
-
-//            layoutManager = viewManager
-//            adapter = paymentAdapter
-//            addItemDecoration(
-//                PaymentMethodsDividerItemDecoration(
-//                    this@PaymentMethodsActivity,
-//                    R.drawable.airwallex_line_divider
-//                )
-//            )
-        }
-//        initPaymentMethodSwipeCallback(paymentAdapter, createFactory(paymentAdapter))
-    }
-
-//    private fun initPaymentMethodSwipeCallback(
-//        adapter: PaymentMethodsAdapter,
-//        factory: DeletePaymentMethodDialogFactory
-//    ) {
-//        object :
-//            PaymentMethodSwipeCallback(this@PaymentMethodsActivity, viewBinding.rvPaymentMethods) {
-//            override fun instantiateUnderlayButton(
-//                viewHolder: RecyclerView.ViewHolder?,
-//                underlayButtons: ArrayList<UnderlayButton>
-//            ) {
-//                underlayButtons.add(
-//                    UnderlayButton(
-//                        text = resources.getString(R.string.airwallex_delete_payment_method_positive),
-//                        textSize = resources.getDimensionPixelSize(R.dimen.swipe_size),
-//                        color = ContextCompat.getColor(baseContext, R.color.airwallex_color_red),
-//                        clickListener = object : UnderlayButtonClickListener {
-//                            override fun onClick(position: Int) {
-//                                factory.create(adapter.getPaymentConsentAtPosition(position)).show()
-//                            }
-//                        }
-//                    )
-//                )
-//            }
-//        }
-//    }
-
-    private fun createFactory(adapter: PaymentMethodsAdapter): DeletePaymentMethodDialogFactory {
-        return DeletePaymentMethodDialogFactory(this, adapter) { paymentConsent ->
-            setLoadingProgress(loading = true, cancelable = false)
-            viewModel.deletePaymentConsent(paymentConsent).observe(this) { result ->
-                result.fold(
-                    onSuccess = {
-                        setLoadingProgress(false)
-                        adapter.deletePaymentConsent(it)
-                    },
-                    onFailure = {
-                        setLoadingProgress(false)
-                        alert(message = it.message ?: it.toString())
-                    }
-                )
             }
         }
     }
@@ -414,6 +338,34 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             )
         )
         finish()
+    }
+
+    private fun onDeleteCard(paymentConsent: PaymentConsent, onDeleteCompleted: (PaymentConsent) -> Unit) {
+        setLoadingProgress(loading = true, cancelable = false)
+        viewModel.deletePaymentConsent(paymentConsent).observe(this) { result ->
+            result.fold(
+                onSuccess = { consent ->
+                    setLoadingProgress(false)
+                    onDeleteCompleted(consent)
+                },
+                onFailure = {
+                    setLoadingProgress(false)
+                    alert(message = it.message ?: it.toString())
+                },
+            )
+        }
+    }
+
+    private fun onPaymentConsentClicked(paymentConsent: PaymentConsent) {
+        setLoadingProgress(true)
+        viewModel.trackPaymentSelection(paymentConsent.paymentMethod?.type)
+        viewModel.confirmPaymentIntent(paymentConsent)
+    }
+
+    private fun onCheckoutWithCvc(paymentConsent: PaymentConsent, cvc: String) {
+        setLoadingProgress(true)
+        viewModel.trackPaymentSelection(paymentConsent.paymentMethod?.type)
+        viewModel.checkoutWithCvc(paymentConsent, cvc)
     }
 
     private fun onAddCard() {

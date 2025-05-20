@@ -1,4 +1,4 @@
-package com.airwallex.android.view.composables
+package com.airwallex.android.view.composables.common
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -15,7 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +36,7 @@ internal fun PaymentMethodCard(
     paymentMethodType: AvailablePaymentMethodType,
     onClick: () -> Unit,
 ) {
-    var isSelected by rememberSaveable { mutableStateOf(false) }
+    var isSelected by remember { mutableStateOf(false) }
 
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiaryContainer
     val overlayColor = AirwallexColor.Transparent

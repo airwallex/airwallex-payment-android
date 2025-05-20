@@ -1,7 +1,5 @@
-package com.airwallex.android.view.composables
+package com.airwallex.android.view.composables.addcard
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,39 +10,40 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
-import com.airwallex.android.core.CardBrand
-import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.util.CardUtils.formatCardNumber
-import com.airwallex.android.core.util.CardUtils.getPossibleCardBrand
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
+import com.airwallex.android.view.util.ExpiryDateUtils.VALID_INPUT_LENGTH
+import com.airwallex.android.view.util.ExpiryDateUtils.formatExpiryDate
 
 @Composable
-fun CardNumberTextField(
-    type: AvailablePaymentMethodType,
-    onValueChange: (TextFieldValue, CardBrand) -> Unit,
+fun CardExpiryTextField(
+    modifier: Modifier = Modifier,
+    onTextChanged: (TextFieldValue) -> Unit,
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
-    modifier: Modifier = Modifier,
     isError: Boolean = false,
 ) {
     var textFieldValue by remember { mutableStateOf<TextFieldValue?>(null) }
-    var brand by remember { mutableStateOf(CardBrand.Unknown) }
 
     StandardTextField(
-        hint = stringResource(R.string.airwallex_card_number_placeholder),
+        hint = stringResource(R.string.airwallex_expires_hint),
         text = textFieldValue ?: TextFieldValue(),
         onTextChanged = { newText ->
-            brand = getPossibleCardBrand(newText.text, shouldNormalize = true)
-            val formattedText = formatCardNumber(newText.text, brand)
+            val isDeleteAction = newText.text.length < (textFieldValue?.text?.length ?: 0)
+            if (isDeleteAction) {
+                textFieldValue = newText
+                onTextChanged(textFieldValue ?: TextFieldValue())
+                return@StandardTextField
+            }
+
+            val formattedDate = formatExpiryDate(newText.text)
             textFieldValue = TextFieldValue(
-                text = formattedText,
-                selection = TextRange(formattedText.length),
+                text = formattedDate.take(VALID_INPUT_LENGTH),
+                selection = TextRange(formattedDate.length),
             )
-            onValueChange(textFieldValue ?: TextFieldValue(), brand)
-            if (textFieldValue?.text?.length == brand.lengths.max() + brand.spacingPattern.size - 1) {
+            onTextChanged(textFieldValue ?: TextFieldValue())
+            if (textFieldValue?.text?.length == VALID_INPUT_LENGTH) {
                 onComplete(textFieldValue?.text.orEmpty())
             }
         },
@@ -66,18 +65,6 @@ fun CardNumberTextField(
         ),
         onComplete = {
             onComplete(textFieldValue?.text.orEmpty())
-        },
-        trailingAccessory = {
-            type.cardSchemes?.let { schemes ->
-                CardBrandTrailingAccessory(
-                    schemes = schemes,
-                    brand = brand,
-                    displayAllSchemes = textFieldValue == null || textFieldValue?.text?.isBlank() == true,
-                    modifier = Modifier
-                        .size(width = 28.dp, height = 19.dp)
-                        .padding(horizontal = 2.dp),
-                )
-            }
         },
     )
 }

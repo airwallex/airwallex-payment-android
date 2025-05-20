@@ -1,7 +1,7 @@
-package com.airwallex.android.view.composables
+package com.airwallex.android.view.composables.addcard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,50 +9,42 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.util.CardUtils.formatCardNumber
+import com.airwallex.android.core.util.CardUtils.getPossibleCardBrand
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
 
-private const val AMEX_CVV_LENGTH = 4
-private const val DEFAULT_CVV_LENGTH = 3
-
 @Composable
-fun CardCvcTextField(
-    modifier: Modifier = Modifier,
-    cardBrand: CardBrand,
-    onTextChanged: (TextFieldValue) -> Unit,
+fun CardNumberTextField(
+    type: AvailablePaymentMethodType,
+    onValueChange: (TextFieldValue, CardBrand) -> Unit,
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
+    modifier: Modifier = Modifier,
     isError: Boolean = false,
 ) {
     var textFieldValue by remember { mutableStateOf<TextFieldValue?>(null) }
+    var brand by remember { mutableStateOf(CardBrand.Unknown) }
 
     StandardTextField(
-        hint = stringResource(R.string.airwallex_cvc_hint),
+        hint = stringResource(R.string.airwallex_card_number_placeholder),
         text = textFieldValue ?: TextFieldValue(),
         onTextChanged = { newText ->
-            val cvcLength = when (cardBrand) {
-                CardBrand.Amex -> AMEX_CVV_LENGTH
-                else -> DEFAULT_CVV_LENGTH
-            }
-            val newTextLength = newText.text.length
-            val newCursorPosition = if (newTextLength > cvcLength) {
-                cvcLength
-            } else {
-                newTextLength
-            }
+            brand = getPossibleCardBrand(newText.text, shouldNormalize = true)
+            val formattedText = formatCardNumber(newText.text, brand)
             textFieldValue = TextFieldValue(
-                text = newText.text.take(cvcLength),
-                selection = TextRange(newCursorPosition),
+                text = formattedText,
+                selection = TextRange(formattedText.length),
             )
-            onTextChanged(newText)
-            if (textFieldValue?.text?.length == cvcLength) {
+            onValueChange(textFieldValue ?: TextFieldValue(), brand)
+            if (textFieldValue?.text?.length == brand.lengths.max() + brand.spacingPattern.size - 1) {
                 onComplete(textFieldValue?.text.orEmpty())
             }
         },
@@ -76,11 +68,16 @@ fun CardCvcTextField(
             onComplete(textFieldValue?.text.orEmpty())
         },
         trailingAccessory = {
-            Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_cvv),
-                contentDescription = "card",
-                modifier = Modifier.padding(horizontal = 2.dp),
-            )
-        }
+            type.cardSchemes?.let { schemes ->
+                CardBrandTrailingAccessory(
+                    schemes = schemes,
+                    brand = brand,
+                    displayAllSchemes = textFieldValue == null || textFieldValue?.text?.isBlank() == true,
+                    modifier = Modifier
+                        .size(width = 28.dp, height = 19.dp)
+                        .padding(horizontal = 2.dp),
+                )
+            }
+        },
     )
 }

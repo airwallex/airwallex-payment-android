@@ -1,4 +1,4 @@
-package com.airwallex.android.view.composables
+package com.airwallex.android.view.composables.addcard
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
@@ -32,12 +32,14 @@ import com.airwallex.android.ui.composables.StandardCheckBox
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
+import com.airwallex.android.view.composables.common.CountrySelectRow
+import com.airwallex.android.view.composables.common.WarningBanner
 import com.airwallex.android.view.util.CountryUtils
 import com.airwallex.risk.AirwallexRisk
 
 @Suppress("ComplexMethod", "LongMethod")
 @Composable
-internal fun AddCardScreen(
+internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
     type: AvailablePaymentMethodType,
     onConfirm: () -> Unit,
