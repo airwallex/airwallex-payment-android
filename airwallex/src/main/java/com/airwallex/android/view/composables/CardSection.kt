@@ -66,12 +66,13 @@ internal fun CardSection(
     onPaymentConsentClicked: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
 ) {
-    val deleteCardEvent by addPaymentMethodViewModel.deleteCardSuccess.collectAsState()
+    val deletedConsent by addPaymentMethodViewModel.deleteCardSuccess.collectAsState()
+
     var localConsents by remember { mutableStateOf(availablePaymentConsents) }
     var selectedScreen by remember { mutableStateOf(if (localConsents.isEmpty()) CardSectionType.AddCard else CardSectionType.ConsentList) }
 
-    LaunchedEffect(localConsents, deleteCardEvent) {
-        localConsents = localConsents.filterNot { it.id == deleteCardEvent?.id }
+    LaunchedEffect(localConsents, deletedConsent) {
+        localConsents = localConsents.filterNot { it.id == deletedConsent?.id }
         selectedScreen = if (localConsents.isEmpty()) {
             CardSectionType.AddCard
         } else {

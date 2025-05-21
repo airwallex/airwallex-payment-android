@@ -9,10 +9,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.airwallex.android.R
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.ui.composables.AirwallexColor
+import com.airwallex.android.ui.composables.AirwallexTypography
+import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
 import org.json.JSONArray
@@ -32,6 +38,14 @@ internal fun PaymentScreen(
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState()),
     ) {
+        StandardText(
+            text = stringResource(id = R.string.airwallex_payment_methods),
+            color = AirwallexColor.TextPrimary,
+            typography = AirwallexTypography.Title200,
+            textAlign = TextAlign.Left,
+            modifier = Modifier.padding(horizontal = 24.dp),
+        )
+
         allowedPaymentMethods?.let { allowedPaymentMethods ->
             Spacer(modifier = Modifier.height(24.dp))
 
