@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
@@ -44,6 +45,7 @@ fun StandardTextField(
     onFocusChanged: ((Boolean) -> Unit)? = null,
     onComplete: (() -> Unit)? = null,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
     AirwallexTheme {
         OutlinedTextField(
@@ -68,6 +70,7 @@ fun StandardTextField(
             maxLines = 1,
             textStyle = textStyle,
             colors = textFieldColors(),
+            shape = shape,
         )
     }
 }

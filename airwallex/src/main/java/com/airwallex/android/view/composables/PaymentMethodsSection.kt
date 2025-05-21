@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,28 +36,40 @@ internal fun PaymentMethodsSection(
     onPaymentConsentClicked: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
 ) {
+    val lazyListState = rememberLazyListState()
     val pagerState = rememberPagerState(pageCount = { availablePaymentMethodTypes.size })
     val coroutineScope = rememberCoroutineScope()
 
     var type by remember { mutableStateOf(availablePaymentMethodTypes.first()) }
+    var selectedIndex by remember { mutableIntStateOf(0) }
 
     Column {
-        LazyRow(modifier = Modifier.padding(horizontal = 24.dp)) {
+        LazyRow(
+            state = lazyListState,
+            modifier = Modifier.padding(horizontal = 24.dp),
+        ) {
             availablePaymentMethodTypes.forEachIndexed { index, availablePaymentMethodType ->
                 item(key = "payment_method_$index") {
-                    Spacer(modifier = Modifier.width(12.dp))
+                    if (index != 0) {
+                        Spacer(modifier = Modifier.width(12.dp))
+                    }
 
                     PaymentMethodCard(
-                        paymentMethodType = availablePaymentMethodType,
+                        isSelected = selectedIndex == index,
+                        selectedType = availablePaymentMethodType,
                         onClick = {
                             coroutineScope.launch {
+                                selectedIndex = index
                                 type = availablePaymentMethodType
                                 pagerState.scrollToPage(page = index)
+                                lazyListState.animateScrollToItem(index = index)
                             }
                         },
                     )
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    if (index != availablePaymentMethodTypes.size - 1) {
+                        Spacer(modifier = Modifier.width(12.dp))
+                    }
                 }
             }
         }
