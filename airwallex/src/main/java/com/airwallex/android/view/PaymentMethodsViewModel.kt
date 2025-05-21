@@ -33,10 +33,10 @@ import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
-import com.airwallex.android.view.util.toPaymentFlow
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.findWithType
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
+import com.airwallex.android.view.util.toPaymentFlow
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -138,6 +138,30 @@ internal class PaymentMethodsViewModel(
         } else {
             _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(
                 AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession"))
+            )
+        }
+    }
+
+    fun checkoutWithCvc(paymentConsent: PaymentConsent, cvc: String) = viewModelScope.launch {
+        val paymentMethod = paymentConsent.paymentMethod
+        if (paymentMethod == null) {
+            _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(
+                AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "checkout with paymentConsent without paymentMethod"))
+            )
+            return@launch
+        }
+        if (session is AirwallexPaymentSession) {
+            checkout(
+                paymentMethod = paymentMethod,
+                paymentConsentId = paymentConsent.id,
+                cvc = cvc,
+            ).also {
+                trackPaymentSuccess(it, paymentMethod.type)
+                _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
+            }
+        } else {
+            _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(
+                AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "checkout with paymentConsent only support AirwallexPaymentSession"))
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.airwallex.android.view.composables
+package com.airwallex.android.view.composables.addcard
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,12 +33,14 @@ import com.airwallex.android.ui.composables.StandardCheckBox
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
+import com.airwallex.android.view.composables.common.CountrySelectRow
+import com.airwallex.android.view.composables.common.WarningBanner
 import com.airwallex.android.view.util.CountryUtils
 import com.airwallex.risk.AirwallexRisk
 
 @Suppress("ComplexMethod", "LongMethod")
 @Composable
-internal fun AddCardScreen(
+internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
     type: AvailablePaymentMethodType,
     onConfirm: () -> Unit,
@@ -95,6 +98,7 @@ internal fun AddCardScreen(
             onValueChange = { value, cardBrand ->
                 cardNumber = value.text
                 brand = cardBrand
+                cardNumberErrorMessage = null
             },
             modifier = Modifier
                 .padding(horizontal = 24.dp),
@@ -106,12 +110,19 @@ internal fun AddCardScreen(
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(input)
             },
             isError = cardNumberErrorMessage != null,
+            shape = RoundedCornerShape(
+                topStart = 8.dp,
+                topEnd = 8.dp,
+                bottomEnd = 0.dp,
+                bottomStart = 0.dp,
+            ),
         )
 
         Row {
             CardExpiryTextField(
                 onTextChanged = { value ->
                     expiryDate = value.text
+                    expiryDateErrorMessage = null
                 },
                 onComplete = { input ->
                     expiryDateErrorMessage = viewModel.getExpiryValidationMessage(input)
@@ -125,11 +136,18 @@ internal fun AddCardScreen(
                     expiryDateErrorMessage = viewModel.getExpiryValidationMessage(input)
                 },
                 isError = expiryDateErrorMessage != null,
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomEnd = 0.dp,
+                    bottomStart = 8.dp,
+                ),
             )
             CardCvcTextField(
                 cardBrand = brand,
                 onTextChanged = { value ->
                     cvv = value.text
+                    cvvErrorMessage = null
                 },
                 onComplete = { input ->
                     cvvErrorMessage = viewModel.getCvvValidationMessage(input, brand)
@@ -143,6 +161,12 @@ internal fun AddCardScreen(
                     .padding(end = 24.dp)
                     .weight(1f),
                 isError = cvvErrorMessage != null,
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomEnd = 8.dp,
+                    bottomStart = 0.dp,
+                ),
             )
         }
 
@@ -176,6 +200,7 @@ internal fun AddCardScreen(
             text = cardHolderName,
             onTextChanged = { value ->
                 cardHolderName = value.text
+                cardHolderNameErrorMessage = null
             },
             onComplete = { input ->
                 cardHolderNameErrorMessage = viewModel.getCardHolderNameValidationMessage(input)
@@ -184,6 +209,9 @@ internal fun AddCardScreen(
                 } else {
                     focusManager.clearFocus()
                 }
+            },
+            onFocusLost = { input ->
+                cardHolderNameErrorMessage = viewModel.getCardHolderNameValidationMessage(input)
             },
             errorText = cardHolderNameErrorMessage?.let { stringResource(id = it) },
             modifier = Modifier
@@ -210,10 +238,14 @@ internal fun AddCardScreen(
                 text = email,
                 onTextChanged = { value ->
                     email = value.text
+                    cardHolderEmailErrorMessage = null
                 },
                 onComplete = { input ->
                     cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(input)
                     focusManager.clearFocus()
+                },
+                onFocusLost = { input ->
+                    cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(input)
                 },
                 errorText = cardHolderEmailErrorMessage?.let { stringResource(id = it) },
                 modifier = Modifier
@@ -265,6 +297,12 @@ internal fun AddCardScreen(
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
+                    shape = RoundedCornerShape(
+                        topStart = 8.dp,
+                        topEnd = 8.dp,
+                        bottomEnd = 0.dp,
+                        bottomStart = 0.dp,
+                    ),
                 )
 
                 BillingTextField(
@@ -272,14 +310,24 @@ internal fun AddCardScreen(
                     text = street,
                     onTextChanged = {
                         street = it.text
+                        streetErrorMessage = null
                     },
                     onComplete = { input ->
                         streetErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STREET)
                         focusManager.moveFocus(FocusDirection.Down)
                     },
+                    onFocusLost = { input ->
+                        streetErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STREET)
+                    },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
                     isError = streetErrorMessage != null,
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 0.dp,
+                        bottomStart = 0.dp,
+                    ),
                 )
 
                 Row {
@@ -288,32 +336,52 @@ internal fun AddCardScreen(
                         text = state,
                         onTextChanged = {
                             state = it.text
+                            stateErrorMessage = null
                         },
                         onComplete = { input ->
                             stateErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STATE)
                             focusManager.moveFocus(FocusDirection.Right)
+                        },
+                        onFocusLost = { input ->
+                            stateErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STATE)
                         },
                         modifier = Modifier
                             .padding(start = 24.dp)
                             .weight(1f),
                         enabled = !isSameAddressChecked,
                         isError = stateErrorMessage != null,
+                        shape = RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomEnd = 0.dp,
+                            bottomStart = 0.dp,
+                        ),
                     )
                     BillingTextField(
                         hint = stringResource(id = R.string.airwallex_shipping_city_name_hint),
                         text = city,
                         onTextChanged = {
                             city = it.text
+                            cityErrorMessage = null
                         },
                         onComplete = { input ->
                             cityErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.CITY)
                             focusManager.moveFocus(FocusDirection.Down)
+                        },
+                        onFocusLost = { input ->
+                            cityErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.CITY)
                         },
                         modifier = Modifier
                             .padding(end = 24.dp)
                             .weight(1f),
                         enabled = !isSameAddressChecked,
                         isError = cityErrorMessage != null,
+                        shape = RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomEnd = 0.dp,
+                            bottomStart = 0.dp,
+                        ),
                     )
                 }
 
@@ -322,14 +390,24 @@ internal fun AddCardScreen(
                     text = zipCode,
                     onTextChanged = {
                         zipCode = it.text
+                        zipCodeErrorMessage = null
                     },
                     onComplete = { input ->
                         zipCodeErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
                         focusManager.moveFocus(FocusDirection.Down)
                     },
+                    onFocusLost = { input ->
+                        zipCodeErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
+                    },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
                     isError = zipCodeErrorMessage != null,
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 0.dp,
+                        bottomStart = 0.dp,
+                    ),
                 )
 
                 BillingTextField(
@@ -337,14 +415,24 @@ internal fun AddCardScreen(
                     text = phoneNumber,
                     onTextChanged = {
                         phoneNumber = it.text
+                        phoneNumberErrorMessage = null
                     },
                     onComplete = { input ->
                         phoneNumberErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
                         focusManager.clearFocus()
                     },
+                    onFocusLost = { input ->
+                        phoneNumberErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
+                    },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
                     isError = phoneNumberErrorMessage != null,
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 8.dp,
+                        bottomStart = 8.dp,
+                    ),
                 )
 
                 val billingErrorMessage = streetErrorMessage ?: stateErrorMessage ?: cityErrorMessage ?: zipCodeErrorMessage ?: phoneNumberErrorMessage
@@ -390,6 +478,8 @@ internal fun AddCardScreen(
         StandardSolidButton(
             text = viewModel.ctaTitle,
             onClick = {
+                focusManager.clearFocus()
+
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(cardNumber)
                 expiryDateErrorMessage = viewModel.getExpiryValidationMessage(expiryDate)
                 cvvErrorMessage = viewModel.getCvvValidationMessage(cvv, brand)

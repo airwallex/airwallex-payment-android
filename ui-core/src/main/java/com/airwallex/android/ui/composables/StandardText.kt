@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -16,6 +17,8 @@ fun StandardText(
     color: Color = Color.Black,
     typography: AirwallexTypography = AirwallexTypography.Body100,
     textAlign: TextAlign? = null,
+    overflow: TextOverflow = TextOverflow.Clip,
+    maxLines: Int = Int.MAX_VALUE,
 ) {
     Text(
         text = text,
@@ -23,6 +26,8 @@ fun StandardText(
         color = color,
         style = typography.toComposeTextStyle(),
         textAlign = textAlign,
+        overflow = overflow,
+        maxLines = maxLines,
     )
 }
 
@@ -33,13 +38,17 @@ fun StandardText(
     color: Color = Color.Black,
     typography: AirwallexTypography = AirwallexTypography.Body100,
     textAlign: TextAlign? = null,
+    overflow: TextOverflow = TextOverflow.Clip,
+    maxLines: Int = Int.MAX_VALUE,
 ) {
     StandardText(
         text = stringResource(id = textRes),
         modifier = modifier,
         color = color,
         typography = typography,
-        textAlign = textAlign
+        textAlign = textAlign,
+        overflow = overflow,
+        maxLines = maxLines,
     )
 }
 
