@@ -30,16 +30,15 @@ internal fun ConsentListSection(
     val deleteCardEvent by viewModel.deleteCardEvent.collectAsState()
 
     var localConsentToBeDeleted by remember { mutableStateOf<PaymentConsent?>(null) }
-    var localConsents by remember { mutableStateOf(availablePaymentConsents) }
 
     LaunchedEffect(deleteCardEvent) {
-        deleteCardEvent?.id?.let { id ->
-            localConsents = localConsents.filterNot { id == it.id }
+        deleteCardEvent?.let { consent ->
+            onDeleteCard(consent)
         }
     }
     
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-        localConsents.forEach { consent ->
+        availablePaymentConsents.forEach { consent ->
             if (consent.paymentMethod?.card != null) {
                 ConsentItem(
                     consent = consent,
