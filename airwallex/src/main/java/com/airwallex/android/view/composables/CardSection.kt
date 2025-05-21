@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,33 +65,44 @@ internal fun CardSection(
     onPaymentConsentClicked: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
 ) {
+    var localConsents by remember { mutableStateOf(availablePaymentConsents) }
     var selectedScreen by remember { mutableStateOf<CardSectionType>(CardSectionType.ConsentList) }
+
+    LaunchedEffect(localConsents) {
+        selectedScreen = if (localConsents.isEmpty()) {
+            CardSectionType.AddCard
+        } else {
+            CardSectionType.ConsentList
+        }
+    }
 
     Column {
         when (selectedScreen) {
             is CardSectionType.AddCard -> {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                ) {
-                    StandardText(
-                        text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }.orEmpty(),
-                        typography = AirwallexTypography.Body200Bold,
-                    )
+                if (localConsents.isNotEmpty()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 24.dp),
+                    ) {
+                        StandardText(
+                            text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }.orEmpty(),
+                            typography = AirwallexTypography.Body200Bold,
+                        )
 
-                    Spacer(modifier = Modifier.weight(1f))
+                        Spacer(modifier = Modifier.weight(1f))
 
-                    StandardText(
-                        text = stringResource(id = selectedScreen.buttonTitleRes),
-                        typography = AirwallexTypography.Body200Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable(
-                            onClick = { selectedScreen = CardSectionType.ConsentList },
-                        ),
-                    )
+                        StandardText(
+                            text = stringResource(id = selectedScreen.buttonTitleRes),
+                            typography = AirwallexTypography.Body200Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.clickable(
+                                onClick = { selectedScreen = CardSectionType.ConsentList },
+                            ),
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 AddCardSection(
                     viewModel = addPaymentMethodViewModel,
@@ -124,7 +136,7 @@ internal fun CardSection(
 
                 ConsentListSection(
                     viewModel = addPaymentMethodViewModel,
-                    availablePaymentConsents = availablePaymentConsents,
+                    availablePaymentConsents = localConsents,
                     onSelectCard = { consent ->
                         if (addPaymentMethodViewModel.isCvcRequired(paymentConsent = consent)) {
                             selectedScreen = CardSectionType.ConsentDetail(consent = consent)
@@ -132,7 +144,10 @@ internal fun CardSection(
                             onPaymentConsentClicked(consent)
                         }
                     },
-                    onDeleteCard = onDeleteCard,
+                    onDeleteCard = { consent ->
+                        localConsents = localConsents.filterNot { consent.id == it.id }
+                        onDeleteCard(consent)
+                    },
                 )
             }
             is CardSectionType.ConsentDetail -> {
