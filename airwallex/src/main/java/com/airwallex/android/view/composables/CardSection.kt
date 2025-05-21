@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,10 +66,12 @@ internal fun CardSection(
     onPaymentConsentClicked: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
 ) {
+    val deleteCardEvent by addPaymentMethodViewModel.deleteCardSuccess.collectAsState()
     var localConsents by remember { mutableStateOf(availablePaymentConsents) }
     var selectedScreen by remember { mutableStateOf(if (localConsents.isEmpty()) CardSectionType.AddCard else CardSectionType.ConsentList) }
 
-    LaunchedEffect(localConsents) {
+    LaunchedEffect(localConsents, deleteCardEvent) {
+        localConsents = localConsents.filterNot { it.id == deleteCardEvent?.id }
         selectedScreen = if (localConsents.isEmpty()) {
             CardSectionType.AddCard
         } else {
@@ -135,7 +138,6 @@ internal fun CardSection(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ConsentListSection(
-                    viewModel = addPaymentMethodViewModel,
                     availablePaymentConsents = localConsents,
                     onSelectCard = { consent ->
                         if (addPaymentMethodViewModel.isCvcRequired(paymentConsent = consent)) {
@@ -144,10 +146,7 @@ internal fun CardSection(
                             onPaymentConsentClicked(consent)
                         }
                     },
-                    onDeleteCard = { consent ->
-                        localConsents = localConsents.filterNot { consent.id == it.id }
-                        onDeleteCard(consent)
-                    },
+                    onDeleteCard = onDeleteCard,
                 )
             }
             is CardSectionType.ConsentDetail -> {

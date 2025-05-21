@@ -86,8 +86,8 @@ class AddPaymentMethodViewModel(
     private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
     val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
 
-    private val _deleteCardEvent = MutableStateFlow<PaymentConsent?>(null)
-    val deleteCardEvent: StateFlow<PaymentConsent?> = _deleteCardEvent.asStateFlow()
+    private val _deleteCardSuccess = MutableStateFlow<PaymentConsent?>(null)
+    val deleteCardSuccess: StateFlow<PaymentConsent?> = _deleteCardSuccess.asStateFlow()
 
     fun getValidationResult(cardNumber: String): ValidationResult {
         if (cardNumber.isEmpty()) {
@@ -202,8 +202,8 @@ class AddPaymentMethodViewModel(
             .build()
     }
 
-    fun deleteCard(consent: PaymentConsent) {
-        _deleteCardEvent.update { consent }
+    fun deleteCardSuccess(consent: PaymentConsent) {
+        _deleteCardSuccess.update { consent }
     }
 
     fun isCvcRequired(paymentConsent: PaymentConsent) = paymentConsent.paymentMethod?.card?.numberType == PaymentMethod.Card.NumberType.PAN
@@ -215,9 +215,11 @@ class AddPaymentMethodViewModel(
         private val supportedCardSchemes: List<CardScheme>
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            @Suppress("UNCHECKED_CAST")
             return AddPaymentMethodViewModel(
-                application, airwallex, session, supportedCardSchemes
+                application = application,
+                airwallex = airwallex,
+                session = session,
+                supportedCardSchemes = supportedCardSchemes
             ) as T
         }
     }
