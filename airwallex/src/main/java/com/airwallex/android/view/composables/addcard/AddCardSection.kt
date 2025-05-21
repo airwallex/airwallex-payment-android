@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -109,6 +110,12 @@ internal fun AddCardSection(
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(input)
             },
             isError = cardNumberErrorMessage != null,
+            shape = RoundedCornerShape(
+                topStart = 8.dp,
+                topEnd = 8.dp,
+                bottomEnd = 0.dp,
+                bottomStart = 0.dp,
+            ),
         )
 
         Row {
@@ -129,6 +136,12 @@ internal fun AddCardSection(
                     expiryDateErrorMessage = viewModel.getExpiryValidationMessage(input)
                 },
                 isError = expiryDateErrorMessage != null,
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomEnd = 0.dp,
+                    bottomStart = 8.dp,
+                ),
             )
             CardCvcTextField(
                 cardBrand = brand,
@@ -148,6 +161,12 @@ internal fun AddCardSection(
                     .padding(end = 24.dp)
                     .weight(1f),
                 isError = cvvErrorMessage != null,
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomEnd = 8.dp,
+                    bottomStart = 0.dp,
+                ),
             )
         }
 
@@ -278,6 +297,12 @@ internal fun AddCardSection(
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
+                    shape = RoundedCornerShape(
+                        topStart = 8.dp,
+                        topEnd = 8.dp,
+                        bottomEnd = 0.dp,
+                        bottomStart = 0.dp,
+                    ),
                 )
 
                 BillingTextField(
@@ -297,6 +322,12 @@ internal fun AddCardSection(
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
                     isError = streetErrorMessage != null,
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 0.dp,
+                        bottomStart = 0.dp,
+                    ),
                 )
 
                 Row {
@@ -319,6 +350,12 @@ internal fun AddCardSection(
                             .weight(1f),
                         enabled = !isSameAddressChecked,
                         isError = stateErrorMessage != null,
+                        shape = RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomEnd = 0.dp,
+                            bottomStart = 0.dp,
+                        ),
                     )
                     BillingTextField(
                         hint = stringResource(id = R.string.airwallex_shipping_city_name_hint),
@@ -339,6 +376,12 @@ internal fun AddCardSection(
                             .weight(1f),
                         enabled = !isSameAddressChecked,
                         isError = cityErrorMessage != null,
+                        shape = RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomEnd = 0.dp,
+                            bottomStart = 0.dp,
+                        ),
                     )
                 }
 
@@ -359,6 +402,12 @@ internal fun AddCardSection(
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
                     isError = zipCodeErrorMessage != null,
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 0.dp,
+                        bottomStart = 0.dp,
+                    ),
                 )
 
                 BillingTextField(
@@ -378,6 +427,12 @@ internal fun AddCardSection(
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
                     isError = phoneNumberErrorMessage != null,
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 8.dp,
+                        bottomStart = 8.dp,
+                    ),
                 )
 
                 val billingErrorMessage = streetErrorMessage ?: stateErrorMessage ?: cityErrorMessage ?: zipCodeErrorMessage ?: phoneNumberErrorMessage

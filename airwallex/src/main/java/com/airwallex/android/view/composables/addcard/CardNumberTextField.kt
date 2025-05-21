@@ -3,9 +3,11 @@ package com.airwallex.android.view.composables.addcard
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -36,6 +39,7 @@ fun CardNumberTextField(
     onFocusLost: (String) -> Unit,
     modifier: Modifier = Modifier,
     isError: Boolean = false,
+    shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
     var showClearButton by remember { mutableStateOf(false) }
     var textFieldValue by remember { mutableStateOf<TextFieldValue?>(null) }
@@ -113,5 +117,6 @@ fun CardNumberTextField(
                 }
             }
         },
+        shape = shape,
     )
 }
