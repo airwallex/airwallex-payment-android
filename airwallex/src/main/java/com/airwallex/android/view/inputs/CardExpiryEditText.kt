@@ -22,7 +22,6 @@ internal class CardExpiryEditText @JvmOverloads constructor(
 
     private companion object {
         private const val INVALID_INPUT = -1
-        private const val VALID_INPUT_LENGTH = 5
     }
 
     internal var errorCallback: (showError: Boolean) -> Unit = {}
@@ -50,7 +49,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
     init {
         setHint(R.string.airwallex_expires_hint)
         maxLines = 1
-        filters = arrayOf(InputFilter.LengthFilter(VALID_INPUT_LENGTH))
+        filters = arrayOf(InputFilter.LengthFilter(ExpiryDateUtils.VALID_INPUT_LENGTH))
 
         inputType = InputType.TYPE_CLASS_DATETIME
 
@@ -177,7 +176,7 @@ internal class CardExpiryEditText @JvmOverloads constructor(
             newPosition--
         }
         val unTruncatedPosition = if (newPosition <= newLength) newPosition else newLength
-        return min(VALID_INPUT_LENGTH, unTruncatedPosition)
+        return min(ExpiryDateUtils.VALID_INPUT_LENGTH, unTruncatedPosition)
     }
 
     private fun checkDateValid(month: String, year: String) {

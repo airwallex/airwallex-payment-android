@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
@@ -34,7 +36,7 @@ import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.composables.GooglePaySection
-import com.airwallex.android.view.composables.PaymentMethodsHorizontalList
+import com.airwallex.android.view.composables.PaymentMethodsSection
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.risk.AirwallexRisk
 
@@ -164,11 +166,38 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 )
             }
         }
-        AirwallexLogger.debug("allowedPaymentMethods: ${allowedPaymentMethods.toString()}")
+        val addPaymentMethodViewModel = ViewModelProvider(
+            owner = this,
+            factory = AddPaymentMethodViewModel.Factory(
+                application = application,
+                airwallex = airwallex,
+                session = session,
+                supportedCardSchemes = availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
+                    paymentMethodType.name == PaymentMethodType.CARD.value
+                }?.cardSchemes ?: emptyList(),
+            )
+        )[AddPaymentMethodViewModel::class.java]
+
+        addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
+            when (result) {
+                is AirwallexPaymentStatus.Success -> {
+                    finishWithPaymentIntent(
+                        paymentIntentId = result.paymentIntentId, consentId = result.consentId
+                    )
+                }
+                is AirwallexPaymentStatus.Failure -> {
+                    finishWithPaymentIntent(exception = result.exception)
+                }
+                else -> Unit
+            }
+        }
+
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
-                    Column {
+                    Column(
+                        modifier = Modifier.verticalScroll(rememberScrollState()),
+                    ) {
                         allowedPaymentMethods?.let { allowedPaymentMethods ->
                             Spacer(modifier = Modifier.height(24.dp))
 
@@ -183,9 +212,13 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        PaymentMethodsHorizontalList(
+                        PaymentMethodsSection(
+                            addPaymentMethodViewModel = addPaymentMethodViewModel,
                             availablePaymentMethodTypes = availablePaymentMethodTypes.filterNot { paymentMethodType ->
                                 paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
+                            },
+                            onAddCard = {
+                                onAddCard()
                             },
                         )
                     }
@@ -381,6 +414,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             )
         )
         finish()
+    }
+
+    private fun onAddCard() {
+        AnalyticsLogger.logAction("tap_pay_button")
+        AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
+        setLoadingProgress(loading = true, cancelable = false)
     }
 
     companion object {
