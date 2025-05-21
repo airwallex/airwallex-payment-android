@@ -1,14 +1,20 @@
 package com.airwallex.android.view.composables.addcard
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -32,6 +38,7 @@ fun CardCvcTextField(
     isError: Boolean = false,
     errorMessage: String? = null,
 ) {
+    var showClearButton by remember { mutableStateOf(false) }
     var textFieldValue by remember { mutableStateOf<TextFieldValue?>(null) }
 
     StandardTextField(
@@ -52,24 +59,32 @@ fun CardCvcTextField(
                 text = newText.text.take(cvcLength),
                 selection = TextRange(newCursorPosition),
             )
+            showClearButton = textFieldValue?.text?.isNotEmpty() == true
             onTextChanged(newText)
             if (textFieldValue?.text?.length == cvcLength) {
                 onComplete(textFieldValue?.text.orEmpty())
+                showClearButton = false
             }
         },
         isError = isError,
         errorText = errorMessage,
-        modifier = modifier.onFocusChanged { focusState ->
-            if (!focusState.isFocused && textFieldValue != null) {
-                // Focus has left the TextField after being focused
-                onFocusLost(textFieldValue?.text.orEmpty())
+        modifier = modifier
+            .onFocusEvent { focusState ->
+                if (focusState.hasFocus && textFieldValue?.text?.isNotEmpty() == true) {
+                    showClearButton = true
+                }
             }
-            if (focusState.isFocused) {
-                textFieldValue = textFieldValue?.copy(
-                    selection = TextRange(textFieldValue?.text?.length ?: 0),
-                )
-            }
-        },
+            .onFocusChanged { focusState ->
+                if (focusState.isFocused) {
+                    textFieldValue = textFieldValue?.copy(selection = TextRange(textFieldValue?.text?.length ?: 0)) ?: TextFieldValue()
+                } else {
+                    if (textFieldValue != null) {
+                        // Focus has left the TextField after being focused
+                        onFocusLost(textFieldValue?.text.orEmpty())
+                    }
+                    showClearButton = false
+                }
+            },
         options = StandardTextFieldOptions(
             inputType = StandardTextFieldOptions.InputType.NUMBER,
             returnType = StandardTextFieldOptions.ReturnType.DONE,
@@ -78,11 +93,32 @@ fun CardCvcTextField(
             onComplete(textFieldValue?.text.orEmpty())
         },
         trailingAccessory = {
-            Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_cvv),
-                contentDescription = "card",
-                modifier = Modifier.padding(horizontal = 2.dp),
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp),
+            ) {
+                if (showClearButton) {
+                    IconButton(
+                        onClick = {
+                            showClearButton = false
+                            textFieldValue = TextFieldValue()
+                            onTextChanged(TextFieldValue())
+                        },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.airwallex_ic_clear),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            contentDescription = "Clear",
+                        )
+                    }
+                }
+
+                Image(
+                    painter = painterResource(id = R.drawable.airwallex_ic_cvv),
+                    contentDescription = "card",
+                    modifier = Modifier.padding(horizontal = 2.dp),
+                )
+            }
         }
     )
 }

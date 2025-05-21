@@ -1,14 +1,20 @@
 package com.airwallex.android.view.composables.addcard
 
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import com.airwallex.android.R
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
 
@@ -19,14 +25,17 @@ fun BillingTextField(
     modifier: Modifier = Modifier,
     onTextChanged: (TextFieldValue) -> Unit,
     onComplete: (String) -> Unit,
+    onFocusLost: (String) -> Unit,
     isError: Boolean = false,
     enabled: Boolean = true,
     hint: String = "",
 ) {
+    var showClearButton by remember { mutableStateOf(false) }
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
-    textFieldValue = textFieldValue.copy(
-        text = text,
-    )
+
+    LaunchedEffect(text) {
+        textFieldValue = textFieldValue.copy(text = text)
+    }
 
     StandardTextField(
         hint = hint,
@@ -36,13 +45,19 @@ fun BillingTextField(
                 text = newText.text,
                 selection = TextRange(newText.text.length),
             )
+            showClearButton = textFieldValue.text.isNotEmpty()
             onTextChanged(newText)
         },
         modifier = modifier.onFocusChanged { focusState ->
             if (focusState.isFocused) {
-                textFieldValue = textFieldValue.copy(
-                    selection = TextRange(textFieldValue.text.length),
-                )
+                textFieldValue = textFieldValue.copy(selection = TextRange(textFieldValue.text.length))
+                if (textFieldValue.text.isNotEmpty()) {
+                    showClearButton = true
+                }
+            } else {
+                showClearButton = false
+                // Focus has left the TextField after being focused
+                onFocusLost(textFieldValue.text)
             }
         },
         enabled = enabled,
@@ -53,6 +68,23 @@ fun BillingTextField(
         ),
         onComplete = {
             onComplete(textFieldValue.text)
+        },
+        trailingAccessory = {
+            if (showClearButton) {
+                IconButton(
+                    onClick = {
+                        showClearButton = false
+                        textFieldValue = TextFieldValue()
+                        onTextChanged(textFieldValue)
+                    },
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.airwallex_ic_clear),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        contentDescription = "Clear",
+                    )
+                }
+            }
         },
     )
 }
