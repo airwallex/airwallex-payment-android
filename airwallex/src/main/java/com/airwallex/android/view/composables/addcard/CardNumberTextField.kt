@@ -26,6 +26,7 @@ import com.airwallex.android.core.util.CardUtils.formatCardNumber
 import com.airwallex.android.core.util.CardUtils.getPossibleCardBrand
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
+import com.airwallex.android.view.util.toSupportedIcons
 
 @Composable
 fun CardNumberTextField(
@@ -100,9 +101,9 @@ fun CardNumberTextField(
                     }
                 }
 
-                type.cardSchemes?.let { schemes ->
+                type.cardSchemes?.toSupportedIcons()?.let { icons ->
                     CardBrandTrailingAccessory(
-                        schemes = schemes,
+                        icons = icons,
                         brand = brand,
                         displayAllSchemes = textFieldValue == null || textFieldValue?.text?.isBlank() == true,
                         modifier = Modifier

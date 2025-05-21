@@ -32,6 +32,7 @@ internal fun ConsentDetailSection(
         cardBrand = cardBrand,
         onTextChanged = { value ->
             cvv = value.text
+            cvvErrorMessage = null
         },
         onComplete = { input ->
             cvvErrorMessage = viewModel.getCvvValidationMessage(input, cardBrand)

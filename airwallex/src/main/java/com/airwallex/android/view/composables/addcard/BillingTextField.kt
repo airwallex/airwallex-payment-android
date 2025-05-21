@@ -34,6 +34,7 @@ fun BillingTextField(
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
 
     LaunchedEffect(text) {
+        // Update the text when clicking same address
         textFieldValue = textFieldValue.copy(text = text)
     }
 

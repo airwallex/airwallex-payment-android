@@ -11,36 +11,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
-import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.view.composables.common.CardBrandIcon
 import kotlinx.coroutines.delay
 
-private const val MAX_FIXED_SCHEMES = 3
+private const val FIXED_ICON_NUMBER = 3
 private const val CARD_BRAND_SWITCH_INTERVAL = 2000L
 
 @Suppress("ComplexMethod", "LongMethod")
 @Composable
 internal fun CardBrandTrailingAccessory(
     modifier: Modifier = Modifier,
-    schemes: List<CardScheme>,
+    icons: List<Int>,
     brand: CardBrand = CardBrand.Unknown,
     displayAllSchemes: Boolean,
 ) {
     if (displayAllSchemes) {
         Row {
-            schemes.take(MAX_FIXED_SCHEMES).mapNotNull { CardBrand.fromType(it.name)?.icon }.forEach { icon ->
+            icons.take(FIXED_ICON_NUMBER).forEach { icon ->
                 Image(
                     painter = painterResource(id = icon),
                     contentDescription = "card",
                     modifier = modifier,
                 )
             }
-            if (schemes.size > MAX_FIXED_SCHEMES) {
-                val cardBrandImages = remember(schemes) {
-                    schemes.drop(MAX_FIXED_SCHEMES).mapNotNull { CardBrand.fromType(it.name)?.icon }
-                }
+            if (icons.size > FIXED_ICON_NUMBER) {
+                val cardBrandImages = remember(icons) { icons.drop(FIXED_ICON_NUMBER) }
                 if (cardBrandImages.isNotEmpty()) {
                     val currentImageIndex = remember { mutableIntStateOf(0) }
                     LaunchedEffect(currentImageIndex.intValue) {

@@ -194,7 +194,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         onAddCard = ::onAddCard,
                         onDeleteCard = { consent ->
                             onDeleteCard(consent) {
-                                addPaymentMethodViewModel.deleteCard(consent)
+                                addPaymentMethodViewModel.deleteCardSuccess(consent)
                             }
                         },
                         onPaymentConsentClicked = ::onPaymentConsentClicked,

@@ -423,6 +423,8 @@ internal fun AddCardSection(
         StandardSolidButton(
             text = viewModel.ctaTitle,
             onClick = {
+                focusManager.clearFocus()
+
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(cardNumber)
                 expiryDateErrorMessage = viewModel.getExpiryValidationMessage(expiryDate)
                 cvvErrorMessage = viewModel.getCvvValidationMessage(cvv, brand)

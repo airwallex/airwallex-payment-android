@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,25 +15,15 @@ import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.ui.composables.StandardAlertDialog
-import com.airwallex.android.view.AddPaymentMethodViewModel
 import java.util.Locale
 
 @Composable
 internal fun ConsentListSection(
-    viewModel: AddPaymentMethodViewModel,
     availablePaymentConsents: List<PaymentConsent>,
     onSelectCard: (PaymentConsent) -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
 ) {
-    val deleteCardEvent by viewModel.deleteCardEvent.collectAsState()
-
     var localConsentToBeDeleted by remember { mutableStateOf<PaymentConsent?>(null) }
-
-    LaunchedEffect(deleteCardEvent) {
-        deleteCardEvent?.let { consent ->
-            onDeleteCard(consent)
-        }
-    }
     
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
         availablePaymentConsents.forEach { consent ->
