@@ -29,7 +29,7 @@ internal fun CardBrandTrailingAccessory(
 ) {
     if (displayAllSchemes) {
         Row {
-            schemes.take(MAX_FIXED_SCHEMES).map { CardBrand.fromType(it.name)?.icon ?: R.drawable.airwallex_ic_card_default }.forEach { icon ->
+            schemes.take(MAX_FIXED_SCHEMES).mapNotNull { CardBrand.fromType(it.name)?.icon }.forEach { icon ->
                 Image(
                     painter = painterResource(id = icon),
                     contentDescription = "card",
@@ -38,7 +38,7 @@ internal fun CardBrandTrailingAccessory(
             }
             if (schemes.size > MAX_FIXED_SCHEMES) {
                 val cardBrandImages = remember(schemes) {
-                    schemes.drop(MAX_FIXED_SCHEMES).map { CardBrand.fromType(it.name)?.icon ?: R.drawable.airwallex_ic_card_default }
+                    schemes.drop(MAX_FIXED_SCHEMES).mapNotNull { CardBrand.fromType(it.name)?.icon }
                 }
                 if (cardBrandImages.isNotEmpty()) {
                     val currentImageIndex = remember { mutableIntStateOf(0) }
