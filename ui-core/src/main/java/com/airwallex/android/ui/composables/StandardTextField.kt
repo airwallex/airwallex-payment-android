@@ -150,7 +150,7 @@ private fun Hint(
         Text(
             text = hint,
             textAlign = TextAlign.Left,
-            color = AirwallexColor.Gray50,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyMedium,
         )
     }

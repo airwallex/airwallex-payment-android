@@ -23,7 +23,7 @@ fun BillingTextField(
     enabled: Boolean = true,
     hint: String = "",
 ) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
     textFieldValue = textFieldValue.copy(
         text = text,
     )
