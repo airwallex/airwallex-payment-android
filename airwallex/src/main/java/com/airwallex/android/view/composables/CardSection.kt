@@ -66,7 +66,7 @@ internal fun CardSection(
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
 ) {
     var localConsents by remember { mutableStateOf(availablePaymentConsents) }
-    var selectedScreen by remember { mutableStateOf<CardSectionType>(CardSectionType.ConsentList) }
+    var selectedScreen by remember { mutableStateOf(if (localConsents.isEmpty()) CardSectionType.AddCard else CardSectionType.ConsentList) }
 
     LaunchedEffect(localConsents) {
         selectedScreen = if (localConsents.isEmpty()) {

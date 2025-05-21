@@ -15,6 +15,7 @@ import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
 import com.airwallex.android.view.util.ExpiryDateUtils.VALID_INPUT_LENGTH
 import com.airwallex.android.view.util.ExpiryDateUtils.formatExpiryDate
+import com.airwallex.android.view.util.ExpiryDateUtils.formatExpiryDateWhenDeleting
 
 @Composable
 fun CardExpiryTextField(
@@ -32,7 +33,11 @@ fun CardExpiryTextField(
         onTextChanged = { newText ->
             val isDeleteAction = newText.text.length < (textFieldValue?.text?.length ?: 0)
             if (isDeleteAction) {
-                textFieldValue = newText
+                val formattedText = formatExpiryDateWhenDeleting(newText.text)
+                textFieldValue = TextFieldValue(
+                    text = formattedText.take(VALID_INPUT_LENGTH),
+                    selection = TextRange(formattedText.length),
+                )
                 onTextChanged(textFieldValue ?: TextFieldValue())
                 return@StandardTextField
             }

@@ -31,6 +31,7 @@ object ExpiryDateUtils {
     fun formatExpiryDate(rawInput: String): String {
         val formattedDateBuilder = StringBuilder()
         when (rawInput.length) {
+            0 -> return ""
             1 -> {
                 when (rawInput) {
                     "0",
@@ -39,6 +40,27 @@ object ExpiryDateUtils {
                 }
             }
             2 -> formattedDateBuilder.append("$rawInput/")
+            else -> {
+                if (rawInput[2] == '/') {
+                    formattedDateBuilder.append(rawInput)
+                } else {
+                    formattedDateBuilder.append("${rawInput.substring(0, 2)}/${rawInput.substring(2)}")
+                }
+            }
+        }
+        return formattedDateBuilder.toString()
+    }
+
+    fun formatExpiryDateWhenDeleting(rawInput: String): String {
+        val formattedDateBuilder = StringBuilder()
+        when (rawInput.length) {
+            3 -> {
+                if (rawInput[2] == '/') {
+                    formattedDateBuilder.append(rawInput.substring(0, 2))
+                } else {
+                    formattedDateBuilder.append(rawInput)
+                }
+            }
             else -> formattedDateBuilder.append(rawInput)
         }
         return formattedDateBuilder.toString()
