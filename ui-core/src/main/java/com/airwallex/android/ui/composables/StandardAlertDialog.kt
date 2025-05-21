@@ -57,7 +57,7 @@ fun StandardAlertDialog(
                 StandardOutlinedButton(
                     text = dismissButtonTitle,
                     onClick = onDismiss,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
@@ -66,10 +66,10 @@ fun StandardAlertDialog(
                     text = confirmButtonTitle,
                     containerColor = AirwallexColor.TextError,
                     onClick = onConfirm,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
             }
         },
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
     )
 }

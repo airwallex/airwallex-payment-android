@@ -97,6 +97,7 @@ internal fun AddCardSection(
             onValueChange = { value, cardBrand ->
                 cardNumber = value.text
                 brand = cardBrand
+                cardNumberErrorMessage = null
             },
             modifier = Modifier
                 .padding(horizontal = 24.dp),
@@ -114,6 +115,7 @@ internal fun AddCardSection(
             CardExpiryTextField(
                 onTextChanged = { value ->
                     expiryDate = value.text
+                    expiryDateErrorMessage = null
                 },
                 onComplete = { input ->
                     expiryDateErrorMessage = viewModel.getExpiryValidationMessage(input)
@@ -132,6 +134,7 @@ internal fun AddCardSection(
                 cardBrand = brand,
                 onTextChanged = { value ->
                     cvv = value.text
+                    cvvErrorMessage = null
                 },
                 onComplete = { input ->
                     cvvErrorMessage = viewModel.getCvvValidationMessage(input, brand)
@@ -178,6 +181,7 @@ internal fun AddCardSection(
             text = cardHolderName,
             onTextChanged = { value ->
                 cardHolderName = value.text
+                cardHolderNameErrorMessage = null
             },
             onComplete = { input ->
                 cardHolderNameErrorMessage = viewModel.getCardHolderNameValidationMessage(input)
@@ -186,6 +190,9 @@ internal fun AddCardSection(
                 } else {
                     focusManager.clearFocus()
                 }
+            },
+            onFocusLost = { input ->
+                cardHolderNameErrorMessage = viewModel.getCardHolderNameValidationMessage(input)
             },
             errorText = cardHolderNameErrorMessage?.let { stringResource(id = it) },
             modifier = Modifier
@@ -212,10 +219,14 @@ internal fun AddCardSection(
                 text = email,
                 onTextChanged = { value ->
                     email = value.text
+                    cardHolderEmailErrorMessage = null
                 },
                 onComplete = { input ->
                     cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(input)
                     focusManager.clearFocus()
+                },
+                onFocusLost = { input ->
+                    cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(input)
                 },
                 errorText = cardHolderEmailErrorMessage?.let { stringResource(id = it) },
                 modifier = Modifier
@@ -274,10 +285,14 @@ internal fun AddCardSection(
                     text = street,
                     onTextChanged = {
                         street = it.text
+                        streetErrorMessage = null
                     },
                     onComplete = { input ->
                         streetErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STREET)
                         focusManager.moveFocus(FocusDirection.Down)
+                    },
+                    onFocusLost = { input ->
+                        streetErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STREET)
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
@@ -290,10 +305,14 @@ internal fun AddCardSection(
                         text = state,
                         onTextChanged = {
                             state = it.text
+                            stateErrorMessage = null
                         },
                         onComplete = { input ->
                             stateErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STATE)
                             focusManager.moveFocus(FocusDirection.Right)
+                        },
+                        onFocusLost = { input ->
+                            stateErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STATE)
                         },
                         modifier = Modifier
                             .padding(start = 24.dp)
@@ -306,10 +325,14 @@ internal fun AddCardSection(
                         text = city,
                         onTextChanged = {
                             city = it.text
+                            cityErrorMessage = null
                         },
                         onComplete = { input ->
                             cityErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.CITY)
                             focusManager.moveFocus(FocusDirection.Down)
+                        },
+                        onFocusLost = { input ->
+                            cityErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.CITY)
                         },
                         modifier = Modifier
                             .padding(end = 24.dp)
@@ -324,10 +347,14 @@ internal fun AddCardSection(
                     text = zipCode,
                     onTextChanged = {
                         zipCode = it.text
+                        zipCodeErrorMessage = null
                     },
                     onComplete = { input ->
                         zipCodeErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
                         focusManager.moveFocus(FocusDirection.Down)
+                    },
+                    onFocusLost = { input ->
+                        zipCodeErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
@@ -339,10 +366,14 @@ internal fun AddCardSection(
                     text = phoneNumber,
                     onTextChanged = {
                         phoneNumber = it.text
+                        phoneNumberErrorMessage = null
                     },
                     onComplete = { input ->
                         phoneNumberErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
                         focusManager.clearFocus()
+                    },
+                    onFocusLost = { input ->
+                        phoneNumberErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
