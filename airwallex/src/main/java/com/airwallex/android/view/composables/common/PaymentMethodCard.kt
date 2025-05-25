@@ -1,9 +1,11 @@
 package com.airwallex.android.view.composables.common
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -46,22 +48,21 @@ internal fun PaymentMethodCard(
                 .height(75.dp),
         ) {
             Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
                 AsyncImage(
                     model = selectedType.resources?.logos?.png ?: painterResource(id = R.drawable.airwallex_ic_card_default),
-                    contentDescription = null,
+                    contentDescription = "payment method icon",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .width(24.dp)
-                        .height(18.dp)
+                        .width(32.dp)
+                        .height(24.dp)
                         .clip(RoundedCornerShape(4.dp)),
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 StandardText(
                     text = selectedType.displayName ?: selectedType.name,
@@ -70,7 +71,9 @@ internal fun PaymentMethodCard(
                     textAlign = TextAlign.Center,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
                 )
             }
         }

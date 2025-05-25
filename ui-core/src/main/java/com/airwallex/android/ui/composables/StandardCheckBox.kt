@@ -3,12 +3,13 @@ package com.airwallex.android.ui.composables
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,34 +20,40 @@ import androidx.compose.ui.unit.dp
 fun StandardCheckBox(
     checked: Boolean,
     text: String,
-    modifier: Modifier = Modifier,
-    onCheckedChange: ((Boolean) -> Unit)?
+    onCheckedChange: ((Boolean) -> Unit)?,
 ) {
-    Row(
-        verticalAlignment = Alignment.Top,
+    Surface(
         modifier = Modifier
-            .clickable {
-                onCheckedChange?.let { it(!checked) }
-            }
-            // modifier parameters needs to be applied after clickable to incorporate padding into ripple effect
-            .then(modifier),
+            .padding(horizontal = 24.dp)
+            .clickable(
+                onClick = {
+                    onCheckedChange?.let { it(!checked) }
+                },
+            ),
     ) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = null,
-            colors = CheckboxDefaults.colors(uncheckedColor = MaterialTheme.colorScheme.tertiaryContainer),
-        )
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        StandardText(
-            text = text,
-            textAlign = TextAlign.Left,
-            typography = AirwallexTypography.Body200,
-            color = AirwallexColor.TextPrimary,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(top = 2.dp)
-                .weight(1f),
-        )
+                .padding(vertical = 2.dp)
+                .fillMaxWidth(),
+        ) {
+            Checkbox(
+                checked = checked,
+                onCheckedChange = null,
+                colors = CheckboxDefaults.colors(uncheckedColor = MaterialTheme.colorScheme.tertiaryContainer),
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            StandardText(
+                text = text,
+                textAlign = TextAlign.Left,
+                typography = AirwallexTypography.Caption100,
+                color = AirwallexColor.TextPrimary,
+                modifier = Modifier
+                    .padding(top = 2.dp)
+                    .weight(1f),
+            )
+        }
     }
 }

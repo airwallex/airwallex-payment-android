@@ -15,12 +15,15 @@ import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
+import com.airwallex.android.view.composables.google.GooglePaySection
 import org.json.JSONArray
 
 @Composable
@@ -32,8 +35,11 @@ internal fun PaymentScreen(
     availablePaymentConsents: List<PaymentConsent>,
     onAddCard: () -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
-    onPaymentConsentClicked: (PaymentConsent) -> Unit,
+    onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
+    onDirectPay: (AvailablePaymentMethodType) -> Unit,
+    onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
+    onLoading: (Boolean) -> Unit,
 ) {
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -61,6 +67,7 @@ internal fun PaymentScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         PaymentMethodsSection(
+            paymentMethodViewModel = paymentMethodsViewModel,
             addPaymentMethodViewModel = addPaymentMethodViewModel,
             availablePaymentMethodTypes = availablePaymentMethodTypes.filterNot { paymentMethodType ->
                 paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
@@ -68,8 +75,11 @@ internal fun PaymentScreen(
             availablePaymentConsents = availablePaymentConsents,
             onAddCard = onAddCard,
             onDeleteCard = onDeleteCard,
-            onPaymentConsentClicked = onPaymentConsentClicked,
+            onCheckoutWithoutCvc = onCheckoutWithoutCvc,
+            onDirectPay = onDirectPay,
             onCheckoutWithCvc = onCheckoutWithCvc,
+            onPayWithFields = onPayWithFields,
+            onLoading = onLoading,
         )
     }
 }

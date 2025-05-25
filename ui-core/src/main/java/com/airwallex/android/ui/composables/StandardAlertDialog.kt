@@ -57,6 +57,8 @@ fun StandardAlertDialog(
                 StandardOutlinedButton(
                     text = dismissButtonTitle,
                     onClick = onDismiss,
+                    textColor = AirwallexColor.TextPrimary,
+                    borderColor = AirwallexColor.Transparent,
                     modifier = Modifier.weight(1f),
                 )
 
