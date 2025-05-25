@@ -246,7 +246,7 @@ class PaymentMethodsViewModelTest {
         every { viewModel.trackPaymentSuccess(expectedStatus, paymentMethod.type) } just runs
         val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
         viewModel.paymentFlowStatus.observeForever(observer)
-        viewModel.startCheckout(paymentMethod, additionalInfo, paymentMethodTypeInfo)
+        viewModel.checkoutWithSchema(paymentMethod, additionalInfo, paymentMethodTypeInfo)
         advanceUntilIdle()
 
         coVerify(exactly = 1) {
@@ -270,7 +270,7 @@ class PaymentMethodsViewModelTest {
             }
             every { AirwallexLogger.info(any<String>(), any()) } just Runs
 
-            viewModel.startCheckout(availablePaymentMethodType)
+            viewModel.checkoutWithSchema(availablePaymentMethodType)
             advanceUntilIdle()
             verify(exactly = 1) { AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.") }
             unmockkObject(AirwallexLogger)
@@ -308,7 +308,7 @@ class PaymentMethodsViewModelTest {
         val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
         viewModel.paymentFlowStatus.observeForever(observer)
 
-        viewModel.startCheckout(availablePaymentMethodType)
+        viewModel.checkoutWithSchema(availablePaymentMethodType)
 
         advanceUntilIdle()
 
@@ -349,7 +349,7 @@ class PaymentMethodsViewModelTest {
         val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
         viewModel.paymentFlowStatus.observeForever(observer)
 
-        viewModel.startCheckout(availablePaymentMethodType)
+        viewModel.checkoutWithSchema(availablePaymentMethodType)
 
         advanceUntilIdle()
 
@@ -399,7 +399,7 @@ class PaymentMethodsViewModelTest {
                 listenerSlot.captured.onCompleted(expectedStatus)
             }
 
-            viewModel.startCheckout(availablePaymentMethodType)
+            viewModel.checkoutWithSchema(availablePaymentMethodType)
 
             advanceUntilIdle()
 
@@ -447,7 +447,7 @@ class PaymentMethodsViewModelTest {
                 listenerSlot.captured.onCompleted(expectedStatus)
             }
 
-            viewModel.startCheckout(availablePaymentMethodType)
+            viewModel.checkoutWithSchema(availablePaymentMethodType)
 
             advanceUntilIdle()
 
@@ -479,7 +479,7 @@ class PaymentMethodsViewModelTest {
                 listenerSlot.captured.onCompleted(expectedStatus)
             }
 
-            viewModel.startCheckout(availablePaymentMethodType)
+            viewModel.checkoutWithSchema(availablePaymentMethodType)
             advanceUntilIdle()
             verify {
                 AirwallexLogger.info(eq("PaymentMethodsViewModel startCheckout, type = card"), isNull())
@@ -512,7 +512,7 @@ class PaymentMethodsViewModelTest {
                 listenerSlot.captured.onCompleted(expectedStatus)
             }
 
-            viewModel.startCheckout(availablePaymentMethodType)
+            viewModel.checkoutWithSchema(availablePaymentMethodType)
             advanceUntilIdle()
             verify {
                 AirwallexLogger.info(eq("PaymentMethodsViewModel start checkout checkoutGooglePay, type = googlepay"), isNull())
