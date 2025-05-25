@@ -1,7 +1,6 @@
-package com.airwallex.android.view.composables
+package com.airwallex.android.view.composables.common
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,16 +12,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.airwallex.android.R
@@ -33,27 +29,21 @@ import com.airwallex.android.ui.composables.StandardText
 
 @Composable
 internal fun PaymentMethodCard(
-    paymentMethodType: AvailablePaymentMethodType,
+    isSelected: Boolean,
+    selectedType: AvailablePaymentMethodType,
     onClick: () -> Unit,
 ) {
-    var isSelected by rememberSaveable { mutableStateOf(false) }
-
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiaryContainer
-    val overlayColor = AirwallexColor.Transparent
 
     Card(
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, borderColor),
-        onClick = {
-            isSelected = true
-            // TODO
-            onClick()
-        },
+        onClick = onClick,
     ) {
         Box(
             modifier = Modifier
-                .width(120.dp)
-                .height(90.dp),
+                .width(100.dp)
+                .height(75.dp),
         ) {
             Column(
                 modifier = Modifier
@@ -62,33 +52,25 @@ internal fun PaymentMethodCard(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 AsyncImage(
-                    model = paymentMethodType.resources?.logos?.png ?: painterResource(id = R.drawable.airwallex_ic_card_default),
+                    model = selectedType.resources?.logos?.png ?: painterResource(id = R.drawable.airwallex_ic_card_default),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .width(40.dp)
-                        .height(30.dp)
-                        .clip(RoundedCornerShape(8.dp)),
+                        .width(24.dp)
+                        .height(18.dp)
+                        .clip(RoundedCornerShape(4.dp)),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 StandardText(
-                    text = paymentMethodType.displayName ?: paymentMethodType.name,
+                    text = selectedType.displayName ?: selectedType.name,
                     color = if (isSelected) MaterialTheme.colorScheme.primary else AirwallexColor.TextPrimary,
-                    typography = if (isSelected) AirwallexTypography.Caption100Bold else AirwallexTypography.Caption100,
+                    typography = if (isSelected) AirwallexTypography.Caption300Bold else AirwallexTypography.Caption300,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                )
-            }
-
-            if (isSelected) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(overlayColor)
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }

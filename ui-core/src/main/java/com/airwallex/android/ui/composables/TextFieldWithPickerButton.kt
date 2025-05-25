@@ -2,10 +2,12 @@ package com.airwallex.android.ui.composables
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.ui.R
@@ -19,7 +21,8 @@ fun TextFieldWithPickerButton(
     title: String?,
     isFieldRequired: Boolean = false,
     enabled: Boolean = true,
-    onPresentRequested: () -> Unit
+    onPresentRequested: () -> Unit,
+    shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
     TextFieldWithPickerButton(
         hint = hint,
@@ -37,6 +40,7 @@ fun TextFieldWithPickerButton(
                 padding = 0.dp,
             )
         },
+        shape = shape,
     )
 }
 
@@ -51,7 +55,8 @@ private fun TextFieldWithPickerButton(
     isFieldRequired: Boolean = false,
     enabled: Boolean = true,
     leadingAccessory: (@Composable () -> Unit)? = null,
-    trailingAccessory: (@Composable () -> Unit)? = null
+    trailingAccessory: (@Composable () -> Unit)? = null,
+    shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
     StandardTextField(
         hint = hint,
@@ -78,5 +83,6 @@ private fun TextFieldWithPickerButton(
         errorText = errorText,
         leadingAccessory = leadingAccessory,
         trailingAccessory = trailingAccessory,
+        shape = shape,
     )
 }
