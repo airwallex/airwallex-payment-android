@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
-import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.util.CardUtils.formatCardNumber
 import com.airwallex.android.core.util.CardUtils.getPossibleCardBrand
 import com.airwallex.android.ui.composables.StandardTextField
@@ -32,7 +32,7 @@ import com.airwallex.android.view.util.toSupportedIcons
 
 @Composable
 fun CardNumberTextField(
-    type: AvailablePaymentMethodType,
+    cardSchemes: List<CardScheme>,
     onValueChange: (TextFieldValue, CardBrand) -> Unit,
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
@@ -104,16 +104,14 @@ fun CardNumberTextField(
                     }
                 }
 
-                type.cardSchemes?.toSupportedIcons()?.let { icons ->
-                    CardBrandTrailingAccessory(
-                        icons = icons,
-                        brand = brand,
-                        displayAllSchemes = textFieldValue == null || textFieldValue?.text?.isBlank() == true,
-                        modifier = Modifier
-                            .size(width = 28.dp, height = 19.dp)
-                            .padding(horizontal = 2.dp),
-                    )
-                }
+                CardBrandTrailingAccessory(
+                    icons = cardSchemes.toSupportedIcons(),
+                    brand = brand,
+                    displayAllSchemes = textFieldValue == null || textFieldValue?.text?.isBlank() == true,
+                    modifier = Modifier
+                        .size(width = 28.dp, height = 19.dp)
+                        .padding(horizontal = 2.dp),
+                )
             }
         },
         shape = shape,

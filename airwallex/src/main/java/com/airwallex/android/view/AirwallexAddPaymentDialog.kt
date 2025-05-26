@@ -24,6 +24,8 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.databinding.DialogAddCardBinding
+import com.airwallex.android.ui.composables.AirwallexTheme
+import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.risk.AirwallexRisk
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -67,18 +69,6 @@ class AirwallexAddPaymentDialog(
         )[factoryKey, AddPaymentMethodViewModel::class.java]
     }
 
-    private val isValid: Boolean
-        get() {
-            val isCardValid = viewBinding.cardWidget.isValid
-            var isBillingValid = true
-            if (viewBinding.billingGroup.visibility == View.VISIBLE) {
-                isBillingValid = viewBinding.billingWidget.isValid
-            }
-            return isCardValid && isBillingValid
-        }
-
-    private var currentBrand: CardBrand? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
@@ -107,39 +97,26 @@ class AirwallexAddPaymentDialog(
     private fun initView() {
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
         viewBinding.closeIcon.setColorFilter(Color.BLACK)
-        viewBinding.cardWidget.showEmail = viewModel.isEmailRequired
-        viewBinding.billingWidget.shipping = viewModel.shipping
-        viewBinding.btnSaveCard.text = viewModel.ctaTitle
-        viewBinding.btnSaveCard.isEnabled = false
-        viewBinding.billingGroup.visibility =
-            if (viewModel.isBillingRequired) View.VISIBLE else View.GONE
-        viewBinding.saveCardWidget.visibility =
-            if (viewModel.canSaveCard) View.VISIBLE else View.GONE
+        viewBinding.composeView.apply {
+            setContent {
+                AirwallexTheme {
+                    CardSection(
+                        addPaymentMethodViewModel = viewModel,
+                        cardSchemes = supportedCardSchemes,
+                        onAddCard = {
+                            setLoadingProgress(true)
+                        },
+                        onDeleteCard = {},
+                        onCheckoutWithoutCvc = {},
+                        onCheckoutWithCvc = { _, _ -> },
+                        isSinglePaymentMethod = true,
+                    )
+                }
+            }
+        }
     }
 
     private fun addListener() {
-        viewBinding.cardWidget.validationMessageCallback = { cardNumber ->
-            when (val result = viewModel.getValidationResult(cardNumber)) {
-                is AddPaymentMethodViewModel.ValidationResult.Success -> null
-                is AddPaymentMethodViewModel.ValidationResult.Error -> context.getString(result.message)
-            }
-        }
-        viewBinding.cardWidget.brandChangeCallback = { cardBrand ->
-            currentBrand = cardBrand
-            handleUnionPayWarning()
-        }
-        viewBinding.cardWidget.cardChangeCallback = { invalidateConfirmStatus() }
-        viewBinding.billingWidget.billingChangeCallback = {
-            invalidateConfirmStatus()
-            AnalyticsLogger.logAction("toggle_billing_address")
-        }
-        viewBinding.btnSaveCard.setOnSingleClickListener { onSaveCard() }
-        viewBinding.swSaveCard.setOnCheckedChangeListener { _, isChecked ->
-            handleUnionPayWarning()
-            if (isChecked) {
-                AnalyticsLogger.logAction("save_card")
-            }
-        }
         viewBinding.closeIcon.setOnClickListener {
             cancelPayment()
         }
@@ -159,32 +136,6 @@ class AirwallexAddPaymentDialog(
                 else -> Unit
             }
         }
-    }
-
-    private fun invalidateConfirmStatus() {
-        viewBinding.btnSaveCard.isEnabled = isValid
-    }
-
-    private fun handleUnionPayWarning() {
-        if (currentBrand == CardBrand.UnionPay && viewBinding.swSaveCard.isChecked) {
-            viewBinding.warningView.message =
-                context.getString(R.string.airwallex_save_union_pay_card)
-            viewBinding.warningView.visibility = View.VISIBLE
-        } else {
-            viewBinding.warningView.visibility = View.GONE
-        }
-    }
-
-    private fun onSaveCard() {
-        AnalyticsLogger.logAction("tap_pay_button")
-        AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
-        val card = viewBinding.cardWidget.paymentMethodCard ?: return
-        setLoadingProgress(loading = true)
-        viewModel.confirmPayment(
-            card,
-            viewBinding.swSaveCard.isChecked,
-            viewBinding.billingWidget.billing,
-        )
     }
 
     private fun dismissWithPaymentResult(

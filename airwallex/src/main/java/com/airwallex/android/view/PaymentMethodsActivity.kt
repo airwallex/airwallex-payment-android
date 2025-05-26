@@ -85,7 +85,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 }
 
                 is PaymentMethodsViewModel.PaymentMethodResult.Skip -> {
-                    startAddPaymentMethod(result.schemes) // TODO
+                    startAddPaymentMethod(result.schemes)
                 }
             }
         }
@@ -188,52 +188,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             ) { _, result ->
                 handleAddPaymentMethodActivityResult(result.resultCode, result.data)
             }
-    }
-
-    private fun showPaymentBankDialog(
-        paymentMethod: PaymentMethod,
-        typeInfo: PaymentMethodTypeInfo,
-        bankField: DynamicSchemaField? = null,
-        banks: List<Bank>
-    ) {
-        val bankDialog = PaymentBankBottomSheetDialog.newInstance(
-            paymentMethod,
-            getString(R.string.airwallex_select_your_bank),
-            banks
-        )
-        bankDialog.onCompleted = { bank ->
-            AnalyticsLogger.logAction("select_bank", mapOf("bankName" to bank.name))
-            showSchemaFieldsDialog(typeInfo, paymentMethod, bankField, bank.name)
-        }
-        bankDialog.show(supportFragmentManager, typeInfo.name)
-    }
-
-    private fun showSchemaFieldsDialog(
-        info: PaymentMethodTypeInfo,
-        paymentMethod: PaymentMethod,
-        bankField: DynamicSchemaField? = null,
-        bankName: String? = null,
-    ) {
-        val paymentInfoDialog = PaymentInfoBottomSheetDialog.newInstance(paymentMethod, info)
-        paymentInfoDialog.onCompleted = { fieldMap ->
-            setLoadingProgress(loading = true)
-            if (bankField != null && bankName != null) {
-                fieldMap[bankField.name] = bankName
-            }
-            if (session is AirwallexPaymentSession) {
-                fieldMap[COUNTRY_CODE] = (session as AirwallexPaymentSession).countryCode
-            }
-            setLoadingProgress(loading = true, cancelable = false)
-            viewModel.checkoutWithSchema(
-                paymentMethod = paymentMethod,
-                additionalInfo = fieldMap,
-                typeInfo = info
-            )
-        }
-        paymentInfoDialog.show(
-            supportFragmentManager,
-            info.name
-        )
     }
 
     private fun handleAddPaymentMethodActivityResult(resultCode: Int, data: Intent?) {
