@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.airwallex.android.R
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
+import com.airwallex.android.view.composables.common.FocusState
 
 @Suppress("LongParameterList")
 @Composable
@@ -35,6 +36,7 @@ fun BillingTextField(
 ) {
     var showClearButton by remember { mutableStateOf(false) }
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
+    var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
     LaunchedEffect(text) {
         // Update the text when clicking same address
@@ -54,14 +56,18 @@ fun BillingTextField(
         },
         modifier = modifier.onFocusChanged { focusState ->
             if (focusState.isFocused) {
+                localFocusState = FocusState.Focused
                 textFieldValue = textFieldValue.copy(selection = TextRange(textFieldValue.text.length))
                 if (textFieldValue.text.isNotEmpty()) {
                     showClearButton = true
                 }
             } else {
-                showClearButton = false
                 // Focus has left the TextField after being focused
-                onFocusLost(textFieldValue.text)
+                if (localFocusState !is FocusState.Initial) {
+                    onFocusLost(textFieldValue.text)
+                }
+                showClearButton = false
+                localFocusState = FocusState.Unfocused
             }
         },
         enabled = enabled,

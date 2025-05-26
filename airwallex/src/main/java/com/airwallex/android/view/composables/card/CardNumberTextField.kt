@@ -28,7 +28,9 @@ import com.airwallex.android.core.util.CardUtils.formatCardNumber
 import com.airwallex.android.core.util.CardUtils.getPossibleCardBrand
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
+import com.airwallex.android.view.composables.common.FocusState
 import com.airwallex.android.view.util.toSupportedIcons
+import com.airwallex.risk.AirwallexRisk
 
 @Composable
 fun CardNumberTextField(
@@ -41,12 +43,13 @@ fun CardNumberTextField(
     shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
     var showClearButton by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf<TextFieldValue?>(null) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
     var brand by remember { mutableStateOf(CardBrand.Unknown) }
 
     StandardTextField(
         hint = stringResource(R.string.airwallex_card_number_placeholder),
-        text = textFieldValue ?: TextFieldValue(),
+        text = textFieldValue,
         onTextChanged = { newText ->
             brand = getPossibleCardBrand(newText.text, shouldNormalize = true)
             val formattedText = formatCardNumber(newText.text, brand)
@@ -54,26 +57,28 @@ fun CardNumberTextField(
                 text = formattedText,
                 selection = TextRange(formattedText.length),
             )
-            showClearButton = textFieldValue?.text?.isNotEmpty() == true
-            onValueChange(textFieldValue ?: TextFieldValue(), brand)
-            if (textFieldValue?.text?.length == brand.lengths.max() + brand.spacingPattern.size - 1) {
-                onComplete(textFieldValue?.text.orEmpty())
+            showClearButton = textFieldValue.text.isNotEmpty()
+            onValueChange(textFieldValue, brand)
+            if (textFieldValue.text.length == brand.lengths.max() + brand.spacingPattern.size - 1) {
+                onComplete(textFieldValue.text)
                 showClearButton = false
             }
         },
         isError = isError,
         modifier = modifier.onFocusChanged { focusState ->
             if (focusState.isFocused) {
-                textFieldValue = textFieldValue?.copy(selection = TextRange(textFieldValue?.text?.length ?: 0)) ?: TextFieldValue()
-                if (textFieldValue?.text?.isNotEmpty() == true) {
+                AirwallexRisk.log(event = "input_card_number", screen = "page_create_card")
+                localFocusState = FocusState.Focused
+                textFieldValue = textFieldValue.copy(selection = TextRange(textFieldValue.text.length))
+                if (textFieldValue.text.isNotEmpty()) {
                     showClearButton = true
                 }
             } else {
-                if (textFieldValue != null) {
-                    // Focus has left the TextField after being focused
-                    onFocusLost(textFieldValue?.text.orEmpty())
+                if (localFocusState !is FocusState.Initial) {
+                    onFocusLost(textFieldValue.text)
                 }
                 showClearButton = false
+                localFocusState = FocusState.Unfocused
             }
         },
         options = StandardTextFieldOptions(
@@ -81,7 +86,7 @@ fun CardNumberTextField(
             returnType = StandardTextFieldOptions.ReturnType.DONE,
         ),
         onComplete = {
-            onComplete(textFieldValue?.text.orEmpty())
+            onComplete(textFieldValue.text)
         },
         trailingAccessory = {
             Row(
@@ -107,7 +112,7 @@ fun CardNumberTextField(
                 CardBrandTrailingAccessory(
                     icons = cardSchemes.toSupportedIcons(),
                     brand = brand,
-                    displayAllSchemes = textFieldValue == null || textFieldValue?.text?.isBlank() == true,
+                    displayAllSchemes = localFocusState is FocusState.Initial || textFieldValue.text.isBlank(),
                     modifier = Modifier
                         .size(width = 28.dp, height = 19.dp)
                         .padding(horizontal = 2.dp),

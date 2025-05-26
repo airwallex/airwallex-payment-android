@@ -1,6 +1,7 @@
 package com.airwallex.android.view.composables.card
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -218,7 +219,12 @@ internal fun AddCardSection(
             modifier = Modifier
                 .focusRequester(nameFocusRequest)
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 24.dp)
+                .clickable(
+                    onClick = {
+                        AirwallexRisk.log(event = "input_card_holder_name", screen = "page_create_card")
+                    },
+                ),
         )
 
         if (viewModel.isEmailRequired) {
@@ -277,12 +283,12 @@ internal fun AddCardSection(
                     onCheckedChange = {
                         AnalyticsLogger.logAction("toggle_billing_address")
                         isSameAddressChecked = it
-                        selectedCountryCode = viewModel.countryCode
-                        street = viewModel.shipping?.address?.street.orEmpty()
-                        state = viewModel.shipping?.address?.state.orEmpty()
-                        city = viewModel.shipping?.address?.city.orEmpty()
-                        zipCode = viewModel.shipping?.address?.postcode.orEmpty()
-                        phoneNumber = viewModel.shipping?.phoneNumber.orEmpty()
+                        selectedCountryCode = if (isSameAddressChecked) viewModel.countryCode else selectedCountryCode
+                        street = if (isSameAddressChecked) viewModel.shipping?.address?.street.orEmpty() else street
+                        state = if (isSameAddressChecked) viewModel.shipping?.address?.state.orEmpty() else state
+                        city = if (isSameAddressChecked) viewModel.shipping?.address?.city.orEmpty() else city
+                        zipCode = if (isSameAddressChecked) viewModel.shipping?.address?.postcode.orEmpty() else zipCode
+                        phoneNumber = if (isSameAddressChecked) viewModel.shipping?.phoneNumber.orEmpty() else phoneNumber
                     },
                 )
 
