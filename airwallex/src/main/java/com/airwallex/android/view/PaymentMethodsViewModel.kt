@@ -494,8 +494,6 @@ internal class PaymentMethodsViewModel(
     private fun createBaseParamsForSchemaSubmission(): Map<String, String> {
         return mapOf(
             COUNTRY_CODE to session.countryCode,
-            FLOW to "inapp",
-            OS_TYPE to "android",
         )
     }
 
@@ -543,7 +541,6 @@ internal class PaymentMethodsViewModel(
     companion object {
         const val COUNTRY_CODE = "country_code"
         const val FLOW = "flow"
-        private const val OS_TYPE = "os_type"
         private const val PAYMENT_METHOD = "payment_method"
         private const val PAYMENT_SUCCESS = "payment_success"
         private const val PAYMENT_SELECT = "select_payment"
