@@ -20,9 +20,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.airwallex.android.R
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
+import com.airwallex.android.view.composables.common.FocusState
 import com.airwallex.android.view.util.ExpiryDateUtils.VALID_INPUT_LENGTH
 import com.airwallex.android.view.util.ExpiryDateUtils.formatExpiryDate
 import com.airwallex.android.view.util.ExpiryDateUtils.formatExpiryDateWhenDeleting
+import com.airwallex.risk.AirwallexRisk
 
 @Composable
 fun CardExpiryTextField(
@@ -34,21 +36,22 @@ fun CardExpiryTextField(
     shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
     var showClearButton by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf<TextFieldValue?>(null) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
     StandardTextField(
         hint = stringResource(R.string.airwallex_expires_hint),
-        text = textFieldValue ?: TextFieldValue(),
+        text = textFieldValue,
         onTextChanged = { newText ->
-            val isDeleteAction = newText.text.length < (textFieldValue?.text?.length ?: 0)
+            val isDeleteAction = newText.text.length < (textFieldValue.text.length)
             if (isDeleteAction) {
                 val formattedText = formatExpiryDateWhenDeleting(newText.text)
                 textFieldValue = TextFieldValue(
                     text = formattedText.take(VALID_INPUT_LENGTH),
                     selection = TextRange(formattedText.length),
                 )
-                showClearButton = textFieldValue?.text?.isNotEmpty() == true
-                onTextChanged(textFieldValue ?: TextFieldValue())
+                showClearButton = textFieldValue.text.isNotEmpty()
+                onTextChanged(textFieldValue)
                 return@StandardTextField
             }
 
@@ -57,29 +60,32 @@ fun CardExpiryTextField(
                 text = formattedDate.take(VALID_INPUT_LENGTH),
                 selection = TextRange(formattedDate.length),
             )
-            showClearButton = textFieldValue?.text?.isNotEmpty() == true
-            onTextChanged(textFieldValue ?: TextFieldValue())
-            if (textFieldValue?.text?.length == VALID_INPUT_LENGTH) {
-                onComplete(textFieldValue?.text.orEmpty())
+            showClearButton = textFieldValue.text.isNotEmpty()
+            onTextChanged(textFieldValue)
+            if (textFieldValue.text.length == VALID_INPUT_LENGTH) {
+                onComplete(textFieldValue.text)
                 showClearButton = false
             }
         },
         isError = isError,
         modifier = modifier
             .onFocusEvent { focusState ->
-                if (focusState.hasFocus && textFieldValue?.text?.isNotEmpty() == true) {
+                if (focusState.hasFocus && textFieldValue.text.isNotEmpty()) {
                     showClearButton = true
+                    AirwallexRisk.log(event = "input_card_expiry", screen = "page_create_card")
                 }
             }
             .onFocusChanged { focusState ->
                 if (focusState.isFocused) {
-                    textFieldValue = textFieldValue?.copy(selection = TextRange(textFieldValue?.text?.length ?: 0)) ?: TextFieldValue()
+                    localFocusState = FocusState.Focused
+                    textFieldValue = textFieldValue.copy(selection = TextRange(textFieldValue.text.length))
                 } else {
-                    if (textFieldValue != null) {
+                    if (localFocusState !is FocusState.Initial) {
                         // Focus has left the TextField after being focused
-                        onFocusLost(textFieldValue?.text.orEmpty())
+                        onFocusLost(textFieldValue.text)
                     }
                     showClearButton = false
+                    localFocusState = FocusState.Unfocused
                 }
             },
         options = StandardTextFieldOptions(
@@ -87,7 +93,7 @@ fun CardExpiryTextField(
             returnType = StandardTextFieldOptions.ReturnType.DONE,
         ),
         onComplete = {
-            onComplete(textFieldValue?.text.orEmpty())
+            onComplete(textFieldValue.text)
         },
         trailingAccessory = {
             if (showClearButton) {

@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
@@ -14,9 +13,7 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.model.Bank
 import com.airwallex.android.core.model.CardScheme
-import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
@@ -25,7 +22,6 @@ import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
-import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.risk.AirwallexRisk

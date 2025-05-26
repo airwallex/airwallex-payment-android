@@ -98,9 +98,7 @@ internal fun SchemaFieldsSection(
                             inputMap[field.name] = input
                             errorMap[field.name] = false
                         } else {
-                            if (errorMap[field.name] != null) {
-                                errorMap[field.name] = true
-                            }
+                            errorMap[field.name] = true
                         }
                     },
                     onComplete = { input ->
@@ -150,7 +148,7 @@ internal fun SchemaFieldsSection(
                 }
             }
             DynamicSchemaFieldType.ENUM -> {
-                // Not supported yet.
+                // Not showing UI
             }
             DynamicSchemaFieldType.BOOLEAN -> {
                 // Not supported yet.

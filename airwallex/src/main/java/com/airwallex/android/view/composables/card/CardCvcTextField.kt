@@ -26,6 +26,8 @@ import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
+import com.airwallex.android.view.composables.common.FocusState
+import com.airwallex.risk.AirwallexRisk
 
 private const val AMEX_CVV_LENGTH = 4
 private const val DEFAULT_CVV_LENGTH = 3
@@ -42,11 +44,12 @@ fun CardCvcTextField(
     shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
     var showClearButton by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf<TextFieldValue?>(null) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
     StandardTextField(
         hint = stringResource(R.string.airwallex_cvc_hint),
-        text = textFieldValue ?: TextFieldValue(),
+        text = textFieldValue,
         onTextChanged = { newText ->
             val cvcLength = when (cardBrand) {
                 CardBrand.Amex -> AMEX_CVV_LENGTH
@@ -62,10 +65,10 @@ fun CardCvcTextField(
                 text = newText.text.take(cvcLength),
                 selection = TextRange(newCursorPosition),
             )
-            showClearButton = textFieldValue?.text?.isNotEmpty() == true
+            showClearButton = textFieldValue.text.isNotEmpty()
             onTextChanged(newText)
-            if (textFieldValue?.text?.length == cvcLength) {
-                onComplete(textFieldValue?.text.orEmpty())
+            if (textFieldValue.text.length == cvcLength) {
+                onComplete(textFieldValue.text)
                 showClearButton = false
             }
         },
@@ -73,19 +76,22 @@ fun CardCvcTextField(
         errorText = errorMessage,
         modifier = modifier
             .onFocusEvent { focusState ->
-                if (focusState.hasFocus && textFieldValue?.text?.isNotEmpty() == true) {
+                if (focusState.hasFocus && textFieldValue.text.isNotEmpty()) {
                     showClearButton = true
+                    AirwallexRisk.log(event = "input_card_cvc", screen = "page_create_card")
                 }
             }
             .onFocusChanged { focusState ->
                 if (focusState.isFocused) {
-                    textFieldValue = textFieldValue?.copy(selection = TextRange(textFieldValue?.text?.length ?: 0)) ?: TextFieldValue()
+                    localFocusState = FocusState.Focused
+                    textFieldValue = textFieldValue.copy(selection = TextRange(textFieldValue.text.length))
                 } else {
-                    if (textFieldValue != null) {
+                    if (localFocusState !is FocusState.Initial) {
                         // Focus has left the TextField after being focused
-                        onFocusLost(textFieldValue?.text.orEmpty())
+                        onFocusLost(textFieldValue.text)
                     }
                     showClearButton = false
+                    localFocusState = FocusState.Unfocused
                 }
             },
         options = StandardTextFieldOptions(
@@ -93,7 +99,7 @@ fun CardCvcTextField(
             returnType = StandardTextFieldOptions.ReturnType.DONE,
         ),
         onComplete = {
-            onComplete(textFieldValue?.text.orEmpty())
+            onComplete(textFieldValue.text)
         },
         trailingAccessory = {
             Row(

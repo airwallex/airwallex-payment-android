@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,9 +41,12 @@ internal fun CountrySelectRow(
 ) {
     val focusManager = LocalFocusManager.current
     var selectedValue by remember { mutableStateOf(default) }
-    selectedValue = default
-    var selectedLabel by remember { mutableStateOf<String?>(null) }
-    selectedLabel = options.firstOrNull { it.second == selectedValue }?.first ?: selectedLabel
+    var selectedLabel by remember { mutableStateOf(options.firstOrNull { it.second == selectedValue }?.first) }
+
+    LaunchedEffect(default) {
+        selectedValue = default
+        selectedLabel = options.firstOrNull { it.second == selectedValue }?.first ?: selectedLabel
+    }
 
     StandardBottomSheet<Unit>(
         sheetContent = { sheetDetails ->

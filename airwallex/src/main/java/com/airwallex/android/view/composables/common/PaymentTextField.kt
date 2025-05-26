@@ -28,6 +28,7 @@ fun PaymentTextField(
 ) {
     var showClearButton by remember { mutableStateOf(false) }
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
+    var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
     StandardTextField(
         hint = "",
@@ -42,14 +43,18 @@ fun PaymentTextField(
         },
         modifier = modifier.onFocusChanged { focusState ->
             if (focusState.isFocused) {
+                localFocusState = FocusState.Focused
                 textFieldValue = textFieldValue.copy(selection = TextRange(textFieldValue.text.length))
                 if (textFieldValue.text.isNotEmpty()) {
                     showClearButton = true
                 }
             } else {
-                showClearButton = false
                 // Focus has left the TextField after being focused
-                onFocusLost(textFieldValue.text)
+                if (localFocusState !is FocusState.Initial) {
+                    onFocusLost(textFieldValue.text)
+                }
+                showClearButton = false
+                localFocusState = FocusState.Unfocused
             }
         },
         errorText = errorText,
