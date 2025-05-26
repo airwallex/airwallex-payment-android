@@ -40,6 +40,7 @@ internal fun PaymentScreen(
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
+    onError: () -> Unit,
 ) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         StandardText(
@@ -78,6 +79,7 @@ internal fun PaymentScreen(
             onCheckoutWithCvc = onCheckoutWithCvc,
             onPayWithFields = onPayWithFields,
             onLoading = onLoading,
+            onError = onError,
         )
     }
 }

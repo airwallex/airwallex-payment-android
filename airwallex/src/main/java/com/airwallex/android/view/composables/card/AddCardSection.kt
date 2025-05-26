@@ -33,6 +33,7 @@ import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardCheckBox
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
+import com.airwallex.android.ui.composables.StandardTextFieldOptions
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.composables.common.CountrySelectRow
 import com.airwallex.android.view.composables.common.PaymentTextField
@@ -432,6 +433,10 @@ internal fun AddCardSection(
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
                     isError = phoneNumberErrorMessage != null,
+                    options = StandardTextFieldOptions(
+                        inputType = StandardTextFieldOptions.InputType.PHONE,
+                        returnType = StandardTextFieldOptions.ReturnType.DONE,
+                    ),
                     shape = RoundedCornerShape(
                         topStart = 0.dp,
                         topEnd = 0.dp,

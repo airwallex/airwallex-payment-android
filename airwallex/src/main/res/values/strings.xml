@@ -60,5 +60,6 @@
     <string name="airwallex_delete_consent_alert_title">Remove %s?</string>
     <string name="airwallex_delete_consent_alert_content">This option will be permanently removed from your saved payment methods.</string>
     <string name="airwallex_schema_payment_redirect_message">You will be redirected to complete your payment upon confirmation.</string>
+    <string name="airwallex_invalid_scheme_message">Invalid schema</string>
 
 </resources>

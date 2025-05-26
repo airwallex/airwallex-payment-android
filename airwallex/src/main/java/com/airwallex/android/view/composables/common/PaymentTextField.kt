@@ -25,6 +25,10 @@ fun PaymentTextField(
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
     errorText: String? = null,
+    options: StandardTextFieldOptions = StandardTextFieldOptions(
+        inputType = StandardTextFieldOptions.InputType.NORMAL,
+        returnType = StandardTextFieldOptions.ReturnType.DONE,
+    ),
 ) {
     var showClearButton by remember { mutableStateOf(false) }
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
@@ -58,10 +62,7 @@ fun PaymentTextField(
             }
         },
         errorText = errorText,
-        options = StandardTextFieldOptions(
-            inputType = StandardTextFieldOptions.InputType.NORMAL,
-            returnType = StandardTextFieldOptions.ReturnType.DONE,
-        ),
+        options = options,
         onComplete = {
             onComplete(textFieldValue.text)
         },

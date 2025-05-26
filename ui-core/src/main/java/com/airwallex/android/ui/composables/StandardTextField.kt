@@ -172,13 +172,15 @@ data class StandardTextFieldOptions(
         NORMAL,
         NUMBER,
         DECIMALS,
-        NUMBER_PASSWORD;
+        NUMBER_PASSWORD,
+        PHONE;
 
         fun makeKeyboardType(): KeyboardType = when (this) {
             NORMAL -> KeyboardType.Text
             NUMBER -> KeyboardType.Number
             DECIMALS -> KeyboardType.Decimal
             NUMBER_PASSWORD -> KeyboardType.NumberPassword
+            PHONE -> KeyboardType.Phone
         }
     }
 

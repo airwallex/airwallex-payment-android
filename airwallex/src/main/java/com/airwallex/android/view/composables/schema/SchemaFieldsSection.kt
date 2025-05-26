@@ -3,7 +3,6 @@ package com.airwallex.android.view.composables.schema
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -22,9 +21,11 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.Bank
 import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.DynamicSchemaFieldType
+import com.airwallex.android.core.model.DynamicSchemaFieldUIType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
+import com.airwallex.android.ui.composables.StandardTextFieldOptions
 import com.airwallex.android.view.composables.common.BankSelectRow
 import com.airwallex.android.view.composables.common.PaymentTextField
 import com.airwallex.android.view.util.isValidDynamicSchemaField
@@ -54,14 +55,17 @@ internal fun SchemaFieldsSection(
     }
 
     val validateFields = {
-        val allValid = fields.all { field ->
-            val isValid = if (field.type == DynamicSchemaFieldType.BANKS && banks.isEmpty()) {
-                true
+        var allValid = true
+        fields.forEach { field ->
+            errorMap[field.name] = if (field.type == DynamicSchemaFieldType.BANKS && banks.isEmpty()) {
+                false
             } else {
-                inputMap[field.name]?.isValidDynamicSchemaField(field.validations) == true
+                val isValid = inputMap[field.name]?.isValidDynamicSchemaField(field.validations, field.uiType) == true
+                if (!isValid) {
+                    allValid = false
+                }
+                !isValid
             }
-            errorMap[field.name] = !isValid
-            isValid
         }
         if (allValid) {
             onFieldsValidated(inputMap)
@@ -92,9 +96,16 @@ internal fun SchemaFieldsSection(
                 PaymentTextField(
                     text = inputMap[field.name] ?: "",
                     errorText = if (errorMap[field.name] == true) stringResource(R.string.airwallex_invalid_field, field.displayName.lowercase()) else null,
+                    options = StandardTextFieldOptions(
+                        inputType = when (field.uiType) {
+                            DynamicSchemaFieldUIType.PHONE -> StandardTextFieldOptions.InputType.PHONE
+                            else -> StandardTextFieldOptions.InputType.NORMAL
+                        },
+                        returnType = StandardTextFieldOptions.ReturnType.DONE,
+                    ),
                     onTextChanged = { inputMap[field.name] = it.text },
                     onFocusLost = { input ->
-                        if (input.isValidDynamicSchemaField(field.validations)) {
+                        if (input.isValidDynamicSchemaField(field.validations, field.uiType)) {
                             inputMap[field.name] = input
                             errorMap[field.name] = false
                         } else {
@@ -102,7 +113,7 @@ internal fun SchemaFieldsSection(
                         }
                     },
                     onComplete = { input ->
-                        if (input.isValidDynamicSchemaField(field.validations)) {
+                        if (input.isValidDynamicSchemaField(field.validations, field.uiType)) {
                             inputMap[field.name] = input
                             errorMap[field.name] = false
                         } else {
@@ -130,21 +141,11 @@ internal fun SchemaFieldsSection(
                         onOptionSelected = { bank ->
                             AnalyticsLogger.logAction("select_bank", mapOf("bankName" to bank.name))
                             selectedBank = bank
+                            inputMap[field.name] = bank.name
                             errorMap[field.name] = false
                         },
+                        errorText = if (errorMap[field.name] == true) stringResource(R.string.airwallex_invalid_field, field.displayName.lowercase()) else null,
                     )
-
-                    if (errorMap[field.name] == true) {
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        StandardText(
-                            text = stringResource(id = R.string.airwallex_invalid_field, field.displayName.lowercase()),
-                            textAlign = TextAlign.Left,
-                            typography = AirwallexTypography.Caption100,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(start = 40.dp),
-                        )
-                    }
                 }
             }
             DynamicSchemaFieldType.ENUM -> {
