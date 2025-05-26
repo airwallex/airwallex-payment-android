@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,11 +39,6 @@ internal fun BankSelectRow(
     val focusManager = LocalFocusManager.current
     var selectedValue by remember { mutableStateOf(default) }
     var selectedLabel by remember { mutableStateOf(options.firstOrNull { it.name == selectedValue }?.displayName) }
-
-    LaunchedEffect(default) {
-        selectedValue = default
-        selectedLabel = options.firstOrNull { it.name == selectedValue }?.displayName ?: selectedLabel
-    }
 
     StandardBottomSheet<Unit>(
         sheetContent = { sheetDetails ->
