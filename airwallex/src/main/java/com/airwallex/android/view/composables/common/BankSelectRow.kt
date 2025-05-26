@@ -35,6 +35,7 @@ internal fun BankSelectRow(
     onOptionSelected: (Bank) -> Unit,
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(8.dp),
+    errorText: String? = null,
 ) {
     val focusManager = LocalFocusManager.current
     var selectedValue by remember { mutableStateOf(default) }
@@ -67,7 +68,9 @@ internal fun BankSelectRow(
                         BankItem(
                             bank = content,
                             isSelected = selectedValue == content.name,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .padding(horizontal = 24.dp)
+                                .fillMaxWidth(),
                             onClick = {
                                 sheetDetails.onDismissRequested {}
                                 selectedLabel = content.displayName
@@ -91,6 +94,7 @@ internal fun BankSelectRow(
             enabled = enabled,
             onPresentRequested = { onPresentRequested(Unit) },
             shape = shape,
+            errorText = errorText,
         )
     }
 }

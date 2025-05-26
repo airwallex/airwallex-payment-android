@@ -37,6 +37,7 @@ internal fun SchemaSection(
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
+    onError: () -> Unit,
 ) {
     var fieldsToSubmit by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var validateFields: (() -> Unit)? by remember { mutableStateOf(null) }
@@ -99,6 +100,11 @@ internal fun SchemaSection(
         StandardSolidButton(
             text = viewModel.schemaButtonTitle,
             onClick = {
+                if (schemaData == null) {
+                    onError()
+                    return@StandardSolidButton
+                }
+
                 if (schemaData?.fields?.isEmpty() == true) {
                     // No fields to validate
                     onDirectPay(type)
@@ -117,5 +123,7 @@ internal fun SchemaSection(
             },
             modifier = Modifier.fillMaxWidth(),
         )
+
+        Spacer(modifier = Modifier.height(36.dp))
     }
 }

@@ -1,5 +1,6 @@
 package com.airwallex.android.view.composables.card
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
@@ -32,7 +34,11 @@ fun BillingTextField(
     isError: Boolean = false,
     enabled: Boolean = true,
     hint: String = "",
-    shape: Shape = OutlinedTextFieldDefaults.shape,
+    shape: Shape = RoundedCornerShape(8.dp),
+    options: StandardTextFieldOptions = StandardTextFieldOptions(
+        inputType = StandardTextFieldOptions.InputType.NORMAL,
+        returnType = StandardTextFieldOptions.ReturnType.DONE,
+    ),
 ) {
     var showClearButton by remember { mutableStateOf(false) }
     var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
@@ -72,10 +78,7 @@ fun BillingTextField(
         },
         enabled = enabled,
         isError = isError,
-        options = StandardTextFieldOptions(
-            inputType = StandardTextFieldOptions.InputType.NORMAL,
-            returnType = StandardTextFieldOptions.ReturnType.DONE,
-        ),
+        options = options,
         onComplete = {
             onComplete(textFieldValue.text)
         },

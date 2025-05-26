@@ -25,6 +25,7 @@ import com.airwallex.android.core.util.CardUtils
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
 import com.airwallex.android.view.util.isValidCvc
+import com.airwallex.android.view.util.isValidEmail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -125,7 +126,7 @@ class AddPaymentMethodViewModel(
     fun getEmailValidationMessage(email: String): Int? {
         return when {
             email.isBlank() -> R.string.airwallex_empty_email
-            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> R.string.airwallex_invalid_email
+            !email.isValidEmail() -> R.string.airwallex_invalid_email
             else -> null
         }
     }
