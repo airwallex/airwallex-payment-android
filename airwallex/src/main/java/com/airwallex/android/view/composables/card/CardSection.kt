@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
-import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
@@ -58,12 +58,13 @@ sealed interface CardSectionType {
 @Composable
 internal fun CardSection(
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
-    type: AvailablePaymentMethodType,
-    availablePaymentConsents: List<PaymentConsent>,
+    cardSchemes: List<CardScheme>,
     onAddCard: () -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
+    availablePaymentConsents: List<PaymentConsent> = emptyList(),
+    isSinglePaymentMethod: Boolean = false,
 ) {
     val deletedConsent by addPaymentMethodViewModel.deleteCardSuccess.collectAsState()
 
@@ -72,7 +73,7 @@ internal fun CardSection(
 
     LaunchedEffect(localConsents, deletedConsent) {
         localConsents = localConsents.filterNot { it.id == deletedConsent?.id }
-        selectedScreen = if (localConsents.isEmpty()) {
+        selectedScreen = if (localConsents.isEmpty() || isSinglePaymentMethod) {
             CardSectionType.AddCard
         } else {
             CardSectionType.ConsentList
@@ -109,7 +110,7 @@ internal fun CardSection(
 
                 AddCardSection(
                     viewModel = addPaymentMethodViewModel,
-                    type = type,
+                    cardSchemes = cardSchemes,
                     onConfirm = onAddCard,
                 )
             }

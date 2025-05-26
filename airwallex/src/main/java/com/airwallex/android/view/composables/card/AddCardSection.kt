@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardCheckBox
@@ -43,7 +43,7 @@ import com.airwallex.risk.AirwallexRisk
 @Composable
 internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
-    type: AvailablePaymentMethodType,
+    cardSchemes: List<CardScheme>,
     onConfirm: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -95,7 +95,7 @@ internal fun AddCardSection(
         )
 
         CardNumberTextField(
-            type = type,
+            cardSchemes = cardSchemes,
             onValueChange = { value, cardBrand ->
                 cardNumber = value.text
                 brand = cardBrand

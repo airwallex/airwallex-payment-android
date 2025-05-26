@@ -98,7 +98,7 @@ internal fun PaymentMethodsSection(
                 PaymentMethodType.CARD.value -> {
                     CardSection(
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
-                        type = type,
+                        cardSchemes = type.cardSchemes.orEmpty(),
                         availablePaymentConsents = availablePaymentConsents,
                         onAddCard = onAddCard,
                         onDeleteCard = onDeleteCard,

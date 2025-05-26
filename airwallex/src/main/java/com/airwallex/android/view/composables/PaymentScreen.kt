@@ -41,9 +41,7 @@ internal fun PaymentScreen(
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.verticalScroll(rememberScrollState()),
-    ) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         StandardText(
             text = stringResource(id = R.string.airwallex_payment_methods),
             color = AirwallexColor.TextPrimary,
