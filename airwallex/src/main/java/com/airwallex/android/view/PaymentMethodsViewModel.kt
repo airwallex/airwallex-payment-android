@@ -33,10 +33,12 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
+import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.findWithType
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
+import com.airwallex.android.view.util.needCountryCode
 import com.airwallex.android.view.util.toPaymentFlow
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -60,6 +62,9 @@ internal class PaymentMethodsViewModel(
     
     // Cache for schema data by payment method type
     private val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData>()
+
+    // Map for additional params. Currently only used for country code in Enum type fields.
+    private val additionalParams = mutableMapOf<String, String>()
 
     private val paymentIntent: PaymentIntent? by lazy {
         when (session) {
@@ -128,6 +133,14 @@ internal class PaymentMethodsViewModel(
         }
     }
 
+    private val transactionMode: TransactionMode by lazy {
+        when (session) {
+            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
+            is AirwallexPaymentSession -> TransactionMode.ONE_OFF
+            else -> TransactionMode.ONE_OFF // Default to one-off if session is unavailable
+        }
+    }
+
     val schemaButtonTitle = if (session is AirwallexRecurringSession) {
         application.getString(R.string.airwallex_confirm)
     } else {
@@ -182,7 +195,7 @@ internal class PaymentMethodsViewModel(
         typeInfo: PaymentMethodTypeInfo
     ) = viewModelScope.launch {
         AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchema, type = ${paymentMethod.type}")
-        checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow())
+        checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow(transactionMode))
             .also {
                 trackPaymentSuccess(it, paymentMethod.type)
                 _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
@@ -441,7 +454,12 @@ internal class PaymentMethodsViewModel(
                     schemaDataCache[paymentMethodType] = SchemaData()
                     return null
                 }
-                val fields = typeInfo.filterRequiredFields() ?: return null
+                // Ad hoc. If country code is required, use session's country code.
+                // Other fields like os_type and flow will not need to be retrieved here.
+                if (typeInfo.needCountryCode(transactionMode)) {
+                    additionalParams[COUNTRY_CODE] = session.countryCode
+                }
+                val fields = typeInfo.filterRequiredFields(transactionMode) ?: return null
                 AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields: filterRequiredFields = $fields")
                 // 2.If all fields are hidden, start checkout directly
                 if (fields.isEmpty()) {
@@ -491,14 +509,8 @@ internal class PaymentMethodsViewModel(
         return null
     }
 
-    private fun createBaseParamsForSchemaSubmission(): Map<String, String> {
-        return mapOf(
-            COUNTRY_CODE to session.countryCode,
-        )
-    }
-
     fun appendParamsToMapForSchemaSubmission(map: Map<String, String>): Map<String, String> {
-        return map + createBaseParamsForSchemaSubmission()
+        return map + additionalParams
     }
 
     internal class Factory(
