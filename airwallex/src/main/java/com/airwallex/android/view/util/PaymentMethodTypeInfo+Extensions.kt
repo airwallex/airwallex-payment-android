@@ -2,22 +2,24 @@ package com.airwallex.android.view.util
 
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.DynamicSchemaField
+import com.airwallex.android.core.model.DynamicSchemaFieldType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TransactionMode
+import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.FLOW
 
-fun PaymentMethodTypeInfo.filterRequiredFields(): List<DynamicSchemaField>? {
+fun PaymentMethodTypeInfo.filterRequiredFields(transactionMode: TransactionMode): List<DynamicSchemaField>? {
     return this
         .fieldSchemas
-        ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
+        ?.firstOrNull { schema -> schema.transactionMode == transactionMode }
         ?.fields
         ?.filter { !it.hidden }
 }
 
-fun PaymentMethodTypeInfo.toPaymentFlow(): AirwallexPaymentRequestFlow {
+fun PaymentMethodTypeInfo.toPaymentFlow(transactionMode: TransactionMode): AirwallexPaymentRequestFlow {
     val flowField = this
         .fieldSchemas
-        ?.firstOrNull { schema -> schema.transactionMode == TransactionMode.ONE_OFF }
+        ?.firstOrNull { schema -> schema.transactionMode == transactionMode }
         ?.fields
         ?.firstOrNull { it.name == FLOW }
 
@@ -37,3 +39,9 @@ fun PaymentMethodTypeInfo.toPaymentFlow(): AirwallexPaymentRequestFlow {
         }
     }
 }
+
+fun PaymentMethodTypeInfo.needCountryCode(transactionMode: TransactionMode) = fieldSchemas
+    ?.firstOrNull { it.transactionMode == transactionMode }
+    ?.fields
+    ?.any { it.hidden && it.type == DynamicSchemaFieldType.ENUM && it.name == COUNTRY_CODE }
+    ?: false
