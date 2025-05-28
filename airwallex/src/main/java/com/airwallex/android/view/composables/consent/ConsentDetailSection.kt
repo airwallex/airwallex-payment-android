@@ -14,13 +14,15 @@ import androidx.compose.ui.unit.dp
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.view.AddPaymentMethodViewModel
-import com.airwallex.android.view.composables.addcard.CardCvcTextField
+import com.airwallex.android.view.composables.card.CardCvcTextField
 
 @Composable
 internal fun ConsentDetailSection(
     viewModel: AddPaymentMethodViewModel,
+    isCvcRequired: Boolean,
     cardBrand: CardBrand,
-    onCheckout: (String) -> Unit,
+    onCheckoutWithCvc: (String) -> Unit,
+    onCheckoutWithoutCvv: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -28,32 +30,38 @@ internal fun ConsentDetailSection(
     var cvv by remember { mutableStateOf("") }
     var cvvErrorMessage by remember { mutableStateOf<Int?>(null) }
 
-    CardCvcTextField(
-        cardBrand = cardBrand,
-        onTextChanged = { value ->
-            cvv = value.text
-            cvvErrorMessage = null
-        },
-        onComplete = { input ->
-            cvvErrorMessage = viewModel.getCvvValidationMessage(input, cardBrand)
-            focusManager.clearFocus()
-        },
-        onFocusLost = { input ->
-            cvvErrorMessage = viewModel.getCvvValidationMessage(input, cardBrand)
-        },
-        isError = cvvErrorMessage != null,
-        errorMessage = cvvErrorMessage?.let { stringResource(it) },
-        modifier = modifier,
-    )
+    if (isCvcRequired) {
+        CardCvcTextField(
+            cardBrand = cardBrand,
+            onTextChanged = { value ->
+                cvv = value.text
+                cvvErrorMessage = null
+            },
+            onComplete = { input ->
+                cvvErrorMessage = viewModel.getCvvValidationMessage(input, cardBrand)
+                focusManager.clearFocus()
+            },
+            onFocusLost = { input ->
+                cvvErrorMessage = viewModel.getCvvValidationMessage(input, cardBrand)
+            },
+            isError = cvvErrorMessage != null,
+            errorMessage = cvvErrorMessage?.let { stringResource(it) },
+            modifier = modifier,
+        )
+    }
 
     Spacer(modifier = Modifier.height(16.dp))
 
     StandardSolidButton(
         text = viewModel.ctaTitle,
         onClick = {
-            cvvErrorMessage = viewModel.getCvvValidationMessage(cvv, cardBrand)
-            if (cvvErrorMessage == null) {
-                onCheckout(cvv)
+            if (isCvcRequired) {
+                cvvErrorMessage = viewModel.getCvvValidationMessage(cvv, cardBrand)
+                if (cvvErrorMessage == null) {
+                    onCheckoutWithCvc(cvv)
+                }
+            } else {
+                onCheckoutWithoutCvv()
             }
         },
         modifier = modifier,

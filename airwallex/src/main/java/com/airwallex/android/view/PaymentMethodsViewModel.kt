@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.Airwallex.PaymentResultListener
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -32,10 +33,12 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
+import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.findWithType
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
+import com.airwallex.android.view.util.needCountryCode
 import com.airwallex.android.view.util.toPaymentFlow
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -56,6 +59,12 @@ internal class PaymentMethodsViewModel(
 
     private val _paymentMethodResult = MutableLiveData<PaymentMethodResult>()
     val paymentMethodResult: LiveData<PaymentMethodResult> = _paymentMethodResult
+    
+    // Cache for schema data by payment method type
+    private val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData>()
+
+    // Map for additional params. Currently only used for country code in Enum type fields.
+    private val additionalParams = mutableMapOf<String, String>()
 
     private val paymentIntent: PaymentIntent? by lazy {
         when (session) {
@@ -124,6 +133,20 @@ internal class PaymentMethodsViewModel(
         }
     }
 
+    private val transactionMode: TransactionMode by lazy {
+        when (session) {
+            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
+            is AirwallexPaymentSession -> TransactionMode.ONE_OFF
+            else -> TransactionMode.ONE_OFF // Default to one-off if session is unavailable
+        }
+    }
+
+    val schemaButtonTitle = if (session is AirwallexRecurringSession) {
+        application.getString(R.string.airwallex_confirm)
+    } else {
+        application.getString(R.string.airwallex_pay_now)
+    }
+
     fun confirmPaymentIntent(paymentConsent: PaymentConsent) {
         if (session is AirwallexPaymentSession) {
             airwallex.confirmPaymentIntent(
@@ -166,39 +189,29 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    fun startCheckout(
+    fun checkoutWithSchema(
         paymentMethod: PaymentMethod,
         additionalInfo: Map<String, String>,
         typeInfo: PaymentMethodTypeInfo
     ) = viewModelScope.launch {
-        checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow())
+        AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchema, type = ${paymentMethod.type}")
+        checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow(transactionMode))
             .also {
                 trackPaymentSuccess(it, paymentMethod.type)
                 _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
             }
     }
 
-    fun startCheckout(paymentMethodType: AvailablePaymentMethodType) = viewModelScope.launch {
-        AirwallexLogger.info("PaymentMethodsViewModel startCheckout, type = ${paymentMethodType.name}")
+    fun checkoutWithSchema(paymentMethodType: AvailablePaymentMethodType) = viewModelScope.launch {
+        AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchema, type = ${paymentMethodType.name}")
         val paymentMethod = PaymentMethod.Builder()
             .setType(paymentMethodType.name)
             .build()
         paymentMethod.type?.let { type ->
-            if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
-                AirwallexLogger.info("PaymentMethodsViewModel start checkout checkoutGooglePay, type = ${paymentMethod.type}")
-                checkoutGooglePay().also {
-                    trackPaymentSuccess(it, paymentMethod.type)
-                    _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
-                }
-            } else if (requireHandleSchemaFields(paymentMethodType)) { // Have required schema fields
-                AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
-                checkoutWithSchemaFields(paymentMethod, type)
-            } else {
-                AirwallexLogger.info("PaymentMethodsViewModel start checkout directly, type = ${paymentMethod.type}")
-                checkout(paymentMethod).also {
-                    trackPaymentSuccess(it, paymentMethod.type)
-                    _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
-                }
+            AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
+            checkout(paymentMethod).also {
+                trackPaymentSuccess(it, paymentMethod.type)
+                _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
             }
         }
     }
@@ -272,45 +285,6 @@ internal class PaymentMethodsViewModel(
     fun trackPaymentSelection(paymentMethodType: String?) {
         paymentMethodType?.takeIf { it.isNotEmpty() }?.let { type ->
             AnalyticsLogger.logAction(PAYMENT_SELECT, mapOf(PAYMENT_METHOD to type))
-        }
-    }
-
-    private suspend fun checkoutWithSchemaFields(paymentMethod: PaymentMethod, type: String) {
-        // 1.Retrieve all required schema fields of the payment method
-        val typeInfo = retrievePaymentMethodTypeInfo(type).getOrElse {
-            _paymentFlowStatus.value = PaymentFlowStatus.ErrorAlert(it.message ?: "")
-            return@checkoutWithSchemaFields
-        }
-        val fields = typeInfo.filterRequiredFields()
-        AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchemaFields: filterRequiredFields = $fields")
-        // 2.If all fields are hidden, start checkout directly
-        if (fields.isNullOrEmpty()) {
-            checkout(paymentMethod).also {
-                trackPaymentSuccess(it, paymentMethod.type)
-                _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
-            }
-            return
-        }
-        val bankField =
-            fields.find { field -> field.type == DynamicSchemaFieldType.BANKS }
-        AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchemaFields: bankField = $bankField")
-        if (bankField == null) {
-            // show the schema fields dialog.
-            _paymentFlowStatus.value =
-                PaymentFlowStatus.SchemaFieldsDialog(paymentMethod, typeInfo)
-            return
-        }
-        // 3.If the bank is needed, need to retrieve the bank list.
-        val banks = retrieveBanks(type).getOrElse {
-            _paymentFlowStatus.value = PaymentFlowStatus.ErrorAlert(it.message ?: "")
-            return@checkoutWithSchemaFields
-        }.items
-        AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchemaFields: banks = $banks")
-        // 4.If the bank is not needed or bank list is empty, then show the schema fields dialog.
-        _paymentFlowStatus.value = if (banks.isNullOrEmpty()) {
-            PaymentFlowStatus.SchemaFieldsDialog(paymentMethod, typeInfo)
-        } else {
-            PaymentFlowStatus.BankDialog(paymentMethod, typeInfo, bankField, banks)
         }
     }
 
@@ -463,6 +437,82 @@ internal class PaymentMethodsViewModel(
         return resultData
     }
 
+    suspend fun loadSchemaFields(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
+        // Return cached data if available
+        schemaDataCache[paymentMethodType]?.let { return it }
+
+        AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields, type = ${paymentMethodType.name}")
+        val paymentMethod = PaymentMethod.Builder()
+            .setType(paymentMethodType.name)
+            .build()
+        paymentMethod.type?.let { type ->
+            if (requireHandleSchemaFields(paymentMethodType)) { // Have required schema fields
+                AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
+                // 1.Retrieve all required schema fields of the payment method
+                val typeInfo = retrievePaymentMethodTypeInfo(type).getOrElse { exception ->
+                    _paymentFlowStatus.value = PaymentFlowStatus.ErrorAlert(exception.localizedMessage ?: "")
+                    schemaDataCache[paymentMethodType] = SchemaData()
+                    return null
+                }
+                // Ad hoc. If country code is required, use session's country code.
+                // Other fields like os_type and flow will not need to be retrieved here.
+                if (typeInfo.needCountryCode(transactionMode)) {
+                    additionalParams[COUNTRY_CODE] = session.countryCode
+                }
+                val fields = typeInfo.filterRequiredFields(transactionMode) ?: return null
+                AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields: filterRequiredFields = $fields")
+                // 2.If all fields are hidden, start checkout directly
+                if (fields.isEmpty()) {
+                    schemaDataCache[paymentMethodType] = SchemaData()
+                    return SchemaData()
+                }
+                val bankField = fields.find { field -> field.type == DynamicSchemaFieldType.BANKS }
+                AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields: bankField = $bankField")
+                if (bankField == null) {
+                    return SchemaData(
+                        fields = fields,
+                        paymentMethod = paymentMethod,
+                        typeInfo = typeInfo,
+                    ).also { schemaData ->
+                        schemaDataCache[paymentMethodType] = schemaData
+                    }
+                }
+                // 3.If the bank is needed, need to retrieve the bank list.
+                val banks = retrieveBanks(type).getOrElse { exception ->
+                    _paymentFlowStatus.value = PaymentFlowStatus.ErrorAlert(exception.localizedMessage ?: "")
+                    schemaDataCache[paymentMethodType] = SchemaData()
+                    return null
+                }.items
+                AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields: banks = $banks")
+                // 4.If the bank is not needed or bank list is empty, then show the schema fields.
+                if (banks.isNullOrEmpty()) {
+                    return SchemaData(
+                        fields = fields,
+                        paymentMethod = paymentMethod,
+                        typeInfo = typeInfo,
+                    ).also { schemaData ->
+                        schemaDataCache[paymentMethodType] = schemaData
+                    }
+                } else {
+                    return SchemaData(
+                        fields = fields,
+                        paymentMethod = paymentMethod,
+                        typeInfo = typeInfo,
+                        banks = banks,
+                    ).also { schemaData ->
+                        schemaDataCache[paymentMethodType] = schemaData
+                    }
+                }
+            }
+        }
+        // Default to null
+        return null
+    }
+
+    fun appendParamsToMapForSchemaSubmission(map: Map<String, String>): Map<String, String> {
+        return map + additionalParams
+    }
+
     internal class Factory(
         private val application: Application,
         private val airwallex: Airwallex,
@@ -484,22 +534,21 @@ internal class PaymentMethodsViewModel(
     }
 
     internal sealed class PaymentFlowStatus {
-        data class ErrorAlert(val message: String) : PaymentFlowStatus()
-
-        data class SchemaFieldsDialog(
-            val paymentMethod: PaymentMethod,
-            val typeInfo: PaymentMethodTypeInfo
+        data class ErrorAlert(
+            val message: String,
         ) : PaymentFlowStatus()
 
-        data class BankDialog(
-            val paymentMethod: PaymentMethod,
-            val typeInfo: PaymentMethodTypeInfo,
-            val bankField: DynamicSchemaField,
-            val banks: List<Bank>
+        data class PaymentStatus(
+            val status: AirwallexPaymentStatus,
         ) : PaymentFlowStatus()
-
-        data class PaymentStatus(val status: AirwallexPaymentStatus) : PaymentFlowStatus()
     }
+
+    data class SchemaData(
+        val fields: List<DynamicSchemaField> = emptyList(),
+        val paymentMethod: PaymentMethod? = null,
+        val typeInfo: PaymentMethodTypeInfo? = null,
+        val banks: List<Bank> = emptyList(),
+    )
 
     companion object {
         const val COUNTRY_CODE = "country_code"

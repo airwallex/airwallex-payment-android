@@ -18,23 +18,33 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.ui.composables.StandardText
+import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.view.AddPaymentMethodViewModel
+import com.airwallex.android.view.PaymentMethodsViewModel
+import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.common.PaymentMethodCard
+import com.airwallex.android.view.composables.schema.SchemaSection
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun PaymentMethodsSection(
+    paymentMethodViewModel: PaymentMethodsViewModel,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
     onAddCard: () -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
-    onPaymentConsentClicked: (PaymentConsent) -> Unit,
+    onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
+    onDirectPay: (AvailablePaymentMethodType) -> Unit,
+    onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
+    onLoading: (Boolean) -> Unit,
+    onError: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val pagerState = rememberPagerState(pageCount = { availablePaymentMethodTypes.size })
@@ -58,11 +68,16 @@ internal fun PaymentMethodsSection(
                         isSelected = selectedIndex == index,
                         selectedType = availablePaymentMethodType,
                         onClick = {
+                            AirwallexLogger.info("PaymentMethodsActivity onPaymentMethodClick: type = ${type.name}")
                             coroutineScope.launch {
                                 selectedIndex = index
                                 type = availablePaymentMethodType
                                 pagerState.scrollToPage(page = index)
-                                lazyListState.animateScrollToItem(index = index)
+                                // Position the selected item as the second item in the UI
+                                lazyListState.animateScrollToItem(
+                                    index = if (index < 1) index else index - 1,
+                                    scrollOffset = 0,
+                                )
                             }
                         },
                     )
@@ -84,17 +99,23 @@ internal fun PaymentMethodsSection(
                 PaymentMethodType.CARD.value -> {
                     CardSection(
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
-                        type = type,
+                        cardSchemes = type.cardSchemes.orEmpty(),
                         availablePaymentConsents = availablePaymentConsents,
                         onAddCard = onAddCard,
                         onDeleteCard = onDeleteCard,
-                        onPaymentConsentClicked = onPaymentConsentClicked,
+                        onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                         onCheckoutWithCvc = onCheckoutWithCvc,
                     )
                 }
                 else -> {
-                    // TODO
-                    StandardText(text = "TODO")
+                    SchemaSection(
+                        viewModel = paymentMethodViewModel,
+                        type = type,
+                        onDirectPay = onDirectPay,
+                        onPayWithFields = onPayWithFields,
+                        onLoading = onLoading,
+                        onError = onError,
+                    )
                 }
             }
         }

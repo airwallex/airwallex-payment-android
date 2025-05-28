@@ -16,6 +16,11 @@
         <item>Customer</item>
     </string-array>
 
+    <string-array name="array_payment_layout">
+        <item>Tab</item>
+        <item>Accordion</item>
+    </string-array>
+
     <string-array name="array_requires_cvc">
         <item>False</item>
         <item>True</item>

@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
@@ -18,7 +19,8 @@ import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardIcon
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.view.util.getFlagEmoji
+import com.airwallex.android.view.util.CountryCodeType
+import com.airwallex.android.view.util.safeValueOf
 
 @Composable
 internal fun CountryItem(
@@ -49,8 +51,17 @@ internal fun CountryItem(
     ) {
         Spacer(modifier = Modifier.width(24.dp))
 
+        StandardIcon(
+            drawableRes = safeValueOf<CountryCodeType>(countryCode.uppercase())?.flagRes ?: CountryCodeType.UNKNOWN.flagRes,
+            size = 32.dp,
+            padding = 0.dp,
+            tint = Color.Unspecified,
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
         StandardText(
-            text = "${getFlagEmoji(countryCode)}  $countryName",
+            text = countryName,
             color = AirwallexColor.TextPrimary,
             typography = AirwallexTypography.Body100,
         )

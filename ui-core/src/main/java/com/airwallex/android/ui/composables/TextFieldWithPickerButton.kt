@@ -2,7 +2,8 @@ package com.airwallex.android.ui.composables
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -22,7 +23,8 @@ fun TextFieldWithPickerButton(
     isFieldRequired: Boolean = false,
     enabled: Boolean = true,
     onPresentRequested: () -> Unit,
-    shape: Shape = OutlinedTextFieldDefaults.shape,
+    shape: Shape = RoundedCornerShape(8.dp),
+    leadingAccessory: (@Composable () -> Unit)? = null,
 ) {
     TextFieldWithPickerButton(
         hint = hint,
@@ -36,11 +38,13 @@ fun TextFieldWithPickerButton(
         trailingAccessory = {
             StandardIcon(
                 drawableRes = R.drawable.airwallex_ic_chevron_down,
-                size = 12.dp,
+                size = 16.dp,
                 padding = 0.dp,
+                tint = MaterialTheme.colorScheme.onSurface,
             )
         },
         shape = shape,
+        leadingAccessory = leadingAccessory,
     )
 }
 
@@ -56,7 +60,7 @@ private fun TextFieldWithPickerButton(
     enabled: Boolean = true,
     leadingAccessory: (@Composable () -> Unit)? = null,
     trailingAccessory: (@Composable () -> Unit)? = null,
-    shape: Shape = OutlinedTextFieldDefaults.shape,
+    shape: Shape = RoundedCornerShape(8.dp),
 ) {
     StandardTextField(
         hint = hint,
