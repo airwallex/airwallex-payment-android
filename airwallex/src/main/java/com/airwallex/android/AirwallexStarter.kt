@@ -12,6 +12,7 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.CardScheme
@@ -135,12 +136,14 @@ class AirwallexStarter {
         fun presentPaymentFlow(
             fragment: Fragment,
             session: AirwallexSession,
-            paymentResultListener: Airwallex.PaymentResultListener
+            layoutType: PaymentMethodsLayoutType,
+            paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(fragment),
                 session,
-                paymentResultListener
+                layoutType,
+                paymentResultListener,
             )
         }
 
@@ -155,12 +158,14 @@ class AirwallexStarter {
         fun presentPaymentFlow(
             activity: ComponentActivity,
             session: AirwallexSession,
-            paymentResultListener: Airwallex.PaymentResultListener
+            layoutType: PaymentMethodsLayoutType,
+            paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(activity),
                 session,
-                paymentResultListener
+                layoutType,
+                paymentResultListener,
             )
         }
 
@@ -174,32 +179,36 @@ class AirwallexStarter {
         fun presentEntirePaymentFlow(
             activity: ComponentActivity,
             session: AirwallexSession,
-            paymentResultListener: Airwallex.PaymentResultListener
+            layoutType: PaymentMethodsLayoutType,
+            paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(activity),
                 session,
-                paymentResultListener
+                layoutType,
+                paymentResultListener,
             )
         }
 
         private fun presentPaymentFlow(
             launch: PaymentMethodsActivityLaunch,
             session: AirwallexSession,
-            paymentResultListener: Airwallex.PaymentResultListener
+            layoutType: PaymentMethodsLayoutType,
+            paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentPaymentFlow[$intentId]")
             launch.launchForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
+                    .setLayoutType(layoutType)
                     .build()
             ) { _, result ->
                 handlePaymentData(
                     result.resultCode,
                     result.data,
                     paymentResultListener,
-                    intentId
+                    intentId,
                 )
             }
         }
