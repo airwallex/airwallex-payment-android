@@ -70,6 +70,11 @@ class AirwallexPaymentSession internal constructor(
     override val paymentMethods: List<String>? = null,
 
     /**
+     * The layout of payment methods
+     */
+    override val paymentMethodsLayoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
+
+    /**
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */
@@ -95,6 +100,7 @@ class AirwallexPaymentSession internal constructor(
         private var hidePaymentConsents: Boolean = false
         private var paymentMethods: List<String>? = null
         private var shipping: Shipping? = null
+        private var paymentMethodsLayoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB
 
         init {
             paymentIntent.clientSecret?.apply {
@@ -130,6 +136,10 @@ class AirwallexPaymentSession internal constructor(
             this.shipping = shipping
         }
 
+        fun setPaymentMethodsLayoutType(paymentMethodsLayoutType: PaymentMethodsLayoutType): Builder = apply {
+            this.paymentMethodsLayoutType = paymentMethodsLayoutType
+        }
+
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
                 paymentIntent = paymentIntent,
@@ -144,7 +154,8 @@ class AirwallexPaymentSession internal constructor(
                 googlePayOptions = googlePayOptions,
                 autoCapture = autoCapture,
                 hidePaymentConsents = hidePaymentConsents,
-                paymentMethods = paymentMethods
+                paymentMethods = paymentMethods,
+                paymentMethodsLayoutType = paymentMethodsLayoutType,
             )
         }
     }

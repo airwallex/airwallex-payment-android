@@ -89,6 +89,11 @@ class AirwallexRecurringWithIntentSession internal constructor(
     override val paymentMethods: List<String>? = null,
 
     /**
+     * The layout of payment methods
+     */
+    override val paymentMethodsLayoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
+
+    /**
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */
@@ -112,6 +117,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
         private var paymentMethods: List<String>? = null
         private var googlePayOptions: GooglePayOptions? = null
         private var shipping: Shipping? = null
+        private var paymentMethodsLayoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB
 
         init {
             paymentIntent.clientSecret?.apply {
@@ -148,6 +154,10 @@ class AirwallexRecurringWithIntentSession internal constructor(
             this.paymentMethods = paymentMethods
         }
 
+        fun setPaymentMethodsLayoutType(paymentMethodsLayoutType: PaymentMethodsLayoutType): Builder = apply {
+            this.paymentMethodsLayoutType = paymentMethodsLayoutType
+        }
+
         fun setGooglePayOptions(googlePayOptions: GooglePayOptions?): Builder = apply {
             this.googlePayOptions = googlePayOptions
         }
@@ -174,6 +184,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 returnUrl = returnUrl,
                 autoCapture = autoCapture,
                 paymentMethods = paymentMethods,
+                paymentMethodsLayoutType = paymentMethodsLayoutType,
                 googlePayOptions = googlePayOptions,
                 merchantTriggerReason = merchantTriggerReason
             )

@@ -12,6 +12,7 @@ import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
@@ -274,6 +275,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setHidePaymentConsents(false)
             .setPaymentMethods(listOf())
             .setShipping(shipping)
+            .setPaymentMethodsLayoutType(PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()))
             .build()
 
     /**
@@ -300,6 +302,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
             .setReturnUrl(Settings.returnUrl)
             .setPaymentMethods(listOf())
+            .setPaymentMethodsLayoutType(PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()))
             .setGooglePayOptions(googlePayOptions)
             .build()
 
@@ -326,6 +329,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setReturnUrl(Settings.returnUrl)
             .setAutoCapture(autoCapture)
             .setPaymentMethods(listOf())
+            .setPaymentMethodsLayoutType(PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()))
             .setGooglePayOptions(googlePayOptions)
             .setShipping(shipping)
             .build()

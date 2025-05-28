@@ -15,6 +15,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
@@ -192,6 +193,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setHidePaymentConsents(false)
             .setPaymentMethods(paymentMethods)
             .setShipping(shipping)
+            .setPaymentMethodsLayoutType(PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()))
             .build()
 
     /**
@@ -215,6 +217,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setGooglePayOptions(googlePayOptions)
             .setReturnUrl(Settings.returnUrl)
             .setPaymentMethods(paymentMethods)
+            .setPaymentMethodsLayoutType(PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()))
             .build()
 
     /**
@@ -238,7 +241,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setAutoCapture(autoCapture)
             .setGooglePayOptions(googlePayOptions)
             .setPaymentMethods(paymentMethods)
-            .setShipping(shipping)
+            .setPaymentMethodsLayoutType(PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()))
             .build()
 
 }
