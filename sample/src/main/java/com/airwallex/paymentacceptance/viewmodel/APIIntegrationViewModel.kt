@@ -26,10 +26,6 @@ import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
 import java.math.BigDecimal
 
 class APIIntegrationViewModel : BaseViewModel() {
-
-    //our SDK offers three modes of payment flow.
-    private var checkoutMode = AirwallexCheckoutMode.PAYMENT
-
     //create your own Airwallex instance to call the APIs.
     private var airwallex: Airwallex? = null
 
@@ -224,7 +220,7 @@ class APIIntegrationViewModel : BaseViewModel() {
         saveCard: Boolean = false,
         googlePayOptions: GooglePayOptions? = null,
     ): AirwallexSession {
-        when (checkoutMode) {
+        when (Settings.checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
                 //get the customerId from your server.
                 //if you want to save card , customerId is required
