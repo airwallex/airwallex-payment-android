@@ -83,11 +83,6 @@ class AirwallexRecurringSession internal constructor(
      */
     override val paymentMethods: List<String>? = null,
 
-    /**
-     * The layout of payment methods
-     */
-    override val paymentMethodsLayoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB
-
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
@@ -108,7 +103,6 @@ class AirwallexRecurringSession internal constructor(
         private var returnUrl: String? = null
         private var paymentMethods: List<String>? = null
         private var googlePayOptions: GooglePayOptions? = null
-        private var paymentMethodsLayoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB
 
         init {
             TokenManager.updateClientSecret(clientSecret)
@@ -143,10 +137,6 @@ class AirwallexRecurringSession internal constructor(
             this.paymentMethods = paymentMethods
         }
 
-        fun setPaymentMethodsLayoutType(paymentMethodsLayoutType: PaymentMethodsLayoutType): Builder = apply {
-            this.paymentMethodsLayoutType = paymentMethodsLayoutType
-        }
-
         fun setGooglePayOptions(googlePayOptions: GooglePayOptions?): Builder = apply {
             this.googlePayOptions = googlePayOptions
         }
@@ -165,7 +155,6 @@ class AirwallexRecurringSession internal constructor(
                 customerId = customerId,
                 returnUrl = returnUrl,
                 paymentMethods = paymentMethods,
-                paymentMethodsLayoutType = paymentMethodsLayoutType,
                 clientSecret = clientSecret,
                 googlePayOptions = googlePayOptions
             )

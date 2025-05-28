@@ -55,6 +55,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
+            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
 
                 override fun onCompleted(status: AirwallexPaymentStatus) {
@@ -81,6 +82,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
+            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
 
                 override fun onCompleted(status: AirwallexPaymentStatus) {
@@ -193,7 +195,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setHidePaymentConsents(false)
             .setPaymentMethods(paymentMethods)
             .setShipping(shipping)
-            .setPaymentMethodsLayoutType(PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()))
             .build()
 
     /**
@@ -217,7 +218,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setGooglePayOptions(googlePayOptions)
             .setReturnUrl(Settings.returnUrl)
             .setPaymentMethods(paymentMethods)
-            .setPaymentMethodsLayoutType(PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()))
             .build()
 
     /**
@@ -241,7 +241,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setAutoCapture(autoCapture)
             .setGooglePayOptions(googlePayOptions)
             .setPaymentMethods(paymentMethods)
-            .setPaymentMethodsLayoutType(PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()))
             .build()
 
 }
