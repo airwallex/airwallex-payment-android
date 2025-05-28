@@ -28,9 +28,6 @@ import java.math.BigDecimal
 
 class UIIntegrationViewModel : BaseViewModel() {
 
-    //our SDK offers three modes of payment flow.
-    private var checkoutMode = AirwallexCheckoutMode.PAYMENT
-
     //AirwallexPaymentStatus is the result returned by the payment flow. You can add your own handling logic based on the final result.
     private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
     val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
@@ -145,7 +142,7 @@ class UIIntegrationViewModel : BaseViewModel() {
      * this method will create different types of Sessions based on the different modes.
      */
     private suspend fun createSession(googlePayOptions: GooglePayOptions? = null,  paymentMethods: List<String>? = listOf()): AirwallexSession {
-        return when (checkoutMode) {
+        return when (Settings.checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
                 //get the paymentIntent object from your server
                 //please do not directly copy this method!
