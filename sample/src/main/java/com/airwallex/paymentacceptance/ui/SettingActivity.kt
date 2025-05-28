@@ -89,6 +89,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             mBinding.swEmail.setChecked(false)
             mBinding.selectViewEnvironment.setSelectOption("DEMO")
             mBinding.selectViewTrigger.setSelectOption("Merchant")
+            mBinding.selectPaymentLayout.setSelectOption("Tab")
             mBinding.etReturnUrl.setText("")
             showAlert("", "settings cleared") {
                 finish()
