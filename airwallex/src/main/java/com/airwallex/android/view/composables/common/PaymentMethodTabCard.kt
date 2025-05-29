@@ -30,7 +30,7 @@ import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 
 @Composable
-internal fun PaymentMethodCard(
+internal fun PaymentMethodTabCard(
     isSelected: Boolean,
     selectedType: AvailablePaymentMethodType,
     onClick: () -> Unit,

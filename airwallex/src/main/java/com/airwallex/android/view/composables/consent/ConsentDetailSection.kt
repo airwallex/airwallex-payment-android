@@ -66,4 +66,6 @@ internal fun ConsentDetailSection(
         },
         modifier = modifier,
     )
+
+    Spacer(modifier = Modifier.height(32.dp))
 }

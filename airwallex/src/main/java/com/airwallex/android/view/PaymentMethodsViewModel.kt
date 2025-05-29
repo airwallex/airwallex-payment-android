@@ -437,6 +437,10 @@ internal class PaymentMethodsViewModel(
         return resultData
     }
 
+    fun retrieveSchemaDataFromCache(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
+        return schemaDataCache[paymentMethodType]
+    }
+
     suspend fun loadSchemaFields(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
         // Return cached data if available
         schemaDataCache[paymentMethodType]?.let { return it }

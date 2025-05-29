@@ -149,6 +149,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             setContent {
                 AirwallexTheme {
                     PaymentScreen(
+                        layoutType = args.layoutType,
                         paymentMethodsViewModel = viewModel,
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
                         allowedPaymentMethods = allowedPaymentMethods,

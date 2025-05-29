@@ -27,12 +27,12 @@ import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.composables.card.CardSection
-import com.airwallex.android.view.composables.common.PaymentMethodCard
+import com.airwallex.android.view.composables.common.PaymentMethodTabCard
 import com.airwallex.android.view.composables.schema.SchemaSection
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun PaymentMethodsSection(
+internal fun PaymentMethodsTabSection(
     paymentMethodViewModel: PaymentMethodsViewModel,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
@@ -64,7 +64,7 @@ internal fun PaymentMethodsSection(
                         Spacer(modifier = Modifier.width(12.dp))
                     }
 
-                    PaymentMethodCard(
+                    PaymentMethodTabCard(
                         isSelected = selectedIndex == index,
                         selectedType = availablePaymentMethodType,
                         onClick = {

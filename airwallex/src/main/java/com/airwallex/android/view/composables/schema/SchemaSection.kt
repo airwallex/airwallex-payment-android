@@ -42,15 +42,17 @@ internal fun SchemaSection(
     var fieldsToSubmit by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var validateFields: (() -> Unit)? by remember { mutableStateOf(null) }
     var schemaData by remember { mutableStateOf<PaymentMethodsViewModel.SchemaData?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(false) }
     var isValidated by remember { mutableStateOf(false) }
 
     LaunchedEffect(type) {
-        try {
+        schemaData = viewModel.retrieveSchemaDataFromCache(type) ?: run {
             isLoading = true
-            schemaData = viewModel.loadSchemaFields(type)
-        } finally {
-            isLoading = false
+            try {
+                viewModel.loadSchemaFields(type)
+            } finally {
+                isLoading = false
+            }
         }
     }
 
@@ -75,6 +77,8 @@ internal fun SchemaSection(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(

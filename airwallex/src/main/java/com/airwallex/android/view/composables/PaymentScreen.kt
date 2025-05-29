@@ -8,11 +8,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
@@ -28,6 +32,7 @@ import org.json.JSONArray
 
 @Composable
 internal fun PaymentScreen(
+    layoutType: PaymentMethodsLayoutType,
     paymentMethodsViewModel: PaymentMethodsViewModel,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     allowedPaymentMethods: JSONArray?,
@@ -42,6 +47,14 @@ internal fun PaymentScreen(
     onLoading: (Boolean) -> Unit,
     onError: () -> Unit,
 ) {
+    val availableTypes by remember {
+        mutableStateOf(
+            availablePaymentMethodTypes.filterNot { paymentMethodType ->
+                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
+            }
+        )
+    }
+
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         StandardText(
             text = stringResource(id = R.string.airwallex_payment_methods),
@@ -63,23 +76,45 @@ internal fun PaymentScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        if (availableTypes.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(24.dp))
 
-        PaymentMethodsSection(
-            paymentMethodViewModel = paymentMethodsViewModel,
-            addPaymentMethodViewModel = addPaymentMethodViewModel,
-            availablePaymentMethodTypes = availablePaymentMethodTypes.filterNot { paymentMethodType ->
-                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
-            },
-            availablePaymentConsents = availablePaymentConsents,
-            onAddCard = onAddCard,
-            onDeleteCard = onDeleteCard,
-            onCheckoutWithoutCvc = onCheckoutWithoutCvc,
-            onDirectPay = onDirectPay,
-            onCheckoutWithCvc = onCheckoutWithCvc,
-            onPayWithFields = onPayWithFields,
-            onLoading = onLoading,
-            onError = onError,
-        )
+            when (layoutType) {
+                PaymentMethodsLayoutType.TAB -> {
+                    PaymentMethodsTabSection(
+                        paymentMethodViewModel = paymentMethodsViewModel,
+                        addPaymentMethodViewModel = addPaymentMethodViewModel,
+                        availablePaymentMethodTypes = availableTypes,
+                        availablePaymentConsents = availablePaymentConsents,
+                        onAddCard = onAddCard,
+                        onDeleteCard = onDeleteCard,
+                        onCheckoutWithoutCvc = onCheckoutWithoutCvc,
+                        onDirectPay = onDirectPay,
+                        onCheckoutWithCvc = onCheckoutWithCvc,
+                        onPayWithFields = onPayWithFields,
+                        onLoading = onLoading,
+                        onError = onError,
+                    )
+                }
+                PaymentMethodsLayoutType.ACCORDION -> {
+                    PaymentMethodsAccordionSection(
+                        paymentMethodViewModel = paymentMethodsViewModel,
+                        addPaymentMethodViewModel = addPaymentMethodViewModel,
+                        availablePaymentMethodTypes = availableTypes,
+                        availablePaymentConsents = availablePaymentConsents,
+                        onAddCard = onAddCard,
+                        onDeleteCard = onDeleteCard,
+                        onCheckoutWithoutCvc = onCheckoutWithoutCvc,
+                        onDirectPay = onDirectPay,
+                        onCheckoutWithCvc = onCheckoutWithCvc,
+                        onPayWithFields = onPayWithFields,
+                        onLoading = onLoading,
+                        onError = onError,
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(48.dp))
     }
 }
