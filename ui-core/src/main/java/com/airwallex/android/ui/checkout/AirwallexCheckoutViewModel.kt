@@ -148,12 +148,15 @@ open class AirwallexCheckoutViewModel(
         paymentMethodTypeName: String
     ): Result<PaymentMethodTypeInfo> {
         return suspendCancellableCoroutine { continuation ->
-            when (session) {
-                is AirwallexPaymentSession -> {
-                    val paymentIntent = session.paymentIntent
+            val clientSecret = when (session) {
+                is AirwallexPaymentSession -> session.paymentIntent.clientSecret
+                is AirwallexRecurringSession-> session.clientSecret
+                is AirwallexRecurringWithIntentSession -> session.paymentIntent.clientSecret
+                else -> null
+            }
                     airwallex.retrievePaymentMethodTypeInfo(
                         RetrievePaymentMethodTypeInfoParams.Builder(
-                            clientSecret = requireNotNull(paymentIntent.clientSecret),
+                            clientSecret = requireNotNull(clientSecret),
                             paymentMethodType = paymentMethodTypeName
                         )
                             .setFlow(AirwallexPaymentRequestFlow.IN_APP)
@@ -168,16 +171,6 @@ open class AirwallexCheckoutViewModel(
                             }
                         }
                     )
-                }
-
-                else -> {
-                    continuation.resume(
-                        Result.failure(
-                            AirwallexCheckoutException(message = "$paymentMethodTypeName just support one-off payment")
-                        )
-                    )
-                }
-            }
         }
     }
 
