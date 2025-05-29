@@ -18,6 +18,7 @@ import com.airwallex.android.core.extension.confirmGooglePayIntent
 import com.airwallex.android.core.extension.createCardPaymentMethod
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.model.AirwallexPaymentRequest
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.BankResponse
@@ -526,23 +527,23 @@ class Airwallex internal constructor(
                 override fun onSuccess(response: PaymentConsent) {
                     // for redirect, initialPaymentIntentId is empty now. so we don support recurring in redirect flow
                     val paymentIntentId = response.initialPaymentIntentId
-                    if (paymentIntentId.isNullOrEmpty()) {
-                        AnalyticsLogger.logError(
-                            "initialPaymentIntentId_null_or_empty",
-                            mapOf("type" to paymentMethodType)
-                        )
-                        AirwallexLogger.error("Airwallex verifyPaymentConsent: type = $paymentMethodType, paymentIntentId isNullOrEmpty")
-                        listener.onCompleted(
-                            AirwallexPaymentStatus.Failure(
-                                AirwallexCheckoutException(message = "Unsupported payment method")
-                            )
-                        )
-                        return
-                    }
+//                    if (paymentIntentId.isNullOrEmpty()) {
+//                        AnalyticsLogger.logError(
+//                            "initialPaymentIntentId_null_or_empty",
+//                            mapOf("type" to paymentMethodType)
+//                        )
+//                        AirwallexLogger.error("Airwallex verifyPaymentConsent: type = $paymentMethodType, paymentIntentId isNullOrEmpty")
+//                        listener.onCompleted(
+//                            AirwallexPaymentStatus.Failure(
+//                                AirwallexCheckoutException(message = "Unsupported payment method")
+//                            )
+//                        )
+//                        return
+//                    }
                     if (response.nextAction == null) {
                         listener.onCompleted(
                             AirwallexPaymentStatus.Success(
-                                paymentIntentId,
+                                "",
                                 response.id
                             )
                         )
@@ -564,7 +565,7 @@ class Airwallex internal constructor(
                             paymentManager = paymentManager,
                             clientSecret = params.clientSecret,
                             device = null,
-                            paymentIntentId = paymentIntentId,
+                            paymentIntentId = "paymentIntentId",
                             currency = requireNotNull(params.currency),
                             amount = requireNotNull(params.amount),
                         )
@@ -573,7 +574,7 @@ class Airwallex internal constructor(
                     }
 
                     provider.get().handlePaymentIntentResponse(
-                        paymentIntentId,
+                        "paymentIntentId",
                         response.nextAction,
                         fragment,
                         activity,
@@ -1227,6 +1228,10 @@ class Airwallex internal constructor(
                         type = params.paymentMethodType,
                         // provide either id or googlePay
                         googlePay = params.googlePay,
+                        paymentRequest = AirwallexPaymentRequest(
+                            flow = AirwallexPaymentRequestFlow.IN_APP,
+                            osType = "android"
+                        )
                     )
                 )
                 .setNextTriggeredBy(
