@@ -16,6 +16,8 @@ private typealias AirwallexEnviornment = com.airwallex.android.core.Environment
 
 object AnalyticsLogger {
     private var tracker: Tracker? = null
+    private var paymentIntentId: String? = null
+    private var transactionMode: String? = null
 
     fun initialize(context: Context) {
         if (AirwallexPlugins.enableAnalytics && tracker == null) {
@@ -91,6 +93,11 @@ object AnalyticsLogger {
         tracker?.info(viewName, extraInfo)
     }
 
+    fun setSessionInformation(transactionMode: String, paymentIntentId: String? = null) {
+        this.paymentIntentId = paymentIntentId
+        this.transactionMode = transactionMode
+    }
+
     private fun AirwallexEnviornment.toTrackerEnvironment(): Environment {
         return when (this) {
             AirwallexEnviornment.STAGING -> Environment.STAGING
@@ -104,6 +111,8 @@ object AnalyticsLogger {
             putIfNotNull("merchantAppName", context.packageManager.getAppName(context.packageName))
             putIfNotNull("merchantAppVersion", context.packageManager.getAppVersion(context.packageName))
             putIfNotNull("accountId", TokenManager.accountId)
+            putIfNotNull("payment_intent_id", paymentIntentId)
+            putIfNotNull("transaction_mode", transactionMode)
         }
     }
 }
