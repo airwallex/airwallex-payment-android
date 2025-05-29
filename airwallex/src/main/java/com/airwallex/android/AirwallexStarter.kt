@@ -131,12 +131,13 @@ class AirwallexStarter {
          * @param fragment fragment {@link Fragment}
          * @param session a [AirwallexSession] used to present the payment flow
          * @param paymentResultListener The callback of present entire payment flow
+         * @param layoutType PaymentMethodsLayoutType for payment methods list UI. Two types are supported: Tab and Accordion.
          */
         @Deprecated(message = "Use presentEntirePaymentFlow() instead")
         fun presentPaymentFlow(
             fragment: Fragment,
             session: AirwallexSession,
-            layoutType: PaymentMethodsLayoutType,
+            layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
@@ -153,12 +154,13 @@ class AirwallexStarter {
          * @param activity the launch activity on which the payment UI is presented
          * @param session a [AirwallexSession] used to present the payment flow
          * @param paymentResultListener The callback of present entire payment flow
+         * @param layoutType PaymentMethodsLayoutType for payment methods list UI. Two types are supported: Tab and Accordion.
          */
         @Deprecated(message = "Use presentEntirePaymentFlow() instead")
         fun presentPaymentFlow(
             activity: ComponentActivity,
             session: AirwallexSession,
-            layoutType: PaymentMethodsLayoutType,
+            layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
@@ -175,11 +177,12 @@ class AirwallexStarter {
          * @param activity the launch activity on which the payment UI is presented
          * @param session a [AirwallexSession] used to present the payment flow
          * @param paymentResultListener The callback of present entire payment flow
+         * @param layoutType PaymentMethodsLayoutType for payment methods list UI. Two types are supported: Tab and Accordion.
          */
         fun presentEntirePaymentFlow(
             activity: ComponentActivity,
             session: AirwallexSession,
-            layoutType: PaymentMethodsLayoutType,
+            layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
