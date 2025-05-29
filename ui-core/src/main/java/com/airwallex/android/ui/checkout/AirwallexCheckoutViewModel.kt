@@ -19,34 +19,6 @@ open class AirwallexCheckoutViewModel(
     companion object {
         private const val EVENT_PAYMENT_CANCELLED = "payment_canceled"
         private const val EVENT_PAYMENT_LAUNCHED = "payment_launched"
-        private const val KEY_PAYMENT_INTENT_ID = "payment_intent_id"
-        private const val KEY_TRANSACTION_MODE = "transaction_mode"
-    }
-
-    private val additionalAnalyticsEventParams: Map<String, String> by lazy {
-        when (session) {
-            is AirwallexPaymentSession -> {
-                mapOf(
-                    KEY_PAYMENT_INTENT_ID to session.paymentIntent.id,
-                    KEY_TRANSACTION_MODE to TransactionMode.ONE_OFF.value,
-                )
-            }
-
-            is AirwallexRecurringSession -> {
-                mapOf(
-                    KEY_TRANSACTION_MODE to TransactionMode.RECURRING.value,
-                )
-            }
-
-            is AirwallexRecurringWithIntentSession -> {
-                mapOf(
-                    KEY_PAYMENT_INTENT_ID to session.paymentIntent.id,
-                    KEY_TRANSACTION_MODE to TransactionMode.RECURRING.value,
-                )
-            }
-
-            else -> mapOf()
-        }
     }
 
     val transactionMode: TransactionMode by lazy {
@@ -210,23 +182,17 @@ open class AirwallexCheckoutViewModel(
     }
 
     fun trackPaymentCancelled() {
-        AnalyticsLogger.logAction(
-            actionName = EVENT_PAYMENT_CANCELLED,
-            additionalInfo = additionalAnalyticsEventParams,
-        )
+        AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_CANCELLED)
     }
 
     fun trackPaymentLaunched() {
-        AnalyticsLogger.logAction(
-            actionName = EVENT_PAYMENT_LAUNCHED,
-            additionalInfo = additionalAnalyticsEventParams,
-        )
+        AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_LAUNCHED)
     }
 
     fun trackScreenViewed(eventName: String, params: Map<String, Any> = emptyMap()) {
         AnalyticsLogger.logPaymentView(
             viewName = eventName,
-            additionalInfo = params + additionalAnalyticsEventParams,
+            additionalInfo = params,
         )
     }
 
