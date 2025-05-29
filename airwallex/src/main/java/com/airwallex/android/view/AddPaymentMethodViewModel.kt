@@ -23,6 +23,7 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.core.util.CardUtils
+import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
 import com.airwallex.android.view.util.isValidCvc
@@ -37,7 +38,7 @@ class AddPaymentMethodViewModel(
     private val airwallex: Airwallex,
     private val session: AirwallexSession,
     private val supportedCardSchemes: List<CardScheme>
-) : AndroidViewModel(application) {
+) : AirwallexCheckoutViewModel(application, airwallex, session) {
     val pageName: String = "card_payment_view"
     val additionalInfo: Map<String, List<String>> =
         mapOf("supportedSchemes" to supportedCardSchemes.map { it.name })

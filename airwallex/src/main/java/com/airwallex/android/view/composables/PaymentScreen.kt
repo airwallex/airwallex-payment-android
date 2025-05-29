@@ -73,6 +73,9 @@ internal fun PaymentScreen(
                     .fillMaxWidth(),
                 allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
                 onClick = paymentMethodsViewModel::checkoutWithGooglePay,
+                onScreenViewed = {
+                    paymentMethodsViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
+                },
             )
         }
 

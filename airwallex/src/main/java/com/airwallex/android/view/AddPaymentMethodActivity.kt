@@ -74,6 +74,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
+        viewModel.trackPaymentLaunched()
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
         viewBinding.composeView.apply {
             setContent {
@@ -119,6 +120,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
     }
 
     override fun onBackButtonPressed() {
+        super.onBackButtonPressed()
         AirwallexLogger.info("AddPaymentMethodActivity onBackButtonPressed")
         setResult(
             Activity.RESULT_CANCELED,

@@ -26,6 +26,7 @@ import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
+import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.PaymentMethodsViewModel
@@ -44,6 +45,8 @@ internal fun SchemaSection(
     var schemaData by remember { mutableStateOf<PaymentMethodsViewModel.SchemaData?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var isValidated by remember { mutableStateOf(false) }
+
+    ScreenView { viewModel.trackScreenViewed(type.name) }
 
     LaunchedEffect(type) {
         schemaData = viewModel.retrieveSchemaDataFromCache(type) ?: run {

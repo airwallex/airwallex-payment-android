@@ -175,6 +175,7 @@ class AirwallexAddPaymentDialog(
     private fun cancelPayment() {
         val paymentSession = session as? AirwallexPaymentSession
         AirwallexLogger.info("AddPaymentMethodDialog cancelPayment[${paymentSession?.paymentIntent?.id}]: cancel")
+        viewModel.trackPaymentCancelled()
         paymentResultListener.onCompleted(AirwallexPaymentStatus.Cancel)
         dismiss()
     }

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
+import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardText
 import com.google.pay.button.ButtonTheme
 import com.google.pay.button.ButtonType
@@ -28,6 +29,7 @@ import com.google.pay.button.PayButton
 internal fun GooglePaySection(
     allowedPaymentMethods: String,
     onClick: () -> Unit,
+    onScreenViewed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var payButtonVisible by remember { mutableStateOf(false) }
@@ -35,6 +37,7 @@ internal fun GooglePaySection(
     PayButtonWithVisibilityChecker(
         onVisibilityChanged = { isVisible -> payButtonVisible = isVisible },
     ) {
+        ScreenView { onScreenViewed() }
         PayButton(
             onClick = onClick,
             allowedPaymentMethods = allowedPaymentMethods,
