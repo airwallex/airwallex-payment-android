@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.*
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -14,6 +15,47 @@ open class AirwallexCheckoutViewModel(
     private val airwallex: Airwallex,
     private val session: AirwallexSession
 ) : AndroidViewModel(application) {
+
+    companion object {
+        private const val EVENT_PAYMENT_CANCELLED = "payment_canceled"
+        private const val EVENT_PAYMENT_LAUNCHED = "payment_launched"
+        private const val KEY_PAYMENT_INTENT_ID = "payment_intent_id"
+        private const val KEY_TRANSACTION_MODE = "transaction_mode"
+    }
+
+    private val additionalAnalyticsEventParams: Map<String, String> by lazy {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                mapOf(
+                    KEY_PAYMENT_INTENT_ID to session.paymentIntent.id,
+                    KEY_TRANSACTION_MODE to TransactionMode.ONE_OFF.value,
+                )
+            }
+
+            is AirwallexRecurringSession -> {
+                mapOf(
+                    KEY_TRANSACTION_MODE to TransactionMode.RECURRING.value,
+                )
+            }
+
+            is AirwallexRecurringWithIntentSession -> {
+                mapOf(
+                    KEY_PAYMENT_INTENT_ID to session.paymentIntent.id,
+                    KEY_TRANSACTION_MODE to TransactionMode.RECURRING.value,
+                )
+            }
+
+            else -> mapOf()
+        }
+    }
+
+    val transactionMode: TransactionMode by lazy {
+        when (session) {
+            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
+            is AirwallexPaymentSession -> TransactionMode.ONE_OFF
+            else -> TransactionMode.ONE_OFF // Default to one-off if session is unavailable
+        }
+    }
 
     @Suppress("LongParameterList")
     fun checkout(
@@ -165,6 +207,27 @@ open class AirwallexCheckoutViewModel(
                 }
             }
         }
+    }
+
+    fun trackPaymentCancelled() {
+        AnalyticsLogger.logAction(
+            actionName = EVENT_PAYMENT_CANCELLED,
+            additionalInfo = additionalAnalyticsEventParams,
+        )
+    }
+
+    fun trackPaymentLaunched() {
+        AnalyticsLogger.logAction(
+            actionName = EVENT_PAYMENT_LAUNCHED,
+            additionalInfo = additionalAnalyticsEventParams,
+        )
+    }
+
+    fun trackScreenViewed(eventName: String, params: Map<String, Any> = emptyMap()) {
+        AnalyticsLogger.logPaymentView(
+            viewName = eventName,
+            additionalInfo = params + additionalAnalyticsEventParams,
+        )
     }
 
     internal class Factory(

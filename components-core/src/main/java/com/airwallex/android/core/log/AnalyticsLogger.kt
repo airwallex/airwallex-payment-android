@@ -85,6 +85,12 @@ object AnalyticsLogger {
         tracker?.info(actionName, extraInfo)
     }
 
+    fun logPaymentView(viewName: String, additionalInfo: Map<String, Any>? = null) {
+        val extraInfo = additionalInfo?.toMutableMap() ?: mutableMapOf()
+        extraInfo["eventType"] = "payment_method_view"
+        tracker?.info(viewName, extraInfo)
+    }
+
     private fun AirwallexEnviornment.toTrackerEnvironment(): Environment {
         return when (this) {
             AirwallexEnviornment.STAGING -> Environment.STAGING

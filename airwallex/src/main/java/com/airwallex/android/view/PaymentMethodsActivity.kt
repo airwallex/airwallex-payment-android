@@ -67,6 +67,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     override fun onBackButtonPressed() {
+        super.onBackButtonPressed()
         AirwallexLogger.info("PaymentMethodsActivity onBackButtonPressed")
         setResult(RESULT_CANCELED)
         finish()
