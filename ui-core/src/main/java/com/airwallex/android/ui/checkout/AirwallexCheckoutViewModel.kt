@@ -154,23 +154,23 @@ open class AirwallexCheckoutViewModel(
                 is AirwallexRecurringWithIntentSession -> session.paymentIntent.clientSecret
                 else -> null
             }
-                    airwallex.retrievePaymentMethodTypeInfo(
-                        RetrievePaymentMethodTypeInfoParams.Builder(
-                            clientSecret = requireNotNull(clientSecret),
-                            paymentMethodType = paymentMethodTypeName
-                        )
-                            .setFlow(AirwallexPaymentRequestFlow.IN_APP)
-                            .build(),
-                        object : Airwallex.PaymentListener<PaymentMethodTypeInfo> {
-                            override fun onFailed(exception: AirwallexException) {
-                                continuation.resume(Result.failure(exception))
-                            }
+            airwallex.retrievePaymentMethodTypeInfo(
+                RetrievePaymentMethodTypeInfoParams.Builder(
+                    clientSecret = requireNotNull(clientSecret),
+                    paymentMethodType = paymentMethodTypeName
+                )
+                    .setFlow(AirwallexPaymentRequestFlow.IN_APP)
+                    .build(),
+                object : Airwallex.PaymentListener<PaymentMethodTypeInfo> {
+                    override fun onFailed(exception: AirwallexException) {
+                        continuation.resume(Result.failure(exception))
+                    }
 
-                            override fun onSuccess(response: PaymentMethodTypeInfo) {
-                                continuation.resume(Result.success(response))
-                            }
-                        }
-                    )
+                    override fun onSuccess(response: PaymentMethodTypeInfo) {
+                        continuation.resume(Result.success(response))
+                    }
+                }
+            )
         }
     }
 
