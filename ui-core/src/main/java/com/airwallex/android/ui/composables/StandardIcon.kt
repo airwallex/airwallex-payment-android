@@ -10,7 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.airwallex.android.ui.R
 
 @Composable
 fun StandardIcon(
@@ -29,4 +32,14 @@ fun StandardIcon(
             tint = tint,
         )
     }
+}
+
+@Composable
+@Preview
+private fun StandardIconPreview() {
+    StandardIcon(
+        drawableRes = R.drawable.airwallex_ic_card_default,
+        size = 24.dp,
+        padding = 0.dp,
+    )
 }

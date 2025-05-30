@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.airwallex.android.core.model.Bank
@@ -73,4 +74,32 @@ internal fun BankItem(
 
         Spacer(modifier = Modifier.width(24.dp))
     }
+}
+
+@Composable
+@Preview
+private fun BankItemNotSelectedPreview() {
+    BankItem(
+        bank = Bank(
+            name = "Chase",
+            displayName = "Chase Bank",
+            resources = null,
+        ),
+        isSelected = false,
+        onClick = {},
+    )
+}
+
+@Composable
+@Preview
+private fun BankItemSelectedPreview() {
+    BankItem(
+        bank = Bank(
+            name = "Chase",
+            displayName = "Chase Bank",
+            resources = null,
+        ),
+        isSelected = true,
+        onClick = {},
+    )
 }

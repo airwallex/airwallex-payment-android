@@ -54,6 +54,6 @@ fun StandardText(
 
 @Preview
 @Composable
-fun StandardTextPreview() {
+private fun StandardTextPreview() {
     StandardText("Hello, World!")
 }
