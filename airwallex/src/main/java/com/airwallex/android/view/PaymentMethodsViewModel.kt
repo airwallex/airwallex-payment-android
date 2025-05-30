@@ -549,7 +549,7 @@ internal class PaymentMethodsViewModel(
     companion object {
         const val COUNTRY_CODE = "country_code"
         const val FLOW = "flow"
-        private const val OS_TYPE = "os_"
+        private const val OS_TYPE = "os_type"
         private const val OS_NAME = "android"
         private const val PAYMENT_METHOD = "payment_method"
         private const val PAYMENT_SUCCESS = "payment_success"
