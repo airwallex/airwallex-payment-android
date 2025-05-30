@@ -527,19 +527,6 @@ class Airwallex internal constructor(
                 override fun onSuccess(response: PaymentConsent) {
                     // for redirect, initialPaymentIntentId is empty now. so we don support recurring in redirect flow
                     val paymentIntentId = response.initialPaymentIntentId
-//                    if (paymentIntentId.isNullOrEmpty()) {
-//                        AnalyticsLogger.logError(
-//                            "initialPaymentIntentId_null_or_empty",
-//                            mapOf("type" to paymentMethodType)
-//                        )
-//                        AirwallexLogger.error("Airwallex verifyPaymentConsent: type = $paymentMethodType, paymentIntentId isNullOrEmpty")
-//                        listener.onCompleted(
-//                            AirwallexPaymentStatus.Failure(
-//                                AirwallexCheckoutException(message = "Unsupported payment method")
-//                            )
-//                        )
-//                        return
-//                    }
                     if (response.nextAction == null) {
                         listener.onCompleted(
                             AirwallexPaymentStatus.Success(
@@ -560,29 +547,56 @@ class Airwallex internal constructor(
                         )
                         return
                     }
-                    val nextActionModel = when (paymentMethodType) {
-                        PaymentMethodType.CARD.value, PaymentMethodType.GOOGLEPAY.value -> CardNextActionModel(
-                            paymentManager = paymentManager,
-                            clientSecret = params.clientSecret,
-                            device = null,
-                            paymentIntentId = "paymentIntentId",
-                            currency = requireNotNull(params.currency),
-                            amount = requireNotNull(params.amount),
-                        )
+                    when (paymentMethodType) {
+                        PaymentMethodType.CARD.value, PaymentMethodType.GOOGLEPAY.value -> {
+                            if (paymentIntentId.isNullOrEmpty()) {
+                                AnalyticsLogger.logError(
+                                    "initialPaymentIntentId_null_or_empty",
+                                    mapOf("type" to paymentMethodType)
+                                )
+                                AirwallexLogger.error("Airwallex verifyPaymentConsent: type = $paymentMethodType, paymentIntentId isNullOrEmpty")
+                                listener.onCompleted(
+                                    AirwallexPaymentStatus.Failure(
+                                        AirwallexCheckoutException(message = "Unsupported payment method")
+                                    )
+                                )
+                                return
+                            }
 
-                        else -> null
+                            val nextActionModel = CardNextActionModel(
+                                paymentManager = paymentManager,
+                                clientSecret = params.clientSecret,
+                                device = null,
+                                paymentIntentId = paymentIntentId,
+                                currency = requireNotNull(params.currency),
+                                amount = requireNotNull(params.amount),
+                            )
+
+                            provider.get().handlePaymentIntentResponse(
+                                paymentIntentId,
+                                response.nextAction,
+                                fragment,
+                                activity,
+                                applicationContext,
+                                nextActionModel,
+                                listener,
+                                response.id
+                            )
+                        }
+
+                        else -> {
+                            provider.get().handlePaymentIntentResponse(
+                                null,
+                                response.nextAction,
+                                fragment,
+                                activity,
+                                applicationContext,
+                                null,
+                                listener,
+                                response.id
+                            )
+                        }
                     }
-
-                    provider.get().handlePaymentIntentResponse(
-                        "paymentIntentId",
-                        response.nextAction,
-                        fragment,
-                        activity,
-                        applicationContext,
-                        nextActionModel,
-                        listener,
-                        response.id
-                    )
                 }
             }
         )

@@ -318,8 +318,7 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    private fun requireHandleSchemaFields(paymentMethodType: AvailablePaymentMethodType) =
-        paymentMethodType.resources?.hasSchema == true
+    private fun requireHandleSchemaFields(paymentMethodType: AvailablePaymentMethodType) = paymentMethodType.resources?.hasSchema == true
 
     private fun needRequestConsent(): Boolean {
         // if the customerId is null or empty ,there is no need to request consents
