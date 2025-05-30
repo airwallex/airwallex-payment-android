@@ -8,15 +8,20 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.Airwallex.Companion.initialize
 import com.airwallex.android.core.AirwallexConfiguration
+import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.Shipping
+import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
@@ -47,6 +52,28 @@ class AirwallexStarter {
             AirwallexActivityLaunch.initialize(application)
         }
 
+        private fun setupAnalyticsLogger(session: AirwallexSession) {
+            when (session) {
+                is AirwallexPaymentSession -> {
+                    AnalyticsLogger.setSessionInformation(
+                        transactionMode = TransactionMode.ONE_OFF.value,
+                        paymentIntentId = session.paymentIntent.id,
+                    )
+                }
+                is AirwallexRecurringSession -> {
+                    AnalyticsLogger.setSessionInformation(
+                        transactionMode = TransactionMode.RECURRING.value,
+                    )
+                }
+                is AirwallexRecurringWithIntentSession -> {
+                    AnalyticsLogger.setSessionInformation(
+                        transactionMode = TransactionMode.RECURRING.value,
+                        paymentIntentId = session.paymentIntent.id,
+                    )
+                }
+            }
+        }
+
         /**
          * Launch the card payment flow to allow the user to complete the entire payment flow
          *
@@ -60,6 +87,7 @@ class AirwallexStarter {
             supportedCards: List<AirwallexSupportedCard> = enumValues<AirwallexSupportedCard>().toList(),
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
+            setupAnalyticsLogger(session)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentCardPaymentFlow[$intentId]")
             AddPaymentMethodActivityLaunch(activity)
@@ -199,6 +227,7 @@ class AirwallexStarter {
             layoutType: PaymentMethodsLayoutType,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
+            setupAnalyticsLogger(session)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentPaymentFlow[$intentId]")
             launch.launchForResult(

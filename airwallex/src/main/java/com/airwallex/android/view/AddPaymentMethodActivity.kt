@@ -20,6 +20,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.ActivityAddCardBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexColor
@@ -74,6 +75,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
+        viewModel.trackPaymentLaunched()
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
         viewBinding.composeView.apply {
             setContent {
@@ -119,6 +121,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
     }
 
     override fun onBackButtonPressed() {
+        super.onBackButtonPressed()
         AirwallexLogger.info("AddPaymentMethodActivity onBackButtonPressed")
         setResult(
             Activity.RESULT_CANCELED,
@@ -153,7 +156,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     private fun onAddCard() {
         setLoadingProgress(loading = true, cancelable = false)
-        AnalyticsLogger.logAction("tap_pay_button")
+        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
         AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
     }
 }

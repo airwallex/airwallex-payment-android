@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardAlertDialog
 import java.util.Locale
 
@@ -22,8 +23,11 @@ internal fun ConsentListSection(
     availablePaymentConsents: List<PaymentConsent>,
     onSelectCard: (PaymentConsent) -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
+    onScreenViewed: () -> Unit,
 ) {
     var localConsentToBeDeleted by remember { mutableStateOf<PaymentConsent?>(null) }
+
+    ScreenView { onScreenViewed() }
     
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
         availablePaymentConsents.forEach { consent ->

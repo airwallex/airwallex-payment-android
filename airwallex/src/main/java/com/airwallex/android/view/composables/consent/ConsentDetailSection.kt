@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.core.CardBrand
+import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.composables.card.CardCvcTextField
@@ -23,12 +24,15 @@ internal fun ConsentDetailSection(
     cardBrand: CardBrand,
     onCheckoutWithCvc: (String) -> Unit,
     onCheckoutWithoutCvv: () -> Unit,
+    onScreenViewed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
 
     var cvv by remember { mutableStateOf("") }
     var cvvErrorMessage by remember { mutableStateOf<Int?>(null) }
+
+    ScreenView { onScreenViewed() }
 
     if (isCvcRequired) {
         CardCvcTextField(

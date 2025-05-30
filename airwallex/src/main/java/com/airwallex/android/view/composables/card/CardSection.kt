@@ -25,6 +25,7 @@ import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
@@ -144,6 +145,9 @@ internal fun CardSection(
                         selectedScreen = CardSectionType.ConsentDetail(consent = consent)
                     },
                     onDeleteCard = onDeleteCard,
+                    onScreenViewed = {
+                        addPaymentMethodViewModel.trackScreenViewed(PaymentMethodType.CARD.value, mapOf("subtype" to "consent"))
+                    },
                 )
             }
             is CardSectionType.ConsentDetail -> {
@@ -197,6 +201,9 @@ internal fun CardSection(
                     },
                     onCheckoutWithoutCvv = {
                         onCheckoutWithoutCvc(consent)
+                    },
+                    onScreenViewed = {
+                        addPaymentMethodViewModel.trackScreenViewed(PaymentMethodType.CARD.value, mapOf("subtype" to "consent"))
                     },
                     modifier = Modifier
                         .fillMaxWidth()

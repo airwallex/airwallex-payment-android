@@ -28,8 +28,10 @@ import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
+import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardCheckBox
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
@@ -79,6 +81,8 @@ internal fun AddCardSection(
     var cityErrorMessage by remember { mutableStateOf<Int?>(null) }
     var zipCodeErrorMessage by remember { mutableStateOf<Int?>(null) }
     var phoneNumberErrorMessage by remember { mutableStateOf<Int?>(null) }
+
+    ScreenView { viewModel.trackScreenViewed(PaymentMethodType.CARD.value, mapOf("subtype" to "card")) }
 
     LaunchedEffect(Unit) {
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
