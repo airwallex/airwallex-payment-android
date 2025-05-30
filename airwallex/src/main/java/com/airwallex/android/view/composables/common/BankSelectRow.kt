@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.model.Bank
@@ -91,4 +92,25 @@ internal fun BankSelectRow(
             errorText = errorText,
         )
     }
+}
+
+@Composable
+@Preview
+private fun BankSelectRowPreview() {
+    BankSelectRow(
+        options = listOf(
+            Bank(
+                name = "Chase",
+                displayName = "Chase Bank",
+                resources = null,
+            ),
+            Bank(
+                name = "Chase",
+                displayName = "Chase Bank",
+                resources = null,
+            ),
+        ),
+        default = "Chase",
+        onOptionSelected = {},
+    )
 }

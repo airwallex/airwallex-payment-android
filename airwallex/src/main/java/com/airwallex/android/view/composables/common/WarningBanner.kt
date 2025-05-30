@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.ui.composables.AirwallexColor
@@ -44,4 +45,10 @@ fun WarningBanner(message: String) {
             modifier = Modifier.padding(vertical = 8.dp),
         )
     }
+}
+
+@Composable
+@Preview
+private fun WarningBannerPreview() {
+    WarningBanner("First line\nSecond line\nLong long long long long long long long long message")
 }

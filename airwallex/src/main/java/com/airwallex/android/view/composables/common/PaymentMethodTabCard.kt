@@ -21,10 +21,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.airwallex.android.R
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
@@ -78,4 +80,32 @@ internal fun PaymentMethodTabCard(
             }
         }
     }
+}
+
+@Composable
+@Preview
+private fun PaymentMethodTabCardSelectedPreview() {
+    PaymentMethodTabCard(
+        isSelected = true,
+        selectedType = AvailablePaymentMethodType(
+            name = "card",
+            displayName = "Card",
+            transactionMode = TransactionMode.ONE_OFF,
+        ),
+        onClick = {},
+    )
+}
+
+@Preview
+@Composable
+private fun PaymentMethodTabCardNotSelectedPreview() {
+    PaymentMethodTabCard(
+        isSelected = false,
+        selectedType = AvailablePaymentMethodType(
+            name = "card",
+            displayName = "Card",
+            transactionMode = TransactionMode.ONE_OFF,
+        ),
+        onClick = {},
+    )
 }

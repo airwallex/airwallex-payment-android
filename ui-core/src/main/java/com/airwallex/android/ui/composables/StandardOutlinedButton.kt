@@ -9,6 +9,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -37,4 +38,13 @@ fun StandardOutlinedButton(
             typography = AirwallexTypography.Headline100
         )
     }
+}
+
+@Composable
+@Preview
+private fun StandardOutlinedButtonPreview() {
+    StandardOutlinedButton(
+        onClick = {},
+        text = "Outlined Button",
+    )
 }

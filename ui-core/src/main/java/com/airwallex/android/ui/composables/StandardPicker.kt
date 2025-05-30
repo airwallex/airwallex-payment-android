@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -61,4 +62,19 @@ fun <T> StandardPicker(
     }
 
     Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+@Preview
+private fun StandardPickerPreview() {
+    StandardPicker(
+        hint = "Select an option",
+        options = listOf("Option 1", "Option 2", "Option 3", "Option 4", "Option 5"),
+        content = { option, modifier ->
+            StandardText(
+                text = option,
+                modifier = modifier.padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 16.dp),
+            )
+        }
+    )
 }
