@@ -64,7 +64,7 @@ class WeChatComponent : ActionComponent {
     }
 
     override fun handlePaymentIntentResponse(
-        paymentIntentId: String,
+        paymentIntentId: String?,
         nextAction: NextAction?,
         fragment: Fragment?,
         activity: Activity,
@@ -73,6 +73,14 @@ class WeChatComponent : ActionComponent {
         listener: Airwallex.PaymentResultListener,
         consentId: String?
     ) {
+        if (paymentIntentId.isNullOrEmpty()) {
+            listener.onCompleted(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexCheckoutException(message = "paymentIntentId is null or empty")
+                )
+            )
+            return
+        }
         this.paymentIntentId = paymentIntentId
         this.listener = listener
         when (nextAction?.type) {

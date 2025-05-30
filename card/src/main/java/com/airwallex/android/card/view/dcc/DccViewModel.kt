@@ -23,7 +23,12 @@ internal class DccViewModel(
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     when (status) {
                         is AirwallexPaymentStatus.Success -> {
-                            resultData.value = Result.success(status.paymentIntentId)
+                            val paymentIntentId = status.paymentIntentId
+                            if (paymentIntentId == null) {
+                                resultData.value = Result.failure(Throwable("paymentIntentId is null"))
+                                return
+                            }
+                            resultData.value = Result.success(paymentIntentId)
                         }
                         is AirwallexPaymentStatus.Failure -> {
                             resultData.value = Result.failure(status.exception)

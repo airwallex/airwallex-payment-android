@@ -15,6 +15,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
@@ -53,6 +54,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
+            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
 
                 override fun onCompleted(status: AirwallexPaymentStatus) {
@@ -79,6 +81,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
+            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
 
                 override fun onCompleted(status: AirwallexPaymentStatus) {

@@ -43,10 +43,23 @@
     <string name="airwallex_empty_email">Please enter your email address</string>
     <string name="airwallex_card_number_label">Card number</string>
     <string name="airwallex_card_number_placeholder">1234 1234 1234 1234</string>
-    <string name="airwallex_expires_hint">Expires MM/YY</string>
+    <string name="airwallex_expires_hint">MM/YY</string>
     <string name="airwallex_invalid_email">Please enter valid email</string>
     <string name="airwallex_select_your_bank">Select your bank</string>
     <string name="airwallex_enter_cvv">Enter CVC/CVV for \n%s</string>
     <string name="airwallex_invalid_field">Invalid %s</string>
+    <string name="airwallex_or_pay_with">Or pay with</string>
+    <string name="airwallex_card_information_title">Card information</string>
+    <string name="airwallex_empty_postal_code">Please enter your zip code</string>
+    <string name="airwallex_empty_phone_number">Please enter your phone number</string>
+    <string name="airwallex_add_card_screen_title">Add new</string>
+    <string name="airwallex_add_card_button_title">Keep using saved cards</string>
+    <string name="airwallex_consent_list_screen_title">Choose a card</string>
+    <string name="airwallex_consent_list_button_title">Add new</string>
+    <string name="airwallex_consent_detail_button_title">Change</string>
+    <string name="airwallex_delete_consent_alert_title">Remove %s?</string>
+    <string name="airwallex_delete_consent_alert_content">This option will be permanently removed from your saved payment methods.</string>
+    <string name="airwallex_schema_payment_redirect_message">You will be redirected to complete your payment upon confirmation.</string>
+    <string name="airwallex_invalid_scheme_message">Invalid schema</string>
 
 </resources>

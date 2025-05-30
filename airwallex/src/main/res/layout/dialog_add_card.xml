@@ -8,18 +8,18 @@
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/btnSaveCard">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingVertical="24dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="24dp">
 
                 <TextView
                     android:id="@+id/cardLabel"
@@ -42,80 +42,13 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.airwallex.android.view.CardWidget
-                android:id="@+id/cardWidget"
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/compose_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="24dp" />
+                android:layout_height="match_parent" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/saveCardWidget"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp">
-
-                <TextView
-                    android:id="@+id/saveCardLabel"
-                    style="@style/AirwallexPaymentSubHeaderRegular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/airwallex_save_card"
-                    app:layout_constraintBottom_toBottomOf="@+id/swSaveCard"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/swSaveCard" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/swSaveCard"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:theme="@style/AirwallexDefaultTheme"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.airwallex.android.view.WarningView
-                    android:id="@+id/warningView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/swSaveCard"
-                    android:layout_marginTop="16dp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/saveCardLabel" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <LinearLayout
-                android:id="@+id/billingGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/AirwallexPaymentSubHeaderBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/airwallex_billing_info" />
-
-                <com.airwallex.android.view.BillingWidget
-                    android:id="@+id/billingWidget"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:theme="@style/AirwallexDefaultTheme"
-                    android:layout_marginBottom="32dp" />
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnSaveCard"
-        style="@style/AirwallexPaymentButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="24dp"
-        android:text="@string/airwallex_pay_now" />
 
     <FrameLayout
         android:id="@+id/frLoading"

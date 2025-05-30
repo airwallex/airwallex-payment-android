@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
  * Bank information.
  */
 @Parcelize
-data class Bank internal constructor(
+data class Bank(
     /**
      * name of the bank
      */

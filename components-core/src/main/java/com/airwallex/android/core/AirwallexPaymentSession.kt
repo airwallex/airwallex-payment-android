@@ -139,7 +139,7 @@ class AirwallexPaymentSession internal constructor(
                 googlePayOptions = googlePayOptions,
                 autoCapture = autoCapture,
                 hidePaymentConsents = hidePaymentConsents,
-                paymentMethods = paymentMethods
+                paymentMethods = paymentMethods,
             )
         }
     }
