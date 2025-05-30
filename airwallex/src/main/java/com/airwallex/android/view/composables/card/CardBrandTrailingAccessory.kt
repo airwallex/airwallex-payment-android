@@ -10,7 +10,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.view.composables.common.CardBrandIcon
 import kotlinx.coroutines.delay
@@ -60,4 +62,38 @@ internal fun CardBrandTrailingAccessory(
             modifier = modifier,
         )
     }
+}
+
+@Composable
+@Preview
+private fun CardBrandTrailingAccessoryPreview() {
+    CardBrandTrailingAccessory(
+        icons = listOf(
+            R.drawable.airwallex_ic_card_default,
+            R.drawable.airwallex_ic_visa,
+            R.drawable.airwallex_ic_mastercard,
+            R.drawable.airwallex_ic_diners,
+            R.drawable.airwallex_ic_unionpay,
+            R.drawable.airwallex_ic_jcb,
+        ),
+        brand = CardBrand.Visa,
+        displayAllSchemes = false,
+    )
+}
+
+@Composable
+@Preview
+private fun CardBrandTrailingAccessoryWithAllSchemasPreview() {
+    CardBrandTrailingAccessory(
+        icons = listOf(
+            R.drawable.airwallex_ic_card_default,
+            R.drawable.airwallex_ic_visa,
+            R.drawable.airwallex_ic_mastercard,
+            R.drawable.airwallex_ic_diners,
+            R.drawable.airwallex_ic_unionpay,
+            R.drawable.airwallex_ic_jcb,
+        ),
+        brand = CardBrand.Visa,
+        displayAllSchemes = true,
+    )
 }

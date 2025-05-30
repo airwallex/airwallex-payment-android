@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -206,5 +207,18 @@ data class StandardTextFieldOptions(
         autoCorrectEnabled = true,
         keyboardType = inputType.makeKeyboardType(),
         imeAction = returnType.makeImeAction(),
+    )
+}
+
+@Preview
+@Composable
+private fun StandardTextFieldPreview() {
+    StandardTextField(
+        text = TextFieldValue("Hello"),
+        onTextChanged = {},
+        hint = "Hint",
+        supportText = "Support Text",
+        errorText = "Error Text",
+        options = StandardTextFieldOptions(),
     )
 }

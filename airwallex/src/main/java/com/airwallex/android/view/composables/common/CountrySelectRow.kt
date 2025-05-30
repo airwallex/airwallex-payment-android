@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.ui.composables.AirwallexColor
@@ -105,4 +106,17 @@ internal fun CountrySelectRow(
             }
         )
     }
+}
+
+@Composable
+@Preview
+private fun CountrySelectRowPreview() {
+    CountrySelectRow(
+        options = listOf(
+            "United States" to "US",
+            "United Kingdom" to "GB",
+        ),
+        default = "US",
+        onOptionSelected = {},
+    )
 }
