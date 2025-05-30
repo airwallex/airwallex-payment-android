@@ -134,36 +134,29 @@ open class AirwallexCheckoutViewModel(
         paymentMethodTypeName: String
     ): Result<PaymentMethodTypeInfo> {
         return suspendCancellableCoroutine { continuation ->
-            when (session) {
-                is AirwallexPaymentSession -> {
-                    val paymentIntent = session.paymentIntent
-                    airwallex.retrievePaymentMethodTypeInfo(
-                        RetrievePaymentMethodTypeInfoParams.Builder(
-                            clientSecret = requireNotNull(paymentIntent.clientSecret),
-                            paymentMethodType = paymentMethodTypeName
-                        )
-                            .setFlow(AirwallexPaymentRequestFlow.IN_APP)
-                            .build(),
-                        object : Airwallex.PaymentListener<PaymentMethodTypeInfo> {
-                            override fun onFailed(exception: AirwallexException) {
-                                continuation.resume(Result.failure(exception))
-                            }
-
-                            override fun onSuccess(response: PaymentMethodTypeInfo) {
-                                continuation.resume(Result.success(response))
-                            }
-                        }
-                    )
-                }
-
-                else -> {
-                    continuation.resume(
-                        Result.failure(
-                            AirwallexCheckoutException(message = "$paymentMethodTypeName just support one-off payment")
-                        )
-                    )
-                }
+            val clientSecret = when (session) {
+                is AirwallexPaymentSession -> session.paymentIntent.clientSecret
+                is AirwallexRecurringSession-> session.clientSecret
+                is AirwallexRecurringWithIntentSession -> session.paymentIntent.clientSecret
+                else -> null
             }
+            airwallex.retrievePaymentMethodTypeInfo(
+                RetrievePaymentMethodTypeInfoParams.Builder(
+                    clientSecret = requireNotNull(clientSecret),
+                    paymentMethodType = paymentMethodTypeName
+                )
+                    .setFlow(AirwallexPaymentRequestFlow.IN_APP)
+                    .build(),
+                object : Airwallex.PaymentListener<PaymentMethodTypeInfo> {
+                    override fun onFailed(exception: AirwallexException) {
+                        continuation.resume(Result.failure(exception))
+                    }
+
+                    override fun onSuccess(response: PaymentMethodTypeInfo) {
+                        continuation.resume(Result.success(response))
+                    }
+                }
+            )
         }
     }
 
