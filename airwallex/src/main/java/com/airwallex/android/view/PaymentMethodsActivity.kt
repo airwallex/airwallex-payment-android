@@ -298,17 +298,18 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     private fun onAddCard() {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.trackCardPaymentSelection()
-        AnalyticsLogger.logAction("tap_pay_button")
         AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
     }
 
     private fun onDirectPay(type: AvailablePaymentMethodType) {
         setLoadingProgress(loading = true, cancelable = false)
+        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to type.name))
         viewModel.checkoutWithSchema(type)
     }
 
     private fun onPayWithSchema(paymentMethod: PaymentMethod, info: PaymentMethodTypeInfo, fieldMap: Map<String, String>) {
         setLoadingProgress(loading = true, cancelable = false)
+        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to info.name.orEmpty()))
         viewModel.checkoutWithSchema(
             paymentMethod = paymentMethod,
             additionalInfo = fieldMap,
