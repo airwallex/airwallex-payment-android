@@ -530,7 +530,7 @@ class Airwallex internal constructor(
                     if (response.nextAction == null) {
                         listener.onCompleted(
                             AirwallexPaymentStatus.Success(
-                                "",
+                                paymentIntentId,
                                 response.id
                             )
                         )
