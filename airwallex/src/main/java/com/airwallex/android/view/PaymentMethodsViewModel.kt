@@ -19,6 +19,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.Bank
 import com.airwallex.android.core.model.CardScheme
@@ -37,7 +38,7 @@ import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.findWithType
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
-import com.airwallex.android.view.util.needCountryCode
+import com.airwallex.android.view.util.needHiddenEnumParam
 import com.airwallex.android.view.util.toPaymentFlow
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -308,8 +309,7 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    private fun requireHandleSchemaFields(paymentMethodType: AvailablePaymentMethodType) =
-        paymentMethodType.resources?.hasSchema == true && session is AirwallexPaymentSession
+    private fun requireHandleSchemaFields(paymentMethodType: AvailablePaymentMethodType) = paymentMethodType.resources?.hasSchema == true
 
     private fun needRequestConsent(): Boolean {
         // if the customerId is null or empty ,there is no need to request consents
@@ -448,11 +448,13 @@ internal class PaymentMethodsViewModel(
                     schemaDataCache[paymentMethodType] = SchemaData()
                     return null
                 }
-                // Ad hoc. If country code is required, use session's country code.
-                // Other fields like os_type and flow will not need to be retrieved here.
-                if (typeInfo.needCountryCode(transactionMode)) {
-                    additionalParams[COUNTRY_CODE] = session.countryCode
-                }
+                // Ad hoc. Aligned with BE that we do not show Enum types in UI, instead we pass fixed values when we have the field.
+                listOf(COUNTRY_CODE to session.countryCode, OS_TYPE to OS_NAME, FLOW to AirwallexPaymentRequestFlow.IN_APP.value)
+                    .forEach { (key, value) ->
+                        if (typeInfo.needHiddenEnumParam(transactionMode, key)) {
+                            additionalParams[key] = value
+                        }
+                    }
                 val fields = typeInfo.filterRequiredFields(transactionMode) ?: return null
                 AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields: filterRequiredFields = $fields")
                 // 2.If all fields are hidden, start checkout directly
@@ -547,6 +549,8 @@ internal class PaymentMethodsViewModel(
     companion object {
         const val COUNTRY_CODE = "country_code"
         const val FLOW = "flow"
+        private const val OS_TYPE = "os_type"
+        private const val OS_NAME = "android"
         private const val PAYMENT_METHOD = "payment_method"
         private const val PAYMENT_SUCCESS = "payment_success"
         private const val PAYMENT_SELECT = "select_payment"

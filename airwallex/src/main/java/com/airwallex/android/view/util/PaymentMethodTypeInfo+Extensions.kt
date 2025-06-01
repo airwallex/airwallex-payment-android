@@ -40,8 +40,8 @@ fun PaymentMethodTypeInfo.toPaymentFlow(transactionMode: TransactionMode): Airwa
     }
 }
 
-fun PaymentMethodTypeInfo.needCountryCode(transactionMode: TransactionMode) = fieldSchemas
+fun PaymentMethodTypeInfo.needHiddenEnumParam(transactionMode: TransactionMode, name: String) = fieldSchemas
     ?.firstOrNull { it.transactionMode == transactionMode }
     ?.fields
-    ?.any { it.hidden && it.type == DynamicSchemaFieldType.ENUM && it.name == COUNTRY_CODE }
+    ?.any { it.hidden && it.type == DynamicSchemaFieldType.ENUM && it.name == name }
     ?: false

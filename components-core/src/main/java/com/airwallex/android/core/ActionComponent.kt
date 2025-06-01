@@ -13,7 +13,7 @@ interface ActionComponent {
 
     @Suppress("LongParameterList")
     fun handlePaymentIntentResponse(
-        paymentIntentId: String,
+        paymentIntentId: String?,
         nextAction: NextAction?,
         fragment: Fragment? = null,
         activity: Activity,

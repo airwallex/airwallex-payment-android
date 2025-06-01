@@ -11,6 +11,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -73,5 +74,18 @@ fun StandardAlertDialog(
             }
         },
         onDismissRequest = onDismiss,
+    )
+}
+
+@Composable
+@Preview
+private fun StandardAlertDialogPreview() {
+    StandardAlertDialog(
+        title = "Title",
+        content = "Content",
+        confirmButtonTitle = "Confirm",
+        dismissButtonTitle = "Dismiss",
+        onConfirm = {},
+        onDismiss = {},
     )
 }
