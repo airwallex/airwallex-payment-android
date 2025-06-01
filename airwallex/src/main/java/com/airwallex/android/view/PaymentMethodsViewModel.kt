@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger
 internal class PaymentMethodsViewModel(
     application: Application,
     private val airwallex: Airwallex,
-    private val session: AirwallexSession
+    internal val session: AirwallexSession
 ) : AirwallexCheckoutViewModel(application, airwallex, session) {
 
     val pageName: String = "payment_method_list"

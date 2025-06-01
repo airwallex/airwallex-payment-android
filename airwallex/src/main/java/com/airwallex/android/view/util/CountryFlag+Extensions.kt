@@ -3,17 +3,9 @@ package com.airwallex.android.view.util
 import androidx.annotation.DrawableRes
 import com.airwallex.android.R
 
-// Legacy code that may be used in the future. Emoji flags are not supported according to legal.
-fun getFlagEmoji(countryCode: String): String {
-    return countryCode.uppercase().map {
-        val charCode = (it.code - 'A'.code + 0x1F1E6)
-        String(Character.toChars(charCode))
-    }.joinToString("")
-}
-
 inline fun <reified T : Enum<T>> safeValueOf(type: String): T? {
     return try {
-        java.lang.Enum.valueOf(T::class.java, type)
+        java.lang.Enum.valueOf(T::class.java, type.uppercase())
     } catch (e: IllegalArgumentException) {
         null
     }
