@@ -15,14 +15,13 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexSupportedCard
-import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.composables.card.CardSection
@@ -104,6 +103,7 @@ class AirwallexAddPaymentDialog(
                         addPaymentMethodViewModel = viewModel,
                         cardSchemes = supportedCardSchemes,
                         onAddCard = {
+                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
                             setLoadingProgress(true)
                         },
                         onDeleteCard = {},
@@ -175,6 +175,7 @@ class AirwallexAddPaymentDialog(
     private fun cancelPayment() {
         val paymentSession = session as? AirwallexPaymentSession
         AirwallexLogger.info("AddPaymentMethodDialog cancelPayment[${paymentSession?.paymentIntent?.id}]: cancel")
+        viewModel.trackPaymentCancelled()
         paymentResultListener.onCompleted(AirwallexPaymentStatus.Cancel)
         dismiss()
     }

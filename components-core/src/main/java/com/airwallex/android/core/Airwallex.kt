@@ -124,6 +124,28 @@ class Airwallex internal constructor(
         applicationContext
     )
 
+    private fun setupAnalyticsLogger(session: AirwallexSession) {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                AnalyticsLogger.setSessionInformation(
+                    transactionMode = TransactionMode.ONE_OFF.value,
+                    paymentIntentId = session.paymentIntent.id,
+                )
+            }
+            is AirwallexRecurringSession -> {
+                AnalyticsLogger.setSessionInformation(
+                    transactionMode = TransactionMode.RECURRING.value,
+                )
+            }
+            is AirwallexRecurringWithIntentSession -> {
+                AnalyticsLogger.setSessionInformation(
+                    transactionMode = TransactionMode.RECURRING.value,
+                    paymentIntentId = session.paymentIntent.id,
+                )
+            }
+        }
+    }
+
     /**
      * Method to handle Activity results from Airwallex activities. Pass data here from your
      * host's `#onActivityResult(int, int, Intent)` function.
@@ -168,6 +190,7 @@ class Airwallex internal constructor(
         saveCard: Boolean = false,
         listener: PaymentResultListener
     ) {
+        setupAnalyticsLogger(session)
         createCardPaymentMethod(
             session = session,
             card = card,
@@ -198,6 +221,7 @@ class Airwallex internal constructor(
         paymentConsent: PaymentConsent,
         listener: PaymentResultListener
     ) {
+        setupAnalyticsLogger(session)
         val paymentMethod = paymentConsent.paymentMethod
         val paymentConsentId = paymentConsent.id
         if (paymentMethod == null) {
@@ -254,6 +278,7 @@ class Airwallex internal constructor(
         paymentConsentId: String,
         listener: PaymentResultListener
     ) {
+        setupAnalyticsLogger(session)
         val params = ConfirmPaymentIntentParams.createCardParams(
             paymentIntentId = session.paymentIntent.id,
             clientSecret = requireNotNull(session.paymentIntent.clientSecret),
@@ -278,6 +303,7 @@ class Airwallex internal constructor(
         session: AirwallexSession,
         listener: PaymentResultListener
     ) {
+        setupAnalyticsLogger(session)
         val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
         if (googlePayProvider != null) {
             val coroutineScope = fragment?.lifecycleScope
@@ -424,6 +450,7 @@ class Airwallex internal constructor(
         session: AirwallexSession,
         params: RetrieveAvailablePaymentMethodParams
     ): Page<AvailablePaymentMethodType> {
+        setupAnalyticsLogger(session)
         val transactionMode = when (session) {
             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
             is AirwallexPaymentSession -> TransactionMode.ONE_OFF
@@ -677,6 +704,7 @@ class Airwallex internal constructor(
         flow: AirwallexPaymentRequestFlow? = AirwallexPaymentRequestFlow.IN_APP,
         listener: PaymentResultListener,
     ) {
+        setupAnalyticsLogger(session)
         if (AirwallexPlugins.getProvider(ActionComponentProviderType.REDIRECT) == null) {
             listener.onCompleted(
                 AirwallexPaymentStatus.Failure(
@@ -736,6 +764,7 @@ class Airwallex internal constructor(
         listener: PaymentResultListener,
         saveCard: Boolean = false,
     ) {
+        setupAnalyticsLogger(session)
         AirwallexLogger.info("Airwallex checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
         when (session) {
             is AirwallexPaymentSession -> {
@@ -775,6 +804,7 @@ class Airwallex internal constructor(
         cvc: String? = null,
         listener: PaymentResultListener
     ) {
+        setupAnalyticsLogger(session)
         fun confirmPaymentIntent(
             session: AirwallexPaymentSession,
             consent: PaymentConsent? = null
@@ -939,7 +969,6 @@ class Airwallex internal constructor(
         listener: PaymentResultListener,
         googlePay: PaymentMethod.GooglePay
     ) {
-
         val paymentMethod = PaymentMethod.Builder()
             .setType(PaymentMethodType.GOOGLEPAY.value)
             .setGooglePay(googlePay)

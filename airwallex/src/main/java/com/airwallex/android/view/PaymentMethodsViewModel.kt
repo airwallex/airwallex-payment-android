@@ -34,7 +34,6 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
-import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.findWithType
@@ -131,14 +130,6 @@ internal class PaymentMethodsViewModel(
             else -> {
                 false
             }
-        }
-    }
-
-    private val transactionMode: TransactionMode by lazy {
-        when (session) {
-            is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
-            is AirwallexPaymentSession -> TransactionMode.ONE_OFF
-            else -> TransactionMode.ONE_OFF // Default to one-off if session is unavailable
         }
     }
 
@@ -251,7 +242,6 @@ internal class PaymentMethodsViewModel(
                 _paymentFlowStatus.value = PaymentFlowStatus.ErrorAlert(it.message ?: it.toString())
             }
         )
-
     }
 
     fun trackPaymentSuccess(status: AirwallexPaymentStatus, paymentType: String?) {
