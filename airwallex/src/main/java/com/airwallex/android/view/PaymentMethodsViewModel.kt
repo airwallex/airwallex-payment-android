@@ -146,12 +146,14 @@ internal class PaymentMethodsViewModel(
     fun confirmPaymentIntent(paymentConsent: PaymentConsent) {
         if (session is AirwallexPaymentSession) {
             airwallex.confirmPaymentIntent(
-                session, paymentConsent, object : PaymentResultListener {
+                session, paymentConsent,
+                object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(status)
                         trackPaymentSuccess(status, paymentConsent.paymentMethod?.type)
                     }
-                })
+                }
+            )
         } else {
             _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(
                 AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession"))
@@ -263,9 +265,11 @@ internal class PaymentMethodsViewModel(
 
     fun trackPaymentSuccess(paymentType: String?) {
         AnalyticsLogger.logAction(
-            PAYMENT_SUCCESS, mutableMapOf<String, String>().apply {
+            PAYMENT_SUCCESS,
+            mutableMapOf<String, String>().apply {
                 putIfNotNull(PAYMENT_METHOD, paymentType)
-            })
+            }
+        )
     }
 
     fun trackPaymentSelection(paymentMethodType: String?) {
@@ -315,7 +319,8 @@ internal class PaymentMethodsViewModel(
     }
 
     private fun filterPaymentMethodsBySession(
-        sourceList: List<AvailablePaymentMethodType>, filterList: List<String>?
+        sourceList: List<AvailablePaymentMethodType>,
+        filterList: List<String>?,
     ): List<AvailablePaymentMethodType> {
         if (filterList.isNullOrEmpty()) return sourceList
         return filterList.mapNotNull { name ->
@@ -336,12 +341,15 @@ internal class PaymentMethodsViewModel(
     }
 
     private suspend fun retrieveAvailablePaymentConsents(
-        clientSecret: String, customerId: String
+        clientSecret: String,
+        customerId: String,
     ) = loadPagedItems(
         loadPage = { pageNum ->
             airwallex.retrieveAvailablePaymentConsents(
                 RetrieveAvailablePaymentConsentsParams.Builder(
-                    clientSecret = clientSecret, customerId = customerId, pageNum = pageNum
+                    clientSecret = clientSecret,
+                    customerId = customerId,
+                    pageNum = pageNum,
                 ).setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
                     .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED).build()
             )
@@ -352,12 +360,17 @@ internal class PaymentMethodsViewModel(
     ) = loadPagedItems(
         loadPage = { pageNum ->
             airwallex.retrieveAvailablePaymentMethods(
-                session = session, params = RetrieveAvailablePaymentMethodParams.Builder(
-                    clientSecret = clientSecret, pageNum = pageNum
-                ).setActive(true).setTransactionCurrency(session.currency)
+                session = session,
+                params = RetrieveAvailablePaymentMethodParams.Builder(
+                    clientSecret = clientSecret,
+                    pageNum = pageNum,
+                )
+                    .setActive(true)
+                    .setTransactionCurrency(session.currency)
                     .setCountryCode(session.countryCode).build()
             )
-        })
+        }
+    )
 
     private suspend fun <T> loadPagedItems(
         loadPage: suspend (Int) -> Page<T>,
@@ -369,7 +382,9 @@ internal class PaymentMethodsViewModel(
         items.addAll(response.items)
         return if (response.hasMore) {
             loadPagedItems(
-                loadPage, items, pageNum
+                loadPage,
+                items,
+                pageNum,
             )
         } else {
             items
@@ -393,7 +408,8 @@ internal class PaymentMethodsViewModel(
                         override fun onSuccess(response: PaymentConsent) {
                             resultData.value = Result.success(paymentConsent)
                         }
-                    })
+                    }
+                )
             } ?: {
                 resultData.value =
                     Result.failure(AirwallexCheckoutException(message = "clientSecret is null"))

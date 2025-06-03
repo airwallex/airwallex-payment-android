@@ -70,16 +70,16 @@ class ExpiryDateUtilsTest {
     @Test
     fun `isValidExpiryDate should validate full expiry date string`() {
         // Valid dates
-        assertTrue(ExpiryDateUtils.isValidExpiryDate("12/25"))  // Future date
+        assertTrue(ExpiryDateUtils.isValidExpiryDate("12/25")) // Future date
 
         // Invalid formats
         assertFalse(ExpiryDateUtils.isValidExpiryDate(""))
         assertFalse(ExpiryDateUtils.isValidExpiryDate("12"))
         assertFalse(ExpiryDateUtils.isValidExpiryDate("12/"))
         assertFalse(ExpiryDateUtils.isValidExpiryDate("12/2"))
-        assertFalse(ExpiryDateUtils.isValidExpiryDate("12/250"))  // Invalid year format
-        assertFalse(ExpiryDateUtils.isValidExpiryDate("13/25"))   // Invalid month
-        assertFalse(ExpiryDateUtils.isValidExpiryDate("00/25"))   // Invalid month
+        assertFalse(ExpiryDateUtils.isValidExpiryDate("12/250")) // Invalid year format
+        assertFalse(ExpiryDateUtils.isValidExpiryDate("13/25")) // Invalid month
+        assertFalse(ExpiryDateUtils.isValidExpiryDate("00/25")) // Invalid month
     }
 
     @Test

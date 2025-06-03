@@ -48,9 +48,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
     private val viewModel: PaymentMethodsViewModel by lazy {
         ViewModelProvider(
-            this, PaymentMethodsViewModel.Factory(
+            this,
+            PaymentMethodsViewModel.Factory(
                 application, airwallex, session
-            )
+            ),
         )[PaymentMethodsViewModel::class.java]
     }
 
@@ -118,14 +119,15 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             }
         }
         val addPaymentMethodViewModel = ViewModelProvider(
-            owner = this, factory = AddPaymentMethodViewModel.Factory(
+            owner = this,
+            factory = AddPaymentMethodViewModel.Factory(
                 application = application,
                 airwallex = airwallex,
                 session = session,
                 supportedCardSchemes = availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
                     paymentMethodType.name == PaymentMethodType.CARD.value
                 }?.cardSchemes ?: emptyList(),
-            )
+            ),
         )[AddPaymentMethodViewModel::class.java]
 
         addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
@@ -250,20 +252,22 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         setLoadingProgress(false)
         AirwallexLogger.info("PaymentMethodsActivity finishWithPaymentIntent")
         setResult(
-            RESULT_OK, Intent().putExtras(
+            RESULT_OK,
+            Intent().putExtras(
                 PaymentMethodsActivityLaunch.Result(
                     paymentIntentId = paymentIntentId,
                     paymentConsentId = consentId,
                     isRedirecting = isRedirecting,
                     exception = exception
                 ).toBundle()
-            )
+            ),
         )
         finish()
     }
 
     private fun onDeleteCard(
-        paymentConsent: PaymentConsent, onDeleteCompleted: (PaymentConsent) -> Unit
+        paymentConsent: PaymentConsent,
+        onDeleteCompleted: (PaymentConsent) -> Unit,
     ) {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.deletePaymentConsent(paymentConsent).observe(this) { result ->
@@ -305,7 +309,9 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     private fun onPayWithSchema(
-        paymentMethod: PaymentMethod, info: PaymentMethodTypeInfo, fieldMap: Map<String, String>
+        paymentMethod: PaymentMethod,
+        info: PaymentMethodTypeInfo,
+        fieldMap: Map<String, String>,
     ) {
         setLoadingProgress(loading = true, cancelable = false)
         AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to info.name.orEmpty()))

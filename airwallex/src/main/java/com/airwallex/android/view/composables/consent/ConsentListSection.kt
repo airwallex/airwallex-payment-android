@@ -48,12 +48,13 @@ internal fun ConsentListSection(
     if (localConsentToBeDeleted != null) {
         StandardAlertDialog(
             title = stringResource(
-                R.string.airwallex_delete_consent_alert_title, String.format(
+                R.string.airwallex_delete_consent_alert_title,
+                String.format(
                     "%s •••• %s",
                     localConsentToBeDeleted?.paymentMethod?.card?.brand?.uppercase(Locale.ROOT)
                         .orEmpty(),
                     localConsentToBeDeleted?.paymentMethod?.card?.last4.orEmpty(),
-                )
+                ),
             ),
             content = stringResource(id = R.string.airwallex_delete_consent_alert_content),
             confirmButtonTitle = stringResource(R.string.airwallex_delete_payment_method_positive),
