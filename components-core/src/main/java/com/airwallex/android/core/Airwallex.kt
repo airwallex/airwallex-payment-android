@@ -64,6 +64,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.UUID
 
+@Suppress("LongMethod")
 class Airwallex internal constructor(
     private val fragment: Fragment?,
     private val activity: ComponentActivity,

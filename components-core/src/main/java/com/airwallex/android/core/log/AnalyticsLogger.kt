@@ -92,15 +92,15 @@ object AnalyticsLogger {
             exception.getAirwallexCodeOrStatusCode()
                 .takeIf { it.isNotEmpty() }
                 ?.let { this["code"] = it }
-            
+
             exception.getAirwallexMessageOrMessage()
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { this["message"] = it }
-            
+
             additionalInfo?.let { putAll(it) }
             putAll(additionalSessionInfo)
         }
-        
+
         logError(eventName, extraInfo)
     }
 
@@ -117,18 +117,18 @@ object AnalyticsLogger {
     ) {
         val extraInfo = mutableMapOf<String, Any>("eventType" to "pa_api_request").apply {
             if (url.isNotEmpty()) this["url"] = url
-            
+
             exception.getAirwallexCodeOrStatusCode()
                 .takeIf { it.isNotEmpty() }
                 ?.let { this["code"] = it }
-                
+
             exception.getAirwallexMessageOrMessage()
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { this["message"] = it }
-                
+
             putAll(additionalSessionInfo)
         }
-        
+
         logError(eventName, extraInfo)
     }
 
@@ -183,7 +183,10 @@ object AnalyticsLogger {
     private fun getExtraCommonData(context: Context): Map<String, Any> {
         return mutableMapOf<String, Any>().apply {
             putIfNotNull("merchantAppName", context.packageManager.getAppName(context.packageName))
-            putIfNotNull("merchantAppVersion", context.packageManager.getAppVersion(context.packageName))
+            putIfNotNull(
+                "merchantAppVersion",
+                context.packageManager.getAppVersion(context.packageName)
+            )
             putIfNotNull("accountId", TokenManager.accountId)
         }
     }
