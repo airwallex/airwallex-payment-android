@@ -17,6 +17,7 @@ import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.composables.card.CardCvcTextField
 
+@Suppress("LongParameterList")
 @Composable
 internal fun ConsentDetailSection(
     viewModel: AddPaymentMethodViewModel,

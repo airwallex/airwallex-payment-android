@@ -49,6 +49,7 @@ import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.schema.SchemaSection
 import com.airwallex.android.view.util.toSupportedIcons
 
+@Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
 internal fun PaymentMethodsAccordionSection(
     paymentMethodViewModel: PaymentMethodsViewModel,

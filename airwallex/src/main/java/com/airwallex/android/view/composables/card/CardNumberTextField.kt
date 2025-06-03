@@ -32,6 +32,7 @@ import com.airwallex.android.view.composables.common.FocusState
 import com.airwallex.android.view.util.toSupportedIcons
 import com.airwallex.risk.AirwallexRisk
 
+@Suppress("LongMethod", "LongParameterList")
 @Composable
 fun CardNumberTextField(
     cardSchemes: List<CardScheme>,

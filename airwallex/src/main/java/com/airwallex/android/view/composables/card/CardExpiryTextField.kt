@@ -26,6 +26,7 @@ import com.airwallex.android.view.util.ExpiryDateUtils.formatExpiryDate
 import com.airwallex.android.view.util.ExpiryDateUtils.formatExpiryDateWhenDeleting
 import com.airwallex.risk.AirwallexRisk
 
+@Suppress("LongMethod", "LongParameterList")
 @Composable
 fun CardExpiryTextField(
     modifier: Modifier = Modifier,
