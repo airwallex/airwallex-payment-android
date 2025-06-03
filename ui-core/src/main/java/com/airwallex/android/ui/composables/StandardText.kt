@@ -10,6 +10,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 
+@Suppress("LongParameterList")
 @Composable
 fun StandardText(
     text: String,
@@ -31,6 +32,7 @@ fun StandardText(
     )
 }
 
+@Suppress("LongParameterList")
 @Composable
 fun StandardText(
     @StringRes textRes: Int,

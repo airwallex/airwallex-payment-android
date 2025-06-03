@@ -312,7 +312,7 @@ class AirwallexCheckoutViewModelTest {
     fun `test transactionMode with AirwallexPaymentSession should be ONE_OFF`() {
         val paymentSession = mockk<AirwallexPaymentSession>()
         val viewModel = AirwallexCheckoutViewModel(application, airwallex, paymentSession)
-        
+
         assertEquals(TransactionMode.ONE_OFF, viewModel.transactionMode)
     }
 
@@ -320,15 +320,16 @@ class AirwallexCheckoutViewModelTest {
     fun `test transactionMode with AirwallexRecurringSession should be RECURRING`() {
         val recurringSession = mockk<AirwallexRecurringSession>()
         val viewModel = AirwallexCheckoutViewModel(application, airwallex, recurringSession)
-        
+
         assertEquals(TransactionMode.RECURRING, viewModel.transactionMode)
     }
 
     @Test
     fun `test transactionMode with AirwallexRecurringWithIntentSession should be RECURRING`() {
         val recurringWithIntentSession = mockk<AirwallexRecurringWithIntentSession>()
-        val viewModel = AirwallexCheckoutViewModel(application, airwallex, recurringWithIntentSession)
-        
+        val viewModel =
+            AirwallexCheckoutViewModel(application, airwallex, recurringWithIntentSession)
+
         assertEquals(TransactionMode.RECURRING, viewModel.transactionMode)
     }
 
@@ -336,7 +337,7 @@ class AirwallexCheckoutViewModelTest {
     fun `test transactionMode with unknown session type should default to ONE_OFF`() {
         val unknownSession = mockk<AirwallexSession>()
         val viewModel = AirwallexCheckoutViewModel(application, airwallex, unknownSession)
-        
+
         assertEquals(TransactionMode.ONE_OFF, viewModel.transactionMode)
     }
 }
