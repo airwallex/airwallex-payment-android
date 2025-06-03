@@ -123,42 +123,6 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
-    fun `test validation error when card number is empty`() {
-        val viewModel = createViewModel(mockk())
-        assertEquals(
-            viewModel.getValidationResult(""),
-            AddPaymentMethodViewModel.ValidationResult.Error(R.string.airwallex_empty_card_number)
-        )
-    }
-
-    @Test
-    fun `test validation success when card number is visa and in supported schemes`() {
-        val viewModel = createViewModel(mockk(), listOf(CardScheme("visa")))
-        assertEquals(
-            viewModel.getValidationResult(visaCardNumber),
-            AddPaymentMethodViewModel.ValidationResult.Success
-        )
-    }
-
-    @Test
-    fun `test validation error when card number is visa but not in supported schemes`() {
-        val viewModel = createViewModel(mockk(), listOf(CardScheme("mastercard")))
-        assertEquals(
-            viewModel.getValidationResult(visaCardNumber),
-            AddPaymentMethodViewModel.ValidationResult.Error(R.string.airwallex_unsupported_card_number)
-        )
-    }
-
-    @Test
-    fun `test validation error when card number is not valid`() {
-        val viewModel = createViewModel(mockk())
-        assertEquals(
-            viewModel.getValidationResult("1234556"),
-            AddPaymentMethodViewModel.ValidationResult.Error(R.string.airwallex_invalid_card_number)
-        )
-    }
-
-    @Test
     fun `test page view tracking`() {
         val viewModel =
             createViewModel(mockk(), listOf(CardScheme("mastercard"), CardScheme("visa")))

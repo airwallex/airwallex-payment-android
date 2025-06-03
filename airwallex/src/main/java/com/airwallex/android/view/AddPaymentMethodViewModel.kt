@@ -88,22 +88,6 @@ class AddPaymentMethodViewModel(
     private val _deleteCardSuccess = MutableStateFlow<PaymentConsent?>(null)
     val deleteCardSuccess: StateFlow<PaymentConsent?> = _deleteCardSuccess.asStateFlow()
 
-    fun getValidationResult(cardNumber: String): ValidationResult {
-        if (cardNumber.isEmpty()) {
-            return ValidationResult.Error(R.string.airwallex_empty_card_number)
-        }
-        if (CardUtils.isValidCardNumber(cardNumber)) {
-            val cardBrand = CardUtils.getPossibleCardBrand(cardNumber, true)
-            val supportedCardBrands = supportedCardSchemes.map { CardBrand.fromType(it.name) }
-            return if (supportedCardBrands.contains(cardBrand)) {
-                ValidationResult.Success
-            } else {
-                ValidationResult.Error(R.string.airwallex_unsupported_card_number)
-            }
-        }
-        return ValidationResult.Error(R.string.airwallex_invalid_card_number)
-    }
-
     fun getCardNumberValidationMessage(cardNumber: String): Int? {
         return when {
             cardNumber.isBlank() -> R.string.airwallex_empty_card_number
@@ -230,15 +214,11 @@ class AddPaymentMethodViewModel(
         }
     }
 
-    sealed class ValidationResult {
-        object Success : ValidationResult()
-        data class Error(@StringRes val message: Int) : ValidationResult()
-    }
-
     enum class BillingFieldType(@StringRes val errorMessage: Int) {
-        STREET(R.string.airwallex_empty_street), CITY(R.string.airwallex_empty_city), STATE(R.string.airwallex_empty_state), POSTAL_CODE(
-            R.string.airwallex_empty_postal_code
-        ),
+        STREET(R.string.airwallex_empty_street),
+        CITY(R.string.airwallex_empty_city),
+        STATE(R.string.airwallex_empty_state),
+        POSTAL_CODE(R.string.airwallex_empty_postal_code),
         PONE_NUMBER(R.string.airwallex_empty_phone_number),
     }
 }
