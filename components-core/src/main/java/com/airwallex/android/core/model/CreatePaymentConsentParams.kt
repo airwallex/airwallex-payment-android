@@ -139,9 +139,7 @@ data class CreatePaymentConsentParams constructor(
                 customerId = customerId,
                 paymentMethodType = paymentMethodType,
                 nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT
-            )
-
-                .build()
+            ).build()
         }
     }
 }
