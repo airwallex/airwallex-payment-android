@@ -1,6 +1,7 @@
 package com.airwallex.android.view
 
 import android.app.Application
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -61,7 +62,8 @@ internal class PaymentMethodsViewModel(
     val paymentMethodResult: LiveData<PaymentMethodResult> = _paymentMethodResult
     
     // Cache for schema data by payment method type
-    private val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData>()
+    @VisibleForTesting
+    internal val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData>()
 
     // Map for additional params. Currently only used for country code in Enum type fields.
     private val additionalParams = mutableMapOf<String, String>()

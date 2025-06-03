@@ -17,11 +17,18 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AirwallexError
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.Bank
 import com.airwallex.android.core.model.BankResponse
+import com.airwallex.android.core.model.DynamicSchema
+import com.airwallex.android.core.model.DynamicSchemaField
+import com.airwallex.android.core.model.DynamicSchemaFieldType
+import com.airwallex.android.core.model.DynamicSchemaFieldUIType
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentConsent.PaymentConsentStatus
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentStatus
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.view.Constants.SAMPLE_BANK_FIELD
@@ -60,6 +67,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -129,6 +137,161 @@ class PaymentMethodsViewModelTest {
         // Clear all mocks and reset state
         clearMocks(airwallex)
         unmockkAll()
+    }
+    
+    @Test
+    fun `test appendParamsToMapForSchemaSubmission with empty additionalParams`() {
+        // Given
+        val viewModel = mockViewModel()
+        val inputMap = mapOf("key1" to "value1", "key2" to "value2")
+        
+        // When
+        val result = viewModel.appendParamsToMapForSchemaSubmission(inputMap)
+        
+        // Then
+        assertEquals(inputMap, result)
+    }
+    
+    @Test
+    fun `test appendParamsToMapForSchemaSubmission with additionalParams`() {
+        // Given
+        val viewModel = mockViewModel()
+        // Use reflection to set private additionalParams field for testing
+        val additionalParamsField = PaymentMethodsViewModel::class.java.getDeclaredField("additionalParams")
+        additionalParamsField.isAccessible = true
+        val additionalParams = additionalParamsField.get(viewModel) as MutableMap<String, String>
+        additionalParams["country_code"] = "US"
+        additionalParams["flow"] = "in_app"
+        
+        val inputMap = mapOf("key1" to "value1")
+        val expectedMap = mapOf(
+            "key1" to "value1",
+            "country_code" to "US",
+            "flow" to "in_app"
+        )
+        
+        // When
+        val result = viewModel.appendParamsToMapForSchemaSubmission(inputMap)
+        
+        // Then
+        assertEquals(expectedMap, result)
+    }
+
+    @Test
+    fun `test checkoutWithGooglePay success`() = runTest {
+        // Mock AnalyticsLogger to verify tracking
+        mockkObject(AnalyticsLogger)
+        every { AnalyticsLogger.logAction(any(), any()) } just Runs
+        
+        // Create view model with mocked dependencies
+        val viewModel = mockViewModel()
+        
+        // Create a list to collect LiveData updates
+        val statuses = mutableListOf<PaymentMethodsViewModel.PaymentFlowStatus>()
+        val observer = Observer<PaymentMethodsViewModel.PaymentFlowStatus> { status ->
+            statuses.add(status)
+        }
+        
+        try {
+            // Observe the LiveData before making the call
+            viewModel.paymentFlowStatus.observeForever(observer)
+            
+            // Mock the airwallex.startGooglePay call to complete successfully
+            val successStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
+            coEvery { 
+                airwallex.startGooglePay(
+                    session = any(),
+                    listener = captureCoroutine()
+                )
+            } coAnswers {
+                val listener = it.invocation.args[1] as Airwallex.PaymentResultListener
+                listener.onCompleted(successStatus)
+            }
+            
+            // Call the method under test
+            viewModel.checkoutWithGooglePay()
+            
+            // Advance time to process coroutines
+            advanceUntilIdle()
+            
+            // Verify startGooglePay was called
+            coVerify { 
+                airwallex.startGooglePay(
+                    session = any(),
+                    listener = any()
+                )
+            }
+            
+            // Verify the LiveData was updated with the success status
+            assertTrue(statuses.isNotEmpty())
+            val lastStatus = statuses.last()
+            assertTrue(lastStatus is PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus)
+            assertEquals(successStatus, (lastStatus as PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus).status)
+        } finally {
+            // Clean up
+            viewModel.paymentFlowStatus.removeObserver(observer)
+        }
+    }
+    
+    @Test
+    fun `test checkoutWithGooglePay failure`() = runTest {
+        // Mock AnalyticsLogger to verify tracking
+        mockkObject(AnalyticsLogger)
+        every { AnalyticsLogger.logAction(any(), any()) } just Runs
+        
+        // Create view model with mocked dependencies
+        val viewModel = mockViewModel()
+        
+        // Create a list to collect LiveData updates
+        val statuses = mutableListOf<PaymentMethodsViewModel.PaymentFlowStatus>()
+        val observer = Observer<PaymentMethodsViewModel.PaymentFlowStatus> { status ->
+            statuses.add(status)
+        }
+        
+        try {
+            // Observe the LiveData before making the call
+            viewModel.paymentFlowStatus.observeForever(observer)
+            
+            // Mock the airwallex.startGooglePay call to fail
+            val error = AirwallexCheckoutException(message = "Test error")
+            coEvery { 
+                airwallex.startGooglePay(
+                    session = any(),
+                    listener = captureCoroutine()
+                )
+            } coAnswers {
+                val listener = it.invocation.args[1] as Airwallex.PaymentResultListener
+                listener.onCompleted(AirwallexPaymentStatus.Failure(error))
+            }
+            
+            // Call the method under test
+            viewModel.checkoutWithGooglePay()
+            
+            // Advance time to process coroutines
+            advanceUntilIdle()
+            
+            // Verify startGooglePay was called
+            coVerify { 
+                airwallex.startGooglePay(
+                    session = any(),
+                    listener = any()
+                )
+            }
+            
+            // Verify payment success was not tracked
+            verify(exactly = 0) { 
+                AnalyticsLogger.logAction("payment_success", any())
+            }
+            
+            // Verify the LiveData was updated with the error status
+            assertTrue(statuses.isNotEmpty())
+            val lastStatus = statuses.last()
+            assertTrue(lastStatus is PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus)
+            assertTrue((lastStatus as PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus).status is AirwallexPaymentStatus.Failure)
+        } finally {
+            // Clean up
+            viewModel.paymentFlowStatus.removeObserver(observer)
+        }
     }
 
     @Test
@@ -337,25 +500,94 @@ class PaymentMethodsViewModelTest {
         viewModel.paymentFlowStatus.removeObserver(observer)
     }
 
-//    @Test
-//    fun `test startCheckout invokes checkout directly when requireHandleSchemaFields is true`() =
-//        runTest {
-//            val availablePaymentMethodType = createAvailablePaymentMethodType()
-//            val viewModel = mockViewModel(TransactionMode.ONE_OFF)
-//
-//            coEvery {
-//                airwallex.retrievePaymentMethodTypeInfo(any(), any())
-//            } coAnswers {
-//                val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
-//                listener.onFailed(AirwallexCheckoutException(message = "Failure message"))
-//            }
-//            every { AirwallexLogger.info(any<String>(), any()) } just Runs
-//
-//            viewModel.checkoutWithSchema(availablePaymentMethodType)
-//            advanceUntilIdle()
-//            verify(exactly = 1) { AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.") }
-//            unmockkObject(AirwallexLogger)
-//        }
+    @Test
+    fun `test checkoutWithCvc with valid payment consent and cvc`() = runTest {
+        // Given
+        val paymentConsent = createPaymentConsent()
+        val cvc = "123"
+        val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
+        val expectedPaymentFlowStatus = PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus(expectedStatus)
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+        
+        // Mock the checkout call
+        val listenerSlot = slot<Airwallex.PaymentResultListener>()
+        coEvery {
+            airwallex.checkout(
+                session = any(),
+                paymentMethod = any(),
+                paymentConsentId = any(),
+                cvc = cvc,
+                flow = any(),
+                listener = capture(listenerSlot)
+            )
+        } answers {
+            listenerSlot.captured.onCompleted(expectedStatus)
+        }
+
+        // When
+        every { viewModel.trackPaymentSuccess(any(), any()) } just runs
+        val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
+        viewModel.paymentFlowStatus.observeForever(observer)
+        viewModel.checkoutWithCvc(paymentConsent, cvc)
+        advanceUntilIdle()
+
+        // Then
+        coVerify(exactly = 1) {
+            viewModel.trackPaymentSuccess(any(), any())
+        }
+        verify(exactly = 1) { observer.onChanged(expectedPaymentFlowStatus) }
+        viewModel.paymentFlowStatus.removeObserver(observer)
+    }
+
+    @Test
+    fun `test checkoutWithCvc with null payment method in consent`() = runTest {
+        // Given
+        val paymentConsent = mockk<PaymentConsent> {
+            every { paymentMethod } returns null
+        }
+        val cvc = "123"
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+        
+        // When
+        val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
+        viewModel.paymentFlowStatus.observeForever(observer)
+        viewModel.checkoutWithCvc(paymentConsent, cvc)
+        advanceUntilIdle()
+
+        // Then
+        val expectedError = AirwallexPaymentStatus.Failure(
+            AirwallexCheckoutException(message = "checkout with paymentConsent without paymentMethod")
+        )
+        val expectedStatus = PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus(expectedError)
+        
+        verify(exactly = 1) { observer.onChanged(match { it.toString() == expectedStatus.toString() }) }
+        viewModel.paymentFlowStatus.removeObserver(observer)
+    }
+
+    @Test
+    fun `test checkoutWithCvc with non-payment session`() = runTest {
+        // Given
+        val paymentConsent = createPaymentConsent()
+        val cvc = "123"
+        val viewModel = mockViewModel(TransactionMode.RECURRING) // Using RECURRING session which is not AirwallexPaymentSession
+        
+        // When
+        val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
+        viewModel.paymentFlowStatus.observeForever(observer)
+        viewModel.checkoutWithCvc(paymentConsent, cvc)
+        advanceUntilIdle()
+
+        // Then
+        val expectedError = AirwallexPaymentStatus.Failure(
+            AirwallexCheckoutException(
+                message = "checkout with paymentConsent only support AirwallexPaymentSession"
+            )
+        )
+        val expectedStatus = PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus(expectedError)
+        
+        verify(exactly = 1) { observer.onChanged(match { it.toString() == expectedStatus.toString() }) }
+        viewModel.paymentFlowStatus.removeObserver(observer)
+    }
 
     @Test
     fun `test checkoutWithSchemaFields when fields is null`() = runTest {
@@ -434,11 +666,6 @@ class PaymentMethodsViewModelTest {
 
         advanceUntilIdle()
 
-//        assertEquals(
-//            (viewModel.paymentFlowStatus.value as? PaymentMethodsViewModel.PaymentFlowStatus.SchemaFieldsDialog)?.typeInfo,
-//            paymentMethodTypeInfo
-//        )
-
         viewModel.paymentFlowStatus.removeObserver(observer)
         unmockkObject(AirwallexLogger)
     }
@@ -483,11 +710,6 @@ class PaymentMethodsViewModelTest {
             viewModel.checkoutWithSchema(availablePaymentMethodType)
 
             advanceUntilIdle()
-
-//            assertEquals(
-//                (viewModel.paymentFlowStatus.value as? PaymentMethodsViewModel.PaymentFlowStatus.BankDialog)?.banks,
-//                null
-//            )
             unmockkObject(AirwallexLogger)
         }
 
@@ -531,11 +753,6 @@ class PaymentMethodsViewModelTest {
             viewModel.checkoutWithSchema(availablePaymentMethodType)
 
             advanceUntilIdle()
-
-//            assertEquals(
-//                (viewModel.paymentFlowStatus.value as? PaymentMethodsViewModel.PaymentFlowStatus.BankDialog)?.banks,
-//                bankResponse.items
-//            )
             unmockkObject(AirwallexLogger)
         }
 
@@ -1028,138 +1245,19 @@ class PaymentMethodsViewModelTest {
         return data as T
     }
 
-//    @Test
-//    fun `test analytics logging`() {
-//        // Given
-//        mockkObject(AnalyticsLogger)
-//        every { AnalyticsLogger.logAction(any(), any()) } just Runs
-//
-//        val viewModel = mockViewModel(transactionMode = TransactionMode.ONE_OFF)
-//
-//        // When/Then
-//        assertEquals("payment_method_list", viewModel.pageName)
-//
-//        // Clear any previous interactions
-//        clearMocks(AnalyticsLogger)
-//        every { AnalyticsLogger.logAction(any(), any()) } just Runs
-//
-//        // When
-//        viewModel.trackPaymentSelection("test_payment_method")
-//        viewModel.trackCardPaymentSelection()
-//        viewModel.trackPaymentSuccess("test_payment_method")
-//        viewModel.trackCardPaymentSuccess()
-//
-//        // Verify AnalyticsLogger was called for each tracking method
-//        verify(exactly = 1) {
-//            AnalyticsLogger.logAction(
-//                eq("payment_select"),
-//                eq(mapOf("payment_method" to "test_payment_method"))
-//            )
-//        }
-//
-//        verify(exactly = 1) {
-//            AnalyticsLogger.logAction(
-//                eq("payment_select"),
-//                eq(mapOf("payment_method" to "card"))
-//            )
-//        }
-//
-//        verify(exactly = 1) {
-//            AnalyticsLogger.logAction(
-//                eq("payment_success"),
-//                eq(mapOf("payment_method" to "test_payment_method"))
-//            )
-//        }
-//
-//        verify(exactly = 1) {
-//            AnalyticsLogger.logAction(
-//                eq("payment_success"),
-//                eq(mapOf("payment_method" to "card"))
-//            )
-//        }
-//
-//        // Clean up
-//        unmockkObject(AnalyticsLogger)
-//    }
-//
-//    @Test
-//    fun `test startCheckout checkoutGooglePay when paymentMethod type is google pay`() = runTest {
-//        // Given
-//        val availablePaymentMethodType = createGooglePayPaymentMethodType()
-//        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
-//        val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
-//
-//        // When
-//        viewModel.checkoutWithSchema(availablePaymentMethodType)
-//
-//        // Then
-//        coVerify(exactly = 1) {
-//            airwallex.startGooglePay(
-//                session = any(),
-//                listener = any()
-//            )
-//        }
-//
-//        // Verify logging
-//        verify(exactly = 1) {
-//            AirwallexLogger.info(
-//                match { it.contains("checkoutGooglePay") && it.contains("type = googlepay") },
-//                isNull()
-//            )
-//        }
-//
-//        // Verify payment success tracking
-//        verify(exactly = 1) {
-//            viewModel.trackPaymentSuccess(expectedStatus, "googlepay")
-//        }
-//
-//        // Verify payment flow status is updated
-//        val flowStatus = viewModel.paymentFlowStatus.value as? PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus
-//        assertEquals("test_payment_intent_id", (flowStatus?.status as? AirwallexPaymentStatus.Success)?.paymentIntentId)
-//    }
-//
-//    @Test
-//    fun `test analytics logging with payment consent`() {
-//        // Given
-//        mockkObject(AnalyticsLogger)
-//        every { AnalyticsLogger.logAction(any(), any()) } just Runs
-//
-//        val viewModel = mockViewModel(transactionMode = TransactionMode.ONE_OFF)
-//        val paymentConsent = PaymentConsent(
-//            paymentMethod = PaymentMethod.Builder().setType(PaymentMethodType.REDIRECT.value)
-//                .build()
-//        )
-//        viewModel.trackPaymentSelection(paymentConsent.paymentMethod?.type)
-//        verify(exactly = 1) {
-//            AnalyticsLogger.logAction(
-//                "select_payment",
-//                mapOf("payment_method" to "redirect")
-//            )
-//        }
-//        viewModel.trackCardPaymentSelection()
-//        verify(exactly = 1) {
-//            AnalyticsLogger.logAction(
-//                "select_payment",
-//                mapOf("payment_method" to "card")
-//            )
-//        }
-//        viewModel.trackPaymentSuccess(paymentConsent.paymentMethod?.type)
-//        verify(exactly = 1) {
-//            AnalyticsLogger.logAction(
-//                "payment_success",
-//                mapOf("payment_method" to "redirect")
-//            )
-//        }
-//        viewModel.trackCardPaymentSuccess()
-//        verify(exactly = 1) {
-//            AnalyticsLogger.logAction(
-//                "payment_success",
-//                mapOf("payment_method" to "card")
-//            )
-//        }
-//    }
-
     @Suppress("LongMethod", "LongParameterList")
+    private fun createPaymentConsent(
+        id: String = "test_consent_id",
+        paymentMethod: PaymentMethod? = createPaymentMethod("card")
+    ): PaymentConsent {
+        return mockk {
+            every { this@mockk.id } returns id
+            every { this@mockk.paymentMethod } returns paymentMethod
+            every { this@mockk.nextTriggeredBy } returns null
+            every { this@mockk.status } returns PaymentConsentStatus.VERIFIED
+        }
+    }
+
     private fun mockViewModel(
         transactionMode: TransactionMode = TransactionMode.ONE_OFF,
         hidePaymentConsents: Boolean = false,
@@ -1296,5 +1394,253 @@ class PaymentMethodsViewModelTest {
         every { viewModel.trackCardPaymentSuccess() } returns Unit
         
         return viewModel
+    }
+    
+    @Test
+    fun `test retrieveSchemaDataFromCache returns null when cache is empty`() = runTest {
+        val viewModel = mockViewModel()
+        val paymentMethodType = createAvailablePaymentMethodType()
+        
+        val result = viewModel.retrieveSchemaDataFromCache(paymentMethodType)
+        
+        assertNull(result)
+    }
+    
+    @Test
+    fun `test retrieveSchemaDataFromCache returns null when cached data is empty`() = runTest {
+        val viewModel = mockViewModel()
+        val paymentMethodType = createAvailablePaymentMethodType()
+        
+        // Set empty SchemaData in cache
+        val emptySchemaData = PaymentMethodsViewModel.SchemaData()
+        viewModel.javaClass.getDeclaredField("schemaDataCache").apply {
+            isAccessible = true
+            @Suppress("UNCHECKED_CAST")
+            val cache = get(viewModel) as MutableMap<AvailablePaymentMethodType, PaymentMethodsViewModel.SchemaData>
+            cache[paymentMethodType] = emptySchemaData
+        }
+        
+        val result = viewModel.retrieveSchemaDataFromCache(paymentMethodType)
+        
+        assertNull(result)
+    }
+    
+    @Test
+    fun `test retrieveSchemaDataFromCache returns cached data when available`() = runTest {
+        val viewModel = mockViewModel()
+        val paymentMethodType = createAvailablePaymentMethodType()
+        
+        // Create test data
+        val testFields = listOf(mockk<DynamicSchemaField>(), mockk<DynamicSchemaField>())
+        val testPaymentMethod = mockk<PaymentMethod>()
+        val testTypeInfo = mockk<PaymentMethodTypeInfo>()
+        val testBanks = listOf(mockk<Bank>())
+        
+        val testSchemaData = PaymentMethodsViewModel.SchemaData(
+            fields = testFields,
+            paymentMethod = testPaymentMethod,
+            typeInfo = testTypeInfo,
+            banks = testBanks
+        )
+        
+        // Set test data in cache
+        viewModel.javaClass.getDeclaredField("schemaDataCache").apply {
+            isAccessible = true
+            @Suppress("UNCHECKED_CAST")
+            val cache = get(viewModel) as MutableMap<AvailablePaymentMethodType, PaymentMethodsViewModel.SchemaData>
+            cache[paymentMethodType] = testSchemaData
+        }
+        
+        val result = viewModel.retrieveSchemaDataFromCache(paymentMethodType)
+        
+        assertNotNull(result)
+        assertEquals(testFields.size, result?.fields?.size)
+        assertEquals(testPaymentMethod, result?.paymentMethod)
+        assertEquals(testTypeInfo, result?.typeInfo)
+        assertEquals(testBanks.size, result?.banks?.size)
+    }
+    
+    @Test
+    fun `test loadSchemaFields returns cached data when available`() = runTest {
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+        // Given
+        val paymentMethodType = createAvailablePaymentMethodType()
+        val expectedSchemaData = PaymentMethodsViewModel.SchemaData(
+            fields = listOf(mockk()),
+            paymentMethod = createPaymentMethod("test"),
+            typeInfo = createPaymentMethodTypeInfo()
+        )
+        viewModel.schemaDataCache[paymentMethodType] = expectedSchemaData
+
+        // When
+        val result = viewModel.loadSchemaFields(paymentMethodType)
+
+        // Then
+        assertEquals(expectedSchemaData, result)
+    }
+
+
+    @Test
+    fun `test loadSchemaFields when no schema fields required`() = runTest {
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+        // Given
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns mockk {
+                every { hasSchema } returns false
+            }
+        }
+        
+        // When
+        val result = viewModel.loadSchemaFields(paymentMethodType)
+        
+        // Then
+        assertNull(result)
+    }
+    
+    @Test
+    fun `test loadSchemaFields when retrievePaymentMethodTypeInfo fails`() = runTest {
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+        // Given
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns mockk {
+                every { hasSchema } returns true
+            }
+        }
+
+        coEvery {
+            airwallex.retrievePaymentMethodTypeInfo(
+                any(),
+                any()
+            )
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+            listener.onFailed(AirwallexCheckoutException(error = AirwallexError("test error")))
+        }
+
+        // When
+        val result = viewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        // Then
+        assertNull(result)
+    }
+
+    @Test
+    fun `test loadSchemaFields with no hidden fields`() = runTest {
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+
+        // Given
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns mockk {
+                every { hasSchema } returns true
+            }
+        }
+
+        // Create a PaymentMethodTypeInfo with empty fieldSchemas to simulate no hidden fields
+        val typeInfo = mockk<PaymentMethodTypeInfo> {
+            every { fieldSchemas } returns listOf(
+                DynamicSchema(
+                    transactionMode = TransactionMode.ONE_OFF,
+                    fields = emptyList()  // Empty list means no fields to show
+                )
+            )
+        }
+
+        coEvery {
+            airwallex.retrievePaymentMethodTypeInfo(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+            listener.onSuccess(typeInfo)
+        }
+
+        // When
+        val result = viewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        // Then
+        assertNotNull(result)
+        assertEquals(emptyList(), result?.fields)
+    }
+    
+    @Test
+    fun `test loadSchemaFields with non-bank fields`() = runTest {
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+
+        // Given
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns mockk { every { hasSchema } returns true }
+        }
+
+        val textField = DynamicSchemaField("name", "Name", DynamicSchemaFieldUIType.TEXT, DynamicSchemaFieldType.STRING, false, null, null)
+        val typeInfo = mockk<PaymentMethodTypeInfo> {
+            every { fieldSchemas } returns listOf(
+                DynamicSchema(
+                    transactionMode = TransactionMode.ONE_OFF,
+                    fields = listOf(textField)
+                )
+            )
+        }
+
+        coEvery {
+            airwallex.retrievePaymentMethodTypeInfo(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+            listener.onSuccess(typeInfo)
+        }
+
+        // When
+        val result = viewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        // Then
+        assertNotNull(result)
+        assertEquals(listOf(textField), result?.fields)
+        assertEquals(emptyList(), result?.banks)
+    }
+
+    @Test
+    fun `test loadSchemaFields when bank retrieval fails`() = runTest {
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+
+        // Given
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns mockk { every { hasSchema } returns true }
+        }
+
+        val bankField = DynamicSchemaField("bank", "Bank", DynamicSchemaFieldUIType.LIST, DynamicSchemaFieldType.BANKS, false, null, null)
+        val typeInfo = mockk<PaymentMethodTypeInfo> {
+            every { fieldSchemas } returns listOf(
+                DynamicSchema(
+                    transactionMode = TransactionMode.ONE_OFF,
+                    fields = listOf(bankField)
+                )
+            )
+        }
+
+        coEvery {
+            airwallex.retrievePaymentMethodTypeInfo(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+            listener.onSuccess(typeInfo)
+        }
+
+        coEvery {
+            airwallex.retrieveBanks(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<Page<Bank>>>()
+            listener.onFailed(AirwallexCheckoutException(AirwallexError("Failed to load banks")))
+        }
+
+        // When
+        val result = viewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        // Then
+        assertNull(result)
     }
 }
