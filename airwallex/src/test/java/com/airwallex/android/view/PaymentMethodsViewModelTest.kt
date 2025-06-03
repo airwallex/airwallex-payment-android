@@ -1451,7 +1451,7 @@ class PaymentMethodsViewModelTest {
         // Then
         assertEquals(expectedSchemaData, result)
     }
-    
+
     @Test
     fun `test loadSchemaFields when no schema fields required`() = runTest {
         val viewModel = mockViewModel(TransactionMode.ONE_OFF)
