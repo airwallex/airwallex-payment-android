@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class DynamicSchemaField internal constructor(
+data class DynamicSchemaField(
 
     /**
      * Name of schema field
