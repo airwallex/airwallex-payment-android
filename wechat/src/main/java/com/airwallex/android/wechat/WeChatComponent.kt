@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Suppress("LongMethod")
 class WeChatComponent : ActionComponent {
 
     private var listener: Airwallex.PaymentResultListener? = null
