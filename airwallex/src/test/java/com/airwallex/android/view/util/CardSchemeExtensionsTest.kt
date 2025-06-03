@@ -1,6 +1,5 @@
 package com.airwallex.android.view.util
 
-import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.CardScheme
 import org.junit.Test

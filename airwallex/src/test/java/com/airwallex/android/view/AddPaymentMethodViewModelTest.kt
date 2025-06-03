@@ -400,7 +400,6 @@ class AddPaymentMethodViewModelTest {
         // When
         viewModel.confirmPayment(card, true, billing)
 
-
         // Then
         verify {
             airwallex.confirmPaymentIntent(

@@ -4,12 +4,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/**
- * Tests for [isValidEmail] extension function.
- * Note: The implementation uses a simple regex that may not cover all valid email formats.
- * The tests are written to match the current implementation's behavior.
- */
-
 class EmailExtensionsTest {
 
     @Test

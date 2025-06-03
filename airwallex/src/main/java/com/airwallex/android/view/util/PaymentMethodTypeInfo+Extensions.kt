@@ -5,7 +5,6 @@ import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.DynamicSchemaFieldType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TransactionMode
-import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.FLOW
 
 fun PaymentMethodTypeInfo.filterRequiredFields(transactionMode: TransactionMode): List<DynamicSchemaField>? {

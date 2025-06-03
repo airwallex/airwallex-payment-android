@@ -18,8 +18,6 @@ import org.junit.Test
 class GooglePayUtilTest {
 
     private val testAccountId = "test_account_id"
-    private val testMerchantName = "Test Merchant"
-    private val testTransactionId = "test_transaction_123"
     private val defaultSupportedNetworks = listOf("AMEX", "DISCOVER", "JCB", "MASTERCARD", "VISA")
 
     @Before
