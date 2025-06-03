@@ -31,6 +31,7 @@ import com.airwallex.android.view.composables.common.PaymentMethodTabCard
 import com.airwallex.android.view.composables.schema.SchemaSection
 import kotlinx.coroutines.launch
 
+@Suppress("LongMethod", "LongParameterList")
 @Composable
 internal fun PaymentMethodsTabSection(
     paymentMethodViewModel: PaymentMethodsViewModel,

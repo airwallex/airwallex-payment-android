@@ -17,6 +17,7 @@ import com.airwallex.android.R
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
 
+@Suppress("LongParameterList")
 @Composable
 fun PaymentTextField(
     text: String,

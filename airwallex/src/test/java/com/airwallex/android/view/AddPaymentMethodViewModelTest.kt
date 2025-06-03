@@ -154,9 +154,12 @@ class AddPaymentMethodViewModelTest {
 
     @Test
     fun `test page view tracking`() {
-        val viewModel = createViewModel(mockk(), listOf(CardScheme("mastercard"), CardScheme("visa")))
+        val viewModel =
+            createViewModel(mockk(), listOf(CardScheme("mastercard"), CardScheme("visa")))
         assertEquals(viewModel.pageName, "card_payment_view")
-        assertEquals(viewModel.additionalInfo, mapOf("supportedSchemes" to listOf("mastercard", "visa")))
+        assertEquals(
+            viewModel.additionalInfo, mapOf("supportedSchemes" to listOf("mastercard", "visa"))
+        )
     }
 
     @Test
@@ -193,19 +196,26 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test getCardNumberValidationMessage with empty input`() {
         val viewModel = createViewModel(mockk())
-        assertEquals(R.string.airwallex_empty_card_number, viewModel.getCardNumberValidationMessage(""))
+        assertEquals(
+            R.string.airwallex_empty_card_number, viewModel.getCardNumberValidationMessage("")
+        )
     }
 
     @Test
     fun `test getCardNumberValidationMessage with invalid card`() {
         val viewModel = createViewModel(mockk())
-        assertEquals(R.string.airwallex_invalid_card_number, viewModel.getCardNumberValidationMessage("1234"))
+        assertEquals(
+            R.string.airwallex_invalid_card_number, viewModel.getCardNumberValidationMessage("1234")
+        )
     }
 
     @Test
     fun `test getCardNumberValidationMessage with unsupported card`() {
         val viewModel = createViewModel(mockk(), listOf(CardScheme("mastercard")))
-        assertEquals(R.string.airwallex_unsupported_card_number, viewModel.getCardNumberValidationMessage(visaCardNumber))
+        assertEquals(
+            R.string.airwallex_unsupported_card_number,
+            viewModel.getCardNumberValidationMessage(visaCardNumber)
+        )
     }
 
     @Test
@@ -225,7 +235,9 @@ class AddPaymentMethodViewModelTest {
     fun `test getExpiryValidationMessage with invalid expiry`() {
         val viewModel = createViewModel(mockk())
         every { ExpiryDateUtils.isValidExpiryDate(any()) } returns false
-        assertEquals(R.string.airwallex_invalid_expiry_date, viewModel.getExpiryValidationMessage("13/25"))
+        assertEquals(
+            R.string.airwallex_invalid_expiry_date, viewModel.getExpiryValidationMessage("13/25")
+        )
     }
 
     @Test
@@ -238,13 +250,17 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test getCvvValidationMessage with empty input`() {
         val viewModel = createViewModel(mockk())
-        assertEquals(R.string.airwallex_empty_cvc, viewModel.getCvvValidationMessage("", CardBrand.Visa))
+        assertEquals(
+            R.string.airwallex_empty_cvc, viewModel.getCvvValidationMessage("", CardBrand.Visa)
+        )
     }
 
     @Test
     fun `test getCvvValidationMessage with invalid CVV length`() {
         val viewModel = createViewModel(mockk())
-        assertEquals(R.string.airwallex_invalid_cvc, viewModel.getCvvValidationMessage("12", CardBrand.Visa))
+        assertEquals(
+            R.string.airwallex_invalid_cvc, viewModel.getCvvValidationMessage("12", CardBrand.Visa)
+        )
     }
 
     @Test
@@ -257,7 +273,9 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test getCardHolderNameValidationMessage with empty input`() {
         val viewModel = createViewModel(mockk())
-        assertEquals(R.string.airwallex_empty_card_name, viewModel.getCardHolderNameValidationMessage(""))
+        assertEquals(
+            R.string.airwallex_empty_card_name, viewModel.getCardHolderNameValidationMessage("")
+        )
     }
 
     @Test
@@ -287,17 +305,41 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test getBillingValidationMessage with empty input`() {
         val viewModel = createViewModel(mockk())
-        assertEquals(R.string.airwallex_empty_street, viewModel.getBillingValidationMessage("", AddPaymentMethodViewModel.BillingFieldType.STREET))
-        assertEquals(R.string.airwallex_empty_city, viewModel.getBillingValidationMessage("", AddPaymentMethodViewModel.BillingFieldType.CITY))
-        assertEquals(R.string.airwallex_empty_state, viewModel.getBillingValidationMessage("", AddPaymentMethodViewModel.BillingFieldType.STATE))
-        assertEquals(R.string.airwallex_empty_postal_code, viewModel.getBillingValidationMessage("", AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE))
-        assertEquals(R.string.airwallex_empty_phone_number, viewModel.getBillingValidationMessage("", AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER))
+        assertEquals(
+            R.string.airwallex_empty_street, viewModel.getBillingValidationMessage(
+                "", AddPaymentMethodViewModel.BillingFieldType.STREET
+            )
+        )
+        assertEquals(
+            R.string.airwallex_empty_city, viewModel.getBillingValidationMessage(
+                "", AddPaymentMethodViewModel.BillingFieldType.CITY
+            )
+        )
+        assertEquals(
+            R.string.airwallex_empty_state, viewModel.getBillingValidationMessage(
+                "", AddPaymentMethodViewModel.BillingFieldType.STATE
+            )
+        )
+        assertEquals(
+            R.string.airwallex_empty_postal_code, viewModel.getBillingValidationMessage(
+                "", AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE
+            )
+        )
+        assertEquals(
+            R.string.airwallex_empty_phone_number, viewModel.getBillingValidationMessage(
+                "", AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER
+            )
+        )
     }
 
     @Test
     fun `test getBillingValidationMessage with valid input`() {
         val viewModel = createViewModel(mockk())
-        assertNull(viewModel.getBillingValidationMessage("123 Main St", AddPaymentMethodViewModel.BillingFieldType.STREET))
+        assertNull(
+            viewModel.getBillingValidationMessage(
+                "123 Main St", AddPaymentMethodViewModel.BillingFieldType.STREET
+            )
+        )
     }
 
     @Test
@@ -363,37 +405,19 @@ class AddPaymentMethodViewModelTest {
             every { countryCode } returns "US"
         }
         val viewModel = createViewModel(session, isBillingRequired = true)
-        
-        val card = PaymentMethod.Card.Builder()
-            .setNumber("4111111111111111")
-            .setName("Test User")
-            .setExpiryMonth("12")
-            .setExpiryYear("2025")
-            .setCvc("123")
-            .build()
 
-        val billing = Billing.Builder()
-            .setAddress(
-                Address.Builder()
-                    .setCountryCode("US")
-                    .setState("CA")
-                    .setCity("San Francisco")
-                    .setStreet("123 Main St")
-                    .setPostcode("94105")
-                    .build()
-            )
-            .setPhone("+1234567890")
-            .setEmail("test@example.com")
-            .build()
+        val card = PaymentMethod.Card.Builder().setNumber("4111111111111111").setName("Test User")
+            .setExpiryMonth("12").setExpiryYear("2025").setCvc("123").build()
+
+        val billing = Billing.Builder().setAddress(
+                Address.Builder().setCountryCode("US").setState("CA").setCity("San Francisco")
+                    .setStreet("123 Main St").setPostcode("94105").build()
+            ).setPhone("+1234567890").setEmail("test@example.com").build()
 
         // Mock the confirmPaymentIntent method
         every {
             airwallex.confirmPaymentIntent(
-                session = session,
-                card = card,
-                billing = billing,
-                saveCard = true,
-                listener = any()
+                session = session, card = card, billing = billing, saveCard = true, listener = any()
             )
         } returns Unit
 
@@ -403,11 +427,7 @@ class AddPaymentMethodViewModelTest {
         // Then
         verify {
             airwallex.confirmPaymentIntent(
-                session = session,
-                card = card,
-                billing = billing,
-                saveCard = true,
-                listener = any()
+                session = session, card = card, billing = billing, saveCard = true, listener = any()
             )
         }
     }

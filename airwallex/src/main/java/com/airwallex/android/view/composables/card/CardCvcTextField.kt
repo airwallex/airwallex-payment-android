@@ -32,6 +32,7 @@ import com.airwallex.risk.AirwallexRisk
 private const val AMEX_CVV_LENGTH = 4
 private const val DEFAULT_CVV_LENGTH = 3
 
+@Suppress("LongMethod", "LongParameterList")
 @Composable
 fun CardCvcTextField(
     modifier: Modifier = Modifier,

@@ -31,6 +31,7 @@ import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.composables.google.GooglePaySection
 import org.json.JSONArray
 
+@Suppress("LongMethod", "LongParameterList")
 @Composable
 internal fun PaymentScreen(
     layoutType: PaymentMethodsLayoutType,
