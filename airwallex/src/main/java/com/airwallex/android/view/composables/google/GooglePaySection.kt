@@ -96,5 +96,6 @@ private fun GooglePaySectionPreview() {
     GooglePaySection(
         allowedPaymentMethods = "",
         onClick = {},
+        onScreenViewed = {},
     )
 }

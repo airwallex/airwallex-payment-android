@@ -152,7 +152,7 @@ open class AirwallexCheckoutViewModel(
                 is AirwallexPaymentSession -> session.paymentIntent.clientSecret
                 is AirwallexRecurringSession-> session.clientSecret
                 is AirwallexRecurringWithIntentSession -> session.paymentIntent.clientSecret
-                else -> null
+                else -> throw AirwallexCheckoutException(message = "Session is not available")
             }
             airwallex.retrievePaymentMethodTypeInfo(
                 RetrievePaymentMethodTypeInfoParams.Builder(

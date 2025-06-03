@@ -1,6 +1,7 @@
 package com.airwallex.android.view
 
 import android.app.Application
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger
 internal class PaymentMethodsViewModel(
     application: Application,
     private val airwallex: Airwallex,
-    private val session: AirwallexSession
+    internal val session: AirwallexSession
 ) : AirwallexCheckoutViewModel(application, airwallex, session) {
 
     val pageName: String = "payment_method_list"
@@ -61,7 +62,8 @@ internal class PaymentMethodsViewModel(
     val paymentMethodResult: LiveData<PaymentMethodResult> = _paymentMethodResult
     
     // Cache for schema data by payment method type
-    private val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData>()
+    @VisibleForTesting
+    internal val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData>()
 
     // Map for additional params. Currently only used for country code in Enum type fields.
     private val additionalParams = mutableMapOf<String, String>()
@@ -428,7 +430,7 @@ internal class PaymentMethodsViewModel(
     }
 
     fun retrieveSchemaDataFromCache(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
-        return schemaDataCache[paymentMethodType]
+        return schemaDataCache[paymentMethodType]?.takeIf { it != SchemaData() }
     }
 
     suspend fun loadSchemaFields(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
