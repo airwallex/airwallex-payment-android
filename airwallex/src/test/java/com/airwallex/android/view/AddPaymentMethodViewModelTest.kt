@@ -312,29 +312,39 @@ class AddPaymentMethodViewModelTest {
     fun `test getBillingValidationMessage with empty input`() {
         val viewModel = createViewModel(mockk())
         assertEquals(
-            R.string.airwallex_empty_street, viewModel.getBillingValidationMessage(
-                "", AddPaymentMethodViewModel.BillingFieldType.STREET
-            )
+            R.string.airwallex_empty_street,
+            viewModel.getBillingValidationMessage(
+                "",
+                AddPaymentMethodViewModel.BillingFieldType.STREET,
+            ),
         )
         assertEquals(
-            R.string.airwallex_empty_city, viewModel.getBillingValidationMessage(
-                "", AddPaymentMethodViewModel.BillingFieldType.CITY
-            )
+            R.string.airwallex_empty_city,
+            viewModel.getBillingValidationMessage(
+                "",
+                AddPaymentMethodViewModel.BillingFieldType.CITY,
+            ),
         )
         assertEquals(
-            R.string.airwallex_empty_state, viewModel.getBillingValidationMessage(
-                "", AddPaymentMethodViewModel.BillingFieldType.STATE
-            )
+            R.string.airwallex_empty_state,
+            viewModel.getBillingValidationMessage(
+                "",
+                AddPaymentMethodViewModel.BillingFieldType.STATE,
+            ),
         )
         assertEquals(
-            R.string.airwallex_empty_postal_code, viewModel.getBillingValidationMessage(
-                "", AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE
-            )
+            R.string.airwallex_empty_postal_code,
+            viewModel.getBillingValidationMessage(
+                "",
+                AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE,
+            ),
         )
         assertEquals(
-            R.string.airwallex_empty_phone_number, viewModel.getBillingValidationMessage(
-                "", AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER
-            )
+            R.string.airwallex_empty_phone_number,
+            viewModel.getBillingValidationMessage(
+                "",
+                AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER,
+            ),
         )
     }
 

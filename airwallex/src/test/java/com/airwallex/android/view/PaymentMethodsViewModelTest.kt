@@ -2,7 +2,6 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asFlow
@@ -73,9 +72,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.math.BigDecimal
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -331,7 +327,8 @@ class PaymentMethodsViewModelTest {
                     withArg { result ->
                         assertTrue(result.isFailure)
                         assertTrue(result.exceptionOrNull() is AirwallexCheckoutException)
-                    })
+                    }
+                )
             }
         }
 
@@ -384,7 +381,8 @@ class PaymentMethodsViewModelTest {
                 withArg { result ->
                     assertTrue(result.isFailure)
                     assertTrue(result.exceptionOrNull() is AirwallexCheckoutException)
-                })
+                }
+            )
         }
 
         // Clean up
@@ -412,7 +410,8 @@ class PaymentMethodsViewModelTest {
             observer.onChanged(
                 match { status ->
                     status is PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus && status.status is AirwallexPaymentStatus.Failure && (status.status).exception.message == (expectedFailureStatus.status as AirwallexPaymentStatus.Failure).exception.message
-                })
+                }
+            )
         }
         viewModel.paymentFlowStatus.removeObserver(observer)
     }
@@ -443,7 +442,8 @@ class PaymentMethodsViewModelTest {
             observer.onChanged(
                 match { result ->
                     result is PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus && result.status is AirwallexPaymentStatus.Success && result.status.paymentIntentId == status.paymentIntentId && result.status.consentId == status.consentId && result.status.additionalInfo == status.additionalInfo
-                })
+                }
+            )
         }
         viewModel.paymentFlowStatus.removeObserver(observer)
     }
@@ -925,7 +925,7 @@ class PaymentMethodsViewModelTest {
             id = "test_payment_intent_id",
             amount = BigDecimal("100.00"),
             currency = "USD",
-            clientSecret = "",  // Empty client secret should trigger the error
+            clientSecret = "", // Empty client secret should trigger the error
             status = PaymentIntentStatus.SUCCEEDED,
             customerId = "test_customer_id"
         )
@@ -1028,7 +1028,7 @@ class PaymentMethodsViewModelTest {
         val mockSession = mockk<AirwallexPaymentSession> {
             every { currency } returns "USD"
             every { countryCode } returns "US"
-            every { paymentMethods } returns emptyList()  // Add this line
+            every { paymentMethods } returns emptyList() // Add this line
             every { paymentIntent } returns PaymentIntent(
                 id = "test_id",
                 amount = BigDecimal.TEN,
@@ -1129,7 +1129,8 @@ class PaymentMethodsViewModelTest {
         // Mock the payment intent and session to return expected values
         coEvery {
             airwallex.retrieveAvailablePaymentMethods(
-                session = session, params = match { it.clientSecret == "test_client_secret" })
+                session = session, params = match { it.clientSecret == "test_client_secret" }
+            )
         } returns page
 
         // Mock the payment consents to return an empty list since we're not testing that part
@@ -1137,7 +1138,8 @@ class PaymentMethodsViewModelTest {
             airwallex.retrieveAvailablePaymentConsents(
                 match {
                     it.clientSecret == "test_client_secret" && it.customerId == "test_customer_id"
-                })
+                }
+            )
         } returns object : Page<PaymentConsent> {
             override var items: List<PaymentConsent> = emptyList()
             override val hasMore: Boolean = false
@@ -1215,38 +1217,10 @@ class PaymentMethodsViewModelTest {
         }
     }
 
-    /**
-     * Extension function to observe LiveData and wait for the first value
-     */
-    private fun <T> LiveData<T>.getOrAwaitValue(
-        time: Long = 2, timeUnit: TimeUnit = TimeUnit.SECONDS
-    ): T {
-        var data: T? = null
-        val latch = CountDownLatch(1)
-        val observer = object : Observer<T> {
-            override fun onChanged(value: T) {
-                data = value
-                latch.countDown()
-                this@getOrAwaitValue.removeObserver(this)
-            }
-        }
-
-        this.observeForever(observer)
-
-        try {
-            if (!latch.await(time, timeUnit)) {
-                throw TimeoutException("LiveData value was never set.")
-            }
-        } finally {
-            this.removeObserver(observer)
-        }
-
-        @Suppress("UNCHECKED_CAST") return data as T
-    }
-
     @Suppress("LongMethod", "LongParameterList")
     private fun createPaymentConsent(
-        id: String = "test_consent_id", paymentMethod: PaymentMethod? = createPaymentMethod("card")
+        id: String = "test_consent_id",
+        paymentMethod: PaymentMethod? = createPaymentMethod("card"),
     ): PaymentConsent {
         return mockk {
             every { this@mockk.id } returns id
@@ -1510,9 +1484,7 @@ class PaymentMethodsViewModelTest {
         }
 
         coEvery {
-            airwallex.retrievePaymentMethodTypeInfo(
-                any(), any()
-            )
+            airwallex.retrievePaymentMethodTypeInfo(any(), any())
         } answers {
             val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
             listener.onFailed(AirwallexCheckoutException(error = AirwallexError("test error")))
@@ -1543,7 +1515,7 @@ class PaymentMethodsViewModelTest {
             every { fieldSchemas } returns listOf(
                 DynamicSchema(
                     transactionMode = TransactionMode.ONE_OFF,
-                    fields = emptyList()  // Empty list means no fields to show
+                    fields = emptyList() // Empty list means no fields to show
                 )
             )
         }

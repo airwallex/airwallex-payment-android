@@ -27,14 +27,14 @@ class EmailExtensionsTest {
 
     @Test
     fun `isValidEmail should return false for emails with missing parts`() {
-        assertFalse("@example.com".isValidEmail())  // Missing local part
-        assertFalse("user@".isValidEmail())         // Missing domain
+        assertFalse("@example.com".isValidEmail()) // Missing local part
+        assertFalse("user@".isValidEmail()) // Missing domain
     }
 
     @Test
     fun `isValidEmail should return false for emails with spaces`() {
-        assertFalse("user name@example.com".isValidEmail())  // Space in local part
-        assertFalse("user@exa mple.com".isValidEmail())      // Space in domain
+        assertFalse("user name@example.com".isValidEmail()) // Space in local part
+        assertFalse("user@exa mple.com".isValidEmail()) // Space in domain
     }
 
     @Test

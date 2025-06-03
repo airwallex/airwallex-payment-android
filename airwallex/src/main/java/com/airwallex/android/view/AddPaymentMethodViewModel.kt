@@ -178,7 +178,10 @@ class AddPaymentMethodViewModel(
     }
 
     fun createCard(
-        cardNumber: String, name: String, expiryDate: String, cvv: String
+        cardNumber: String,
+        name: String,
+        expiryDate: String,
+        cvv: String,
     ): PaymentMethod.Card? {
         if (cardNumber.isBlank() || name.isBlank() || expiryDate.isBlank() || cvv.isBlank()) {
             return null
