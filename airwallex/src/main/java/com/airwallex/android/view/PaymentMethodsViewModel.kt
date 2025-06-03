@@ -353,7 +353,8 @@ internal class PaymentMethodsViewModel(
                 ).setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
                     .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED).build()
             )
-        })
+        }
+    )
 
     private suspend fun retrieveAvailablePaymentMethods(
         clientSecret: String
@@ -399,8 +400,8 @@ internal class PaymentMethodsViewModel(
                     DisablePaymentConsentParams(
                         clientSecret = it,
                         paymentConsentId = requireNotNull(paymentConsent.id),
-                    ), object : Airwallex.PaymentListener<PaymentConsent> {
-
+                    ),
+                    object : Airwallex.PaymentListener<PaymentConsent> {
                         override fun onFailed(exception: AirwallexException) {
                             resultData.value = Result.failure(exception)
                         }
@@ -408,7 +409,7 @@ internal class PaymentMethodsViewModel(
                         override fun onSuccess(response: PaymentConsent) {
                             resultData.value = Result.success(paymentConsent)
                         }
-                    }
+                    },
                 )
             } ?: {
                 resultData.value =

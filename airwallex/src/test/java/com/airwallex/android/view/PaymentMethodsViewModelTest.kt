@@ -1262,8 +1262,7 @@ class PaymentMethodsViewModelTest {
         }
 
         // Mock the retrieveAvailablePaymentConsents call
-        coEvery { airwallex.retrieveAvailablePaymentConsents(any()) } returns (paymentConsents
-            ?: createPaymentConsents())
+        coEvery { airwallex.retrieveAvailablePaymentConsents(any()) } returns (paymentConsents ?: createPaymentConsents())
 
         // Mock the disablePaymentConsent call
         coEvery { airwallex.disablePaymentConsent(any(), any()) } coAnswers {
@@ -1452,8 +1451,7 @@ class PaymentMethodsViewModelTest {
         // Then
         assertEquals(expectedSchemaData, result)
     }
-
-
+    
     @Test
     fun `test loadSchemaFields when no schema fields required`() = runTest {
         val viewModel = mockViewModel(TransactionMode.ONE_OFF)
