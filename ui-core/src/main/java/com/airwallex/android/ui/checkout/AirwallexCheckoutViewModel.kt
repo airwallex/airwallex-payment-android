@@ -150,7 +150,7 @@ open class AirwallexCheckoutViewModel(
         return suspendCancellableCoroutine { continuation ->
             val clientSecret = when (session) {
                 is AirwallexPaymentSession -> session.paymentIntent.clientSecret
-                is AirwallexRecurringSession-> session.clientSecret
+                is AirwallexRecurringSession -> session.clientSecret
                 is AirwallexRecurringWithIntentSession -> session.paymentIntent.clientSecret
                 else -> throw AirwallexCheckoutException(message = "Session is not available")
             }

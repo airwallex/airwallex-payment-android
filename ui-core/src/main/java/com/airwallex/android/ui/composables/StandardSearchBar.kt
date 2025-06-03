@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.ui.R
 
+@Suppress("LongParameterList")
 @Composable
 fun StandardSearchBar(
     text: String,
@@ -67,6 +68,7 @@ fun StandardSearchBar(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("LongParameterList", "LongMethod")
 @Composable
 fun StandardSearchBar(
     value: String,

@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+@Suppress("LongParameterList")
 @Composable
 fun StandardOutlinedButton(
     modifier: Modifier = Modifier,
