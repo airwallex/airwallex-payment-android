@@ -56,6 +56,15 @@ val nextTriggerBy: PaymentConsent.NextTriggeredBy
         }
     }
 
+val force3DS: Boolean
+    get() {
+        return when (Settings.force3DS) {
+            SampleApplication.instance.resources.getStringArray(R.array.array_force_3ds)[0] -> false
+            SampleApplication.instance.resources.getStringArray(R.array.array_force_3ds)[1] -> true
+            else -> throw Exception("Unsupported force3ds: ${Settings.force3DS}")
+        }
+    }
+
 val autoCapture: Boolean
     get() {
         return when (Settings.autoCapture) {

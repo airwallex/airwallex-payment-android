@@ -76,6 +76,12 @@
                 app:labelText="Requires email" />
 
             <com.airwallex.paymentacceptance.ui.widget.SwitchView
+                android:id="@+id/sw3DS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:labelText="Force 3DS" />
+
+            <com.airwallex.paymentacceptance.ui.widget.SwitchView
                 android:id="@+id/swAutoCapture"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
