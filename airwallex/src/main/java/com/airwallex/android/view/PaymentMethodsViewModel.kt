@@ -427,7 +427,11 @@ internal class PaymentMethodsViewModel(
 
     suspend fun loadSchemaFields(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
         // Return cached data if available
-        schemaDataCache[paymentMethodType]?.let { return it }
+        schemaDataCache[paymentMethodType]?.let {
+            if (it != SchemaData()) {
+                return it
+            }
+        }
 
         AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields, type = ${paymentMethodType.name}")
         val paymentMethod = PaymentMethod.Builder().setType(paymentMethodType.name).build()

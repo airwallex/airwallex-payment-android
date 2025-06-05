@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.PaymentMethodsViewModel
+import kotlinx.coroutines.launch
 
 @Suppress("LongMethod", "LongParameterList")
 @Composable
@@ -41,6 +43,7 @@ internal fun SchemaSection(
     onLoading: (Boolean) -> Unit,
     onError: () -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     var fieldsToSubmit by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var validateFields: (() -> Unit)? by remember { mutableStateOf(null) }
     var schemaData by remember { mutableStateOf<PaymentMethodsViewModel.SchemaData?>(null) }
@@ -108,23 +111,30 @@ internal fun SchemaSection(
         StandardSolidButton(
             text = viewModel.schemaButtonTitle,
             onClick = {
-                if (schemaData == null) {
-                    onError()
-                    return@StandardSolidButton
-                }
+                coroutineScope.launch {
+                    viewModel.retrieveSchemaDataFromCache(type)?.takeIf { it != PaymentMethodsViewModel.SchemaData() }?.let {
+                        schemaData = it
+                    } ?: run {
+                        isLoading = true
+                        schemaData = viewModel.loadSchemaFields(type).also { loadedData ->
+                            if (loadedData == null) onError()
+                        }
+                        isLoading = false
+                    }
 
-                if (schemaData?.fields?.isEmpty() == true) {
-                    // No fields to validate
-                    onDirectPay(type)
-                } else {
-                    validateFields?.invoke()
-                    if (isValidated) {
-                        val paymentMethod = schemaData?.paymentMethod
-                        val typeInfo = schemaData?.typeInfo
-                        if (paymentMethod == null || typeInfo == null) {
-                            onDirectPay(type)
-                        } else {
-                            onPayWithFields(paymentMethod, typeInfo, viewModel.appendParamsToMapForSchemaSubmission(fieldsToSubmit))
+                    if (schemaData?.fields?.isEmpty() == true) {
+                        // No fields to validate
+                        onDirectPay(type)
+                    } else {
+                        validateFields?.invoke()
+                        if (isValidated) {
+                            val paymentMethod = schemaData?.paymentMethod
+                            val typeInfo = schemaData?.typeInfo
+                            if (paymentMethod == null || typeInfo == null) {
+                                onDirectPay(type)
+                            } else {
+                                onPayWithFields(paymentMethod, typeInfo, viewModel.appendParamsToMapForSchemaSubmission(fieldsToSubmit))
+                            }
                         }
                     }
                 }
