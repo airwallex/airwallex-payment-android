@@ -21,6 +21,7 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
+import com.airwallex.paymentacceptance.force3DS
 import com.airwallex.paymentacceptance.nextTriggerBy
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
@@ -148,7 +149,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             AirwallexCheckoutMode.PAYMENT -> {
                 //get the paymentIntent object from your server
                 //please do not directly copy this method!
-                val paymentIntent = getPaymentIntentFromServer()
+                val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS)
                 // build an AirwallexPaymentSession based on the paymentIntent
                 buildAirwallexPaymentSession(googlePayOptions, paymentIntent, paymentMethods)
             }
@@ -166,7 +167,7 @@ class UIIntegrationViewModel : BaseViewModel() {
                 //get the customerId and paymentIntent from your server
                 //please do not directly copy these method!
                 val customerId = getCustomerIdFromServer()
-                val paymentIntent = getPaymentIntentFromServer(customerId = customerId)
+                val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
                 //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                 buildAirwallexRecurringWithIntentSession(googlePayOptions, paymentIntent, paymentMethods)
             }
