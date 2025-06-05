@@ -33,7 +33,7 @@ import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.PaymentMethodsViewModel
 import kotlinx.coroutines.launch
 
-@Suppress("LongMethod", "LongParameterList")
+@Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
 internal fun SchemaSection(
     viewModel: PaymentMethodsViewModel,
