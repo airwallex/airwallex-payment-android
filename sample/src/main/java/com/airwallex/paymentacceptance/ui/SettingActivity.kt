@@ -36,6 +36,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.etClientId.setText(Settings.clientId)
         mBinding.etWeChatAppId.setText(Settings.weChatAppId)
 
+        mBinding.sw3DS.setChecked(Settings.force3DS == "True")
         mBinding.swAutoCapture.setChecked(Settings.autoCapture == "Enabled")
         mBinding.swEmail.setChecked(Settings.requiresEmail == "True")
 
@@ -63,6 +64,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             Settings.weChatAppId = mBinding.etWeChatAppId.getText()
             Settings.returnUrl = mBinding.etReturnUrl.getText()
 
+            Settings.force3DS = if (mBinding.sw3DS.isChecked()) "True" else "False"
             Settings.autoCapture = if (mBinding.swAutoCapture.isChecked()) "Enabled" else "Disabled"
             Settings.requiresEmail = if (mBinding.swEmail.isChecked()) "True" else "False"
             Settings.cachedCustomerId = mBinding.etCustomerId.getText()
@@ -80,6 +82,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             mBinding.etAPIKey.setText("")
             mBinding.etClientId.setText("")
             mBinding.etWeChatAppId.setText("")
+            mBinding.sw3DS.setChecked(false)
             mBinding.swAutoCapture.setChecked(false)
             mBinding.swEmail.setChecked(false)
             mBinding.selectViewEnvironment.setSelectOption("DEMO")
