@@ -12,7 +12,6 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexRecurringSession
-import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.Billing
@@ -38,21 +37,7 @@ internal class AddPaymentMethodViewModel(
     }
 
     val shipping: Shipping? by lazy {
-        when (session) {
-            is AirwallexPaymentSession -> {
-                session.paymentIntent.order?.shipping
-            }
-
-            is AirwallexRecurringWithIntentSession -> {
-                session.paymentIntent.order?.shipping
-            }
-
-            is AirwallexRecurringSession -> {
-                session.shipping
-            }
-
-            else -> null
-        }
+        session.shipping
     }
 
     val canSaveCard: Boolean by lazy { session is AirwallexPaymentSession && session.customerId != null }

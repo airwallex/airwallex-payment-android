@@ -22,11 +22,8 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test shipping for AirwallexPaymentSession`() {
         val mockShipping = mockk<Shipping>(relaxed = true)
-        val mockPaymentIntent = mockk<PaymentIntent> {
-            every { order?.shipping } returns mockShipping
-        }
         val mockSession = mockk<AirwallexPaymentSession> {
-            every { paymentIntent } returns mockPaymentIntent
+            every { shipping } returns mockShipping
         }
         val viewModel = createViewModel(mockSession)
         assertEquals(mockShipping, viewModel.shipping)
@@ -35,11 +32,8 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test shipping for AirwallexRecurringWithIntentSession`() {
         val mockShipping = mockk<Shipping>(relaxed = true)
-        val mockPaymentIntent = mockk<PaymentIntent> {
-            every { order?.shipping } returns mockShipping
-        }
         val mockSession = mockk<AirwallexRecurringWithIntentSession> {
-            every { paymentIntent } returns mockPaymentIntent
+            every { shipping } returns mockShipping
         }
         val viewModel = createViewModel(mockSession)
         assertEquals(mockShipping, viewModel.shipping)

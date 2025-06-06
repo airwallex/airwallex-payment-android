@@ -2,6 +2,7 @@ package com.airwallex.android.core
 
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntentFixtures
+import com.airwallex.android.core.model.Shipping
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkObject
@@ -36,6 +37,10 @@ class AirwallexRecurringWithIntentSessionTest {
 
     @Test
     fun buildTest() {
+        val shipping = Shipping.Builder()
+            .setFirstName("John")
+            .setLastName("Doe")
+            .build()
         val googlePayOptions = GooglePayOptions(
             billingAddressRequired = true,
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
@@ -54,14 +59,13 @@ class AirwallexRecurringWithIntentSessionTest {
             .setAutoCapture(false)
             .setGooglePayOptions(googlePayOptions)
             .setPaymentMethods(listOf("googlepay"))
+            .setShipping(shipping)
             .build()
 
         assertNotNull(airwallexRecurringWithIntentSession)
 
-        assertNotNull(airwallexRecurringWithIntentSession.currency)
         assertEquals("AUD", airwallexRecurringWithIntentSession.currency)
 
-        assertNotNull(airwallexRecurringWithIntentSession.amount)
         assertEquals(BigDecimal.valueOf(100.01), airwallexRecurringWithIntentSession.amount)
 
         assertNotNull(airwallexRecurringWithIntentSession.nextTriggerBy)
@@ -70,16 +74,11 @@ class AirwallexRecurringWithIntentSessionTest {
             airwallexRecurringWithIntentSession.nextTriggerBy
         )
 
-        assertNotNull(airwallexRecurringWithIntentSession.requiresCVC)
         assertEquals(true, airwallexRecurringWithIntentSession.requiresCVC)
-
         assertNotNull(airwallexRecurringWithIntentSession.isBillingInformationRequired)
         assertEquals(false, airwallexRecurringWithIntentSession.isBillingInformationRequired)
 
         assertTrue(airwallexRecurringWithIntentSession.isEmailRequired)
-
-        assertEquals(null, airwallexRecurringWithIntentSession.shipping)
-
         assertNotNull(airwallexRecurringWithIntentSession.customerId)
         assertEquals(
             "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
@@ -101,5 +100,6 @@ class AirwallexRecurringWithIntentSessionTest {
         )
         assertEquals(false, airwallexRecurringWithIntentSession.autoCapture)
         assertNotNull(airwallexRecurringWithIntentSession.paymentMethods)
+        assertEquals(airwallexRecurringWithIntentSession.shipping, shipping)
     }
 }
