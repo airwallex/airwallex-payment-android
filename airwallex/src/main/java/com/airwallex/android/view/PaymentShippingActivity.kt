@@ -10,6 +10,7 @@ import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.ui.AirwallexActivity
 import com.airwallex.android.ui.extension.getExtraArgs
 
+// TODO: Remove it after shipping address logic is refactored, i.e. session supports phone number etc.
 /**
  * Activity to edit shipping address
  */

@@ -33,7 +33,7 @@ class GooglePayComponent : ActionComponent {
     }
 
     override fun handlePaymentIntentResponse(
-        paymentIntentId: String,
+        paymentIntentId: String?,
         nextAction: NextAction?,
         fragment: Fragment?,
         activity: Activity,
@@ -42,6 +42,14 @@ class GooglePayComponent : ActionComponent {
         listener: Airwallex.PaymentResultListener,
         consentId: String?
     ) {
+        if (paymentIntentId == null) {
+            listener.onCompleted(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexCheckoutException(message = "paymentIntentId is null")
+                )
+            )
+            return
+        }
         if (nextAction?.type == NextAction.NextActionType.REDIRECT_FORM) {
             if (cardNextActionModel == null) {
                 listener.onCompleted(

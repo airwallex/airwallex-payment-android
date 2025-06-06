@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class AvailablePaymentMethodType internal constructor(
+data class AvailablePaymentMethodType(
 
     /**
      * The name of payment method type.

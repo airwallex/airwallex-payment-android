@@ -26,7 +26,7 @@ class CardComponent : ActionComponent {
     }
 
     override fun handlePaymentIntentResponse(
-        paymentIntentId: String,
+        paymentIntentId: String?,
         nextAction: NextAction?,
         fragment: Fragment?,
         activity: Activity,
@@ -42,6 +42,10 @@ class CardComponent : ActionComponent {
         when (nextAction?.type) {
             // 3DS flow
             NextAction.NextActionType.REDIRECT_FORM -> {
+                if (paymentIntentId.isNullOrEmpty()) {
+                    listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Payment Intent Id is null or empty")))
+                    return
+                }
                 ThreeDSecurityManager.handleThreeDSFlow(
                     paymentIntentId = paymentIntentId,
                     activity = activity,

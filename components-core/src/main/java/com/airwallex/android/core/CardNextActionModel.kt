@@ -7,7 +7,7 @@ class CardNextActionModel(
     val paymentManager: PaymentManager,
     val clientSecret: String,
     val device: Device?,
-    val paymentIntentId: String,
+    val paymentIntentId: String?,
     val currency: String,
     val amount: BigDecimal,
 )

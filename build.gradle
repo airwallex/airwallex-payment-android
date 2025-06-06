@@ -3,7 +3,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 buildscript {
     ext {
         kotlinVersion = '1.8.0'
-        jacocoVersion = '0.8.8'
+        jacocoVersion = '0.8.11'
         detektVersion = '1.21.0'
     }
     repositories {

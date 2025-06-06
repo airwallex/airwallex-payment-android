@@ -82,6 +82,7 @@ class AirwallexRecurringSession internal constructor(
      * API reference: https://www.airwallex.com/docs/api#/Payment_Acceptance/Config/_api_v1_pa_config_payment_method_types/get JSON Object field: items.name
      */
     override val paymentMethods: List<String>? = null,
+
 ) : AirwallexSession(), Parcelable {
 
     class Builder(

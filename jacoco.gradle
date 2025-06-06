@@ -119,7 +119,8 @@ project.afterEvaluate { project ->
                 '**/*EditText.kt',
                 '**/view/CardWidget.kt',
                 '**/paymentacceptance/**',
-                'security-3ds/**'
+                'security-3ds/**',
+                '**/composables/**',
         ]
 
         final androidKotlinTree = fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/${variant}", excludes: fileFilter)

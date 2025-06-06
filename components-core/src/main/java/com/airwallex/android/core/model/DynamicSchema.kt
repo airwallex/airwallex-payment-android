@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class DynamicSchema internal constructor(
+data class DynamicSchema(
     /**
      * The supported transaction mode. One of oneoff, recurring.
      */

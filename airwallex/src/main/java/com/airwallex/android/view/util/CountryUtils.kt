@@ -30,7 +30,7 @@ internal object CountryUtils {
         )
     }
 
-    val COUNTRIES = Locale.getISOCountries()
+    val countryList = Locale.getISOCountries()
         .filter { code -> legalCountries.indexOf(code) >= 0 }
         .map { code ->
             CountryAutoCompleteView.Country(code, Locale("", code).displayCountry)
@@ -41,13 +41,13 @@ internal object CountryUtils {
      * Return the [CountryAutoCompleteView.Country] via [countryName]
      */
     fun getCountryByName(countryName: String): CountryAutoCompleteView.Country? {
-        return COUNTRIES.firstOrNull { it.name == countryName }
+        return countryList.firstOrNull { it.name == countryName }
     }
 
     /**
      * Return the [CountryAutoCompleteView.Country] via [countryCode]
      */
     fun getCountryByCode(countryCode: String): CountryAutoCompleteView.Country? {
-        return COUNTRIES.firstOrNull { it.code == countryCode }
+        return countryList.firstOrNull { it.code == countryCode }
     }
 }

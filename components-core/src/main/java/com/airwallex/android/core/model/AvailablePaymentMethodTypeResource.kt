@@ -5,7 +5,7 @@ import com.airwallex.android.core.LogoResources
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class AvailablePaymentMethodTypeResource internal constructor(
+data class AvailablePaymentMethodTypeResource(
 
     /**
      * Is there a schema of payment method

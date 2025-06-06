@@ -4,7 +4,9 @@ import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.DynamicSchemaFieldType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TransactionMode
+import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.util.filterRequiredFields
+import com.airwallex.android.view.util.needHiddenEnumParam
 import com.airwallex.android.view.util.toPaymentFlow
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -23,11 +25,11 @@ import java.lang.reflect.Type
 import kotlin.test.assertEquals
 
 class PaymentMethodTypeInfoExtensionsTest {
+    private val gson: Gson = GsonBuilder()
+        .registerTypeAdapter(TransactionMode::class.java, TransactionModeAdapter())
+        .create()
     @Test
     fun `test filterRequiredFields returns correct fields`() {
-        val gson: Gson = GsonBuilder()
-            .registerTypeAdapter(TransactionMode::class.java, TransactionModeAdapter())
-            .create()
         val json = """
         {
             "name": "Test Method",
@@ -71,7 +73,7 @@ class PaymentMethodTypeInfoExtensionsTest {
         """.trimIndent()
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
-        val result = paymentMethodTypeInfo.filterRequiredFields()
+        val result = paymentMethodTypeInfo.filterRequiredFields(TransactionMode.ONE_OFF)
 
         assertNotNull(result)
         assertEquals(2, result?.size)
@@ -93,7 +95,7 @@ class PaymentMethodTypeInfoExtensionsTest {
         """.trimIndent()
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
-        val result = paymentMethodTypeInfo.filterRequiredFields()
+        val result = paymentMethodTypeInfo.filterRequiredFields(TransactionMode.ONE_OFF)
         assertNull(result)
     }
 
@@ -109,7 +111,7 @@ class PaymentMethodTypeInfoExtensionsTest {
         }
         """.trimIndent()
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
-        val result = paymentMethodTypeInfo.filterRequiredFields()
+        val result = paymentMethodTypeInfo.filterRequiredFields(TransactionMode.ONE_OFF)
         assertNull(result)
     }
 
@@ -143,15 +145,12 @@ class PaymentMethodTypeInfoExtensionsTest {
         """.trimIndent()
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
-        val result = paymentMethodTypeInfo.filterRequiredFields()
+        val result = paymentMethodTypeInfo.filterRequiredFields(TransactionMode.ONE_OFF)
         assertNull(result)
     }
 
     @Test
     fun `test fetchPaymentFlow with IN_APP candidate`() {
-        val gson: Gson = GsonBuilder()
-            .registerTypeAdapter(TransactionMode::class.java, TransactionModeAdapter())
-            .create()
         val json = """
         {
             "name": "Test Method",
@@ -165,7 +164,7 @@ class PaymentMethodTypeInfoExtensionsTest {
                             "name": "flow",
                             "displayName": "Flow Field",
                             "uiType": "list",
-                            "type": "enum",
+                            "type": "ENUM",
                             "hidden": false,
                             "candidates": [
                                 {"value": "inapp"},
@@ -181,15 +180,12 @@ class PaymentMethodTypeInfoExtensionsTest {
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
 
-        val result = paymentMethodTypeInfo.toPaymentFlow()
+        val result = paymentMethodTypeInfo.toPaymentFlow(TransactionMode.ONE_OFF)
         assertEquals(AirwallexPaymentRequestFlow.IN_APP, result)
     }
 
     @Test
     fun `test fetchPaymentFlow with first candidate not IN_APP`() {
-        val gson: Gson = GsonBuilder()
-            .registerTypeAdapter(TransactionMode::class.java, TransactionModeAdapter())
-            .create()
         val json = """
         {
             "name": "Test Method",
@@ -203,7 +199,7 @@ class PaymentMethodTypeInfoExtensionsTest {
                             "name": "flow",
                             "displayName": "Flow Field",
                             "uiType": "list",
-                            "type": "enum",
+                            "type": "ENUM",
                             "hidden": false,
                             "candidates": [
                                 {"value": "mweb"}
@@ -218,15 +214,12 @@ class PaymentMethodTypeInfoExtensionsTest {
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
 
-        val result = paymentMethodTypeInfo.toPaymentFlow()
+        val result = paymentMethodTypeInfo.toPaymentFlow(TransactionMode.ONE_OFF)
         assertEquals(AirwallexPaymentRequestFlow.M_WEB, result)
     }
 
     @Test
     fun `test fetchPaymentFlow with null candidates`() {
-        val gson: Gson = GsonBuilder()
-            .registerTypeAdapter(TransactionMode::class.java, TransactionModeAdapter())
-            .create()
         val json = """
         {
             "name": "Test Method",
@@ -240,7 +233,7 @@ class PaymentMethodTypeInfoExtensionsTest {
                             "name": "flow",
                             "displayName": "Flow Field",
                             "uiType": "list",
-                            "type": "enum",
+                            "type": "ENUM",
                             "hidden": false,
                             "candidates": null,
                             "validations": null
@@ -253,15 +246,12 @@ class PaymentMethodTypeInfoExtensionsTest {
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
 
-        val result = paymentMethodTypeInfo.toPaymentFlow()
+        val result = paymentMethodTypeInfo.toPaymentFlow(TransactionMode.ONE_OFF)
         assertEquals(AirwallexPaymentRequestFlow.IN_APP, result)
     }
 
     @Test
     fun `test fetchPaymentFlow with empty candidates`() {
-        val gson: Gson = GsonBuilder()
-            .registerTypeAdapter(TransactionMode::class.java, TransactionModeAdapter())
-            .create()
         val json = """
         {
             "name": "Test Method",
@@ -275,7 +265,7 @@ class PaymentMethodTypeInfoExtensionsTest {
                             "name": "flow",
                             "displayName": "Flow Field",
                             "uiType": "list",
-                            "type": "enum",
+                            "type": "ENUM",
                             "hidden": false,
                             "candidates": [],
                             "validations": null
@@ -288,15 +278,12 @@ class PaymentMethodTypeInfoExtensionsTest {
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
 
-        val result = paymentMethodTypeInfo.toPaymentFlow()
+        val result = paymentMethodTypeInfo.toPaymentFlow(TransactionMode.ONE_OFF)
         assertEquals(AirwallexPaymentRequestFlow.IN_APP, result)
     }
 
     @Test
     fun `test fetchPaymentFlow with missing flow field`() {
-        val gson: Gson = GsonBuilder()
-            .registerTypeAdapter(TransactionMode::class.java, TransactionModeAdapter())
-            .create()
         val json = """
         {
             "name": "Test Method",
@@ -323,8 +310,165 @@ class PaymentMethodTypeInfoExtensionsTest {
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
 
-        val result = paymentMethodTypeInfo.toPaymentFlow()
+        val result = paymentMethodTypeInfo.toPaymentFlow(TransactionMode.ONE_OFF)
         assertEquals(AirwallexPaymentRequestFlow.IN_APP, result)
+    }
+
+    @Test
+    fun `test needCountryCode returns true when country code field exists and is hidden`() {
+        val json = """
+        {
+            "name": "Test Method",
+            "displayName": "Test Method Display",
+            "hasSchema": true,
+            "fieldSchemas": [
+                {
+                    "transactionMode": "oneoff",
+                    "fields": [
+                        {
+                            "name": "country_code",
+                            "displayName": "Country Code",
+                            "uiType": "text",
+                            "type": "ENUM",
+                            "hidden": true,
+                            "candidates": null,
+                            "validations": null
+                        }
+                    ]
+                }
+            ]
+        }
+        """.trimIndent()
+
+        val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
+        assertTrue(paymentMethodTypeInfo.needHiddenEnumParam(TransactionMode.ONE_OFF, COUNTRY_CODE))
+    }
+
+    @Test
+    fun `test needCountryCode returns false when country code field is not hidden`() {
+        val json = """
+        {
+            "name": "Test Method",
+            "displayName": "Test Method Display",
+            "hasSchema": true,
+            "fieldSchemas": [
+                {
+                    "transactionMode": "oneoff",
+                    "fields": [
+                        {
+                            "name": "country_code",
+                            "displayName": "Country Code",
+                            "uiType": "text",
+                            "type": "ENUM",
+                            "hidden": false,
+                            "candidates": null,
+                            "validations": null
+                        }
+                    ]
+                }
+            ]
+        }
+        """.trimIndent()
+
+        val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
+        assertFalse(paymentMethodTypeInfo.needHiddenEnumParam(TransactionMode.ONE_OFF, COUNTRY_CODE))
+    }
+
+    @Test
+    fun `test needCountryCode returns false when country code field does not exist`() {
+        val json = """
+        {
+            "name": "Test Method",
+            "displayName": "Test Method Display",
+            "hasSchema": true,
+            "fieldSchemas": [
+                {
+                    "transactionMode": "oneoff",
+                    "fields": [
+                        {
+                            "name": "other_field",
+                            "displayName": "Other Field",
+                            "uiType": "text",
+                            "type": "string",
+                            "hidden": true,
+                            "candidates": null,
+                            "validations": null
+                        }
+                    ]
+                }
+            ]
+        }
+        """.trimIndent()
+
+        val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
+        assertFalse(paymentMethodTypeInfo.needHiddenEnumParam(TransactionMode.ONE_OFF, COUNTRY_CODE))
+    }
+
+    @Test
+    fun `test toPaymentFlow with invalid flow value`() {
+        val json = """
+        {
+            "name": "Test Method",
+            "displayName": "Test Method Display",
+            "hasSchema": true,
+            "fieldSchemas": [
+                {
+                    "transactionMode": "oneoff",
+                    "fields": [
+                        {
+                            "name": "flow",
+                            "displayName": "Flow Field",
+                            "uiType": "list",
+                            "type": "ENUM",
+                            "hidden": false,
+                            "candidates": [
+                                {"value": "invalid_flow"}
+                            ],
+                            "validations": null
+                        }
+                    ]
+                }
+            ]
+        }
+        """.trimIndent()
+
+        val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
+        val result = paymentMethodTypeInfo.toPaymentFlow(TransactionMode.ONE_OFF)
+        // Should default to IN_APP when flow value is invalid
+        assertEquals(AirwallexPaymentRequestFlow.IN_APP, result)
+    }
+
+    @Test
+    fun `test toPaymentFlow with different transaction mode`() {
+        val json = """
+        {
+            "name": "Test Method",
+            "displayName": "Test Method Display",
+            "hasSchema": true,
+            "fieldSchemas": [
+                {
+                    "transactionMode": "recurring",
+                    "fields": [
+                        {
+                            "name": "flow",
+                            "displayName": "Flow Field",
+                            "uiType": "list",
+                            "type": "ENUM",
+                            "hidden": false,
+                            "candidates": [
+                                {"value": "mweb"}
+                            ],
+                            "validations": null
+                        }
+                    ]
+                }
+            ]
+        }
+        """.trimIndent()
+
+        val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
+        val result = paymentMethodTypeInfo.toPaymentFlow(TransactionMode.RECURRING)
+        assertEquals(AirwallexPaymentRequestFlow.M_WEB, result)
     }
 
     class TransactionModeAdapter :
@@ -368,5 +512,4 @@ class PaymentMethodTypeInfoExtensionsTest {
             return JsonPrimitive(src?.value)
         }
     }
-
 }

@@ -1,5 +1,6 @@
 package com.airwallex.android.ui.checkout
 
+import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
@@ -22,6 +23,15 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
                 session
             )
         )[AirwallexCheckoutViewModel::class.java]
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.trackPaymentLaunched()
+    }
+
+    override fun onBackButtonPressed() {
+        viewModel.trackPaymentCancelled()
     }
 
     @Suppress("LongParameterList")

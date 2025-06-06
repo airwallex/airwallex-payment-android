@@ -73,7 +73,7 @@ data class VerifyPaymentConsentParams constructor(
                 currency = currency,
                 cvc = cvc,
                 paymentMethodType = paymentMethodType,
-                returnUrl = returnUrl
+                returnUrl = returnUrl,
             )
         }
     }
@@ -88,7 +88,7 @@ data class VerifyPaymentConsentParams constructor(
             amount: BigDecimal?,
             currency: String?,
             cvc: String?,
-            returnUrl: String?
+            returnUrl: String?,
         ): VerifyPaymentConsentParams {
             return when (paymentMethodType) {
                 PaymentMethodType.CARD.value -> createCardParams(
@@ -113,7 +113,7 @@ data class VerifyPaymentConsentParams constructor(
                     paymentMethodType = paymentMethodType,
                     clientSecret = clientSecret,
                     paymentConsentId = paymentConsentId,
-                    returnUrl = returnUrl
+                    returnUrl = returnUrl,
                 )
             }
         }
@@ -168,7 +168,7 @@ data class VerifyPaymentConsentParams constructor(
             paymentMethodType: String,
             clientSecret: String,
             paymentConsentId: String,
-            returnUrl: String?
+            returnUrl: String?,
         ): VerifyPaymentConsentParams {
             return Builder(
                 clientSecret = clientSecret,

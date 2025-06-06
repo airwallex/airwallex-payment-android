@@ -18,6 +18,7 @@ import com.airwallex.android.core.extension.confirmGooglePayIntent
 import com.airwallex.android.core.extension.createCardPaymentMethod
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.model.AirwallexPaymentRequest
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.BankResponse
@@ -63,6 +64,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.UUID
 
+@Suppress("LongMethod")
 class Airwallex internal constructor(
     private val fragment: Fragment?,
     private val activity: ComponentActivity,
@@ -123,6 +125,28 @@ class Airwallex internal constructor(
         applicationContext
     )
 
+    private fun setupAnalyticsLogger(session: AirwallexSession) {
+        when (session) {
+            is AirwallexPaymentSession -> {
+                AnalyticsLogger.setSessionInformation(
+                    transactionMode = TransactionMode.ONE_OFF.value,
+                    paymentIntentId = session.paymentIntent.id,
+                )
+            }
+            is AirwallexRecurringSession -> {
+                AnalyticsLogger.setSessionInformation(
+                    transactionMode = TransactionMode.RECURRING.value,
+                )
+            }
+            is AirwallexRecurringWithIntentSession -> {
+                AnalyticsLogger.setSessionInformation(
+                    transactionMode = TransactionMode.RECURRING.value,
+                    paymentIntentId = session.paymentIntent.id,
+                )
+            }
+        }
+    }
+
     /**
      * Method to handle Activity results from Airwallex activities. Pass data here from your
      * host's `#onActivityResult(int, int, Intent)` function.
@@ -167,6 +191,7 @@ class Airwallex internal constructor(
         saveCard: Boolean = false,
         listener: PaymentResultListener
     ) {
+        setupAnalyticsLogger(session)
         createCardPaymentMethod(
             session = session,
             card = card,
@@ -197,6 +222,7 @@ class Airwallex internal constructor(
         paymentConsent: PaymentConsent,
         listener: PaymentResultListener
     ) {
+        setupAnalyticsLogger(session)
         val paymentMethod = paymentConsent.paymentMethod
         val paymentConsentId = paymentConsent.id
         if (paymentMethod == null) {
@@ -253,6 +279,7 @@ class Airwallex internal constructor(
         paymentConsentId: String,
         listener: PaymentResultListener
     ) {
+        setupAnalyticsLogger(session)
         val params = ConfirmPaymentIntentParams.createCardParams(
             paymentIntentId = session.paymentIntent.id,
             clientSecret = requireNotNull(session.paymentIntent.clientSecret),
@@ -277,6 +304,7 @@ class Airwallex internal constructor(
         session: AirwallexSession,
         listener: PaymentResultListener
     ) {
+        setupAnalyticsLogger(session)
         val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
         if (googlePayProvider != null) {
             val coroutineScope = fragment?.lifecycleScope
@@ -423,6 +451,7 @@ class Airwallex internal constructor(
         session: AirwallexSession,
         params: RetrieveAvailablePaymentMethodParams
     ): Page<AvailablePaymentMethodType> {
+        setupAnalyticsLogger(session)
         val transactionMode = when (session) {
             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
             is AirwallexPaymentSession -> TransactionMode.ONE_OFF
@@ -526,19 +555,6 @@ class Airwallex internal constructor(
                 override fun onSuccess(response: PaymentConsent) {
                     // for redirect, initialPaymentIntentId is empty now. so we don support recurring in redirect flow
                     val paymentIntentId = response.initialPaymentIntentId
-                    if (paymentIntentId.isNullOrEmpty()) {
-                        AnalyticsLogger.logError(
-                            "initialPaymentIntentId_null_or_empty",
-                            mapOf("type" to paymentMethodType)
-                        )
-                        AirwallexLogger.error("Airwallex verifyPaymentConsent: type = $paymentMethodType, paymentIntentId isNullOrEmpty")
-                        listener.onCompleted(
-                            AirwallexPaymentStatus.Failure(
-                                AirwallexCheckoutException(message = "Unsupported payment method")
-                            )
-                        )
-                        return
-                    }
                     if (response.nextAction == null) {
                         listener.onCompleted(
                             AirwallexPaymentStatus.Success(
@@ -559,29 +575,56 @@ class Airwallex internal constructor(
                         )
                         return
                     }
-                    val nextActionModel = when (paymentMethodType) {
-                        PaymentMethodType.CARD.value, PaymentMethodType.GOOGLEPAY.value -> CardNextActionModel(
-                            paymentManager = paymentManager,
-                            clientSecret = params.clientSecret,
-                            device = null,
-                            paymentIntentId = paymentIntentId,
-                            currency = requireNotNull(params.currency),
-                            amount = requireNotNull(params.amount),
-                        )
+                    when (paymentMethodType) {
+                        PaymentMethodType.CARD.value, PaymentMethodType.GOOGLEPAY.value -> {
+                            if (paymentIntentId.isNullOrEmpty()) {
+                                AnalyticsLogger.logError(
+                                    "initialPaymentIntentId_null_or_empty",
+                                    mapOf("type" to paymentMethodType)
+                                )
+                                AirwallexLogger.error("Airwallex verifyPaymentConsent: type = $paymentMethodType, paymentIntentId isNullOrEmpty")
+                                listener.onCompleted(
+                                    AirwallexPaymentStatus.Failure(
+                                        AirwallexCheckoutException(message = "Unsupported payment method")
+                                    )
+                                )
+                                return
+                            }
 
-                        else -> null
+                            val nextActionModel = CardNextActionModel(
+                                paymentManager = paymentManager,
+                                clientSecret = params.clientSecret,
+                                device = null,
+                                paymentIntentId = paymentIntentId,
+                                currency = requireNotNull(params.currency),
+                                amount = requireNotNull(params.amount),
+                            )
+
+                            provider.get().handlePaymentIntentResponse(
+                                paymentIntentId,
+                                response.nextAction,
+                                fragment,
+                                activity,
+                                applicationContext,
+                                nextActionModel,
+                                listener,
+                                response.id
+                            )
+                        }
+
+                        else -> {
+                            provider.get().handlePaymentIntentResponse(
+                                null,
+                                response.nextAction,
+                                fragment,
+                                activity,
+                                applicationContext,
+                                null,
+                                listener,
+                                response.id
+                            )
+                        }
                     }
-
-                    provider.get().handlePaymentIntentResponse(
-                        paymentIntentId,
-                        response.nextAction,
-                        fragment,
-                        activity,
-                        applicationContext,
-                        nextActionModel,
-                        listener,
-                        response.id
-                    )
                 }
             }
         )
@@ -662,6 +705,7 @@ class Airwallex internal constructor(
         flow: AirwallexPaymentRequestFlow? = AirwallexPaymentRequestFlow.IN_APP,
         listener: PaymentResultListener,
     ) {
+        setupAnalyticsLogger(session)
         if (AirwallexPlugins.getProvider(ActionComponentProviderType.REDIRECT) == null) {
             listener.onCompleted(
                 AirwallexPaymentStatus.Failure(
@@ -721,6 +765,7 @@ class Airwallex internal constructor(
         listener: PaymentResultListener,
         saveCard: Boolean = false,
     ) {
+        setupAnalyticsLogger(session)
         AirwallexLogger.info("Airwallex checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
         when (session) {
             is AirwallexPaymentSession -> {
@@ -760,6 +805,7 @@ class Airwallex internal constructor(
         cvc: String? = null,
         listener: PaymentResultListener
     ) {
+        setupAnalyticsLogger(session)
         fun confirmPaymentIntent(
             session: AirwallexPaymentSession,
             consent: PaymentConsent? = null
@@ -924,7 +970,6 @@ class Airwallex internal constructor(
         listener: PaymentResultListener,
         googlePay: PaymentMethod.GooglePay
     ) {
-
         val paymentMethod = PaymentMethod.Builder()
             .setType(PaymentMethodType.GOOGLEPAY.value)
             .setGooglePay(googlePay)
@@ -1227,6 +1272,10 @@ class Airwallex internal constructor(
                         type = params.paymentMethodType,
                         // provide either id or googlePay
                         googlePay = params.googlePay,
+                        paymentRequest = AirwallexPaymentRequest(
+                            flow = AirwallexPaymentRequestFlow.IN_APP,
+                            osType = "android"
+                        )
                     )
                 )
                 .setNextTriggeredBy(

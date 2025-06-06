@@ -7,6 +7,7 @@ import com.airwallex.android.R
 import com.airwallex.android.ui.widget.AirwallexTextInputLayout
 import com.airwallex.android.ui.widget.ValidatedInput
 
+// TODO: Remove it when shipping address logic is refactored
 internal class EmailTextInputLayout constructor(
     context: Context,
     attrs: AttributeSet?
