@@ -50,6 +50,7 @@ class DropdownPickerView @JvmOverloads constructor(
 
     fun setSelectOption(option: String) {
         selectedTextView.setSelectedText(option)
+        currentOption = option
     }
 
     private fun showDropdown() {
