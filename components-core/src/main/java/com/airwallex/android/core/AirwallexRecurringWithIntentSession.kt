@@ -111,6 +111,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
         private var autoCapture: Boolean = true
         private var paymentMethods: List<String>? = null
         private var googlePayOptions: GooglePayOptions? = null
+        private var shipping: Shipping? = null
 
         init {
             paymentIntent.clientSecret?.apply {
@@ -151,6 +152,10 @@ class AirwallexRecurringWithIntentSession internal constructor(
             this.googlePayOptions = googlePayOptions
         }
 
+        fun setShipping(shipping: Shipping?): Builder = apply {
+            this.shipping = shipping
+        }
+
         override fun build(): AirwallexRecurringWithIntentSession {
             if (paymentIntent.customerId == null) {
                 throw Exception("Customer id is required if the PaymentIntent is created for recurring payment.")
@@ -163,7 +168,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 currency = paymentIntent.currency,
                 countryCode = countryCode,
                 amount = paymentIntent.amount,
-                shipping = paymentIntent.order?.shipping,
+                shipping = shipping,
                 isBillingInformationRequired = isBillingInformationRequired,
                 isEmailRequired = isEmailRequired,
                 returnUrl = returnUrl,

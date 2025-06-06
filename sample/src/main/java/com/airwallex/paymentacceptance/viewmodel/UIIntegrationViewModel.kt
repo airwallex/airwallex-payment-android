@@ -194,6 +194,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setAutoCapture(autoCapture)
             .setHidePaymentConsents(false)
             .setPaymentMethods(paymentMethods)
+            .setShipping(shipping)
             .build()
 
     /**
@@ -240,6 +241,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setAutoCapture(autoCapture)
             .setGooglePayOptions(googlePayOptions)
             .setPaymentMethods(paymentMethods)
+            .setShipping(shipping)
             .build()
 
 }

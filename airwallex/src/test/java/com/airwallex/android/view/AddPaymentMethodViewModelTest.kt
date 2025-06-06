@@ -12,7 +12,6 @@ import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CardScheme
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.view.util.ExpiryDateUtils
@@ -53,11 +52,8 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test shipping for AirwallexPaymentSession`() {
         val mockShipping = mockk<Shipping>(relaxed = true)
-        val mockPaymentIntent = mockk<PaymentIntent> {
-            every { order?.shipping } returns mockShipping
-        }
         val mockSession = mockk<AirwallexPaymentSession> {
-            every { paymentIntent } returns mockPaymentIntent
+            every { shipping } returns mockShipping
         }
         val viewModel = createViewModel(mockSession)
         assertEquals(mockShipping, viewModel.shipping)
@@ -66,11 +62,8 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test shipping for AirwallexRecurringWithIntentSession`() {
         val mockShipping = mockk<Shipping>(relaxed = true)
-        val mockPaymentIntent = mockk<PaymentIntent> {
-            every { order?.shipping } returns mockShipping
-        }
         val mockSession = mockk<AirwallexRecurringWithIntentSession> {
-            every { paymentIntent } returns mockPaymentIntent
+            every { shipping } returns mockShipping
         }
         val viewModel = createViewModel(mockSession)
         assertEquals(mockShipping, viewModel.shipping)
@@ -134,7 +127,10 @@ class AddPaymentMethodViewModelTest {
 
     @Test
     fun `test cardHolderName returns empty when no shipping`() {
-        val viewModel = createViewModel(mockk())
+        val mockSession = mockk<AirwallexRecurringSession> {
+            every { shipping } returns null
+        }
+        val viewModel = createViewModel(mockSession)
         assertEquals("", viewModel.cardHolderName)
     }
 

@@ -18,12 +18,14 @@ class SettingViewModel : BaseViewModel() {
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (throwable is HttpException) {
-            _customerId.value = Pair(
-                false,
-                throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
+            _customerId.postValue(
+                Pair(
+                    false,
+                    throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
+                )
             )
         } else {
-            _customerId.value = Pair(false, throwable.localizedMessage)
+            _customerId.postValue(Pair(false, throwable.localizedMessage))
         }
 
     }
