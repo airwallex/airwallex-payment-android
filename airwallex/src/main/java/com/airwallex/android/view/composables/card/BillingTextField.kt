@@ -27,7 +27,7 @@ import com.airwallex.android.view.composables.common.FocusState
 fun BillingTextField(
     text: String,
     modifier: Modifier = Modifier,
-    onTextChanged: (TextFieldValue) -> Unit,
+    onTextChanged: (String) -> Unit,
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
     isError: Boolean = false,
@@ -40,36 +40,32 @@ fun BillingTextField(
     ),
 ) {
     var showClearButton by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
+    var localText by remember { mutableStateOf(text) }
     var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
     LaunchedEffect(text) {
         // Update the text when clicking same address
-        textFieldValue = textFieldValue.copy(text = text)
+        localText = text
     }
 
     StandardTextField(
         hint = hint,
-        text = textFieldValue,
+        text = localText,
         onTextChanged = { newText ->
-            textFieldValue = textFieldValue.copy(
-                text = newText.text,
-                selection = TextRange(newText.text.length),
-            )
-            showClearButton = textFieldValue.text.isNotEmpty()
+            localText = newText
+            showClearButton = localText.isNotEmpty()
             onTextChanged(newText)
         },
         modifier = modifier.onFocusChanged { focusState ->
             if (focusState.isFocused) {
                 localFocusState = FocusState.Focused
-                textFieldValue = textFieldValue.copy(selection = TextRange(textFieldValue.text.length))
-                if (textFieldValue.text.isNotEmpty()) {
+                if (localText.isNotEmpty()) {
                     showClearButton = true
                 }
             } else {
                 // Focus has left the TextField after being focused
                 if (localFocusState !is FocusState.Initial) {
-                    onFocusLost(textFieldValue.text)
+                    onFocusLost(localText)
                 }
                 showClearButton = false
                 localFocusState = FocusState.Unfocused
@@ -79,15 +75,15 @@ fun BillingTextField(
         isError = isError,
         options = options,
         onComplete = {
-            onComplete(textFieldValue.text)
+            onComplete(localText)
         },
         trailingAccessory = {
             if (showClearButton) {
                 IconButton(
                     onClick = {
                         showClearButton = false
-                        textFieldValue = TextFieldValue()
-                        onTextChanged(textFieldValue)
+                        localText = ""
+                        onTextChanged(localText)
                     },
                 ) {
                     Icon(

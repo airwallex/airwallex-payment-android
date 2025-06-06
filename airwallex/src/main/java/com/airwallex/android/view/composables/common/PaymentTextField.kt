@@ -22,7 +22,7 @@ import com.airwallex.android.ui.composables.StandardTextFieldOptions
 fun PaymentTextField(
     text: String,
     modifier: Modifier = Modifier,
-    onTextChanged: (TextFieldValue) -> Unit,
+    onTextChanged: (String) -> Unit,
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
     errorText: String? = null,
@@ -32,31 +32,27 @@ fun PaymentTextField(
     ),
 ) {
     var showClearButton by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
+    var localText by remember { mutableStateOf(text) }
     var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
     StandardTextField(
         hint = "",
-        text = textFieldValue,
+        text = localText,
         onTextChanged = { newText ->
-            textFieldValue = textFieldValue.copy(
-                text = newText.text,
-                selection = TextRange(newText.text.length),
-            )
-            showClearButton = textFieldValue.text.isNotEmpty()
-            onTextChanged(newText)
+            localText = newText
+            showClearButton = localText.isNotEmpty()
+            onTextChanged(localText)
         },
         modifier = modifier.onFocusChanged { focusState ->
             if (focusState.isFocused) {
                 localFocusState = FocusState.Focused
-                textFieldValue = textFieldValue.copy(selection = TextRange(textFieldValue.text.length))
-                if (textFieldValue.text.isNotEmpty()) {
+                if (localText.isNotEmpty()) {
                     showClearButton = true
                 }
             } else {
                 // Focus has left the TextField after being focused
                 if (localFocusState !is FocusState.Initial) {
-                    onFocusLost(textFieldValue.text)
+                    onFocusLost(localText)
                 }
                 showClearButton = false
                 localFocusState = FocusState.Unfocused
@@ -65,15 +61,15 @@ fun PaymentTextField(
         errorText = errorText,
         options = options,
         onComplete = {
-            onComplete(textFieldValue.text)
+            onComplete(localText)
         },
         trailingAccessory = {
             if (showClearButton) {
                 IconButton(
                     onClick = {
                         showClearButton = false
-                        textFieldValue = TextFieldValue()
-                        onTextChanged(textFieldValue)
+                        localText = ""
+                        onTextChanged(localText)
                     },
                 ) {
                     Icon(
