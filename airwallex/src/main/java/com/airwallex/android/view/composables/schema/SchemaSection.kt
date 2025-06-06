@@ -41,9 +41,9 @@ internal fun SchemaSection(
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
-    onError: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
+
     var fieldsToSubmit by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var validateFields: (() -> Unit)? by remember { mutableStateOf(null) }
     var schemaData by remember { mutableStateOf<PaymentMethodsViewModel.SchemaData?>(null) }
@@ -116,13 +116,12 @@ internal fun SchemaSection(
                         schemaData = it
                     } ?: run {
                         isLoading = true
-                        schemaData = viewModel.loadSchemaFields(type).also { loadedData ->
-                            if (loadedData == null) onError()
-                        }
+                        schemaData = viewModel.loadSchemaFields(type)
                         isLoading = false
                     }
 
-                    if (schemaData?.fields?.isEmpty() == true) {
+                    // BE will need to make sure no schema available is null. Currently in certain cases it is possible to be null.
+                    if (schemaData == null || schemaData?.fields?.isEmpty() == true) {
                         // No fields to validate
                         onDirectPay(type)
                     } else {

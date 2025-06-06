@@ -47,7 +47,6 @@ internal fun PaymentScreen(
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
-    onError: () -> Unit,
 ) {
     val availableTypes by remember {
         mutableStateOf(
@@ -104,7 +103,6 @@ internal fun PaymentScreen(
                         onCheckoutWithCvc = onCheckoutWithCvc,
                         onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
-                        onError = onError,
                     )
                 }
                 PaymentMethodsLayoutType.ACCORDION -> {
@@ -123,7 +121,6 @@ internal fun PaymentScreen(
                         onCheckoutWithCvc = onCheckoutWithCvc,
                         onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
-                        onError = onError,
                     )
                 }
             }

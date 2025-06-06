@@ -63,7 +63,6 @@ internal fun PaymentMethodsAccordionSection(
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
-    onError: () -> Unit,
 ) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethodTypes.first()) }
     var selectedIndex by remember { mutableIntStateOf(0) }
@@ -180,7 +179,6 @@ internal fun PaymentMethodsAccordionSection(
                                 onDirectPay = onDirectPay,
                                 onPayWithFields = onPayWithFields,
                                 onLoading = onLoading,
-                                onError = onError,
                             )
                         }
                     }

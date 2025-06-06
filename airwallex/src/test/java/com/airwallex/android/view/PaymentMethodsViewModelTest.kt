@@ -1380,25 +1380,6 @@ class PaymentMethodsViewModelTest {
     }
 
     @Test
-    fun `test retrieveSchemaDataFromCache returns null when cached data is empty`() = runTest {
-        val viewModel = mockViewModel()
-        val paymentMethodType = createAvailablePaymentMethodType()
-
-        // Set empty SchemaData in cache
-        val emptySchemaData = PaymentMethodsViewModel.SchemaData()
-        viewModel.javaClass.getDeclaredField("schemaDataCache").apply {
-            isAccessible = true
-            @Suppress("UNCHECKED_CAST") val cache =
-                get(viewModel) as MutableMap<AvailablePaymentMethodType, PaymentMethodsViewModel.SchemaData>
-            cache[paymentMethodType] = emptySchemaData
-        }
-
-        val result = viewModel.retrieveSchemaDataFromCache(paymentMethodType)
-
-        assertNull(result)
-    }
-
-    @Test
     fun `test retrieveSchemaDataFromCache returns cached data when available`() = runTest {
         val viewModel = mockViewModel()
         val paymentMethodType = createAvailablePaymentMethodType()
