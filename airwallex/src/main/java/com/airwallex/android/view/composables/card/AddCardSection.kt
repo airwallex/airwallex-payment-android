@@ -206,7 +206,7 @@ internal fun AddCardSection(
         PaymentTextField(
             text = cardHolderName,
             onTextChanged = { value ->
-                cardHolderName = value.text
+                cardHolderName = value
                 cardHolderNameErrorMessage = null
             },
             onComplete = { input ->
@@ -249,7 +249,7 @@ internal fun AddCardSection(
             PaymentTextField(
                 text = email,
                 onTextChanged = { value ->
-                    email = value.text
+                    email = value
                     cardHolderEmailErrorMessage = null
                 },
                 onComplete = { input ->
@@ -319,7 +319,7 @@ internal fun AddCardSection(
                     hint = stringResource(id = R.string.airwallex_shipping_street_hint),
                     text = street,
                     onTextChanged = {
-                        street = it.text
+                        street = it
                         streetErrorMessage = null
                     },
                     onComplete = { input ->
@@ -345,7 +345,7 @@ internal fun AddCardSection(
                         hint = stringResource(id = R.string.airwallex_shipping_state_name_hint),
                         text = state,
                         onTextChanged = {
-                            state = it.text
+                            state = it
                             stateErrorMessage = null
                         },
                         onComplete = { input ->
@@ -371,7 +371,7 @@ internal fun AddCardSection(
                         hint = stringResource(id = R.string.airwallex_shipping_city_name_hint),
                         text = city,
                         onTextChanged = {
-                            city = it.text
+                            city = it
                             cityErrorMessage = null
                         },
                         onComplete = { input ->
@@ -399,7 +399,7 @@ internal fun AddCardSection(
                     hint = stringResource(id = R.string.airwallex_shipping_zip_code_hint),
                     text = zipCode,
                     onTextChanged = {
-                        zipCode = it.text
+                        zipCode = it
                         zipCodeErrorMessage = null
                     },
                     onComplete = { input ->
@@ -424,7 +424,7 @@ internal fun AddCardSection(
                     hint = stringResource(id = R.string.airwallex_contact_phone_number_hint),
                     text = phoneNumber,
                     onTextChanged = {
-                        phoneNumber = it.text
+                        phoneNumber = it
                         phoneNumberErrorMessage = null
                     },
                     onComplete = { input ->

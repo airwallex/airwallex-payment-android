@@ -104,7 +104,7 @@ internal fun SchemaFieldsSection(
                         },
                         returnType = StandardTextFieldOptions.ReturnType.DONE,
                     ),
-                    onTextChanged = { inputMap[field.name] = it.text },
+                    onTextChanged = { inputMap[field.name] = it },
                     onFocusLost = { input ->
                         if (input.isValidDynamicSchemaField(field.validations, field.uiType)) {
                             inputMap[field.name] = input

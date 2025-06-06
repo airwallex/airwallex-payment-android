@@ -78,6 +78,56 @@ fun StandardTextField(
     }
 }
 
+@Suppress("LongParameterList")
+@Composable
+fun StandardTextField(
+    text: String,
+    hint: String?,
+    onTextChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    supportText: String? = null,
+    errorText: String? = null,
+    isError: Boolean = false,
+    isFieldRequired: Boolean = false,
+    options: StandardTextFieldOptions = StandardTextFieldOptions(),
+    leadingAccessory: @Composable (() -> Unit)? = null,
+    trailingAccessory: @Composable (() -> Unit)? = null,
+    onFocusChanged: ((Boolean) -> Unit)? = null,
+    onComplete: (() -> Unit)? = null,
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    shape: Shape = RoundedCornerShape(8.dp),
+) {
+    AirwallexTheme {
+        OutlinedTextField(
+            value = text,
+            onValueChange = onTextChanged,
+            modifier = modifier
+                .fillMaxWidth()
+                .onFocusChanged { focusState ->
+                    onFocusChanged?.invoke(focusState.isFocused)
+                },
+            enabled = enabled,
+            readOnly = readOnly,
+            interactionSource = interactionSource,
+            placeholder = hint?.let { { Hint(isFieldRequired, it) } },
+            leadingIcon = leadingAccessory,
+            trailingIcon = trailingAccessory,
+            supportingText = supportTextOrNull(supportText = supportText, errorText = errorText),
+            isError = isError || errorText.isNullOrEmpty().not(),
+            keyboardOptions = options.makeKeyboardOptions(),
+            keyboardActions = options.returnType.makeKeyboardAction(onComplete),
+            singleLine = options.singleLine,
+            maxLines = 1,
+            textStyle = textStyle,
+            colors = textFieldColors(),
+            shape = shape,
+        )
+    }
+}
+
 @Composable
 private fun supportTextOrNull(
     supportText: String?,
