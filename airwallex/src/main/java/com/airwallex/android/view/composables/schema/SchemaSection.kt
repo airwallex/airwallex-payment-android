@@ -120,12 +120,8 @@ internal fun SchemaSection(
                         isLoading = false
                     }
 
-                    if (schemaData == null) {
-                        return@launch
-                    }
-
                     // BE will need to make sure no schema available is null. Currently in certain cases it is possible to be null.
-                    if (schemaData?.fields?.isEmpty() == true) {
+                    if (schemaData == null || schemaData?.fields?.isEmpty() == true) {
                         // No fields to validate
                         onDirectPay(type)
                     } else {
