@@ -64,7 +64,7 @@ internal class PaymentMethodsViewModel(
 
     // Cache for schema data by payment method type
     @VisibleForTesting
-    internal val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData>()
+    internal val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData?>()
 
     // Map for additional params. Currently only used for country code in Enum type fields.
     private val additionalParams = mutableMapOf<String, String>()
@@ -422,16 +422,12 @@ internal class PaymentMethodsViewModel(
     }
 
     fun retrieveSchemaDataFromCache(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
-        return schemaDataCache[paymentMethodType]?.takeIf { it != SchemaData() }
+        return schemaDataCache[paymentMethodType]
     }
 
     suspend fun loadSchemaFields(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
         // Return cached data if available
-        schemaDataCache[paymentMethodType]?.let {
-            if (it != SchemaData()) {
-                return it
-            }
-        }
+        schemaDataCache[paymentMethodType]?.let { return it }
 
         AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields, type = ${paymentMethodType.name}")
         val paymentMethod = PaymentMethod.Builder().setType(paymentMethodType.name).build()
@@ -442,7 +438,7 @@ internal class PaymentMethodsViewModel(
                 val typeInfo = retrievePaymentMethodTypeInfo(type).getOrElse { exception ->
                     _paymentFlowStatus.value =
                         PaymentFlowStatus.ErrorAlert(exception.localizedMessage ?: "")
-                    schemaDataCache[paymentMethodType] = SchemaData()
+                    schemaDataCache[paymentMethodType] = null
                     return null
                 }
                 // Ad hoc. Aligned with BE that we do not show Enum types in UI, instead we pass fixed values when we have the field.
@@ -477,7 +473,7 @@ internal class PaymentMethodsViewModel(
                 val banks = retrieveBanks(type).getOrElse { exception ->
                     _paymentFlowStatus.value =
                         PaymentFlowStatus.ErrorAlert(exception.localizedMessage ?: "")
-                    schemaDataCache[paymentMethodType] = SchemaData()
+                    schemaDataCache[paymentMethodType] = null
                     return null
                 }.items
                 AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields: banks = $banks")

@@ -170,9 +170,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         onLoading = { isLoading ->
                             setLoadingProgress(loading = isLoading)
                         },
-                        onError = {
-                            alert(message = getString(R.string.airwallex_invalid_scheme_message))
-                        },
                     )
                 }
             }

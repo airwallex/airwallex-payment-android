@@ -45,7 +45,6 @@ internal fun PaymentMethodsTabSection(
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
-    onError: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val pagerState = rememberPagerState(pageCount = { availablePaymentMethodTypes.size })
@@ -115,7 +114,6 @@ internal fun PaymentMethodsTabSection(
                         onDirectPay = onDirectPay,
                         onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
-                        onError = onError,
                     )
                 }
             }
