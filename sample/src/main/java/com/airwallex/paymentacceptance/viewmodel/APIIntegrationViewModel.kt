@@ -273,6 +273,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setAutoCapture(autoCapture)
             .setHidePaymentConsents(false)
             .setPaymentMethods(listOf())
+            .setShipping(shipping)
             .build()
 
     /**
@@ -326,6 +327,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setAutoCapture(autoCapture)
             .setPaymentMethods(listOf())
             .setGooglePayOptions(googlePayOptions)
+            .setShipping(shipping)
             .build()
 
 }
