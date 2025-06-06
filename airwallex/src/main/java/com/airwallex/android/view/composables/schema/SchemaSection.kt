@@ -112,7 +112,7 @@ internal fun SchemaSection(
             text = viewModel.schemaButtonTitle,
             onClick = {
                 coroutineScope.launch {
-                    viewModel.retrieveSchemaDataFromCache(type)?.takeIf { it != PaymentMethodsViewModel.SchemaData() }?.let {
+                    viewModel.retrieveSchemaDataFromCache(type)?.let {
                         schemaData = it
                     } ?: run {
                         isLoading = true

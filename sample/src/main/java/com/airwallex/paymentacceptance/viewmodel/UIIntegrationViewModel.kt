@@ -241,6 +241,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setAutoCapture(autoCapture)
             .setGooglePayOptions(googlePayOptions)
             .setPaymentMethods(paymentMethods)
+            .setShipping(shipping)
             .build()
 
 }
