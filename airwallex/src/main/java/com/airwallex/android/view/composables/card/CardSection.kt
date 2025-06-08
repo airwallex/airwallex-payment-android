@@ -34,28 +34,7 @@ import com.airwallex.android.view.composables.consent.ConsentDetailSection
 import com.airwallex.android.view.composables.consent.ConsentListSection
 import java.util.Locale
 
-sealed interface CardSectionType {
-    val screenTitleRes: Int?
-    val buttonTitleRes: Int
-
-    object AddCard : CardSectionType {
-        @StringRes override val screenTitleRes = R.string.airwallex_add_card_screen_title
-        @StringRes override val buttonTitleRes = R.string.airwallex_add_card_button_title
-    }
-
-    object ConsentList : CardSectionType {
-        @StringRes override val screenTitleRes = R.string.airwallex_consent_list_screen_title
-        @StringRes override val buttonTitleRes = R.string.airwallex_consent_list_button_title
-    }
-
-    data class ConsentDetail(
-        val consent: PaymentConsent,
-    ) : CardSectionType {
-        override val screenTitleRes = null
-        @StringRes override val buttonTitleRes = R.string.airwallex_consent_detail_button_title
-    }
-}
-
+@Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
 internal fun CardSection(
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
@@ -211,5 +190,27 @@ internal fun CardSection(
                 )
             }
         }
+    }
+}
+
+sealed interface CardSectionType {
+    val screenTitleRes: Int?
+    val buttonTitleRes: Int
+
+    object AddCard : CardSectionType {
+        @StringRes override val screenTitleRes = R.string.airwallex_add_card_screen_title
+        @StringRes override val buttonTitleRes = R.string.airwallex_add_card_button_title
+    }
+
+    object ConsentList : CardSectionType {
+        @StringRes override val screenTitleRes = R.string.airwallex_consent_list_screen_title
+        @StringRes override val buttonTitleRes = R.string.airwallex_consent_list_button_title
+    }
+
+    data class ConsentDetail(
+        val consent: PaymentConsent,
+    ) : CardSectionType {
+        override val screenTitleRes = null
+        @StringRes override val buttonTitleRes = R.string.airwallex_consent_detail_button_title
     }
 }

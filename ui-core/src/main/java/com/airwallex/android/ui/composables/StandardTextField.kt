@@ -28,11 +28,62 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+@Suppress("LongParameterList")
 @Composable
 fun StandardTextField(
     text: TextFieldValue,
     hint: String?,
     onTextChanged: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    supportText: String? = null,
+    errorText: String? = null,
+    isError: Boolean = false,
+    isFieldRequired: Boolean = false,
+    options: StandardTextFieldOptions = StandardTextFieldOptions(),
+    leadingAccessory: @Composable (() -> Unit)? = null,
+    trailingAccessory: @Composable (() -> Unit)? = null,
+    onFocusChanged: ((Boolean) -> Unit)? = null,
+    onComplete: (() -> Unit)? = null,
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    shape: Shape = RoundedCornerShape(8.dp),
+) {
+    AirwallexTheme {
+        OutlinedTextField(
+            value = text,
+            onValueChange = onTextChanged,
+            modifier = modifier
+                .fillMaxWidth()
+                .onFocusChanged { focusState ->
+                    onFocusChanged?.invoke(focusState.isFocused)
+                },
+            enabled = enabled,
+            readOnly = readOnly,
+            interactionSource = interactionSource,
+            placeholder = hint?.let { { Hint(isFieldRequired, it) } },
+            leadingIcon = leadingAccessory,
+            trailingIcon = trailingAccessory,
+            supportingText = supportTextOrNull(supportText = supportText, errorText = errorText),
+            isError = isError || errorText.isNullOrEmpty().not(),
+            keyboardOptions = options.makeKeyboardOptions(),
+            keyboardActions = options.returnType.makeKeyboardAction(onComplete),
+            singleLine = options.singleLine,
+            maxLines = 1,
+            textStyle = textStyle,
+            colors = textFieldColors(),
+            shape = shape,
+        )
+    }
+}
+
+@Suppress("LongParameterList")
+@Composable
+fun StandardTextField(
+    text: String,
+    hint: String?,
+    onTextChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -120,8 +171,7 @@ private fun SupportingText(
         if (!description.isNullOrEmpty()) {
             Text(
                 text = description,
-                style = textStyle
-                    .copy(color = AirwallexColor.TextPrimary),
+                style = textStyle.copy(color = AirwallexColor.TextPrimary),
             )
         }
 
@@ -129,8 +179,7 @@ private fun SupportingText(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = errorMessage,
-                style = textStyle
-                    .copy(color = MaterialTheme.colorScheme.error),
+                style = textStyle.copy(color = MaterialTheme.colorScheme.error),
             )
         }
     }
@@ -142,15 +191,18 @@ private fun Hint(
     hint: String,
 ) {
     if (isFieldRequired) {
-        Text(buildAnnotatedString {
-            val text = "$hint *"
-            append(text)
-
-            val baseStyle = MaterialTheme.typography.bodyMedium
-                .toSpanStyle()
-                .copy(color = MaterialTheme.colorScheme.error)
-            addStyle(style = baseStyle, start = text.length - 1, end = text.length)
-        })
+        Text(
+            text = buildAnnotatedString {
+                val text = "$hint *"
+                append(text)
+                val baseStyle = MaterialTheme.typography.bodyMedium.toSpanStyle().copy(color = MaterialTheme.colorScheme.error)
+                addStyle(
+                    style = baseStyle,
+                    start = text.length - 1,
+                    end = text.length,
+                )
+            },
+        )
     } else {
         Text(
             text = hint,
@@ -170,11 +222,7 @@ data class StandardTextFieldOptions(
      * See [android.widget.TextView.getInputType] for details.
      */
     enum class InputType {
-        NORMAL,
-        NUMBER,
-        DECIMALS,
-        NUMBER_PASSWORD,
-        PHONE;
+        NORMAL, NUMBER, DECIMALS, NUMBER_PASSWORD, PHONE;
 
         fun makeKeyboardType(): KeyboardType = when (this) {
             NORMAL -> KeyboardType.Text

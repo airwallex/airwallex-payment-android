@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Suppress("LongMethod")
 class WeChatComponent : ActionComponent {
 
     private var listener: Airwallex.PaymentResultListener? = null
@@ -73,10 +74,10 @@ class WeChatComponent : ActionComponent {
         listener: Airwallex.PaymentResultListener,
         consentId: String?
     ) {
-        if (paymentIntentId.isNullOrEmpty()) {
+        if (paymentIntentId == null) {
             listener.onCompleted(
                 AirwallexPaymentStatus.Failure(
-                    AirwallexCheckoutException(message = "paymentIntentId is null or empty")
+                    AirwallexCheckoutException(message = "paymentIntentId is null")
                 )
             )
             return

@@ -42,10 +42,10 @@ class GooglePayComponent : ActionComponent {
         listener: Airwallex.PaymentResultListener,
         consentId: String?
     ) {
-        if (paymentIntentId.isNullOrEmpty()) {
+        if (paymentIntentId == null) {
             listener.onCompleted(
                 AirwallexPaymentStatus.Failure(
-                    AirwallexCheckoutException(message = "paymentIntentId is null or empty")
+                    AirwallexCheckoutException(message = "paymentIntentId is null")
                 )
             )
             return

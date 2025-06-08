@@ -31,6 +31,7 @@ import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.composables.google.GooglePaySection
 import org.json.JSONArray
 
+@Suppress("LongMethod", "LongParameterList")
 @Composable
 internal fun PaymentScreen(
     layoutType: PaymentMethodsLayoutType,
@@ -46,7 +47,6 @@ internal fun PaymentScreen(
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
-    onError: () -> Unit,
 ) {
     val availableTypes by remember {
         mutableStateOf(
@@ -103,7 +103,6 @@ internal fun PaymentScreen(
                         onCheckoutWithCvc = onCheckoutWithCvc,
                         onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
-                        onError = onError,
                     )
                 }
                 PaymentMethodsLayoutType.ACCORDION -> {
@@ -122,7 +121,6 @@ internal fun PaymentScreen(
                         onCheckoutWithCvc = onCheckoutWithCvc,
                         onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
-                        onError = onError,
                     )
                 }
             }

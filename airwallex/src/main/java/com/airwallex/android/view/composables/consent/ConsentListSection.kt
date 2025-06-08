@@ -28,7 +28,7 @@ internal fun ConsentListSection(
     var localConsentToBeDeleted by remember { mutableStateOf<PaymentConsent?>(null) }
 
     ScreenView { onScreenViewed() }
-    
+
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
         availablePaymentConsents.forEach { consent ->
             if (consent.paymentMethod?.card != null) {
@@ -44,16 +44,17 @@ internal fun ConsentListSection(
             }
         }
     }
-    
+
     if (localConsentToBeDeleted != null) {
         StandardAlertDialog(
             title = stringResource(
                 R.string.airwallex_delete_consent_alert_title,
                 String.format(
                     "%s •••• %s",
-                    localConsentToBeDeleted?.paymentMethod?.card?.brand?.uppercase(Locale.ROOT).orEmpty(),
+                    localConsentToBeDeleted?.paymentMethod?.card?.brand?.uppercase(Locale.ROOT)
+                        .orEmpty(),
                     localConsentToBeDeleted?.paymentMethod?.card?.last4.orEmpty(),
-                )
+                ),
             ),
             content = stringResource(id = R.string.airwallex_delete_consent_alert_content),
             confirmButtonTitle = stringResource(R.string.airwallex_delete_payment_method_positive),

@@ -94,6 +94,7 @@ class AirwallexPaymentSession internal constructor(
         private var autoCapture: Boolean = true
         private var hidePaymentConsents: Boolean = false
         private var paymentMethods: List<String>? = null
+        private var shipping: Shipping? = null
 
         init {
             paymentIntent.clientSecret?.apply {

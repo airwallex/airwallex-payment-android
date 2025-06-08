@@ -1,9 +1,7 @@
 package com.airwallex.android.view
 
 import android.app.Application
-import android.util.Patterns
 import androidx.annotation.StringRes
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,6 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+@Suppress("ComplexCondition", "LongParameterList")
 class AddPaymentMethodViewModel(
     application: Application,
     private val airwallex: Airwallex,
@@ -62,9 +61,7 @@ class AddPaymentMethodViewModel(
         if (shipping == null) {
             ""
         } else {
-            listOfNotNull(shipping?.firstName, shipping?.lastName)
-                .joinToString(" ")
-                .ifEmpty { "" }
+            listOfNotNull(shipping?.firstName, shipping?.lastName).joinToString(" ").ifEmpty { "" }
         }
     }
 
@@ -76,27 +73,16 @@ class AddPaymentMethodViewModel(
     private val _deleteCardSuccess = MutableStateFlow<PaymentConsent?>(null)
     val deleteCardSuccess: StateFlow<PaymentConsent?> = _deleteCardSuccess.asStateFlow()
 
-    fun getValidationResult(cardNumber: String): ValidationResult {
-        if (cardNumber.isEmpty()) {
-            return ValidationResult.Error(R.string.airwallex_empty_card_number)
-        }
-        if (CardUtils.isValidCardNumber(cardNumber)) {
-            val cardBrand = CardUtils.getPossibleCardBrand(cardNumber, true)
-            val supportedCardBrands = supportedCardSchemes.map { CardBrand.fromType(it.name) }
-            return if (supportedCardBrands.contains(cardBrand)) {
-                ValidationResult.Success
-            } else {
-                ValidationResult.Error(R.string.airwallex_unsupported_card_number)
-            }
-        }
-        return ValidationResult.Error(R.string.airwallex_invalid_card_number)
-    }
-
     fun getCardNumberValidationMessage(cardNumber: String): Int? {
         return when {
             cardNumber.isBlank() -> R.string.airwallex_empty_card_number
             !CardUtils.isValidCardNumber(cardNumber) -> R.string.airwallex_invalid_card_number
-            supportedCardSchemes.none { CardBrand.fromType(it.name) == CardUtils.getPossibleCardBrand(cardNumber, true) } -> R.string.airwallex_unsupported_card_number
+            supportedCardSchemes.none {
+                CardBrand.fromType(it.name) == CardUtils.getPossibleCardBrand(
+                    cardNumber, true
+                )
+            } -> R.string.airwallex_unsupported_card_number
+
             else -> null
         }
     }
@@ -141,6 +127,7 @@ class AddPaymentMethodViewModel(
                 BillingFieldType.POSTAL_CODE -> type.errorMessage
                 BillingFieldType.PONE_NUMBER -> type.errorMessage
             }
+
             else -> null
         }
     }
@@ -159,41 +146,42 @@ class AddPaymentMethodViewModel(
         )
     }
 
-    fun createCard(cardNumber: String, name: String, expiryDate: String, cvv: String): PaymentMethod.Card? {
+    fun createCard(
+        cardNumber: String,
+        name: String,
+        expiryDate: String,
+        cvv: String,
+    ): PaymentMethod.Card? {
         if (cardNumber.isBlank() || name.isBlank() || expiryDate.isBlank() || cvv.isBlank()) {
             return null
         }
         val (month, year) = expiryDate.createExpiryMonthAndYear() ?: return null
-        return PaymentMethod.Card.Builder()
-            .setNumber(CardUtils.removeSpacesAndHyphens(cardNumber))
-            .setName(name.trim())
-            .setExpiryMonth(if (month < 10) "0$month" else month.toString())
-            .setExpiryYear(year.toString())
-            .setCvc(cvv.trim())
-            .build()
+        return PaymentMethod.Card.Builder().setNumber(CardUtils.removeSpacesAndHyphens(cardNumber))
+            .setName(name.trim()).setExpiryMonth(if (month < 10) "0$month" else month.toString())
+            .setExpiryYear(year.toString()).setCvc(cvv.trim()).build()
     }
 
-    fun createBillingWithShipping(countryCode: String, state: String, city: String, street: String, postcode: String, phoneNumber: String, email: String): Billing {
-        return Billing.Builder()
-            .setAddress(
-                Address.Builder()
-                    .setCountryCode(countryCode)
-                    .setState(state)
-                    .setCity(city)
-                    .setStreet(street)
-                    .setPostcode(postcode)
-                    .build()
-            )
-            .setPhone(phoneNumber)
-            .setEmail(email)
-            .build()
+    fun createBillingWithShipping(
+        countryCode: String,
+        state: String,
+        city: String,
+        street: String,
+        postcode: String,
+        phoneNumber: String,
+        email: String
+    ): Billing {
+        return Billing.Builder().setAddress(
+                Address.Builder().setCountryCode(countryCode).setState(state).setCity(city)
+                    .setStreet(street).setPostcode(postcode).build()
+            ).setPhone(phoneNumber).setEmail(email).build()
     }
 
     fun deleteCardSuccess(consent: PaymentConsent) {
         _deleteCardSuccess.update { consent }
     }
 
-    fun isCvcRequired(paymentConsent: PaymentConsent) = paymentConsent.paymentMethod?.card?.numberType == PaymentMethod.Card.NumberType.PAN
+    fun isCvcRequired(paymentConsent: PaymentConsent) =
+        paymentConsent.paymentMethod?.card?.numberType == PaymentMethod.Card.NumberType.PAN
 
     internal class Factory(
         private val application: Application,
@@ -209,11 +197,6 @@ class AddPaymentMethodViewModel(
                 supportedCardSchemes = supportedCardSchemes
             ) as T
         }
-    }
-
-    sealed class ValidationResult {
-        object Success : ValidationResult()
-        data class Error(@StringRes val message: Int) : ValidationResult()
     }
 
     enum class BillingFieldType(@StringRes val errorMessage: Int) {

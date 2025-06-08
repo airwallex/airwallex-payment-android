@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.ui.R
 
+@Suppress("LongParameterList")
 @Composable
 fun StandardIcon(
     @DrawableRes drawableRes: Int,

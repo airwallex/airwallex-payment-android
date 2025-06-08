@@ -8,6 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.airwallex.android.ui.R
 
+@Suppress("LongMethod", "ComplexMethod")
 enum class AirwallexTypography {
     LargeTitleBold,
     LargeTitle,
@@ -40,7 +41,7 @@ enum class AirwallexTypography {
                 lineHeight = 41.sp,
                 platformStyle = PlatformTextStyle(includeFontPadding = false)
             )
-            LargeTitle-> TextStyle(
+            LargeTitle -> TextStyle(
                 fontFamily = CircularXxFontFamily,
                 fontSize = 34.sp,
                 lineHeight = 41.sp,

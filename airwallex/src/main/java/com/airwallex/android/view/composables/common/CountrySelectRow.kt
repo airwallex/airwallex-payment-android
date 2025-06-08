@@ -30,7 +30,7 @@ import com.airwallex.android.ui.composables.TextFieldWithPickerButton
 import com.airwallex.android.view.util.CountryCodeType
 import com.airwallex.android.view.util.safeValueOf
 
-@Suppress("LongParameterList")
+@Suppress("LongMethod", "LongParameterList")
 @Composable
 internal fun CountrySelectRow(
     modifier: Modifier = Modifier,

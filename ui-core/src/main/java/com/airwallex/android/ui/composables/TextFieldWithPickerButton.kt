@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.ui.R
 
+@Suppress("LongParameterList")
 @Composable
 fun TextFieldWithPickerButton(
     modifier: Modifier = Modifier,
@@ -49,6 +50,7 @@ fun TextFieldWithPickerButton(
     )
 }
 
+@Suppress("LongParameterList")
 @Composable
 private fun TextFieldWithPickerButton(
     modifier: Modifier = Modifier,

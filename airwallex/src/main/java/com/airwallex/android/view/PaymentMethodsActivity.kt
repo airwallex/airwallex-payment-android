@@ -26,6 +26,7 @@ import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.risk.AirwallexRisk
 
+@Suppress("LongMethod")
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
     private val viewBinding: ActivityPaymentMethodsBinding by lazy {
@@ -49,10 +50,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         ViewModelProvider(
             this,
             PaymentMethodsViewModel.Factory(
-                application,
-                airwallex,
-                session
-            )
+                application, airwallex, session
+            ),
         )[PaymentMethodsViewModel::class.java]
     }
 
@@ -128,7 +127,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 supportedCardSchemes = availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
                     paymentMethodType.name == PaymentMethodType.CARD.value
                 }?.cardSchemes ?: emptyList(),
-            )
+            ),
         )[AddPaymentMethodViewModel::class.java]
 
         addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
@@ -139,9 +138,11 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         consentId = result.consentId,
                     )
                 }
+
                 is AirwallexPaymentStatus.Failure -> {
                     finishWithPaymentIntent(exception = result.exception)
                 }
+
                 else -> Unit
             }
         }
@@ -169,9 +170,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         onLoading = { isLoading ->
                             setLoadingProgress(loading = isLoading)
                         },
-                        onError = {
-                            alert(message = getString(R.string.airwallex_invalid_scheme_message))
-                        },
                     )
                 }
             }
@@ -179,13 +177,9 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     private fun startAddPaymentMethod(cardSchemes: List<CardScheme>) {
-        AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity)
-            .launchForResult(
-                AddPaymentMethodActivityLaunch.Args.Builder()
-                    .setAirwallexSession(session)
-                    .setSupportedCardSchemes(cardSchemes)
-                    .setSinglePaymentMethod(true)
-                    .build()
+        AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity).launchForResult(
+                AddPaymentMethodActivityLaunch.Args.Builder().setAirwallexSession(session)
+                    .setSupportedCardSchemes(cardSchemes).setSinglePaymentMethod(true).build()
             ) { _, result ->
                 handleAddPaymentMethodActivityResult(result.resultCode, result.data)
             }
@@ -206,6 +200,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     )
                 }
             }
+
             RESULT_CANCELED -> {
                 val result = AddPaymentMethodActivityLaunch.CancellationResult.fromIntent(data)
                 AirwallexLogger.info("PaymentMethodsActivity onActivityResult: result_canceled")
@@ -262,12 +257,15 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     isRedirecting = isRedirecting,
                     exception = exception
                 ).toBundle()
-            )
+            ),
         )
         finish()
     }
 
-    private fun onDeleteCard(paymentConsent: PaymentConsent, onDeleteCompleted: (PaymentConsent) -> Unit) {
+    private fun onDeleteCard(
+        paymentConsent: PaymentConsent,
+        onDeleteCompleted: (PaymentConsent) -> Unit,
+    ) {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.deletePaymentConsent(paymentConsent).observe(this) { result ->
             result.fold(
@@ -307,7 +305,11 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         viewModel.checkoutWithSchema(type)
     }
 
-    private fun onPayWithSchema(paymentMethod: PaymentMethod, info: PaymentMethodTypeInfo, fieldMap: Map<String, String>) {
+    private fun onPayWithSchema(
+        paymentMethod: PaymentMethod,
+        info: PaymentMethodTypeInfo,
+        fieldMap: Map<String, String>,
+    ) {
         setLoadingProgress(loading = true, cancelable = false)
         AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to info.name.orEmpty()))
         viewModel.checkoutWithSchema(

@@ -30,6 +30,7 @@ import com.airwallex.android.view.composables.common.BankSelectRow
 import com.airwallex.android.view.composables.common.PaymentTextField
 import com.airwallex.android.view.util.isValidDynamicSchemaField
 
+@Suppress("ComplexMethod", "LongMethod")
 @Composable
 internal fun SchemaFieldsSection(
     fields: List<DynamicSchemaField>,
@@ -103,7 +104,7 @@ internal fun SchemaFieldsSection(
                         },
                         returnType = StandardTextFieldOptions.ReturnType.DONE,
                     ),
-                    onTextChanged = { inputMap[field.name] = it.text },
+                    onTextChanged = { inputMap[field.name] = it },
                     onFocusLost = { input ->
                         if (input.isValidDynamicSchemaField(field.validations, field.uiType)) {
                             inputMap[field.name] = input
