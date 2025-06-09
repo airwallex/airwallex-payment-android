@@ -82,6 +82,10 @@ object ThreeDSecurityManager {
                 resultCallBack?.invoke(requestCode, result.resultCode, result.data)
             }
         } else {
+            (activity as? AirwallexActivity)?.setLoadingProgress(
+                loading = true,
+                cancelable = false
+            )
             val container = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
             val webView = AirwallexWebView(activity).apply {
                 visibility = View.INVISIBLE
@@ -102,6 +106,7 @@ object ThreeDSecurityManager {
 
                             AirwallexLogger.info("ThreeDSecurityManager onWebViewConfirmation: nextAction.stage = ${nextAction.stage}", sensitiveMessage = "payload = $payload")
                             if (nextAction.stage == NextAction.NextActionStage.WAITING_USER_INFO_INPUT) {
+                                (activity as? AirwallexActivity)?.setLoadingProgress(false)
                                 AnalyticsLogger.logPageView(
                                     "webview_redirect",
                                     mutableMapOf<String, Any>().apply {
@@ -117,10 +122,6 @@ object ThreeDSecurityManager {
                                         )
                                     )
                             } else {
-                                (activity as? AirwallexActivity)?.setLoadingProgress(
-                                    loading = true,
-                                    cancelable = false
-                                )
                                 cardNextActionModel.paymentManager.startOperation(
                                     options,
                                     object : Airwallex.PaymentListener<PaymentIntent> {
