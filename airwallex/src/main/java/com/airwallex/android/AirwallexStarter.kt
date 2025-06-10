@@ -8,14 +8,20 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.Airwallex.Companion.initialize
 import com.airwallex.android.core.AirwallexConfiguration
+import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.Shipping
+import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
@@ -46,6 +52,28 @@ class AirwallexStarter {
             AirwallexActivityLaunch.initialize(application)
         }
 
+        private fun setupAnalyticsLogger(session: AirwallexSession) {
+            when (session) {
+                is AirwallexPaymentSession -> {
+                    AnalyticsLogger.setSessionInformation(
+                        transactionMode = TransactionMode.ONE_OFF.value,
+                        paymentIntentId = session.paymentIntent.id,
+                    )
+                }
+                is AirwallexRecurringSession -> {
+                    AnalyticsLogger.setSessionInformation(
+                        transactionMode = TransactionMode.RECURRING.value,
+                    )
+                }
+                is AirwallexRecurringWithIntentSession -> {
+                    AnalyticsLogger.setSessionInformation(
+                        transactionMode = TransactionMode.RECURRING.value,
+                        paymentIntentId = session.paymentIntent.id,
+                    )
+                }
+            }
+        }
+
         /**
          * Launch the card payment flow to allow the user to complete the entire payment flow
          *
@@ -59,6 +87,7 @@ class AirwallexStarter {
             supportedCards: List<AirwallexSupportedCard> = enumValues<AirwallexSupportedCard>().toList(),
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
+            setupAnalyticsLogger(session)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentCardPaymentFlow[$intentId]")
             AddPaymentMethodActivityLaunch(activity)
@@ -130,17 +159,20 @@ class AirwallexStarter {
          * @param fragment fragment {@link Fragment}
          * @param session a [AirwallexSession] used to present the payment flow
          * @param paymentResultListener The callback of present entire payment flow
+         * @param layoutType PaymentMethodsLayoutType for payment methods list UI. Two types are supported: Tab and Accordion.
          */
         @Deprecated(message = "Use presentEntirePaymentFlow() instead")
         fun presentPaymentFlow(
             fragment: Fragment,
             session: AirwallexSession,
-            paymentResultListener: Airwallex.PaymentResultListener
+            layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
+            paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(fragment),
                 session,
-                paymentResultListener
+                layoutType,
+                paymentResultListener,
             )
         }
 
@@ -150,17 +182,20 @@ class AirwallexStarter {
          * @param activity the launch activity on which the payment UI is presented
          * @param session a [AirwallexSession] used to present the payment flow
          * @param paymentResultListener The callback of present entire payment flow
+         * @param layoutType PaymentMethodsLayoutType for payment methods list UI. Two types are supported: Tab and Accordion.
          */
         @Deprecated(message = "Use presentEntirePaymentFlow() instead")
         fun presentPaymentFlow(
             activity: ComponentActivity,
             session: AirwallexSession,
-            paymentResultListener: Airwallex.PaymentResultListener
+            layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
+            paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(activity),
                 session,
-                paymentResultListener
+                layoutType,
+                paymentResultListener,
             )
         }
 
@@ -170,36 +205,42 @@ class AirwallexStarter {
          * @param activity the launch activity on which the payment UI is presented
          * @param session a [AirwallexSession] used to present the payment flow
          * @param paymentResultListener The callback of present entire payment flow
+         * @param layoutType PaymentMethodsLayoutType for payment methods list UI. Two types are supported: Tab and Accordion.
          */
         fun presentEntirePaymentFlow(
             activity: ComponentActivity,
             session: AirwallexSession,
-            paymentResultListener: Airwallex.PaymentResultListener
+            layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
+            paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(activity),
                 session,
-                paymentResultListener
+                layoutType,
+                paymentResultListener,
             )
         }
 
         private fun presentPaymentFlow(
             launch: PaymentMethodsActivityLaunch,
             session: AirwallexSession,
-            paymentResultListener: Airwallex.PaymentResultListener
+            layoutType: PaymentMethodsLayoutType,
+            paymentResultListener: Airwallex.PaymentResultListener,
         ) {
+            setupAnalyticsLogger(session)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentPaymentFlow[$intentId]")
             launch.launchForResult(
                 PaymentMethodsActivityLaunch.Args.Builder()
                     .setAirwallexSession(session)
+                    .setLayoutType(layoutType)
                     .build()
             ) { _, result ->
                 handlePaymentData(
                     result.resultCode,
                     result.data,
                     paymentResultListener,
-                    intentId
+                    intentId,
                 )
             }
         }

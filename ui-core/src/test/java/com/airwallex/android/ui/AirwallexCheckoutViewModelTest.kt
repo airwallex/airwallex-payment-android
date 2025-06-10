@@ -4,6 +4,8 @@ import android.app.Application
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
@@ -12,6 +14,7 @@ import com.airwallex.android.core.model.BankResponse
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
+import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -104,6 +107,46 @@ class AirwallexCheckoutViewModelTest {
                 additionalInfo = additionalInfo,
                 flow = flow,
                 listener = any()
+            )
+        }
+    }
+
+    @Test
+    fun `test suspend function checkout with cvc`() = runTest {
+        val flow = mockk<AirwallexPaymentRequestFlow>()
+        val expectedStatus = mockk<AirwallexPaymentStatus>()
+
+        val listenerSlot = slot<Airwallex.PaymentResultListener>()
+
+        coEvery {
+            airwallex.checkout(
+                session = session,
+                paymentMethod = paymentMethod,
+                paymentConsentId = "consentId",
+                cvc = "cvc",
+                flow = flow,
+                listener = capture(listenerSlot)
+            )
+        } answers {
+            listenerSlot.captured.onCompleted(expectedStatus)
+        }
+
+        val result = viewModel.checkout(
+            paymentMethod = paymentMethod,
+            paymentConsentId = "consentId",
+            cvc = "cvc",
+            flow = flow
+        )
+
+        assertEquals(expectedStatus, result)
+        coVerify(exactly = 1) {
+            airwallex.checkout(
+                session = session,
+                paymentMethod = paymentMethod,
+                paymentConsentId = "consentId",
+                cvc = "cvc",
+                flow = flow,
+                listener = capture(listenerSlot)
             )
         }
     }
@@ -256,14 +299,45 @@ class AirwallexCheckoutViewModelTest {
     fun `test suspend function retrievePaymentMethodTypeInfo unsupported session`() = runTest {
         val paymentMethodTypeName = "card"
 
-        val result = viewModel.retrievePaymentMethodTypeInfo(paymentMethodTypeName)
+        val result = try {
+            viewModel.retrievePaymentMethodTypeInfo(paymentMethodTypeName)
+        } catch (e: AirwallexCheckoutException) {
+            e.message
+        }
 
-        assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is AirwallexCheckoutException)
-        assertEquals(
-            "$paymentMethodTypeName just support one-off payment",
-            result.exceptionOrNull()?.message
-        )
+        assertEquals("Session is not available", result)
     }
 
+    @Test
+    fun `test transactionMode with AirwallexPaymentSession should be ONE_OFF`() {
+        val paymentSession = mockk<AirwallexPaymentSession>()
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, paymentSession)
+
+        assertEquals(TransactionMode.ONE_OFF, viewModel.transactionMode)
+    }
+
+    @Test
+    fun `test transactionMode with AirwallexRecurringSession should be RECURRING`() {
+        val recurringSession = mockk<AirwallexRecurringSession>()
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, recurringSession)
+
+        assertEquals(TransactionMode.RECURRING, viewModel.transactionMode)
+    }
+
+    @Test
+    fun `test transactionMode with AirwallexRecurringWithIntentSession should be RECURRING`() {
+        val recurringWithIntentSession = mockk<AirwallexRecurringWithIntentSession>()
+        val viewModel =
+            AirwallexCheckoutViewModel(application, airwallex, recurringWithIntentSession)
+
+        assertEquals(TransactionMode.RECURRING, viewModel.transactionMode)
+    }
+
+    @Test
+    fun `test transactionMode with unknown session type should default to ONE_OFF`() {
+        val unknownSession = mockk<AirwallexSession>()
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, unknownSession)
+
+        assertEquals(TransactionMode.ONE_OFF, viewModel.transactionMode)
+    }
 }

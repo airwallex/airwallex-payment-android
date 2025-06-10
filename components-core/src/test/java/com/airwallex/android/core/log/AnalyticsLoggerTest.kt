@@ -98,5 +98,12 @@ class AnalyticsLoggerTest {
                 "accountId" to "aid"
             )
         }
+
+        AnalyticsLogger.logPaymentView("view_name", mapOf("key" to "value"))
+        verify(exactly = 1) {
+            anyConstructed<Tracker>().info(
+                "view_name", mapOf("key" to "value", "eventType" to "payment_method_view")
+            )
+        }
     }
 }

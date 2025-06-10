@@ -117,7 +117,11 @@ abstract class AirwallexActivity : AppCompatActivity() {
             try {
                 loadingDialog = Dialog(activity).apply {
                     setContentView(R.layout.airwallex_loading)
-                    window?.setBackgroundDrawableResource(android.R.color.transparent)
+                    window?.apply {
+                        setBackgroundDrawableResource(android.R.color.transparent)
+                        // Clear any dim behind
+                        setDimAmount(0f)
+                    }
                     setCancelable(cancelable)
                     show()
                 }
