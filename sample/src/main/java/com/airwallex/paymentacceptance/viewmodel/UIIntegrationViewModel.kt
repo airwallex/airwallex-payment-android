@@ -15,11 +15,13 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
+import com.airwallex.paymentacceptance.force3DS
 import com.airwallex.paymentacceptance.nextTriggerBy
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
@@ -53,6 +55,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
+            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
 
                 override fun onCompleted(status: AirwallexPaymentStatus) {
@@ -79,6 +82,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
+            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
 
                 override fun onCompleted(status: AirwallexPaymentStatus) {
@@ -145,7 +149,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             AirwallexCheckoutMode.PAYMENT -> {
                 //get the paymentIntent object from your server
                 //please do not directly copy this method!
-                val paymentIntent = getPaymentIntentFromServer()
+                val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS)
                 // build an AirwallexPaymentSession based on the paymentIntent
                 buildAirwallexPaymentSession(googlePayOptions, paymentIntent, paymentMethods)
             }
@@ -163,7 +167,7 @@ class UIIntegrationViewModel : BaseViewModel() {
                 //get the customerId and paymentIntent from your server
                 //please do not directly copy these method!
                 val customerId = getCustomerIdFromServer()
-                val paymentIntent = getPaymentIntentFromServer(customerId = customerId)
+                val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
                 //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                 buildAirwallexRecurringWithIntentSession(googlePayOptions, paymentIntent, paymentMethods)
             }
@@ -190,6 +194,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setAutoCapture(autoCapture)
             .setHidePaymentConsents(false)
             .setPaymentMethods(paymentMethods)
+            .setShipping(shipping)
             .build()
 
     /**
@@ -236,6 +241,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             .setAutoCapture(autoCapture)
             .setGooglePayOptions(googlePayOptions)
             .setPaymentMethods(paymentMethods)
+            .setShipping(shipping)
             .build()
 
 }

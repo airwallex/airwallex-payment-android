@@ -115,6 +115,21 @@ object Settings {
                 ?: defaultNextTriggeredBy
         }
 
+    var paymentLayout: String
+        set(value) {
+            sharedPreferences.edit().putString(context.getString(R.string.payment_layout), value)
+                .apply()
+        }
+        get() {
+            val defaultPaymentLayout =
+                SampleApplication.instance.resources.getStringArray(R.array.array_payment_layout)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.payment_layout),
+                defaultPaymentLayout
+            )
+                ?: defaultPaymentLayout
+        }
+
     var requiresEmail: String
         set(value) {
             sharedPreferences.edit()
@@ -131,6 +146,21 @@ object Settings {
                 ?: defaultRequiresEmail
         }
 
+    var force3DS: String
+        set(value) {
+            sharedPreferences.edit()
+                .putString(context.getString(R.string.force_3ds), value)
+                .apply()
+        }
+        get() {
+            val defaultForce3DS =
+                SampleApplication.instance.resources.getStringArray(R.array.array_force_3ds)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.force_3ds),
+                defaultForce3DS
+            )
+                ?: defaultForce3DS
+        }
 
     var autoCapture: String
         set(value) {

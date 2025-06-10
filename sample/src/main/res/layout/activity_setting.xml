@@ -69,11 +69,25 @@
                 app:titleContent="Next trigger by"
                 app:layout_constraintTop_toBottomOf="@+id/titleView" />
 
+            <com.airwallex.paymentacceptance.ui.widget.DropdownPickerView
+                android:id="@+id/selectPaymentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:titleContent="Payment layout"
+                app:layout_constraintTop_toBottomOf="@+id/selectViewTrigger" />
+
             <com.airwallex.paymentacceptance.ui.widget.SwitchView
                 android:id="@+id/swEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:labelText="Requires email" />
+
+            <com.airwallex.paymentacceptance.ui.widget.SwitchView
+                android:id="@+id/sw3DS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:labelText="Force 3DS" />
 
             <com.airwallex.paymentacceptance.ui.widget.SwitchView
                 android:id="@+id/swAutoCapture"

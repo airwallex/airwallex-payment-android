@@ -20,7 +20,7 @@ class RedirectComponent : ActionComponent {
     }
 
     override fun handlePaymentIntentResponse(
-        paymentIntentId: String,
+        paymentIntentId: String?,
         nextAction: NextAction?,
         fragment: Fragment?,
         activity: Activity,

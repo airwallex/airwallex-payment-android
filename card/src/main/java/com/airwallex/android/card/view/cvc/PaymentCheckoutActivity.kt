@@ -53,6 +53,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     }
 
     override fun onBackButtonPressed() {
+        super.onBackButtonPressed()
         AirwallexLogger.info("PaymentCheckoutActivity onBackButtonPressed")
         setResult(RESULT_CANCELED)
         finish()

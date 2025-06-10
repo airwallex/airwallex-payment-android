@@ -14,14 +14,18 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
 
         val environmentOptions = resources.getStringArray(R.array.array_sdk_env).toList()
         var triggerOptions = resources.getStringArray(R.array.array_next_trigger_by).toList()
+        val paymentLayoutOptions = resources.getStringArray(R.array.array_payment_layout).toList()
+
         if (Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
             triggerOptions = arrayListOf("Customer")
         }
         mBinding.selectViewEnvironment.setOptions(environmentOptions)
         mBinding.selectViewTrigger.setOptions(triggerOptions)
+        mBinding.selectPaymentLayout.setOptions(paymentLayoutOptions)
 
         mBinding.selectViewEnvironment.setSelectOption(Settings.sdkEnv)
         mBinding.selectViewTrigger.setSelectOption(Settings.nextTriggerBy)
+        mBinding.selectPaymentLayout.setSelectOption(Settings.paymentLayout)
 
         if (Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
             mBinding.selectViewTrigger.setSelectOption("Customer")
@@ -36,6 +40,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.etClientId.setText(Settings.clientId)
         mBinding.etWeChatAppId.setText(Settings.weChatAppId)
 
+        mBinding.sw3DS.setChecked(Settings.force3DS == "True")
         mBinding.swAutoCapture.setChecked(Settings.autoCapture == "Enabled")
         mBinding.swEmail.setChecked(Settings.requiresEmail == "True")
 
@@ -52,6 +57,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.btnSave.setOnClickListener {
             Settings.sdkEnv = mBinding.selectViewEnvironment.currentOption
             Settings.nextTriggerBy = mBinding.selectViewTrigger.currentOption
+            Settings.paymentLayout = mBinding.selectPaymentLayout.currentOption
 
             Settings.price = mBinding.etPrice.getText()
             Settings.currency = mBinding.etCurrency.getText()
@@ -63,6 +69,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             Settings.weChatAppId = mBinding.etWeChatAppId.getText()
             Settings.returnUrl = mBinding.etReturnUrl.getText()
 
+            Settings.force3DS = if (mBinding.sw3DS.isChecked()) "True" else "False"
             Settings.autoCapture = if (mBinding.swAutoCapture.isChecked()) "Enabled" else "Disabled"
             Settings.requiresEmail = if (mBinding.swEmail.isChecked()) "True" else "False"
             Settings.cachedCustomerId = mBinding.etCustomerId.getText()
@@ -80,10 +87,12 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             mBinding.etAPIKey.setText("")
             mBinding.etClientId.setText("")
             mBinding.etWeChatAppId.setText("")
+            mBinding.sw3DS.setChecked(false)
             mBinding.swAutoCapture.setChecked(false)
             mBinding.swEmail.setChecked(false)
             mBinding.selectViewEnvironment.setSelectOption("DEMO")
             mBinding.selectViewTrigger.setSelectOption("Merchant")
+            mBinding.selectPaymentLayout.setSelectOption("Tab")
             mBinding.etReturnUrl.setText("")
             showAlert("", "settings cleared") {
                 finish()

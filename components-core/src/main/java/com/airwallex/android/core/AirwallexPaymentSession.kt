@@ -94,6 +94,7 @@ class AirwallexPaymentSession internal constructor(
         private var autoCapture: Boolean = true
         private var hidePaymentConsents: Boolean = false
         private var paymentMethods: List<String>? = null
+        private var shipping: Shipping? = null
 
         init {
             paymentIntent.clientSecret?.apply {
@@ -125,13 +126,17 @@ class AirwallexPaymentSession internal constructor(
             this.paymentMethods = paymentMethods
         }
 
+        fun setShipping(shipping: Shipping?): Builder = apply {
+            this.shipping = shipping
+        }
+
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
                 paymentIntent = paymentIntent,
                 currency = paymentIntent.currency,
                 countryCode = countryCode,
                 amount = paymentIntent.amount,
-                shipping = paymentIntent.order?.shipping,
+                shipping = shipping,
                 isBillingInformationRequired = isBillingInformationRequired,
                 isEmailRequired = isEmailRequired,
                 customerId = paymentIntent.customerId,
@@ -139,7 +144,7 @@ class AirwallexPaymentSession internal constructor(
                 googlePayOptions = googlePayOptions,
                 autoCapture = autoCapture,
                 hidePaymentConsents = hidePaymentConsents,
-                paymentMethods = paymentMethods
+                paymentMethods = paymentMethods,
             )
         }
     }
