@@ -40,7 +40,7 @@ nexusPublishing {
     repositories {
         sonatype {
             stagingProfileId = sonatypeStagingProfileId
-            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+            nexusUrl = uri("https://ossrh-staging-api.central.sonatype.com/service/local/")
             username = ossrhUsername
             password = ossrhPassword
             version = version
