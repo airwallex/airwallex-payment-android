@@ -7,7 +7,7 @@
     <string name="airwallex_card_enter_cvv">Enter CVC/CVV for \n%s</string>
     <string name="airwallex_card_pay_now">Pay</string>
     <string name="airwallex_card_total">Total %s</string>
-    <string name="airwallex_card_cvc_hint">CVC/CVV</string>
+    <string name="airwallex_card_cvc_hint" translatable="false">CVC/CVV</string>
     <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>
     <string name="airwallex_confirm_payment">Confirm payment</string>
 </resources>
