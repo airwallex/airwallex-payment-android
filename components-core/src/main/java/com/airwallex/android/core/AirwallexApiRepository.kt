@@ -1,6 +1,7 @@
 package com.airwallex.android.core
 
 import android.net.Uri
+import android.util.Log
 import com.airwallex.android.core.exception.*
 import com.airwallex.android.core.http.AirwallexHttpClient
 import com.airwallex.android.core.http.AirwallexHttpRequest
@@ -310,7 +311,7 @@ class AirwallexApiRepository : ApiRepository {
             val builder = Uri.parse(url).buildUpon()
             builder.appendQueryParameter("__resources", "true")
             builder.appendQueryParameter("os_type", "android")
-            builder.appendQueryParameter("lang", "en")
+            builder.appendQueryParameter("lang", getLanguageCode())
             pageNum?.let {
                 builder.appendQueryParameter("page_num", it.toString())
             }
@@ -359,7 +360,7 @@ class AirwallexApiRepository : ApiRepository {
                 builder.appendQueryParameter("open_id", it)
             }
             builder.appendQueryParameter("os_type", "android")
-            builder.appendQueryParameter("lang", "en")
+            builder.appendQueryParameter("lang", getLanguageCode())
             return builder.build().toString()
         }
 
@@ -390,13 +391,32 @@ class AirwallexApiRepository : ApiRepository {
                 builder.appendQueryParameter("open_id", it)
             }
             builder.appendQueryParameter("os_type", "android")
-            builder.appendQueryParameter("lang", "en")
+            builder.appendQueryParameter("lang", getLanguageCode())
             return builder.build().toString()
         }
 
         @Suppress("DEPRECATION")
         internal fun getApiUrl(baseUrl: String, path: String, vararg args: Any): String {
             return "$baseUrl/api/v1/pa/${String.format(Locale.ENGLISH, path, *args)}"
+        }
+
+        internal fun getLanguageCode(): String {
+            val locale = Locale.getDefault()
+            val code = when (locale.language) {
+                "zh" -> when (locale.script) {
+                    "Hans" -> "zh-Hans"
+                    "Hant" -> "zh-Hant"
+                    else -> "zh"
+                }
+                "pt" -> when (locale.country) {
+                    "BR" -> "pt-BR"
+                    "PT" -> "pt-PT"
+                    else -> "pt"
+                }
+                else -> locale.language
+            }
+            Log.d("AirwallexLang", code)
+            return code
         }
     }
 }
