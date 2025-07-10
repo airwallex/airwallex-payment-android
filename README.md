@@ -10,7 +10,7 @@ This library makes it quick and easy to build an excellent payment experience in
 
 Airwallex's Android SDK is available for Android SDK >= 21.
 
-We support the following localizations: English, Chinese Simplified, Chinese Traditional, French, German, Japanese, Korean, Portuguese Portugal, Portuguese Brazil, Russian, Spanish, Thai
+We support the following localizations: English, Chinese Simplified, Chinese Traditional, French, German, Japanese, Korean, Portuguese Portugal, Portuguese Brazil, Russian, Spanish, Thai.
 
 ## Installation
 The Components are available through [Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), you only need to add the Gradle dependency.
