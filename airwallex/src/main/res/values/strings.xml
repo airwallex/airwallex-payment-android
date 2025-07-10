@@ -25,7 +25,7 @@
     <string name="airwallex_pay_now">Pay</string>
     <string name="airwallex_confirm">Confirm</string>
     <string name="airwallex_payment_methods">Payment methods</string>
-    <string name="airwallex_cvc_hint">CVC/CVV</string>
+    <string name="airwallex_cvc_hint" translatable="false">CVC/CVV</string>
     <string name="airwallex_card_name_hint">Name on card</string>
     <string name="airwallex_email_hint">Email</string>
     <string name="airwallex_empty_card_number">Please enter your card number</string>
@@ -34,7 +34,7 @@
     <string name="airwallex_save_card">Save this card for future payments</string>
     <string name="airwallex_save_union_pay_card">For UnionPay, only credit cards can be saved. Click “Pay” to proceed with a one time payment or use another card if you would like to save it for future use.</string>
     <string name="airwallex_same_as_shipping">Same as shipping address</string>
-    <string name="airwallex_valid_digits">0123456789</string>
+    <string name="airwallex_valid_digits" translatable="false">0123456789</string>
     <string name="airwallex_empty_card_name">Please enter your card name</string>
     <string name="airwallex_empty_expiry">Please enter your card expiry date</string>
     <string name="airwallex_invalid_expiry_date">Please enter a valid expiry date</string>
@@ -42,11 +42,10 @@
     <string name="airwallex_invalid_cvc">Please enter a valid security code</string>
     <string name="airwallex_empty_email">Please enter your email address</string>
     <string name="airwallex_card_number_label">Card number</string>
-    <string name="airwallex_card_number_placeholder">1234 1234 1234 1234</string>
-    <string name="airwallex_expires_hint">MM/YY</string>
+    <string name="airwallex_card_number_placeholder" translatable="false">1234 1234 1234 1234</string>
+    <string name="airwallex_expires_hint" translatable="false">MM/YY</string>
     <string name="airwallex_invalid_email">Please enter valid email</string>
     <string name="airwallex_select_your_bank">Select your bank</string>
-    <string name="airwallex_enter_cvv">Enter CVC/CVV for \n%s</string>
     <string name="airwallex_invalid_field">Invalid %s</string>
     <string name="airwallex_or_pay_with">Or pay with</string>
     <string name="airwallex_card_information_title">Card information</string>

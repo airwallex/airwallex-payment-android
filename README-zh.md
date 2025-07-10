@@ -8,6 +8,8 @@
 
 Airwallx Android SDK 可以很方便得在你的Android用用中添加支付功能，支持Android 21及以上版本。
 
+我们支持以下本地化语言：英语、简体中文、繁体中文、法语、德语、日语、韩语、葡萄牙语（葡萄牙）、葡萄牙语（巴西）、俄语、西班牙语、泰语。
+
 ## 添加依赖
 已经上传到[Maven Central](https://repo1.maven.org/maven2/io/github/airwallex/), 你只需要添加Gradle依赖项。
 
