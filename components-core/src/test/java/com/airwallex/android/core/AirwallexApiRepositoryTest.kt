@@ -25,6 +25,7 @@ import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
+import java.util.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -321,5 +322,33 @@ class AirwallexApiRepositoryTest {
         val url =
             AirwallexApiRepository.getApiUrl("https://api.airwallex.com", "abc")
         assertEquals("https://api.airwallex.com/api/v1/pa/abc", url)
+    }
+
+    @Test
+    fun getLanguageCode_variousLocales() {
+        val testCases = listOf(
+            Triple(Locale("en"), "en", "en"),
+            Triple(Locale.Builder().setLanguage("zh").setScript("Hans").build(), "zh-Hans", "zh-Hans"),
+            Triple(Locale.Builder().setLanguage("zh").setScript("Hant").build(), "zh-Hant", "zh-Hant"),
+            Triple(Locale("pt", "BR"), "pt-BR", "pt-BR"),
+            Triple(Locale("pt", "PT"), "pt-PT", "pt-PT"),
+            Triple(Locale("fr"), "fr", "fr"),
+            Triple(Locale("zh", "CN"), "zh", "zh"), // fallback if script not set
+            Triple(Locale("pt"), "pt", "pt"),
+            Triple(Locale("ja"), "ja", "ja"),
+            Triple(Locale("ko"), "ko", "ko"),
+            Triple(Locale("ru"), "ru", "ru"),
+            Triple(Locale("th"), "th", "th")
+        )
+        val defaultLocale = Locale.getDefault()
+        try {
+            for ((locale, expected, description) in testCases) {
+                Locale.setDefault(locale)
+                val code = AirwallexApiRepository.getLanguageCode()
+                assertEquals(expected, code, "Locale $description should return $expected but got $code")
+            }
+        } finally {
+            Locale.setDefault(defaultLocale)
+        }
     }
 }

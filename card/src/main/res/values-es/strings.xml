@@ -1,0 +1,11 @@
+<resources>
+    <string name="airwallex_select_your_currency">Seleccione su moneda</string>
+    <string name="airwallex_select_your_currency_title">Seleccione la moneda con la que desea pagar</string>
+    <string name="airwallex_card_empty_cvc">Por favor, introduzca el CVC/CVV de su tarjeta</string>
+    <string name="airwallex_card_invalid_cvc">Por favor, introduzca un código de seguridad válido</string>
+    <string name="airwallex_card_enter_cvv">Introduzca el CVC/CVV para\n%s</string>
+    <string name="airwallex_card_pay_now">Pagar</string>
+    <string name="airwallex_card_total">Total %s</string>
+    <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>
+    <string name="airwallex_confirm_payment">Confirmar pago</string>
+</resources>
