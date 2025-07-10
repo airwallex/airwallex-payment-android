@@ -1,7 +1,6 @@
 package com.airwallex.android.core
 
 import android.net.Uri
-import android.util.Log
 import com.airwallex.android.core.exception.*
 import com.airwallex.android.core.http.AirwallexHttpClient
 import com.airwallex.android.core.http.AirwallexHttpRequest
@@ -415,7 +414,6 @@ class AirwallexApiRepository : ApiRepository {
                 }
                 else -> locale.language
             }
-            Log.d("AirwallexLang", code)
             return code
         }
     }
