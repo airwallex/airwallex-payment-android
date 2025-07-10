@@ -46,7 +46,6 @@
     <string name="airwallex_expires_hint" translatable="false">MM/YY</string>
     <string name="airwallex_invalid_email">Please enter valid email</string>
     <string name="airwallex_select_your_bank">Select your bank</string>
-    <string name="airwallex_enter_cvv">Enter CVC/CVV for \n%s</string>
     <string name="airwallex_invalid_field">Invalid %s</string>
     <string name="airwallex_or_pay_with">Or pay with</string>
     <string name="airwallex_card_information_title">Card information</string>

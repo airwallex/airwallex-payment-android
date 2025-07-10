@@ -51,7 +51,6 @@
     <string name="airwallex_card_number_label">หมายเลขบัตร</string>
     <string name="airwallex_invalid_email">กรุณากรอกอีเมลที่ถูกต้อง</string>
     <string name="airwallex_select_your_bank">เลือกธนาคารของคุณ</string>
-    <string name="airwallex_enter_cvv">กรุณากรอก CVC/CVV สำหรับ\n%s</string>
     <string name="airwallex_invalid_field">%s ไม่ถูกต้อง</string>
     <string name="airwallex_card_information_title">ข้อมูลบัตร</string>
     <string name="airwallex_empty_postal_code">กรุณากรอกรหัสไปรษณีย์ของคุณ</string>

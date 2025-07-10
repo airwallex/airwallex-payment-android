@@ -51,7 +51,6 @@
     <string name="airwallex_card_number_label">卡號</string>
     <string name="airwallex_invalid_email">請輸入有效的電子郵件</string>
     <string name="airwallex_select_your_bank">請選擇您的銀行</string>
-    <string name="airwallex_enter_cvv">請輸入%s的CVC/CVV</string>
     <string name="airwallex_invalid_field">%s無效</string>
     <string name="airwallex_card_information_title">卡片資訊</string>
     <string name="airwallex_empty_postal_code">請輸入您的郵遞區號</string>

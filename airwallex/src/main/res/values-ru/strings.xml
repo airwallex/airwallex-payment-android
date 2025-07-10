@@ -51,7 +51,6 @@
     <string name="airwallex_card_number_label">Номер карты</string>
     <string name="airwallex_invalid_email">Пожалуйста, введите действительный email</string>
     <string name="airwallex_select_your_bank">Выберите ваш банк</string>
-    <string name="airwallex_enter_cvv">Введите CVC/CVV для \n%s</string>
     <string name="airwallex_invalid_field">Недопустимый %s</string>
     <string name="airwallex_card_information_title">Информация о карте</string>
     <string name="airwallex_empty_postal_code">Пожалуйста, введите ваш почтовый индекс</string>

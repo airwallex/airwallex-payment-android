@@ -51,7 +51,6 @@
     <string name="airwallex_card_number_label">Numéro de carte</string>
     <string name="airwallex_invalid_email">Veuillez entrer un e-mail valide</string>
     <string name="airwallex_select_your_bank">Sélectionnez votre banque</string>
-    <string name="airwallex_enter_cvv">Entrez le CVC/CVV pour \n%s</string>
     <string name="airwallex_invalid_field">%s invalide</string>
     <string name="airwallex_card_information_title">Informations de la carte</string>
     <string name="airwallex_empty_postal_code">Veuillez entrer votre code postal</string>

@@ -44,7 +44,6 @@
     <string name="airwallex_card_number_label">卡号</string>
     <string name="airwallex_invalid_email">请输入有效的电子邮件</string>
     <string name="airwallex_select_your_bank">选择您的银行</string>
-    <string name="airwallex_enter_cvv">输入CVC/CVV以支付\n%s</string>
     <string name="airwallex_invalid_field">无效的 %s</string>
     <string name="airwallex_card_information_title">卡信息</string>
     <string name="airwallex_empty_postal_code">请输入您的邮政编码</string>

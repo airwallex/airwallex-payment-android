@@ -3,7 +3,7 @@
     <string name="airwallex_select_your_currency_title">请选择您要支付的货币</string>
     <string name="airwallex_card_empty_cvc">请输入您的卡片CVC/CVV</string>
     <string name="airwallex_card_invalid_cvc">请输入有效的安全码</string>
-    <string name="airwallex_card_enter_cvv">请输入\n%s的CVC/CVV</string>
+    <string name="airwallex_card_enter_cvv">请输入以下卡片的CVC/CVV\n%s</string>
     <string name="airwallex_card_pay_now">支付</string>
     <string name="airwallex_card_total">总计 %s</string>
     <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>
