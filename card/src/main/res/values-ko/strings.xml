@@ -3,7 +3,7 @@
     <string name="airwallex_select_your_currency_title">결제할 통화를 선택하세요</string>
     <string name="airwallex_card_empty_cvc">카드 CVC/CVV를 입력하세요</string>
     <string name="airwallex_card_invalid_cvc">유효한 보안 코드를 입력하세요</string>
-    <string name="airwallex_card_enter_cvv">\n%s의 CVC/CVV를 입력하세요</string>
+    <string name="airwallex_card_enter_cvv">%s\n의 CVC/CVV를 입력하세요</string>
     <string name="airwallex_card_pay_now">결제</string>
     <string name="airwallex_card_total">총액 %s</string>
     <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>

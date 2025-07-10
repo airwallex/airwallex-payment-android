@@ -3,7 +3,7 @@
     <string name="airwallex_select_your_currency_title">お支払いに使用する通貨を選択してください</string>
     <string name="airwallex_card_empty_cvc">カードのCVC/CVVを入力してください</string>
     <string name="airwallex_card_invalid_cvc">有効なセキュリティコードを入力してください</string>
-    <string name="airwallex_card_enter_cvv">\n%sのCVC/CVVを入力してください</string>
+    <string name="airwallex_card_enter_cvv">%s\nのCVC/CVVを入力してください</string>
     <string name="airwallex_card_pay_now">支払う</string>
     <string name="airwallex_card_total">合計 %s</string>
     <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>
