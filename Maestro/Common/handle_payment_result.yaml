@@ -1,0 +1,20 @@
+appId: com.airwallex.paymentacceptance
+---
+- runFlow:
+    when:
+      true: ${PAYMENT_RESULT == 'SUCCESS'}
+    commands:
+      - assertVisible: "Payment successful"
+      - tapOn: "OK"
+- runFlow:
+    when:
+      true: ${PAYMENT_RESULT == 'FAILED'}
+    commands:
+      - assertVisible: "Payment failed"
+      - tapOn: "OK"
+- runFlow:
+    when:
+      true: ${PAYMENT_RESULT == 'CANCELLED'}
+    commands:
+      - assertVisible: "Payment cancelled"
+      - tapOn: "OK"

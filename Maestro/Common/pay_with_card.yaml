@@ -1,0 +1,46 @@
+appId: com.airwallex.paymentacceptance
+---
+- tapOn: "Launch payment list"
+- assertVisible:
+    text: "Card"
+    index: 0
+- tapOn: "1234 1234 1234 1234"
+- inputText: ${CARD_NUMBER}
+- tapOn: "MM/YY"
+- inputText: "1233"
+- tapOn: "CVC/CVV"
+- inputText: "333"
+- scrollUntilVisible:
+    element: "Pay"
+- runFlow:
+    when:
+      true: ${CAN_SAVE_CARD == 'false'}
+    commands:
+      - assertNotVisible: "Save this card for future payments"
+- runFlow:
+    when:
+      true: ${CAN_SAVE_CARD}
+    commands:
+      - assertVisible:
+          id: "Save this card for future payments"
+      - runFlow:
+          when:
+            true: ${SHOULD_SAVE_CARD}
+            visible: 
+              id: "card-saving-toggle-unchecked"
+          commands:
+            - tapOn:
+                id: "card-saving-toggle-unchecked"
+            - assertVisible:
+                id: "card-saving-toggle-checked"
+      - runFlow:
+          when:
+            true: ${SHOULD_SAVE_CARD == 'false'}
+            visible: 
+              id: "card-saving-toggle-checked"
+          commands:
+            - tapOn:
+                id: "card-saving-toggle-checked"
+            - assertVisible:
+                id: "card-saving-toggle-unchecked"
+- tapOn: "Pay"
