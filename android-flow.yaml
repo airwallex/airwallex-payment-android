@@ -1,0 +1,21 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - android
+  - passing
+---
+- launchApp
+- tapOn: "Integrate with Airwallex UI"
+- tapOn: "Launch payment list"
+- assertVisible:
+    text: "Card"
+    index: 0
+- tapOn: "1234 1234 1234 1234"
+- inputText: "4111111111111111"
+- tapOn: "MM/YY"
+- inputText: "1233"
+- tapOn: "CVC/CVV"
+- inputText: 333
+- scrollUntilVisible:
+    element: "Pay"
+- tapOn: "Pay"
+- tapOn: "OK"
