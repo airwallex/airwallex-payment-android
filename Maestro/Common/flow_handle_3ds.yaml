@@ -4,6 +4,7 @@ appId: com.airwallex.paymentacceptance
 - tapOn:
     id: "challengeDataEntry"
 - inputText: "1234"
+- hideKeyboard
 - runFlow:
     when:
       true: ${CANCEL_3DS}

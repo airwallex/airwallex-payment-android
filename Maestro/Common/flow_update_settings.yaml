@@ -1,13 +1,6 @@
 appId: com.airwallex.paymentacceptance
 ---
-- runFlow: # ensure checkout mode 
-    when:
-      notVisible: ${CHECKOUT_MODE}
-    commands:
-      - tapOn: Payment type
-      - tapOn: ${CHECKOUT_MODE}
-      - assertVisible: ${CHECKOUT_MODE}
-- tapOn: setting
+- assertVisible: "Settings"
 - runFlow: # ensure environment
     when:
       notVisible: ${ENVIRONMENT}
@@ -29,6 +22,9 @@ appId: com.airwallex.paymentacceptance
       - tapOn: "Payment Layout"
       - tapOn: ${LAYOUT}
       - assertVisible: ${LAYOUT}
+- scrollUntilVisible:
+    element:
+      id: "com.airwallex.paymentacceptance:id/etCustomerId"
 - runFlow: # ensure customerId for registered user  
     when:
       true: ${IS_GUEST == 'false'}

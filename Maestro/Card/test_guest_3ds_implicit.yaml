@@ -1,0 +1,16 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card 
+  - guest
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+---
+- runScript: cards.js
+- runScript: ../Common/settings.js
+- runFlow:
+    file: flow_guest_card_payment.yaml
+    env:
+      LAYOUT: ${output.settings.layout.tab} # Use the tab layout for this test
+      CARD_NUMBER: ${output.cards.implicit3DS} # Card number for testing
+      HANDLE_3DS: false # Flag to handle 3DS flow

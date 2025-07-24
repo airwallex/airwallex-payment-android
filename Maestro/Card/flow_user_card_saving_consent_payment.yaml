@@ -1,0 +1,78 @@
+appId: com.airwallex.paymentacceptance
+---
+- launchApp
+- tapOn: "Integrate with Airwallex UI"
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff} # Ensure one-off checkout mode
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env:
+      LAYOUT: ${LAYOUT}
+      ENVIRONMENT: ${output.settings.environment.demo}
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
+      IS_GUEST: false 
+- tapOn: "Launch payment list"
+# remove all consents - in case consents created in previous tests were not removed because of test failure
+- runFlow:
+    when:
+      visible: "Choose a card"
+    file: flow_remove_all_consents.yaml
+- runFlow:
+    file: flow_pay_with_card.yaml
+    env:
+      CARD_NUMBER: ${output.cards.visa3DS} # Card number for testing
+      CAN_SAVE_CARD: true 
+      SHOULD_SAVE_CARD: true 
+- runFlow:
+    file: ../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false 
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+- tapOn: "Launch payment list"
+# pay with saved consent 
+- runFlow:
+    file: flow_pay_with_consent.yaml
+- runFlow:
+    file: ../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false 
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+# pay with another card
+- tapOn: "Launch payment list"
+- runFlow:
+    file: flow_pay_with_card.yaml
+    env:
+      CARD_NUMBER: ${output.cards.unionPay} # Card number for testing
+      CAN_SAVE_CARD: true 
+      SHOULD_SAVE_CARD: true 
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+# pay with new consent 
+- tapOn: "Launch payment list"
+- runFlow:
+    file: flow_pay_with_consent.yaml
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS 
+# delete all consents 
+- tapOn: "Launch payment list"
+- runFlow:
+    file: flow_remove_all_consents.yaml
+# cancel payment
+- tapOn: "Navigate up"
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: CANCELLED 

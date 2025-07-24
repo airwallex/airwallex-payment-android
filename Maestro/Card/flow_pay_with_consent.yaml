@@ -1,0 +1,20 @@
+appId: com.airwallex.paymentacceptance
+---
+- assertVisible: "Choose a card"
+- assertVisible:
+    id: "saved-consent"
+    index: 0
+- tapOn:
+    id: "saved-consent"
+    index: 0
+- runFlow:
+    when:
+      visible:
+        id: "card-cvc-text-field"
+    commands:
+      - tapOn:
+          id: "card-cvc-text-field"
+      - inputText: "333"
+- scrollUntilVisible:
+    element: "^(Pay|Confirm)$"
+- tapOn: "^(Pay|Confirm)$"

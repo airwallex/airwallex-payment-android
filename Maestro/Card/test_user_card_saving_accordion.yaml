@@ -1,0 +1,14 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card 
+  - user
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+---
+- runScript: cards.js
+- runScript: ../Common/settings.js
+- runFlow:
+    file: flow_user_card_saving_consent_payment.yaml
+    env:
+      LAYOUT: ${output.settings.layout.accordion} # Use the accordion layout for this test

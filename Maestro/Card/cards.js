@@ -8,4 +8,6 @@ output.cards = {
     explicit3DS: '4012000300000062',
     // Implicit 3DS
     implicit3DS: '4012000300000021',
+    // UnionPay no 3DS
+    unionPay: '6262000000000000'
 }

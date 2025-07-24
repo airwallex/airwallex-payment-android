@@ -1,0 +1,128 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card 
+  - user
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+# env:
+#   WITH_PAYMENT: true # Flag to indicate if payment should be made
+#   TRIGGER_BY_CUSTOMER: true # Flag to indicate if the flow is triggered by customer
+---
+- runScript: ../Common/settings.js
+- runScript: cards.js
+- launchApp
+- tapOn: "Integrate with Airwallex UI"
+# remove all consents before start recurring payment flow
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env: 
+      LAYOUT: ${output.settings.layout.tab}
+      ENVIRONMENT: ${output.settings.environment.demo}
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
+      IS_GUEST: false 
+- tapOn: "Launch payment list"
+- runFlow:
+    file: flow_remove_all_consents.yaml
+- tapOn: "Navigate up"
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: CANCELLED 
+
+# update checkout mode 
+- runFlow:
+    when:
+      true: ${WITH_PAYMENT}
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.recurringAndPayment}
+- runFlow:
+    when:
+      true: ${WITH_PAYMENT == 'false'}
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.recurring}
+# update settings
+- tapOn: setting
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER}
+    file: ../Common/flow_update_settings.yaml
+    env:
+      LAYOUT: ${output.settings.layout.tab}
+      ENVIRONMENT: ${output.settings.environment.demo}
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
+      IS_GUEST: false 
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER == 'false'}
+    file: ../Common/flow_update_settings.yaml
+    env:
+      LAYOUT: ${output.settings.layout.tab}
+      ENVIRONMENT: ${output.settings.environment.demo}
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.merchant}
+      IS_GUEST: false 
+
+# start recurring payment flow
+- tapOn: "Launch payment list"
+- runFlow:
+    file: flow_pay_with_card.yaml
+    env:
+      CARD_NUMBER: ${output.cards.visa} # Card number for testing
+      CAN_SAVE_CARD: false 
+      SHOULD_SAVE_CARD: false
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER == 'false'}
+    file: ../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+
+# check and remove consents
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+- tapOn: "Launch payment list"
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER}
+    commands:
+      - assertVisible:
+          id: "saved-consent"
+          index: 0
+      - runFlow:
+          file: flow_pay_with_consent.yaml
+      - runFlow:
+          file: ../Common/flow_handle_payment_result.yaml
+          env:
+            PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+      - tapOn: "Launch payment list"
+      - runFlow:
+          file: flow_remove_all_consents.yaml
+      - tapOn: "Navigate up"
+      - runFlow:
+          file: ../Common/flow_handle_payment_result.yaml
+          env:
+            PAYMENT_RESULT: CANCELLED
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER == 'false'}
+    commands:
+      - assertVisible: "Card information" # verify no consent saved
+      - tapOn: "Navigate up"
+      - runFlow:
+          file: ../Common/flow_handle_payment_result.yaml
+          env:
+            PAYMENT_RESULT: CANCELLED
+    
