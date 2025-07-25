@@ -3,6 +3,11 @@ package com.airwallex.android.ui.composables
 import androidx.compose.ui.graphics.Color
 
 object AirwallexColor {
+    enum class Level(val value: Int) {
+        Level5(5), Level10(10), Level20(20), Level30(30), Level40(40),
+        Level50(50), Level60(60), Level70(70), Level80(80), Level90(90), Level100(100)
+    }
+
     val Transparent = Color(0x00000000)
     val Black = Color(red = 0, green = 0, blue = 0)
     val White = Color(red = 255, green = 255, blue = 255)
@@ -67,4 +72,37 @@ object AirwallexColor {
     val LoadingBarBackgroundColor = Color(0xF7F6F7F8)
     val LoadingBarFillColor = Color(0xFFEBECF0)
     val LoadingBarEdgeFadeColor = Color(0x00EBECF0)
+
+    @Suppress("ComplexMethod")
+    fun Color.adjustByLevel(level: Level): Color {
+        val base = 70
+
+        if (this == Ultraviolet70) {
+            return when (level) {
+                Level.Level5 -> Ultraviolet10
+                Level.Level10 -> Ultraviolet10
+                Level.Level20 -> Ultraviolet20
+                Level.Level30 -> Ultraviolet30
+                Level.Level40 -> Ultraviolet40
+                Level.Level50 -> Ultraviolet50
+                Level.Level60 -> Ultraviolet60
+                Level.Level70 -> Ultraviolet70
+                Level.Level80 -> Ultraviolet80
+                Level.Level90 -> Ultraviolet90
+                Level.Level100 -> Ultraviolet100
+            }
+        }
+
+        return when {
+            level.value < base -> {
+                val fraction = (base - level.value).toFloat() / base
+                androidx.compose.ui.graphics.lerp(this, White, fraction)
+            }
+            level.value > base -> {
+                val fraction = (level.value - base).toFloat() / 50f
+                androidx.compose.ui.graphics.lerp(this, Black, fraction)
+            }
+            else -> this
+        }
+    }
 }

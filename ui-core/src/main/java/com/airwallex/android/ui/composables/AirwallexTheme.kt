@@ -4,42 +4,46 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.colorResource
+import com.airwallex.android.ui.R
+import com.airwallex.android.ui.composables.AirwallexColor.adjustByLevel
 
 @Composable
 fun AirwallexTheme(content: @Composable () -> Unit) {
-    val materialColorScheme = remember {
+    val tintColor = colorResource(R.color.airwallex_tint_color)
+    val materialColorScheme = remember(tintColor) {
         ColorScheme(
-            primary = AirwallexColor.Ultraviolet70,
+            primary = tintColor,
             onPrimary = AirwallexColor.White,
             primaryContainer = AirwallexColor.White,
-            onPrimaryContainer = AirwallexColor.Ultraviolet70,
-            inversePrimary = AirwallexColor.Ultraviolet70,
+            onPrimaryContainer = tintColor,
+            inversePrimary = tintColor,
             secondary = AirwallexColor.TextSecondary,
             onSecondary = AirwallexColor.White,
             secondaryContainer = AirwallexColor.Gray10,
-            onSecondaryContainer = AirwallexColor.Ultraviolet70,
+            onSecondaryContainer = tintColor,
             tertiary = AirwallexColor.White,
-            onTertiary = AirwallexColor.Ultraviolet70,
+            onTertiary = tintColor,
             tertiaryContainer = AirwallexColor.Gray20,
-            onTertiaryContainer = AirwallexColor.Ultraviolet70,
+            onTertiaryContainer = tintColor,
             background = AirwallexColor.White,
-            onBackground = AirwallexColor.Ultraviolet70,
+            onBackground = tintColor,
             surface = AirwallexColor.White,
             onSurface = AirwallexColor.Gray50,
-            surfaceVariant = AirwallexColor.Ultraviolet70,
-            onSurfaceVariant = AirwallexColor.Ultraviolet70,
-            surfaceTint = AirwallexColor.Ultraviolet70,
+            surfaceVariant = tintColor,
+            onSurfaceVariant = tintColor,
+            surfaceTint = tintColor,
             inverseSurface = AirwallexColor.Gray90,
             inverseOnSurface = AirwallexColor.White,
             error = AirwallexColor.Red50,
             onError = AirwallexColor.White,
-            errorContainer = AirwallexColor.Ultraviolet70,
-            onErrorContainer = AirwallexColor.Ultraviolet70,
+            errorContainer = tintColor,
+            onErrorContainer = tintColor,
             outline = AirwallexColor.Gray30,
             outlineVariant = AirwallexColor.Gray10,
             scrim = AirwallexColor.Gray50,
-            surfaceBright = AirwallexColor.Ultraviolet70,
-            surfaceContainer = AirwallexColor.White,
+            surfaceBright = tintColor,
+            surfaceContainer = tintColor.adjustByLevel(AirwallexColor.Level.Level5),
             surfaceContainerHighest = AirwallexColor.White,
             surfaceContainerHigh = AirwallexColor.White,
             surfaceContainerLow = AirwallexColor.White,
