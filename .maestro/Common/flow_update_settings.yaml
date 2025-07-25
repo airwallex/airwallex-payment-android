@@ -41,6 +41,7 @@ appId: com.airwallex.paymentacceptance
       - tapOn: "Customer ID"
       - inputText: ${UI_TESTING_CUSTOMER_ID} # setup this in CI
       - assertVisible: ${UI_TESTING_CUSTOMER_ID}
+      - hideKeyboard
 - runFlow: # ensure no customerId for guest checkout
     when:
       true: ${IS_GUEST}

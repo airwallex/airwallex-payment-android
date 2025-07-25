@@ -17,6 +17,7 @@ appId: com.airwallex.paymentacceptance
 - tapOn:
     id: "card-cvc-text-field"
 - inputText: "333"
+# - hideKeyboard
 - scrollUntilVisible:
     element: "^(Pay|Confirm)$"
 - runFlow:
