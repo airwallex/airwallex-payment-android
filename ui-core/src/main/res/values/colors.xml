@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="airwallex_tint_color">@color/airwallex_color_blue_10</color>
+    <color name="airwallex_tint_color">@color/airwallex_color_ultraviolet_10</color>
 
     <color name="airwallex_color_white">#FFFFFF</color>
     <color name="airwallex_color_red">#FF4F42</color>
-    <color name="airwallex_color_blue_10">#612FFF</color>
+    <color name="airwallex_color_ultraviolet_10">#612FFF</color>
     <color name="airwallex_color_blue_30">#3711AE</color>
     <color name="airwallex_color_grey_10">#F6F7F8</color>
     <color name="airwallex_color_grey_30">#D7DBE0</color>
