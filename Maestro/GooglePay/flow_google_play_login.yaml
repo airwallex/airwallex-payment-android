@@ -1,0 +1,49 @@
+appId: com.airwallex.paymentacceptance
+---
+- launchApp: com.android.vending
+- tapOn: "Sign in"
+- tapOn: "Email or phone"
+- inputText: ${GPAY_ACCOUNT}
+- tapOn: "NEXT"
+- tapOn: "Enter your password"
+- inputText: ${GPAY_PASSWORD}
+- tapOn: "NEXT"
+- runFlow:
+    when:
+      visible: "Yes, I’m in"
+    commands:
+      - tapOn: "Yes, I’m in"
+- runFlow:
+    when:
+      visible: "Google Terms of Service"
+    commands:
+      - tapOn: "I agree"
+      - scrollUntilVisible:
+          centerElement: true
+          element: "ACCEPT"
+      - tapOn: "ACCEPT"   
+- runFlow:
+    when:
+      visible: "Add a recovery phone"
+    commands:
+      - tapOn: "Cancel"
+- runFlow:
+    when:
+      visible: "Set a home address"
+    commands:
+      - tapOn: "Skip"
+- runFlow:
+    when:
+      visible: "Back up device data"
+    commands:
+      - tapOn: "No thanks"
+      - scrollUntilVisible: 
+          element: "ACCEPT"
+      - tapOn: "ACCEPT" 
+- runFlow:
+    when:
+      visible: "Level up your experience"
+    commands:
+      - tapOn: "Not now"
+- assertVisible: "For you"
+- launchApp: com.airwallex.paymentacceptance
