@@ -6,11 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.colorResource
 import com.airwallex.android.ui.R
+import com.airwallex.android.ui.composables.AirwallexColor.adjustByLevel
 
 @Composable
 fun AirwallexTheme(content: @Composable () -> Unit) {
     val tintColor = colorResource(R.color.airwallex_tint_color)
-    val materialColorScheme = remember {
+    val materialColorScheme = remember(tintColor) {
         ColorScheme(
             primary = tintColor,
             onPrimary = AirwallexColor.White,
@@ -42,7 +43,7 @@ fun AirwallexTheme(content: @Composable () -> Unit) {
             outlineVariant = AirwallexColor.Gray10,
             scrim = AirwallexColor.Gray50,
             surfaceBright = tintColor,
-            surfaceContainer = AirwallexColor.White,
+            surfaceContainer = tintColor.adjustByLevel(AirwallexColor.Level.Level5),
             surfaceContainerHighest = AirwallexColor.White,
             surfaceContainerHigh = AirwallexColor.White,
             surfaceContainerLow = AirwallexColor.White,
