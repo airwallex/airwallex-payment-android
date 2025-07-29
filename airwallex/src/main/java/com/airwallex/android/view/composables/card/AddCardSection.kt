@@ -481,7 +481,7 @@ internal fun AddCardSection(
                 },
                 modifier = Modifier
                     .semantics { testTagsAsResourceId = true }
-                    .testTag(if (isSaveCardChecked) "card-saving-toggle-checked" else "card-saving-toggle-unchecked" )
+                    .testTag(if (isSaveCardChecked) "card-saving-toggle-checked" else "card-saving-toggle-unchecked")
             )
 
             AnimatedVisibility(

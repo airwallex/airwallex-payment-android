@@ -22,6 +22,36 @@ appId: com.airwallex.paymentacceptance
       - tapOn: "Payment Layout"
       - tapOn: ${LAYOUT}
       - assertVisible: ${LAYOUT}
+- runFlow: # ensure value of force 3DS switch
+    when:
+      true: ${FORCE_3DS}
+      visible:
+        id: "com.airwallex.paymentacceptance:id/switchControl"
+        index: 1
+        checked: false
+    commands:
+      - tapOn:
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          index: 1
+      - assertVisible:
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          index: 1
+          checked: true
+- runFlow: # ensure value of force 3DS switch
+    when:
+      true: ${FORCE_3DS == 'false'}
+      visible:
+        id: "com.airwallex.paymentacceptance:id/switchControl"
+        index: 1
+        checked: true
+    commands:
+      - tapOn:
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          index: 1
+      - assertVisible:
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          index: 1
+          checked: false
 - scrollUntilVisible:
     element:
       id: "com.airwallex.paymentacceptance:id/etCustomerId"

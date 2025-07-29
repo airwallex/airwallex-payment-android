@@ -15,7 +15,8 @@ appId: com.airwallex.paymentacceptance
       LAYOUT: ${output.settings.layout.tab}
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${NEXT_TRIGGERED_BY}
-      IS_GUEST: false 
+      IS_GUEST: false
+      FORCE_3DS: ${FORCE_3DS}
 - tapOn: "Launch payment list"
 - tapOn: "Buy with GPay"
 - runFlow:
