@@ -31,7 +31,7 @@ platform:
 - runFlow:
     file: flow_pay_with_card.yaml
     env:
-      CARD_NUMBER: ${output.cards.explicit3DS} # Card number for testing
+      CARD_NUMBER: ${output.cards.challenge3DS} # Card number for testing
       CAN_SAVE_CARD: false 
       SHOULD_SAVE_CARD: false 
 - runFlow:
