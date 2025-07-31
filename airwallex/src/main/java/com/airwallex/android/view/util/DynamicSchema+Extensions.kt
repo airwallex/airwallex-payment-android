@@ -10,6 +10,9 @@ fun String.isValidDynamicSchemaField(validations: DynamicSchemaFieldValidation?,
             else -> isNotBlank()
         }
     } else {
-        (isNotBlank() && (!(validations.regex?.let { Regex(it).matches(this) } == true || validations.max?.let { this.length > it } == true)))
+        (isNotBlank()
+                && (validations.regex?.let { Regex(it).matches(this) } ?: true)
+                && (validations.max?.let { this.length <= it } ?: true)
+        )
     }
 }
