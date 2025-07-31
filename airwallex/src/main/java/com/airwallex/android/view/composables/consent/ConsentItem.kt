@@ -14,7 +14,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
@@ -37,7 +40,9 @@ internal fun ConsentItem(
         modifier = Modifier
             .clickable(
                 onClick = { onSelectCard(consent) }
-            ),
+            )
+            .semantics { testTagsAsResourceId = true }
+            .testTag("saved-consent"),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

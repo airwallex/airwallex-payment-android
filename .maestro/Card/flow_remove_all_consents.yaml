@@ -1,0 +1,9 @@
+appId: com.airwallex.paymentacceptance
+---
+- repeat: # remove all consents
+    while:
+      visible: "Choose a card"
+    commands:
+      - tapOn: "three dots"
+      - tapOn: "Delete"
+- assertVisible: "Card information"

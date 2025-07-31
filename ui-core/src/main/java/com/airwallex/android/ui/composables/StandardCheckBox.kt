@@ -22,9 +22,10 @@ fun StandardCheckBox(
     checked: Boolean,
     text: String,
     onCheckedChange: ((Boolean) -> Unit)?,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 24.dp)
             .clickable(
                 onClick = {

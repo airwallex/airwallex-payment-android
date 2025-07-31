@@ -1,0 +1,55 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card 
+  - user
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_user_oneoff_payment
+- launchApp
+- runScript: cards.js
+- runScript: ../Common/settings.js
+- tapOn: "Integrate with Airwallex UI"
+# Update settings
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env: 
+      LAYOUT: ${output.settings.layout.tab}
+      ENVIRONMENT: ${output.settings.environment.demo}
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
+      IS_GUEST: false 
+# Remove all consents before starting the payment flow
+- tapOn: "Launch payment list"
+- runFlow:
+    file: flow_remove_all_consents.yaml
+- runFlow:
+    file: flow_pay_with_card.yaml
+    env:
+      CARD_NUMBER: ${output.cards.visa3DS} # Card number for testing
+      CAN_SAVE_CARD: true 
+      SHOULD_SAVE_CARD: false 
+- runFlow:
+    file: ../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false 
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+- tapOn: "Launch payment list"
+- assertVisible: "Card information" # verify no consent saved
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

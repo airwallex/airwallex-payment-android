@@ -1,0 +1,35 @@
+appId: com.airwallex.paymentacceptance
+---
+- launchApp
+- runScript: cards.js
+- runScript: ../Common/settings.js
+- tapOn: "Integrate with Airwallex UI"
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff} # Ensure one-off checkout mode
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env:
+      LAYOUT: ${LAYOUT}
+      ENVIRONMENT: ${output.settings.environment.demo}
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
+      IS_GUEST: true 
+- tapOn: "Launch payment list"
+- runFlow:
+    file: flow_pay_with_card.yaml
+    env:
+      CARD_NUMBER: ${CARD_NUMBER} # Card number for testing
+      CAN_SAVE_CARD: false 
+      SHOULD_SAVE_CARD: false 
+- runFlow:
+    when:
+      true: ${HANDLE_3DS}
+    file: ../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false 
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED

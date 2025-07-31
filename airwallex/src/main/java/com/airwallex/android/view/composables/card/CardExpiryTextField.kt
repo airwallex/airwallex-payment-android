@@ -13,8 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import com.airwallex.android.R
@@ -88,7 +91,9 @@ fun CardExpiryTextField(
                     showClearButton = false
                     localFocusState = FocusState.Unfocused
                 }
-            },
+            }
+            .semantics { testTagsAsResourceId = true }
+            .testTag("card-expiry-text-field"),
         options = StandardTextFieldOptions(
             inputType = StandardTextFieldOptions.InputType.NUMBER,
             returnType = StandardTextFieldOptions.ReturnType.DONE,

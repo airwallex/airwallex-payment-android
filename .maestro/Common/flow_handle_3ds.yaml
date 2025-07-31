@@ -1,0 +1,17 @@
+appId: com.airwallex.paymentacceptance
+---
+- assertVisible: "Purchase Authentication"
+- tapOn:
+    id: "challengeDataEntry"
+- inputText: "1234"
+- hideKeyboard
+- runFlow:
+    when:
+      true: ${CANCEL_3DS}
+    commands:
+      - tapOn: "Navigate up"
+- runFlow:
+    when:
+      true: ${CANCEL_3DS == 'false'}
+    commands:
+      - tapOn: "Submit"
