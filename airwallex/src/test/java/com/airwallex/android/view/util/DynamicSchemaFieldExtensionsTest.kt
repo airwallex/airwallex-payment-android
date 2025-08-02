@@ -69,13 +69,12 @@ class DynamicSchemaFieldExtensionsTest {
         }
         val regexValidation = DynamicSchemaFieldValidationParser().parse(json)
 
-        // Just verify the function returns a boolean (no exception thrown)
-        "abc".isValidDynamicSchemaField(regexValidation, null)
-        "abc123".isValidDynamicSchemaField(regexValidation, null)
-        "123".isValidDynamicSchemaField(regexValidation, null)
-        "".isValidDynamicSchemaField(regexValidation, null)
-
-        assertTrue(true)
+        // Valid cases
+        assertTrue("abc".isValidDynamicSchemaField(regexValidation, null))
+        // Invalid cases
+        assertFalse("abc123".isValidDynamicSchemaField(regexValidation, null))
+        assertFalse("123".isValidDynamicSchemaField(regexValidation, null))
+        assertFalse("".isValidDynamicSchemaField(regexValidation, null))
     }
 
     @Test
@@ -85,13 +84,12 @@ class DynamicSchemaFieldExtensionsTest {
         }
         val maxLengthValidation = DynamicSchemaFieldValidationParser().parse(json)
 
-        // Just verify the function returns a boolean (no exception thrown)
-        "12345".isValidDynamicSchemaField(maxLengthValidation, null)
-        "123".isValidDynamicSchemaField(maxLengthValidation, null)
-        "123456".isValidDynamicSchemaField(maxLengthValidation, null)
-        "".isValidDynamicSchemaField(maxLengthValidation, null)
-
-        assertTrue(true)
+        // Valid cases
+        assertTrue("12345".isValidDynamicSchemaField(maxLengthValidation, null))
+        assertTrue("123".isValidDynamicSchemaField(maxLengthValidation, null))
+        // Invalid cases
+        assertFalse("123456".isValidDynamicSchemaField(maxLengthValidation, null))
+        assertFalse("".isValidDynamicSchemaField(maxLengthValidation, null)) // Assuming empty string is valid for max length only
     }
 
     @Test
@@ -102,13 +100,12 @@ class DynamicSchemaFieldExtensionsTest {
         }
         val combinedValidation = DynamicSchemaFieldValidationParser().parse(json)
 
-        // Just verify the function returns a boolean (no exception thrown)
-        "abc".isValidDynamicSchemaField(combinedValidation, null)
-        "abcde".isValidDynamicSchemaField(combinedValidation, null)
-        "abcdef".isValidDynamicSchemaField(combinedValidation, null) // too long
-        "abc123".isValidDynamicSchemaField(combinedValidation, null) // invalid chars
-        "".isValidDynamicSchemaField(combinedValidation, null)
-
-        assertTrue(true)
+        // Valid cases
+        assertTrue("abc".isValidDynamicSchemaField(combinedValidation, null))
+        assertTrue("abcde".isValidDynamicSchemaField(combinedValidation, null))
+        // Invalid cases
+        assertFalse("abcdef".isValidDynamicSchemaField(combinedValidation, null)) // too long
+        assertFalse("abc123".isValidDynamicSchemaField(combinedValidation, null)) // invalid chars
+        assertFalse("".isValidDynamicSchemaField(combinedValidation, null))
     }
 }
