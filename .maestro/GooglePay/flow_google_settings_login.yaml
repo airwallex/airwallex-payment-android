@@ -1,0 +1,25 @@
+appId: com.airwallex.paymentacceptance
+---
+- launchApp: "com.android.settings"
+- assertVisible: "Google"
+- assertVisible: "Services & preferences" 
+- tapOn: "Google"
+- assertVisible: "Sign in"
+- tapOn: "Sign in"
+- assertVisible: "Email or phone"
+- tapOn: "Email or phone"
+- inputText: ${GPAY_ACCOUNT}
+- tapOn: "NEXT"
+- tapOn: "Enter your password"
+- inputText: ${GPAY_PASSWORD}
+- tapOn: "NEXT"
+- assertVisible: "Google Terms of Service"
+- assertVisible: "Privacy Policy"
+- tapOn: "I agree"
+- swipe:
+    from: "Backup"
+    direction: "UP"
+- assertVisible: "ACCEPT"
+- tapOn: "ACCEPT"
+- assertVisible: "Google services"
+- launchApp: "com.airwallex.paymentacceptance"

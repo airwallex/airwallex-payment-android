@@ -6,9 +6,19 @@ platform:
   android:
     disableAnimations: true  # Disables system animations on the Android emulator
 ---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_user_card_saving_tab
 - runScript: cards.js
 - runScript: ../Common/settings.js
 - runFlow:
     file: flow_user_card_saving_consent_payment.yaml
     env:
       LAYOUT: ${output.settings.layout.tab} # Use the tab layout for this test
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

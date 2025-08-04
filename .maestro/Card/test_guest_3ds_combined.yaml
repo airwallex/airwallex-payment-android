@@ -6,6 +6,11 @@ platform:
   android:
     disableAnimations: true  # Disables system animations on the Android emulator
 ---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_guest_3ds_combined
 - runScript: cards.js
 - runScript: ../Common/settings.js
 - runFlow:
@@ -14,3 +19,8 @@ platform:
       LAYOUT: ${output.settings.layout.tab} 
       CARD_NUMBER: ${output.cards.visa3DS}
       HANDLE_3DS: true # Flag to handle 3DS flow
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

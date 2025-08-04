@@ -6,6 +6,11 @@ platform:
   android:
     disableAnimations: true  # Disables system animations on the Android emulator
 ---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_guest_payment_cancel_3ds
 - launchApp
 - tapOn: "Integrate with Airwallex UI"
 - runScript: ../Common/settings.js
@@ -26,7 +31,7 @@ platform:
 - runFlow:
     file: flow_pay_with_card.yaml
     env:
-      CARD_NUMBER: ${output.cards.explicit3DS} # Card number for testing
+      CARD_NUMBER: ${output.cards.challenge3DS} # Card number for testing
       CAN_SAVE_CARD: false 
       SHOULD_SAVE_CARD: false 
 - runFlow:
@@ -37,3 +42,8 @@ platform:
     file: ../Common/flow_handle_payment_result.yaml
     env:
       PAYMENT_RESULT: FAILED # SUCCESS/FAILED/CANCELLED
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording    

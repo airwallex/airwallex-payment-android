@@ -6,6 +6,11 @@ platform:
   android:
     disableAnimations: true  # Disables system animations on the Android emulator
 ---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_guest_payment_cancel
 - launchApp
 - tapOn: "Integrate with Airwallex UI"
 - tapOn: "Launch payment list"
@@ -15,3 +20,8 @@ platform:
     file: ../Common/flow_handle_payment_result.yaml
     env:
       PAYMENT_RESULT: CANCELLED # SUCCESS/FAILED/CANCELLED
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording    

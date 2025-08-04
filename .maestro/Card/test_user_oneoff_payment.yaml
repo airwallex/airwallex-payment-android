@@ -6,6 +6,11 @@ platform:
   android:
     disableAnimations: true  # Disables system animations on the Android emulator
 ---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_user_oneoff_payment
 - launchApp
 - runScript: cards.js
 - runScript: ../Common/settings.js
@@ -43,3 +48,8 @@ platform:
       PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
 - tapOn: "Launch payment list"
 - assertVisible: "Card information" # verify no consent saved
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording
