@@ -1,0 +1,34 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - googlepay 
+  - user
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_google_pay_recurring
+- runScript: ../Common/settings.js
+- runFlow:
+    file: flow_launch_google_payment_sheet.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.recurring}
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.merchant}
+      FORCE_3DS: true
+- tapOn: "Pay"
+- runFlow:
+    file: ../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false # true to cancel 3DS flow
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

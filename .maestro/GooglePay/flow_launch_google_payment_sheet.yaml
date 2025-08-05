@@ -1,0 +1,40 @@
+appId: com.airwallex.paymentacceptance
+---
+- launchApp
+- runScript: ../Common/settings.js
+- tapOn: "Integrate with Airwallex UI"
+# Update checkout flow and settings
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${CHECKOUT_MODE}
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env: 
+      LAYOUT: ${output.settings.layout.tab}
+      ENVIRONMENT: ${output.settings.environment.demo}
+      NEXT_TRIGGERED_BY: ${NEXT_TRIGGERED_BY}
+      IS_GUEST: false
+      FORCE_3DS: ${FORCE_3DS}
+- tapOn: "Launch payment list"
+- tapOn: "Buy with GPay"
+- runFlow:
+    when:
+      visible: "Google Pay requires a Google account to be set up on this device."
+    commands:
+      - tapOn: "OK"
+      - runFlow:
+          # file: flow_google_play_login.yaml
+          file: flow_google_settings_login.yaml
+      - runFlow:
+          when: # sample app might be killed by the system
+            visible: "Integrate with Airwallex UI"
+          commands:
+            - tapOn: "Integrate with Airwallex UI"
+            - tapOn: "Launch payment list"
+      - tapOn: "Buy with GPay"
+      - assertVisible:
+          text: "^Test Card: .*$"
+- assertVisible: "GPay"
+- assertVisible: "Pay"

@@ -48,6 +48,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     fun launchPaymentList(activity: ComponentActivity) = run {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
         val googlePayOptions = GooglePayOptions(
+            allowedCardAuthMethods = if (force3DS) listOf("PAN_ONLY") else null,
             billingAddressRequired = true,
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
         )

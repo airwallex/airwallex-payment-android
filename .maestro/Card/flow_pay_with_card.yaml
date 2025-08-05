@@ -1,0 +1,53 @@
+appId: com.airwallex.paymentacceptance
+---
+# check if there are existing consents
+- runFlow:
+    when:
+      visible: "Choose a card"
+    commands:
+      - tapOn: "Add new"
+# add new card
+- assertVisible: "Card information"
+- tapOn:
+    id: "card-number-text-field"
+- inputText: ${CARD_NUMBER}
+- tapOn:
+    id: "card-expiry-text-field"
+- inputText: "1233"
+- tapOn:
+    id: "card-cvc-text-field"
+- inputText: "333"
+# - hideKeyboard
+- scrollUntilVisible:
+    element: "^(Pay|Confirm)$"
+- runFlow:
+    when:
+      true: ${CAN_SAVE_CARD == 'false'}
+    commands:
+      - assertNotVisible: "Save this card for future payments"
+- runFlow:
+    when:
+      true: ${CAN_SAVE_CARD}
+    commands:
+      - assertVisible: "Save this card for future payments"
+      - runFlow:
+          when:
+            true: ${SHOULD_SAVE_CARD}
+            visible: 
+              id: "card-saving-toggle-unchecked"
+          commands:
+            - tapOn:
+                id: "card-saving-toggle-unchecked"
+            - assertVisible:
+                id: "card-saving-toggle-checked"
+      - runFlow:
+          when:
+            true: ${SHOULD_SAVE_CARD == 'false'}
+            visible: 
+              id: "card-saving-toggle-checked"
+          commands:
+            - tapOn:
+                id: "card-saving-toggle-checked"
+            - assertVisible:
+                id: "card-saving-toggle-unchecked"
+- tapOn: "^(Pay|Confirm)$"
