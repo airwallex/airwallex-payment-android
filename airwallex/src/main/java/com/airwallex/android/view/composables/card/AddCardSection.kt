@@ -21,9 +21,13 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
@@ -108,7 +112,8 @@ internal fun AddCardSection(
                 cardNumberErrorMessage = null
             },
             modifier = Modifier
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 24.dp)
+                .zIndex(1f),
             onComplete = { input ->
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(input)
                 expiryFocusRequester.requestFocus()
@@ -476,6 +481,9 @@ internal fun AddCardSection(
                         AnalyticsLogger.logAction("save_card")
                     }
                 },
+                modifier = Modifier
+                    .semantics { testTagsAsResourceId = true }
+                    .testTag(if (isSaveCardChecked) "card-saving-toggle-checked" else "card-saving-toggle-unchecked")
             )
 
             AnimatedVisibility(

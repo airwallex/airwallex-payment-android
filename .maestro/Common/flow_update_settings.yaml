@@ -1,0 +1,96 @@
+appId: com.airwallex.paymentacceptance
+---
+- assertVisible: "Settings"
+- runFlow: # ensure environment
+    when:
+      notVisible: ${ENVIRONMENT}
+    commands:
+      - tapOn: "Environment"
+      - tapOn: ${ENVIRONMENT}
+      - assertVisible: ${ENVIRONMENT}
+- runFlow: # ensure next triggered by
+    when:
+      notVisible: ${NEXT_TRIGGERED_BY}
+    commands:
+      - tapOn: "Next Trigger By"
+      - tapOn: ${NEXT_TRIGGERED_BY}
+      - assertVisible: ${NEXT_TRIGGERED_BY}
+- runFlow: # ensure layout
+    when:
+      notVisible: ${LAYOUT}
+    commands:
+      - tapOn: "Payment Layout"
+      - tapOn: ${LAYOUT}
+      - assertVisible: ${LAYOUT}
+- runFlow: # ensure value of force 3DS switch
+    when:
+      true: ${FORCE_3DS}
+      visible:
+        id: "com.airwallex.paymentacceptance:id/switchControl"
+        index: 1
+        checked: false
+    commands:
+      - tapOn:
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          index: 1
+      - assertVisible:
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          index: 1
+          checked: true
+- runFlow: # ensure value of force 3DS switch
+    when:
+      true: ${FORCE_3DS == 'false'}
+      visible:
+        id: "com.airwallex.paymentacceptance:id/switchControl"
+        index: 1
+        checked: true
+    commands:
+      - tapOn:
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          index: 1
+      - assertVisible:
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          index: 1
+          checked: false
+- scrollUntilVisible:
+    element:
+      id: "com.airwallex.paymentacceptance:id/etCustomerId"
+- runFlow: # ensure customerId for registered user  
+    when:
+      true: ${IS_GUEST == 'false'}
+      notVisible: ${UI_TESTING_CUSTOMER_ID}
+    commands:
+      - runFlow:
+          when:
+            visible:
+              id: "com.airwallex.paymentacceptance:id/deleteIcon"
+          commands:
+            - tapOn:
+                id: "com.airwallex.paymentacceptance:id/deleteIcon"
+      - assertVisible: "Customer ID"
+      - tapOn: "Customer ID"
+      - runFlow:
+          when:
+            visible: "Try out your stylus"
+          commands:
+            - tapOn: "Cancel"
+      - inputText: ${UI_TESTING_CUSTOMER_ID} # setup this in CI
+      - assertVisible: ${UI_TESTING_CUSTOMER_ID}
+      - hideKeyboard
+- runFlow: # ensure no customerId for guest checkout
+    when:
+      true: ${IS_GUEST}
+      visible:
+        id: "com.airwallex.paymentacceptance:id/deleteIcon"
+    commands:
+      - tapOn: 
+          id: "com.airwallex.paymentacceptance:id/deleteIcon"
+      - assertVisible: "Customer ID"
+      - assertVisible: "Generate"
+- scrollUntilVisible:
+    element: "Save"
+- tapOn:
+    id: "com.airwallex.paymentacceptance:id/btnSave"
+- assertVisible: "settings saved"
+- tapOn: "OK"
+- assertVisible: "Integrate with Airwallex UI"

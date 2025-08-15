@@ -1,0 +1,9 @@
+appId: com.airwallex.paymentacceptance
+---
+- runFlow: # ensure checkout mode 
+    when:
+      notVisible: ${CHECKOUT_MODE}
+    commands:
+      - tapOn: Payment type
+      - tapOn: ${CHECKOUT_MODE}
+      - assertVisible: ${CHECKOUT_MODE}
