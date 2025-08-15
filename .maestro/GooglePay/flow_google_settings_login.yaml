@@ -10,7 +10,7 @@ appId: com.airwallex.paymentacceptance
 - tapOn: "Email or phone"
 - inputText: ${GPAY_ACCOUNT}
 - tapOn: "NEXT"
-- tapOn: "Enter your password"
+- assertVisible: "Enter your password"
 - inputText: ${GPAY_PASSWORD}
 - tapOn: "NEXT"
 - assertVisible: "Google Terms of Service"

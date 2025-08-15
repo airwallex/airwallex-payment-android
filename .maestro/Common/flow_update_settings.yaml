@@ -69,6 +69,11 @@ appId: com.airwallex.paymentacceptance
                 id: "com.airwallex.paymentacceptance:id/deleteIcon"
       - assertVisible: "Customer ID"
       - tapOn: "Customer ID"
+      - runFlow:
+          when:
+            visible: "Try out your stylus"
+          commands:
+            - tapOn: "Cancel"
       - inputText: ${UI_TESTING_CUSTOMER_ID} # setup this in CI
       - assertVisible: ${UI_TESTING_CUSTOMER_ID}
       - hideKeyboard
