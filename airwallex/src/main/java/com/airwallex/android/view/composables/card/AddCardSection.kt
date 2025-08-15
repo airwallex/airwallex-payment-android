@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
@@ -111,7 +112,8 @@ internal fun AddCardSection(
                 cardNumberErrorMessage = null
             },
             modifier = Modifier
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 24.dp)
+                .zIndex(1f),
             onComplete = { input ->
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(input)
                 expiryFocusRequester.requestFocus()
