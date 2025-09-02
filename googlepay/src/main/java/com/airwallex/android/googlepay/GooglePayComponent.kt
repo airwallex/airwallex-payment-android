@@ -66,10 +66,9 @@ class GooglePayComponent : ActionComponent {
                 fragment = fragment,
                 nextAction = nextAction,
                 cardNextActionModel = cardNextActionModel,
-                listener = listener
-            ) { requestCode, resultCode, data ->
-                handleActivityResult(requestCode, resultCode, data, listener)
-            }
+                listener = listener,
+                paymentConsentId = consentId
+            )
         } else {
             this.paymentIntentId = paymentIntentId
             val googlePayOptions = session.googlePayOptions ?: return

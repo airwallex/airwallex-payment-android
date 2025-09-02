@@ -4,12 +4,6 @@
 
     <application tools:targetApi="n">
         <activity
-            android:name=".view.dcc.DccActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/AirwallexDefaultTheme" />
-
-        <activity
             android:name=".view.cvc.PaymentCheckoutActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"

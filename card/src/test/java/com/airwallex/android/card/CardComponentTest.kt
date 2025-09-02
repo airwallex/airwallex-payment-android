@@ -64,7 +64,7 @@ class CardComponentTest {
         )
         handlePaymentIntentResponse(redirectAction, cardModel)
         verify(exactly = 1) {
-            ThreeDSecurityManager.handleThreeDSFlow("id", activity, null, redirectAction, cardModel, listener, resultCallBack = any())
+            ThreeDSecurityManager.handleThreeDSFlow("id", activity, null, redirectAction, cardModel, listener, paymentConsentId = null)
         }
     }
 
