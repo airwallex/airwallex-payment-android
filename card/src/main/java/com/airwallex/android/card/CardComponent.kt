@@ -12,7 +12,6 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
-import com.airwallex.android.threedsecurity.handleThreeDSActivityResult
 import com.airwallex.android.ui.AirwallexActivityLaunch
 
 class CardComponent : ActionComponent {
@@ -58,14 +57,9 @@ class CardComponent : ActionComponent {
                     fragment = fragment,
                     nextAction = nextAction,
                     cardNextActionModel = cardNextActionModel,
-                    listener = listener
-                ) { _, _, data ->
-                    handleThreeDSActivityResult(
-                        paymentConsentId = consentId,
-                        data = data,
-                        listener = listener
-                    )
-                }
+                    listener = listener,
+                    paymentConsentId = consentId
+                )
             }
             // payPayment
             else -> {

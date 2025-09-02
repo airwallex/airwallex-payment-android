@@ -113,7 +113,7 @@ class GooglePayComponentTest {
                 redirectAction,
                 cardModel,
                 listener,
-                resultCallBack = any()
+                paymentConsentId = null
             )
         }
     }
