@@ -57,7 +57,8 @@ internal fun ActionComponent.confirmGooglePayIntent(
                         device = device,
                         paymentIntentId = response.id,
                         currency = response.currency,
-                        amount = response.amount
+                        amount = response.amount,
+                        paymentConsentId = null
                     )
                     handlePaymentIntentResponse(
                         response.id,

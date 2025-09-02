@@ -43,7 +43,10 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
         val fullButtonList = listOf(
             ButtonItem(PAY_WITH_CARD, "Pay with card"),
             ButtonItem(PAY_WITH_CARD_AND_SAVE, "Pay with card and save card"),
-            ButtonItem(PAY_WITH_3DS, "Pay with card and trigger 3DS"), // Available only in non-production environments
+            ButtonItem(
+                PAY_WITH_3DS,
+                "Pay with card and trigger 3DS"
+            ), // Available only in non-production environments
             ButtonItem(PAY_WITH_GOOGLE_PAY, "Pay with Google Pay"),
             ButtonItem(GOOGLE_PAY_3DS, "Google Pay 3DS"),
             ButtonItem(REDIRECT_PAYMENT, "Redirect Payment"), // Only visible for "One-off payment"
@@ -204,7 +207,10 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
         setLoadingProgress(false)
         when (status) {
             is AirwallexPaymentStatus.Success -> {
-                Log.d(TAG, "Payment success ${status.paymentIntentId}")
+                Log.d(
+                    TAG,
+                    "Payment success with intent id: ${status.paymentIntentId}, consent id: ${status.consentId}"
+                )
                 showPaymentSuccess()
             }
 

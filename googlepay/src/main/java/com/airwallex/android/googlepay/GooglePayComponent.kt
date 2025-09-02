@@ -67,8 +67,12 @@ class GooglePayComponent : ActionComponent {
                 nextAction = nextAction,
                 cardNextActionModel = cardNextActionModel,
                 listener = listener
-            ) { requestCode, resultCode, data ->
-                handleActivityResult(requestCode, resultCode, data, listener)
+            ) { _, _, data ->
+                handleThreeDSActivityResult(
+                    paymentConsentId = consentId,
+                    data = data,
+                    listener = listener
+                )
             }
         } else {
             this.paymentIntentId = paymentIntentId
@@ -136,5 +140,24 @@ class GooglePayComponent : ActionComponent {
             return true
         }
         return false
+    }
+
+    private fun handleThreeDSActivityResult(
+        paymentConsentId: String?,
+        data: Intent?,
+        listener: Airwallex.PaymentResultListener
+    ) {
+        val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
+        result?.paymentIntentId?.let { intentId ->
+            listener.onCompleted(
+                AirwallexPaymentStatus.Success(
+                    paymentIntentId = intentId,
+                    consentId = paymentConsentId
+                )
+            )
+        }
+        result?.exception?.let { exception ->
+            listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
+        }
     }
 }

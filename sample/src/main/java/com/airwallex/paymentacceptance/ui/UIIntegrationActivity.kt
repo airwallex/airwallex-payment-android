@@ -76,7 +76,10 @@ class UIIntegrationActivity :
         setLoadingProgress(false)
         when (status) {
             is AirwallexPaymentStatus.Success -> {
-                Log.d(TAG, "Payment success ${status.paymentIntentId}")
+                Log.d(
+                    TAG,
+                    "Payment success with intent id: ${status.paymentIntentId}, consent id: ${status.consentId}"
+                )
                 showPaymentSuccess()
             }
 

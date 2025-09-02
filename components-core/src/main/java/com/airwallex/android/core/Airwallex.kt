@@ -598,6 +598,7 @@ class Airwallex internal constructor(
                                 paymentIntentId = paymentIntentId,
                                 currency = requireNotNull(params.currency),
                                 amount = requireNotNull(params.amount),
+                                paymentConsentId = params.paymentConsentId
                             )
 
                             provider.get().handlePaymentIntentResponse(
@@ -1227,6 +1228,7 @@ class Airwallex internal constructor(
                             paymentIntentId = response.id,
                             currency = response.currency,
                             amount = response.amount,
+                            paymentConsentId = params.paymentConsentId
                         )
 
                         else -> null
@@ -1390,67 +1392,6 @@ class Airwallex internal constructor(
             clientSecret = params.clientSecret,
             paymentIntentId = params.paymentIntentId,
             request = request
-        )
-    }
-
-    fun continueDccPaymentIntent(
-        params: ContinuePaymentIntentParams,
-        listener: PaymentResultListener
-    ) {
-        val request = PaymentIntentContinueRequest(
-            requestId = UUID.randomUUID().toString(),
-            type = params.type,
-            threeDSecure = params.threeDSecure,
-            device = params.device,
-            useDcc = params.useDcc
-        )
-
-        val paymentListener = object : PaymentListener<PaymentIntent> {
-            override fun onFailed(exception: AirwallexException) {
-                // Payment failed
-                listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
-            }
-
-            override fun onSuccess(response: PaymentIntent) {
-                // Handle next action
-                val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
-                if (provider == null) {
-                    listener.onCompleted(
-                        AirwallexPaymentStatus.Failure(
-                            AirwallexCheckoutException(
-                                message = "Missing ${PaymentMethodType.CARD.dependencyName} dependency!"
-                            )
-                        )
-                    )
-                    return
-                }
-                // Only card
-                provider.get().handlePaymentIntentResponse(
-                    response.id,
-                    response.nextAction,
-                    fragment,
-                    activity,
-                    applicationContext,
-                    CardNextActionModel(
-                        paymentManager = paymentManager,
-                        clientSecret = params.clientSecret,
-                        device = params.device,
-                        paymentIntentId = response.id,
-                        currency = response.currency,
-                        amount = response.amount,
-                    ),
-                    listener
-                )
-            }
-        }
-
-        paymentManager.startOperation(
-            Options.ContinuePaymentIntentOptions(
-                clientSecret = params.clientSecret,
-                paymentIntentId = params.paymentIntentId,
-                request = request
-            ),
-            paymentListener
         )
     }
 
