@@ -18,6 +18,7 @@ import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.threedsecurity.ThreeDSecurityActivityLaunch
 import com.airwallex.android.threedsecurity.ThreeDSecurityManager
+import com.airwallex.android.threedsecurity.handleThreeDSActivityResult
 import com.airwallex.android.ui.AirwallexActivityLaunch
 
 class GooglePayComponent : ActionComponent {
@@ -140,24 +141,5 @@ class GooglePayComponent : ActionComponent {
             return true
         }
         return false
-    }
-
-    private fun handleThreeDSActivityResult(
-        paymentConsentId: String?,
-        data: Intent?,
-        listener: Airwallex.PaymentResultListener
-    ) {
-        val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
-        result?.paymentIntentId?.let { intentId ->
-            listener.onCompleted(
-                AirwallexPaymentStatus.Success(
-                    paymentIntentId = intentId,
-                    consentId = paymentConsentId
-                )
-            )
-        }
-        result?.exception?.let { exception ->
-            listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
-        }
     }
 }

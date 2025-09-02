@@ -10,6 +10,5 @@ class CardNextActionModel(
     val device: Device?,
     val paymentIntentId: String?,
     val currency: String,
-    val amount: BigDecimal,
-    val paymentConsentId: String?
+    val amount: BigDecimal
 )

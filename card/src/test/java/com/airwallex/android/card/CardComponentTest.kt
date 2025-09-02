@@ -60,8 +60,7 @@ class CardComponentTest {
             device = null,
             paymentIntentId = "int_hkdmr7v9rg1j58ky8re",
             currency = "CNY",
-            amount = BigDecimal.TEN,
-            paymentConsentId = null
+            amount = BigDecimal.TEN
         )
         handlePaymentIntentResponse(redirectAction, cardModel)
         verify(exactly = 1) {

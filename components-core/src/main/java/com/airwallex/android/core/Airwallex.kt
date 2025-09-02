@@ -595,8 +595,7 @@ class Airwallex internal constructor(
                                 device = null,
                                 paymentIntentId = paymentIntentId,
                                 currency = requireNotNull(params.currency),
-                                amount = requireNotNull(params.amount),
-                                paymentConsentId = params.paymentConsentId
+                                amount = requireNotNull(params.amount)
                             )
 
                             provider.get().handlePaymentIntentResponse(
@@ -1225,8 +1224,7 @@ class Airwallex internal constructor(
                             device = device,
                             paymentIntentId = response.id,
                             currency = response.currency,
-                            amount = response.amount,
-                            paymentConsentId = params.paymentConsentId
+                            amount = response.amount
                         )
 
                         else -> null
