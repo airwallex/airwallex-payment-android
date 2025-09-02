@@ -51,7 +51,7 @@ tasks.register('clean', Delete) {
 version = '6.2.2'
 
 ext {
-    compileSdkVersion = 35
+    compileSdkVersion = 36
     minSdkVersion = 21
 
     kotlinCoroutinesVersion = '1.8.0'

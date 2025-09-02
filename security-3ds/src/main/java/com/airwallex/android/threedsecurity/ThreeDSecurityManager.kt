@@ -29,8 +29,8 @@ object ThreeDSecurityManager {
         nextAction: NextAction,
         cardNextActionModel: CardNextActionModel,
         listener: Airwallex.PaymentResultListener,
-        payload: String? = null,
-        resultCallBack: ((requestCode: Int, resultCode: Int, data: Intent?) -> Unit)? = null
+        paymentConsentId: String? = null,
+        payload: String? = null
     ) {
         val url = nextAction.url
         val data = nextAction.data
@@ -77,8 +77,12 @@ object ThreeDSecurityManager {
                             .build()
                     )
                 )
-            ) { requestCode, result ->
-                resultCallBack?.invoke(requestCode, result.resultCode, result.data)
+            ) { _, result ->
+                handleThreeDSActivityResult(
+                    paymentConsentId = paymentConsentId,
+                    data = result.data,
+                    listener = listener
+                )
             }
         } else {
             (activity as? AirwallexActivity)?.setLoadingProgress(
@@ -135,7 +139,8 @@ object ThreeDSecurityManager {
                                                 AirwallexLogger.info("ThreeDSecurityManager: 3DS finished, doesn't need challenge. Status: ${response.status}, NextAction: $continueNextAction")
                                                 listener.onCompleted(
                                                     AirwallexPaymentStatus.Success(
-                                                        response.id
+                                                        paymentIntentId = response.id,
+                                                        consentId = paymentConsentId
                                                     )
                                                 )
                                                 return
@@ -147,8 +152,8 @@ object ThreeDSecurityManager {
                                                 continueNextAction,
                                                 cardNextActionModel,
                                                 listener,
-                                                payload,
-                                                resultCallBack
+                                                paymentConsentId,
+                                                payload
                                             )
                                         }
 
@@ -205,5 +210,24 @@ object ThreeDSecurityManager {
             paymentIntentId = paymentIntentId,
             request = request
         )
+    }
+
+    private fun handleThreeDSActivityResult(
+        paymentConsentId: String?,
+        data: Intent?,
+        listener: Airwallex.PaymentResultListener
+    ) {
+        val result = ThreeDSecurityActivityLaunch.Result.fromIntent(data)
+        result?.paymentIntentId?.let { intentId ->
+            listener.onCompleted(
+                AirwallexPaymentStatus.Success(
+                    paymentIntentId = intentId,
+                    consentId = paymentConsentId
+                )
+            )
+        }
+        result?.exception?.let { exception ->
+            listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
+        }
     }
 }

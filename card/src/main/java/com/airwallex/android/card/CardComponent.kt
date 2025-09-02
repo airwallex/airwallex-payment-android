@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.airwallex.android.card.view.cvc.PaymentCheckoutActivityLaunch
-
 import com.airwallex.android.core.*
 import com.airwallex.android.core.data.AirwallexCheckoutParam
 import com.airwallex.android.core.exception.AirwallexCheckoutException
@@ -43,7 +42,13 @@ class CardComponent : ActionComponent {
             // 3DS flow
             NextAction.NextActionType.REDIRECT_FORM -> {
                 if (paymentIntentId.isNullOrEmpty()) {
-                    listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Payment Intent Id is null or empty")))
+                    listener.onCompleted(
+                        AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(
+                                message = "Payment Intent Id is null or empty"
+                            )
+                        )
+                    )
                     return
                 }
                 ThreeDSecurityManager.handleThreeDSFlow(
@@ -52,10 +57,9 @@ class CardComponent : ActionComponent {
                     fragment = fragment,
                     nextAction = nextAction,
                     cardNextActionModel = cardNextActionModel,
-                    listener = listener
-                ) { requestCode, resultCode, data ->
-                    handleActivityResult(requestCode, resultCode, data, listener)
-                }
+                    listener = listener,
+                    paymentConsentId = consentId
+                )
             }
             // payPayment
             else -> {
@@ -74,7 +78,11 @@ class CardComponent : ActionComponent {
                         .setPaymentConsentId(param.paymentConsentId)
                         .build()
                 ) { _, result ->
-                    val paymentStatus = handleCVCActivityResult(param.paymentConsentId, result.resultCode, result.data)
+                    val paymentStatus = handleCVCActivityResult(
+                        param.paymentConsentId,
+                        result.resultCode,
+                        result.data
+                    )
                     @Suppress("UNCHECKED_CAST")
                     callBack(paymentStatus as R)
                 }
@@ -114,6 +122,7 @@ class CardComponent : ActionComponent {
                     result == null -> return AirwallexPaymentStatus.Failure(
                         AirwallexCheckoutException(message = "cvc result is null")
                     )
+
                     result.exception != null -> return AirwallexPaymentStatus.Failure(result.exception)
                     result.paymentIntentId != null -> return AirwallexPaymentStatus.Success(
                         result.paymentIntentId,
