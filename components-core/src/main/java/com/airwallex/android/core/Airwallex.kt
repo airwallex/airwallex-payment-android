@@ -25,7 +25,6 @@ import com.airwallex.android.core.model.BankResponse
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.ConfirmPaymentIntentParams
-import com.airwallex.android.core.model.ContinuePaymentIntentParams
 import com.airwallex.android.core.model.CreatePaymentConsentParams
 import com.airwallex.android.core.model.CreatePaymentMethodParams
 import com.airwallex.android.core.model.Dependency
@@ -40,7 +39,6 @@ import com.airwallex.android.core.model.PaymentConsentReference
 import com.airwallex.android.core.model.PaymentConsentVerifyRequest
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentConfirmRequest
-import com.airwallex.android.core.model.PaymentIntentContinueRequest
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodCreateRequest
 import com.airwallex.android.core.model.PaymentMethodOptions
