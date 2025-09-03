@@ -13,6 +13,14 @@ appId: com.airwallex.paymentacceptance
 - assertVisible: "Enter your password"
 - inputText: ${GPAY_PASSWORD}
 - tapOn: "NEXT"
+- runFlow:
+    when:
+      visible: "Add phone number?"
+    commands:
+      - swipe:
+          from: "How it works"
+          direction: "UP"
+      - tapOn: "Skip"
 - assertVisible: "Google Terms of Service"
 - assertVisible: "Privacy Policy"
 - tapOn: "I agree"
