@@ -334,7 +334,9 @@ internal fun AddCardSection(
                     onFocusLost = { input ->
                         streetErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STREET)
                     },
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp)
+                        .zIndex(1f),
                     enabled = !isSameAddressChecked,
                     isError = streetErrorMessage != null,
                     shape = RoundedCornerShape(
