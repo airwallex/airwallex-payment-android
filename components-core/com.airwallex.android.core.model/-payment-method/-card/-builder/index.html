@@ -1,0 +1,397 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Builder</title>
+<link href="../../../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../../../../index.html">
+                    airwallex-android
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">6.2.4
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":components-core/release">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":components-core/release" data-filter=":components-core/release">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    airwallex-android
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="components-core::com.airwallex.android.core.model/PaymentMethod.Card.Builder///PointingToDeclaration//1424399983">
+  <div class="breadcrumbs"><a href="../../../../index.html">components-core</a><span class="delimiter">/</span><a href="../../../index.html">com.airwallex.android.core.model</a><span class="delimiter">/</span><a href="../../index.html">PaymentMethod</a><span class="delimiter">/</span><a href="../index.html">Card</a><span class="delimiter">/</span><span class="current">Builder</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Builder</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">Builder</a> : <a href="../../../-object-builder/index.html">ObjectBuilder</a><span class="token operator">&lt;</span><a href="../index.html">PaymentMethod.Card</a><span class="token operator">&gt; </span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-549524181%2FConstructors%2F1424399983" anchor-label="Builder" id="-549524181%2FConstructors%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-builder.html"><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-549524181%2FConstructors%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-208411688%2FFunctions%2F1424399983" anchor-label="build" id="-208411688%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="build.html"><span><span>build</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-208411688%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="build.html"><span class="token function">build</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../index.html">PaymentMethod.Card</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1850066215%2FFunctions%2F1424399983" anchor-label="setAvsCheck" id="-1850066215%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-avs-check.html"><span>set</span><wbr><span>Avs</span><wbr><span><span>Check</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1850066215%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-avs-check.html"><span class="token function">setAvsCheck</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">avsCheck<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-622667634%2FFunctions%2F1424399983" anchor-label="setBin" id="-622667634%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-bin.html"><span>set</span><wbr><span><span>Bin</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-622667634%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-bin.html"><span class="token function">setBin</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">bin<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-267511858%2FFunctions%2F1424399983" anchor-label="setBrand" id="-267511858%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-brand.html"><span>set</span><wbr><span><span>Brand</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-267511858%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-brand.html"><span class="token function">setBrand</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">brand<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1879915207%2FFunctions%2F1424399983" anchor-label="setCardType" id="-1879915207%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-card-type.html"><span>set</span><wbr><span>Card</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1879915207%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-card-type.html"><span class="token function">setCardType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cardType<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1433168225%2FFunctions%2F1424399983" anchor-label="setCountry" id="-1433168225%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-country.html"><span>set</span><wbr><span><span>Country</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1433168225%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-country.html"><span class="token function">setCountry</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">country<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1210114853%2FFunctions%2F1424399983" anchor-label="setCvc" id="1210114853%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-cvc.html"><span>set</span><wbr><span><span>Cvc</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1210114853%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-cvc.html"><span class="token function">setCvc</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cvc<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-761110709%2FFunctions%2F1424399983" anchor-label="setCvcCheck" id="-761110709%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-cvc-check.html"><span>set</span><wbr><span>Cvc</span><wbr><span><span>Check</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-761110709%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-cvc-check.html"><span class="token function">setCvcCheck</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cvcCheck<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1380100920%2FFunctions%2F1424399983" anchor-label="setExpiryMonth" id="-1380100920%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-expiry-month.html"><span>set</span><wbr><span>Expiry</span><wbr><span><span>Month</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1380100920%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-expiry-month.html"><span class="token function">setExpiryMonth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">expiryMonth<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-70492397%2FFunctions%2F1424399983" anchor-label="setExpiryYear" id="-70492397%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-expiry-year.html"><span>set</span><wbr><span>Expiry</span><wbr><span><span>Year</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-70492397%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-expiry-year.html"><span class="token function">setExpiryYear</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">expiryYear<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1659316975%2FFunctions%2F1424399983" anchor-label="setFingerprint" id="-1659316975%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-fingerprint.html"><span>set</span><wbr><span><span>Fingerprint</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1659316975%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-fingerprint.html"><span class="token function">setFingerprint</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fingerprint<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1983597224%2FFunctions%2F1424399983" anchor-label="setFunding" id="-1983597224%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-funding.html"><span>set</span><wbr><span><span>Funding</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1983597224%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-funding.html"><span class="token function">setFunding</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">funding<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-556839349%2FFunctions%2F1424399983" anchor-label="setIssuerCountryCode" id="-556839349%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-issuer-country-code.html"><span>set</span><wbr><span>Issuer</span><wbr><span>Country</span><wbr><span><span>Code</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-556839349%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-issuer-country-code.html"><span class="token function">setIssuerCountryCode</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">issuerCountryCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-818712809%2FFunctions%2F1424399983" anchor-label="setLast4" id="-818712809%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-last4.html"><span>set</span><wbr><span><span>Last4</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-818712809%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-last4.html"><span class="token function">setLast4</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">last4<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1485187448%2FFunctions%2F1424399983" anchor-label="setName" id="1485187448%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-name.html"><span>set</span><wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1485187448%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-name.html"><span class="token function">setName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-649991878%2FFunctions%2F1424399983" anchor-label="setNumber" id="-649991878%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-number.html"><span>set</span><wbr><span><span>Number</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-649991878%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-number.html"><span class="token function">setNumber</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">number<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2063060773%2FFunctions%2F1424399983" anchor-label="setNumberType" id="-2063060773%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-number-type.html"><span>set</span><wbr><span>Number</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2063060773%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-number-type.html"><span class="token function">setNumberType</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">numberType<span class="token operator">: </span><a href="../-number-type/index.html">PaymentMethod.Card.NumberType</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">PaymentMethod.Card.Builder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

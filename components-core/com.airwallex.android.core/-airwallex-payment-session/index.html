@@ -1,0 +1,371 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>AirwallexPaymentSession</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../../index.html">
+                    airwallex-android
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">6.2.4
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":components-core/release">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":components-core/release" data-filter=":components-core/release">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    airwallex-android
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="components-core::com.airwallex.android.core/AirwallexPaymentSession///PointingToDeclaration//1424399983">
+  <div class="breadcrumbs"><a href="../../index.html">components-core</a><span class="delimiter">/</span><a href="../index.html">com.airwallex.android.core</a><span class="delimiter">/</span><span class="current">AirwallexPaymentSession</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Airwallex</span><wbr><span>Payment</span><wbr><span><span>Session</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">AirwallexPaymentSession</a> : <a href="../-airwallex-session/index.html">AirwallexSession</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><p class="paragraph">For one-off payment</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="416850634%2FClasslikes%2F1424399983" anchor-label="Builder" id="416850634%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-builder/index.html"><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="416850634%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-builder/index.html">Builder</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">paymentIntent<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-payment-intent/index.html">PaymentIntent</a><span class="token punctuation">, </span></span><span class="parameter ">countryCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">googlePayOptions<span class="token operator">: </span><a href="../-google-pay-options/index.html">GooglePayOptions</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="../../com.airwallex.android.core.model/-object-builder/index.html">ObjectBuilder</a><span class="token operator">&lt;</span><a href="index.html">AirwallexPaymentSession</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="2007555088%2FProperties%2F1424399983" anchor-label="amount" id="2007555088%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="amount.html"><span><span>amount</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2007555088%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="amount.html">amount</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/math/BigDecimal.html">BigDecimal</a></div><div class="brief "><p class="paragraph">Payment amount. This is the order amount you would like to charge your customer. required.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1078019525%2FProperties%2F1424399983" anchor-label="autoCapture" id="-1078019525%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="auto-capture.html"><span>auto</span><wbr><span><span>Capture</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1078019525%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="auto-capture.html">autoCapture</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></div><div class="brief "><p class="paragraph">Indicate if the payment shall be captured immediately after authorized. Only applicable to Card. Default: true</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-913018961%2FProperties%2F1424399983" anchor-label="countryCode" id="-913018961%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="country-code.html"><span>country</span><wbr><span><span>Code</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-913018961%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="country-code.html">countryCode</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Country code</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1283559497%2FProperties%2F1424399983" anchor-label="currency" id="-1283559497%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="currency.html"><span><span>currency</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1283559497%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="currency.html">currency</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Amount currency. required.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="294228079%2FProperties%2F1424399983" anchor-label="customerId" id="294228079%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="customer-id.html"><span>customer</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="294228079%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="customer-id.html">customerId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="951046809%2FProperties%2F1424399983" anchor-label="googlePayOptions" id="951046809%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="google-pay-options.html"><span>google</span><wbr><span>Pay</span><wbr><span><span>Options</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="951046809%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="google-pay-options.html">googlePayOptions</a><span class="token operator">: </span><a href="../-google-pay-options/index.html">GooglePayOptions</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">Google Pay options</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1120879733%2FProperties%2F1424399983" anchor-label="hidePaymentConsents" id="1120879733%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="hide-payment-consents.html"><span>hide</span><wbr><span>Payment</span><wbr><span><span>Consents</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1120879733%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="hide-payment-consents.html">hidePaymentConsents</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">control whether saved cards are displayed on the list screen</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="507528494%2FProperties%2F1424399983" anchor-label="isBillingInformationRequired" id="507528494%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-billing-information-required.html"><span>is</span><wbr><span>Billing</span><wbr><span>Information</span><wbr><span><span>Required</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="507528494%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="is-billing-information-required.html">isBillingInformationRequired</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></div><div class="brief "><p class="paragraph">Whether or not billing information is required for card payments. When set to <code class="lang-kotlin">false</code>, any billing information will be ignored.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-179890879%2FProperties%2F1424399983" anchor-label="isEmailRequired" id="-179890879%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-email-required.html"><span>is</span><wbr><span>Email</span><wbr><span><span>Required</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-179890879%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="is-email-required.html">isEmailRequired</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">Whether or not email is required for card payments. Set to 'true' if you'd like to collect customers' email</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1772240304%2FProperties%2F1424399983" anchor-label="paymentIntent" id="1772240304%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="payment-intent.html"><span>payment</span><wbr><span><span>Intent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1772240304%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="payment-intent.html">paymentIntent</a><span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-payment-intent/index.html">PaymentIntent</a></div><div class="brief "><p class="paragraph">the ID of the <a href="../../com.airwallex.android.core.model/-payment-intent/index.html">PaymentIntent</a>, required.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1682062620%2FProperties%2F1424399983" anchor-label="paymentMethods" id="1682062620%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="payment-methods.html"><span>payment</span><wbr><span><span>Methods</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1682062620%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="payment-methods.html">paymentMethods</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">An array of payment method type names to limit the payment methods displayed on the list screen. Only available ones from your Airwallex account will be applied, any other ones will be ignored. Also the order of payment method list will follow the order of this array. API reference: https://www.airwallex.com/docs/api#/Payment_Acceptance/Config/_api_v1_pa_config_payment_method_types/get JSON Object field: items.name</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1599330547%2FProperties%2F1424399983" anchor-label="returnUrl" id="1599330547%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="return-url.html"><span>return</span><wbr><span><span>Url</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1599330547%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="return-url.html">returnUrl</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1351359674%2FProperties%2F1424399983" anchor-label="shipping" id="1351359674%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="shipping.html"><span><span>shipping</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1351359674%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="shipping.html">shipping</a><span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-shipping/index.html">Shipping</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">Shipping information. optional</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1578325224%2FFunctions%2F1424399983" anchor-label="describeContents" id="-1578325224%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../com.airwallex.android.core.model/-we-chat/index.html#-1578325224%2FFunctions%2F1424399983"><span>describe</span><wbr><span><span>Contents</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1578325224%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../../com.airwallex.android.core.model/-we-chat/index.html#-1578325224%2FFunctions%2F1424399983"><span class="token function">describeContents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1754457655%2FFunctions%2F1424399983" anchor-label="writeToParcel" id="-1754457655%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../com.airwallex.android.core.model/-we-chat/index.html#-1754457655%2FFunctions%2F1424399983"><span>write</span><wbr><span>To</span><wbr><span><span>Parcel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1754457655%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../../com.airwallex.android.core.model/-we-chat/index.html#-1754457655%2FFunctions%2F1424399983"><span class="token function">writeToParcel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

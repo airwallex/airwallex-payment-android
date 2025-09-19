@@ -1,0 +1,352 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ConfirmPaymentIntentParams</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../../index.html">
+                    airwallex-android
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">6.2.4
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":components-core/release">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":components-core/release" data-filter=":components-core/release">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    airwallex-android
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="components-core::com.airwallex.android.core.model/ConfirmPaymentIntentParams///PointingToDeclaration//1424399983">
+  <div class="breadcrumbs"><a href="../../index.html">components-core</a><span class="delimiter">/</span><a href="../index.html">com.airwallex.android.core.model</a><span class="delimiter">/</span><span class="current">ConfirmPaymentIntentParams</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Confirm</span><wbr><span>Payment</span><wbr><span>Intent</span><wbr><span><span>Params</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">ConfirmPaymentIntentParams</a> : <a href="../-abstract-payment-intent-params/index.html">AbstractPaymentIntentParams</a></div><p class="paragraph">The params that used for confirm <a href="../-payment-intent/index.html">PaymentIntent</a></p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-832880294%2FClasslikes%2F1424399983" anchor-label="Builder" id="-832880294%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-builder/index.html"><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-832880294%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-builder/index.html">Builder</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">paymentIntentId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">paymentMethodType<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span> : <a href="../-object-builder/index.html">ObjectBuilder</a><span class="token operator">&lt;</span><a href="index.html">ConfirmPaymentIntentParams</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-734374391%2FClasslikes%2F1424399983" anchor-label="Companion" id="-734374391%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-734374391%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1053808131%2FProperties%2F1424399983" anchor-label="additionalInfo" id="1053808131%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="additional-info.html"><span>additional</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1053808131%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="additional-info.html">additionalInfo</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">AdditionalInfo (used by LPMs)</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1632661301%2FProperties%2F1424399983" anchor-label="autoCapture" id="-1632661301%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="auto-capture.html"><span>auto</span><wbr><span><span>Capture</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1632661301%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="auto-capture.html">autoCapture</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></div><div class="brief "><p class="paragraph">Indicate if the payment shall be captured immediately after authorized. Only applicable to Card. Default: true</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-944354659%2FProperties%2F1424399983" anchor-label="clientSecret" id="-944354659%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="client-secret.html"><span>client</span><wbr><span><span>Secret</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-944354659%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="client-secret.html">clientSecret</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">The client secret of <a href="../-payment-intent/index.html">PaymentIntent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1467660737%2FProperties%2F1424399983" anchor-label="countryCode" id="-1467660737%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="country-code.html"><span>country</span><wbr><span><span>Code</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1467660737%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="country-code.html">countryCode</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">Country Code</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1370512601%2FProperties%2F1424399983" anchor-label="currency" id="-1370512601%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="currency.html"><span><span>currency</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1370512601%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="currency.html">currency</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">Currency</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1663326241%2FProperties%2F1424399983" anchor-label="customerId" id="-1663326241%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="customer-id.html"><span>customer</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1663326241%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="customer-id.html">customerId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">optional, the ID of a Customer.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1697031218%2FProperties%2F1424399983" anchor-label="cvc" id="1697031218%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="cvc.html"><span><span>cvc</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1697031218%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="cvc.html">cvc</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">CVC</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1744863786%2FProperties%2F1424399983" anchor-label="flow" id="1744863786%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="flow.html"><span><span>flow</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1744863786%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="flow.html">flow</a><span class="token operator">: </span><a href="../-airwallex-payment-request-flow/index.html">AirwallexPaymentRequestFlow</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">Payment Request Flow</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1646423689%2FProperties%2F1424399983" anchor-label="paymentConsentId" id="1646423689%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="payment-consent-id.html"><span>payment</span><wbr><span>Consent</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1646423689%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="payment-consent-id.html">paymentConsentId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">Unique identifier of this <a href="../-payment-consent/index.html">PaymentConsent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1760090789%2FProperties%2F1424399983" anchor-label="paymentIntentId" id="1760090789%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="payment-intent-id.html"><span>payment</span><wbr><span>Intent</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1760090789%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="payment-intent-id.html">paymentIntentId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">ID of <a href="../-payment-intent/index.html">PaymentIntent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1955086949%2FProperties%2F1424399983" anchor-label="paymentMethod" id="-1955086949%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="payment-method.html"><span>payment</span><wbr><span><span>Method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1955086949%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="payment-method.html">paymentMethod</a><span class="token operator">: </span><a href="../-payment-method/index.html">PaymentMethod</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">Payment Method</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1463039105%2FProperties%2F1424399983" anchor-label="paymentMethodType" id="1463039105%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="payment-method-type.html"><span>payment</span><wbr><span>Method</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1463039105%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="payment-method-type.html">paymentMethodType</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">Payment method type</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1096215677%2FProperties%2F1424399983" anchor-label="returnUrl" id="-1096215677%2FProperties%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="return-url.html"><span>return</span><wbr><span><span>Url</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1096215677%2FProperties%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="return-url.html">returnUrl</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</div><div class="brief "><p class="paragraph">The URL to redirect your customer back to after they authenticate their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1016 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>AirwallexColor</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../../index.html">
+                    airwallex-android
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">6.2.4
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":ui-core/release">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":ui-core/release" data-filter=":ui-core/release">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    airwallex-android
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="ui-core::com.airwallex.android.ui.composables/AirwallexColor///PointingToDeclaration//-1628350927">
+  <div class="breadcrumbs"><a href="../../index.html">ui-core</a><span class="delimiter">/</span><a href="../index.html">com.airwallex.android.ui.composables</a><span class="delimiter">/</span><span class="current">AirwallexColor</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Airwallex</span><wbr><span><span>Color</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="index.html">AirwallexColor</a></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="1552038991%2FClasslikes%2F-1628350927" anchor-label="Level" id="1552038991%2FClasslikes%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-level/index.html"><span><span>Level</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1552038991%2FClasslikes%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-level/index.html">Level</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-level/index.html">AirwallexColor.Level</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-342268230%2FProperties%2F-1628350927" anchor-label="BackgroundSecondary" id="-342268230%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-background-secondary.html"><span>Background</span><wbr><span><span>Secondary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-342268230%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-background-secondary.html">BackgroundSecondary</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2044211711%2FProperties%2F-1628350927" anchor-label="Black" id="-2044211711%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-black.html"><span><span>Black</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2044211711%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-black.html">Black</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1070494945%2FProperties%2F-1628350927" anchor-label="Blue10" id="1070494945%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-blue10.html"><span><span>Blue10</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1070494945%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-blue10.html">Blue10</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="873238071%2FProperties%2F-1628350927" anchor-label="ErrorBox" id="873238071%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-error-box.html"><span>Error</span><wbr><span><span>Box</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="873238071%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-error-box.html">ErrorBox</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1115495736%2FProperties%2F-1628350927" anchor-label="Gray10" id="1115495736%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gray10.html"><span><span>Gray10</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1115495736%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-gray10.html">Gray10</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-291442830%2FProperties%2F-1628350927" anchor-label="Gray100" id="-291442830%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gray100.html"><span><span>Gray100</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-291442830%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-gray100.html">Gray100</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2077109753%2FProperties%2F-1628350927" anchor-label="Gray20" id="2077109753%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gray20.html"><span><span>Gray20</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2077109753%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-gray20.html">Gray20</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1256243526%2FProperties%2F-1628350927" anchor-label="Gray30" id="-1256243526%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gray30.html"><span><span>Gray30</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1256243526%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-gray30.html">Gray30</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-294629509%2FProperties%2F-1628350927" anchor-label="Gray40" id="-294629509%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gray40.html"><span><span>Gray40</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-294629509%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-gray40.html">Gray40</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="666984508%2FProperties%2F-1628350927" anchor-label="Gray50" id="666984508%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gray50.html"><span><span>Gray50</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="666984508%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-gray50.html">Gray50</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1628598525%2FProperties%2F-1628350927" anchor-label="Gray60" id="1628598525%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gray60.html"><span><span>Gray60</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1628598525%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-gray60.html">Gray60</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1704754754%2FProperties%2F-1628350927" anchor-label="Gray70" id="-1704754754%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gray70.html"><span><span>Gray70</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1704754754%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-gray70.html">Gray70</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-743140737%2FProperties%2F-1628350927" anchor-label="Gray80" id="-743140737%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gray80.html"><span><span>Gray80</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-743140737%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-gray80.html">Gray80</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="218473280%2FProperties%2F-1628350927" anchor-label="Gray90" id="218473280%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-gray90.html"><span><span>Gray90</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="218473280%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-gray90.html">Gray90</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1379243582%2FProperties%2F-1628350927" anchor-label="Green10" id="1379243582%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-green10.html"><span><span>Green10</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1379243582%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-green10.html">Green10</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-992495680%2FProperties%2F-1628350927" anchor-label="Green30" id="-992495680%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-green30.html"><span><span>Green30</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-992495680%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-green30.html">Green30</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="930732354%2FProperties%2F-1628350927" anchor-label="Green50" id="930732354%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-green50.html"><span><span>Green50</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="930732354%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-green50.html">Green50</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1441006908%2FProperties%2F-1628350927" anchor-label="Green70" id="-1441006908%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-green70.html"><span><span>Green70</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1441006908%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-green70.html">Green70</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="482221126%2FProperties%2F-1628350927" anchor-label="Green90" id="482221126%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-green90.html"><span><span>Green90</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="482221126%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-green90.html">Green90</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-246178322%2FProperties%2F-1628350927" anchor-label="Grey100" id="-246178322%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-grey100.html"><span><span>Grey100</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-246178322%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-grey100.html">Grey100</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-371839426%2FProperties%2F-1628350927" anchor-label="Interactive" id="-371839426%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-interactive.html"><span><span>Interactive</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-371839426%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-interactive.html">Interactive</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1582170430%2FProperties%2F-1628350927" anchor-label="LoadingBarBackgroundColor" id="-1582170430%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-loading-bar-background-color.html"><span>Loading</span><wbr><span>Bar</span><wbr><span>Background</span><wbr><span><span>Color</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1582170430%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-loading-bar-background-color.html">LoadingBarBackgroundColor</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="374391981%2FProperties%2F-1628350927" anchor-label="LoadingBarEdgeFadeColor" id="374391981%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-loading-bar-edge-fade-color.html"><span>Loading</span><wbr><span>Bar</span><wbr><span>Edge</span><wbr><span>Fade</span><wbr><span><span>Color</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="374391981%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-loading-bar-edge-fade-color.html">LoadingBarEdgeFadeColor</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="710234071%2FProperties%2F-1628350927" anchor-label="LoadingBarFillColor" id="710234071%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-loading-bar-fill-color.html"><span>Loading</span><wbr><span>Bar</span><wbr><span>Fill</span><wbr><span><span>Color</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="710234071%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-loading-bar-fill-color.html">LoadingBarFillColor</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2042343245%2FProperties%2F-1628350927" anchor-label="Orange10" id="2042343245%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-orange10.html"><span><span>Orange10</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2042343245%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-orange10.html">Orange10</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-329396017%2FProperties%2F-1628350927" anchor-label="Orange30" id="-329396017%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-orange30.html"><span><span>Orange30</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-329396017%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-orange30.html">Orange30</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1593832017%2FProperties%2F-1628350927" anchor-label="Orange50" id="1593832017%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-orange50.html"><span><span>Orange50</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1593832017%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-orange50.html">Orange50</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-777907245%2FProperties%2F-1628350927" anchor-label="Orange70" id="-777907245%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-orange70.html"><span><span>Orange70</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-777907245%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-orange70.html">Orange70</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1145320789%2FProperties%2F-1628350927" anchor-label="Orange90" id="1145320789%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-orange90.html"><span><span>Orange90</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1145320789%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-orange90.html">Orange90</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-719384833%2FProperties%2F-1628350927" anchor-label="ProgressbarDefault" id="-719384833%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-progressbar-default.html"><span>Progressbar</span><wbr><span><span>Default</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-719384833%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-progressbar-default.html">ProgressbarDefault</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1940925250%2FProperties%2F-1628350927" anchor-label="ProgressbarStart" id="-1940925250%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-progressbar-start.html"><span>Progressbar</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1940925250%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-progressbar-start.html">ProgressbarStart</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1555369808%2FProperties%2F-1628350927" anchor-label="Red10" id="-1555369808%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-red10.html"><span><span>Red10</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1555369808%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-red10.html">Red10</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="367858226%2FProperties%2F-1628350927" anchor-label="Red30" id="367858226%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-red30.html"><span><span>Red30</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="367858226%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-red30.html">Red30</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2003881036%2FProperties%2F-1628350927" anchor-label="Red50" id="-2003881036%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-red50.html"><span><span>Red50</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2003881036%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-red50.html">Red50</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-80653002%2FProperties%2F-1628350927" anchor-label="Red70" id="-80653002%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-red70.html"><span><span>Red70</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-80653002%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-red70.html">Red70</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1842575032%2FProperties%2F-1628350927" anchor-label="Red90" id="1842575032%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-red90.html"><span><span>Red90</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1842575032%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-red90.html">Red90</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-489254107%2FProperties%2F-1628350927" anchor-label="TextError" id="-489254107%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-text-error.html"><span>Text</span><wbr><span><span>Error</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-489254107%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-text-error.html">TextError</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2010544021%2FProperties%2F-1628350927" anchor-label="TextPrimary" id="-2010544021%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-text-primary.html"><span>Text</span><wbr><span><span>Primary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2010544021%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-text-primary.html">TextPrimary</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="536685881%2FProperties%2F-1628350927" anchor-label="TextSecondary" id="536685881%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-text-secondary.html"><span>Text</span><wbr><span><span>Secondary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="536685881%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-text-secondary.html">TextSecondary</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1660206542%2FProperties%2F-1628350927" anchor-label="Transparent" id="1660206542%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-transparent.html"><span><span>Transparent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1660206542%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-transparent.html">Transparent</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1129712342%2FProperties%2F-1628350927" anchor-label="Ultraviolet10" id="1129712342%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ultraviolet10.html"><span><span>Ultraviolet10</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1129712342%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-ultraviolet10.html">Ultraviolet10</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="149271956%2FProperties%2F-1628350927" anchor-label="Ultraviolet100" id="149271956%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ultraviolet100.html"><span><span>Ultraviolet100</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="149271956%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-ultraviolet100.html">Ultraviolet100</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2091326359%2FProperties%2F-1628350927" anchor-label="Ultraviolet20" id="2091326359%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ultraviolet20.html"><span><span>Ultraviolet20</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2091326359%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-ultraviolet20.html">Ultraviolet20</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1242026920%2FProperties%2F-1628350927" anchor-label="Ultraviolet30" id="-1242026920%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ultraviolet30.html"><span><span>Ultraviolet30</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1242026920%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-ultraviolet30.html">Ultraviolet30</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-280412903%2FProperties%2F-1628350927" anchor-label="Ultraviolet40" id="-280412903%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ultraviolet40.html"><span><span>Ultraviolet40</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-280412903%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-ultraviolet40.html">Ultraviolet40</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="681201114%2FProperties%2F-1628350927" anchor-label="Ultraviolet50" id="681201114%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ultraviolet50.html"><span><span>Ultraviolet50</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="681201114%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-ultraviolet50.html">Ultraviolet50</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1642815131%2FProperties%2F-1628350927" anchor-label="Ultraviolet60" id="1642815131%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ultraviolet60.html"><span><span>Ultraviolet60</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1642815131%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-ultraviolet60.html">Ultraviolet60</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1690538148%2FProperties%2F-1628350927" anchor-label="Ultraviolet70" id="-1690538148%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ultraviolet70.html"><span><span>Ultraviolet70</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1690538148%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-ultraviolet70.html">Ultraviolet70</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-728924131%2FProperties%2F-1628350927" anchor-label="Ultraviolet80" id="-728924131%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ultraviolet80.html"><span><span>Ultraviolet80</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-728924131%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-ultraviolet80.html">Ultraviolet80</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="232689886%2FProperties%2F-1628350927" anchor-label="Ultraviolet90" id="232689886%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-ultraviolet90.html"><span><span>Ultraviolet90</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="232689886%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-ultraviolet90.html">Ultraviolet90</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="643252726%2FProperties%2F-1628350927" anchor-label="WarningBackground" id="643252726%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-warning-background.html"><span>Warning</span><wbr><span><span>Background</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="643252726%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-warning-background.html">WarningBackground</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="954512663%2FProperties%2F-1628350927" anchor-label="White" id="954512663%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-white.html"><span><span>White</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="954512663%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-white.html">White</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1752255161%2FProperties%2F-1628350927" anchor-label="Yellow10" id="-1752255161%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-yellow10.html"><span><span>Yellow10</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1752255161%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-yellow10.html">Yellow10</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="170972873%2FProperties%2F-1628350927" anchor-label="Yellow30" id="170972873%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-yellow30.html"><span><span>Yellow30</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="170972873%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-yellow30.html">Yellow30</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2094200907%2FProperties%2F-1628350927" anchor-label="Yellow50" id="2094200907%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-yellow50.html"><span><span>Yellow50</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2094200907%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-yellow50.html">Yellow50</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-277538355%2FProperties%2F-1628350927" anchor-label="Yellow70" id="-277538355%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-yellow70.html"><span><span>Yellow70</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-277538355%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-yellow70.html">Yellow70</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1645689679%2FProperties%2F-1628350927" anchor-label="Yellow90" id="1645689679%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-yellow90.html"><span><span>Yellow90</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1645689679%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="-yellow90.html">Yellow90</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1028924122%2FFunctions%2F-1628350927" anchor-label="adjustByLevel" id="-1028924122%2FFunctions%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="adjust-by-level.html"><span>adjust</span><wbr><span>By</span><wbr><span><span>Level</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1028924122%2FFunctions%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a><span class="token punctuation">.</span><a href="adjust-by-level.html"><span class="token function">adjustByLevel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">level<span class="token operator">: </span><a href="-level/index.html">AirwallexColor.Level</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1146 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>com.airwallex.android.core.model</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../index.html">
+                    airwallex-android
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">6.2.4
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":components-core/release">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":components-core/release" data-filter=":components-core/release">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    airwallex-android
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="components-core::com.airwallex.android.core.model////PointingToDeclaration//1424399983">
+  <div class="breadcrumbs"><a href="../index.html">components-core</a><span class="delimiter">/</span><span class="current">com.airwallex.android.core.model</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button><button class="section-tab" data-togglable="FUNCTION,EXTENSION_FUNCTION">Functions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="555650861%2FClasslikes%2F1424399983" anchor-label="AbstractPaymentIntentParams" id="555650861%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-abstract-payment-intent-params/index.html"><span>Abstract</span><wbr><span>Payment</span><wbr><span>Intent</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="555650861%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-abstract-payment-intent-params/index.html">AbstractPaymentIntentParams</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>paymentIntentId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="196602952%2FClasslikes%2F1424399983" anchor-label="AbstractPaymentMethodParams" id="196602952%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-abstract-payment-method-params/index.html"><span>Abstract</span><wbr><span>Payment</span><wbr><span>Method</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="196602952%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-abstract-payment-method-params/index.html">AbstractPaymentMethodParams</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>customerId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1631422241%2FClasslikes%2F1424399983" anchor-label="Address" id="-1631422241%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-address/index.html"><span><span>Address</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1631422241%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-address/index.html">Address</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Address information.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="842748526%2FClasslikes%2F1424399983" anchor-label="AirwallexError" id="842748526%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-airwallex-error/index.html"><span>Airwallex</span><wbr><span><span>Error</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="842748526%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-airwallex-error/index.html">AirwallexError</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>code<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>source<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>message<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a>, <a href="https://developer.android.com/reference/kotlin/java/io/Serializable.html">Serializable</a></div><div class="brief "><p class="paragraph">Airwallex uses conventional HTTP response codes to indicate the success or failure of an API request. Typically a status code in the 2xx range indicates success, status codes in the 4xx range indicate an error that has been triggered due to the information provided (for example; a parameter does not meet the validation requirements or was not provided), and status codes in the 5xx range indicate an error with our servers.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1207959661%2FClasslikes%2F1424399983" anchor-label="AirwallexModel" id="1207959661%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-airwallex-model/index.html"><span>Airwallex</span><wbr><span><span>Model</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1207959661%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-airwallex-model/index.html">AirwallexModel</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1880893181%2FClasslikes%2F1424399983" anchor-label="AirwallexPaymentRequest" id="-1880893181%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-airwallex-payment-request/index.html"><span>Airwallex</span><wbr><span>Payment</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1880893181%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-airwallex-payment-request/index.html">AirwallexPaymentRequest</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>additionalInfo<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>flow<span class="token operator">: </span><a href="-airwallex-payment-request-flow/index.html">AirwallexPaymentRequestFlow</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>osType<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Request for Bank</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1189765515%2FClasslikes%2F1424399983" anchor-label="AirwallexPaymentRequestFlow" id="-1189765515%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-airwallex-payment-request-flow/index.html"><span>Airwallex</span><wbr><span>Payment</span><wbr><span>Request</span><wbr><span><span>Flow</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1189765515%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-airwallex-payment-request-flow/index.html">AirwallexPaymentRequestFlow</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-airwallex-payment-request-flow/index.html">AirwallexPaymentRequestFlow</a><span class="token operator">&gt; </span>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1749325646%2FClasslikes%2F1424399983" anchor-label="AirwallexRequestModel" id="-1749325646%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-airwallex-request-model/index.html"><span>Airwallex</span><wbr><span>Request</span><wbr><span><span>Model</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1749325646%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-airwallex-request-model/index.html">AirwallexRequestModel</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1786121015%2FClasslikes%2F1424399983" anchor-label="AvailablePaymentMethodType" id="1786121015%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-available-payment-method-type/index.html"><span>Available</span><wbr><span>Payment</span><wbr><span>Method</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1786121015%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-available-payment-method-type/index.html">AvailablePaymentMethodType</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>displayName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>transactionMode<span class="token operator">: </span><a href="-transaction-mode/index.html">TransactionMode</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>flows<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="-airwallex-payment-request-flow/index.html">AirwallexPaymentRequestFlow</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>transactionCurrencies<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>countryCodes<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>active<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>resources<span class="token operator">: </span><a href="-available-payment-method-type-resource/index.html">AvailablePaymentMethodTypeResource</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>cardSchemes<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="-card-scheme/index.html">CardScheme</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1221553353%2FClasslikes%2F1424399983" anchor-label="AvailablePaymentMethodTypeResource" id="1221553353%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-available-payment-method-type-resource/index.html"><span>Available</span><wbr><span>Payment</span><wbr><span>Method</span><wbr><span>Type</span><wbr><span><span>Resource</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1221553353%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-available-payment-method-type-resource/index.html">AvailablePaymentMethodTypeResource</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>hasSchema<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>logos<span class="token operator">: </span><a href="../com.airwallex.android.core/-logo-resources/index.html">LogoResources</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-884233581%2FClasslikes%2F1424399983" anchor-label="Bank" id="-884233581%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-bank/index.html"><span><span>Bank</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-884233581%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-bank/index.html">Bank</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>displayName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>resources<span class="token operator">: </span><a href="-bank-resources/index.html">BankResources</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Bank information.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-222670422%2FClasslikes%2F1424399983" anchor-label="BankResources" id="-222670422%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-bank-resources/index.html"><span>Bank</span><wbr><span><span>Resources</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-222670422%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-bank-resources/index.html">BankResources</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Resources of bank</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1463275694%2FClasslikes%2F1424399983" anchor-label="BankResponse" id="-1463275694%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-bank-response/index.html"><span>Bank</span><wbr><span><span>Response</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1463275694%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-bank-response/index.html">BankResponse</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Response for retrieve available payment method types</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="730040376%2FClasslikes%2F1424399983" anchor-label="Billing" id="730040376%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-billing/index.html"><span><span>Billing</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="730040376%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-billing/index.html">Billing</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Billing information.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-428654694%2FClasslikes%2F1424399983" anchor-label="CardScheme" id="-428654694%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-card-scheme/index.html"><span>Card</span><wbr><span><span>Scheme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-428654694%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-card-scheme/index.html">CardScheme</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="820468052%2FClasslikes%2F1424399983" anchor-label="ClientSecret" id="820468052%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-client-secret/index.html"><span>Client</span><wbr><span><span>Secret</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="820468052%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-client-secret/index.html">ClientSecret</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>value<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>expiredTime<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Date.html">Date</a></span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2000791111%2FClasslikes%2F1424399983" anchor-label="ConfirmPaymentIntentParams" id="2000791111%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-confirm-payment-intent-params/index.html"><span>Confirm</span><wbr><span>Payment</span><wbr><span>Intent</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2000791111%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-confirm-payment-intent-params/index.html">ConfirmPaymentIntentParams</a> : <a href="-abstract-payment-intent-params/index.html">AbstractPaymentIntentParams</a></div><div class="brief "><p class="paragraph">The params that used for confirm <a href="-payment-intent/index.html">PaymentIntent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="480303154%2FClasslikes%2F1424399983" anchor-label="ContinuePaymentIntentParams" id="480303154%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-continue-payment-intent-params/index.html"><span>Continue</span><wbr><span>Payment</span><wbr><span>Intent</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="480303154%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-continue-payment-intent-params/index.html">ContinuePaymentIntentParams</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>paymentIntentId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="-payment-intent-continue-type/index.html">PaymentIntentContinueType</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>threeDSecure<span class="token operator">: </span><a href="-three-d-secure/index.html">ThreeDSecure</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>device<span class="token operator">: </span><a href="-device/index.html">Device</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>useDcc<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-abstract-payment-intent-params/index.html">AbstractPaymentIntentParams</a></div><div class="brief "><p class="paragraph">The params that used for continue <a href="-payment-intent/index.html">PaymentIntent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1479284071%2FClasslikes%2F1424399983" anchor-label="CreatePaymentConsentParams" id="-1479284071%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-create-payment-consent-params/index.html"><span>Create</span><wbr><span>Payment</span><wbr><span>Consent</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1479284071%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-create-payment-consent-params/index.html">CreatePaymentConsentParams</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>customerId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>paymentMethodId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>googlePay<span class="token operator">: </span><a href="-payment-method/-google-pay/index.html">PaymentMethod.GooglePay</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>paymentMethodType<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>nextTriggeredBy<span class="token operator">: </span><a href="-payment-consent/-next-triggered-by/index.html">PaymentConsent.NextTriggeredBy</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>merchantTriggerReason<span class="token operator">: </span><a href="-payment-consent/-merchant-trigger-reason/index.html">PaymentConsent.MerchantTriggerReason</a><span class="token operator">?</span><span class="token operator"> = </span>PaymentConsent.MerchantTriggerReason.UNSCHEDULED<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>requiresCvc<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">The params that used for create <a href="-payment-consent/index.html">PaymentConsent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1199218338%2FClasslikes%2F1424399983" anchor-label="CreatePaymentMethodParams" id="1199218338%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-create-payment-method-params/index.html"><span>Create</span><wbr><span>Payment</span><wbr><span>Method</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1199218338%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-create-payment-method-params/index.html">CreatePaymentMethodParams</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>customerId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>card<span class="token operator">: </span><a href="-payment-method/-card/index.html">PaymentMethod.Card</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>billing<span class="token operator">: </span><a href="-billing/index.html">Billing</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span> : <a href="-abstract-payment-method-params/index.html">AbstractPaymentMethodParams</a></div><div class="brief "><p class="paragraph">The params that used for create <a href="-payment-method/index.html">PaymentMethod</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-423686684%2FClasslikes%2F1424399983" anchor-label="Dependency" id="-423686684%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-dependency/index.html"><span><span>Dependency</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-423686684%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-dependency/index.html">Dependency</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-dependency/index.html">Dependency</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1925231673%2FClasslikes%2F1424399983" anchor-label="Device" id="1925231673%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-device/index.html"><span><span>Device</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1925231673%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-device/index.html">Device</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Device info.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="194151089%2FClasslikes%2F1424399983" anchor-label="DisablePaymentConsentParams" id="194151089%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-disable-payment-consent-params/index.html"><span>Disable</span><wbr><span>Payment</span><wbr><span>Consent</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="194151089%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-disable-payment-consent-params/index.html">DisablePaymentConsentParams</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>paymentConsentId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">The params that used for disable <a href="-payment-consent/index.html">PaymentConsent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="125983251%2FClasslikes%2F1424399983" anchor-label="DynamicSchema" id="125983251%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-dynamic-schema/index.html"><span>Dynamic</span><wbr><span><span>Schema</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="125983251%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-dynamic-schema/index.html">DynamicSchema</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>transactionMode<span class="token operator">: </span><a href="-transaction-mode/index.html">TransactionMode</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fields<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="-dynamic-schema-field/index.html">DynamicSchemaField</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-972126219%2FClasslikes%2F1424399983" anchor-label="DynamicSchemaField" id="-972126219%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-dynamic-schema-field/index.html"><span>Dynamic</span><wbr><span>Schema</span><wbr><span><span>Field</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-972126219%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-dynamic-schema-field/index.html">DynamicSchemaField</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>displayName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>uiType<span class="token operator">: </span><a href="-dynamic-schema-field-u-i-type/index.html">DynamicSchemaFieldUIType</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="-dynamic-schema-field-type/index.html">DynamicSchemaFieldType</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>hidden<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>candidates<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="-dynamic-schema-field-candidate/index.html">DynamicSchemaFieldCandidate</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>validations<span class="token operator">: </span><a href="-dynamic-schema-field-validation/index.html">DynamicSchemaFieldValidation</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-678104854%2FClasslikes%2F1424399983" anchor-label="DynamicSchemaFieldCandidate" id="-678104854%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-dynamic-schema-field-candidate/index.html"><span>Dynamic</span><wbr><span>Schema</span><wbr><span>Field</span><wbr><span><span>Candidate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-678104854%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-dynamic-schema-field-candidate/index.html">DynamicSchemaFieldCandidate</a> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="9477083%2FClasslikes%2F1424399983" anchor-label="DynamicSchemaFieldType" id="9477083%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-dynamic-schema-field-type/index.html"><span>Dynamic</span><wbr><span>Schema</span><wbr><span>Field</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="9477083%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-dynamic-schema-field-type/index.html">DynamicSchemaFieldType</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-dynamic-schema-field-type/index.html">DynamicSchemaFieldType</a><span class="token operator">&gt; </span>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-26531641%2FClasslikes%2F1424399983" anchor-label="DynamicSchemaFieldUIType" id="-26531641%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-dynamic-schema-field-u-i-type/index.html"><span>Dynamic</span><wbr><span>Schema</span><wbr><span>Field</span><wbr><span><span>UIType</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-26531641%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-dynamic-schema-field-u-i-type/index.html">DynamicSchemaFieldUIType</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-dynamic-schema-field-u-i-type/index.html">DynamicSchemaFieldUIType</a><span class="token operator">&gt; </span>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-422040452%2FClasslikes%2F1424399983" anchor-label="DynamicSchemaFieldValidation" id="-422040452%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-dynamic-schema-field-validation/index.html"><span>Dynamic</span><wbr><span>Schema</span><wbr><span>Field</span><wbr><span><span>Validation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-422040452%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-dynamic-schema-field-validation/index.html">DynamicSchemaFieldValidation</a> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="590845557%2FClasslikes%2F1424399983" anchor-label="IntegrationData" id="590845557%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-integration-data/index.html"><span>Integration</span><wbr><span><span>Data</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="590845557%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-integration-data/index.html">IntegrationData</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>version<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">sdk information</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2050998246%2FClasslikes%2F1424399983" anchor-label="NextAction" id="2050998246%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-next-action/index.html"><span>Next</span><wbr><span><span>Action</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2050998246%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-next-action/index.html">NextAction</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>stage<span class="token operator">: </span><a href="-next-action/-next-action-stage/index.html">NextAction.NextActionStage</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="-next-action/-next-action-type/index.html">NextAction.NextActionType</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>data<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>dcc<span class="token operator">: </span><a href="-next-action/-dcc-data/index.html">NextAction.DccData</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>url<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>fallbackUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>method<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>packageName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2021947145%2FClasslikes%2F1424399983" anchor-label="ObjectBuilder" id="-2021947145%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-object-builder/index.html"><span>Object</span><wbr><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2021947145%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-object-builder/index.html">ObjectBuilder</a><span class="token operator">&lt;</span><a href="-object-builder/index.html">ObjectType</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-320863883%2FClasslikes%2F1424399983" anchor-label="Options" id="-320863883%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-options/index.html"><span><span>Options</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-320863883%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">class </span><a href="-options/index.html">Options</a> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1901773216%2FClasslikes%2F1424399983" anchor-label="Page" id="1901773216%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-page/index.html"><span><span>Page</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1901773216%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-page/index.html">Page</a><span class="token operator">&lt;</span><a href="-page/index.html">T</a><span class="token operator">&gt;</span> : <a href="-airwallex-model/index.html">AirwallexModel</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-195561701%2FClasslikes%2F1424399983" anchor-label="PaymentConsent" id="-195561701%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-consent/index.html"><span>Payment</span><wbr><span><span>Consent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-195561701%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-consent/index.html">PaymentConsent</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>id<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>requestId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>customerId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>paymentMethod<span class="token operator">: </span><a href="-payment-method/index.html">PaymentMethod</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>initialPaymentIntentId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>nextTriggeredBy<span class="token operator">: </span><a href="-payment-consent/-next-triggered-by/index.html">PaymentConsent.NextTriggeredBy</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>merchantTriggerReason<span class="token operator">: </span><a href="-payment-consent/-merchant-trigger-reason/index.html">PaymentConsent.MerchantTriggerReason</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>requiresCvc<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>metadata<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>status<span class="token operator">: </span><a href="-payment-consent/-payment-consent-status/index.html">PaymentConsent.PaymentConsentStatus</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>createdAt<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Date.html">Date</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>updatedAt<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Date.html">Date</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>nextAction<span class="token operator">: </span><a href="-next-action/index.html">NextAction</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1481842924%2FClasslikes%2F1424399983" anchor-label="PaymentConsentCreateRequest" id="-1481842924%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-consent-create-request/index.html"><span>Payment</span><wbr><span>Consent</span><wbr><span>Create</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1481842924%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-consent-create-request/index.html">PaymentConsentCreateRequest</a> : <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Params for create a <a href="-payment-consent/index.html">PaymentConsent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1712623404%2FClasslikes%2F1424399983" anchor-label="PaymentConsentDisableRequest" id="-1712623404%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-consent-disable-request/index.html"><span>Payment</span><wbr><span>Consent</span><wbr><span>Disable</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1712623404%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-consent-disable-request/index.html">PaymentConsentDisableRequest</a> : <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Params for disable a payment consent</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1046572100%2FClasslikes%2F1424399983" anchor-label="PaymentConsentReference" id="-1046572100%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-consent-reference/index.html"><span>Payment</span><wbr><span>Consent</span><wbr><span><span>Reference</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1046572100%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-consent-reference/index.html">PaymentConsentReference</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Reference to an existing PaymentConsent</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2086834833%2FClasslikes%2F1424399983" anchor-label="PaymentConsentVerifyRequest" id="2086834833%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-consent-verify-request/index.html"><span>Payment</span><wbr><span>Consent</span><wbr><span>Verify</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2086834833%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-consent-verify-request/index.html">PaymentConsentVerifyRequest</a> : <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Params for create a <a href="-payment-consent/index.html">PaymentConsent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1435005231%2FClasslikes%2F1424399983" anchor-label="PaymentIntent" id="-1435005231%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-intent/index.html"><span>Payment</span><wbr><span><span>Intent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1435005231%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-intent/index.html">PaymentIntent</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>id<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>requestId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>amount<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/math/BigDecimal.html">BigDecimal</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>currency<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>merchantOrderId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>order<span class="token operator">: </span><a href="-purchase-order/index.html">PurchaseOrder</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>customerId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>descriptor<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>metadata<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>status<span class="token operator">: </span><a href="-payment-intent-status/index.html">PaymentIntentStatus</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>capturedAmount<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/math/BigDecimal.html">BigDecimal</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>latestPaymentAttempt<span class="token operator">: </span><a href="-payment-intent/-payment-attempt/index.html">PaymentIntent.PaymentAttempt</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>availablePaymentMethodTypes<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="-payment-method-type/index.html">PaymentMethodType</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>customerPaymentMethods<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="-payment-method/index.html">PaymentMethod</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>customerPaymentConsents<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="-payment-consent/index.html">PaymentConsent</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>nextAction<span class="token operator">: </span><a href="-next-action/index.html">NextAction</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>createdAt<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Date.html">Date</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>updatedAt<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Date.html">Date</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>cancelledAt<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Date.html">Date</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>cancellationReason<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">A PaymentIntent guides you through the process of collecting a payment from your customer. It tracks a payment when your customer first checks out, through to when payment is successfully paid by your customer. A PaymentIntent transitions through a number of states throughout the customer's payment journey.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1967016478%2FClasslikes%2F1424399983" anchor-label="PaymentIntentConfirmRequest" id="-1967016478%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-intent-confirm-request/index.html"><span>Payment</span><wbr><span>Intent</span><wbr><span>Confirm</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1967016478%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-intent-confirm-request/index.html">PaymentIntentConfirmRequest</a> : <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">The request params to confirm <a href="-payment-intent/index.html">PaymentIntent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1722663223%2FClasslikes%2F1424399983" anchor-label="PaymentIntentContinueRequest" id="-1722663223%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-intent-continue-request/index.html"><span>Payment</span><wbr><span>Intent</span><wbr><span>Continue</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1722663223%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-intent-continue-request/index.html">PaymentIntentContinueRequest</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>requestId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="-payment-intent-continue-type/index.html">PaymentIntentContinueType</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>threeDSecure<span class="token operator">: </span><a href="-three-d-secure/index.html">ThreeDSecure</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>device<span class="token operator">: </span><a href="-device/index.html">Device</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>useDcc<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">The request params to confirm <a href="-payment-intent/index.html">PaymentIntent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1911026352%2FClasslikes%2F1424399983" anchor-label="PaymentIntentContinueType" id="-1911026352%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-intent-continue-type/index.html"><span>Payment</span><wbr><span>Intent</span><wbr><span>Continue</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1911026352%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-payment-intent-continue-type/index.html">PaymentIntentContinueType</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-payment-intent-continue-type/index.html">PaymentIntentContinueType</a><span class="token operator">&gt; </span>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1678560513%2FClasslikes%2F1424399983" anchor-label="PaymentIntentStatus" id="-1678560513%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-intent-status/index.html"><span>Payment</span><wbr><span>Intent</span><wbr><span><span>Status</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1678560513%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-payment-intent-status/index.html">PaymentIntentStatus</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-payment-intent-status/index.html">PaymentIntentStatus</a><span class="token operator">&gt; </span>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">The status of a <a href="-payment-intent/index.html">PaymentIntent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-432563156%2FClasslikes%2F1424399983" anchor-label="PaymentMethod" id="-432563156%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-method/index.html"><span>Payment</span><wbr><span><span>Method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-432563156%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-method/index.html">PaymentMethod</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">A PaymentMethod represents the funding source that is used by your customer when making a payment. You may create and add multiple payment methods to a customer as saved payment methods to help streamline your customers' checkout experience.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-354697821%2FClasslikes%2F1424399983" anchor-label="PaymentMethodCreateRequest" id="-354697821%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-method-create-request/index.html"><span>Payment</span><wbr><span>Method</span><wbr><span>Create</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-354697821%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-method-create-request/index.html">PaymentMethodCreateRequest</a> : <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Params for create a payment method</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1420950296%2FClasslikes%2F1424399983" anchor-label="PaymentMethodOptions" id="1420950296%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-method-options/index.html"><span>Payment</span><wbr><span>Method</span><wbr><span><span>Options</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1420950296%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-method-options/index.html">PaymentMethodOptions</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Options for payment method</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="157880779%2FClasslikes%2F1424399983" anchor-label="PaymentMethodReference" id="157880779%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-method-reference/index.html"><span>Payment</span><wbr><span>Method</span><wbr><span><span>Reference</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="157880779%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-method-reference/index.html">PaymentMethodReference</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>id<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>cvc<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Reference for payment method</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1388367801%2FClasslikes%2F1424399983" anchor-label="PaymentMethodRequest" id="-1388367801%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-method-request/index.html"><span>Payment</span><wbr><span>Method</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1388367801%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-payment-method-request/index.html">PaymentMethodRequest</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>id<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>paymentRequest<span class="token operator">: </span><a href="-airwallex-payment-request/index.html">AirwallexPaymentRequest</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>card<span class="token operator">: </span><a href="-payment-method/-card/index.html">PaymentMethod.Card</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>googlePay<span class="token operator">: </span><a href="-payment-method/-google-pay/index.html">PaymentMethod.GooglePay</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>billing<span class="token operator">: </span><a href="-billing/index.html">Billing</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="18267282%2FClasslikes%2F1424399983" anchor-label="PaymentMethodType" id="18267282%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-method-type/index.html"><span>Payment</span><wbr><span>Method</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="18267282%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-payment-method-type/index.html">PaymentMethodType</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-payment-method-type/index.html">PaymentMethodType</a><span class="token operator">&gt; </span>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">The type of <a href="-payment-method/index.html">PaymentMethod</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="317435652%2FClasslikes%2F1424399983" anchor-label="PaymentMethodTypeInfo" id="317435652%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-method-type-info/index.html"><span>Payment</span><wbr><span>Method</span><wbr><span>Type</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="317435652%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-payment-method-type-info/index.html">PaymentMethodTypeInfo</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-40087749%2FClasslikes%2F1424399983" anchor-label="PhysicalProduct" id="-40087749%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-physical-product/index.html"><span>Physical</span><wbr><span><span>Product</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-40087749%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-physical-product/index.html">PhysicalProduct</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Product information</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1238589786%2FClasslikes%2F1424399983" anchor-label="PurchaseOrder" id="-1238589786%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-purchase-order/index.html"><span>Purchase</span><wbr><span><span>Order</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1238589786%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-purchase-order/index.html">PurchaseOrder</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>products<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="-physical-product/index.html">PhysicalProduct</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>shipping<span class="token operator">: </span><a href="-shipping/index.html">Shipping</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>type<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Purchase order information</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-998734185%2FClasslikes%2F1424399983" anchor-label="RetrieveAvailablePaymentConsentsParams" id="-998734185%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-retrieve-available-payment-consents-params/index.html"><span>Retrieve</span><wbr><span>Available</span><wbr><span>Payment</span><wbr><span>Consents</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-998734185%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-retrieve-available-payment-consents-params/index.html">RetrieveAvailablePaymentConsentsParams</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2071465359%2FClasslikes%2F1424399983" anchor-label="RetrieveAvailablePaymentMethodParams" id="2071465359%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-retrieve-available-payment-method-params/index.html"><span>Retrieve</span><wbr><span>Available</span><wbr><span>Payment</span><wbr><span>Method</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2071465359%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-retrieve-available-payment-method-params/index.html">RetrieveAvailablePaymentMethodParams</a></div><div class="brief "><p class="paragraph">The params that used for retrieve <a href="-payment-method/index.html">PaymentMethod</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-338724271%2FClasslikes%2F1424399983" anchor-label="RetrieveBankParams" id="-338724271%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-retrieve-bank-params/index.html"><span>Retrieve</span><wbr><span>Bank</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-338724271%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-retrieve-bank-params/index.html">RetrieveBankParams</a></div><div class="brief "><p class="paragraph">The params that used for retrieve <a href="-payment-method-type-info/index.html">PaymentMethodTypeInfo</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1811259463%2FClasslikes%2F1424399983" anchor-label="RetrievePaymentIntentParams" id="1811259463%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-retrieve-payment-intent-params/index.html"><span>Retrieve</span><wbr><span>Payment</span><wbr><span>Intent</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1811259463%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-retrieve-payment-intent-params/index.html">RetrievePaymentIntentParams</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>paymentIntentId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span> : <a href="-abstract-payment-intent-params/index.html">AbstractPaymentIntentParams</a></div><div class="brief "><p class="paragraph">The params that used for retrieve <a href="-payment-intent/index.html">PaymentIntent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1721798086%2FClasslikes%2F1424399983" anchor-label="RetrievePaymentMethodTypeInfoParams" id="-1721798086%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-retrieve-payment-method-type-info-params/index.html"><span>Retrieve</span><wbr><span>Payment</span><wbr><span>Method</span><wbr><span>Type</span><wbr><span>Info</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1721798086%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-retrieve-payment-method-type-info-params/index.html">RetrievePaymentMethodTypeInfoParams</a></div><div class="brief "><p class="paragraph">The params that used for retrieve <a href="-payment-method-type-info/index.html">PaymentMethodTypeInfo</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1084950431%2FClasslikes%2F1424399983" anchor-label="Shipping" id="-1084950431%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-shipping/index.html"><span><span>Shipping</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1084950431%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-shipping/index.html">Shipping</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Shipping information</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-169755534%2FClasslikes%2F1424399983" anchor-label="ThreeDSecure" id="-169755534%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-three-d-secure/index.html"><span>Three</span><wbr><span><span>DSecure</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-169755534%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-three-d-secure/index.html">ThreeDSecure</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="483349336%2FClasslikes%2F1424399983" anchor-label="ThreeDSecureLookup" id="483349336%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-three-d-secure-lookup/index.html"><span>Three</span><wbr><span>DSecure</span><wbr><span><span>Lookup</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="483349336%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-three-d-secure-lookup/index.html">ThreeDSecureLookup</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>transactionId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>payload<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>acsUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>version<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1245058868%2FClasslikes%2F1424399983" anchor-label="ThreeDSecureParams" id="-1245058868%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-three-d-secure-params/index.html"><span>Three</span><wbr><span>DSecure</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1245058868%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-three-d-secure-params/index.html">ThreeDSecureParams</a> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="283271032%2FClasslikes%2F1424399983" anchor-label="TrackerRequest" id="283271032%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-tracker-request/index.html"><span>Tracker</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="283271032%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-tracker-request/index.html">TrackerRequest</a> : <a href="-airwallex-request-model/index.html">AirwallexRequestModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1481851438%2FClasslikes%2F1424399983" anchor-label="TransactionMode" id="-1481851438%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-transaction-mode/index.html"><span>Transaction</span><wbr><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1481851438%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-transaction-mode/index.html">TransactionMode</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><a href="-transaction-mode/index.html">TransactionMode</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1048873532%2FClasslikes%2F1424399983" anchor-label="VerifyPaymentConsentParams" id="1048873532%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-verify-payment-consent-params/index.html"><span>Verify</span><wbr><span>Payment</span><wbr><span>Consent</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1048873532%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-verify-payment-consent-params/index.html">VerifyPaymentConsentParams</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>clientSecret<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>paymentConsentId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>amount<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/math/BigDecimal.html">BigDecimal</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>currency<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>cvc<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>paymentMethodType<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>returnUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">The params that used for verify <a href="-payment-consent/index.html">PaymentConsent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2103820617%2FClasslikes%2F1424399983" anchor-label="WeChat" id="2103820617%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-we-chat/index.html"><span>We</span><wbr><span><span>Chat</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2103820617%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-we-chat/index.html">WeChat</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>appId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>partnerId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>prepayId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>package<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>nonceStr<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>timestamp<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>sign<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span> : <a href="-airwallex-model/index.html">AirwallexModel</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">WeChat Pay Payments</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="2046388468%2FFunctions%2F1424399983" anchor-label="getUrl" id="2046388468%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-url.html"><span>get</span><wbr><span><span>Url</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2046388468%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-options/index.html">Options</a><span class="token punctuation">.</span><a href="get-url.html"><span class="token function">getUrl</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1623220658%2FFunctions%2F1424399983" anchor-label="toAirwallexHttpRequest" id="1623220658%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-airwallex-http-request.html"><span>to</span><wbr><span>Airwallex</span><wbr><span>Http</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1623220658%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="-options/index.html">Options</a><span class="token punctuation">.</span><a href="to-airwallex-http-request.html"><span class="token function">toAirwallexHttpRequest</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../com.airwallex.android.core.http/-airwallex-http-request/index.html">AirwallexHttpRequest</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

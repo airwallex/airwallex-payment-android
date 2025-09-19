@@ -1,0 +1,446 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Airwallex</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+    <nav class="navigation theme-dark" id="navigation-wrapper">
+<a class="library-name--link" href="../../../index.html">
+                    airwallex-android
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">6.2.4
+        </div>
+        <div class="navigation-controls">
+        <div class="filter-section filter-section_loading" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":components-core/release">androidJvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
+                    <div class="dropdown--header"><span>Platform filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":components-core/release" data-filter=":components-core/release">
+                                <span class="checkbox--icon"></span>
+                                androidJvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </div>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox">
+                        <div class="dropdown--header">
+                            <span>
+                                    airwallex-android
+                            </span>
+                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar--inner" id="sideMenu"></div>
+                    </ul>
+                    <div class="dropdown--overlay"></div>
+                </div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="components-core::com.airwallex.android.core/Airwallex///PointingToDeclaration//1424399983">
+  <div class="breadcrumbs"><a href="../../index.html">components-core</a><span class="delimiter">/</span><a href="../index.html">com.airwallex.android.core</a><span class="delimiter">/</span><span class="current">Airwallex</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Airwallex</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">Airwallex</a></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-618789109%2FConstructors%2F1424399983" anchor-label="Airwallex" id="-618789109%2FConstructors%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-airwallex.html"><span><span>Airwallex</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-618789109%2FConstructors%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fragment<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/Fragment.html">Fragment</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Constructor of <a href="index.html">Airwallex</a></p></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/activity/ComponentActivity.html">ComponentActivity</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/VisibleForTesting.html"><span class="token annotation builtin">VisibleForTesting</span></a></div></div><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/activity/ComponentActivity.html">ComponentActivity</a><span class="token punctuation">, </span></span><span class="parameter ">applicationContext<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="-849691191%2FClasslikes%2F1424399983" anchor-label="Companion" id="-849691191%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-849691191%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1005108037%2FClasslikes%2F1424399983" anchor-label="PaymentListener" id="-1005108037%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-listener/index.html"><span>Payment</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1005108037%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-payment-listener/index.html">PaymentListener</a><span class="token operator">&lt;</span><a href="-payment-listener/index.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1156305506%2FClasslikes%2F1424399983" anchor-label="PaymentResultListener" id="-1156305506%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-payment-result-listener/index.html"><span>Payment</span><wbr><span>Result</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1156305506%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-payment-result-listener/index.html">PaymentResultListener</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-997573842%2FClasslikes%2F1424399983" anchor-label="ShippingResultListener" id="-997573842%2FClasslikes%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-shipping-result-listener/index.html"><span>Shipping</span><wbr><span>Result</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-997573842%2FClasslikes%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-shipping-result-listener/index.html">ShippingResultListener</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-358363048%2FFunctions%2F1424399983" anchor-label="checkout" id="-358363048%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="checkout.html"><span><span>checkout</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-358363048%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="checkout.html"><span class="token function">checkout</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-airwallex-session/index.html">AirwallexSession</a><span class="token punctuation">, </span></span><span class="parameter ">paymentMethod<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-payment-method/index.html">PaymentMethod</a><span class="token punctuation">, </span></span><span class="parameter ">paymentConsentId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">cvc<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">additionalInfo<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">flow<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-airwallex-payment-request-flow/index.html">AirwallexPaymentRequestFlow</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-result-listener/index.html">Airwallex.PaymentResultListener</a><span class="token punctuation">, </span></span><span class="parameter ">saveCard<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Checkout the payment, include one-off &amp; recurring</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-909905464%2FFunctions%2F1424399983" anchor-label="confirmPaymentIntent" id="-909905464%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="confirm-payment-intent.html"><span>confirm</span><wbr><span>Payment</span><wbr><span><span>Intent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-909905464%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="confirm-payment-intent.html"><span class="token function">confirmPaymentIntent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-airwallex-payment-session/index.html">AirwallexPaymentSession</a><span class="token punctuation">, </span></span><span class="parameter ">paymentConsent<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-payment-consent/index.html">PaymentConsent</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-result-listener/index.html">Airwallex.PaymentResultListener</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="confirm-payment-intent.html"><span class="token function">confirmPaymentIntent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-airwallex-payment-session/index.html">AirwallexPaymentSession</a><span class="token punctuation">, </span></span><span class="parameter ">paymentConsentId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-result-listener/index.html">Airwallex.PaymentResultListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Confirm a payment intent with payment consent ID</p></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="confirm-payment-intent.html"><span class="token function">confirmPaymentIntent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-airwallex-session/index.html">AirwallexSession</a><span class="token punctuation">, </span></span><span class="parameter ">card<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-payment-method/-card/index.html">PaymentMethod.Card</a><span class="token punctuation">, </span></span><span class="parameter ">billing<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-billing/index.html">Billing</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">saveCard<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-result-listener/index.html">Airwallex.PaymentResultListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Confirm a payment intent with card and billing details</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1110436063%2FFunctions%2F1424399983" anchor-label="confirmPaymentIntentWithDevice" id="1110436063%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="confirm-payment-intent-with-device.html"><span>confirm</span><wbr><span>Payment</span><wbr><span>Intent</span><wbr><span>With</span><wbr><span><span>Device</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1110436063%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="confirm-payment-intent-with-device.html"><span class="token function">confirmPaymentIntentWithDevice</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">device<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-device/index.html">Device</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-confirm-payment-intent-params/index.html">ConfirmPaymentIntentParams</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-result-listener/index.html">Airwallex.PaymentResultListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Confirm PaymentIntent with Device Fingerprinting</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="231586392%2FFunctions%2F1424399983" anchor-label="createCardPaymentMethod" id="231586392%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../com.airwallex.android.core.extension/create-card-payment-method.html"><span>create</span><wbr><span>Card</span><wbr><span>Payment</span><wbr><span><span>Method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="231586392%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="index.html">Airwallex</a><span class="token punctuation">.</span><a href="../../com.airwallex.android.core.extension/create-card-payment-method.html"><span class="token function">createCardPaymentMethod</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-airwallex-session/index.html">AirwallexSession</a><span class="token punctuation">, </span></span><span class="parameter ">card<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-payment-method/-card/index.html">PaymentMethod.Card</a><span class="token punctuation">, </span></span><span class="parameter ">billing<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-billing/index.html">Billing</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">saveCard<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-listener/index.html">Airwallex.PaymentListener</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-payment-method/index.html">PaymentMethod</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-901324413%2FFunctions%2F1424399983" anchor-label="createPaymentConsent" id="-901324413%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-payment-consent.html"><span>create</span><wbr><span>Payment</span><wbr><span><span>Consent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-901324413%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="create-payment-consent.html"><span class="token function">createPaymentConsent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-create-payment-consent-params/index.html">CreatePaymentConsentParams</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-payment-consent/index.html">PaymentConsent</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1219744238%2FFunctions%2F1424399983" anchor-label="createPaymentMethod" id="1219744238%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-payment-method.html"><span>create</span><wbr><span>Payment</span><wbr><span><span>Method</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1219744238%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="create-payment-method.html"><span class="token function">createPaymentMethod</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-create-payment-method-params/index.html">CreatePaymentMethodParams</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-payment-method/index.html">PaymentMethod</a></div><br><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="create-payment-method.html"><span class="token function">createPaymentMethod</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-create-payment-method-params/index.html">CreatePaymentMethodParams</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-listener/index.html">Airwallex.PaymentListener</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-payment-method/index.html">PaymentMethod</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Create a payment method</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="117556508%2FFunctions%2F1424399983" anchor-label="disablePaymentConsent" id="117556508%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disable-payment-consent.html"><span>disable</span><wbr><span>Payment</span><wbr><span><span>Consent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="117556508%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="disable-payment-consent.html"><span class="token function">disablePaymentConsent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-disable-payment-consent-params/index.html">DisablePaymentConsentParams</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-listener/index.html">Airwallex.PaymentListener</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-payment-consent/index.html">PaymentConsent</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disable a <a href="../../com.airwallex.android.core.model/-payment-consent/index.html">PaymentConsent</a> by ID</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="418348857%2FFunctions%2F1424399983" anchor-label="handlePaymentData" id="418348857%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="handle-payment-data.html"><span>handle</span><wbr><span>Payment</span><wbr><span><span>Data</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="418348857%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="handle-payment-data.html"><span class="token function"><strike>handlePaymentData</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">requestCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">resultCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">data<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Method to handle Activity results from Airwallex activities. Pass data here from your host's <code class="lang-kotlin">#onActivityResult(int, int, Intent)</code> function.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1044490094%2FFunctions%2F1424399983" anchor-label="retrieveAvailablePaymentConsents" id="-1044490094%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="retrieve-available-payment-consents.html"><span>retrieve</span><wbr><span>Available</span><wbr><span>Payment</span><wbr><span><span>Consents</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1044490094%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="retrieve-available-payment-consents.html"><span class="token function">retrieveAvailablePaymentConsents</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-retrieve-available-payment-consents-params/index.html">RetrieveAvailablePaymentConsentsParams</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-page/index.html">Page</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-payment-consent/index.html">PaymentConsent</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="retrieve-available-payment-consents.html"><span class="token function">retrieveAvailablePaymentConsents</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-retrieve-available-payment-consents-params/index.html">RetrieveAvailablePaymentConsentsParams</a><span class="token punctuation">, </span></span><span class="parameter ">callback<span class="token operator">: </span><a href="../-airwallex-callback/index.html">AirwallexCallback</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-page/index.html">Page</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-payment-consent/index.html">PaymentConsent</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Retrieve available payment consents</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="100095376%2FFunctions%2F1424399983" anchor-label="retrieveAvailablePaymentMethods" id="100095376%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="retrieve-available-payment-methods.html"><span>retrieve</span><wbr><span>Available</span><wbr><span>Payment</span><wbr><span><span>Methods</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="100095376%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="retrieve-available-payment-methods.html"><span class="token function">retrieveAvailablePaymentMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-airwallex-session/index.html">AirwallexSession</a><span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-retrieve-available-payment-method-params/index.html">RetrieveAvailablePaymentMethodParams</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-page/index.html">Page</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-available-payment-method-type/index.html">AvailablePaymentMethodType</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="retrieve-available-payment-methods.html"><span class="token function">retrieveAvailablePaymentMethods</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-airwallex-session/index.html">AirwallexSession</a><span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-retrieve-available-payment-method-params/index.html">RetrieveAvailablePaymentMethodParams</a><span class="token punctuation">, </span></span><span class="parameter ">callback<span class="token operator">: </span><a href="../-airwallex-callback/index.html">AirwallexCallback</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-page/index.html">Page</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-available-payment-method-type/index.html">AvailablePaymentMethodType</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Retrieve available payment methods</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="771963228%2FFunctions%2F1424399983" anchor-label="retrieveBanks" id="771963228%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="retrieve-banks.html"><span>retrieve</span><wbr><span><span>Banks</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="771963228%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="retrieve-banks.html"><span class="token function">retrieveBanks</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-retrieve-bank-params/index.html">RetrieveBankParams</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-listener/index.html">Airwallex.PaymentListener</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-bank-response/index.html">BankResponse</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="464152406%2FFunctions%2F1424399983" anchor-label="retrievePaymentIntent" id="464152406%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="retrieve-payment-intent.html"><span>retrieve</span><wbr><span>Payment</span><wbr><span><span>Intent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="464152406%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="retrieve-payment-intent.html"><span class="token function">retrievePaymentIntent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-retrieve-payment-intent-params/index.html">RetrievePaymentIntentParams</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-listener/index.html">Airwallex.PaymentListener</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-payment-intent/index.html">PaymentIntent</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Retrieve a <a href="../../com.airwallex.android.core.model/-payment-intent/index.html">PaymentIntent</a> by ID</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1059864547%2FFunctions%2F1424399983" anchor-label="retrievePaymentMethodTypeInfo" id="-1059864547%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="retrieve-payment-method-type-info.html"><span>retrieve</span><wbr><span>Payment</span><wbr><span>Method</span><wbr><span>Type</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1059864547%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="retrieve-payment-method-type-info.html"><span class="token function">retrievePaymentMethodTypeInfo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-retrieve-payment-method-type-info-params/index.html">RetrievePaymentMethodTypeInfoParams</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-listener/index.html">Airwallex.PaymentListener</a><span class="token operator">&lt;</span><a href="../../com.airwallex.android.core.model/-payment-method-type-info/index.html">PaymentMethodTypeInfo</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1383543169%2FFunctions%2F1424399983" anchor-label="startGooglePay" id="-1383543169%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="start-google-pay.html"><span>start</span><wbr><span>Google</span><wbr><span><span>Pay</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1383543169%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="start-google-pay.html"><span class="token function">startGooglePay</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-airwallex-session/index.html">AirwallexSession</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-result-listener/index.html">Airwallex.PaymentResultListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Confirm a payment intent with google pay options</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1015820112%2FFunctions%2F1424399983" anchor-label="startRedirectPay" id="-1015820112%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="start-redirect-pay.html"><span>start</span><wbr><span>Redirect</span><wbr><span><span>Pay</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1015820112%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="start-redirect-pay.html"><span class="token function">startRedirectPay</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">session<span class="token operator">: </span><a href="../-airwallex-payment-session/index.html">AirwallexPaymentSession</a><span class="token punctuation">, </span></span><span class="parameter ">paymentMethodName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">additionalInfo<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">flow<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-airwallex-payment-request-flow/index.html">AirwallexPaymentRequestFlow</a><span class="token operator">?</span><span class="token operator"> = </span>AirwallexPaymentRequestFlow.IN_APP<span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-result-listener/index.html">Airwallex.PaymentResultListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Checkout the payment by paymentType and session</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="328342172%2FFunctions%2F1424399983" anchor-label="verifyPaymentConsent" id="328342172%2FFunctions%2F1424399983" data-filterable-set=":components-core/release"></a>
+          <div class="table-row" data-filterable-current=":components-core/release" data-filterable-set=":components-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="verify-payment-consent.html"><span>verify</span><wbr><span>Payment</span><wbr><span><span>Consent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="328342172%2FFunctions%2F1424399983"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":components-core/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/UiThread.html"><span class="token annotation builtin">UiThread</span></a></div></div><span class="token keyword">fun </span><a href="verify-payment-consent.html"><span class="token function">verifyPaymentConsent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">device<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-device/index.html">Device</a><span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="../../com.airwallex.android.core.model/-verify-payment-consent-params/index.html">VerifyPaymentConsentParams</a><span class="token punctuation">, </span></span><span class="parameter ">listener<span class="token operator">: </span><a href="-payment-result-listener/index.html">Airwallex.PaymentResultListener</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Verify a <a href="../../com.airwallex.android.core.model/-payment-consent/index.html">PaymentConsent</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+        <span>© 2025 Copyright</span>
+        <span class="pull-right">
+            <span>Generated by </span>
+            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                <span>dokka</span>
+            </a>
+        </span>
+    </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
