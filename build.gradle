@@ -1,5 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
-import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
+import org.jetbrains.dokka.gradle.DokkaTask
 
 buildscript {
     ext {
@@ -95,7 +95,7 @@ subprojects {
     if (project.name in ['airwallex', 'card', 'wechat', 'redirect', 'googlepay', 'components-core', 'security-3ds', 'ui-core']) {
         apply plugin: 'org.jetbrains.dokka'
 
-        tasks.withType(org.jetbrains.dokka.gradle.DokkaTask.class).configureEach {
+        tasks.withType(DokkaTask.class).configureEach {
             moduleName.set(project.name)
             moduleVersion.set(rootProject.version.toString())
 
@@ -110,7 +110,7 @@ subprojects {
                     // Source links configuration
                     sourceLink {
                         localDirectory.set(file("src/main/java"))
-                        remoteUrl.set(new java.net.URL("https://github.com/airwallex/airwallex-payment-android/tree/main/${project.name}/src/main/java"))
+                        remoteUrl.set(new URL("https://github.com/airwallex/airwallex-payment-android/tree/main/${project.name}/src/main/java"))
                         remoteLineSuffix.set("#L")
                     }
                 }
@@ -138,6 +138,46 @@ tasks.register('generateSDKDocs') {
         }
         println "\nTo view the documentation, open the index.html files in each module's build/dokka-module/html/ directory"
     }
+}
+
+// Root-level Dokka configuration for unified multi-module documentation
+tasks.withType(DokkaTask.class).configureEach {
+    moduleName.set("Airwallex Payment Android SDK")
+    moduleVersion.set(version.toString())
+
+    dokkaSourceSets {
+        main {
+            // Include only public API
+            includeNonPublic.set(false)
+
+            // Add root documentation
+            if (file("README.md").exists()) {
+                includes.from("README.md")
+            }
+
+            // External documentation links
+            externalDocumentationLink {
+                url.set(new URL("https://developer.android.com/reference/kotlin/"))
+                packageListUrl.set(new URL("https://developer.android.com/reference/kotlin/package-list"))
+            }
+
+            externalDocumentationLink {
+                url.set(new URL("https://kotlinlang.org/api/latest/jvm/stdlib/"))
+                packageListUrl.set(new URL("https://kotlinlang.org/api/latest/jvm/stdlib/package-list"))
+            }
+        }
+    }
+}
+
+dependencies {
+    dokka(project(':airwallex'))
+    dokka(project(':card'))
+    dokka(project(':wechat'))
+    dokka(project(':redirect'))
+    dokka(project(':googlepay'))
+    dokka(project(':components-core'))
+    dokka(project(':security-3ds'))
+    dokka(project(':ui-core'))
 }
 
 apply from: "${rootDir}/sonar.gradle"
