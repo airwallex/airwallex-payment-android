@@ -14,9 +14,9 @@ tasks.register('androidSourcesJar', Jar) {
 }
 
 tasks.register('javadocJar', Jar) {
-    dependsOn dokkaJavadoc
+    dependsOn dokkaGeneratePublicationJavadoc
     archiveClassifier.set('javadoc')
-    from dokkaJavadoc.outputDirectory
+    from dokkaGeneratePublicationJavadoc.outputDirectory
 }
 
 artifacts {
