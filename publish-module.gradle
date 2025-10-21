@@ -14,9 +14,20 @@ tasks.register('androidSourcesJar', Jar) {
 }
 
 tasks.register('javadocJar', Jar) {
-    dependsOn dokkaGeneratePublicationJavadoc
     archiveClassifier.set('javadoc')
-    from dokkaGeneratePublicationJavadoc.outputDirectory
+
+    doFirst {
+        // Try to use dokka output if available, otherwise create empty jar
+        def dokkaOutputDir = file("${buildDir}/dokka/html")
+        def emptyDir = file("${buildDir}/tmp/empty-javadoc")
+
+        if (dokkaOutputDir.exists() && dokkaOutputDir.list().length > 0) {
+            from dokkaOutputDir
+        } else {
+            emptyDir.mkdirs()
+            from emptyDir
+        }
+    }
 }
 
 artifacts {
