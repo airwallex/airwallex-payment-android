@@ -12,20 +12,17 @@
         <activity
             android:name=".view.PaymentShippingActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
             android:theme="@style/AirwallexDefaultTheme"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".view.PaymentMethodsActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
             android:theme="@style/AirwallexDefaultTheme" />
 
         <activity
             android:name=".view.AddPaymentMethodActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
             android:theme="@style/AirwallexDefaultTheme"
             android:windowSoftInputMode="adjustResize" />
     </application>

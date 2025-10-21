@@ -6,7 +6,6 @@
         <activity
             android:name=".ThreeDSecurityActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
             android:theme="@style/AirwallexDefaultTheme" />
     </application>
 </manifest>

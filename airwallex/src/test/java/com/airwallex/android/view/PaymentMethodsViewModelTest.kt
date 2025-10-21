@@ -73,7 +73,6 @@ import org.junit.Rule
 import org.junit.Test
 import java.math.BigDecimal
 import kotlin.test.assertEquals
-import kotlin.test.fail
 
 @Suppress("LargeClass", "LongMethod", "LongParameterList")
 class PaymentMethodsViewModelTest {
@@ -777,7 +776,7 @@ class PaymentMethodsViewModelTest {
 
             // Verify the result is Skip with the expected card schemes
             val result =
-                viewModel.paymentMethodResult.value as? PaymentMethodsViewModel.PaymentMethodResult.Skip
+                viewModel.paymentMethodResult.value as? PaymentMethodResult.Skip
             assertNotNull(result)
             assertEquals(
                 result?.schemes, availableMethodTypes.items[0].cardSchemes ?: emptyList()
@@ -990,7 +989,7 @@ class PaymentMethodsViewModelTest {
                 val field = viewModel::class.java.getDeclaredField("paymentMethodResult")
                 field.isAccessible = true
                 val liveData =
-                    field.get(viewModel) as MutableLiveData<PaymentMethodsViewModel.PaymentMethodResult>
+                    field.get(viewModel) as MutableLiveData<PaymentMethodResult>
                 liveData.postValue(
                     PaymentMethodResult.Show(
                         Pair(methods, consents)
@@ -1057,7 +1056,7 @@ class PaymentMethodsViewModelTest {
             val field = viewModel::class.java.getDeclaredField("paymentMethodResult")
             field.isAccessible = true
             val liveData =
-                field.get(viewModel) as MutableLiveData<PaymentMethodsViewModel.PaymentMethodResult>
+                field.get(viewModel) as MutableLiveData<PaymentMethodResult>
             liveData.postValue(
                 PaymentMethodResult.Show(
                     Pair(methods, consents)
@@ -1197,8 +1196,6 @@ class PaymentMethodsViewModelTest {
                         )
                     }
                 }
-
-                else -> fail("Unexpected result type: ${result.javaClass.simpleName}")
             }
 
             // Verify the methods were called with the correct parameters
@@ -1349,7 +1346,7 @@ class PaymentMethodsViewModelTest {
             val field = viewModel::class.java.getDeclaredField("paymentMethodResult")
             field.isAccessible = true
             val liveData =
-                field.get(viewModel) as MutableLiveData<PaymentMethodsViewModel.PaymentMethodResult>
+                field.get(viewModel) as MutableLiveData<PaymentMethodResult>
             liveData.postValue(
                 PaymentMethodResult.Show(
                     Pair(methods, consents)
@@ -1513,6 +1510,68 @@ class PaymentMethodsViewModelTest {
         // Then
         assertNotNull(result)
         assertEquals(emptyList(), result?.fields)
+    }
+
+    @Test
+    fun `test loadSchemaFields with hidden fields`() = runTest {
+        val viewModel = mockViewModel(TransactionMode.ONE_OFF)
+
+        // Given
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns mockk {
+                every { hasSchema } returns true
+            }
+        }
+
+        val shopperNameField = DynamicSchemaField(
+            name = "shopper_name",
+            displayName = "Shopper Name",
+            uiType = DynamicSchemaFieldUIType.TEXT,
+            type = DynamicSchemaFieldType.STRING,
+            hidden = false, // This field is visible
+            candidates = null,
+            validations = null
+        )
+        val hiddenField = DynamicSchemaField(
+            name = "country_code",
+            displayName = "Country",
+            uiType = DynamicSchemaFieldUIType.LIST,
+            type = DynamicSchemaFieldType.STRING,
+            hidden = true, // This field is hidden
+            candidates = null,
+            validations = null
+        )
+        val typeInfo = mockk<PaymentMethodTypeInfo> {
+            every { fieldSchemas } returns listOf(
+                DynamicSchema(
+                    transactionMode = TransactionMode.ONE_OFF,
+                    fields = listOf(shopperNameField, hiddenField)
+                )
+            )
+        }
+
+        coEvery {
+            airwallex.retrievePaymentMethodTypeInfo(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+            listener.onSuccess(typeInfo)
+        }
+
+        // When
+        val result = viewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        // Then
+        assertNotNull(result)
+        assertEquals(
+            "country_code",
+            result?.typeInfo?.fieldSchemas?.first()?.fields?.get(1)?.name
+        )
+        assertEquals(
+            viewModel.appendParamsToMapForSchemaSubmission(emptyMap()),
+            mapOf("country_code" to "AU")
+        )
     }
 
     @Test

@@ -2,7 +2,6 @@ package com.airwallex.android.view.util
 
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.DynamicSchemaField
-import com.airwallex.android.core.model.DynamicSchemaFieldType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.FLOW
@@ -39,8 +38,8 @@ fun PaymentMethodTypeInfo.toPaymentFlow(transactionMode: TransactionMode): Airwa
     }
 }
 
-fun PaymentMethodTypeInfo.needHiddenEnumParam(transactionMode: TransactionMode, name: String) = fieldSchemas
+fun PaymentMethodTypeInfo.needHiddenParam(transactionMode: TransactionMode, name: String) = fieldSchemas
     ?.firstOrNull { it.transactionMode == transactionMode }
     ?.fields
-    ?.any { it.hidden && it.type == DynamicSchemaFieldType.ENUM && it.name == name }
+    ?.any { it.hidden && it.name == name }
     ?: false
