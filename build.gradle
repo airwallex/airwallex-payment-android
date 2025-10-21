@@ -47,7 +47,7 @@ allprojects {
 
 
 // Update the version field when a new version is released
-version = '6.2.4'
+version = '6.2.5'
 
 ext {
     compileSdkVersion = 36
