@@ -43,7 +43,6 @@
         <activity
             android:name="com.airwallex.paymentacceptance.ui.MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -67,35 +66,29 @@
         <activity
             android:name="com.airwallex.paymentacceptance.ui.UIIntegrationActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
 
         </activity>
 
         <activity
             android:name="com.airwallex.paymentacceptance.ui.APIIntegrationActivity"
-            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.h5.H5WebViewActivity"
-            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.h5.H5DemoActivity"
-            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.wechat.WeChatDemoActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name=".ui.SettingActivity"
-            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 
     </application>

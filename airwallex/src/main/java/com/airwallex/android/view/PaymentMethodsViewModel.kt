@@ -39,7 +39,7 @@ import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.findWithType
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
-import com.airwallex.android.view.util.needHiddenEnumParam
+import com.airwallex.android.view.util.needHiddenParam
 import com.airwallex.android.view.util.toPaymentFlow
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -447,7 +447,7 @@ internal class PaymentMethodsViewModel(
                     OS_TYPE to OS_NAME,
                     FLOW to AirwallexPaymentRequestFlow.IN_APP.value
                 ).forEach { (key, value) ->
-                        if (typeInfo.needHiddenEnumParam(transactionMode, key)) {
+                        if (typeInfo.needHiddenParam(transactionMode, key)) {
                             additionalParams[key] = value
                         }
                     }

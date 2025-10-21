@@ -3,11 +3,13 @@
 
     <style name="AppButton" parent="Widget.AppCompat.Button">
         <item name="android:textAllCaps">false</item>
-        <item name="android:layout_width">343dp</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">52dp</item>
         <item name="android:background">@drawable/btn_shape</item>
         <item name="android:textColor">@color/color_primary</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontWeight">700</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
     </style>
 </resources>

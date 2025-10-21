@@ -6,7 +6,6 @@
         <activity
             android:name=".view.cvc.PaymentCheckoutActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
             android:theme="@style/AirwallexDefaultTheme"
             android:windowSoftInputMode="adjustResize" />
     </application>

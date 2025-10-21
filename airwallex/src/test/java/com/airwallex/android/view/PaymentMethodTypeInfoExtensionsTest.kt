@@ -6,7 +6,7 @@ import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.util.filterRequiredFields
-import com.airwallex.android.view.util.needHiddenEnumParam
+import com.airwallex.android.view.util.needHiddenParam
 import com.airwallex.android.view.util.toPaymentFlow
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -341,7 +341,7 @@ class PaymentMethodTypeInfoExtensionsTest {
         """.trimIndent()
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
-        assertTrue(paymentMethodTypeInfo.needHiddenEnumParam(TransactionMode.ONE_OFF, COUNTRY_CODE))
+        assertTrue(paymentMethodTypeInfo.needHiddenParam(TransactionMode.ONE_OFF, COUNTRY_CODE))
     }
 
     @Test
@@ -371,7 +371,7 @@ class PaymentMethodTypeInfoExtensionsTest {
         """.trimIndent()
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
-        assertFalse(paymentMethodTypeInfo.needHiddenEnumParam(TransactionMode.ONE_OFF, COUNTRY_CODE))
+        assertFalse(paymentMethodTypeInfo.needHiddenParam(TransactionMode.ONE_OFF, COUNTRY_CODE))
     }
 
     @Test
@@ -401,7 +401,7 @@ class PaymentMethodTypeInfoExtensionsTest {
         """.trimIndent()
 
         val paymentMethodTypeInfo = gson.fromJson(json, PaymentMethodTypeInfo::class.java)
-        assertFalse(paymentMethodTypeInfo.needHiddenEnumParam(TransactionMode.ONE_OFF, COUNTRY_CODE))
+        assertFalse(paymentMethodTypeInfo.needHiddenParam(TransactionMode.ONE_OFF, COUNTRY_CODE))
     }
 
     @Test

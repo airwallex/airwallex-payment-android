@@ -41,7 +41,6 @@ abstract class BasePaymentTypeActivity<VM : BaseViewModel> :
         mBinding.flArrow.setOnClickListener { finish() }
         mBinding.imSetting.setOnClickListener { openSettingPage() }
         mBinding.titleView.setOnButtonClickListener { openSettingPage() }
-
         mBinding.dropdownView.setOnOptionSelectedCallback { mode ->
             handleDropdownSelection(mode)
         }
