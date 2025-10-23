@@ -9,6 +9,7 @@ import android.net.Uri
 import androidx.annotation.VisibleForTesting
 import androidx.browser.customtabs.CustomTabsIntent
 import com.airwallex.android.redirect.exception.RedirectException
+import androidx.core.net.toUri
 
 object RedirectUtil {
 
@@ -43,7 +44,7 @@ object RedirectUtil {
                     }
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return ResolveResultType.UNKNOWN
         }
         return ResolveResultType.UNKNOWN
@@ -73,7 +74,7 @@ object RedirectUtil {
         fallBackUrl: String? = null,
         packageName: String? = null
     ) {
-        val redirectUri = Uri.parse(redirectUrl)
+        val redirectUri = redirectUrl.toUri()
         val redirectIntent = createRedirectIntent(activity, redirectUri, packageName)
         try {
             activity.startActivity(redirectIntent)

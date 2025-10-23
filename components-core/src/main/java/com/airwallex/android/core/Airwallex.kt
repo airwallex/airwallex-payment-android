@@ -689,7 +689,7 @@ class Airwallex internal constructor(
     /**
      * Checkout the payment by paymentType and session
      *
-     * @param session a [AirwallexPaymentSession] used to present the Checkout flow, required.
+     * @param session a [AirwallexSession] used to present the Checkout flow, required.
      * @param paymentMethodName a [String] representing one of the redirect payment type names, required. check all methods by API reference: https://www.airwallex.com/docs/api#/Payment_Acceptance/Config/_api_v1_pa_config_payment_method_types/get JSON Object field: items.name
      * @param additionalInfo a [Map] containing extra information needed for certain payment types, such as phone number, email, bank details, etc., optional.
      * @param flow an [AirwallexPaymentRequestFlow], currently only supporting [AirwallexPaymentRequestFlow.IN_APP], optional.
@@ -697,7 +697,7 @@ class Airwallex internal constructor(
      */
     @UiThread
     fun startRedirectPay(
-        session: AirwallexPaymentSession,
+        session: AirwallexSession,
         paymentMethodName: String,
         additionalInfo: Map<String, String>? = null,
         flow: AirwallexPaymentRequestFlow? = AirwallexPaymentRequestFlow.IN_APP,
