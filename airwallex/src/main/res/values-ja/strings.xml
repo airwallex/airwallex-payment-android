@@ -53,6 +53,4 @@
     <string name="airwallex_select_your_bank">銀行を選択してください</string>
     <string name="airwallex_invalid_field">無効な%s</string>
     <string name="airwallex_card_information_title">カード情報</string>
-    <string name="airwallex_empty_postal_code">郵便番号を入力してください</string>
-    <string name="airwallex_empty_phone_number">電話番号を入力してください</string>
 </resources>

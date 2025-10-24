@@ -53,6 +53,4 @@
     <string name="airwallex_select_your_bank">Selecciona tu banco</string>
     <string name="airwallex_invalid_field">%s no válido</string>
     <string name="airwallex_card_information_title">Información de la tarjeta</string>
-    <string name="airwallex_empty_postal_code">Por favor, introduce tu código postal</string>
-    <string name="airwallex_empty_phone_number">Por favor, introduce tu número de teléfono</string>
 </resources>

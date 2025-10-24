@@ -83,8 +83,6 @@ internal fun AddCardSection(
     var streetErrorMessage by remember { mutableStateOf<Int?>(null) }
     var stateErrorMessage by remember { mutableStateOf<Int?>(null) }
     var cityErrorMessage by remember { mutableStateOf<Int?>(null) }
-    var zipCodeErrorMessage by remember { mutableStateOf<Int?>(null) }
-    var phoneNumberErrorMessage by remember { mutableStateOf<Int?>(null) }
 
     ScreenView { viewModel.trackScreenViewed(PaymentMethodType.CARD.value, mapOf("subtype" to "card")) }
 
@@ -406,18 +404,12 @@ internal fun AddCardSection(
                     text = zipCode,
                     onTextChanged = {
                         zipCode = it
-                        zipCodeErrorMessage = null
                     },
                     onComplete = { input ->
-                        zipCodeErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
                         focusManager.moveFocus(FocusDirection.Down)
-                    },
-                    onFocusLost = { input ->
-                        zipCodeErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
-                    isError = zipCodeErrorMessage != null,
                     shape = RoundedCornerShape(
                         topStart = 0.dp,
                         topEnd = 0.dp,
@@ -431,18 +423,12 @@ internal fun AddCardSection(
                     text = phoneNumber,
                     onTextChanged = {
                         phoneNumber = it
-                        phoneNumberErrorMessage = null
                     },
                     onComplete = { input ->
-                        phoneNumberErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
                         focusManager.clearFocus()
-                    },
-                    onFocusLost = { input ->
-                        phoneNumberErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
-                    isError = phoneNumberErrorMessage != null,
                     options = StandardTextFieldOptions(
                         inputType = StandardTextFieldOptions.InputType.PHONE,
                         returnType = StandardTextFieldOptions.ReturnType.DONE,
@@ -455,7 +441,7 @@ internal fun AddCardSection(
                     ),
                 )
 
-                val billingErrorMessage = streetErrorMessage ?: stateErrorMessage ?: cityErrorMessage ?: zipCodeErrorMessage ?: phoneNumberErrorMessage
+                val billingErrorMessage = streetErrorMessage ?: stateErrorMessage ?: cityErrorMessage
                 if (billingErrorMessage != null) {
                     Spacer(modifier = Modifier.height(4.dp))
 
@@ -513,8 +499,6 @@ internal fun AddCardSection(
                     streetErrorMessage = viewModel.getBillingValidationMessage(street, AddPaymentMethodViewModel.BillingFieldType.STREET)
                     stateErrorMessage = viewModel.getBillingValidationMessage(state, AddPaymentMethodViewModel.BillingFieldType.STATE)
                     cityErrorMessage = viewModel.getBillingValidationMessage(city, AddPaymentMethodViewModel.BillingFieldType.CITY)
-                    zipCodeErrorMessage = viewModel.getBillingValidationMessage(zipCode, AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE)
-                    phoneNumberErrorMessage = viewModel.getBillingValidationMessage(phoneNumber, AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER)
                 }
 
                 val allValidated = listOfNotNull(
@@ -525,9 +509,7 @@ internal fun AddCardSection(
                     cardHolderEmailErrorMessage,
                     streetErrorMessage,
                     stateErrorMessage,
-                    cityErrorMessage,
-                    zipCodeErrorMessage,
-                    phoneNumberErrorMessage,
+                    cityErrorMessage
                 ).isEmpty()
                 if (allValidated) {
                     // All fields are valid, so proceed to confirm payment.
@@ -535,7 +517,7 @@ internal fun AddCardSection(
                     viewModel.confirmPayment(
                         card = card,
                         saveCard = isSaveCardChecked,
-                        billing = viewModel.createBillingWithShipping(
+                        billing = viewModel.createBilling(
                             countryCode = selectedCountryCode,
                             state = state,
                             city = city,

@@ -53,6 +53,4 @@
     <string name="airwallex_select_your_bank">Выберите ваш банк</string>
     <string name="airwallex_invalid_field">Недопустимый %s</string>
     <string name="airwallex_card_information_title">Информация о карте</string>
-    <string name="airwallex_empty_postal_code">Пожалуйста, введите ваш почтовый индекс</string>
-    <string name="airwallex_empty_phone_number">Пожалуйста, введите ваш номер телефона</string>
 </resources>

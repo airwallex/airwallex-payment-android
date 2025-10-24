@@ -49,8 +49,6 @@
     <string name="airwallex_invalid_field">Invalid %s</string>
     <string name="airwallex_or_pay_with">Or pay with</string>
     <string name="airwallex_card_information_title">Card information</string>
-    <string name="airwallex_empty_postal_code">Please enter your zip code</string>
-    <string name="airwallex_empty_phone_number">Please enter your phone number</string>
     <string name="airwallex_add_card_screen_title">Add new</string>
     <string name="airwallex_add_card_button_title">Keep using saved cards</string>
     <string name="airwallex_consent_list_screen_title">Choose a card</string>
