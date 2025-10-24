@@ -124,8 +124,7 @@ class AddPaymentMethodViewModel(
                 BillingFieldType.STREET -> type.errorMessage
                 BillingFieldType.CITY -> type.errorMessage
                 BillingFieldType.STATE -> type.errorMessage
-                BillingFieldType.POSTAL_CODE -> type.errorMessage
-                BillingFieldType.PONE_NUMBER -> type.errorMessage
+                else -> null
             }
 
             else -> null
@@ -161,7 +160,7 @@ class AddPaymentMethodViewModel(
             .setExpiryYear(year.toString()).setCvc(cvv.trim()).build()
     }
 
-    fun createBillingWithShipping(
+    fun createBilling(
         countryCode: String,
         state: String,
         city: String,
@@ -202,8 +201,6 @@ class AddPaymentMethodViewModel(
     enum class BillingFieldType(@StringRes val errorMessage: Int) {
         STREET(R.string.airwallex_empty_street),
         CITY(R.string.airwallex_empty_city),
-        STATE(R.string.airwallex_empty_state),
-        POSTAL_CODE(R.string.airwallex_empty_postal_code),
-        PONE_NUMBER(R.string.airwallex_empty_phone_number),
+        STATE(R.string.airwallex_empty_state)
     }
 }

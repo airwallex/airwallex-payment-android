@@ -46,8 +46,6 @@
     <string name="airwallex_select_your_bank">选择您的银行</string>
     <string name="airwallex_invalid_field">无效的 %s</string>
     <string name="airwallex_card_information_title">卡信息</string>
-    <string name="airwallex_empty_postal_code">请输入您的邮政编码</string>
-    <string name="airwallex_empty_phone_number">请输入您的电话号码</string>
     <string name="airwallex_empty_state">请输入您的省/州</string>
     <string name="airwallex_delete_payment_method_prompt_title">您要删除此支付授权吗？</string>
     <string name="airwallex_delete_payment_method_positive">删除</string>

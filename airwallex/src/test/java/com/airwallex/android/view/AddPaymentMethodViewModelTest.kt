@@ -292,20 +292,6 @@ class AddPaymentMethodViewModelTest {
                 AddPaymentMethodViewModel.BillingFieldType.STATE,
             ),
         )
-        assertEquals(
-            R.string.airwallex_empty_postal_code,
-            viewModel.getBillingValidationMessage(
-                "",
-                AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE,
-            ),
-        )
-        assertEquals(
-            R.string.airwallex_empty_phone_number,
-            viewModel.getBillingValidationMessage(
-                "",
-                AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER,
-            ),
-        )
     }
 
     @Test
@@ -340,7 +326,7 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test createBillingWithShipping with valid input`() {
         val viewModel = createViewModel(mockk())
-        val billing = viewModel.createBillingWithShipping(
+        val billing = viewModel.createBilling(
             countryCode = "US",
             state = "CA",
             city = "San Francisco",

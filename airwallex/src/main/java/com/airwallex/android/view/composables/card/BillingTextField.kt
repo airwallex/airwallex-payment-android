@@ -27,7 +27,7 @@ fun BillingTextField(
     modifier: Modifier = Modifier,
     onTextChanged: (String) -> Unit,
     onComplete: (String) -> Unit,
-    onFocusLost: (String) -> Unit,
+    onFocusLost: ((String) -> Unit)? = null,
     isError: Boolean = false,
     enabled: Boolean = true,
     hint: String = "",
@@ -63,7 +63,7 @@ fun BillingTextField(
             } else {
                 // Focus has left the TextField after being focused
                 if (localFocusState !is FocusState.Initial) {
-                    onFocusLost(localText)
+                    onFocusLost?.invoke(localText)
                 }
                 showClearButton = false
                 localFocusState = FocusState.Unfocused
