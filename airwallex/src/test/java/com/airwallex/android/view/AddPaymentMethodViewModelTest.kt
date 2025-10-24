@@ -292,20 +292,6 @@ class AddPaymentMethodViewModelTest {
                 AddPaymentMethodViewModel.BillingFieldType.STATE,
             ),
         )
-        assertEquals(
-            R.string.airwallex_empty_postal_code,
-            viewModel.getBillingValidationMessage(
-                "",
-                AddPaymentMethodViewModel.BillingFieldType.POSTAL_CODE,
-            ),
-        )
-        assertEquals(
-            R.string.airwallex_empty_phone_number,
-            viewModel.getBillingValidationMessage(
-                "",
-                AddPaymentMethodViewModel.BillingFieldType.PONE_NUMBER,
-            ),
-        )
     }
 
     @Test

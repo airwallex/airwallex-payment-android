@@ -201,8 +201,6 @@ class AddPaymentMethodViewModel(
     enum class BillingFieldType(@StringRes val errorMessage: Int) {
         STREET(R.string.airwallex_empty_street),
         CITY(R.string.airwallex_empty_city),
-        STATE(R.string.airwallex_empty_state),
-        POSTAL_CODE(R.string.airwallex_empty_postal_code),
-        PONE_NUMBER(R.string.airwallex_empty_phone_number),
+        STATE(R.string.airwallex_empty_state)
     }
 }
