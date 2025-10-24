@@ -124,8 +124,7 @@ class AddPaymentMethodViewModel(
                 BillingFieldType.STREET -> type.errorMessage
                 BillingFieldType.CITY -> type.errorMessage
                 BillingFieldType.STATE -> type.errorMessage
-                BillingFieldType.POSTAL_CODE -> type.errorMessage
-                BillingFieldType.PONE_NUMBER -> type.errorMessage
+                else -> null
             }
 
             else -> null
@@ -161,7 +160,7 @@ class AddPaymentMethodViewModel(
             .setExpiryYear(year.toString()).setCvc(cvv.trim()).build()
     }
 
-    fun createBillingWithShipping(
+    fun createBilling(
         countryCode: String,
         state: String,
         city: String,

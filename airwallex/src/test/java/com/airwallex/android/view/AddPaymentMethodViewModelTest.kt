@@ -340,7 +340,7 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test createBillingWithShipping with valid input`() {
         val viewModel = createViewModel(mockk())
-        val billing = viewModel.createBillingWithShipping(
+        val billing = viewModel.createBilling(
             countryCode = "US",
             state = "CA",
             city = "San Francisco",
