@@ -117,13 +117,15 @@ object ThreeDSecurityManager {
                                     }
                                 )
                                 ThreeDSecurityActivityLaunch(activity)
-                                    .startForResult(
+                                    .launchForResult(
                                         ThreeDSecurityActivityLaunch.Args(
                                             url = url,
                                             body = postResult.toString(),
                                             options = options
                                         )
-                                    )
+                                    ) { _, _ ->
+                                        // The result will be handled in onWebViewConfirmation callback
+                                    }
                             } else {
                                 cardNextActionModel.paymentManager.startOperation(
                                     options,

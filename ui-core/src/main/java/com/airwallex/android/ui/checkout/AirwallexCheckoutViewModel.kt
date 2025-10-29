@@ -12,7 +12,7 @@ import kotlin.coroutines.resume
 
 open class AirwallexCheckoutViewModel(
     application: Application,
-    private val airwallex: Airwallex,
+    private var airwallex: Airwallex,
     private val session: AirwallexSession
 ) : AndroidViewModel(application) {
 
@@ -27,6 +27,14 @@ open class AirwallexCheckoutViewModel(
             is AirwallexPaymentSession -> TransactionMode.ONE_OFF
             else -> TransactionMode.ONE_OFF // Default to one-off if session is unavailable
         }
+    }
+
+    /**
+     * Update the Airwallex instance when the activity is recreated.
+     * This should be called in the activity's onCreate or onStart.
+     */
+    fun updateAirwallex(airwallex: Airwallex) {
+        this.airwallex = airwallex
     }
 
     @Suppress("LongParameterList")
