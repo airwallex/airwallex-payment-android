@@ -119,17 +119,14 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 )
             }
         }
-        val addPaymentMethodViewModel = ViewModelProvider(
-            owner = this,
-            factory = AddPaymentMethodViewModel.Factory(
-                application = application,
-                airwallex = airwallex,
-                session = session,
-                supportedCardSchemes = availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
-                    paymentMethodType.name == PaymentMethodType.CARD.value
-                }?.cardSchemes ?: emptyList(),
-            ),
-        )[AddPaymentMethodViewModel::class.java]
+        val addPaymentMethodViewModel = AddPaymentMethodViewModel(
+            application = application,
+            airwallex = airwallex,
+            session = session,
+            supportedCardSchemes = availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
+                paymentMethodType.name == PaymentMethodType.CARD.value
+            }?.cardSchemes ?: emptyList(),
+        )
 
         addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
             when (result) {
@@ -179,11 +176,11 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
     private fun startAddPaymentMethod(cardSchemes: List<CardScheme>) {
         AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity).launchForResult(
-                AddPaymentMethodActivityLaunch.Args.Builder().setAirwallexSession(session)
-                    .setSupportedCardSchemes(cardSchemes).setSinglePaymentMethod(true).build()
-            ) { _, result ->
-                handleAddPaymentMethodActivityResult(result.resultCode, result.data)
-            }
+            AddPaymentMethodActivityLaunch.Args.Builder().setAirwallexSession(session)
+                .setSupportedCardSchemes(cardSchemes).setSinglePaymentMethod(true).build()
+        ) { _, result ->
+            handleAddPaymentMethodActivityResult(result.resultCode, result.data)
+        }
     }
 
     private fun handleAddPaymentMethodActivityResult(resultCode: Int, data: Intent?) {
