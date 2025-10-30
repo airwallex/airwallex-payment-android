@@ -3,6 +3,7 @@ package com.airwallex.paymentacceptance.viewmodel
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -23,15 +24,22 @@ import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.nextTriggerBy
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 class APIIntegrationViewModel : BaseViewModel() {
     //create your own Airwallex instance to call the APIs.
     private var airwallex: Airwallex? = null
 
-    //AirwallexPaymentStatus is the result returned by the payment flow. You can add your own handling logic based on the final result.
-    private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
-    val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
+    // AirwallexPaymentStatus is the result returned by the payment flow. You can add your own handling logic based on the final result.
+    // Using SharedFlow with default replay=0 ensures the event is only delivered once to active collectors
+    // This prevents duplicate callbacks on configuration changes
+    private val _airwallexPaymentStatus = MutableSharedFlow<AirwallexPaymentStatus>()
+    val airwallexPaymentStatus: SharedFlow<AirwallexPaymentStatus> =
+        _airwallexPaymentStatus.asSharedFlow()
 
     private val _paymentMethodList = MutableLiveData<List<AvailablePaymentMethodType>>()
     val paymentMethodList: LiveData<List<AvailablePaymentMethodType>> = _paymentMethodList
@@ -62,7 +70,9 @@ class APIIntegrationViewModel : BaseViewModel() {
             saveCard = saveCard,
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.value = status
+                    viewModelScope.launch {
+                        _airwallexPaymentStatus.emit(status)
+                    }
                 }
             }
         )
@@ -84,7 +94,9 @@ class APIIntegrationViewModel : BaseViewModel() {
             session = session,
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.value = status
+                    viewModelScope.launch {
+                        _airwallexPaymentStatus.emit(status)
+                    }
                 }
             }
         )
@@ -107,10 +119,12 @@ class APIIntegrationViewModel : BaseViewModel() {
         val session = createSession()
         airwallex?.startRedirectPay(
             session = session,
-            paymentMethodName = "alipayhk",
+            paymentMethodName = "paypay",
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.value = status
+                    viewModelScope.launch {
+                        _airwallexPaymentStatus.emit(status)
+                    }
                 }
             }
         )
@@ -128,7 +142,9 @@ class APIIntegrationViewModel : BaseViewModel() {
             paymentConsent = paymentConsent,
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.value = status
+                    viewModelScope.launch {
+                        _airwallexPaymentStatus.emit(status)
+                    }
                 }
             }
         )
@@ -315,8 +331,8 @@ class APIIntegrationViewModel : BaseViewModel() {
             paymentIntent = paymentIntent,
             customerId = requireNotNull(
                 paymentIntent.customerId,
-                { "CustomerId is required" }
-            ),
+
+                ) { "CustomerId is required" },
             nextTriggerBy = nextTriggerBy,
             countryCode = Settings.countryCode
         )
