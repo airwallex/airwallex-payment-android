@@ -75,7 +75,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
-        viewModel.trackPaymentLaunched()
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
         viewBinding.composeView.apply {
             setContent {
@@ -142,7 +141,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         setLoadingProgress(false)
         AirwallexLogger.info("AddPaymentMethodActivity finishWithPaymentIntent")
         setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtras(
                 AddPaymentMethodActivityLaunch.Result(
                     paymentIntentId = paymentIntentId,

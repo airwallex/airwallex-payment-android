@@ -26,10 +26,10 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.trackPaymentLaunched()
         // Update the Airwallex instance in the ViewModel to ensure it always refers to the current Activity
         viewModel.updateAirwallex(airwallex)
+        super.onCreate(savedInstanceState)
+        viewModel.trackPaymentLaunched()
     }
 
     override fun onBackButtonPressed() {
