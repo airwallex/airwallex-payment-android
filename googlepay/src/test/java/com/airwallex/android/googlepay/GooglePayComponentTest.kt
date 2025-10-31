@@ -53,7 +53,6 @@ class GooglePayComponentTest {
         mockkConstructor(GooglePayActivityLaunch::class)
         component = GooglePayComponent()
 
-        every { anyConstructed<GooglePayActivityLaunch>().startForResult(any()) } just runs
         every { anyConstructed<GooglePayActivityLaunch>().launchForResult(any(), any()) } just runs
         val session = mockk<AirwallexSession>(relaxed = true)
         val mockPaymentType = mockk<AvailablePaymentMethodType>()

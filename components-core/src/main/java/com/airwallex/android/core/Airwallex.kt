@@ -65,7 +65,7 @@ import java.util.UUID
 @Suppress("LongMethod")
 class Airwallex internal constructor(
     private val fragment: Fragment?,
-    private var activity: ComponentActivity,
+    private val activity: ComponentActivity,
     private val paymentManager: PaymentManager,
     private val applicationContext: Context,
 ) {

@@ -340,4 +340,13 @@ class AirwallexCheckoutViewModelTest {
 
         assertEquals(TransactionMode.ONE_OFF, viewModel.transactionMode)
     }
+
+    @Test
+    fun `test updateAirwallex should update the airwallex instance`() {
+        val newAirwallex = mockk<Airwallex>()
+
+        viewModel.updateAirwallex(newAirwallex)
+
+        assertEquals(newAirwallex, viewModel.airwallex)
+    }
 }
