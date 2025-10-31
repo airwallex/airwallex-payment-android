@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.update
 @Suppress("ComplexCondition", "LongParameterList")
 class AddPaymentMethodViewModel(
     application: Application,
-    private val airwallex: Airwallex,
+    airwallex: Airwallex,
     private val session: AirwallexSession,
     private val supportedCardSchemes: List<CardScheme>
 ) : AirwallexCheckoutViewModel(application, airwallex, session) {

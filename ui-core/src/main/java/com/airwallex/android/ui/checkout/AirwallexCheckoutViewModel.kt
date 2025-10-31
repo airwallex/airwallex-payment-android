@@ -12,14 +12,16 @@ import kotlin.coroutines.resume
 
 open class AirwallexCheckoutViewModel(
     application: Application,
-    private var airwallex: Airwallex,
+    airwallex: Airwallex,
     private val session: AirwallexSession
 ) : AndroidViewModel(application) {
-
     companion object {
         private const val EVENT_PAYMENT_CANCELLED = "payment_canceled"
         private const val EVENT_PAYMENT_LAUNCHED = "payment_launched"
     }
+
+    var airwallex: Airwallex = airwallex
+        private set
 
     val transactionMode: TransactionMode by lazy {
         when (session) {

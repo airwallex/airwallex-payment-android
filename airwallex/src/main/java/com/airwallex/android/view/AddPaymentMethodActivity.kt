@@ -75,7 +75,9 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
+        viewModel.updateAirwallex(airwallex)
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
+
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
