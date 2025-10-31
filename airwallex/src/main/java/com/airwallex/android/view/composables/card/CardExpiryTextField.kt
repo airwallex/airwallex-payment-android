@@ -33,6 +33,7 @@ import com.airwallex.risk.AirwallexRisk
 @Composable
 fun CardExpiryTextField(
     modifier: Modifier = Modifier,
+    initialValue: String = "",
     onTextChanged: (TextFieldValue) -> Unit,
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
@@ -40,7 +41,9 @@ fun CardExpiryTextField(
     shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
     var showClearButton by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var textFieldValue by remember(initialValue) {
+        mutableStateOf(TextFieldValue(text = initialValue, selection = TextRange(initialValue.length)))
+    }
     var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
     StandardTextField(

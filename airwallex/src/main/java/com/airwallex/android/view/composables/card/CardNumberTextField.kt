@@ -43,13 +43,18 @@ fun CardNumberTextField(
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
     modifier: Modifier = Modifier,
+    initialValue: String = "",
     isError: Boolean = false,
     shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
     var showClearButton by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var textFieldValue by remember(initialValue) {
+        mutableStateOf(TextFieldValue(text = initialValue, selection = TextRange(initialValue.length)))
+    }
     var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
-    var brand by remember { mutableStateOf(CardBrand.Unknown) }
+    var brand by remember(initialValue) {
+        mutableStateOf(getPossibleCardBrand(initialValue, shouldNormalize = true))
+    }
 
     StandardTextField(
         hint = stringResource(R.string.airwallex_card_number_placeholder),

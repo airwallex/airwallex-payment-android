@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,27 +60,28 @@ internal fun AddCardSection(
     val cvvFocusRequester = remember { FocusRequester() }
     val nameFocusRequest = remember { FocusRequester() }
 
-    var brand by remember { mutableStateOf(CardBrand.Unknown) }
-    var isSaveCardChecked by remember { mutableStateOf(viewModel.canSaveCard) }
-    var cardNumber by remember { mutableStateOf("") }
-    var expiryDate by remember { mutableStateOf("") }
-    var cvv by remember { mutableStateOf("") }
-    var cardHolderName by remember { mutableStateOf(viewModel.cardHolderName) }
-    var email by remember { mutableStateOf(viewModel.shipping?.email.orEmpty()) }
+    // Use ViewModel state flows for data retention across configuration changes
+    val brand by viewModel.cardBrand.collectAsState()
+    val isSaveCardChecked by viewModel.isSaveCardChecked.collectAsState()
+    val cardNumber by viewModel.cardNumber.collectAsState()
+    val expiryDate by viewModel.expiryDate.collectAsState()
+    val cvv by viewModel.cvv.collectAsState()
+    val cardHolderName by viewModel.cardHolderNameState.collectAsState()
+    val email by viewModel.email.collectAsState()
     var cardNumberErrorMessage by remember { mutableStateOf<Int?>(null) }
     var expiryDateErrorMessage by remember { mutableStateOf<Int?>(null) }
     var cvvErrorMessage by remember { mutableStateOf<Int?>(null) }
     var cardHolderNameErrorMessage by remember { mutableStateOf<Int?>(null) }
     var cardHolderEmailErrorMessage by remember { mutableStateOf<Int?>(null) }
 
-    // Billing info section
-    var isSameAddressChecked by remember { mutableStateOf(viewModel.shipping != null) }
-    var selectedCountryCode by remember { mutableStateOf(viewModel.countryCode) }
-    var street by remember { mutableStateOf(viewModel.shipping?.address?.street.orEmpty()) }
-    var state by remember { mutableStateOf(viewModel.shipping?.address?.state.orEmpty()) }
-    var city by remember { mutableStateOf(viewModel.shipping?.address?.city.orEmpty()) }
-    var zipCode by remember { mutableStateOf(viewModel.shipping?.address?.postcode.orEmpty()) }
-    var phoneNumber by remember { mutableStateOf(viewModel.shipping?.phoneNumber.orEmpty()) }
+    // Billing info section - Use ViewModel state flows
+    val isSameAddressChecked by viewModel.isSameAddressChecked.collectAsState()
+    val selectedCountryCode by viewModel.selectedCountryCode.collectAsState()
+    val street by viewModel.street.collectAsState()
+    val state by viewModel.state.collectAsState()
+    val city by viewModel.city.collectAsState()
+    val zipCode by viewModel.zipCode.collectAsState()
+    val phoneNumber by viewModel.phoneNumber.collectAsState()
     var streetErrorMessage by remember { mutableStateOf<Int?>(null) }
     var stateErrorMessage by remember { mutableStateOf<Int?>(null) }
     var cityErrorMessage by remember { mutableStateOf<Int?>(null) }
@@ -104,9 +106,9 @@ internal fun AddCardSection(
 
         CardNumberTextField(
             cardSchemes = cardSchemes,
+            initialValue = cardNumber,
             onValueChange = { value, cardBrand ->
-                cardNumber = value.text
-                brand = cardBrand
+                viewModel.updateCardNumber(value.text, cardBrand)
                 cardNumberErrorMessage = null
             },
             modifier = Modifier
@@ -130,8 +132,9 @@ internal fun AddCardSection(
 
         Row {
             CardExpiryTextField(
+                initialValue = expiryDate,
                 onTextChanged = { value ->
-                    expiryDate = value.text
+                    viewModel.updateExpiryDate(value.text)
                     expiryDateErrorMessage = null
                 },
                 onComplete = { input ->
@@ -155,8 +158,9 @@ internal fun AddCardSection(
             )
             CardCvcTextField(
                 cardBrand = brand,
+                initialValue = cvv,
                 onTextChanged = { value ->
-                    cvv = value.text
+                    viewModel.updateCvv(value.text)
                     cvvErrorMessage = null
                 },
                 onComplete = { input ->
@@ -209,7 +213,7 @@ internal fun AddCardSection(
         PaymentTextField(
             text = cardHolderName,
             onTextChanged = { value ->
-                cardHolderName = value
+                viewModel.updateCardHolderName(value)
                 cardHolderNameErrorMessage = null
             },
             onComplete = { input ->
@@ -252,7 +256,7 @@ internal fun AddCardSection(
             PaymentTextField(
                 text = email,
                 onTextChanged = { value ->
-                    email = value
+                    viewModel.updateEmail(value)
                     cardHolderEmailErrorMessage = null
                 },
                 onComplete = { input ->
@@ -290,13 +294,15 @@ internal fun AddCardSection(
                     text = stringResource(id = R.string.airwallex_same_as_shipping),
                     onCheckedChange = {
                         AnalyticsLogger.logAction("toggle_billing_address")
-                        isSameAddressChecked = it
-                        selectedCountryCode = if (isSameAddressChecked) viewModel.countryCode else selectedCountryCode
-                        street = if (isSameAddressChecked) viewModel.shipping?.address?.street.orEmpty() else street
-                        state = if (isSameAddressChecked) viewModel.shipping?.address?.state.orEmpty() else state
-                        city = if (isSameAddressChecked) viewModel.shipping?.address?.city.orEmpty() else city
-                        zipCode = if (isSameAddressChecked) viewModel.shipping?.address?.postcode.orEmpty() else zipCode
-                        phoneNumber = if (isSameAddressChecked) viewModel.shipping?.phoneNumber.orEmpty() else phoneNumber
+                        viewModel.updateSameAddressChecked(it)
+                        if (it) {
+                            viewModel.updateSelectedCountryCode(viewModel.countryCode)
+                            viewModel.updateStreet(viewModel.shipping?.address?.street.orEmpty())
+                            viewModel.updateState(viewModel.shipping?.address?.state.orEmpty())
+                            viewModel.updateCity(viewModel.shipping?.address?.city.orEmpty())
+                            viewModel.updateZipCode(viewModel.shipping?.address?.postcode.orEmpty())
+                            viewModel.updatePhoneNumber(viewModel.shipping?.phoneNumber.orEmpty())
+                        }
                     },
                 )
 
@@ -306,7 +312,7 @@ internal fun AddCardSection(
                     options = CountryUtils.countryList.map { it.name to it.code },
                     default = selectedCountryCode,
                     onOptionSelected = {
-                        selectedCountryCode = it.second
+                        viewModel.updateSelectedCountryCode(it.second)
                     },
                     modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
@@ -322,7 +328,7 @@ internal fun AddCardSection(
                     hint = stringResource(id = R.string.airwallex_shipping_street_hint),
                     text = street,
                     onTextChanged = {
-                        street = it
+                        viewModel.updateStreet(it)
                         streetErrorMessage = null
                     },
                     onComplete = { input ->
@@ -349,7 +355,7 @@ internal fun AddCardSection(
                         hint = stringResource(id = R.string.airwallex_shipping_state_name_hint),
                         text = state,
                         onTextChanged = {
-                            state = it
+                            viewModel.updateState(it)
                             stateErrorMessage = null
                         },
                         onComplete = { input ->
@@ -375,7 +381,7 @@ internal fun AddCardSection(
                         hint = stringResource(id = R.string.airwallex_shipping_city_name_hint),
                         text = city,
                         onTextChanged = {
-                            city = it
+                            viewModel.updateCity(it)
                             cityErrorMessage = null
                         },
                         onComplete = { input ->
@@ -403,7 +409,7 @@ internal fun AddCardSection(
                     hint = stringResource(id = R.string.airwallex_shipping_zip_code_hint),
                     text = zipCode,
                     onTextChanged = {
-                        zipCode = it
+                        viewModel.updateZipCode(it)
                     },
                     onComplete = { input ->
                         focusManager.moveFocus(FocusDirection.Down)
@@ -422,7 +428,7 @@ internal fun AddCardSection(
                     hint = stringResource(id = R.string.airwallex_contact_phone_number_hint),
                     text = phoneNumber,
                     onTextChanged = {
-                        phoneNumber = it
+                        viewModel.updatePhoneNumber(it)
                     },
                     onComplete = { input ->
                         focusManager.clearFocus()
@@ -463,8 +469,8 @@ internal fun AddCardSection(
                 checked = isSaveCardChecked,
                 text = stringResource(id = R.string.airwallex_save_card),
                 onCheckedChange = {
-                    isSaveCardChecked = it
-                    if (isSaveCardChecked) {
+                    viewModel.updateSaveCardChecked(it)
+                    if (it) {
                         AnalyticsLogger.logAction("save_card")
                     }
                 },
