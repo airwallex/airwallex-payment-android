@@ -55,6 +55,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         )[PaymentMethodsViewModel::class.java]
     }
 
+    private lateinit var addPaymentMethodViewModel: AddPaymentMethodViewModel
+
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
     }
@@ -108,6 +110,41 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
         availablePaymentConsents: List<PaymentConsent>,
     ) {
+        // Initialize AddPaymentMethodViewModel only if not already initialized
+        if (!::addPaymentMethodViewModel.isInitialized) {
+            val supportedCardSchemes = availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
+                paymentMethodType.name == PaymentMethodType.CARD.value
+            }?.cardSchemes ?: emptyList()
+
+            addPaymentMethodViewModel = ViewModelProvider(
+                this,
+                AddPaymentMethodViewModel.Factory(
+                    application = application,
+                    airwallex = airwallex,
+                    session = session,
+                    supportedCardSchemes = supportedCardSchemes
+                ),
+            )[AddPaymentMethodViewModel::class.java]
+
+            // Observe payment status changes from AddPaymentMethodViewModel (only once)
+            addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
+                when (result) {
+                    is AirwallexPaymentStatus.Success -> {
+                        finishWithPaymentIntent(
+                            paymentIntentId = result.paymentIntentId,
+                            consentId = result.consentId,
+                        )
+                    }
+
+                    is AirwallexPaymentStatus.Failure -> {
+                        finishWithPaymentIntent(exception = result.exception)
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
+
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
         val allowedPaymentMethods = session.googlePayOptions?.let { googlePayOptions ->
             availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
@@ -117,31 +154,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     googlePayOptions,
                     paymentMethodType.cardSchemes,
                 )
-            }
-        }
-        val addPaymentMethodViewModel = AddPaymentMethodViewModel(
-            application = application,
-            airwallex = airwallex,
-            session = session,
-            supportedCardSchemes = availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
-                paymentMethodType.name == PaymentMethodType.CARD.value
-            }?.cardSchemes ?: emptyList(),
-        )
-
-        addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
-            when (result) {
-                is AirwallexPaymentStatus.Success -> {
-                    finishWithPaymentIntent(
-                        paymentIntentId = result.paymentIntentId,
-                        consentId = result.consentId,
-                    )
-                }
-
-                is AirwallexPaymentStatus.Failure -> {
-                    finishWithPaymentIntent(exception = result.exception)
-                }
-
-                else -> Unit
             }
         }
 
