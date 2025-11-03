@@ -125,6 +125,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     supportedCardSchemes = supportedCardSchemes
                 ),
             )[AddPaymentMethodViewModel::class.java]
+            addPaymentMethodViewModel.updateAirwallex(airwallex)
 
             // Observe payment status changes from AddPaymentMethodViewModel (only once)
             addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
