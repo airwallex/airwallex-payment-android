@@ -64,7 +64,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setLoadingProgress(loading = true, cancelable = false)
-        viewModel.updateAirwallex(airwallex)
+        viewModel.updateActivity(this)
         viewModel.fetchPaymentMethodsAndConsents()
     }
 
@@ -125,7 +125,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                     supportedCardSchemes = supportedCardSchemes
                 ),
             )[AddPaymentMethodViewModel::class.java]
-            addPaymentMethodViewModel.updateAirwallex(airwallex)
+            addPaymentMethodViewModel.updateActivity(this)
 
             // Observe payment status changes from AddPaymentMethodViewModel (only once)
             addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->

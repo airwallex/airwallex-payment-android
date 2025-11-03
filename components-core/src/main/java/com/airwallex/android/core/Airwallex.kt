@@ -65,7 +65,7 @@ import java.util.UUID
 @Suppress("LongMethod")
 class Airwallex internal constructor(
     private val fragment: Fragment?,
-    private val activity: ComponentActivity,
+    private var activity: ComponentActivity,
     private val paymentManager: PaymentManager,
     private val applicationContext: Context,
 ) {
@@ -96,6 +96,17 @@ class Airwallex internal constructor(
 
     init {
         AnalyticsLogger.initialize(applicationContext)
+    }
+
+    /**
+     * Update the activity reference. This should be called when the activity is recreated
+     * due to configuration changes to ensure the Airwallex instance always has a valid
+     * activity reference.
+     *
+     * @param newActivity The new activity instance after recreation
+     */
+    fun updateActivity(newActivity: ComponentActivity) {
+        this.activity = newActivity
     }
 
     /**

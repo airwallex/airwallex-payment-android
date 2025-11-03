@@ -131,7 +131,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         setLoadingProgress(false)
         AirwallexLogger.info("PaymentCheckoutActivity finishWithPaymentIntent")
         setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtras(
                 PaymentCheckoutActivityLaunch.Result(
                     paymentIntentId = paymentIntentId,
