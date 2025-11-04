@@ -12,7 +12,7 @@ import java.util.*
 @Suppress("LongParameterList")
 internal fun ActionComponent.confirmGooglePayIntent(
     fragment: Fragment?,
-    activity: Activity,
+    activityProvider: (() -> Activity),
     paymentManager: PaymentManager,
     applicationContext: Context,
     paymentIntentId: String,
@@ -57,13 +57,14 @@ internal fun ActionComponent.confirmGooglePayIntent(
                         device = device,
                         paymentIntentId = response.id,
                         currency = response.currency,
-                        amount = response.amount
+                        amount = response.amount,
+                        activityProvider = activityProvider
                     )
                     handlePaymentIntentResponse(
                         response.id,
                         response.nextAction,
                         fragment,
-                        activity,
+                        activityProvider(),
                         applicationContext,
                         cardNextActionModel,
                         listener

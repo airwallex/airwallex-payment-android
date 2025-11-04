@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.update
 @Suppress("ComplexCondition", "LongParameterList")
 class AddPaymentMethodViewModel(
     application: Application,
-    private val airwallex: Airwallex,
+    airwallex: Airwallex,
     private val session: AirwallexSession,
     private val supportedCardSchemes: List<CardScheme>
 ) : AirwallexCheckoutViewModel(application, airwallex, session) {
@@ -72,6 +72,104 @@ class AddPaymentMethodViewModel(
 
     private val _deleteCardSuccess = MutableStateFlow<PaymentConsent?>(null)
     val deleteCardSuccess: StateFlow<PaymentConsent?> = _deleteCardSuccess.asStateFlow()
+
+    // Card input state
+    private val _cardNumber = MutableStateFlow("")
+    val cardNumber: StateFlow<String> = _cardNumber.asStateFlow()
+
+    private val _expiryDate = MutableStateFlow("")
+    val expiryDate: StateFlow<String> = _expiryDate.asStateFlow()
+
+    private val _cvv = MutableStateFlow("")
+    val cvv: StateFlow<String> = _cvv.asStateFlow()
+
+    private val _cardHolderName = MutableStateFlow(cardHolderName)
+    val cardHolderNameState: StateFlow<String> = _cardHolderName.asStateFlow()
+
+    private val _email = MutableStateFlow(shipping?.email.orEmpty())
+    val email: StateFlow<String> = _email.asStateFlow()
+
+    private val _cardBrand = MutableStateFlow(CardBrand.Unknown)
+    val cardBrand: StateFlow<CardBrand> = _cardBrand.asStateFlow()
+
+    private val _isSaveCardChecked = MutableStateFlow(canSaveCard)
+    val isSaveCardChecked: StateFlow<Boolean> = _isSaveCardChecked.asStateFlow()
+
+    // Billing state
+    private val _isSameAddressChecked = MutableStateFlow(shipping != null)
+    val isSameAddressChecked: StateFlow<Boolean> = _isSameAddressChecked.asStateFlow()
+
+    private val _selectedCountryCode = MutableStateFlow(countryCode)
+    val selectedCountryCode: StateFlow<String> = _selectedCountryCode.asStateFlow()
+
+    private val _street = MutableStateFlow(shipping?.address?.street.orEmpty())
+    val street: StateFlow<String> = _street.asStateFlow()
+
+    private val _state = MutableStateFlow(shipping?.address?.state.orEmpty())
+    val state: StateFlow<String> = _state.asStateFlow()
+
+    private val _city = MutableStateFlow(shipping?.address?.city.orEmpty())
+    val city: StateFlow<String> = _city.asStateFlow()
+
+    private val _zipCode = MutableStateFlow(shipping?.address?.postcode.orEmpty())
+    val zipCode: StateFlow<String> = _zipCode.asStateFlow()
+
+    private val _phoneNumber = MutableStateFlow(shipping?.phoneNumber.orEmpty())
+    val phoneNumber: StateFlow<String> = _phoneNumber.asStateFlow()
+
+    // Update functions
+    fun updateCardNumber(value: String, brand: CardBrand) {
+        _cardNumber.value = value
+        _cardBrand.value = brand
+    }
+
+    fun updateExpiryDate(value: String) {
+        _expiryDate.value = value
+    }
+
+    fun updateCvv(value: String) {
+        _cvv.value = value
+    }
+
+    fun updateCardHolderName(value: String) {
+        _cardHolderName.value = value
+    }
+
+    fun updateEmail(value: String) {
+        _email.value = value
+    }
+
+    fun updateSaveCardChecked(checked: Boolean) {
+        _isSaveCardChecked.value = checked
+    }
+
+    fun updateSameAddressChecked(checked: Boolean) {
+        _isSameAddressChecked.value = checked
+    }
+
+    fun updateSelectedCountryCode(value: String) {
+        _selectedCountryCode.value = value
+    }
+
+    fun updateStreet(value: String) {
+        _street.value = value
+    }
+
+    fun updateState(value: String) {
+        _state.value = value
+    }
+
+    fun updateCity(value: String) {
+        _city.value = value
+    }
+
+    fun updateZipCode(value: String) {
+        _zipCode.value = value
+    }
+
+    fun updatePhoneNumber(value: String) {
+        _phoneNumber.value = value
+    }
 
     fun getCardNumberValidationMessage(cardNumber: String): Int? {
         return when {

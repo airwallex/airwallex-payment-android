@@ -4,6 +4,9 @@ import CustomerDialog
 import DemoCardDialog
 import android.util.Log
 import android.view.View
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.CardBrand
@@ -18,6 +21,7 @@ import com.airwallex.paymentacceptance.ui.base.BasePaymentTypeActivity
 import com.airwallex.paymentacceptance.ui.bean.ButtonItem
 import com.airwallex.paymentacceptance.viewmodel.APIIntegrationViewModel
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 /**
@@ -128,8 +132,12 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
 
     override fun addObserver() {
         super.addObserver()
-        mViewModel.airwallexPaymentStatus.observe(this) { status ->
-            handleStatusUpdate(status)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mViewModel.airwallexPaymentStatus.collect { status ->
+                    handleStatusUpdate(status)
+                }
+            }
         }
         mViewModel.paymentMethodList.observe(this) { list ->
             setLoadingProgress(false)

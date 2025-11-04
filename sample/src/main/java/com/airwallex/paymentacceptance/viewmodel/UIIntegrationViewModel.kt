@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexCheckoutMode
@@ -25,13 +26,20 @@ import com.airwallex.paymentacceptance.force3DS
 import com.airwallex.paymentacceptance.nextTriggerBy
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 class UIIntegrationViewModel : BaseViewModel() {
 
-    //AirwallexPaymentStatus is the result returned by the payment flow. You can add your own handling logic based on the final result.
-    private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
-    val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
+    // AirwallexPaymentStatus is the result returned by the payment flow. You can add your own handling logic based on the final result.
+    // Using SharedFlow with default replay=0 ensures the event is only delivered once to active collectors
+    // This prevents duplicate callbacks on configuration changes
+    private val _airwallexPaymentStatus = MutableSharedFlow<AirwallexPaymentStatus>()
+    val airwallexPaymentStatus: SharedFlow<AirwallexPaymentStatus> =
+        _airwallexPaymentStatus.asSharedFlow()
 
     private val _airwallexShippingStatus = MutableLiveData<AirwallexShippingStatus>()
     val airwallexShippingStatus: LiveData<AirwallexShippingStatus> = _airwallexShippingStatus
@@ -58,9 +66,10 @@ class UIIntegrationViewModel : BaseViewModel() {
             session = session,
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
-
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.value = status
+                    viewModelScope.launch {
+                        _airwallexPaymentStatus.emit(status)
+                    }
                 }
             }
         )
@@ -78,16 +87,18 @@ class UIIntegrationViewModel : BaseViewModel() {
         )
         val session = createSession(
             googlePayOptions,
-            listOf("paypal", "card", "Googlepay", "fps", "alipayhk",)//customize the payment methods and their order
+            //customize the payment methods and their order
+            listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
         )
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
-
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.value = status
+                    viewModelScope.launch {
+                        _airwallexPaymentStatus.emit(status)
+                    }
                 }
             }
         )
@@ -102,9 +113,10 @@ class UIIntegrationViewModel : BaseViewModel() {
             activity = activity,
             session = session,
             paymentResultListener = object : Airwallex.PaymentResultListener {
-
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.value = status
+                    viewModelScope.launch {
+                        _airwallexPaymentStatus.emit(status)
+                    }
                 }
             }
         )
@@ -120,7 +132,9 @@ class UIIntegrationViewModel : BaseViewModel() {
             session = session,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.value = status
+                    viewModelScope.launch {
+                        _airwallexPaymentStatus.emit(status)
+                    }
                 }
             }
         )
@@ -145,7 +159,10 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * this method will create different types of Sessions based on the different modes.
      */
-    private suspend fun createSession(googlePayOptions: GooglePayOptions? = null,  paymentMethods: List<String>? = listOf()): AirwallexSession {
+    private suspend fun createSession(
+        googlePayOptions: GooglePayOptions? = null,
+        paymentMethods: List<String>? = listOf()
+    ): AirwallexSession {
         return when (Settings.checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
                 //get the paymentIntent object from your server
@@ -161,16 +178,26 @@ class UIIntegrationViewModel : BaseViewModel() {
                 val customerId = getCustomerIdFromServer()
                 val clientSecret = getClientSecretFromServer(customerId)
                 //build an AirwallexRecurringSession based on the customerId and clientSecret
-                buildAirwallexRecurringSession(googlePayOptions, customerId, clientSecret, paymentMethods)
+                buildAirwallexRecurringSession(
+                    googlePayOptions,
+                    customerId,
+                    clientSecret,
+                    paymentMethods
+                )
             }
 
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
                 //get the customerId and paymentIntent from your server
                 //please do not directly copy these method!
                 val customerId = getCustomerIdFromServer()
-                val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
+                val paymentIntent =
+                    getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
                 //build an AirwallexRecurringWithIntentSession based on the paymentIntent
-                buildAirwallexRecurringWithIntentSession(googlePayOptions, paymentIntent, paymentMethods)
+                buildAirwallexRecurringWithIntentSession(
+                    googlePayOptions,
+                    paymentIntent,
+                    paymentMethods
+                )
             }
         }
     }
@@ -183,66 +210,67 @@ class UIIntegrationViewModel : BaseViewModel() {
         googlePayOptions: GooglePayOptions? = null,
         paymentIntent: PaymentIntent,
         paymentMethods: List<String>? = listOf()
-    ) =
-        AirwallexPaymentSession.Builder(
-            paymentIntent = paymentIntent,
-            countryCode = Settings.countryCode,
-            googlePayOptions = googlePayOptions
-        )
-            .setRequireBillingInformation(true)
-            .setRequireEmail(Settings.requiresEmail.toBoolean())
-            .setReturnUrl(Settings.returnUrl)
-            .setAutoCapture(autoCapture)
-            .setHidePaymentConsents(false)
-            .setPaymentMethods(paymentMethods)
-            .setShipping(shipping)
-            .build()
+    ) = AirwallexPaymentSession.Builder(
+        paymentIntent = paymentIntent,
+        countryCode = Settings.countryCode,
+        googlePayOptions = googlePayOptions
+    )
+        .setRequireBillingInformation(true)
+        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setReturnUrl(Settings.returnUrl)
+        .setAutoCapture(autoCapture)
+        .setHidePaymentConsents(false)
+        .setPaymentMethods(paymentMethods)
+        .setShipping(shipping)
+        .build()
 
     /**
      * build an AirwallexRecurringSession based on the customerId and clientSecret
      * @param customerId get this from your sever
      * @param clientSecret get this from your sever
      */
-    private fun buildAirwallexRecurringSession(googlePayOptions: GooglePayOptions? = null, customerId: String, clientSecret: String, paymentMethods: List<String>? = listOf()) =
-        AirwallexRecurringSession.Builder(
-            customerId = customerId,
-            clientSecret = clientSecret,
-            currency = Settings.currency,
-            amount = BigDecimal.valueOf(Settings.price.toDouble()),
-            nextTriggerBy = nextTriggerBy,
-            countryCode = Settings.countryCode
-        )
-            .setRequireEmail(Settings.requiresEmail.toBoolean())
-            .setShipping(shipping)
-            //only nextTriggerBy is merchant, merchantTriggerReason is required
-            .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
-            .setGooglePayOptions(googlePayOptions)
-            .setReturnUrl(Settings.returnUrl)
-            .setPaymentMethods(paymentMethods)
-            .build()
+    private fun buildAirwallexRecurringSession(
+        googlePayOptions: GooglePayOptions? = null,
+        customerId: String,
+        clientSecret: String,
+        paymentMethods: List<String>? = listOf()
+    ) = AirwallexRecurringSession.Builder(
+        customerId = customerId,
+        clientSecret = clientSecret,
+        currency = Settings.currency,
+        amount = BigDecimal.valueOf(Settings.price.toDouble()),
+        nextTriggerBy = nextTriggerBy,
+        countryCode = Settings.countryCode
+    )
+        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setShipping(shipping)
+        .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
+        .setGooglePayOptions(googlePayOptions)
+        .setReturnUrl(Settings.returnUrl)
+        .setPaymentMethods(paymentMethods)
+        .build()
 
     /**
      * build an AirwallexRecurringWithIntentSession based on the customerId and paymentIntent
      * @param paymentIntent get this from your sever
      */
-    private fun buildAirwallexRecurringWithIntentSession(googlePayOptions: GooglePayOptions? = null, paymentIntent: PaymentIntent, paymentMethods: List<String>? = listOf()) =
-        AirwallexRecurringWithIntentSession.Builder(
-            paymentIntent = paymentIntent,
-            customerId = requireNotNull(
-                paymentIntent.customerId,
-                { "CustomerId is required" }
-            ),
-            nextTriggerBy = nextTriggerBy,
-            countryCode = Settings.countryCode
-        )
-            .setRequireEmail(Settings.requiresEmail.toBoolean())
-            //only nextTriggerBy is merchant, merchantTriggerReason is required
-            .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-            .setReturnUrl(Settings.returnUrl)
-            .setAutoCapture(autoCapture)
-            .setGooglePayOptions(googlePayOptions)
-            .setPaymentMethods(paymentMethods)
-            .setShipping(shipping)
-            .build()
-
+    private fun buildAirwallexRecurringWithIntentSession(
+        googlePayOptions: GooglePayOptions? = null,
+        paymentIntent: PaymentIntent,
+        paymentMethods: List<String>? = listOf()
+    ) = AirwallexRecurringWithIntentSession.Builder(
+        paymentIntent = paymentIntent,
+        customerId = requireNotNull(paymentIntent.customerId) { "CustomerId is required" },
+        nextTriggerBy = nextTriggerBy,
+        countryCode = Settings.countryCode
+    )
+        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+        .setReturnUrl(Settings.returnUrl)
+        .setAutoCapture(autoCapture)
+        .setGooglePayOptions(googlePayOptions)
+        .setPaymentMethods(paymentMethods)
+        .setShipping(shipping)
+        .build()
 }
+

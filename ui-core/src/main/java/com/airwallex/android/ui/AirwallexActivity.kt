@@ -35,6 +35,13 @@ abstract class AirwallexActivity : AppCompatActivity() {
         }
 
     private var loadingDialog: Dialog? = null
+    private var isLoadingBeforeConfigChange = false
+    private var loadingCancelable = true
+
+    companion object {
+        private const val KEY_IS_LOADING = "airwallex_is_loading"
+        private const val KEY_LOADING_CANCELABLE = "airwallex_loading_cancelable"
+    }
 
     abstract fun onBackButtonPressed()
 
@@ -68,6 +75,22 @@ abstract class AirwallexActivity : AppCompatActivity() {
         initView()
         addListener()
         addObserver()
+
+        // Restore loading dialog state after configuration change
+        savedInstanceState?.let {
+            isLoadingBeforeConfigChange = it.getBoolean(KEY_IS_LOADING, false)
+            loadingCancelable = it.getBoolean(KEY_LOADING_CANCELABLE, true)
+            if (isLoadingBeforeConfigChange) {
+                setLoadingProgress(loading = true, cancelable = loadingCancelable)
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Save loading dialog state before configuration change
+        outState.putBoolean(KEY_IS_LOADING, loading)
+        outState.putBoolean(KEY_LOADING_CANCELABLE, loadingCancelable)
     }
 
     override fun onDestroy() {
@@ -102,6 +125,7 @@ abstract class AirwallexActivity : AppCompatActivity() {
     }
 
     open fun setLoadingProgress(loading: Boolean, cancelable: Boolean = true) {
+        loadingCancelable = cancelable
         if (loading) {
             startWait(this, cancelable)
         } else {

@@ -1,6 +1,7 @@
 package com.airwallex.android.ui.checkout
 
 import android.app.Application
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.*
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
@@ -12,10 +13,9 @@ import kotlin.coroutines.resume
 
 open class AirwallexCheckoutViewModel(
     application: Application,
-    private val airwallex: Airwallex,
+    val airwallex: Airwallex,
     private val session: AirwallexSession
 ) : AndroidViewModel(application) {
-
     companion object {
         private const val EVENT_PAYMENT_CANCELLED = "payment_canceled"
         private const val EVENT_PAYMENT_LAUNCHED = "payment_launched"
@@ -27,6 +27,14 @@ open class AirwallexCheckoutViewModel(
             is AirwallexPaymentSession -> TransactionMode.ONE_OFF
             else -> TransactionMode.ONE_OFF // Default to one-off if session is unavailable
         }
+    }
+
+    /**
+     * Update the Airwallex instance when the activity is recreated.
+     * This should be called in the activity's onCreate or onStart.
+     */
+    fun updateActivity(newActivity: ComponentActivity) {
+         airwallex.updateActivity(newActivity)
     }
 
     @Suppress("LongParameterList")

@@ -340,4 +340,12 @@ class AirwallexCheckoutViewModelTest {
 
         assertEquals(TransactionMode.ONE_OFF, viewModel.transactionMode)
     }
+
+    @Test
+    fun `test updateActivity should update the activity instance`() {
+        every { airwallex.updateActivity(any()) } just runs
+        val newActivity = mockk<androidx.activity.ComponentActivity>()
+        viewModel.updateActivity(newActivity)
+        verify(exactly = 1) { airwallex.updateActivity(newActivity) }
+    }
 }

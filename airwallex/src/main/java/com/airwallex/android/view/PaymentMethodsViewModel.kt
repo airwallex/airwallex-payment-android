@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @Suppress("ComplexMethod", "LongMethod")
 internal class PaymentMethodsViewModel(
     application: Application,
-    private val airwallex: Airwallex,
+    airwallex: Airwallex,
     internal val session: AirwallexSession
 ) : AirwallexCheckoutViewModel(application, airwallex, session) {
 
