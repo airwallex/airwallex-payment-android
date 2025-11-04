@@ -2,12 +2,16 @@ package com.airwallex.paymentacceptance.ui
 
 import android.content.Intent
 import android.util.Log
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.airwallex.android.core.Airwallex.Companion.AIRWALLEX_CHECKOUT_SCHEMA
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.ui.base.BasePaymentTypeActivity
 import com.airwallex.paymentacceptance.ui.bean.ButtonItem
 import com.airwallex.paymentacceptance.viewmodel.UIIntegrationViewModel
+import kotlinx.coroutines.launch
 
 /**
  * This Activity demonstrates how to call the payment flow UI provided by Airwallex.
@@ -22,8 +26,12 @@ class UIIntegrationActivity :
 
     override fun addObserver() {
         super.addObserver()
-        mViewModel.airwallexPaymentStatus.observe(this) { status ->
-            handleStatusUpdate(status)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mViewModel.airwallexPaymentStatus.collect { status ->
+                    handleStatusUpdate(status)
+                }
+            }
         }
         mViewModel.dialogShowed.observe(this) {
             setLoadingProgress(false)

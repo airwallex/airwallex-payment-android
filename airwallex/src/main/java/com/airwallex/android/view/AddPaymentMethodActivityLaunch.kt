@@ -82,7 +82,7 @@ internal class AddPaymentMethodActivityLaunch :
                 return Result(
                     paymentIntentId = parcel.readString(),
                     consentId = parcel.readString(),
-                    exception = parcel.readSerializable() as? AirwallexException?
+                    exception = parcel.readSerializable() as? AirwallexException
                 )
             }
 

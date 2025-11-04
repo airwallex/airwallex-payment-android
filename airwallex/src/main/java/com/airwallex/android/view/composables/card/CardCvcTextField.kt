@@ -40,6 +40,7 @@ private const val DEFAULT_CVV_LENGTH = 3
 fun CardCvcTextField(
     modifier: Modifier = Modifier,
     cardBrand: CardBrand,
+    initialValue: String = "",
     onTextChanged: (TextFieldValue) -> Unit,
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
@@ -48,7 +49,9 @@ fun CardCvcTextField(
     shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
     var showClearButton by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var textFieldValue by remember(initialValue) {
+        mutableStateOf(TextFieldValue(text = initialValue, selection = TextRange(initialValue.length)))
+    }
     var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
     StandardTextField(

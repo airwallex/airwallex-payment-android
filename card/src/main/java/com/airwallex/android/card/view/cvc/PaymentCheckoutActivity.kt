@@ -1,6 +1,5 @@
 package com.airwallex.android.card.view.cvc
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
@@ -131,7 +130,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         setLoadingProgress(false)
         AirwallexLogger.info("PaymentCheckoutActivity finishWithPaymentIntent")
         setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtras(
                 PaymentCheckoutActivityLaunch.Result(
                     paymentIntentId = paymentIntentId,

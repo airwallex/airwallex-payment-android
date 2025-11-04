@@ -1,6 +1,5 @@
 package com.airwallex.android.threedsecurity
 
-import android.app.Activity
 import android.content.Intent
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,6 @@ object ThreeDSecurityManager {
     @Suppress("LongParameterList", "LongMethod")
     fun handleThreeDSFlow(
         paymentIntentId: String,
-        activity: Activity,
         fragment: Fragment?,
         nextAction: NextAction,
         cardNextActionModel: CardNextActionModel,
@@ -61,7 +59,7 @@ object ThreeDSecurityManager {
             val threeDSecurityActivityLaunch = if (fragment != null) {
                 ThreeDSecurityActivityLaunch(fragment)
             } else {
-                ThreeDSecurityActivityLaunch(activity)
+                ThreeDSecurityActivityLaunch(cardNextActionModel.activityProvider())
             }
             threeDSecurityActivityLaunch.launchForResult(
                 ThreeDSecurityActivityLaunch.Args(
@@ -85,12 +83,12 @@ object ThreeDSecurityManager {
                 )
             }
         } else {
-            (activity as? AirwallexActivity)?.setLoadingProgress(
+            (cardNextActionModel.activityProvider() as? AirwallexActivity)?.setLoadingProgress(
                 loading = true,
                 cancelable = false
             )
-            val container = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
-            val webView = AirwallexWebView(activity).apply {
+            val container = cardNextActionModel.activityProvider().window.decorView.findViewById<ViewGroup>(android.R.id.content)
+            val webView = AirwallexWebView(cardNextActionModel.activityProvider()).apply {
                 visibility = View.INVISIBLE
 
                 webViewClient =
@@ -109,21 +107,23 @@ object ThreeDSecurityManager {
 
                             AirwallexLogger.info("ThreeDSecurityManager onWebViewConfirmation: nextAction.stage = ${nextAction.stage}", sensitiveMessage = "payload = $payload")
                             if (nextAction.stage == NextAction.NextActionStage.WAITING_USER_INFO_INPUT) {
-                                (activity as? AirwallexActivity)?.setLoadingProgress(false)
+                                (cardNextActionModel.activityProvider() as? AirwallexActivity)?.setLoadingProgress(false)
                                 AnalyticsLogger.logPageView(
                                     "webview_redirect",
                                     mutableMapOf<String, Any>().apply {
                                         putIfNotNull("stage", nextAction.stage?.value)
                                     }
                                 )
-                                ThreeDSecurityActivityLaunch(activity)
-                                    .startForResult(
+                                ThreeDSecurityActivityLaunch(cardNextActionModel.activityProvider())
+                                    .launchForResult(
                                         ThreeDSecurityActivityLaunch.Args(
                                             url = url,
                                             body = postResult.toString(),
                                             options = options
                                         )
-                                    )
+                                    ) { _, _ ->
+                                        // The result will be handled in onWebViewConfirmation callback
+                                    }
                             } else {
                                 cardNextActionModel.paymentManager.startOperation(
                                     options,
@@ -147,7 +147,6 @@ object ThreeDSecurityManager {
                                             }
                                             handleThreeDSFlow(
                                                 paymentIntentId,
-                                                activity,
                                                 fragment,
                                                 continueNextAction,
                                                 cardNextActionModel,

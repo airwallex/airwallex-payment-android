@@ -21,8 +21,12 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
     companion object {
         private var isInitialized = false
         private val resultLauncherMap = HashMap<Activity, ActivityResultLauncher<Intent>>()
-        private val resultCallbackMap = HashMap<Activity, AirwallexActivityLaunchResultCallback>()
-        private val launchInstanceMap = HashMap<Class<*>, AirwallexActivityLaunch<*, *>>()
+        // Maps Activity instances to their callback handlers for activity results
+        private val activityCallbackMap = HashMap<Activity, AirwallexActivityLaunchResultCallback>()
+
+        // Store callbacks by Activity class name to survive configuration changes
+        private val persistentCallbackStorage =
+            HashMap<String, Pair<Int, (requestCode: Int, result: ActivityResult) -> Unit>>()
 
         fun initialize(application: Application) {
             if (isInitialized) return
@@ -47,15 +51,25 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
                             resultCallback
                         )
                         resultLauncherMap[activity] = resultLauncher
-                        resultCallbackMap[activity] = resultCallback
-                        launchInstanceMap[activity.javaClass]?.onTargetActivityCreated(activity)
+                        activityCallbackMap[activity] = resultCallback
+
+                        // Restore callback if Activity was recreated (e.g., due to orientation change)
+                        val activityKey = activity.javaClass.name
+                        persistentCallbackStorage[activityKey]?.let { (requestCode, callback) ->
+                            resultCallback.setRequestCode(requestCode)
+                            resultCallback.setResultCallback(callback)
+                        }
                     }
                 }
 
                 override fun onActivityDestroyed(activity: Activity) {
                     resultLauncherMap.remove(activity)
-                    resultCallbackMap.remove(activity)
-                    launchInstanceMap.remove(activity.javaClass)
+                    activityCallbackMap.remove(activity)
+
+                    // Only remove callbacks if Activity is finishing (not just rotating)
+                    if (activity.isFinishing) {
+                        persistentCallbackStorage.remove(activity.javaClass.name)
+                    }
                 }
             })
         }
@@ -65,8 +79,13 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
             requestCode: Int,
             resultCallBack: (requestCode: Int, result: ActivityResult) -> Unit
         ) {
-            resultCallbackMap[activity]?.setRequestCode(requestCode)
-            resultCallbackMap[activity]?.setResultCallback(resultCallBack)
+            // Store callback by Activity class name to survive configuration changes
+            val activityKey = activity.javaClass.name
+            persistentCallbackStorage[activityKey] = Pair(requestCode, resultCallBack)
+
+            // Immediately set callback on current activity's resultCallback object
+            activityCallbackMap[activity]?.setRequestCode(requestCode)
+            activityCallbackMap[activity]?.setResultCallback(resultCallBack)
         }
 
         private fun getActivityResultLauncher(activity: Activity): ActivityResultLauncher<Intent>? =
@@ -95,25 +114,6 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         requestCode = requestCode
     )
 
-    init {
-        this.also { launcher -> launchInstanceMap[targetActivity] = launcher }
-    }
-
-    @Deprecated(message = "Use launchForResult() instead")
-    fun startForResult(args: ArgsType) {
-        val bundle = Bundle().apply {
-            putParcelable(Args.AIRWALLEX_EXTRA, args)
-        }
-        val intent = Intent(originalActivity, targetActivity).apply {
-            putExtra(Args.AIRWALLEX_BUNDLE_EXTRA, bundle)
-        }
-        if (fragment != null) {
-            fragment.startActivityForResult(intent, requestCode)
-        } else {
-            originalActivity.startActivityForResult(intent, requestCode)
-        }
-    }
-
     fun launchForResult(
         args: ArgsType,
         resultCallBack: (requestCode: Int, result: ActivityResult) -> Unit
@@ -126,10 +126,6 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         }
         setResultCallBack(originalActivity, requestCode, resultCallBack)
         getActivityResultLauncher(originalActivity)?.launch(intent)
-    }
-
-    open fun onTargetActivityCreated(target: Activity) {
-
     }
 
     interface Args : Parcelable {

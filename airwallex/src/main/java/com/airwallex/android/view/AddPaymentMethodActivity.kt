@@ -1,6 +1,5 @@
 package com.airwallex.android.view
 
-import android.app.Activity
 import android.content.Intent
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
@@ -75,8 +74,9 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
-        viewModel.trackPaymentLaunched()
+        viewModel.updateActivity(this)
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
+
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
@@ -124,7 +124,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         super.onBackButtonPressed()
         AirwallexLogger.info("AddPaymentMethodActivity onBackButtonPressed")
         setResult(
-            Activity.RESULT_CANCELED,
+            RESULT_CANCELED,
             Intent().putExtras(
                 AddPaymentMethodActivityLaunch.CancellationResult(
                     isSinglePaymentMethod = args.isSinglePaymentMethod,
@@ -142,7 +142,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         setLoadingProgress(false)
         AirwallexLogger.info("AddPaymentMethodActivity finishWithPaymentIntent")
         setResult(
-            Activity.RESULT_OK,
+            RESULT_OK,
             Intent().putExtras(
                 AddPaymentMethodActivityLaunch.Result(
                     paymentIntentId = paymentIntentId,
