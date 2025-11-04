@@ -41,7 +41,7 @@
             </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
-        <div class="library-version" id="library-version">6.2.6
+        <div class="library-version" id="library-version">6.2.7
         </div>
         <div class="navigation-controls">
         <div class="filter-section filter-section_loading" id="filter-section">
@@ -94,7 +94,7 @@
   <div class="breadcrumbs"><a href="../../index.html">ui-core</a><span class="delimiter">/</span><a href="../index.html">com.airwallex.android.ui.checkout</a><span class="delimiter">/</span><span class="current">AirwallexCheckoutViewModel</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Airwallex</span><wbr><span>Checkout</span><wbr><span>View</span><wbr><span><span>Model</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">AirwallexCheckoutViewModel</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">application<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Application.html">Application</a><span class="token punctuation">, </span></span><span class="parameter ">airwallex<span class="token operator">: </span><a href="../../../components-core/com.airwallex.android.core/-airwallex/index.html">Airwallex</a><span class="token punctuation">, </span></span><span class="parameter ">session<span class="token operator">: </span><a href="../../../components-core/com.airwallex.android.core/-airwallex-session/index.html">AirwallexSession</a></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/AndroidViewModel.html">AndroidViewModel</a></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">AirwallexCheckoutViewModel</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">application<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Application.html">Application</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>airwallex<span class="token operator">: </span><a href="../../../components-core/com.airwallex.android.core/-airwallex/index.html">Airwallex</a><span class="token punctuation">, </span></span><span class="parameter ">session<span class="token operator">: </span><a href="../../../components-core/com.airwallex.android.core/-airwallex-session/index.html">AirwallexSession</a></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/AndroidViewModel.html">AndroidViewModel</a></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
@@ -139,7 +139,22 @@
       </div>
       <div data-togglable="PROPERTY">
         <h2 class="">Properties</h2>
-        <div class="table"><a data-name="621021522%2FProperties%2F-1628350927" anchor-label="transactionMode" id="621021522%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+        <div class="table"><a data-name="927325292%2FProperties%2F-1628350927" anchor-label="airwallex" id="927325292%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="airwallex.html"><span><span>airwallex</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="927325292%2FProperties%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="airwallex.html">airwallex</a><span class="token operator">: </span><a href="../../../components-core/com.airwallex.android.core/-airwallex/index.html">Airwallex</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="621021522%2FProperties%2F-1628350927" anchor-label="transactionMode" id="621021522%2FProperties%2F-1628350927" data-filterable-set=":ui-core/release"></a>
           <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -304,6 +319,21 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="track-screen-viewed.html"><span class="token function">trackScreenViewed</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">eventName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">params<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyMap()</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1909542689%2FFunctions%2F-1628350927" anchor-label="updateActivity" id="1909542689%2FFunctions%2F-1628350927" data-filterable-set=":ui-core/release"></a>
+          <div class="table-row" data-filterable-current=":ui-core/release" data-filterable-set=":ui-core/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-activity.html"><span>update</span><wbr><span><span>Activity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1909542689%2FFunctions%2F-1628350927"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-core/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="update-activity.html"><span class="token function">updateActivity</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newActivity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/activity/ComponentActivity.html">ComponentActivity</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Update the Airwallex instance when the activity is recreated. This should be called in the activity's onCreate or onStart.</p></div></div></div>
                 </div>
               </div>
             </div>
