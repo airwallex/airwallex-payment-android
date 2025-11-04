@@ -40,7 +40,7 @@ class ActionComponentProviderExtensionsTest {
 
         actionComponent.confirmGooglePayIntent(
             fragment = fragment,
-            activity = activity,
+            activityProvider = { activity },
             paymentManager = paymentManager,
             applicationContext = context,
             paymentIntentId = "paymentIntent id",
@@ -58,7 +58,8 @@ class ActionComponentProviderExtensionsTest {
                 activity,
                 context,
                 any(),
-                listener
+                listener,
+                any()
             )
         }
     }
@@ -84,7 +85,7 @@ class ActionComponentProviderExtensionsTest {
 
         actionComponent.confirmGooglePayIntent(
             fragment = fragment,
-            activity = activity,
+            activityProvider = { activity },
             paymentManager = paymentManager,
             applicationContext = context,
             paymentIntentId = "paymentIntent id",
@@ -108,7 +109,7 @@ class ActionComponentProviderExtensionsTest {
 
         actionComponent.confirmGooglePayIntent(
             fragment = fragment,
-            activity = activity,
+            activityProvider = { activity },
             paymentManager = paymentManager,
             applicationContext = context,
             paymentIntentId = "paymentIntent id",

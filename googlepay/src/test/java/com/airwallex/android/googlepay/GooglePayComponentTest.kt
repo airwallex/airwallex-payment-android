@@ -101,13 +101,13 @@ class GooglePayComponentTest {
             device = null,
             paymentIntentId = "int_hkdmr7v9rg1j58ky8re",
             currency = "CNY",
-            amount = BigDecimal.TEN
+            amount = BigDecimal.TEN,
+            activityProvider = { activity }
         )
         handlePaymentIntentResponse(redirectAction, cardModel)
         verify(exactly = 1) {
             ThreeDSecurityManager.handleThreeDSFlow(
                 "id",
-                activity,
                 null,
                 redirectAction,
                 cardModel,
@@ -196,10 +196,12 @@ class GooglePayComponentTest {
         component.handlePaymentIntentResponse(
             paymentIntentId = "id",
             nextAction = action,
+            fragment = null,
             activity = activity,
             applicationContext = context,
             cardNextActionModel = model,
-            listener = listener
+            listener = listener,
+            consentId = null
         )
     }
 }

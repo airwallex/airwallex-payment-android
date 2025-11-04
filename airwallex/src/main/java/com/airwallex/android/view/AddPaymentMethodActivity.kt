@@ -1,6 +1,5 @@
 package com.airwallex.android.view
 
-import android.app.Activity
 import android.content.Intent
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column

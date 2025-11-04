@@ -62,7 +62,6 @@ class GooglePayComponent : ActionComponent {
             AirwallexLogger.info("GooglePayComponent handlePaymentIntentResponse: handleThreeDSFlow")
             ThreeDSecurityManager.handleThreeDSFlow(
                 paymentIntentId = paymentIntentId,
-                activity = activity,
                 fragment = fragment,
                 nextAction = nextAction,
                 cardNextActionModel = cardNextActionModel,

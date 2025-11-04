@@ -606,7 +606,8 @@ class Airwallex internal constructor(
                                 device = null,
                                 paymentIntentId = paymentIntentId,
                                 currency = requireNotNull(params.currency),
-                                amount = requireNotNull(params.amount)
+                                amount = requireNotNull(params.amount),
+                                activityProvider = { activity }
                             )
 
                             provider.get().handlePaymentIntentResponse(
@@ -1060,7 +1061,7 @@ class Airwallex internal constructor(
                                     val paymentIntent = session.paymentIntent
                                     googlePayProvider.get().confirmGooglePayIntent(
                                         fragment = fragment,
-                                        activity = activity,
+                                        activityProvider = { activity },
                                         paymentManager = paymentManager,
                                         applicationContext = applicationContext,
                                         paymentIntentId = paymentIntent.id,
@@ -1235,7 +1236,8 @@ class Airwallex internal constructor(
                             device = device,
                             paymentIntentId = response.id,
                             currency = response.currency,
-                            amount = response.amount
+                            amount = response.amount,
+                            activityProvider = { activity }
                         )
 
                         else -> null
