@@ -5,21 +5,21 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.0'
+        kotlinCompilerExtensionVersion '1.5.15'
     }
 }
 
 dependencies {
     // Jetpack Compose
-    implementation 'androidx.compose.ui:ui:1.8.2'
-    implementation 'androidx.compose.material:material:1.8.2'
-    implementation 'androidx.compose.runtime:runtime:1.8.2'
-    implementation 'androidx.compose.material3:material3-android:1.3.2'
+    implementation 'androidx.compose.ui:ui:1.9.4'
+    implementation 'androidx.compose.material:material:1.9.4'
+    implementation 'androidx.compose.runtime:runtime:1.9.4'
+    implementation 'androidx.compose.material3:material3:1.4.0'
     //Coil
     implementation 'io.coil-kt:coil-compose:2.4.0'
     //Google Pay Compose
     implementation 'com.google.pay.button:compose-pay-button:1.0.0'
     //Preview
-    debugImplementation "androidx.compose.ui:ui-tooling:1.2.1"
-    implementation "androidx.compose.ui:ui-tooling-preview:1.2.1"
+    debugImplementation "androidx.compose.ui:ui-tooling:1.9.4"
+    implementation "androidx.compose.ui:ui-tooling-preview:1.9.4"
 }

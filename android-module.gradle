@@ -53,7 +53,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        freeCompilerArgs += [
+            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi"
+        ]
     }
 
     lint {

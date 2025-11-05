@@ -21,6 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -90,7 +92,10 @@ fun CardNumberTextField(
                 localFocusState = FocusState.Unfocused
             }
         }
-            .semantics { testTagsAsResourceId = true }
+            .semantics {
+                testTagsAsResourceId = true
+                contentType = ContentType.CreditCardNumber
+            }
             .testTag("card-number-text-field"),
         options = StandardTextFieldOptions(
             inputType = StandardTextFieldOptions.InputType.NUMBER,
