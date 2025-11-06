@@ -1260,7 +1260,8 @@ class PaymentMethodsViewModelTest {
         }
 
         // Mock the retrieveAvailablePaymentConsents call
-        coEvery { airwallex.retrieveAvailablePaymentConsents(any()) } returns (paymentConsents ?: createPaymentConsents())
+        coEvery { airwallex.retrieveAvailablePaymentConsents(any()) } returns
+                (paymentConsents ?: createPaymentConsents())
 
         // Mock the disablePaymentConsent call
         coEvery { airwallex.disablePaymentConsent(any(), any()) } coAnswers {
@@ -1703,23 +1704,24 @@ class PaymentMethodsViewModelTest {
     }
 
     @Test
-    fun `test fetchPaymentMethodsAndConsents executes normally when not waiting for result`() = runTest {
-        // Given
-        val viewModel = mockViewModel()
-        viewModel.setWaitingForAddPaymentMethodResult(false)
+    fun `test fetchPaymentMethodsAndConsents executes normally when not waiting for result`() =
+        runTest {
+            // Given
+            val viewModel = mockViewModel()
+            viewModel.setWaitingForAddPaymentMethodResult(false)
 
-        // Mock the fetchAvailablePaymentMethodsAndConsents to return success
-        coEvery { viewModel.fetchAvailablePaymentMethodsAndConsents() } returns Result.success(
-            Pair(createPaymentMethods(TransactionMode.ONE_OFF).items, emptyList())
-        )
+            // Mock the fetchAvailablePaymentMethodsAndConsents to return success
+            coEvery { viewModel.fetchAvailablePaymentMethodsAndConsents() } returns Result.success(
+                Pair(createPaymentMethods(TransactionMode.ONE_OFF).items, emptyList())
+            )
 
-        // When
-        viewModel.fetchPaymentMethodsAndConsents()
-        advanceUntilIdle()
+            // When
+            viewModel.fetchPaymentMethodsAndConsents()
+            advanceUntilIdle()
 
-        // Then - verify fetchAvailablePaymentMethodsAndConsents was called
-        coVerify(exactly = 1) { viewModel.fetchAvailablePaymentMethodsAndConsents() }
-    }
+            // Then - verify fetchAvailablePaymentMethodsAndConsents was called
+            coVerify(exactly = 1) { viewModel.fetchAvailablePaymentMethodsAndConsents() }
+        }
 
     @Test
     fun `test fetchPaymentMethodsAndConsents skip logic respects waiting state`() = runTest {
@@ -1748,8 +1750,10 @@ class PaymentMethodsViewModelTest {
             advanceUntilIdle()
 
             // Then - should not have triggered Skip result because we're waiting
-            assertTrue("No Skip result should be emitted when waiting for result",
-                resultData.none { it is PaymentMethodResult.Skip })
+            assertTrue(
+                "No Skip result should be emitted when waiting for result",
+                resultData.none { it is PaymentMethodResult.Skip }
+            )
 
             // Now set waiting to false and try again
             viewModel.setWaitingForAddPaymentMethodResult(false)
@@ -1757,8 +1761,10 @@ class PaymentMethodsViewModelTest {
             advanceUntilIdle()
 
             // Should now emit Skip result
-            assertTrue("Skip result should be emitted when not waiting",
-                resultData.any { it is PaymentMethodResult.Skip })
+            assertTrue(
+                "Skip result should be emitted when not waiting",
+                resultData.any { it is PaymentMethodResult.Skip }
+            )
         } finally {
             viewModel.paymentMethodResult.removeObserver(observer)
         }

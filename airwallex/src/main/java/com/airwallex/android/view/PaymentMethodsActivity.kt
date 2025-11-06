@@ -192,12 +192,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     private fun startAddPaymentMethod(cardSchemes: List<CardScheme>) {
-        viewModel.setWaitingForAddPaymentMethodResult(true)  // Set flag before launching
+        viewModel.setWaitingForAddPaymentMethodResult(true) // Set flag before launching
         AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity).launchForResult(
             AddPaymentMethodActivityLaunch.Args.Builder().setAirwallexSession(session)
                 .setSupportedCardSchemes(cardSchemes).setSinglePaymentMethod(true).build()
         ) { _, result ->
-            viewModel.setWaitingForAddPaymentMethodResult(false)  // Clear flag when result received
+            viewModel.setWaitingForAddPaymentMethodResult(false) // Clear flag when result received
             handleAddPaymentMethodActivityResult(result.resultCode, result.data)
         }
     }
