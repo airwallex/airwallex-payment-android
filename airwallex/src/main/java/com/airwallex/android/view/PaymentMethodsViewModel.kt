@@ -62,6 +62,9 @@ internal class PaymentMethodsViewModel(
     private val _paymentMethodResult = MutableLiveData<PaymentMethodResult>()
     val paymentMethodResult: LiveData<PaymentMethodResult> = _paymentMethodResult
 
+    // State variable to track if we're waiting for AddPaymentMethodActivity result
+    private var isWaitingForAddPaymentMethodResult = false
+
     // Cache for schema data by payment method type
     @VisibleForTesting
     internal val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData?>()
@@ -220,6 +223,11 @@ internal class PaymentMethodsViewModel(
     }
 
     fun fetchPaymentMethodsAndConsents() = viewModelScope.launch {
+        // Only fetch payment methods if we're not waiting for a result
+        if (isWaitingForAddPaymentMethodResult) {
+            return@launch
+        }
+
         val result = fetchAvailablePaymentMethodsAndConsents()
         result.fold(onSuccess = { methodsAndConsents ->
             val availableMethodTypes = methodsAndConsents.first
@@ -231,8 +239,11 @@ internal class PaymentMethodsViewModel(
                 availableMethodTypes.getSinglePaymentMethodOrNull(availablePaymentConsents)
             // only one payment method and it's Card.
             if (singleCardPaymentMethod != null) {
-                _paymentMethodResult.value =
-                    PaymentMethodResult.Skip(singleCardPaymentMethod.cardSchemes ?: emptyList())
+                // Only skip to AddPaymentMethodActivity if not already waiting for result
+                if (!isWaitingForAddPaymentMethodResult) {
+                    _paymentMethodResult.value =
+                        PaymentMethodResult.Skip(singleCardPaymentMethod.cardSchemes ?: emptyList())
+                }
             } else {
                 _paymentMethodResult.value = PaymentMethodResult.Show(
                     Pair(
@@ -504,6 +515,20 @@ internal class PaymentMethodsViewModel(
 
     fun appendParamsToMapForSchemaSubmission(map: Map<String, String>): Map<String, String> {
         return map + additionalParams
+    }
+
+    /**
+     * Sets the flag indicating we're waiting for AddPaymentMethodActivity result
+     */
+    fun setWaitingForAddPaymentMethodResult(waiting: Boolean) {
+        isWaitingForAddPaymentMethodResult = waiting
+    }
+
+    /**
+     * Gets the current state of whether we're waiting for AddPaymentMethodActivity result
+     */
+    fun isWaitingForAddPaymentMethodResult(): Boolean {
+        return isWaitingForAddPaymentMethodResult
     }
 
     internal class Factory(
