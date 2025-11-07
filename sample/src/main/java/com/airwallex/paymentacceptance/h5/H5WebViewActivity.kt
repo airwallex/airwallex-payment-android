@@ -60,8 +60,8 @@ class H5WebViewActivity : AppCompatActivity() {
                     resultMsg: android.os.Message?
                 ): Boolean {
                     // Create a dialog to host the popup WebView
-                    val dialog = Dialog(this@H5WebViewActivity)
-                    dialog.setContentView(android.R.layout.simple_list_item_1)
+                    val dialog = Dialog(this@H5WebViewActivity, android.R.style.Theme_NoTitleBar_Fullscreen)
+                    dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
                     val newWebView = WebView(this@H5WebViewActivity)
                     newWebView.layoutParams = ViewGroup.LayoutParams(
@@ -120,7 +120,7 @@ class H5WebViewActivity : AppCompatActivity() {
                         newWebView.destroy()
                     }
 
-                    val transport = resultMsg?.obj as? android.webkit.WebView.WebViewTransport
+                    val transport = resultMsg?.obj as? WebView.WebViewTransport
                     transport?.webView = newWebView
                     resultMsg?.sendToTarget()
                     return true
