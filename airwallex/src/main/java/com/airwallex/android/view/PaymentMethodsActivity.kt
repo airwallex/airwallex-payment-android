@@ -64,6 +64,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setLoadingProgress(loading = true, cancelable = false)
+
         viewModel.updateActivity(this)
         viewModel.fetchPaymentMethodsAndConsents()
     }
@@ -84,7 +85,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 }
 
                 is PaymentMethodsViewModel.PaymentMethodResult.Skip -> {
-                    startAddPaymentMethod(result.schemes)
+                    // Only start AddPaymentMethodActivity if not already waiting for result
+                    if (!viewModel.isWaitingForAddPaymentMethodResult()) {
+                        startAddPaymentMethod(result.schemes)
+                    }
                 }
             }
         }
@@ -188,10 +192,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     private fun startAddPaymentMethod(cardSchemes: List<CardScheme>) {
+        viewModel.setWaitingForAddPaymentMethodResult(true) // Set flag before launching
         AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity).launchForResult(
             AddPaymentMethodActivityLaunch.Args.Builder().setAirwallexSession(session)
                 .setSupportedCardSchemes(cardSchemes).setSinglePaymentMethod(true).build()
         ) { _, result ->
+            viewModel.setWaitingForAddPaymentMethodResult(false) // Clear flag when result received
             handleAddPaymentMethodActivityResult(result.resultCode, result.data)
         }
     }

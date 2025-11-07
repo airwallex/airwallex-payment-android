@@ -18,6 +18,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.autofill.contentType
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -86,7 +88,12 @@ internal fun AddCardSection(
     var stateErrorMessage by remember { mutableStateOf<Int?>(null) }
     var cityErrorMessage by remember { mutableStateOf<Int?>(null) }
 
-    ScreenView { viewModel.trackScreenViewed(PaymentMethodType.CARD.value, mapOf("subtype" to "card")) }
+    ScreenView {
+        viewModel.trackScreenViewed(
+            PaymentMethodType.CARD.value,
+            mapOf("subtype" to "card")
+        )
+    }
 
     LaunchedEffect(Unit) {
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
@@ -234,7 +241,10 @@ internal fun AddCardSection(
                 .padding(horizontal = 24.dp)
                 .clickable(
                     onClick = {
-                        AirwallexRisk.log(event = "input_card_holder_name", screen = "page_create_card")
+                        AirwallexRisk.log(
+                            event = "input_card_holder_name",
+                            screen = "page_create_card"
+                        )
                     },
                 ),
         )
@@ -269,7 +279,8 @@ internal fun AddCardSection(
                 errorText = cardHolderEmailErrorMessage?.let { stringResource(id = it) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
+                    .padding(horizontal = 24.dp)
+                    .contentType(ContentType.EmailAddress)
             )
         }
 
@@ -332,14 +343,22 @@ internal fun AddCardSection(
                         streetErrorMessage = null
                     },
                     onComplete = { input ->
-                        streetErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STREET)
+                        streetErrorMessage = viewModel.getBillingValidationMessage(
+                            input,
+                            AddPaymentMethodViewModel.BillingFieldType.STREET
+                        )
                         focusManager.moveFocus(FocusDirection.Down)
                     },
                     onFocusLost = { input ->
-                        streetErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STREET)
+                        streetErrorMessage = viewModel.getBillingValidationMessage(
+                            input,
+                            AddPaymentMethodViewModel.BillingFieldType.STREET
+                        )
                     },
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                        .zIndex(1f),
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp)
+                        .zIndex(1f)
+                        .contentType(ContentType.AddressStreet),
                     enabled = !isSameAddressChecked,
                     isError = streetErrorMessage != null,
                     shape = RoundedCornerShape(
@@ -359,15 +378,22 @@ internal fun AddCardSection(
                             stateErrorMessage = null
                         },
                         onComplete = { input ->
-                            stateErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STATE)
+                            stateErrorMessage = viewModel.getBillingValidationMessage(
+                                input,
+                                AddPaymentMethodViewModel.BillingFieldType.STATE
+                            )
                             focusManager.moveFocus(FocusDirection.Right)
                         },
                         onFocusLost = { input ->
-                            stateErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.STATE)
+                            stateErrorMessage = viewModel.getBillingValidationMessage(
+                                input,
+                                AddPaymentMethodViewModel.BillingFieldType.STATE
+                            )
                         },
                         modifier = Modifier
                             .padding(start = 24.dp)
-                            .weight(1f),
+                            .weight(1f)
+                            .contentType(ContentType.AddressRegion),
                         enabled = !isSameAddressChecked,
                         isError = stateErrorMessage != null,
                         shape = RoundedCornerShape(
@@ -385,15 +411,22 @@ internal fun AddCardSection(
                             cityErrorMessage = null
                         },
                         onComplete = { input ->
-                            cityErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.CITY)
+                            cityErrorMessage = viewModel.getBillingValidationMessage(
+                                input,
+                                AddPaymentMethodViewModel.BillingFieldType.CITY
+                            )
                             focusManager.moveFocus(FocusDirection.Down)
                         },
                         onFocusLost = { input ->
-                            cityErrorMessage = viewModel.getBillingValidationMessage(input, AddPaymentMethodViewModel.BillingFieldType.CITY)
+                            cityErrorMessage = viewModel.getBillingValidationMessage(
+                                input,
+                                AddPaymentMethodViewModel.BillingFieldType.CITY
+                            )
                         },
                         modifier = Modifier
                             .padding(end = 24.dp)
-                            .weight(1f),
+                            .weight(1f)
+                            .contentType(ContentType.AddressLocality),
                         enabled = !isSameAddressChecked,
                         isError = cityErrorMessage != null,
                         shape = RoundedCornerShape(
@@ -414,7 +447,9 @@ internal fun AddCardSection(
                     onComplete = { input ->
                         focusManager.moveFocus(FocusDirection.Down)
                     },
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp)
+                        .contentType(ContentType.PostalCode),
                     enabled = !isSameAddressChecked,
                     shape = RoundedCornerShape(
                         topStart = 0.dp,
@@ -433,7 +468,9 @@ internal fun AddCardSection(
                     onComplete = { input ->
                         focusManager.clearFocus()
                     },
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp)
+                        .contentType(ContentType.PhoneNumber),
                     enabled = !isSameAddressChecked,
                     options = StandardTextFieldOptions(
                         inputType = StandardTextFieldOptions.InputType.PHONE,
@@ -447,7 +484,8 @@ internal fun AddCardSection(
                     ),
                 )
 
-                val billingErrorMessage = streetErrorMessage ?: stateErrorMessage ?: cityErrorMessage
+                val billingErrorMessage =
+                    streetErrorMessage ?: stateErrorMessage ?: cityErrorMessage
                 if (billingErrorMessage != null) {
                     Spacer(modifier = Modifier.height(4.dp))
 
@@ -497,14 +535,24 @@ internal fun AddCardSection(
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(cardNumber)
                 expiryDateErrorMessage = viewModel.getExpiryValidationMessage(expiryDate)
                 cvvErrorMessage = viewModel.getCvvValidationMessage(cvv, brand)
-                cardHolderNameErrorMessage = viewModel.getCardHolderNameValidationMessage(cardHolderName)
+                cardHolderNameErrorMessage =
+                    viewModel.getCardHolderNameValidationMessage(cardHolderName)
                 if (viewModel.isEmailRequired) {
                     cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(email)
                 }
                 if (viewModel.isBillingRequired) {
-                    streetErrorMessage = viewModel.getBillingValidationMessage(street, AddPaymentMethodViewModel.BillingFieldType.STREET)
-                    stateErrorMessage = viewModel.getBillingValidationMessage(state, AddPaymentMethodViewModel.BillingFieldType.STATE)
-                    cityErrorMessage = viewModel.getBillingValidationMessage(city, AddPaymentMethodViewModel.BillingFieldType.CITY)
+                    streetErrorMessage = viewModel.getBillingValidationMessage(
+                        street,
+                        AddPaymentMethodViewModel.BillingFieldType.STREET
+                    )
+                    stateErrorMessage = viewModel.getBillingValidationMessage(
+                        state,
+                        AddPaymentMethodViewModel.BillingFieldType.STATE
+                    )
+                    cityErrorMessage = viewModel.getBillingValidationMessage(
+                        city,
+                        AddPaymentMethodViewModel.BillingFieldType.CITY
+                    )
                 }
 
                 val allValidated = listOfNotNull(
@@ -519,7 +567,8 @@ internal fun AddCardSection(
                 ).isEmpty()
                 if (allValidated) {
                     // All fields are valid, so proceed to confirm payment.
-                    val card = viewModel.createCard(cardNumber, cardHolderName, expiryDate, cvv) ?: return@StandardSolidButton
+                    val card = viewModel.createCard(cardNumber, cardHolderName, expiryDate, cvv)
+                        ?: return@StandardSolidButton
                     viewModel.confirmPayment(
                         card = card,
                         saveCard = isSaveCardChecked,

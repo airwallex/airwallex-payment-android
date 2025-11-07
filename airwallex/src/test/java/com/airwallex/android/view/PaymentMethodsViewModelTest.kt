@@ -65,6 +65,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -1259,7 +1260,8 @@ class PaymentMethodsViewModelTest {
         }
 
         // Mock the retrieveAvailablePaymentConsents call
-        coEvery { airwallex.retrieveAvailablePaymentConsents(any()) } returns (paymentConsents ?: createPaymentConsents())
+        coEvery { airwallex.retrieveAvailablePaymentConsents(any()) } returns
+                (paymentConsents ?: createPaymentConsents())
 
         // Mock the disablePaymentConsent call
         coEvery { airwallex.disablePaymentConsent(any(), any()) } coAnswers {
@@ -1665,5 +1667,106 @@ class PaymentMethodsViewModelTest {
 
         // Then
         assertNull(result)
+    }
+
+    // Tests for the new state management functionality
+    @Test
+    fun `test setWaitingForAddPaymentMethodResult sets the flag correctly`() {
+        // Given
+        val viewModel = mockViewModel()
+        assertFalse(viewModel.isWaitingForAddPaymentMethodResult())
+
+        // When
+        viewModel.setWaitingForAddPaymentMethodResult(true)
+
+        // Then
+        assertTrue(viewModel.isWaitingForAddPaymentMethodResult())
+
+        // When
+        viewModel.setWaitingForAddPaymentMethodResult(false)
+
+        // Then
+        assertFalse(viewModel.isWaitingForAddPaymentMethodResult())
+    }
+
+    @Test
+    fun `test fetchPaymentMethodsAndConsents does not execute when waiting for result`() = runTest {
+        // Given
+        val viewModel = mockViewModel()
+        viewModel.setWaitingForAddPaymentMethodResult(true)
+
+        // When
+        viewModel.fetchPaymentMethodsAndConsents()
+        advanceUntilIdle()
+
+        // Then - verify fetchAvailablePaymentMethodsAndConsents was not called
+        coVerify(exactly = 0) { viewModel.fetchAvailablePaymentMethodsAndConsents() }
+    }
+
+    @Test
+    fun `test fetchPaymentMethodsAndConsents executes normally when not waiting for result`() =
+        runTest {
+            // Given
+            val viewModel = mockViewModel()
+            viewModel.setWaitingForAddPaymentMethodResult(false)
+
+            // Mock the fetchAvailablePaymentMethodsAndConsents to return success
+            coEvery { viewModel.fetchAvailablePaymentMethodsAndConsents() } returns Result.success(
+                Pair(createPaymentMethods(TransactionMode.ONE_OFF).items, emptyList())
+            )
+
+            // When
+            viewModel.fetchPaymentMethodsAndConsents()
+            advanceUntilIdle()
+
+            // Then - verify fetchAvailablePaymentMethodsAndConsents was called
+            coVerify(exactly = 1) { viewModel.fetchAvailablePaymentMethodsAndConsents() }
+        }
+
+    @Test
+    fun `test fetchPaymentMethodsAndConsents skip logic respects waiting state`() = runTest {
+        // Given - Create a scenario where we have a single payment method (should normally skip)
+        val availableMethodTypes = createPaymentMethods(TransactionMode.ONE_OFF)
+        val viewModel = mockViewModel()
+
+        // Set waiting for result to true
+        viewModel.setWaitingForAddPaymentMethodResult(true)
+
+        // Mock the fetchAvailablePaymentMethodsAndConsents method to return single payment method
+        coEvery {
+            viewModel.fetchAvailablePaymentMethodsAndConsents()
+        } returns Result.success(Pair(availableMethodTypes.items, emptyList()))
+
+        // Clear previous calls and observe the result
+        val resultData = mutableListOf<PaymentMethodResult>()
+        val observer = Observer<PaymentMethodResult> { result ->
+            resultData.add(result)
+        }
+        viewModel.paymentMethodResult.observeForever(observer)
+
+        try {
+            // When - call fetchPaymentMethodsAndConsents while waiting
+            viewModel.fetchPaymentMethodsAndConsents()
+            advanceUntilIdle()
+
+            // Then - should not have triggered Skip result because we're waiting
+            assertTrue(
+                "No Skip result should be emitted when waiting for result",
+                resultData.none { it is PaymentMethodResult.Skip }
+            )
+
+            // Now set waiting to false and try again
+            viewModel.setWaitingForAddPaymentMethodResult(false)
+            viewModel.fetchPaymentMethodsAndConsents()
+            advanceUntilIdle()
+
+            // Should now emit Skip result
+            assertTrue(
+                "Skip result should be emitted when not waiting",
+                resultData.any { it is PaymentMethodResult.Skip }
+            )
+        } finally {
+            viewModel.paymentMethodResult.removeObserver(observer)
+        }
     }
 }
