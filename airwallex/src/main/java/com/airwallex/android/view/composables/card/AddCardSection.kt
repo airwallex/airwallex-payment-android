@@ -61,6 +61,9 @@ internal fun AddCardSection(
     val expiryFocusRequester = remember { FocusRequester() }
     val cvvFocusRequester = remember { FocusRequester() }
     val nameFocusRequest = remember { FocusRequester() }
+    var allowExpiryFocus by remember { mutableStateOf(false) }
+    var allowCvcFocus by remember { mutableStateOf(false) }
+    var allowNameFocus by remember { mutableStateOf(false) }
 
     // Use ViewModel state flows for data retention across configuration changes
     val brand by viewModel.cardBrand.collectAsState()
@@ -123,6 +126,7 @@ internal fun AddCardSection(
                 .zIndex(1f),
             onComplete = { input ->
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(input)
+                allowExpiryFocus = true
                 expiryFocusRequester.requestFocus()
             },
             onFocusLost = { input ->
@@ -146,10 +150,11 @@ internal fun AddCardSection(
                 },
                 onComplete = { input ->
                     expiryDateErrorMessage = viewModel.getExpiryValidationMessage(input)
+                    allowCvcFocus = true
                     cvvFocusRequester.requestFocus()
                 },
                 modifier = Modifier
-                    .focusRequester(expiryFocusRequester)
+                    .then(if (allowExpiryFocus) Modifier.focusRequester(expiryFocusRequester) else Modifier)
                     .padding(start = 24.dp)
                     .weight(1f),
                 onFocusLost = { input ->
@@ -172,13 +177,14 @@ internal fun AddCardSection(
                 },
                 onComplete = { input ->
                     cvvErrorMessage = viewModel.getCvvValidationMessage(input, brand)
+                    allowNameFocus = true
                     nameFocusRequest.requestFocus()
                 },
                 onFocusLost = { input ->
                     cvvErrorMessage = viewModel.getCvvValidationMessage(input, brand)
                 },
                 modifier = Modifier
-                    .focusRequester(cvvFocusRequester)
+                    .then(if (allowCvcFocus) Modifier.focusRequester(cvvFocusRequester) else Modifier)
                     .padding(end = 24.dp)
                     .weight(1f),
                 isError = cvvErrorMessage != null,
@@ -236,7 +242,7 @@ internal fun AddCardSection(
             },
             errorText = cardHolderNameErrorMessage?.let { stringResource(id = it) },
             modifier = Modifier
-                .focusRequester(nameFocusRequest)
+                .then(if (allowNameFocus) Modifier.focusRequester(nameFocusRequest) else Modifier)
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
                 .clickable(
