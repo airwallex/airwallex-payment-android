@@ -133,7 +133,7 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
     override fun addObserver() {
         super.addObserver()
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
                 mViewModel.airwallexPaymentStatus.collect { status ->
                     handleStatusUpdate(status)
                 }
