@@ -16,6 +16,7 @@ import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import com.airwallex.android.core.AirwallexPlugins.AIRWALLEX_USER_AGENT
 import com.airwallex.paymentacceptance.databinding.ActivityH5WebviewBinding
+import androidx.core.net.toUri
 
 class H5WebViewActivity : AppCompatActivity() {
 
@@ -87,12 +88,13 @@ class H5WebViewActivity : AppCompatActivity() {
                                 url.startsWith("http://weixin/wap/pay") ||
                                 url.startsWith("alipays") ||
                                 url.startsWith("alipayhk") ||
+                                url.startsWith("alipayconnect") ||
                                 url.startsWith("airwallexcheckout")
                             ) {
                                 try {
                                     val intent = Intent()
                                     intent.action = Intent.ACTION_VIEW
-                                    intent.data = Uri.parse(url)
+                                    intent.data = url.toUri()
                                     startActivity(intent)
                                     dialog.dismiss()
                                 } catch (e: ActivityNotFoundException) {
@@ -137,12 +139,13 @@ class H5WebViewActivity : AppCompatActivity() {
                         url.startsWith("http://weixin/wap/pay") ||
                         url.startsWith("alipays") ||
                         url.startsWith("alipayhk") ||
+                        url.startsWith("alipayconnect") ||
                         url.startsWith("airwallexcheckout")
                     ) {
                         try {
                             val intent = Intent()
                             intent.action = Intent.ACTION_VIEW
-                            intent.data = Uri.parse(url)
+                            intent.data = url.toUri()
                             startActivity(intent)
                             finish()
                         } catch (e: ActivityNotFoundException) {
