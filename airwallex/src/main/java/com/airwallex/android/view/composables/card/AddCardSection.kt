@@ -23,6 +23,7 @@ import androidx.compose.ui.autofill.contentType
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -99,7 +100,16 @@ internal fun AddCardSection(
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
     }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .focusTarget()
+            .clickable(
+                interactionSource = null,
+                indication = null
+            ) {
+                focusManager.clearFocus()
+            }
+    ) {
         StandardText(
             text = stringResource(R.string.airwallex_card_information_title),
             textAlign = TextAlign.Left,
