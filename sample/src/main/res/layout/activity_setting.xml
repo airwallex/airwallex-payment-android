@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <FrameLayout
@@ -50,8 +51,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                app:titleContent="Environment"
-                app:layout_constraintTop_toBottomOf="@+id/titleView" />
+                app:layout_constraintTop_toBottomOf="@+id/titleView"
+                app:titleContent="Environment" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -66,16 +67,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                app:titleContent="Next trigger by"
-                app:layout_constraintTop_toBottomOf="@+id/titleView" />
+                app:layout_constraintTop_toBottomOf="@+id/titleView"
+                app:titleContent="Next trigger by" />
 
             <com.airwallex.paymentacceptance.ui.widget.DropdownPickerView
                 android:id="@+id/selectPaymentLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                app:titleContent="Payment layout"
-                app:layout_constraintTop_toBottomOf="@+id/selectViewTrigger" />
+                app:layout_constraintTop_toBottomOf="@+id/selectViewTrigger"
+                app:titleContent="Payment layout" />
 
             <com.airwallex.paymentacceptance.ui.widget.SwitchView
                 android:id="@+id/swEmail"
@@ -152,7 +153,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginBottom="25dp"
-        android:background="#F6F7F8"/>
+        android:background="#F6F7F8" />
 
     <Button
         android:id="@+id/btnSave"

@@ -22,6 +22,7 @@
         <item name="android:actionMenuTextColor">@color/airwallex_menu_text</item>
         <item name="android:windowBackground">@color/airwallex_color_white</item>
         <item name="colorControlActivated">@color/airwallex_tint_color</item>
+        <item name="android:statusBarColor">@color/airwallex_color_white</item>
     </style>
 
     <style name="AirwallexTransparentTheme" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
