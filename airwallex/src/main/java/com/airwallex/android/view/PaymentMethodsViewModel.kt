@@ -93,23 +93,7 @@ internal class PaymentMethodsViewModel(
     }
 
     private val customerId: String? by lazy {
-        when (session) {
-            is AirwallexPaymentSession -> {
-                session.paymentIntent.customerId
-            }
-
-            is AirwallexRecurringWithIntentSession -> {
-                session.paymentIntent.customerId
-            }
-
-            is AirwallexRecurringSession -> {
-                session.customerId
-            }
-
-            else -> {
-                throw Exception("Not supported session $session")
-            }
-        }
+        session.customerId
     }
 
     private val clientSecret: String? by lazy {

@@ -85,8 +85,8 @@ abstract class BaseViewModel : ViewModel() {
 
     internal fun getClientSecretFromSession(session: AirwallexSession): String {
         return when (session) {
-            is AirwallexPaymentSession -> session.paymentIntent.clientSecret ?: ""
-            is AirwallexRecurringWithIntentSession -> session.paymentIntent.clientSecret ?: ""
+            is AirwallexPaymentSession -> session.paymentIntent?.clientSecret ?: ""
+            is AirwallexRecurringWithIntentSession -> session.paymentIntent?.clientSecret ?: ""
             is AirwallexRecurringSession -> session.clientSecret
             else -> ""
         }

@@ -1,12 +1,12 @@
 package com.airwallex.android.threedsecurity
 
-import android.annotation.TargetApi
 import android.graphics.Bitmap
 import android.os.Build
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.annotation.RequiresApi
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.util.BuildHelper
 import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
@@ -36,7 +36,7 @@ abstract class AirwallexWebViewClient(private val callbacks: WebViewClientCallba
         callbacks.onWebViewError(WebViewConnectionException("$errorCode, $description"))
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onReceivedError(
         view: WebView,
         request: WebResourceRequest,
