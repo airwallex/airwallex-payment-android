@@ -5,6 +5,7 @@ import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 import java.math.BigDecimal
 
 /**
@@ -14,9 +15,16 @@ import java.math.BigDecimal
 @Parcelize
 class AirwallexPaymentSession internal constructor(
     /**
-     * the ID of the [PaymentIntent], required.
+     * the ID of the [PaymentIntent], optional when using paymentIntentProvider.
      */
-    val paymentIntent: PaymentIntent,
+    val paymentIntent: PaymentIntent?,
+
+    /**
+     * Provider for asynchronously providing PaymentIntent, optional when paymentIntent is provided.
+     * Note: This field is not parcelable and will be null after parcel/unparcel operations.
+     */
+    @Transient
+    val paymentIntentProvider: @RawValue PaymentIntentProvider? = null,
 
     /**
      * Amount currency. required.
@@ -51,7 +59,7 @@ class AirwallexPaymentSession internal constructor(
     /**
      * The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout).
      */
-    override val customerId: String? = null,
+    override val customerId: String?,
 
     /**
      * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
@@ -82,11 +90,55 @@ class AirwallexPaymentSession internal constructor(
 
 ) : AirwallexSession(), Parcelable {
 
-    class Builder(
-        private val paymentIntent: PaymentIntent,
-        private val countryCode: String,
-        private val googlePayOptions: GooglePayOptions? = null
-    ) : ObjectBuilder<AirwallexPaymentSession> {
+    init {
+        require(paymentIntent != null || paymentIntentProvider != null) {
+            "Either paymentIntent or paymentIntentProvider must be provided"
+        }
+    }
+
+    class Builder : ObjectBuilder<AirwallexPaymentSession> {
+        private var paymentIntent: PaymentIntent? = null
+        private var paymentIntentProvider: PaymentIntentProvider? = null
+        private val countryCode: String
+        private val currency: String
+        private val amount: BigDecimal
+        private var customerId: String? = null
+        private val googlePayOptions: GooglePayOptions?
+
+        /**
+         * Constructor for static PaymentIntent
+         */
+        constructor(
+            paymentIntent: PaymentIntent,
+            countryCode: String,
+            googlePayOptions: GooglePayOptions? = null
+        ) {
+            this.paymentIntent = paymentIntent
+            this.countryCode = countryCode
+            this.currency = paymentIntent.currency
+            this.amount = paymentIntent.amount
+            this.customerId = paymentIntent.customerId
+            this.googlePayOptions = googlePayOptions
+        }
+
+        /**
+         * Constructor for PaymentIntentProvider
+         */
+        constructor(
+            paymentIntentProvider: PaymentIntentProvider,
+            countryCode: String,
+            currency: String,
+            amount: BigDecimal,
+            customerId: String? = null,
+            googlePayOptions: GooglePayOptions? = null
+        ) {
+            this.paymentIntentProvider = paymentIntentProvider
+            this.countryCode = countryCode
+            this.currency = currency
+            this.amount = amount
+            this.customerId = customerId
+            this.googlePayOptions = googlePayOptions
+        }
 
         private var isBillingInformationRequired: Boolean = true
         private var isEmailRequired: Boolean = false
@@ -97,7 +149,7 @@ class AirwallexPaymentSession internal constructor(
         private var shipping: Shipping? = null
 
         init {
-            paymentIntent.clientSecret?.apply {
+            paymentIntent?.clientSecret?.apply {
                 TokenManager.updateClientSecret(this)
             }
         }
@@ -133,13 +185,14 @@ class AirwallexPaymentSession internal constructor(
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
                 paymentIntent = paymentIntent,
-                currency = paymentIntent.currency,
+                paymentIntentProvider = paymentIntentProvider,
+                currency = currency,
                 countryCode = countryCode,
-                amount = paymentIntent.amount,
+                amount = amount,
                 shipping = shipping,
                 isBillingInformationRequired = isBillingInformationRequired,
                 isEmailRequired = isEmailRequired,
-                customerId = paymentIntent.customerId,
+                customerId = customerId,
                 returnUrl = returnUrl,
                 googlePayOptions = googlePayOptions,
                 autoCapture = autoCapture,

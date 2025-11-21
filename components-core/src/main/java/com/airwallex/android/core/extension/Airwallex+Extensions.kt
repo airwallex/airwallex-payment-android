@@ -6,11 +6,15 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.PaymentIntentProvider
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CreatePaymentMethodParams
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.resolvePaymentIntent
 
 @UiThread
 fun Airwallex.createCardPaymentMethod(
@@ -51,12 +55,33 @@ fun Airwallex.createCardPaymentMethod(
                 .build()
         )
     } else {
-        val clientSecret = when (session) {
-            is AirwallexRecurringSession -> session.clientSecret
-            is AirwallexPaymentSession -> session.paymentIntent.clientSecret
-            is AirwallexRecurringWithIntentSession -> session.paymentIntent.clientSecret
-            else -> null
+        when (session) {
+            is AirwallexRecurringSession -> {
+                createPaymentMethod(session.clientSecret)
+            }
+            is AirwallexPaymentSession -> {
+                session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
+                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                        createPaymentMethod(requireNotNull(paymentIntent.clientSecret))
+                    }
+
+                    override fun onError(error: Throwable) {
+                        listener.onFailed(AirwallexCheckoutException(message = error.message, e = error))
+                    }
+                })
+            }
+            is AirwallexRecurringWithIntentSession -> {
+                session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
+                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                        createPaymentMethod(requireNotNull(paymentIntent.clientSecret))
+                    }
+
+                    override fun onError(error: Throwable) {
+                        listener.onFailed(AirwallexCheckoutException(message = error.message, e = error))
+                    }
+                })
+            }
+            else -> listener.onFailed(AirwallexCheckoutException(message = "Unsupported session type"))
         }
-        createPaymentMethod(requireNotNull(clientSecret))
     }
 }

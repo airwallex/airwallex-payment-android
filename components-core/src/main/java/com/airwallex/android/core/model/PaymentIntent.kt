@@ -13,7 +13,7 @@ import java.util.*
  * customer's payment journey.
  */
 @Parcelize
-data class PaymentIntent constructor(
+data class PaymentIntent(
 
     /**
      * Unique identifier for the payment intent

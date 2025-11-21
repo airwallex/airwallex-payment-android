@@ -6,6 +6,7 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 import java.math.BigDecimal
 
 /**
@@ -16,9 +17,16 @@ import java.math.BigDecimal
 class AirwallexRecurringWithIntentSession internal constructor(
 
     /**
-     * the ID of the [PaymentIntent], required.
+     * the ID of the [PaymentIntent], optional when using paymentIntentProvider.
      */
-    val paymentIntent: PaymentIntent,
+    val paymentIntent: PaymentIntent?,
+
+    /**
+     * Provider for asynchronously providing PaymentIntent, optional when paymentIntent is provided.
+     * Note: This field is not parcelable and will be null after parcel/unparcel operations.
+     */
+    @Transient
+    val paymentIntentProvider: @RawValue PaymentIntentProvider? = null,
 
     /**
      * The party to trigger subsequent payments. Can be one of merchant, customer. required.
@@ -95,12 +103,56 @@ class AirwallexRecurringWithIntentSession internal constructor(
     val autoCapture: Boolean = true
 ) : AirwallexSession(), Parcelable {
 
-    class Builder(
-        private val paymentIntent: PaymentIntent,
-        private val customerId: String,
-        private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
+    init {
+        require(paymentIntent != null || paymentIntentProvider != null) {
+            "Either paymentIntent or paymentIntentProvider must be provided"
+        }
+    }
+
+    class Builder : ObjectBuilder<AirwallexRecurringWithIntentSession> {
+        private var paymentIntent: PaymentIntent? = null
+        private var paymentIntentProvider: PaymentIntentProvider? = null
+        private val customerId: String
+        private val nextTriggerBy: PaymentConsent.NextTriggeredBy
         private val countryCode: String
-    ) : ObjectBuilder<AirwallexRecurringWithIntentSession> {
+        private val currency: String
+        private val amount: BigDecimal
+
+        /**
+         * Constructor for static PaymentIntent
+         */
+        constructor(
+            paymentIntent: PaymentIntent,
+            customerId: String,
+            nextTriggerBy: PaymentConsent.NextTriggeredBy,
+            countryCode: String
+        ) {
+            this.paymentIntent = paymentIntent
+            this.customerId = customerId
+            this.nextTriggerBy = nextTriggerBy
+            this.countryCode = countryCode
+            this.currency = paymentIntent.currency
+            this.amount = paymentIntent.amount
+        }
+
+        /**
+         * Constructor for PaymentIntentProvider
+         */
+        constructor(
+            paymentIntentProvider: PaymentIntentProvider,
+            customerId: String,
+            nextTriggerBy: PaymentConsent.NextTriggeredBy,
+            countryCode: String,
+            currency: String,
+            amount: BigDecimal
+        ) {
+            this.paymentIntentProvider = paymentIntentProvider
+            this.customerId = customerId
+            this.nextTriggerBy = nextTriggerBy
+            this.countryCode = countryCode
+            this.currency = currency
+            this.amount = amount
+        }
 
         private var requiresCVC: Boolean = false
         private var isBillingInformationRequired: Boolean = true
@@ -114,7 +166,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
         private var shipping: Shipping? = null
 
         init {
-            paymentIntent.clientSecret?.apply {
+            paymentIntent?.clientSecret?.apply {
                 TokenManager.updateClientSecret(this)
             }
         }
@@ -157,17 +209,15 @@ class AirwallexRecurringWithIntentSession internal constructor(
         }
 
         override fun build(): AirwallexRecurringWithIntentSession {
-            if (paymentIntent.customerId == null) {
-                throw Exception("Customer id is required if the PaymentIntent is created for recurring payment.")
-            }
             return AirwallexRecurringWithIntentSession(
                 paymentIntent = paymentIntent,
+                paymentIntentProvider = paymentIntentProvider,
                 nextTriggerBy = nextTriggerBy,
                 requiresCVC = requiresCVC,
                 customerId = customerId,
-                currency = paymentIntent.currency,
+                currency = currency,
                 countryCode = countryCode,
-                amount = paymentIntent.amount,
+                amount = amount,
                 shipping = shipping,
                 isBillingInformationRequired = isBillingInformationRequired,
                 isEmailRequired = isEmailRequired,

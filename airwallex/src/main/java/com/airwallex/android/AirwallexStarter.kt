@@ -58,7 +58,7 @@ class AirwallexStarter {
                 is AirwallexPaymentSession -> {
                     AnalyticsLogger.setSessionInformation(
                         transactionMode = TransactionMode.ONE_OFF.value,
-                        paymentIntentId = session.paymentIntent.id,
+                        paymentIntentId = session.paymentIntent?.id,
                     )
                 }
                 is AirwallexRecurringSession -> {
@@ -69,7 +69,7 @@ class AirwallexStarter {
                 is AirwallexRecurringWithIntentSession -> {
                     AnalyticsLogger.setSessionInformation(
                         transactionMode = TransactionMode.RECURRING.value,
-                        paymentIntentId = session.paymentIntent.id,
+                        paymentIntentId = session.paymentIntent?.id,
                     )
                 }
             }
