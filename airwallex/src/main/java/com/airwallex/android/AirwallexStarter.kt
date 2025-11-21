@@ -27,6 +27,7 @@ import com.airwallex.android.view.AddPaymentMethodActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
 import com.airwallex.android.core.util.SessionUtils.getIntentId
+import com.airwallex.risk.AirwallexRisk
 
 /**
  *  Entry-point to the Airwallex Payment Flow. Create a AirwallexStarter attached to the given host Activity.
@@ -88,6 +89,7 @@ class AirwallexStarter {
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             setupAnalyticsLogger(session)
+            AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED, "")
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentCardPaymentFlow[$intentId]")
             AddPaymentMethodActivityLaunch(activity)
@@ -228,6 +230,7 @@ class AirwallexStarter {
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             setupAnalyticsLogger(session)
+            AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED, "")
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentPaymentFlow[$intentId]")
             launch.launchForResult(

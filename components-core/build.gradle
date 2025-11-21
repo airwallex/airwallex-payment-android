@@ -35,7 +35,7 @@ dependencies {
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.2"
     implementation "io.github.airwallex:AirTracker:1.1.0"
-    api "io.github.airwallex:RiskSdk:1.0.9"
+    api "io.github.airwallex:RiskSdk:1.1.0"
 
     // test
     testImplementation 'org.json:json:20231013'
