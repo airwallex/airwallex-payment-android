@@ -71,7 +71,7 @@ class AirwallexAddPaymentDialog(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
-        AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED, "")
+        AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
         initDialog()
         initView()
         addListener()

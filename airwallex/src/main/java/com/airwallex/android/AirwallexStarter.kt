@@ -89,7 +89,7 @@ class AirwallexStarter {
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             setupAnalyticsLogger(session)
-            AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED, "")
+            AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentCardPaymentFlow[$intentId]")
             AddPaymentMethodActivityLaunch(activity)
@@ -230,7 +230,7 @@ class AirwallexStarter {
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             setupAnalyticsLogger(session)
-            AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED, "")
+            AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentPaymentFlow[$intentId]")
             launch.launchForResult(
