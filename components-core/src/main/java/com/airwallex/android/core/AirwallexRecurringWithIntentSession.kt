@@ -6,7 +6,6 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
 import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 import java.math.BigDecimal
 
 /**
@@ -22,11 +21,10 @@ class AirwallexRecurringWithIntentSession internal constructor(
     val paymentIntent: PaymentIntent?,
 
     /**
-     * Provider for asynchronously providing PaymentIntent, optional when paymentIntent is provided.
-     * Note: This field is not parcelable and will be null after parcel/unparcel operations.
+     * Internal identifier for the PaymentIntentProvider stored in the repository.
+     * This is set automatically when a PaymentIntentProvider is provided to the builder.
      */
-    @Transient
-    val paymentIntentProvider: @RawValue PaymentIntentProvider? = null,
+    internal val paymentIntentProviderId: String? = null,
 
     /**
      * The party to trigger subsequent payments. Can be one of merchant, customer. required.
@@ -103,8 +101,15 @@ class AirwallexRecurringWithIntentSession internal constructor(
     val autoCapture: Boolean = true
 ) : AirwallexSession(), Parcelable {
 
+    /**
+     * Provider for asynchronously providing PaymentIntent, optional when paymentIntent is provided.
+     * This is automatically managed by the SDK repository.
+     */
+    val paymentIntentProvider: PaymentIntentProvider?
+        get() = paymentIntentProviderId?.let { PaymentIntentProviderRepository.get(it) }
+
     init {
-        require(paymentIntent != null || paymentIntentProvider != null) {
+        require(paymentIntent != null || paymentIntentProviderId != null) {
             "Either paymentIntent or paymentIntentProvider must be provided"
         }
     }
@@ -211,7 +216,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
         override fun build(): AirwallexRecurringWithIntentSession {
             return AirwallexRecurringWithIntentSession(
                 paymentIntent = paymentIntent,
-                paymentIntentProvider = paymentIntentProvider,
+                paymentIntentProviderId = paymentIntentProvider?.let { PaymentIntentProviderRepository.store(it) },
                 nextTriggerBy = nextTriggerBy,
                 requiresCVC = requiresCVC,
                 customerId = customerId,

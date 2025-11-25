@@ -5,7 +5,6 @@ import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
 import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 import java.math.BigDecimal
 
 /**
@@ -20,11 +19,10 @@ class AirwallexPaymentSession internal constructor(
     val paymentIntent: PaymentIntent?,
 
     /**
-     * Provider for asynchronously providing PaymentIntent, optional when paymentIntent is provided.
-     * Note: This field is not parcelable and will be null after parcel/unparcel operations.
+     * Internal identifier for the PaymentIntentProvider stored in the repository.
+     * This is set automatically when a PaymentIntentProvider is provided to the builder.
      */
-    @Transient
-    val paymentIntentProvider: @RawValue PaymentIntentProvider? = null,
+    internal val paymentIntentProviderId: String? = null,
 
     /**
      * Amount currency. required.
@@ -91,7 +89,7 @@ class AirwallexPaymentSession internal constructor(
 ) : AirwallexSession(), Parcelable {
 
     init {
-        require(paymentIntent != null || paymentIntentProvider != null) {
+        require(paymentIntent != null || paymentIntentProviderId != null) {
             "Either paymentIntent or paymentIntentProvider must be provided"
         }
     }
@@ -185,7 +183,7 @@ class AirwallexPaymentSession internal constructor(
         override fun build(): AirwallexPaymentSession {
             return AirwallexPaymentSession(
                 paymentIntent = paymentIntent,
-                paymentIntentProvider = paymentIntentProvider,
+                paymentIntentProviderId = paymentIntentProvider?.let { PaymentIntentProviderRepository.store(it) },
                 currency = currency,
                 countryCode = countryCode,
                 amount = amount,

@@ -20,6 +20,7 @@ import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
+import com.airwallex.paymentacceptance.DemoPaymentIntentProvider
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.force3DS
@@ -165,11 +166,16 @@ class UIIntegrationViewModel : BaseViewModel() {
     ): AirwallexSession {
         return when (Settings.checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
-                //get the paymentIntent object from your server
-                //please do not directly copy this method!
-                val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS)
-                // build an AirwallexPaymentSession based on the paymentIntent
-                buildAirwallexPaymentSession(googlePayOptions, paymentIntent, paymentMethods)
+                if (Settings.expressCheckout == "Enabled") {
+                    // Use PaymentIntentProvider for on-demand payment intent creation
+                    buildAirwallexPaymentSessionWithProvider(googlePayOptions, paymentMethods)
+                } else {
+                    //get the paymentIntent object from your server
+                    //please do not directly copy this method!
+                    val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS)
+                    // build an AirwallexPaymentSession based on the paymentIntent
+                    buildAirwallexPaymentSession(googlePayOptions, paymentIntent, paymentMethods)
+                }
             }
 
             AirwallexCheckoutMode.RECURRING -> {
@@ -187,17 +193,27 @@ class UIIntegrationViewModel : BaseViewModel() {
             }
 
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                //get the customerId and paymentIntent from your server
-                //please do not directly copy these method!
-                val customerId = getCustomerIdFromServer()
-                val paymentIntent =
-                    getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
-                //build an AirwallexRecurringWithIntentSession based on the paymentIntent
-                buildAirwallexRecurringWithIntentSession(
-                    googlePayOptions,
-                    paymentIntent,
-                    paymentMethods
-                )
+                if (Settings.expressCheckout == "Enabled") {
+                    // Get the customerId for the provider, then use PaymentIntentProvider
+                    val customerId = getCustomerIdFromServer()
+                    buildAirwallexRecurringWithIntentSessionWithProvider(
+                        googlePayOptions,
+                        customerId,
+                        paymentMethods
+                    )
+                } else {
+                    //get the customerId and paymentIntent from your server
+                    //please do not directly copy these method!
+                    val customerId = getCustomerIdFromServer()
+                    val paymentIntent =
+                        getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
+                    //build an AirwallexRecurringWithIntentSession based on the paymentIntent
+                    buildAirwallexRecurringWithIntentSession(
+                        googlePayOptions,
+                        paymentIntent,
+                        paymentMethods
+                    )
+                }
             }
         }
     }
@@ -263,6 +279,59 @@ class UIIntegrationViewModel : BaseViewModel() {
         customerId = requireNotNull(paymentIntent.customerId) { "CustomerId is required" },
         nextTriggerBy = nextTriggerBy,
         countryCode = Settings.countryCode
+    )
+        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+        .setReturnUrl(Settings.returnUrl)
+        .setAutoCapture(autoCapture)
+        .setGooglePayOptions(googlePayOptions)
+        .setPaymentMethods(paymentMethods)
+        .setShipping(shipping)
+        .build()
+
+    /**
+     * build an AirwallexPaymentSession using PaymentIntentProvider for Express Checkout
+     */
+    private fun buildAirwallexPaymentSessionWithProvider(
+        googlePayOptions: GooglePayOptions? = null,
+        paymentMethods: List<String>? = listOf()
+    ) = AirwallexPaymentSession.Builder(
+        paymentIntentProvider = DemoPaymentIntentProvider(
+            force3DS = force3DS,
+            customerId = Settings.cachedCustomerId
+        ),
+        countryCode = Settings.countryCode,
+        currency = Settings.currency,
+        amount = BigDecimal.valueOf(Settings.price.toDouble()),
+        customerId = Settings.cachedCustomerId,
+        googlePayOptions = googlePayOptions
+    )
+        .setRequireBillingInformation(true)
+        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setReturnUrl(Settings.returnUrl)
+        .setAutoCapture(autoCapture)
+        .setHidePaymentConsents(false)
+        .setPaymentMethods(paymentMethods)
+        .setShipping(shipping)
+        .build()
+
+    /**
+     * build an AirwallexRecurringWithIntentSession using PaymentIntentProvider for Express Checkout
+     */
+    private fun buildAirwallexRecurringWithIntentSessionWithProvider(
+        googlePayOptions: GooglePayOptions? = null,
+        customerId: String,
+        paymentMethods: List<String>? = listOf()
+    ) = AirwallexRecurringWithIntentSession.Builder(
+        paymentIntentProvider = DemoPaymentIntentProvider(
+            force3DS = force3DS,
+            customerId = customerId
+        ),
+        customerId = customerId,
+        nextTriggerBy = nextTriggerBy,
+        countryCode = Settings.countryCode,
+        currency = Settings.currency,
+        amount = BigDecimal.valueOf(Settings.price.toDouble())
     )
         .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)

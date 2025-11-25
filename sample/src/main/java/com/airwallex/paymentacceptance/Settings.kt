@@ -178,6 +178,16 @@ object Settings {
                 ?: defaultAutoCapture
         }
 
+    var expressCheckout: String
+        set(value) {
+            sharedPreferences.edit()
+                .putString("express_checkout", value)
+                .apply()
+        }
+        get() {
+            return sharedPreferences.getString("express_checkout", "Disabled") ?: "Disabled"
+        }
+
     var apiKey: String
         set(value) {
             sharedPreferences.edit().putString(context.getString(R.string.api_key), value).apply()

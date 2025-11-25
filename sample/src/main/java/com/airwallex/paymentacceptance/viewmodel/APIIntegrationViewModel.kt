@@ -19,6 +19,7 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
+import com.airwallex.paymentacceptance.DemoPaymentIntentProvider
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.nextTriggerBy
@@ -238,15 +239,23 @@ class APIIntegrationViewModel : BaseViewModel() {
     ): AirwallexSession {
         when (Settings.checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
-                //get the customerId from your server.
-                //if you want to save card , customerId is required
-                val customerId = if (saveCard) {
-                    getCustomerIdFromServer()
-                } else null
-                //get the paymentIntent object from your server
-                //please do not directly copy this method!
-                val paymentIntent = getPaymentIntentFromServer(force3DS, customerId)
-                return buildAirwallexPaymentSession(googlePayOptions, paymentIntent)
+                if (Settings.expressCheckout == "Enabled") {
+                    // Express Checkout: Use PaymentIntentProvider
+                    val customerId = if (saveCard) {
+                        getCustomerIdFromServer()
+                    } else null
+                    return buildAirwallexPaymentSessionWithProvider(googlePayOptions, customerId, force3DS)
+                } else {
+                    //get the customerId from your server.
+                    //if you want to save card , customerId is required
+                    val customerId = if (saveCard) {
+                        getCustomerIdFromServer()
+                    } else null
+                    //get the paymentIntent object from your server
+                    //please do not directly copy this method!
+                    val paymentIntent = getPaymentIntentFromServer(force3DS, customerId)
+                    return buildAirwallexPaymentSession(googlePayOptions, paymentIntent)
+                }
             }
 
             AirwallexCheckoutMode.RECURRING -> {
@@ -259,13 +268,19 @@ class APIIntegrationViewModel : BaseViewModel() {
             }
 
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
-                //get the customerId and paymentIntent from your server
-                //please do not directly copy these method!
-                val customerId = getCustomerIdFromServer()
-                val paymentIntent =
-                    getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
-                //build an AirwallexRecurringWithIntentSession based on the paymentIntent
-                return buildAirwallexRecurringWithIntentSession(googlePayOptions, paymentIntent)
+                if (Settings.expressCheckout == "Enabled") {
+                    // Express Checkout: Use PaymentIntentProvider
+                    val customerId = getCustomerIdFromServer()
+                    return buildAirwallexRecurringWithIntentSessionWithProvider(googlePayOptions, customerId, force3DS)
+                } else {
+                    //get the customerId and paymentIntent from your server
+                    //please do not directly copy these method!
+                    val customerId = getCustomerIdFromServer()
+                    val paymentIntent =
+                        getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
+                    //build an AirwallexRecurringWithIntentSession based on the paymentIntent
+                    return buildAirwallexRecurringWithIntentSession(googlePayOptions, paymentIntent)
+                }
             }
         }
     }
@@ -345,5 +360,59 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setGooglePayOptions(googlePayOptions)
             .setShipping(shipping)
             .build()
+
+    /**
+     * build an AirwallexPaymentSession using PaymentIntentProvider for Express Checkout
+     */
+    private fun buildAirwallexPaymentSessionWithProvider(
+        googlePayOptions: GooglePayOptions? = null,
+        customerId: String?,
+        force3DS: Boolean = false
+    ) = AirwallexPaymentSession.Builder(
+        paymentIntentProvider = DemoPaymentIntentProvider(
+            force3DS = force3DS,
+            customerId = customerId
+        ),
+        countryCode = Settings.countryCode,
+        currency = Settings.currency,
+        amount = BigDecimal.valueOf(Settings.price.toDouble()),
+        customerId = customerId,
+        googlePayOptions = googlePayOptions
+    )
+        .setRequireBillingInformation(true)
+        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setReturnUrl(Settings.returnUrl)
+        .setAutoCapture(autoCapture)
+        .setHidePaymentConsents(false)
+        .setPaymentMethods(listOf())
+        .setShipping(shipping)
+        .build()
+
+    /**
+     * build an AirwallexRecurringWithIntentSession using PaymentIntentProvider for Express Checkout
+     */
+    private fun buildAirwallexRecurringWithIntentSessionWithProvider(
+        googlePayOptions: GooglePayOptions? = null,
+        customerId: String,
+        force3DS: Boolean = false
+    ) = AirwallexRecurringWithIntentSession.Builder(
+        paymentIntentProvider = DemoPaymentIntentProvider(
+            force3DS = force3DS,
+            customerId = customerId
+        ),
+        customerId = customerId,
+        nextTriggerBy = nextTriggerBy,
+        countryCode = Settings.countryCode,
+        currency = Settings.currency,
+        amount = BigDecimal.valueOf(Settings.price.toDouble())
+    )
+        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
+        .setReturnUrl(Settings.returnUrl)
+        .setAutoCapture(autoCapture)
+        .setGooglePayOptions(googlePayOptions)
+        .setPaymentMethods(listOf())
+        .setShipping(shipping)
+        .build()
 
 }
