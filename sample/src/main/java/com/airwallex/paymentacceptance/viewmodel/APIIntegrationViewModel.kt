@@ -48,6 +48,9 @@ class APIIntegrationViewModel : BaseViewModel() {
     private val _paymentConsentList = MutableLiveData<List<PaymentConsent>>()
     val paymentConsentList: LiveData<List<PaymentConsent>> = _paymentConsentList
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     override fun init(activity: ComponentActivity) {
         airwallex = Airwallex(activity)
     }
@@ -64,6 +67,7 @@ class APIIntegrationViewModel : BaseViewModel() {
         saveCard: Boolean = true
     ) = run {
         val session = createSession(force3DS = force3DS, saveCard = saveCard)
+        _isLoading.value = true
         airwallex?.confirmPaymentIntent(
             session = session,
             card = card,
@@ -72,6 +76,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     viewModelScope.launch {
+                        _isLoading.value = false
                         _airwallexPaymentStatus.emit(status)
                     }
                 }
@@ -96,6 +101,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     viewModelScope.launch {
+                        _isLoading.value = false
                         _airwallexPaymentStatus.emit(status)
                     }
                 }
@@ -118,12 +124,14 @@ class APIIntegrationViewModel : BaseViewModel() {
      */
     fun startPayByRedirection() = run {
         val session = createSession()
+        _isLoading.value = true
         airwallex?.startRedirectPay(
             session = session,
             paymentMethodName = "alipayhk",
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     viewModelScope.launch {
+                        _isLoading.value = false
                         _airwallexPaymentStatus.emit(status)
                     }
                 }
@@ -138,12 +146,14 @@ class APIIntegrationViewModel : BaseViewModel() {
     fun startPayWithConsent(paymentConsent: PaymentConsent) = run {
         requireNotNull(paymentConsent.id)
         val session = createSession()
+        _isLoading.value = true
         airwallex?.confirmPaymentIntent(
             session = session as AirwallexPaymentSession,
             paymentConsent = paymentConsent,
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     viewModelScope.launch {
+                        _isLoading.value = false
                         _airwallexPaymentStatus.emit(status)
                     }
                 }
@@ -155,6 +165,7 @@ class APIIntegrationViewModel : BaseViewModel() {
      * retrieve the list of payment methods you have.
      */
     fun getPaymentMethodsList() = run {
+        _isLoading.value = true
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
         val googlePayOptions = GooglePayOptions(
             billingAddressRequired = true,
@@ -190,12 +201,14 @@ class APIIntegrationViewModel : BaseViewModel() {
             )
         }
         _paymentMethodList.value = paymentMethods
+        _isLoading.value = false
     }
 
     /**
      * retrieve your list of saved cards.
      */
     fun getPaymentConsentList() = run {
+        _isLoading.value = true
         //get the customerId and clientSecret from your server
         //please do not directly copy these two methods!
         val customerId = getCustomerIdFromServer()
@@ -227,6 +240,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             )
         }
         _paymentConsentList.value = paymentConsents
+        _isLoading.value = false
     }
 
     /**
@@ -237,6 +251,14 @@ class APIIntegrationViewModel : BaseViewModel() {
         saveCard: Boolean = false,
         googlePayOptions: GooglePayOptions? = null,
     ): AirwallexSession {
+        // Only show loading for traditional flows that make API calls
+        val isExpressCheckout = Settings.expressCheckout == "Enabled" &&
+            (Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT ||
+             Settings.checkoutMode == AirwallexCheckoutMode.RECURRING_WITH_INTENT)
+
+        if (!isExpressCheckout) {
+            _isLoading.value = true
+        }
         when (Settings.checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
                 if (Settings.expressCheckout == "Enabled") {

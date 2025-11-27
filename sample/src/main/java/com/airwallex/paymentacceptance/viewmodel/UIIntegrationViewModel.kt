@@ -45,8 +45,15 @@ class UIIntegrationViewModel : BaseViewModel() {
     private val _airwallexShippingStatus = MutableLiveData<AirwallexShippingStatus>()
     val airwallexShippingStatus: LiveData<AirwallexShippingStatus> = _airwallexShippingStatus
 
-    private val _dialogShowed = MutableLiveData<Boolean>()
-    val dialogShowed: LiveData<Boolean> = _dialogShowed
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val googlePayOptions by lazy {
+        GooglePayOptions(
+            billingAddressRequired = true,
+            billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
+        )
+    }
 
     override fun init(activity: ComponentActivity) {
     }
@@ -54,14 +61,23 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * launch the payment list page
      */
-    fun launchPaymentList(activity: ComponentActivity) = run {
+    fun launchPaymentList(activity: ComponentActivity) {
+        // Check if Express Checkout is enabled to determine loading strategy
+        if (Settings.expressCheckout == "Enabled" && Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
+            // Express Checkout: Create session immediately without API calls, no loading needed
+            launchPaymentListExpressCheckout(activity)
+        } else {
+            // Traditional flow: Show loading for API calls
+            launchPaymentListTraditional(activity)
+        }
+    }
+
+    /**
+     * Express Checkout: Launch immediately without loading
+     */
+    private fun launchPaymentListExpressCheckout(activity: ComponentActivity) {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
-        val googlePayOptions = GooglePayOptions(
-            allowedCardAuthMethods = if (force3DS) listOf("PAN_ONLY") else null,
-            billingAddressRequired = true,
-            billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
-        )
-        val session = createSession(googlePayOptions)
+        val session = buildAirwallexPaymentSessionWithProvider(googlePayOptions)
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
@@ -77,16 +93,46 @@ class UIIntegrationViewModel : BaseViewModel() {
     }
 
     /**
+     * Traditional flow: Launch with loading for API calls
+     */
+    private fun launchPaymentListTraditional(activity: ComponentActivity) = run {
+        //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
+        val session = createSession(googlePayOptions)
+        AirwallexStarter.presentEntirePaymentFlow(
+            activity = activity,
+            session = session,
+            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
+            paymentResultListener = object : Airwallex.PaymentResultListener {
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    viewModelScope.launch {
+                        _isLoading.value = false
+                        _airwallexPaymentStatus.emit(status)
+                    }
+                }
+            }
+        )
+    }
+
+    /**
      * launch the payment list page
      * You can customize the payment methods and their order in the payment list through parameters.
      */
-    fun launchCustomPaymentList(activity: ComponentActivity) = run {
+    fun launchCustomPaymentList(activity: ComponentActivity) {
+        if (Settings.expressCheckout == "Enabled" && Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
+            // Express Checkout: Create session immediately without API calls, no loading needed
+            launchCustomPaymentListExpressCheckout(activity)
+        } else {
+            // Traditional flow: Show loading for API calls
+            launchCustomPaymentListTraditional(activity)
+        }
+    }
+
+    /**
+     * Express Checkout: Launch custom payment list immediately without loading
+     */
+    private fun launchCustomPaymentListExpressCheckout(activity: ComponentActivity) {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
-        val googlePayOptions = GooglePayOptions(
-            billingAddressRequired = true,
-            billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
-        )
-        val session = createSession(
+        val session = buildAirwallexPaymentSessionWithProvider(
             googlePayOptions,
             //customize the payment methods and their order
             listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
@@ -106,10 +152,49 @@ class UIIntegrationViewModel : BaseViewModel() {
     }
 
     /**
+     * Traditional flow: Launch custom payment list with loading for API calls
+     */
+    private fun launchCustomPaymentListTraditional(activity: ComponentActivity) = run {
+        //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
+        val session = createSession(
+            googlePayOptions,
+            //customize the payment methods and their order
+            listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
+        )
+        AirwallexStarter.presentEntirePaymentFlow(
+            activity = activity,
+            session = session,
+            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
+            paymentResultListener = object : Airwallex.PaymentResultListener {
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    viewModelScope.launch {
+                        _isLoading.value = false
+                        _airwallexPaymentStatus.emit(status)
+                    }
+                }
+            }
+        )
+    }
+
+    /**
      * launch the card payment page
      */
-    fun launchCardPage(activity: ComponentActivity) = run {
-        val session = createSession()
+    fun launchCardPage(activity: ComponentActivity) {
+        // Check if Express Checkout is enabled to determine loading strategy
+        if (Settings.expressCheckout == "Enabled" && Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
+            // Express Checkout: Create session immediately without API calls, no loading needed
+            launchCardPageExpressCheckout(activity)
+        } else {
+            // Traditional flow: Show loading for API calls
+            launchCardPageTraditional(activity)
+        }
+    }
+
+    /**
+     * Express Checkout: Launch card payment page immediately without loading
+     */
+    private fun launchCardPageExpressCheckout(activity: ComponentActivity) {
+        val session = buildAirwallexPaymentSessionWithProvider()
         AirwallexStarter.presentCardPaymentFlow(
             activity = activity,
             session = session,
@@ -124,9 +209,62 @@ class UIIntegrationViewModel : BaseViewModel() {
     }
 
     /**
+     * Traditional flow: Launch card payment page with loading for API calls
+     */
+    private fun launchCardPageTraditional(activity: ComponentActivity) = run {
+        val session = createSession()
+        AirwallexStarter.presentCardPaymentFlow(
+            activity = activity,
+            session = session,
+            paymentResultListener = object : Airwallex.PaymentResultListener {
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    viewModelScope.launch {
+                        _isLoading.value = false
+                        _airwallexPaymentStatus.emit(status)
+                    }
+                }
+            }
+        )
+    }
+
+    /**
      * launch the card payment dialog
      */
-    fun launchCardDialog(activity: ComponentActivity) = run {
+    fun launchCardDialog(activity: ComponentActivity) {
+        // Check if Express Checkout is enabled to determine loading strategy
+        if (Settings.expressCheckout == "Enabled" && Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
+            // Express Checkout: Create dialog immediately without API calls, no loading needed
+            launchCardDialogExpressCheckout(activity)
+        } else {
+            // Traditional flow: Show loading for API calls
+            launchCardDialogTraditional(activity)
+        }
+    }
+
+    /**
+     * Express Checkout: Launch card payment dialog immediately without loading
+     */
+    private fun launchCardDialogExpressCheckout(activity: ComponentActivity) {
+        val session = buildAirwallexPaymentSessionWithProvider()
+        val dialog = AirwallexAddPaymentDialog(
+            activity = activity,
+            session = session,
+            paymentResultListener = object : Airwallex.PaymentResultListener {
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    _isLoading.value = false
+                    viewModelScope.launch {
+                        _airwallexPaymentStatus.emit(status)
+                    }
+                }
+            }
+        )
+        dialog.show()
+    }
+
+    /**
+     * Traditional flow: Launch card payment dialog with loading for API calls
+     */
+    private fun launchCardDialogTraditional(activity: ComponentActivity) = run {
         val session = createSession()
         val dialog = AirwallexAddPaymentDialog(
             activity = activity,
@@ -140,7 +278,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             }
         )
         dialog.show()
-        _dialogShowed.value = true
     }
 
     /**
@@ -164,6 +301,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         googlePayOptions: GooglePayOptions? = null,
         paymentMethods: List<String>? = listOf()
     ): AirwallexSession {
+        _isLoading.value = true
         return when (Settings.checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
                 if (Settings.expressCheckout == "Enabled") {

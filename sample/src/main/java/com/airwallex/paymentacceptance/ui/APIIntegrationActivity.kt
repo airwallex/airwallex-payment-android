@@ -80,7 +80,6 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 DemoCardDialog(this)
                     .setCardInfo(card)
                     .setPayCallBack { card ->
-                        setLoadingProgress(true)
                         mViewModel.startPayWithCardDetail(card, saveCard = false)
                     }.show()
             }
@@ -89,7 +88,6 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 DemoCardDialog(this)
                     .setCardInfo(card)
                     .setPayCallBack { card ->
-                        setLoadingProgress(true)
                         mViewModel.startPayWithCardDetail(card, saveCard = true)
                     }.show()
             }
@@ -98,33 +96,27 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 DemoCardDialog(this)
                     .setCardInfo(card3DS, false)
                     .setPayCallBack { card ->
-                        setLoadingProgress(true)
                         mViewModel.startPayWithCardDetail(card, force3DS = true)
                     }.show()
             }
 
             PAY_WITH_GOOGLE_PAY -> {
-                setLoadingProgress(true)
                 mViewModel.startGooglePay()
             }
 
             GOOGLE_PAY_3DS -> {
-                setLoadingProgress(true)
                 mViewModel.startGooglePay(true)
             }
 
             REDIRECT_PAYMENT -> {
-                setLoadingProgress(true)
                 mViewModel.startPayByRedirection()
             }
 
             GET_PAYMENT_METHODS -> {
-                setLoadingProgress(true)
                 mViewModel.getPaymentMethodsList()
             }
 
             GET_SAVED_CARDS -> {
-                setLoadingProgress(true)
                 mViewModel.getPaymentConsentList()
             }
         }
@@ -139,13 +131,13 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 }
             }
         }
+        mViewModel.isLoading.observe(this) { isLoading ->
+            setLoadingProgress(isLoading)
+        }
         mViewModel.paymentMethodList.observe(this) { list ->
-            setLoadingProgress(false)
             showPaymentMethodList(list)
-
         }
         mViewModel.paymentConsentList.observe(this) { list ->
-            setLoadingProgress(false)
             showPaymentConsentList(list)
         }
     }
@@ -178,7 +170,6 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                         }
                         holder.btnPay.setOnClickListener {
                             mViewModel.startPayWithConsent(item)
-                            setLoadingProgress(true)
                             customerDialog?.dismiss()
                         }
                         setBtnEnabled(
@@ -211,7 +202,6 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
-        setLoadingProgress(false)
         when (status) {
             is AirwallexPaymentStatus.Success -> {
                 Log.d(

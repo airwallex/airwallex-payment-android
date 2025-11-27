@@ -33,8 +33,8 @@ class UIIntegrationActivity :
                 }
             }
         }
-        mViewModel.dialogShowed.observe(this) {
-            setLoadingProgress(false)
+        mViewModel.isLoading.observe(this) { isLoading ->
+            setLoadingProgress(isLoading)
         }
         mViewModel.airwallexShippingStatus.observe(this) {
 
@@ -54,22 +54,18 @@ class UIIntegrationActivity :
     override fun handleBtnClick(id: Int) {
         when (id) {
             LAUNCH_PAYMENT_LIST -> {
-                setLoadingProgress(true)
                 mViewModel.launchPaymentList(this)
             }
 
             LAUNCH_CUSTOM_PAYMENT_LIST -> {
-                setLoadingProgress(true)
                 mViewModel.launchCustomPaymentList(this)
             }
 
             LAUNCH_CARD_PAYMENT -> {
-                setLoadingProgress(true)
                 mViewModel.launchCardPage(this)
             }
 
             LAUNCH_CARD_PAYMENT_DIALOG -> {
-                setLoadingProgress(true)
                 mViewModel.launchCardDialog(this)
             }
 
@@ -81,7 +77,6 @@ class UIIntegrationActivity :
 
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
-        setLoadingProgress(false)
         when (status) {
             is AirwallexPaymentStatus.Success -> {
                 Log.d(
