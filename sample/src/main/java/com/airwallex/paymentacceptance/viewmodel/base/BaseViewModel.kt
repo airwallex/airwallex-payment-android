@@ -14,6 +14,9 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.paymentacceptance.repo.RepositoryProvider
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.util.Collections
@@ -21,16 +24,23 @@ import java.util.concurrent.atomic.AtomicInteger
 
 abstract class BaseViewModel : ViewModel() {
 
-    private val _createPaymentIntentError = MutableLiveData<String>()
-    val createPaymentIntentError: LiveData<String> = _createPaymentIntentError
+    private val _createPaymentIntentError = MutableSharedFlow<String?>()
+    val createPaymentIntentError: SharedFlow<String?> =
+        _createPaymentIntentError.asSharedFlow()
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        if (throwable is HttpException) {
-            _createPaymentIntentError.postValue(
-                throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
-            )
-        } else {
-            _createPaymentIntentError.postValue(throwable.localizedMessage)
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
+        _isLoading.postValue(false)
+        viewModelScope.launch {
+            if (throwable is HttpException) {
+                _createPaymentIntentError.emit(
+                    throwable.response()?.errorBody()?.string() ?: throwable.localizedMessage
+                )
+            } else {
+                _createPaymentIntentError.emit(throwable.localizedMessage)
+            }
         }
     }
 
@@ -92,9 +102,19 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
-    fun run(block: suspend () -> Unit) {
-        viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
+    fun launch(block: suspend () -> Unit) {
+         viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
+            _isLoading.value = true
             block.invoke()
+            _isLoading.value = false
         }
+    }
+
+    fun startLoading() {
+        _isLoading.value = true
+    }
+
+    fun stopLoading() {
+        _isLoading.value = false
     }
 }

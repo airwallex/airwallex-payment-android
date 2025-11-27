@@ -45,9 +45,6 @@ class UIIntegrationViewModel : BaseViewModel() {
     private val _airwallexShippingStatus = MutableLiveData<AirwallexShippingStatus>()
     val airwallexShippingStatus: LiveData<AirwallexShippingStatus> = _airwallexShippingStatus
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-
     private val googlePayOptions by lazy {
         GooglePayOptions(
             billingAddressRequired = true,
@@ -95,7 +92,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * Traditional flow: Launch with loading for API calls
      */
-    private fun launchPaymentListTraditional(activity: ComponentActivity) = run {
+    private fun launchPaymentListTraditional(activity: ComponentActivity) = launch {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
         val session = createSession(googlePayOptions)
         AirwallexStarter.presentEntirePaymentFlow(
@@ -105,7 +102,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     viewModelScope.launch {
-                        _isLoading.value = false
                         _airwallexPaymentStatus.emit(status)
                     }
                 }
@@ -154,7 +150,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * Traditional flow: Launch custom payment list with loading for API calls
      */
-    private fun launchCustomPaymentListTraditional(activity: ComponentActivity) = run {
+    private fun launchCustomPaymentListTraditional(activity: ComponentActivity) = launch {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
         val session = createSession(
             googlePayOptions,
@@ -168,7 +164,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     viewModelScope.launch {
-                        _isLoading.value = false
                         _airwallexPaymentStatus.emit(status)
                     }
                 }
@@ -211,7 +206,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * Traditional flow: Launch card payment page with loading for API calls
      */
-    private fun launchCardPageTraditional(activity: ComponentActivity) = run {
+    private fun launchCardPageTraditional(activity: ComponentActivity) = launch {
         val session = createSession()
         AirwallexStarter.presentCardPaymentFlow(
             activity = activity,
@@ -219,7 +214,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     viewModelScope.launch {
-                        _isLoading.value = false
                         _airwallexPaymentStatus.emit(status)
                     }
                 }
@@ -251,7 +245,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             session = session,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _isLoading.value = false
                     viewModelScope.launch {
                         _airwallexPaymentStatus.emit(status)
                     }
@@ -264,7 +257,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * Traditional flow: Launch card payment dialog with loading for API calls
      */
-    private fun launchCardDialogTraditional(activity: ComponentActivity) = run {
+    private fun launchCardDialogTraditional(activity: ComponentActivity) = launch {
         val session = createSession()
         val dialog = AirwallexAddPaymentDialog(
             activity = activity,
@@ -301,7 +294,6 @@ class UIIntegrationViewModel : BaseViewModel() {
         googlePayOptions: GooglePayOptions? = null,
         paymentMethods: List<String>? = listOf()
     ): AirwallexSession {
-        _isLoading.value = true
         return when (Settings.checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
                 if (Settings.expressCheckout == "Enabled") {

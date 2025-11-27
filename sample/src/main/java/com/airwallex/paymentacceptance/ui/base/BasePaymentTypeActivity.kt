@@ -4,6 +4,9 @@ import android.content.Intent
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.paymentacceptance.R
@@ -13,6 +16,7 @@ import com.airwallex.paymentacceptance.ui.SettingActivity
 import com.airwallex.paymentacceptance.ui.bean.ButtonItem
 import com.airwallex.paymentacceptance.ui.widget.ButtonAdapter
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
+import kotlinx.coroutines.launch
 
 abstract class BasePaymentTypeActivity<VM : BaseViewModel> :
     BasePaymentActivity<ActivityPaymentTypeBinding, VM>() {
@@ -47,12 +51,15 @@ abstract class BasePaymentTypeActivity<VM : BaseViewModel> :
     }
 
     override fun addObserver() {
-        mViewModel.createPaymentIntentError.observe(this) { error ->
-            setLoadingProgress(false)
-            showAlert(
-                getString(R.string.create_payment_intent_failed),
-                error ?: getString(R.string.payment_failed_message)
-            )
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                mViewModel.createPaymentIntentError.collect { error ->
+                    showAlert(
+                        getString(R.string.create_payment_intent_failed),
+                        error ?: getString(R.string.payment_failed_message)
+                    )
+                }
+            }
         }
     }
 
