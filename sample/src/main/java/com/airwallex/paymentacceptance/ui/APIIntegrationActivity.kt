@@ -62,6 +62,7 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
             when (item.id) {
                 PAY_WITH_3DS -> Settings.getEnvironment() != Environment.PRODUCTION// Hide "3DS" in PRODUCTION
                 PAY_WITH_CARD_AND_SAVE -> selectedOption != 1 // Hide "Pay with card and save" in "Recurring" mode
+                GET_PAYMENT_METHODS -> Settings.expressCheckout != "Enabled" // Hide "Get payment methods" when Express Checkout is enabled
                 else -> true
             }
         }
@@ -226,6 +227,17 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 showPaymentCancelled()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh buttons when returning from settings to reflect Express Checkout changes
+        val selectedOption = when (mBinding.dropdownView.currentOption) {
+            "Recurring" -> 1
+            "Recurring and payment" -> 2
+            else -> 0
+        }
+        refreshButtons(selectedOption)
     }
 
     companion object {
