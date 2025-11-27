@@ -1,6 +1,9 @@
 package com.airwallex.android.core
 
 import com.airwallex.android.core.model.PaymentIntent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -8,9 +11,6 @@ import java.util.concurrent.ConcurrentHashMap
  * Interface for providing PaymentIntent objects asynchronously.
  * This allows consumer applications to provide payment intents on demand
  * rather than having to provide them upfront when creating payment sessions.
- *
- * **NO ADDITIONAL INTERFACES REQUIRED**: Consumers only need to implement this interface.
- * The SDK uses an internal repository pattern to manage providers across activity transitions.
  *
  * ## Simple Implementation Example
  * ```kotlin
@@ -50,6 +50,55 @@ interface PaymentIntentProvider {
          * @param error The error that occurred
          */
         fun onError(error: Throwable)
+    }
+}
+
+/**
+ * Modern suspend-based interface for providing PaymentIntent objects.
+ * This is the preferred interface for Kotlin consumers as it provides cleaner async handling.
+ *
+ * ## Kotlin Implementation Example
+ * ```kotlin
+ * class MyPaymentIntentSource(private val apiService: ApiService) : PaymentIntentSource {
+ *     override suspend fun getPaymentIntent(): PaymentIntent {
+ *         return apiService.createPaymentIntent()
+ *     }
+ * }
+ * ```
+ *
+ * ## Java Compatibility
+ * If you need Java compatibility, use the callback-based [PaymentIntentProvider] interface instead.
+ */
+interface PaymentIntentSource {
+    /**
+     * Retrieves a PaymentIntent using suspend functions.
+     * This method should perform any necessary API calls or business logic
+     * to create and return a PaymentIntent.
+     *
+     * @return The PaymentIntent
+     * @throws Exception if unable to retrieve the PaymentIntent
+     */
+    suspend fun getPaymentIntent(): PaymentIntent
+}
+
+/**
+ * Adapter that bridges [PaymentIntentSource] to [PaymentIntentProvider].
+ * This allows modern suspend-based sources to work with callback-based APIs seamlessly.
+ */
+internal class SourceToProviderAdapter(
+    private val source: PaymentIntentSource,
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+) : PaymentIntentProvider {
+
+    override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+        scope.launch {
+            try {
+                val paymentIntent = source.getPaymentIntent()
+                callback.onSuccess(paymentIntent)
+            } catch (error: Throwable) {
+                callback.onError(error)
+            }
+        }
     }
 }
 

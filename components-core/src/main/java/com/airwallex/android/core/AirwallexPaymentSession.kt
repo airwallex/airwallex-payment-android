@@ -138,6 +138,26 @@ class AirwallexPaymentSession internal constructor(
             this.googlePayOptions = googlePayOptions
         }
 
+        /**
+         * Constructor for PaymentIntentSource (modern suspend-based version)
+         */
+        constructor(
+            paymentIntentSource: PaymentIntentSource,
+            countryCode: String,
+            currency: String,
+            amount: BigDecimal,
+            customerId: String? = null,
+            googlePayOptions: GooglePayOptions? = null
+        ) {
+            // Automatically wrap suspend source with callback adapter
+            this.paymentIntentProvider = SourceToProviderAdapter(paymentIntentSource)
+            this.countryCode = countryCode
+            this.currency = currency
+            this.amount = amount
+            this.customerId = customerId
+            this.googlePayOptions = googlePayOptions
+        }
+
         private var isBillingInformationRequired: Boolean = true
         private var isEmailRequired: Boolean = false
         private var returnUrl: String? = null

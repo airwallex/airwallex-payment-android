@@ -19,7 +19,7 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
-import com.airwallex.paymentacceptance.DemoPaymentIntentProvider
+import com.airwallex.paymentacceptance.DemoPaymentIntentSource
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.nextTriggerBy
@@ -391,9 +391,11 @@ class APIIntegrationViewModel : BaseViewModel() {
         customerId: String?,
         force3DS: Boolean = false
     ) = AirwallexPaymentSession.Builder(
-        paymentIntentProvider = DemoPaymentIntentProvider(
+        // You can use paymentIntentSource (Kotlin coroutine pattern) or paymentIntentProvider (Java callback pattern) based on your preference
+        // Example with paymentIntentProvider: paymentIntentProvider = DemoPaymentIntentProvider(force3DS = force3DS, customerId = Settings.cachedCustomerId)
+        paymentIntentSource = DemoPaymentIntentSource(
             force3DS = force3DS,
-            customerId = customerId
+            customerId = Settings.cachedCustomerId
         ),
         countryCode = Settings.countryCode,
         currency = Settings.currency,
@@ -418,9 +420,11 @@ class APIIntegrationViewModel : BaseViewModel() {
         customerId: String,
         force3DS: Boolean = false
     ) = AirwallexRecurringWithIntentSession.Builder(
-        paymentIntentProvider = DemoPaymentIntentProvider(
+        // You can use paymentIntentSource (Kotlin coroutine pattern) or paymentIntentProvider (Java callback pattern) based on your preference
+        // Example with paymentIntentProvider: paymentIntentProvider = DemoPaymentIntentProvider(force3DS = force3DS, customerId = Settings.cachedCustomerId)
+        paymentIntentSource = DemoPaymentIntentSource(
             force3DS = force3DS,
-            customerId = customerId
+            customerId = Settings.cachedCustomerId
         ),
         customerId = customerId,
         nextTriggerBy = nextTriggerBy,

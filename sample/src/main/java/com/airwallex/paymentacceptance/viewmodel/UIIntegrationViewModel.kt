@@ -20,7 +20,7 @@ import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
-import com.airwallex.paymentacceptance.DemoPaymentIntentProvider
+import com.airwallex.paymentacceptance.DemoPaymentIntentSource
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.force3DS
@@ -434,7 +434,9 @@ class UIIntegrationViewModel : BaseViewModel() {
         googlePayOptions: GooglePayOptions? = null,
         paymentMethods: List<String>? = listOf()
     ) = AirwallexPaymentSession.Builder(
-        paymentIntentProvider = DemoPaymentIntentProvider(
+        // You can use paymentIntentSource (Kotlin coroutine pattern) or paymentIntentProvider (Java callback pattern) based on your preference
+        // Example with paymentIntentProvider: paymentIntentProvider = DemoPaymentIntentProvider(force3DS = force3DS, customerId = Settings.cachedCustomerId)
+        paymentIntentSource = DemoPaymentIntentSource(
             force3DS = force3DS,
             customerId = Settings.cachedCustomerId
         ),
@@ -461,9 +463,11 @@ class UIIntegrationViewModel : BaseViewModel() {
         customerId: String,
         paymentMethods: List<String>? = listOf()
     ) = AirwallexRecurringWithIntentSession.Builder(
-        paymentIntentProvider = DemoPaymentIntentProvider(
+        // You can use paymentIntentSource (Kotlin coroutine pattern) or paymentIntentProvider (Java callback pattern) based on your preference
+        // Example with paymentIntentProvider: paymentIntentProvider = DemoPaymentIntentProvider(force3DS = force3DS, customerId = Settings.cachedCustomerId)
+        paymentIntentSource = DemoPaymentIntentSource(
             force3DS = force3DS,
-            customerId = customerId
+            customerId = Settings.cachedCustomerId
         ),
         customerId = customerId,
         nextTriggerBy = nextTriggerBy,
@@ -480,4 +484,3 @@ class UIIntegrationViewModel : BaseViewModel() {
         .setShipping(shipping)
         .build()
 }
-

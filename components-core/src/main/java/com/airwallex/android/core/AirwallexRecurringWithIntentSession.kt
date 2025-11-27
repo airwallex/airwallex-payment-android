@@ -159,6 +159,26 @@ class AirwallexRecurringWithIntentSession internal constructor(
             this.amount = amount
         }
 
+        /**
+         * Constructor for PaymentIntentSource (modern suspend-based version)
+         */
+        constructor(
+            paymentIntentSource: PaymentIntentSource,
+            customerId: String,
+            nextTriggerBy: PaymentConsent.NextTriggeredBy,
+            countryCode: String,
+            currency: String,
+            amount: BigDecimal
+        ) {
+            // Automatically wrap suspend source with callback adapter
+            this.paymentIntentProvider = SourceToProviderAdapter(paymentIntentSource)
+            this.customerId = customerId
+            this.nextTriggerBy = nextTriggerBy
+            this.countryCode = countryCode
+            this.currency = currency
+            this.amount = amount
+        }
+
         private var requiresCVC: Boolean = false
         private var isBillingInformationRequired: Boolean = true
         private var isEmailRequired: Boolean = false
