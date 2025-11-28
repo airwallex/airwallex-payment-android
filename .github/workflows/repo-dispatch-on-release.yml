@@ -1,0 +1,48 @@
+name: Repo Dispatch on Android Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Android SDK version (e.g., 6.3.0)'
+        required: true
+        type: string
+
+jobs:
+  repo-dispatch-on-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.tag }}"
+            ACTION="manual"
+          else
+            VERSION="${{ github.event.release.tag_name }}"
+            ACTION="${{ github.event.action }}"
+          fi
+          echo "tag=$VERSION" >> $GITHUB_OUTPUT
+          echo "action=$ACTION" >> $GITHUB_OUTPUT
+          echo "Dispatching for version: $VERSION (action: $ACTION)"
+      - name: Send repository dispatch to Flutter SDK
+        env:
+          GH_TOKEN: ${{ secrets.SERVICE_ACCOUNT_PAT }}
+        run: |
+          gh api repos/airwallex/airwallex-payment-flutter/dispatches \
+            --method POST \
+            --field event_type='android_release' \
+            --field client_payload[tag]='${{ steps.version.outputs.tag }}' \
+            --field client_payload[action]='${{ steps.version.outputs.action }}'
+
+      - name: Send repository dispatch to React Native SDK
+        env:
+          GH_TOKEN: ${{ secrets.SERVICE_ACCOUNT_PAT }}
+        run: |
+          gh api repos/airwallex/airwallex-payment-react-native/dispatches \
+            --method POST \
+            --field event_type='android_release' \
+            --field client_payload[tag]='${{ steps.version.outputs.tag }}' \
+            --field client_payload[action]='${{ steps.version.outputs.action }}'
