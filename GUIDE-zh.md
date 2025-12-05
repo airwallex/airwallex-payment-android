@@ -498,7 +498,7 @@ airwallex.startRedirectPay(
 ## 测试卡号
 
 详见：
-https://cardinaldocs.atlassian.net/wiki/spaces/CCen/pages/903577725/EMV+3DS+Test+Cases
+https://www.airwallex.com/docs/payments/test-and-go-live/test-card-numbers
 
 ---
 
