@@ -11,6 +11,8 @@ import com.airwallex.paymentacceptance.repo.PACheckoutDemoRepository
  * without callback boilerplate.
  */
 class DemoPaymentIntentSource(
+    override val currency: String = Settings.currency,
+    override val amount: java.math.BigDecimal = Settings.price.toBigDecimal(),
     private val force3DS: Boolean = Settings.force3DS == "True",
     private val customerId: String? = Settings.cachedCustomerId
 ) : PaymentIntentSource {

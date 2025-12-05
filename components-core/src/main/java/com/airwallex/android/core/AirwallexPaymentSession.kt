@@ -125,15 +125,13 @@ class AirwallexPaymentSession internal constructor(
         constructor(
             paymentIntentProvider: PaymentIntentProvider,
             countryCode: String,
-            currency: String,
-            amount: BigDecimal,
             customerId: String? = null,
             googlePayOptions: GooglePayOptions? = null
         ) {
             this.paymentIntentProvider = paymentIntentProvider
             this.countryCode = countryCode
-            this.currency = currency
-            this.amount = amount
+            this.currency = paymentIntentProvider.currency
+            this.amount = paymentIntentProvider.amount
             this.customerId = customerId
             this.googlePayOptions = googlePayOptions
         }
@@ -144,16 +142,14 @@ class AirwallexPaymentSession internal constructor(
         constructor(
             paymentIntentSource: PaymentIntentSource,
             countryCode: String,
-            currency: String,
-            amount: BigDecimal,
             customerId: String? = null,
             googlePayOptions: GooglePayOptions? = null
         ) {
             // Automatically wrap suspend source with callback adapter
             this.paymentIntentProvider = SourceToProviderAdapter(paymentIntentSource)
             this.countryCode = countryCode
-            this.currency = currency
-            this.amount = amount
+            this.currency = paymentIntentSource.currency
+            this.amount = paymentIntentSource.amount
             this.customerId = customerId
             this.googlePayOptions = googlePayOptions
         }

@@ -409,8 +409,6 @@ class APIIntegrationViewModel : BaseViewModel() {
             customerId = Settings.cachedCustomerId
         ),
         countryCode = Settings.countryCode,
-        currency = Settings.currency,
-        amount = BigDecimal.valueOf(Settings.price.toDouble()),
         customerId = customerId,
         googlePayOptions = googlePayOptions
     )
@@ -439,9 +437,7 @@ class APIIntegrationViewModel : BaseViewModel() {
         ),
         customerId = customerId,
         nextTriggerBy = nextTriggerBy,
-        countryCode = Settings.countryCode,
-        currency = Settings.currency,
-        amount = BigDecimal.valueOf(Settings.price.toDouble())
+        countryCode = Settings.countryCode
     )
         .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)

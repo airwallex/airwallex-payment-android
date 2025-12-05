@@ -4,6 +4,7 @@ import com.airwallex.android.core.model.PaymentIntent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -25,6 +26,16 @@ import java.util.concurrent.ConcurrentHashMap
  * The SDK handles all the complexity of passing providers between activities automatically.
  */
 interface PaymentIntentProvider {
+
+    /**
+     * Amount currency. Required for payment session creation.
+     */
+    val currency: String
+
+    /**
+     * Payment amount. This is the order amount you would like to charge your customer. Required for payment session creation.
+     */
+    val amount: BigDecimal
 
     /**
      * Provides a PaymentIntent asynchronously.
@@ -70,6 +81,17 @@ interface PaymentIntentProvider {
  * If you need Java compatibility, use the callback-based [PaymentIntentProvider] interface instead.
  */
 interface PaymentIntentSource {
+
+    /**
+     * Amount currency. Required for payment session creation.
+     */
+    val currency: String
+
+    /**
+     * Payment amount. This is the order amount you would like to charge your customer. Required for payment session creation.
+     */
+    val amount: BigDecimal
+
     /**
      * Retrieves a PaymentIntent using suspend functions.
      * This method should perform any necessary API calls or business logic
@@ -89,6 +111,12 @@ internal class SourceToProviderAdapter(
     private val source: PaymentIntentSource,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : PaymentIntentProvider {
+
+    override val currency: String
+        get() = source.currency
+
+    override val amount: BigDecimal
+        get() = source.amount
 
     override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
         scope.launch {

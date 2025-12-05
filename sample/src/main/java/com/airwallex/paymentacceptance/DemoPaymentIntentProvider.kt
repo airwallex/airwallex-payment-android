@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
  * asynchronously when needed, rather than upfront.
  */
 class DemoPaymentIntentProvider(
+    override val currency: String = Settings.currency,
+    override val amount: java.math.BigDecimal = Settings.price.toBigDecimal(),
     private val force3DS: Boolean = Settings.force3DS == "True",
     private val customerId: String? = Settings.cachedCustomerId
 ) : PaymentIntentProvider {

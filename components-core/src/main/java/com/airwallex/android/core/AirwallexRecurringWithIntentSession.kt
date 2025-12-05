@@ -147,16 +147,14 @@ class AirwallexRecurringWithIntentSession internal constructor(
             paymentIntentProvider: PaymentIntentProvider,
             customerId: String,
             nextTriggerBy: PaymentConsent.NextTriggeredBy,
-            countryCode: String,
-            currency: String,
-            amount: BigDecimal
+            countryCode: String
         ) {
             this.paymentIntentProvider = paymentIntentProvider
             this.customerId = customerId
             this.nextTriggerBy = nextTriggerBy
             this.countryCode = countryCode
-            this.currency = currency
-            this.amount = amount
+            this.currency = paymentIntentProvider.currency
+            this.amount = paymentIntentProvider.amount
         }
 
         /**
@@ -166,17 +164,15 @@ class AirwallexRecurringWithIntentSession internal constructor(
             paymentIntentSource: PaymentIntentSource,
             customerId: String,
             nextTriggerBy: PaymentConsent.NextTriggeredBy,
-            countryCode: String,
-            currency: String,
-            amount: BigDecimal
+            countryCode: String
         ) {
             // Automatically wrap suspend source with callback adapter
             this.paymentIntentProvider = SourceToProviderAdapter(paymentIntentSource)
             this.customerId = customerId
             this.nextTriggerBy = nextTriggerBy
             this.countryCode = countryCode
-            this.currency = currency
-            this.amount = amount
+            this.currency = paymentIntentSource.currency
+            this.amount = paymentIntentSource.amount
         }
 
         private var requiresCVC: Boolean = false
