@@ -476,7 +476,7 @@ To run the example project, you should follow these steps.
 5. Run the `sample` project
 
 ## Test Card Numbers
-https://cardinaldocs.atlassian.net/wiki/spaces/CCen/pages/903577725/EMV+3DS+Test+Cases
+https://www.airwallex.com/docs/payments/test-and-go-live/test-card-numbers
 
 ## Contributing
 We welcome contributions of any kind including new features, bug fixes, and documentation 
