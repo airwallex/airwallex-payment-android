@@ -28,6 +28,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class AirwallexCheckoutViewModelTest {
@@ -299,13 +300,12 @@ class AirwallexCheckoutViewModelTest {
     fun `test suspend function retrievePaymentMethodTypeInfo unsupported session`() = runTest {
         val paymentMethodTypeName = "card"
 
-        val result = try {
-            viewModel.retrievePaymentMethodTypeInfo(paymentMethodTypeName)
-        } catch (e: AirwallexCheckoutException) {
-            e.message
-        }
+        val result = viewModel.retrievePaymentMethodTypeInfo(paymentMethodTypeName)
 
-        assertEquals("Session is not available", result)
+        assertTrue(result.isFailure)
+        assertIs<AirwallexCheckoutException>(result.exceptionOrNull()).apply {
+            assertEquals("Session is not available", message)
+        }
     }
 
     @Test

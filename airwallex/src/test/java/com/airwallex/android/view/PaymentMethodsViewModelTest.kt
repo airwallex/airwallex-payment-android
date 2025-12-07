@@ -1315,7 +1315,6 @@ class PaymentMethodsViewModelTest {
                 every { amount } returns BigDecimal.valueOf(100.01)
                 every { currency } returns "AUD"
                 every { clientSecret } returns secretClient
-                every { customerId } returns "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu"
             }
 
             mockk<AirwallexPaymentSession> {
@@ -1324,6 +1323,7 @@ class PaymentMethodsViewModelTest {
                 every { this@mockk.hidePaymentConsents } returns hidePaymentConsents
                 every { this@mockk.paymentMethods } returns paymentMethods.ifEmpty { listOf("card") }
                 every { googlePayOptions } returns GooglePayOptions()
+                every { customerId } returns "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu"
             }
         }
 
