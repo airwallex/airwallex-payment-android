@@ -348,4 +348,55 @@ class AirwallexCheckoutViewModelTest {
         viewModel.updateActivity(newActivity)
         verify(exactly = 1) { airwallex.updateActivity(newActivity) }
     }
+
+    @Test
+    fun `test retrieveBanks with AirwallexPaymentSession using PaymentIntent`() = runTest {
+        val paymentIntent = mockk<PaymentIntent> {
+            every { clientSecret } returns "test_client_secret"
+        }
+        val session = mockk<AirwallexPaymentSession> {
+            every { countryCode } returns "US"
+            every { this@mockk.paymentIntent } returns paymentIntent
+        }
+
+        val expectedBankResponse = mockk<BankResponse>()
+        val bankListenerSlot = slot<Airwallex.PaymentListener<BankResponse>>()
+
+        every {
+            airwallex.retrieveBanks(any(), capture(bankListenerSlot))
+        } answers {
+            bankListenerSlot.captured.onSuccess(expectedBankResponse)
+        }
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, session)
+        val result = viewModel.retrieveBanks("test_payment_method")
+
+        assertTrue(result.isSuccess)
+        assertEquals(expectedBankResponse, result.getOrNull())
+    }
+
+    @Test
+    fun `test retrievePaymentMethodTypeInfo with AirwallexPaymentSession using PaymentIntent`() = runTest {
+        val paymentIntent = mockk<PaymentIntent> {
+            every { clientSecret } returns "test_client_secret"
+        }
+        val session = mockk<AirwallexPaymentSession> {
+            every { this@mockk.paymentIntent } returns paymentIntent
+        }
+
+        val expectedTypeInfo = mockk<PaymentMethodTypeInfo>()
+        val typeInfoListenerSlot = slot<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+
+        every {
+            airwallex.retrievePaymentMethodTypeInfo(any(), capture(typeInfoListenerSlot))
+        } answers {
+            typeInfoListenerSlot.captured.onSuccess(expectedTypeInfo)
+        }
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, session)
+        val result = viewModel.retrievePaymentMethodTypeInfo("test_payment_method")
+
+        assertTrue(result.isSuccess)
+        assertEquals(expectedTypeInfo, result.getOrNull())
+    }
 }

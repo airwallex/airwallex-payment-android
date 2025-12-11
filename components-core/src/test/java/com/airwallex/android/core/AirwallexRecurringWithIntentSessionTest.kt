@@ -1,6 +1,7 @@
 package com.airwallex.android.core
 
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentFixtures
 import com.airwallex.android.core.model.Shipping
 import io.mockk.every
@@ -101,5 +102,67 @@ class AirwallexRecurringWithIntentSessionTest {
         assertEquals(false, airwallexRecurringWithIntentSession.autoCapture)
         assertNotNull(airwallexRecurringWithIntentSession.paymentMethods)
         assertEquals(airwallexRecurringWithIntentSession.shipping, shipping)
+    }
+
+    @Test
+    fun `build with PaymentIntentProvider`() {
+        val testProvider = TestPaymentIntentProvider(
+            currency = "USD",
+            amount = BigDecimal(50.0)
+        )
+
+        val session = AirwallexRecurringWithIntentSession.Builder(
+            paymentIntentProvider = testProvider,
+            customerId = "test_customer",
+            nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+            countryCode = "US"
+        ).build()
+
+        assertNotNull(session)
+        assertEquals("USD", session.currency)
+        assertEquals(BigDecimal(50.0), session.amount)
+        assertEquals("test_customer", session.customerId)
+        assertEquals(PaymentConsent.NextTriggeredBy.CUSTOMER, session.nextTriggerBy)
+        assertNotNull(session.paymentIntentProviderId)
+    }
+
+    @Test
+    fun `build with PaymentIntentSource`() {
+        val testSource = TestPaymentIntentSource(
+            currency = "EUR",
+            amount = BigDecimal(75.0)
+        )
+
+        val session = AirwallexRecurringWithIntentSession.Builder(
+            paymentIntentSource = testSource,
+            customerId = "test_customer_de",
+            nextTriggerBy = PaymentConsent.NextTriggeredBy.MERCHANT,
+            countryCode = "DE"
+        ).build()
+
+        assertNotNull(session)
+        assertEquals("EUR", session.currency)
+        assertEquals(BigDecimal(75.0), session.amount)
+        assertEquals("test_customer_de", session.customerId)
+        assertEquals(PaymentConsent.NextTriggeredBy.MERCHANT, session.nextTriggerBy)
+        assertNotNull(session.paymentIntentProviderId)
+    }
+
+    private class TestPaymentIntentProvider(
+        override val currency: String,
+        override val amount: BigDecimal
+    ) : PaymentIntentProvider {
+        override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+            callback.onSuccess(PaymentIntentFixtures.PAYMENT_INTENT)
+        }
+    }
+
+    private class TestPaymentIntentSource(
+        override val currency: String,
+        override val amount: BigDecimal
+    ) : PaymentIntentSource {
+        override suspend fun getPaymentIntent(): PaymentIntent {
+            return PaymentIntentFixtures.PAYMENT_INTENT
+        }
     }
 }
