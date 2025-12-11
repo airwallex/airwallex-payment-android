@@ -1,5 +1,8 @@
 package com.airwallex.android.core
 
+import android.app.Activity
+import android.app.Application
+import android.os.Bundle
 import com.airwallex.android.core.model.PaymentIntent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -131,15 +134,56 @@ internal class SourceToProviderAdapter(
 }
 
 /**
- * Internal repository for managing PaymentIntentProvider instances across activity transitions.
+ * Internal repository for managing PaymentIntentProvider instances scoped to Activity lifecycle.
  * This uses the same pattern as AirwallexActivityLaunch to store providers in memory
- * and pass only identifiers between activities.
+ * and pass only identifiers between activities. Providers are automatically cleaned up
+ * when the host Activity is destroyed.
  */
 internal object PaymentIntentProviderRepository {
+    private var isInitialized = false
+
+    // Maps provider IDs to their PaymentIntentProvider instances
     private val providers = ConcurrentHashMap<String, PaymentIntentProvider>()
+
+    // Maps Activity class names to their provider IDs for cleanup (survives configuration changes)
+    private val activityProvidersMap = ConcurrentHashMap<String, MutableSet<String>>()
+
+    /**
+     * Initializes the repository with Activity lifecycle callbacks.
+     * Should be called during Application initialization.
+     */
+    fun initialize(application: Application) {
+        if (isInitialized) return
+        isInitialized = true
+
+        application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityStarted(activity: Activity) {}
+            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivityStopped(activity: Activity) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+            override fun onActivityDestroyed(activity: Activity) {
+                // Only clean up providers if the Activity is finishing (not just configuration change)
+                if (activity.isFinishing) {
+                    val activityKey = activity.javaClass.name
+                    activityProvidersMap[activityKey]?.forEach { providerId ->
+                        providers.remove(providerId)
+                    }
+                    activityProvidersMap.remove(activityKey)
+                }
+            }
+        })
+    }
 
     /**
      * Stores a provider and returns its unique identifier.
+     * The provider is stored globally first, then should be bound to an Activity
+     * using bindToActivity() when the host Activity is known.
+     *
+     * @param provider The PaymentIntentProvider to store
+     * @return Unique identifier for the stored provider
      */
     fun store(provider: PaymentIntentProvider): String {
         val id = UUID.randomUUID().toString()
@@ -148,24 +192,40 @@ internal object PaymentIntentProviderRepository {
     }
 
     /**
+     * Binds a stored provider to an Activity lifecycle.
+     * The provider will be automatically cleaned up when the Activity is destroyed.
+     * This should be called when the session is used with a known Activity.
+     * Can be called multiple times with different Activity instances of the same class
+     * (e.g., after configuration changes) - the binding will persist.
+     *
+     * @param providerId The provider identifier returned from store()
+     * @param activity The host Activity that owns this provider
+     */
+    fun bindToActivity(providerId: String, activity: Activity) {
+        if (providers.containsKey(providerId)) {
+            val activityKey = activity.javaClass.name
+            activityProvidersMap.getOrPut(activityKey) { ConcurrentHashMap.newKeySet() }.add(providerId)
+        }
+    }
+
+    /**
      * Retrieves a provider by its identifier.
      */
     fun get(id: String): PaymentIntentProvider? {
         return providers[id]
     }
+}
 
-    /**
-     * Removes a provider from storage when no longer needed.
-     */
-    fun remove(id: String) {
-        providers.remove(id)
-    }
-
-    /**
-     * Clears all stored providers. Used for testing or memory management.
-     */
-    internal fun clear() {
-        providers.clear()
+/**
+ * Binds this session's PaymentIntentProvider to an Activity lifecycle.
+ * This ensures the provider is cleaned up when the Activity is destroyed.
+ * Should be called once when the session starts being used with a specific Activity.
+ *
+ * @param activity The host Activity that will own this session's provider
+ */
+fun AirwallexPaymentSession.bindToActivity(activity: Activity) {
+    paymentIntentProviderId?.let { providerId ->
+        PaymentIntentProviderRepository.bindToActivity(providerId, activity)
     }
 }
 
@@ -190,6 +250,19 @@ fun AirwallexPaymentSession.resolvePaymentIntent(callback: PaymentIntentProvider
 }
 
 /**
+ * Binds this session's PaymentIntentProvider to an Activity lifecycle.
+ * This ensures the provider is cleaned up when the Activity is destroyed.
+ * Should be called once when the session starts being used with a specific Activity.
+ *
+ * @param activity The host Activity that will own this session's provider
+ */
+fun AirwallexRecurringWithIntentSession.bindToActivity(activity: Activity) {
+    paymentIntentProviderId?.let { providerId ->
+        PaymentIntentProviderRepository.bindToActivity(providerId, activity)
+    }
+}
+
+/**
  * Extension function to resolve PaymentIntent from recurring session.
  * If paymentIntent is available, calls callback immediately.
  * If paymentIntentProviderId is available, retrieves the provider and uses it to get the intent asynchronously.
@@ -206,5 +279,19 @@ fun AirwallexRecurringWithIntentSession.resolvePaymentIntent(callback: PaymentIn
             }
         }
         else -> callback.onError(IllegalStateException("Neither paymentIntent nor paymentIntentProvider available"))
+    }
+}
+
+/**
+ * Binds an AirwallexSession's PaymentIntentProvider to an Activity lifecycle.
+ * This is a convenience function that handles all session types.
+ *
+ * @param activity The host Activity that will own this session's provider
+ */
+fun AirwallexSession.bindToActivity(activity: Activity) {
+    when (this) {
+        is AirwallexPaymentSession -> this.bindToActivity(activity)
+        is AirwallexRecurringWithIntentSession -> this.bindToActivity(activity)
+        // AirwallexRecurringSession doesn't use PaymentIntentProvider
     }
 }

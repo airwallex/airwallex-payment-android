@@ -200,6 +200,9 @@ class Airwallex internal constructor(
         saveCard: Boolean = false,
         listener: PaymentResultListener
     ) {
+        // Bind session's PaymentIntentProvider to this Activity's lifecycle
+        session.bindToActivity(activity)
+
         setupAnalyticsLogger(session)
         createCardPaymentMethod(
             session = session,
@@ -231,6 +234,9 @@ class Airwallex internal constructor(
         paymentConsent: PaymentConsent,
         listener: PaymentResultListener
     ) {
+        // Bind session's PaymentIntentProvider to this Activity's lifecycle
+        session.bindToActivity(activity)
+
         setupAnalyticsLogger(session)
         val paymentMethod = paymentConsent.paymentMethod
         val paymentConsentId = paymentConsent.id
@@ -288,6 +294,9 @@ class Airwallex internal constructor(
         paymentConsentId: String,
         listener: PaymentResultListener
     ) {
+        // Bind session's PaymentIntentProvider to this Activity's lifecycle
+        session.bindToActivity(activity)
+
         setupAnalyticsLogger(session)
         session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
             override fun onSuccess(paymentIntent: PaymentIntent) {
@@ -321,6 +330,9 @@ class Airwallex internal constructor(
         session: AirwallexSession,
         listener: PaymentResultListener
     ) {
+        // Bind session's PaymentIntentProvider to this Activity's lifecycle
+        session.bindToActivity(activity)
+
         setupAnalyticsLogger(session)
         val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
         if (googlePayProvider != null) {
@@ -723,6 +735,9 @@ class Airwallex internal constructor(
         flow: AirwallexPaymentRequestFlow? = AirwallexPaymentRequestFlow.IN_APP,
         listener: PaymentResultListener,
     ) {
+        // Bind session's PaymentIntentProvider to this Activity's lifecycle
+        session.bindToActivity(activity)
+
         setupAnalyticsLogger(session)
         if (AirwallexPlugins.getProvider(ActionComponentProviderType.REDIRECT) == null) {
             listener.onCompleted(
@@ -1572,6 +1587,7 @@ class Airwallex internal constructor(
             application: Application,
             configuration: AirwallexConfiguration
         ) {
+            PaymentIntentProviderRepository.initialize(application)
             AirwallexPlugins.initialize(configuration)
             initializeComponents(application, configuration.supportComponentProviders)
             AirwallexLogger.initialize(
