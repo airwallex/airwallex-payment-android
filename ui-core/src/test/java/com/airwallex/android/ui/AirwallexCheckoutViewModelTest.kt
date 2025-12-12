@@ -399,4 +399,45 @@ class AirwallexCheckoutViewModelTest {
         assertTrue(result.isSuccess)
         assertEquals(expectedTypeInfo, result.getOrNull())
     }
+
+    @Test
+    fun `test retrievePaymentMethodTypeInfo with AirwallexRecurringWithIntentSession resolvePaymentIntent success`() = runTest {
+        val paymentIntent = mockk<PaymentIntent> {
+            every { clientSecret } returns "test_recurring_client_secret"
+        }
+        val session = mockk<AirwallexRecurringWithIntentSession> {
+            every { this@mockk.paymentIntent } returns paymentIntent
+        }
+
+        val expectedTypeInfo = mockk<PaymentMethodTypeInfo>()
+        val typeInfoListenerSlot = slot<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+
+        every {
+            airwallex.retrievePaymentMethodTypeInfo(any(), capture(typeInfoListenerSlot))
+        } answers {
+            typeInfoListenerSlot.captured.onSuccess(expectedTypeInfo)
+        }
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, session)
+        val result = viewModel.retrievePaymentMethodTypeInfo("test_payment_method")
+
+        assertTrue(result.isSuccess)
+        assertEquals(expectedTypeInfo, result.getOrNull())
+    }
+
+    @Test
+    fun `test retrievePaymentMethodTypeInfo with AirwallexRecurringWithIntentSession resolvePaymentIntent error`() = runTest {
+        val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true) {
+            every { paymentIntent } returns null
+            every { paymentIntentProvider } returns null
+        }
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, session)
+        val result = viewModel.retrievePaymentMethodTypeInfo("test_payment_method")
+
+        assertTrue(result.isFailure)
+        assertIs<AirwallexCheckoutException>(result.exceptionOrNull()).apply {
+            assertEquals("PaymentIntentProvider not found in repository. Provider may have been garbage collected.", message)
+        }
+    }
 }

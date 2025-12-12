@@ -240,7 +240,16 @@ fun AirwallexPaymentSession.resolvePaymentIntent(callback: PaymentIntentProvider
         paymentIntentProviderId != null -> {
             val provider = PaymentIntentProviderRepository.get(paymentIntentProviderId)
             if (provider != null) {
-                provider.provide(callback)
+                provider.provide(object : PaymentIntentProvider.PaymentIntentCallback {
+                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                        paymentIntent.clientSecret?.let { TokenManager.updateClientSecret(it) }
+                        callback.onSuccess(paymentIntent)
+                    }
+
+                    override fun onError(error: Throwable) {
+                        callback.onError(error)
+                    }
+                })
             } else {
                 callback.onError(IllegalStateException("PaymentIntentProvider not found in repository. Provider may have been garbage collected."))
             }
@@ -273,7 +282,16 @@ fun AirwallexRecurringWithIntentSession.resolvePaymentIntent(callback: PaymentIn
         paymentIntentProviderId != null -> {
             val provider = PaymentIntentProviderRepository.get(paymentIntentProviderId)
             if (provider != null) {
-                provider.provide(callback)
+                provider.provide(object : PaymentIntentProvider.PaymentIntentCallback {
+                    override fun onSuccess(paymentIntent: PaymentIntent) {
+                        paymentIntent.clientSecret?.let { TokenManager.updateClientSecret(it) }
+                        callback.onSuccess(paymentIntent)
+                    }
+
+                    override fun onError(error: Throwable) {
+                        callback.onError(error)
+                    }
+                })
             } else {
                 callback.onError(IllegalStateException("PaymentIntentProvider not found in repository. Provider may have been garbage collected."))
             }

@@ -277,6 +277,28 @@ class PaymentIntentProviderTest {
     }
 
     @Test
+    fun `AirwallexPaymentSession resolvePaymentIntent returns error when provider fails`() {
+        val testException = RuntimeException("Provider error")
+        val errorProvider = object : PaymentIntentProvider {
+            override val currency: String = "USD"
+            override val amount: BigDecimal = BigDecimal(50.0)
+            override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+                callback.onError(testException)
+            }
+        }
+        val providerId = PaymentIntentProviderRepository.store(errorProvider)
+        val session = mockk<AirwallexPaymentSession>(relaxed = true)
+        every { session.paymentIntent } returns null
+        every { session.paymentIntentProviderId } returns providerId
+        val (callback, getIntent, getError) = createTestCallback()
+
+        session.resolvePaymentIntent(callback)
+
+        assertNull(getIntent())
+        assertEquals(testException, getError())
+    }
+
+    @Test
     fun `AirwallexPaymentSession resolvePaymentIntent returns error when provider not found`() {
         val session = mockk<AirwallexPaymentSession>(relaxed = true)
         every { session.paymentIntent } returns null
@@ -346,6 +368,83 @@ class PaymentIntentProviderTest {
 
         assertEquals(PaymentIntentFixtures.PAYMENT_INTENT, getIntent())
         assertNull(getError())
+    }
+
+    @Test
+    fun `AirwallexRecurringWithIntentSession resolvePaymentIntent returns error when provider fails`() {
+        val testException = RuntimeException("Provider error")
+        val errorProvider = object : PaymentIntentProvider {
+            override val currency: String = "USD"
+            override val amount: BigDecimal = BigDecimal(50.0)
+            override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+                callback.onError(testException)
+            }
+        }
+        val providerId = PaymentIntentProviderRepository.store(errorProvider)
+        val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true)
+        every { session.paymentIntent } returns null
+        every { session.paymentIntentProviderId } returns providerId
+        val (callback, getIntent, getError) = createTestCallback()
+
+        session.resolvePaymentIntent(callback)
+
+        assertNull(getIntent())
+        assertEquals(testException, getError())
+    }
+
+    @Test
+    fun `AirwallexRecurringWithIntentSession resolvePaymentIntent returns error when provider not found`() {
+        val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true)
+        every { session.paymentIntent } returns null
+        every { session.paymentIntentProviderId } returns "non-existent-id"
+        val (callback, getIntent, getError) = createTestCallback()
+
+        session.resolvePaymentIntent(callback)
+
+        assertNull(getIntent())
+        assertIs<IllegalStateException>(getError()).apply {
+            assertEquals(message?.contains("PaymentIntentProvider not found"), true)
+        }
+    }
+
+    @Test
+    fun `AirwallexRecurringWithIntentSession resolvePaymentIntent returns error when neither intent nor provider available`() {
+        val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true)
+        every { session.paymentIntent } returns null
+        every { session.paymentIntentProviderId } returns null
+        val (callback, getIntent, getError) = createTestCallback()
+
+        session.resolvePaymentIntent(callback)
+
+        assertNull(getIntent())
+        assertIs<IllegalStateException>(getError()).apply {
+            assertEquals(
+                message?.contains("Neither paymentIntent nor paymentIntentProvider available"),
+                true
+            )
+        }
+    }
+
+    @Test
+    fun `PaymentIntentCallback onSuccess is called correctly`() {
+        val testIntent = PaymentIntentFixtures.PAYMENT_INTENT
+        val (callback, getIntent, getError) = createTestCallback()
+
+        callback.onSuccess(testIntent)
+
+        assertEquals(testIntent, getIntent())
+        assertNull(getError())
+    }
+
+    @Test
+    fun `PaymentIntentCallback onError is called correctly`() {
+        val testException = RuntimeException("Test error")
+        val (callback, getIntent, getError) = createTestCallback()
+
+        callback.onError(testException)
+
+        assertNull(getIntent())
+        assertEquals(testException, getError())
     }
 
     @Test

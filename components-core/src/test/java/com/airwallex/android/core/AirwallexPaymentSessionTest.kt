@@ -89,6 +89,25 @@ class AirwallexPaymentSessionTest {
     }
 
     @Test
+    fun `build with PaymentIntentProvider without customerId`() {
+        val testProvider = TestPaymentIntentProvider(
+            currency = "USD",
+            amount = BigDecimal(50.0)
+        )
+
+        val airwallexPaymentSession = AirwallexPaymentSession.Builder(
+            paymentIntentProvider = testProvider,
+            countryCode = "US"
+        ).build()
+
+        assertNotNull(airwallexPaymentSession)
+        assertEquals("USD", airwallexPaymentSession.currency)
+        assertEquals(BigDecimal(50.0), airwallexPaymentSession.amount)
+        assertEquals(null, airwallexPaymentSession.customerId)
+        assertNotNull(airwallexPaymentSession.paymentIntentProviderId)
+    }
+
+    @Test
     fun `build with PaymentIntentSource`() {
         val testSource = TestPaymentIntentSource(
             currency = "EUR",
@@ -105,6 +124,25 @@ class AirwallexPaymentSessionTest {
         assertEquals("EUR", airwallexPaymentSession.currency)
         assertEquals(BigDecimal(75.0), airwallexPaymentSession.amount)
         assertEquals("test_customer_de", airwallexPaymentSession.customerId)
+        assertNotNull(airwallexPaymentSession.paymentIntentProviderId)
+    }
+
+    @Test
+    fun `build with PaymentIntentSource without customerId`() {
+        val testSource = TestPaymentIntentSource(
+            currency = "EUR",
+            amount = BigDecimal(75.0)
+        )
+
+        val airwallexPaymentSession = AirwallexPaymentSession.Builder(
+            paymentIntentSource = testSource,
+            countryCode = "DE"
+        ).build()
+
+        assertNotNull(airwallexPaymentSession)
+        assertEquals("EUR", airwallexPaymentSession.currency)
+        assertEquals(BigDecimal(75.0), airwallexPaymentSession.amount)
+        assertEquals(null, airwallexPaymentSession.customerId)
         assertNotNull(airwallexPaymentSession.paymentIntentProviderId)
     }
 

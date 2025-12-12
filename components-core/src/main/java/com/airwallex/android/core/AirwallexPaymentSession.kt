@@ -14,7 +14,7 @@ import java.math.BigDecimal
 @Parcelize
 class AirwallexPaymentSession internal constructor(
     /**
-     * the ID of the [PaymentIntent], optional when using paymentIntentProvider.
+     * The [PaymentIntent] object, optional when using paymentIntentProvider.
      */
     val paymentIntent: PaymentIntent?,
 

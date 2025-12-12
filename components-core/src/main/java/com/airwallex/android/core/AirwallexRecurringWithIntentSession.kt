@@ -16,7 +16,7 @@ import java.math.BigDecimal
 class AirwallexRecurringWithIntentSession internal constructor(
 
     /**
-     * the ID of the [PaymentIntent], optional when using paymentIntentProvider.
+     * The [PaymentIntent] object, optional when using paymentIntentProvider.
      */
     val paymentIntent: PaymentIntent?,
 
