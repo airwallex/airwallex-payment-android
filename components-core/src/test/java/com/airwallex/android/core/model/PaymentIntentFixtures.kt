@@ -163,6 +163,14 @@ internal object PaymentIntentFixtures {
                 "created_at": "2020-03-30T03:04:00+0000",
                 "updated_at": "2020-03-30T03:04:00+0000",
                 "cancelled_at": "2020-03-30T03:04:00+0000",
+                "failure_details": {
+                    "code": "authentication_declined",
+                    "message": "The user failed authentication.",
+                    "details": {
+                        "original_response_code": "FAILED",
+                        "original_response_message": "Authentication failed"
+                    }
+                },
                 "authentication_data": {
                     "ds_data": {
 				        "version": "2.1.0",

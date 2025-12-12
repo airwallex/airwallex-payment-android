@@ -41,9 +41,9 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
 
     abstract fun getViewModelClass(): Class<VM>
 
-    fun setLoadingProgress(loading: Boolean) {
+    fun setLoadingProgress(loading: Boolean, cancellable: Boolean = false) {
         if (loading) {
-            startWait()
+            startWait(cancellable)
         } else {
             endWait()
         }
@@ -93,8 +93,15 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
             .show()
     }
 
-    private fun startWait() {
+    private fun startWait(cancellable: Boolean = false) {
+        // If dialog already showing, just update cancelable state (reentrant)
         if (dialog?.isShowing == true) {
+            dialog?.setCancelable(cancellable)
+            if (cancellable) {
+                dialog?.setOnCancelListener { onLoadingCancelled() }
+            } else {
+                dialog?.setOnCancelListener(null)
+            }
             return
         }
         if (!isFinishing) {
@@ -109,7 +116,10 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
                         )
                     )
                     window?.setBackgroundDrawableResource(android.R.color.transparent)
-                    setCancelable(false)
+                    setCancelable(cancellable)
+                    if (cancellable) {
+                        setOnCancelListener { onLoadingCancelled() }
+                    }
                     show()
                 }
             } catch (e: Exception) {
@@ -118,6 +128,14 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
         } else {
             dialog = null
         }
+    }
+
+    /**
+     * Called when user presses back while loading dialog is showing.
+     * Override in subclasses to handle cancellation (e.g., stop polling, finish activity).
+     */
+    open fun onLoadingCancelled() {
+        // Default: do nothing
     }
 
     private fun endWait() {

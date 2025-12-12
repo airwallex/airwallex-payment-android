@@ -130,6 +130,10 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
                 },
                 authenticationData = json.optJSONObject(FIELD_AUTHENTICATION_DATA)?.let {
                     PaymentAttemptAuthDataParser().parse(it)
+                },
+                status = AirwallexJsonUtils.optString(json, FIELD_STATUS),
+                failureDetails = json.optJSONObject(FIELD_FAILURE_DETAILS)?.let {
+                    PaymentAttemptFailureDetailsParser().parse(it)
                 }
             )
         }
@@ -144,6 +148,8 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
             private const val FIELD_CREATED_AT = "created_at"
             private const val FIELD_UPDATED_AT = "updated_at"
             private const val FIELD_AUTHENTICATION_DATA = "authentication_data"
+            private const val FIELD_STATUS = "status"
+            private const val FIELD_FAILURE_DETAILS = "failure_details"
         }
     }
 
@@ -211,6 +217,43 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
         private companion object {
             private const val FIELD_ACTION = "action"
             private const val FIELD_SCORE = "score"
+        }
+    }
+
+    internal class PaymentAttemptFailureDetailsParser : ModelJsonParser<PaymentIntent.FailureDetails> {
+
+        override fun parse(json: JSONObject): PaymentIntent.FailureDetails? {
+            val code = AirwallexJsonUtils.optString(json, FIELD_CODE) ?: return null
+            val message = AirwallexJsonUtils.optString(json, FIELD_MESSAGE) ?: return null
+
+            return PaymentIntent.FailureDetails(
+                code = code,
+                message = message,
+                details = json.optJSONObject(FIELD_DETAILS)?.let {
+                    PaymentAttemptFailureDetailsDetailsParser().parse(it)
+                }
+            )
+        }
+
+        private companion object {
+            private const val FIELD_CODE = "code"
+            private const val FIELD_MESSAGE = "message"
+            private const val FIELD_DETAILS = "details"
+        }
+    }
+
+    internal class PaymentAttemptFailureDetailsDetailsParser : ModelJsonParser<PaymentIntent.FailureDetails.Details> {
+
+        override fun parse(json: JSONObject): PaymentIntent.FailureDetails.Details? {
+            return PaymentIntent.FailureDetails.Details(
+                originalResponseCode = AirwallexJsonUtils.optString(json, FIELD_ORIGINAL_RESPONSE_CODE),
+                originalResponseMessage = AirwallexJsonUtils.optString(json, FIELD_ORIGINAL_RESPONSE_MESSAGE)
+            )
+        }
+
+        private companion object {
+            private const val FIELD_ORIGINAL_RESPONSE_CODE = "original_response_code"
+            private const val FIELD_ORIGINAL_RESPONSE_MESSAGE = "original_response_message"
         }
     }
 }

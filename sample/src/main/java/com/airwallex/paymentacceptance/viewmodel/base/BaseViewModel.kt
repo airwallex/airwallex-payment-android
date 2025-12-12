@@ -12,6 +12,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.paymentacceptance.repo.RepositoryProvider
+import com.airwallex.paymentacceptance.repo.ReturnUrl
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -55,9 +56,10 @@ abstract class BaseViewModel : ViewModel() {
      */
     suspend fun getPaymentIntentFromServer(
         force3DS: Boolean = false,
-        customerId: String? = null
+        customerId: String? = null,
+        returnUrl: ReturnUrl
     ): PaymentIntent {
-        return repository.getPaymentIntentFromServer(force3DS, customerId)
+        return repository.getPaymentIntentFromServer(force3DS, customerId, returnUrl)
     }
 
     /**
