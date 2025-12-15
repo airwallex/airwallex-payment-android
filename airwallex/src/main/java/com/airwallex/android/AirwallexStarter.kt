@@ -15,6 +15,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.PaymentMethodsLayoutType
+import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
@@ -91,6 +92,10 @@ class AirwallexStarter {
             AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentCardPaymentFlow[$intentId]")
+
+            // Bind session's PaymentIntentProvider to this Activity's lifecycle
+            session.bindToActivity(activity)
+
             AddPaymentMethodActivityLaunch(activity)
                 .launchForResult(
                     AddPaymentMethodActivityLaunch.Args.Builder()

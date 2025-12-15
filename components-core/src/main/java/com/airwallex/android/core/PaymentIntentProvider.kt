@@ -138,6 +138,12 @@ internal class SourceToProviderAdapter(
  * This uses the same pattern as AirwallexActivityLaunch to store providers in memory
  * and pass only identifiers between activities. Providers are automatically cleaned up
  * when the host Activity is destroyed.
+ *
+ * Multiple activities can share the same provider ID. The provider is only removed when
+ * ALL activities that use it have been destroyed.
+ *
+ * Each activity can only be bound to ONE provider at a time. If an activity binds to a new
+ * provider, it will unbind from the previous one.
  */
 internal object PaymentIntentProviderRepository {
     private var isInitialized = false
@@ -145,8 +151,13 @@ internal object PaymentIntentProviderRepository {
     // Maps provider IDs to their PaymentIntentProvider instances
     private val providers = ConcurrentHashMap<String, PaymentIntentProvider>()
 
-    // Maps Activity class names to their provider IDs for cleanup (survives configuration changes)
-    private val activityProvidersMap = ConcurrentHashMap<String, MutableSet<String>>()
+    // Maps Activity class names to their single provider ID (survives configuration changes)
+    // Each activity can only be bound to one provider at a time
+    private val activityToProviderMap = ConcurrentHashMap<String, String>()
+
+    // Maps provider IDs to the set of activity class names using this provider
+    // When the set becomes empty, the provider is removed
+    private val providerToActivitiesMap = ConcurrentHashMap<String, MutableSet<String>>()
 
     /**
      * Initializes the repository with Activity lifecycle callbacks.
@@ -168,10 +179,17 @@ internal object PaymentIntentProviderRepository {
                 // Only clean up providers if the Activity is finishing (not just configuration change)
                 if (activity.isFinishing) {
                     val activityKey = activity.javaClass.name
-                    activityProvidersMap[activityKey]?.forEach { providerId ->
-                        providers.remove(providerId)
+                    activityToProviderMap[activityKey]?.let { providerId ->
+                        // Remove this activity from the provider's activity set
+                        providerToActivitiesMap[providerId]?.remove(activityKey)
+
+                        // If no more activities are using this provider, remove it
+                        if (providerToActivitiesMap[providerId]?.isEmpty() == true) {
+                            providers.remove(providerId)
+                            providerToActivitiesMap.remove(providerId)
+                        }
                     }
-                    activityProvidersMap.remove(activityKey)
+                    activityToProviderMap.remove(activityKey)
                 }
             }
         })
@@ -188,24 +206,45 @@ internal object PaymentIntentProviderRepository {
     fun store(provider: PaymentIntentProvider): String {
         val id = UUID.randomUUID().toString()
         providers[id] = provider
+        providerToActivitiesMap[id] = ConcurrentHashMap.newKeySet()
         return id
     }
 
     /**
      * Binds a stored provider to an Activity lifecycle.
-     * The provider will be automatically cleaned up when the Activity is destroyed.
-     * This should be called when the session is used with a known Activity.
-     * Can be called multiple times with different Activity instances of the same class
-     * (e.g., after configuration changes) - the binding will persist.
+     * The provider will be automatically cleaned up when ALL activities using it are destroyed.
+     * Each activity can only be bound to ONE provider at a time. If the activity was previously
+     * bound to a different provider, it will be unbound from the old one first.
+     *
+     * This can be called multiple times with the same activity class and provider ID
+     * (e.g., after configuration changes) - subsequent calls with the same provider ID will be ignored.
      *
      * @param providerId The provider identifier returned from store()
      * @param activity The host Activity that owns this provider
      */
     fun bindToActivity(providerId: String, activity: Activity) {
-        if (providers.containsKey(providerId)) {
-            val activityKey = activity.javaClass.name
-            activityProvidersMap.getOrPut(activityKey) { ConcurrentHashMap.newKeySet() }.add(providerId)
+        if (!providers.containsKey(providerId)) return
+
+        val activityKey = activity.javaClass.name
+        val currentProviderId = activityToProviderMap[activityKey]
+
+        // If activity is already bound to this same provider, do nothing
+        if (currentProviderId == providerId) return
+
+        // If activity was bound to a different provider, unbind from the old one first
+        if (currentProviderId != null) {
+            providerToActivitiesMap[currentProviderId]?.remove(activityKey)
+
+            // If no more activities are using the old provider, remove it
+            if (providerToActivitiesMap[currentProviderId]?.isEmpty() == true) {
+                providers.remove(currentProviderId)
+                providerToActivitiesMap.remove(currentProviderId)
+            }
         }
+
+        // Bind to the new provider
+        activityToProviderMap[activityKey] = providerId
+        providerToActivitiesMap[providerId]?.add(activityKey)
     }
 
     /**
@@ -224,7 +263,16 @@ internal object PaymentIntentProviderRepository {
  * @param activity The host Activity that will own this session's provider
  */
 fun AirwallexPaymentSession.bindToActivity(activity: Activity) {
-    paymentIntentProviderId?.let { providerId ->
+    val provider = paymentIntentProvider ?: return
+
+    val providerId = paymentIntentProviderId
+    if (providerId == null) {
+        // Store the provider in the repository and bind to activity
+        val newProviderId = PaymentIntentProviderRepository.store(provider)
+        PaymentIntentProviderRepository.bindToActivity(newProviderId, activity)
+        paymentIntentProviderId = newProviderId
+    } else {
+        // Already stored, just bind to the new activity
         PaymentIntentProviderRepository.bindToActivity(providerId, activity)
     }
 }
@@ -232,30 +280,53 @@ fun AirwallexPaymentSession.bindToActivity(activity: Activity) {
 /**
  * Extension function to resolve PaymentIntent from session.
  * If paymentIntent is available, calls callback immediately.
- * If paymentIntentProviderId is available, retrieves the provider and uses it to get the intent asynchronously.
+ * If paymentIntentProvider is available (transient field), uses it to get the intent asynchronously.
+ * If paymentIntentProviderId is available (after binding), retrieves from repository.
  */
 fun AirwallexPaymentSession.resolvePaymentIntent(callback: PaymentIntentProvider.PaymentIntentCallback) {
-    when {
-        paymentIntent != null -> callback.onSuccess(paymentIntent)
-        paymentIntentProviderId != null -> {
-            val provider = PaymentIntentProviderRepository.get(paymentIntentProviderId)
-            if (provider != null) {
-                provider.provide(object : PaymentIntentProvider.PaymentIntentCallback {
-                    override fun onSuccess(paymentIntent: PaymentIntent) {
-                        paymentIntent.clientSecret?.let { TokenManager.updateClientSecret(it) }
-                        callback.onSuccess(paymentIntent)
-                    }
-
-                    override fun onError(error: Throwable) {
-                        callback.onError(error)
-                    }
-                })
-            } else {
-                callback.onError(IllegalStateException("PaymentIntentProvider not found in repository. Provider may have been garbage collected."))
-            }
-        }
-        else -> callback.onError(IllegalStateException("Neither paymentIntent nor paymentIntentProvider available"))
+    // Check if we have a static PaymentIntent
+    paymentIntent?.let { intent ->
+        callback.onSuccess(intent)
+        return
     }
+
+    // Check if we have a transient provider (before binding)
+    paymentIntentProvider?.let { provider ->
+        provider.provide(object : PaymentIntentProvider.PaymentIntentCallback {
+            override fun onSuccess(paymentIntent: PaymentIntent) {
+                paymentIntent.clientSecret?.let { TokenManager.updateClientSecret(it) }
+                callback.onSuccess(paymentIntent)
+            }
+
+            override fun onError(error: Throwable) {
+                callback.onError(error)
+            }
+        })
+        return
+    }
+
+    // Check if we have a provider ID (after binding)
+    paymentIntentProviderId?.let { providerId ->
+        val provider = PaymentIntentProviderRepository.get(providerId)
+        if (provider != null) {
+            provider.provide(object : PaymentIntentProvider.PaymentIntentCallback {
+                override fun onSuccess(paymentIntent: PaymentIntent) {
+                    paymentIntent.clientSecret?.let { TokenManager.updateClientSecret(it) }
+                    callback.onSuccess(paymentIntent)
+                }
+
+                override fun onError(error: Throwable) {
+                    callback.onError(error)
+                }
+            })
+        } else {
+            callback.onError(IllegalStateException("PaymentIntentProvider not found in repository. Provider may have been garbage collected."))
+        }
+        return
+    }
+
+    // No payment intent or provider available
+    callback.onError(IllegalStateException("Neither paymentIntent nor paymentIntentProvider available"))
 }
 
 /**
@@ -266,7 +337,16 @@ fun AirwallexPaymentSession.resolvePaymentIntent(callback: PaymentIntentProvider
  * @param activity The host Activity that will own this session's provider
  */
 fun AirwallexRecurringWithIntentSession.bindToActivity(activity: Activity) {
-    paymentIntentProviderId?.let { providerId ->
+    val provider = paymentIntentProvider ?: return
+
+    val providerId = paymentIntentProviderId
+    if (providerId == null) {
+        // Store the provider in the repository and bind to activity
+        val newProviderId = PaymentIntentProviderRepository.store(provider)
+        PaymentIntentProviderRepository.bindToActivity(newProviderId, activity)
+        paymentIntentProviderId = newProviderId
+    } else {
+        // Already stored, just bind to the new activity
         PaymentIntentProviderRepository.bindToActivity(providerId, activity)
     }
 }
@@ -274,30 +354,53 @@ fun AirwallexRecurringWithIntentSession.bindToActivity(activity: Activity) {
 /**
  * Extension function to resolve PaymentIntent from recurring session.
  * If paymentIntent is available, calls callback immediately.
- * If paymentIntentProviderId is available, retrieves the provider and uses it to get the intent asynchronously.
+ * If paymentIntentProvider is available (transient field), uses it to get the intent asynchronously.
+ * If paymentIntentProviderId is available (after binding), retrieves from repository.
  */
 fun AirwallexRecurringWithIntentSession.resolvePaymentIntent(callback: PaymentIntentProvider.PaymentIntentCallback) {
-    when {
-        paymentIntent != null -> callback.onSuccess(paymentIntent)
-        paymentIntentProviderId != null -> {
-            val provider = PaymentIntentProviderRepository.get(paymentIntentProviderId)
-            if (provider != null) {
-                provider.provide(object : PaymentIntentProvider.PaymentIntentCallback {
-                    override fun onSuccess(paymentIntent: PaymentIntent) {
-                        paymentIntent.clientSecret?.let { TokenManager.updateClientSecret(it) }
-                        callback.onSuccess(paymentIntent)
-                    }
-
-                    override fun onError(error: Throwable) {
-                        callback.onError(error)
-                    }
-                })
-            } else {
-                callback.onError(IllegalStateException("PaymentIntentProvider not found in repository. Provider may have been garbage collected."))
-            }
-        }
-        else -> callback.onError(IllegalStateException("Neither paymentIntent nor paymentIntentProvider available"))
+    // Check if we have a static PaymentIntent
+    paymentIntent?.let { intent ->
+        callback.onSuccess(intent)
+        return
     }
+
+    // Check if we have a transient provider (before binding)
+    paymentIntentProvider?.let { provider ->
+        provider.provide(object : PaymentIntentProvider.PaymentIntentCallback {
+            override fun onSuccess(paymentIntent: PaymentIntent) {
+                paymentIntent.clientSecret?.let { TokenManager.updateClientSecret(it) }
+                callback.onSuccess(paymentIntent)
+            }
+
+            override fun onError(error: Throwable) {
+                callback.onError(error)
+            }
+        })
+        return
+    }
+
+    // Check if we have a provider ID (after binding)
+    paymentIntentProviderId?.let { providerId ->
+        val provider = PaymentIntentProviderRepository.get(providerId)
+        if (provider != null) {
+            provider.provide(object : PaymentIntentProvider.PaymentIntentCallback {
+                override fun onSuccess(paymentIntent: PaymentIntent) {
+                    paymentIntent.clientSecret?.let { TokenManager.updateClientSecret(it) }
+                    callback.onSuccess(paymentIntent)
+                }
+
+                override fun onError(error: Throwable) {
+                    callback.onError(error)
+                }
+            })
+        } else {
+            callback.onError(IllegalStateException("PaymentIntentProvider not found in repository. Provider may have been garbage collected."))
+        }
+        return
+    }
+
+    // No payment intent or provider available
+    callback.onError(IllegalStateException("Neither paymentIntent nor paymentIntentProvider available"))
 }
 
 /**

@@ -35,11 +35,17 @@ class PaymentIntentProviderTest {
             providersField.get(PaymentIntentProviderRepository) as java.util.concurrent.ConcurrentHashMap<*, *>
         providers.clear()
 
-        val activityProvidersMapField = repositoryClass.getDeclaredField("activityProvidersMap")
-        activityProvidersMapField.isAccessible = true
-        val activityProvidersMap =
-            activityProvidersMapField.get(PaymentIntentProviderRepository) as java.util.concurrent.ConcurrentHashMap<*, *>
-        activityProvidersMap.clear()
+        val activityToProviderMapField = repositoryClass.getDeclaredField("activityToProviderMap")
+        activityToProviderMapField.isAccessible = true
+        val activityToProviderMap =
+            activityToProviderMapField.get(PaymentIntentProviderRepository) as java.util.concurrent.ConcurrentHashMap<*, *>
+        activityToProviderMap.clear()
+
+        val providerToActivitiesMapField = repositoryClass.getDeclaredField("providerToActivitiesMap")
+        providerToActivitiesMapField.isAccessible = true
+        val providerToActivitiesMap =
+            providerToActivitiesMapField.get(PaymentIntentProviderRepository) as java.util.concurrent.ConcurrentHashMap<*, *>
+        providerToActivitiesMap.clear()
     }
 
     // Helper function to create a test callback
@@ -263,10 +269,11 @@ class PaymentIntentProviderTest {
 
     @Test
     fun `AirwallexPaymentSession resolvePaymentIntent uses provider when intent not available`() {
-        val providerId = PaymentIntentProviderRepository.store(createTestProvider())
+        val testProvider = createTestProvider()
         val session = mockk<AirwallexPaymentSession>(relaxed = true)
         every { session.paymentIntent } returns null
-        every { session.paymentIntentProviderId } returns providerId
+        every { session.paymentIntentProvider } returns testProvider
+        every { session.paymentIntentProviderId } returns null
         val (callback, getIntent, getError) = createTestCallback()
 
         session.resolvePaymentIntent(callback)
@@ -286,10 +293,10 @@ class PaymentIntentProviderTest {
                 callback.onError(testException)
             }
         }
-        val providerId = PaymentIntentProviderRepository.store(errorProvider)
         val session = mockk<AirwallexPaymentSession>(relaxed = true)
         every { session.paymentIntent } returns null
-        every { session.paymentIntentProviderId } returns providerId
+        every { session.paymentIntentProvider } returns errorProvider
+        every { session.paymentIntentProviderId } returns null
         val (callback, getIntent, getError) = createTestCallback()
 
         session.resolvePaymentIntent(callback)
@@ -302,6 +309,7 @@ class PaymentIntentProviderTest {
     fun `AirwallexPaymentSession resolvePaymentIntent returns error when provider not found`() {
         val session = mockk<AirwallexPaymentSession>(relaxed = true)
         every { session.paymentIntent } returns null
+        every { session.paymentIntentProvider } returns null
         every { session.paymentIntentProviderId } returns "non-existent-id"
         val (callback, getIntent, getError) = createTestCallback()
 
@@ -317,6 +325,7 @@ class PaymentIntentProviderTest {
     fun `AirwallexPaymentSession resolvePaymentIntent returns error when neither intent nor provider available`() {
         val session = mockk<AirwallexPaymentSession>(relaxed = true)
         every { session.paymentIntent } returns null
+        every { session.paymentIntentProvider } returns null
         every { session.paymentIntentProviderId } returns null
         val (callback, getIntent, getError) = createTestCallback()
 
@@ -358,10 +367,11 @@ class PaymentIntentProviderTest {
 
     @Test
     fun `AirwallexRecurringWithIntentSession resolvePaymentIntent uses provider when intent not available`() {
-        val providerId = PaymentIntentProviderRepository.store(createTestProvider())
+        val testProvider = createTestProvider()
         val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true)
         every { session.paymentIntent } returns null
-        every { session.paymentIntentProviderId } returns providerId
+        every { session.paymentIntentProvider } returns testProvider
+        every { session.paymentIntentProviderId } returns null
         val (callback, getIntent, getError) = createTestCallback()
 
         session.resolvePaymentIntent(callback)
@@ -380,10 +390,10 @@ class PaymentIntentProviderTest {
                 callback.onError(testException)
             }
         }
-        val providerId = PaymentIntentProviderRepository.store(errorProvider)
         val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true)
         every { session.paymentIntent } returns null
-        every { session.paymentIntentProviderId } returns providerId
+        every { session.paymentIntentProvider } returns errorProvider
+        every { session.paymentIntentProviderId } returns null
         val (callback, getIntent, getError) = createTestCallback()
 
         session.resolvePaymentIntent(callback)
@@ -396,6 +406,7 @@ class PaymentIntentProviderTest {
     fun `AirwallexRecurringWithIntentSession resolvePaymentIntent returns error when provider not found`() {
         val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true)
         every { session.paymentIntent } returns null
+        every { session.paymentIntentProvider } returns null
         every { session.paymentIntentProviderId } returns "non-existent-id"
         val (callback, getIntent, getError) = createTestCallback()
 
@@ -411,6 +422,7 @@ class PaymentIntentProviderTest {
     fun `AirwallexRecurringWithIntentSession resolvePaymentIntent returns error when neither intent nor provider available`() {
         val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true)
         every { session.paymentIntent } returns null
+        every { session.paymentIntentProvider } returns null
         every { session.paymentIntentProviderId } returns null
         val (callback, getIntent, getError) = createTestCallback()
 

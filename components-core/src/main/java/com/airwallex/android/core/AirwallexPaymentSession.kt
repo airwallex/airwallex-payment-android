@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
@@ -20,9 +21,9 @@ class AirwallexPaymentSession internal constructor(
 
     /**
      * Internal identifier for the PaymentIntentProvider stored in the repository.
-     * This is set automatically when a PaymentIntentProvider is provided to the builder.
+     * This is set when bindToActivity is called.
      */
-    internal val paymentIntentProviderId: String? = null,
+    internal var paymentIntentProviderId: String? = null,
 
     /**
      * Amount currency. required.
@@ -60,7 +61,7 @@ class AirwallexPaymentSession internal constructor(
     override val customerId: String?,
 
     /**
-     * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
+     * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod's app or site. If you'd prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
      */
     override val returnUrl: String?,
 
@@ -88,11 +89,13 @@ class AirwallexPaymentSession internal constructor(
 
 ) : AirwallexSession(), Parcelable {
 
-    init {
-        require(paymentIntent != null || paymentIntentProviderId != null) {
-            "Either paymentIntent or paymentIntentProvider must be provided"
-        }
-    }
+    /**
+     * PaymentIntentProvider instance. This field is transient and not parceled.
+     * It is stored only in memory and bound to the Activity lifecycle via PaymentIntentProviderRepository.
+     */
+    @IgnoredOnParcel
+    @Transient
+    internal var paymentIntentProvider: PaymentIntentProvider? = null
 
     class Builder : ObjectBuilder<AirwallexPaymentSession> {
         private var paymentIntent: PaymentIntent? = null
@@ -197,9 +200,12 @@ class AirwallexPaymentSession internal constructor(
         }
 
         override fun build(): AirwallexPaymentSession {
-            return AirwallexPaymentSession(
+            require(paymentIntent != null || paymentIntentProvider != null) {
+                "Either paymentIntent or paymentIntentProvider must be provided"
+            }
+
+            val session = AirwallexPaymentSession(
                 paymentIntent = paymentIntent,
-                paymentIntentProviderId = paymentIntentProvider?.let { PaymentIntentProviderRepository.store(it) },
                 currency = currency,
                 countryCode = countryCode,
                 amount = amount,
@@ -212,7 +218,11 @@ class AirwallexPaymentSession internal constructor(
                 autoCapture = autoCapture,
                 hidePaymentConsents = hidePaymentConsents,
                 paymentMethods = paymentMethods,
-            )
+            ).apply {
+                // Set the provider directly on the session (transient field, won't be parceled)
+                paymentIntentProvider = this@Builder.paymentIntentProvider
+            }
+            return session
         }
     }
 }

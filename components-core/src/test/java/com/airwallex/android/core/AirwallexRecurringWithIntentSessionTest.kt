@@ -123,7 +123,7 @@ class AirwallexRecurringWithIntentSessionTest {
         assertEquals(BigDecimal(50.0), session.amount)
         assertEquals("test_customer", session.customerId)
         assertEquals(PaymentConsent.NextTriggeredBy.CUSTOMER, session.nextTriggerBy)
-        assertNotNull(session.paymentIntentProviderId)
+        assertNotNull(session.paymentIntentProvider)
     }
 
     @Test
@@ -145,7 +145,7 @@ class AirwallexRecurringWithIntentSessionTest {
         assertEquals(BigDecimal(75.0), session.amount)
         assertEquals("test_customer_de", session.customerId)
         assertEquals(PaymentConsent.NextTriggeredBy.MERCHANT, session.nextTriggerBy)
-        assertNotNull(session.paymentIntentProviderId)
+        assertNotNull(session.paymentIntentProvider)
     }
 
     private class TestPaymentIntentProvider(

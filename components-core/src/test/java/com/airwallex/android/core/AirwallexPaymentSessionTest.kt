@@ -85,7 +85,7 @@ class AirwallexPaymentSessionTest {
         assertEquals("USD", airwallexPaymentSession.currency)
         assertEquals(BigDecimal(50.0), airwallexPaymentSession.amount)
         assertEquals("test_customer", airwallexPaymentSession.customerId)
-        assertNotNull(airwallexPaymentSession.paymentIntentProviderId)
+        assertNotNull(airwallexPaymentSession.paymentIntentProvider)
     }
 
     @Test
@@ -104,7 +104,7 @@ class AirwallexPaymentSessionTest {
         assertEquals("USD", airwallexPaymentSession.currency)
         assertEquals(BigDecimal(50.0), airwallexPaymentSession.amount)
         assertEquals(null, airwallexPaymentSession.customerId)
-        assertNotNull(airwallexPaymentSession.paymentIntentProviderId)
+        assertNotNull(airwallexPaymentSession.paymentIntentProvider)
     }
 
     @Test
@@ -124,7 +124,7 @@ class AirwallexPaymentSessionTest {
         assertEquals("EUR", airwallexPaymentSession.currency)
         assertEquals(BigDecimal(75.0), airwallexPaymentSession.amount)
         assertEquals("test_customer_de", airwallexPaymentSession.customerId)
-        assertNotNull(airwallexPaymentSession.paymentIntentProviderId)
+        assertNotNull(airwallexPaymentSession.paymentIntentProvider)
     }
 
     @Test
@@ -143,7 +143,7 @@ class AirwallexPaymentSessionTest {
         assertEquals("EUR", airwallexPaymentSession.currency)
         assertEquals(BigDecimal(75.0), airwallexPaymentSession.amount)
         assertEquals(null, airwallexPaymentSession.customerId)
-        assertNotNull(airwallexPaymentSession.paymentIntentProviderId)
+        assertNotNull(airwallexPaymentSession.paymentIntentProvider)
     }
 
     private class TestPaymentIntentProvider(
