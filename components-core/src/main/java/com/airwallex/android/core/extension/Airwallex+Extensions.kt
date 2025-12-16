@@ -59,18 +59,7 @@ fun Airwallex.createCardPaymentMethod(
             is AirwallexRecurringSession -> {
                 createPaymentMethod(session.clientSecret)
             }
-            is AirwallexPaymentSession -> {
-                session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
-                    override fun onSuccess(paymentIntent: PaymentIntent) {
-                        createPaymentMethod(requireNotNull(paymentIntent.clientSecret))
-                    }
-
-                    override fun onError(error: Throwable) {
-                        listener.onFailed(AirwallexCheckoutException(message = error.message, e = error))
-                    }
-                })
-            }
-            is AirwallexRecurringWithIntentSession -> {
+            is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
                 session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
                         createPaymentMethod(requireNotNull(paymentIntent.clientSecret))

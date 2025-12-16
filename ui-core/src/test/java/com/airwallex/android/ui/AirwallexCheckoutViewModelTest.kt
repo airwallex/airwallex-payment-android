@@ -23,6 +23,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.slot
+import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -427,17 +428,19 @@ class AirwallexCheckoutViewModelTest {
 
     @Test
     fun `test retrievePaymentMethodTypeInfo with AirwallexRecurringWithIntentSession resolvePaymentIntent error`() = runTest {
-        val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true) {
+        val session = mockk<AirwallexRecurringWithIntentSession>()
+
+        // Use spyk to replace paymentIntent with null
+        val sessionSpy = spyk(session) {
             every { paymentIntent } returns null
-            every { paymentIntentProvider } returns null
         }
 
-        val viewModel = AirwallexCheckoutViewModel(application, airwallex, session)
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, sessionSpy)
         val result = viewModel.retrievePaymentMethodTypeInfo("test_payment_method")
 
         assertTrue(result.isFailure)
         assertIs<AirwallexCheckoutException>(result.exceptionOrNull()).apply {
-            assertEquals("PaymentIntentProvider not found in repository. Provider may have been garbage collected.", message)
+            assertEquals("Neither paymentIntent nor paymentIntentProvider available", message)
         }
     }
 }

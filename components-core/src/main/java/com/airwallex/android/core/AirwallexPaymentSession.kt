@@ -17,13 +17,13 @@ class AirwallexPaymentSession internal constructor(
     /**
      * The [PaymentIntent] object, optional when using paymentIntentProvider.
      */
-    val paymentIntent: PaymentIntent?,
+    override val paymentIntent: PaymentIntent?,
 
     /**
      * Internal identifier for the PaymentIntentProvider stored in the repository.
      * This is set when bindToActivity is called.
      */
-    internal var paymentIntentProviderId: String? = null,
+    override var paymentIntentProviderId: String? = null,
 
     /**
      * Amount currency. required.
@@ -87,7 +87,7 @@ class AirwallexPaymentSession internal constructor(
      */
     val hidePaymentConsents: Boolean = false
 
-) : AirwallexSession(), Parcelable {
+) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 
     /**
      * PaymentIntentProvider instance. This field is transient and not parceled.
@@ -95,7 +95,7 @@ class AirwallexPaymentSession internal constructor(
      */
     @IgnoredOnParcel
     @Transient
-    internal var paymentIntentProvider: PaymentIntentProvider? = null
+    override var paymentIntentProvider: PaymentIntentProvider? = null
 
     class Builder : ObjectBuilder<AirwallexPaymentSession> {
         private var paymentIntent: PaymentIntent? = null

@@ -185,7 +185,7 @@ open class AirwallexCheckoutViewModel(
             }
 
             when (session) {
-                is AirwallexPaymentSession -> {
+                is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
                     session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
                         override fun onSuccess(paymentIntent: PaymentIntent) {
                             performRetrieval(paymentIntent.clientSecret)
@@ -198,17 +198,6 @@ open class AirwallexCheckoutViewModel(
                 }
                 is AirwallexRecurringSession -> {
                     performRetrieval(session.clientSecret)
-                }
-                is AirwallexRecurringWithIntentSession -> {
-                    session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
-                        override fun onSuccess(paymentIntent: PaymentIntent) {
-                            performRetrieval(paymentIntent.clientSecret)
-                        }
-
-                        override fun onError(error: Throwable) {
-                            continuation.resume(Result.failure(AirwallexCheckoutException(message = error.message, e = error)))
-                        }
-                    })
                 }
                 else -> {
                     continuation.resume(Result.failure(AirwallexCheckoutException(message = "Session is not available")))

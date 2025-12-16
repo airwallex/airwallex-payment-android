@@ -19,6 +19,7 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
+import com.airwallex.paymentacceptance.DemoPaymentIntentProvider
 import com.airwallex.paymentacceptance.DemoPaymentIntentSource
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
@@ -264,26 +265,24 @@ class APIIntegrationViewModel : BaseViewModel() {
     ): AirwallexSession {
         when (Settings.checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
-                if (Settings.expressCheckout == "Enabled") {
+                //get the customerId from your server.
+                //if you want to save card , customerId is required
+                val customerId = if (saveCard) {
+                    getCustomerIdFromServer()
+                } else null
+
+                return if (Settings.expressCheckout == "Enabled") {
                     // Express Checkout: Use PaymentIntentProvider
-                    val customerId = if (saveCard) {
-                        getCustomerIdFromServer()
-                    } else null
-                    return buildAirwallexPaymentSessionWithProvider(
+                    buildAirwallexPaymentSessionWithProvider(
                         googlePayOptions,
                         customerId,
                         force3DS
                     )
                 } else {
-                    //get the customerId from your server.
-                    //if you want to save card , customerId is required
-                    val customerId = if (saveCard) {
-                        getCustomerIdFromServer()
-                    } else null
                     //get the paymentIntent object from your server
                     //please do not directly copy this method!
                     val paymentIntent = getPaymentIntentFromServer(force3DS, customerId)
-                    return buildAirwallexPaymentSession(googlePayOptions, paymentIntent)
+                    buildAirwallexPaymentSession(googlePayOptions, paymentIntent)
                 }
             }
 
@@ -430,9 +429,9 @@ class APIIntegrationViewModel : BaseViewModel() {
         force3DS: Boolean = false
     ) = AirwallexRecurringWithIntentSession.Builder(
         // You can use paymentIntentSource (Kotlin coroutine pattern) or paymentIntentProvider (Java callback pattern) based on your preference
-        // Example with paymentIntentProvider: paymentIntentProvider = DemoPaymentIntentProvider(force3DS = force3DS, customerId = Settings.cachedCustomerId)
-        paymentIntentSource = DemoPaymentIntentSource(
-            force3DS = force3DS,
+        // Example with paymentIntentSource: PaymentIntentSource = DemoPaymentIntentSource(force3DS = force3DS, customerId = Settings.cachedCustomerId)
+        paymentIntentProvider = DemoPaymentIntentProvider(
+            force3DS = com.airwallex.paymentacceptance.force3DS,
             customerId = Settings.cachedCustomerId
         ),
         customerId = customerId,

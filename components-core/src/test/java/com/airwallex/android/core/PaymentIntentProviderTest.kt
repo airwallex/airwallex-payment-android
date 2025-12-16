@@ -6,7 +6,9 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentFixtures
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.slot
+import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -41,7 +43,8 @@ class PaymentIntentProviderTest {
             activityToProviderMapField.get(PaymentIntentProviderRepository) as java.util.concurrent.ConcurrentHashMap<*, *>
         activityToProviderMap.clear()
 
-        val providerToActivitiesMapField = repositoryClass.getDeclaredField("providerToActivitiesMap")
+        val providerToActivitiesMapField =
+            repositoryClass.getDeclaredField("providerToActivitiesMap")
         providerToActivitiesMapField.isAccessible = true
         val providerToActivitiesMap =
             providerToActivitiesMapField.get(PaymentIntentProviderRepository) as java.util.concurrent.ConcurrentHashMap<*, *>
@@ -132,7 +135,6 @@ class PaymentIntentProviderTest {
         }
     }
 
-    // Tests for SourceToProviderAdapter lines 125-132
     @Test
     fun `SourceToProviderAdapter provide calls onSuccess when source succeeds`() = runTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
@@ -168,7 +170,6 @@ class PaymentIntentProviderTest {
         assertEquals(testException, getError())
     }
 
-    // Tests for PaymentIntentProviderRepository initialization lines 156-178
     @Test
     fun `PaymentIntentProviderRepository initialize registers lifecycle callbacks`() {
         val mockApplication = mockk<Application>(relaxed = true)
@@ -223,7 +224,6 @@ class PaymentIntentProviderTest {
         assertNotNull(PaymentIntentProviderRepository.get(providerId))
     }
 
-    // Tests for PaymentIntentProviderRepository bindToActivity and extension functions lines 205-297
     @Test
     fun `PaymentIntentProviderRepository bindToActivity binds provider to activity`() {
         val providerId = PaymentIntentProviderRepository.store(createTestProvider())
@@ -479,6 +479,123 @@ class PaymentIntentProviderTest {
         session.bindToActivity(TestActivity(isFinishing = false))
 
         assertNotNull(PaymentIntentProviderRepository.get(providerId))
+    }
+
+    @Test
+    fun `AirwallexPaymentSession resolvePaymentIntent uses providerId from repository and updates TokenManager`() {
+        mockkObject(TokenManager)
+        try {
+            val testProvider = createTestProvider()
+            val providerId = PaymentIntentProviderRepository.store(testProvider)
+            val session = mockk<AirwallexPaymentSession>(relaxed = true)
+            every { session.paymentIntent } returns null
+            every { session.paymentIntentProvider } returns null
+            every { session.paymentIntentProviderId } returns providerId
+            val (callback, getIntent, getError) = createTestCallback()
+
+            session.resolvePaymentIntent(callback)
+
+            assertEquals(PaymentIntentFixtures.PAYMENT_INTENT, getIntent())
+            assertNull(getError())
+            verify { TokenManager.updateClientSecret(requireNotNull(PaymentIntentFixtures.PAYMENT_INTENT.clientSecret)) }
+        } finally {
+            unmockkObject(TokenManager)
+        }
+    }
+
+    @Test
+    fun `PaymentIntentProviderRepository bindToActivity rebinds to new provider and cleans up old provider`() {
+        val oldProvider = createTestProvider()
+        val newProvider = createTestProvider()
+        val oldProviderId = PaymentIntentProviderRepository.store(oldProvider)
+        val newProviderId = PaymentIntentProviderRepository.store(newProvider)
+        val testActivity = TestActivity(isFinishing = false)
+
+        // Bind to old provider first
+        PaymentIntentProviderRepository.bindToActivity(oldProviderId, testActivity)
+        assertNotNull(PaymentIntentProviderRepository.get(oldProviderId))
+        assertNotNull(PaymentIntentProviderRepository.get(newProviderId))
+
+        // Rebind to new provider
+        PaymentIntentProviderRepository.bindToActivity(newProviderId, testActivity)
+
+        // Old provider should be cleaned up, new provider should still exist
+        assertNull(PaymentIntentProviderRepository.get(oldProviderId))
+        assertNotNull(PaymentIntentProviderRepository.get(newProviderId))
+    }
+
+    @Test
+    fun `AirwallexRecurringWithIntentSession resolvePaymentIntent uses providerId from repository and updates TokenManager`() {
+        mockkObject(TokenManager)
+        try {
+            val testProvider = createTestProvider()
+            val providerId = PaymentIntentProviderRepository.store(testProvider)
+            val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true)
+            every { session.paymentIntent } returns null
+            every { session.paymentIntentProvider } returns null
+            every { session.paymentIntentProviderId } returns providerId
+            val (callback, getIntent, getError) = createTestCallback()
+
+            session.resolvePaymentIntent(callback)
+
+            assertEquals(PaymentIntentFixtures.PAYMENT_INTENT, getIntent())
+            assertNull(getError())
+            verify { TokenManager.updateClientSecret(requireNotNull(PaymentIntentFixtures.PAYMENT_INTENT.clientSecret)) }
+        } finally {
+            unmockkObject(TokenManager)
+        }
+    }
+
+    @Test
+    fun `AirwallexPaymentSession bindToActivity stores provider when providerId is null`() {
+        val testProvider = createTestProvider()
+        val session = mockk<AirwallexPaymentSession>(relaxed = true)
+        val testActivity = TestActivity(isFinishing = false)
+        var capturedProviderId: String? = null
+
+        every { session.paymentIntent } returns null
+        every { session.paymentIntentProvider } returns testProvider
+        every { session.paymentIntentProviderId } returns null
+        every { session.paymentIntentProviderId = any() } answers {
+            capturedProviderId = firstArg()
+        }
+
+        session.bindToActivity(testActivity)
+
+        // Verify that a provider ID was set on the session
+        assertNotNull(capturedProviderId)
+        capturedProviderId?.let { providerId ->
+            // Verify that the provider was stored in the repository
+            assertNotNull(PaymentIntentProviderRepository.get(providerId))
+            // Verify it's the same provider
+            assertEquals(testProvider, PaymentIntentProviderRepository.get(providerId))
+        }
+    }
+
+    @Test
+    fun `AirwallexRecurringWithIntentSession bindToActivity stores provider when providerId is null`() {
+        val testProvider = createTestProvider()
+        val session = mockk<AirwallexRecurringWithIntentSession>(relaxed = true)
+        val testActivity = TestActivity(isFinishing = false)
+        var capturedProviderId: String? = null
+
+        every { session.paymentIntent } returns null
+        every { session.paymentIntentProvider } returns testProvider
+        every { session.paymentIntentProviderId } returns null
+        every { session.paymentIntentProviderId = any() } answers {
+            capturedProviderId = firstArg()
+        }
+
+        session.bindToActivity(testActivity)
+
+        // Verify that a provider ID was set on the session
+        assertNotNull(capturedProviderId)
+        capturedProviderId?.let { providerId ->
+            // Verify that the provider was stored in the repository
+            assertNotNull(PaymentIntentProviderRepository.get(providerId))
+            // Verify it's the same provider
+            assertEquals(testProvider, PaymentIntentProviderRepository.get(providerId))
+        }
     }
 
     // Test helper classes
