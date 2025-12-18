@@ -121,6 +121,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.2"
+    implementation 'androidx.webkit:webkit:1.14.0'
 
     debugImplementation "com.squareup.leakcanary:leakcanary-android:2.14"
 }
