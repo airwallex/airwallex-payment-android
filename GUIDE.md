@@ -94,7 +94,16 @@ dependencies {
 
 Initialize the SDK in your Application class:
 
-```kotlin
+```
+import com.airwallex.android.AirwallexStarter
+import com.airwallex.android.core.AirwallexConfiguration
+import com.airwallex.android.core.Environment
+import com.airwallex.android.card.CardComponent
+import com.airwallex.android.googlepay.GooglePayComponent
+import com.airwallex.android.redirect.RedirectComponent
+import com.airwallex.android.wechat.WeChatComponent
+
+
 AirwallexStarter.initialize(
     application,
     AirwallexConfiguration.Builder()
@@ -130,7 +139,20 @@ Before using the SDK, you need to create a Payment Intent on your server:
 Create an appropriate session object based on your payment scenario:
 
 #### Standard Payment Session
-```kotlin
+```
+import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.AirwallexPaymentSession
+
+
+// call https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post api 
+// and get intent id, client secret from response.   
+val paymentIntent = PaymentIntent(
+    id = "REPLACE_WITH_YOUR_PAYMENT_INTENT_ID",
+    clientSecret = "REPLACE_WITH_YOUR_CLIENT_SECRET",
+    amount = 1.toBigDecimal(),
+    currency = "USD"
+)
+
 val paymentSession = AirwallexPaymentSession.Builder(
     paymentIntent = paymentIntent,
     countryCode = countryCode,
@@ -146,7 +168,10 @@ val paymentSession = AirwallexPaymentSession.Builder(
 ```
 
 #### Recurring Payment Session
-```kotlin
+```
+import com.airwallex.android.core.AirwallexRecurringSession
+
+
 val recurringSession = AirwallexRecurringSession.Builder(
     customerId = customerId,
     clientSecret = clientSecret,
@@ -165,7 +190,10 @@ val recurringSession = AirwallexRecurringSession.Builder(
 ```
 
 #### Recurring Payment with Intent Session
-```kotlin
+```
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
+import com.airwallex.android.core.model.PaymentIntent
+
 val recurringWithIntentSession = AirwallexRecurringWithIntentSession.Builder(
     paymentIntent = paymentIntent,
     customerId = customerId,
@@ -184,7 +212,12 @@ val recurringWithIntentSession = AirwallexRecurringWithIntentSession.Builder(
 ### 3. Present the Payment UI
 
 #### Complete Payment Flow
-```kotlin
+```
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.AirwallexStarter
+import com.airwallex.android.core.AirwallexPaymentStatus
+
+
 AirwallexStarter.presentEntirePaymentFlow(
     activity = activity,
     session = session,
@@ -197,7 +230,11 @@ AirwallexStarter.presentEntirePaymentFlow(
 ```
 
 #### Card-only Payment Flow
-```kotlin
+```
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.AirwallexStarter
+import com.airwallex.android.core.AirwallexPaymentStatus
+
 AirwallexStarter.presentCardPaymentFlow(
     activity = activity,
     session = session,
@@ -210,7 +247,12 @@ AirwallexStarter.presentCardPaymentFlow(
 ```
 
 #### Card Payment Dialog
-```kotlin
+```
+import com.airwallex.android.view.AirwallexAddPaymentDialog
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+
+
 val dialog = AirwallexAddPaymentDialog(
     activity = activity,
     session = session,
@@ -227,7 +269,10 @@ dialog.show()
 
 Allow users to provide shipping details:
 
-```kotlin
+```
+import com.airwallex.android.AirwallexStarter
+import com.airwallex.android.core.Airwallex
+
 AirwallexStarter.presentShippingFlow(
     activity = activity,
     shipping = shipping, // Optional
@@ -243,7 +288,10 @@ AirwallexStarter.presentShippingFlow(
 
 After payment completion, verify the status:
 
-```kotlin
+```
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.model.RetrievePaymentIntentParams
+
 airwallex.retrievePaymentIntent(
     params = RetrievePaymentIntentParams(
         paymentIntentId = paymentIntentId,
@@ -324,7 +372,10 @@ After setting up the SDK, you are required to config your SDK with some paramete
 #### Configuration the SDK
 
 We provide some parameters that can be used to debug the SDK, you can call it in Application
-```kotlin
+```
+    import com.airwallex.android.core.Airwallex
+    import com.airwallex.android.core.AirwallexConfiguration
+
      Airwallex.initialize(
          this,
          AirwallexConfiguration.Builder()
@@ -349,11 +400,17 @@ We provide some parameters that can be used to debug the SDK, you can call it in
 ### Step 3: Create AirwallexSession and Airwallex object
 [Create an AirwallexSession object](#2-create-an-airwallex-session)
 #### Create an Airwallex object
-```kotlin
+```
+import com.airwallex.android.core.Airwallex
+
 val airwallex = Airwallex(activity)
 ```
 ### Confirm payment with card and billing details
-```kotlin
+```
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+
+
 // Confirm intent with card and billing
 airwallex.confirmPaymentIntent(
     session = session,
@@ -374,7 +431,10 @@ airwallex.confirmPaymentIntent(
 )
 ```
 ### Confirm payment with Consent ID
-```kotlin
+```
+    import com.airwallex.android.core.Airwallex
+    import com.airwallex.android.core.AirwallexPaymentStatus
+
      airwallex.confirmPaymentIntent(
         session = session,
         paymentConsentId = "cst_xxxxxxxxxx",
@@ -386,7 +446,12 @@ airwallex.confirmPaymentIntent(
      )
 ```
 ### Confirm payment with PaymentConsent
-```kotlin
+```
+    import com.airwallex.android.core.Airwallex
+    import com.airwallex.android.core.AirwallexPaymentStatus
+    import com.airwallex.android.core.AirwallexPaymentSession
+    import com.airwallex.android.core.model.PaymentConsent
+
      airwallex.confirmPaymentIntent(
         session = session as AirwallexPaymentSession,
         paymentConsent = paymentConsent,
@@ -398,7 +463,10 @@ airwallex.confirmPaymentIntent(
      )
 ```
 ### Retrieve the list of payment methods
-```kotlin
+```
+    import com.airwallex.android.core.Airwallex
+    import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
+
      val methods = airwallex.retrieveAvailablePaymentMethods(
         session = session,
         params = RetrieveAvailablePaymentMethodParams.Builder(
@@ -412,7 +480,11 @@ airwallex.confirmPaymentIntent(
      )
 ```
 ### Retrieve the list of saved cards
-```kotlin
+```
+    import com.airwallex.android.core.Airwallex
+    import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
+    import com.airwallex.android.core.model.PaymentConsent
+
      val consents = airwallex.retrieveAvailablePaymentConsents(
         RetrieveAvailablePaymentConsentsParams.Builder(
            clientSecret = clientSecret,
@@ -426,7 +498,11 @@ airwallex.confirmPaymentIntent(
 ```
 ### Launch payment via Google Pay
 Before invoking the payment API, you need to follow the steps to [Set up Google Pay](#set-up-google-pay)
-```kotlin
+```
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+
+
 // NOTE: We only support AirwallexPaymentSession (one off session), no recurring session for Google Pay at the moment.
 // Also make sure you pass GooglePayOptions to the session. Refer to [Set up Google Pay].
 airwallex.startGooglePay(
@@ -439,7 +515,10 @@ airwallex.startGooglePay(
 )
 ```
 ### Pay by redirection
-```kotlin
+```
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+
 airwallex.startRedirectPay(
     session = session,
     paymentType = "alipayhk",
