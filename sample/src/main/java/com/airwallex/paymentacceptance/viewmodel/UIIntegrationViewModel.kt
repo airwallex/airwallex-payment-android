@@ -1,6 +1,5 @@
 package com.airwallex.paymentacceptance.viewmodel
 
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
@@ -10,10 +9,10 @@ import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
-import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
@@ -29,22 +28,11 @@ import com.airwallex.paymentacceptance.force3DS
 import com.airwallex.paymentacceptance.nextTriggerBy
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.repo.ReturnUrl
-import com.airwallex.paymentacceptance.util.PaymentStatusPoller
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 class UIIntegrationViewModel : BaseViewModel() {
-
-    // AirwallexPaymentStatus is the result returned by the payment flow. You can add your own handling logic based on the final result.
-    // Using SharedFlow with default replay=0 ensures the event is only delivered once to active collectors
-    // This prevents duplicate callbacks on configuration changes
-    private val _airwallexPaymentStatus = MutableSharedFlow<AirwallexPaymentStatus>()
-    val airwallexPaymentStatus: SharedFlow<AirwallexPaymentStatus> =
-        _airwallexPaymentStatus.asSharedFlow()
 
     private val _airwallexShippingStatus = MutableLiveData<AirwallexShippingStatus>()
     val airwallexShippingStatus: LiveData<AirwallexShippingStatus> = _airwallexShippingStatus
@@ -54,86 +42,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             billingAddressRequired = true,
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
         )
-    }
-
-    // Payment status poller for handling deep link returns
-    private var paymentStatusPoller: PaymentStatusPoller? = null
-
-    // Polling result
-    private val _pollingResult = MutableSharedFlow<PaymentStatusPoller.PollingResult>()
-    val pollingResult: SharedFlow<PaymentStatusPoller.PollingResult> = _pollingResult.asSharedFlow()
-
-    override fun init(activity: ComponentActivity) {
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        paymentStatusPoller?.stop()
-        stopLoading()
-    }
-
-    /**
-     * Stop active polling (called when user cancels)
-     */
-    fun stopPolling() {
-        paymentStatusPoller?.stop()
-        paymentStatusPoller = null
-        stopLoading()
-    }
-
-    /**
-     * Handle payment status - start polling for InProgress, emit status for others
-     */
-    private fun handlePaymentStatus(
-        activity: ComponentActivity,
-        session: AirwallexSession,
-        status: AirwallexPaymentStatus
-    ) {
-        viewModelScope.launch {
-            if (status is AirwallexPaymentStatus.InProgress) {
-                // Start polling for InProgress status
-                status.paymentIntentId?.let { intentId ->
-                    val clientSecret = when (session) {
-                        is AirwallexPaymentSession -> session.paymentIntent?.clientSecret
-                        is AirwallexRecurringWithIntentSession -> session.paymentIntent?.clientSecret
-                        is AirwallexRecurringSession -> session.clientSecret
-                        else -> null
-                    }
-                    if (clientSecret != null) {
-                        startPolling(activity, intentId, clientSecret)
-                    } else {
-                        Log.e(TAG, "Client secret is null, cannot start polling")
-                    }
-                }
-            } else {
-                stopLoading()
-            }
-            // Emit status for non-InProgress statuses
-            _airwallexPaymentStatus.emit(status)
-        }
-    }
-
-    /**
-     * Start polling for payment status
-     */
-    private fun startPolling(activity: ComponentActivity, intentId: String, clientSecret: String) {
-        // Stop any existing poller first
-        paymentStatusPoller?.stop()
-
-        val airwallex = Airwallex(activity)
-        val poller = PaymentStatusPoller(
-            intentId = intentId,
-            clientSecret = clientSecret,
-            airwallex = airwallex
-        )
-        paymentStatusPoller = poller
-
-        viewModelScope.launch {
-            val result = poller.getPaymentAttempt()
-            _pollingResult.emit(result)
-            paymentStatusPoller = null
-            stopLoading()
-        }
     }
 
     /**
@@ -182,7 +90,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    handlePaymentStatus(activity, session, status)
+                    handlePaymentStatus(session, status)
                 }
             }
         )
@@ -242,7 +150,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    handlePaymentStatus(activity, session, status)
+                    handlePaymentStatus(session, status)
                 }
             }
         )
@@ -290,7 +198,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             session = session,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    handlePaymentStatus(activity, session, status)
+                    handlePaymentStatus(session, status)
                 }
             }
         )
@@ -339,7 +247,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             session = session,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    handlePaymentStatus(activity, session, status)
+                    handlePaymentStatus(session, status)
                 }
             }
         )
@@ -375,7 +283,7 @@ class UIIntegrationViewModel : BaseViewModel() {
                 } else {
                     //get the paymentIntent object from your server
                     //please do not directly copy this method!
-                    val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS, returnUrl = ReturnUrl.UI)
+                    val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS, returnUrl = ReturnUrl.UIIntegration)
                     // build an AirwallexPaymentSession based on the paymentIntent
                     buildAirwallexPaymentSession(googlePayOptions, paymentIntent, paymentMethods)
                 }
@@ -409,7 +317,7 @@ class UIIntegrationViewModel : BaseViewModel() {
                     //please do not directly copy these method!
                     val customerId = getCustomerIdFromServer()
                     val paymentIntent =
-                        getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId, returnUrl = ReturnUrl.UI)
+                        getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId, returnUrl = ReturnUrl.UIIntegration)
                     //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                     buildAirwallexRecurringWithIntentSession(
                         googlePayOptions,
@@ -436,7 +344,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     )
         .setRequireBillingInformation(true)
         .setRequireEmail(Settings.requiresEmail.toBoolean())
-        .setReturnUrl(ReturnUrl.UI.fullUrl)
+        .setReturnUrl(ReturnUrl.UIIntegration.fullUrl)
         .setAutoCapture(autoCapture)
         .setHidePaymentConsents(false)
         .setPaymentMethods(paymentMethods)
@@ -465,7 +373,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         .setShipping(shipping)
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
         .setGooglePayOptions(googlePayOptions)
-        .setReturnUrl(ReturnUrl.UI.fullUrl)
+        .setReturnUrl(ReturnUrl.UIIntegration.fullUrl)
         .setPaymentMethods(paymentMethods)
         .build()
 
@@ -485,7 +393,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     )
         .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-        .setReturnUrl(ReturnUrl.UI.fullUrl)
+        .setReturnUrl(ReturnUrl.UIIntegration.fullUrl)
         .setAutoCapture(autoCapture)
         .setGooglePayOptions(googlePayOptions)
         .setPaymentMethods(paymentMethods)
@@ -504,7 +412,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         paymentIntentSource = DemoPaymentIntentSource(
             force3DS = force3DS,
             customerId = Settings.cachedCustomerId,
-            returnUrl = ReturnUrl.UI
+            returnUrl = ReturnUrl.UIIntegration
         ),
         countryCode = Settings.countryCode,
         customerId = Settings.cachedCustomerId,
@@ -512,7 +420,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     )
         .setRequireBillingInformation(true)
         .setRequireEmail(Settings.requiresEmail.toBoolean())
-        .setReturnUrl(ReturnUrl.UI.fullUrl)
+        .setReturnUrl(ReturnUrl.UIIntegration.fullUrl)
         .setAutoCapture(autoCapture)
         .setHidePaymentConsents(false)
         .setPaymentMethods(paymentMethods)
@@ -532,7 +440,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         paymentIntentProvider = DemoPaymentIntentProvider(
             force3DS = force3DS,
             customerId = Settings.cachedCustomerId,
-            returnUrl = ReturnUrl.UI
+            returnUrl = ReturnUrl.UIIntegration
         ),
         customerId = customerId,
         nextTriggerBy = nextTriggerBy,
@@ -540,14 +448,10 @@ class UIIntegrationViewModel : BaseViewModel() {
     )
         .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-        .setReturnUrl(ReturnUrl.UI.fullUrl)
+        .setReturnUrl(ReturnUrl.UIIntegration.fullUrl)
         .setAutoCapture(autoCapture)
         .setGooglePayOptions(googlePayOptions)
         .setPaymentMethods(paymentMethods)
         .setShipping(shipping)
         .build()
-
-    companion object {
-        private const val TAG = "UIIntegrationViewModel"
-    }
 }

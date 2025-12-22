@@ -196,7 +196,7 @@ data class PaymentIntent(
         /**
          * Additional failure details
          */
-        val details: Details? = null
+        val details: Details?
     ) : AirwallexModel, Parcelable {
 
         @Parcelize

@@ -3,9 +3,9 @@ package com.airwallex.paymentacceptance.repo
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.paymentacceptance.Settings
 
-sealed class ReturnUrl(private val subpath: String) {
-    data object UI : ReturnUrl("/ui")
-    data object API : ReturnUrl("/api")
+enum class ReturnUrl(private val subpath: String) {
+    UIIntegration("/ui"),
+    APIIntegration("/api");
 
     val fullUrl: String get() = Settings.returnUrl + subpath
 }
