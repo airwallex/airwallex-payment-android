@@ -88,10 +88,14 @@ object ThreeDSecurityManager {
                 cancelable = false
             )
             val container = cardNextActionModel.activityProvider().window.decorView.findViewById<ViewGroup>(android.R.id.content)
+
+            // Store webViewClient reference for cleanup
+            var webViewClient: ThreeDSecureWebViewClient? = null
+
             val webView = AirwallexWebView(cardNextActionModel.activityProvider()).apply {
                 visibility = View.INVISIBLE
 
-                webViewClient =
+                this@apply.webViewClient =
                     ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
                         @Suppress("LongMethod")
                         override fun onWebViewConfirmation(payload: String) {
@@ -133,6 +137,7 @@ object ThreeDSecurityManager {
                                                 "ThreeDSecurityManager: onSuccess ",
                                                 sensitiveMessage = response.toString()
                                             )
+                                            webViewClient?.cleanup()
                                             destroyWebView()
                                             val continueNextAction = response.nextAction
                                             if (continueNextAction == null) {
@@ -157,6 +162,7 @@ object ThreeDSecurityManager {
                                         }
 
                                         override fun onFailed(exception: AirwallexException) {
+                                            webViewClient?.cleanup()
                                             destroyWebView()
                                             AirwallexLogger.error("ThreeDSecurityManager: onFailed", exception)
                                             listener.onCompleted(
@@ -173,6 +179,7 @@ object ThreeDSecurityManager {
                         override fun onWebViewError(error: WebViewConnectionException) {
                             AnalyticsLogger.logError("webview_redirect", exception = error)
                             AirwallexLogger.error("onWebViewError", error)
+                            webViewClient?.cleanup()
                             destroyWebView()
                             listener.onCompleted(AirwallexPaymentStatus.Failure(error))
                         }
@@ -184,7 +191,7 @@ object ThreeDSecurityManager {
                         override fun onPageStarted(url: String?) {
                             AirwallexLogger.debug("onPageStarted $url")
                         }
-                    })
+                    }).also { webViewClient = it }
 
                 postUrl(url, postResult.toString().toByteArray())
             }

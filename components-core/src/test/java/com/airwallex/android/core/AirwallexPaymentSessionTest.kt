@@ -7,9 +7,6 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkObject
 import io.mockk.runs
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Test
 import java.math.BigDecimal
@@ -19,11 +16,8 @@ import kotlin.test.assertTrue
 
 class AirwallexPaymentSessionTest {
 
-    private val testDispatcher = UnconfinedTestDispatcher()
-
     @Before
     fun setup() {
-        Dispatchers.setMain(testDispatcher)
         mockkObject(TokenManager)
         every { TokenManager.updateClientSecret(any()) } just runs
     }

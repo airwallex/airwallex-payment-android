@@ -33,6 +33,8 @@ class ThreeDSecurityActivity : AirwallexActivity() {
         AirwallexPaymentManager(AirwallexApiRepository())
     }
 
+    private var webViewClient: ThreeDSecureWebViewClient? = null
+
     override fun onBackButtonPressed() {
         finishWithData(exception = AirwallexCheckoutException(message = "3DS has been cancelled!"))
     }
@@ -43,9 +45,8 @@ class ThreeDSecurityActivity : AirwallexActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val webView = viewBinding.webView.apply {
-            webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
-                override fun onWebViewConfirmation(payload: String) {
+        val client = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
+            override fun onWebViewConfirmation(payload: String) {
                     AirwallexLogger.info("ThreeDSecurityActivity onWebViewConfirmation", sensitiveMessage = "payload = $payload")
                     paymentManager.startOperation(
                         args.options,
@@ -80,12 +81,21 @@ class ThreeDSecurityActivity : AirwallexActivity() {
                     AirwallexLogger.debug("onPageFinished $url")
                 }
 
-                override fun onPageStarted(url: String?) {
-                    AirwallexLogger.debug("onPageStarted $url")
-                }
-            })
+            override fun onPageStarted(url: String?) {
+                AirwallexLogger.debug("onPageStarted $url")
+            }
+        })
+        webViewClient = client
+
+        viewBinding.webView.apply {
+            this.webViewClient = client
+            postUrl(args.url, args.body.toByteArray())
         }
-        webView.postUrl(args.url, args.body.toByteArray())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        webViewClient?.cleanup()
     }
 
     private fun finishWithData(
