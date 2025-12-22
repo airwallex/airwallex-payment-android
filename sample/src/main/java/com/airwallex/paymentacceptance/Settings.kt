@@ -7,6 +7,7 @@ import androidx.preference.PreferenceManager
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.Environment
 import kotlin.properties.Delegates
+import androidx.core.content.edit
 
 object Settings {
 
@@ -52,9 +53,9 @@ object Settings {
     var cachedCustomerId: String?
         set(value) {
             if (value?.isEmpty() == true) {
-                sharedPreferences.edit().remove(CUSTOMER_ID).apply()
+                sharedPreferences.edit { remove(CUSTOMER_ID) }
             } else {
-                sharedPreferences.edit().putString(CUSTOMER_ID, value).apply()
+                sharedPreferences.edit { putString(CUSTOMER_ID, value) }
             }
         }
         get() {
@@ -64,9 +65,9 @@ object Settings {
     // Default Staging
     var sdkEnv: String
         set(value) {
-            sharedPreferences.edit()
-                .putString(context.getString(R.string.sdk_env_id), value)
-                .apply()
+            sharedPreferences.edit {
+                putString(context.getString(R.string.sdk_env_id), value)
+            }
         }
         get() {
             val defaultSdkEnv =
@@ -89,8 +90,9 @@ object Settings {
 
     var returnUrl: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.return_url), value)
-                .apply()
+            sharedPreferences.edit {
+                putString(context.getString(R.string.return_url), value)
+            }
         }
         get() {
             return sharedPreferences.getString(
@@ -102,8 +104,9 @@ object Settings {
 
     var nextTriggerBy: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.next_trigger_by), value)
-                .apply()
+            sharedPreferences.edit {
+                putString(context.getString(R.string.next_trigger_by), value)
+            }
         }
         get() {
             val defaultNextTriggeredBy =
@@ -117,8 +120,9 @@ object Settings {
 
     var paymentLayout: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.payment_layout), value)
-                .apply()
+            sharedPreferences.edit {
+                putString(context.getString(R.string.payment_layout), value)
+            }
         }
         get() {
             val defaultPaymentLayout =
@@ -132,9 +136,9 @@ object Settings {
 
     var requiresEmail: String
         set(value) {
-            sharedPreferences.edit()
-                .putString(context.getString(R.string.requires_email), value)
-                .apply()
+            sharedPreferences.edit {
+                putString(context.getString(R.string.requires_email), value)
+            }
         }
         get() {
             val defaultRequiresEmail =
@@ -148,9 +152,9 @@ object Settings {
 
     var force3DS: String
         set(value) {
-            sharedPreferences.edit()
-                .putString(context.getString(R.string.force_3ds), value)
-                .apply()
+            sharedPreferences.edit {
+                putString(context.getString(R.string.force_3ds), value)
+            }
         }
         get() {
             val defaultForce3DS =
@@ -164,9 +168,9 @@ object Settings {
 
     var autoCapture: String
         set(value) {
-            sharedPreferences.edit()
-                .putString(context.getString(R.string.auto_capture), value)
-                .apply()
+            sharedPreferences.edit {
+                putString(context.getString(R.string.auto_capture), value)
+            }
         }
         get() {
             val defaultAutoCapture =
@@ -178,9 +182,19 @@ object Settings {
                 ?: defaultAutoCapture
         }
 
+    var expressCheckout: String
+        set(value) {
+            sharedPreferences.edit {
+                putString("express_checkout", value)
+            }
+        }
+        get() {
+            return sharedPreferences.getString("express_checkout", "Disabled") ?: "Disabled"
+        }
+
     var apiKey: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.api_key), value).apply()
+            sharedPreferences.edit { putString(context.getString(R.string.api_key), value) }
         }
         get() {
             val value = sharedPreferences.getString(
@@ -194,7 +208,7 @@ object Settings {
 
     var clientId: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.client_id), value).apply()
+            sharedPreferences.edit { putString(context.getString(R.string.client_id), value) }
         }
         get() {
             val value = sharedPreferences.getString(
@@ -208,8 +222,9 @@ object Settings {
 
     var weChatAppId: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.wechat_app_id), value)
-                .apply()
+            sharedPreferences.edit {
+                putString(context.getString(R.string.wechat_app_id), value)
+            }
         }
         get() {
             val value = sharedPreferences.getString(
@@ -223,7 +238,7 @@ object Settings {
 
     var price: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.price), value).apply()
+            sharedPreferences.edit { putString(context.getString(R.string.price), value) }
         }
         get() {
             val defaultPrice = SampleApplication.instance.getString(R.string.price_value)
@@ -235,7 +250,7 @@ object Settings {
 
     var currency: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.currency), value).apply()
+            sharedPreferences.edit { putString(context.getString(R.string.currency), value) }
         }
         get() {
             val defaultCurrency =
@@ -248,8 +263,9 @@ object Settings {
 
     var countryCode: String
         set(value) {
-            sharedPreferences.edit().putString(context.getString(R.string.country_code), value)
-                .apply()
+            sharedPreferences.edit {
+                putString(context.getString(R.string.country_code), value)
+            }
         }
         get() {
             val defaultCountryCode =

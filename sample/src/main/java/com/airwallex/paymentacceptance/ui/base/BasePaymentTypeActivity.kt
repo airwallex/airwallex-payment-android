@@ -4,6 +4,9 @@ import android.content.Intent
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.paymentacceptance.R
@@ -13,6 +16,7 @@ import com.airwallex.paymentacceptance.ui.SettingActivity
 import com.airwallex.paymentacceptance.ui.bean.ButtonItem
 import com.airwallex.paymentacceptance.ui.widget.ButtonAdapter
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
+import kotlinx.coroutines.launch
 
 abstract class BasePaymentTypeActivity<VM : BaseViewModel> :
     BasePaymentActivity<ActivityPaymentTypeBinding, VM>() {
@@ -47,12 +51,15 @@ abstract class BasePaymentTypeActivity<VM : BaseViewModel> :
     }
 
     override fun addObserver() {
-        mViewModel.createPaymentIntentError.observe(this) { error ->
-            setLoadingProgress(false)
-            showAlert(
-                getString(R.string.create_payment_intent_failed),
-                error ?: getString(R.string.payment_failed_message)
-            )
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                mViewModel.createPaymentIntentError.collect { error ->
+                    showAlert(
+                        getString(R.string.create_payment_intent_failed),
+                        error ?: getString(R.string.payment_failed_message)
+                    )
+                }
+            }
         }
     }
 
@@ -77,8 +84,12 @@ abstract class BasePaymentTypeActivity<VM : BaseViewModel> :
         refreshButtons(selectedOption)
     }
 
-    protected fun adjustLineMargin() {
+    protected fun adjustLineMargin(
+        preferredSpacing: Int = 180.dpToPx()
+    ) {
         val itemCount = adapter.itemCount
+        val bottomSpacing: Int = 20.dpToPx()
+        val minMargin: Int = 20.dpToPx()
         val itemHeight = 80.dpToPx()
         val totalContentHeight = itemCount * itemHeight
 
@@ -92,10 +103,22 @@ abstract class BasePaymentTypeActivity<VM : BaseViewModel> :
         val maxAvailableHeight = screenHeight - topFixedHeight
 
         val newMarginTop = when {
-            totalContentHeight < maxAvailableHeight - 180.dpToPx() -> 180.dpToPx()
-            totalContentHeight >= maxAvailableHeight - 20.dpToPx() -> 20.dpToPx()
+            totalContentHeight < maxAvailableHeight - preferredSpacing -> {
+                // Use preferred spacing when there's plenty of space
+                maxAvailableHeight - totalContentHeight - bottomSpacing
+            }
+            totalContentHeight >= maxAvailableHeight - minMargin -> minMargin
             else -> maxAvailableHeight - totalContentHeight
-        }.coerceIn(20.dpToPx(), 180.dpToPx())
+        }.let { calculatedMargin ->
+            // Ensure we have a valid range for coerceIn
+            val maxMargin = maxAvailableHeight - totalContentHeight - minMargin
+            if (maxMargin >= minMargin) {
+                calculatedMargin.coerceIn(minMargin, maxMargin)
+            } else {
+                // When screen is too small, just use minimum margin
+                minMargin
+            }
+        }
 
         val params = mBinding.line.layoutParams as ViewGroup.MarginLayoutParams
         params.topMargin = newMarginTop

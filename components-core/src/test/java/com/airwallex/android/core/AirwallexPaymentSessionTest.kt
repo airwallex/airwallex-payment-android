@@ -1,5 +1,6 @@
 package com.airwallex.android.core
 
+import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentFixtures
 import com.airwallex.android.core.model.Shipping
 import io.mockk.every
@@ -65,5 +66,101 @@ class AirwallexPaymentSessionTest {
         assertEquals(false, airwallexPaymentSession.hidePaymentConsents)
         assertNotNull(airwallexPaymentSession.paymentMethods)
         assertEquals(airwallexPaymentSession.shipping, shipping)
+    }
+
+    @Test
+    fun `build with PaymentIntentProvider`() {
+        val testProvider = TestPaymentIntentProvider(
+            currency = "USD",
+            amount = BigDecimal(50.0)
+        )
+
+        val airwallexPaymentSession = AirwallexPaymentSession.Builder(
+            paymentIntentProvider = testProvider,
+            countryCode = "US",
+            customerId = "test_customer"
+        ).build()
+
+        assertNotNull(airwallexPaymentSession)
+        assertEquals("USD", airwallexPaymentSession.currency)
+        assertEquals(BigDecimal(50.0), airwallexPaymentSession.amount)
+        assertEquals("test_customer", airwallexPaymentSession.customerId)
+        assertNotNull(airwallexPaymentSession.paymentIntentProvider)
+    }
+
+    @Test
+    fun `build with PaymentIntentProvider without customerId`() {
+        val testProvider = TestPaymentIntentProvider(
+            currency = "USD",
+            amount = BigDecimal(50.0)
+        )
+
+        val airwallexPaymentSession = AirwallexPaymentSession.Builder(
+            paymentIntentProvider = testProvider,
+            countryCode = "US"
+        ).build()
+
+        assertNotNull(airwallexPaymentSession)
+        assertEquals("USD", airwallexPaymentSession.currency)
+        assertEquals(BigDecimal(50.0), airwallexPaymentSession.amount)
+        assertEquals(null, airwallexPaymentSession.customerId)
+        assertNotNull(airwallexPaymentSession.paymentIntentProvider)
+    }
+
+    @Test
+    fun `build with PaymentIntentSource`() {
+        val testSource = TestPaymentIntentSource(
+            currency = "EUR",
+            amount = BigDecimal(75.0)
+        )
+
+        val airwallexPaymentSession = AirwallexPaymentSession.Builder(
+            paymentIntentSource = testSource,
+            countryCode = "DE",
+            customerId = "test_customer_de"
+        ).build()
+
+        assertNotNull(airwallexPaymentSession)
+        assertEquals("EUR", airwallexPaymentSession.currency)
+        assertEquals(BigDecimal(75.0), airwallexPaymentSession.amount)
+        assertEquals("test_customer_de", airwallexPaymentSession.customerId)
+        assertNotNull(airwallexPaymentSession.paymentIntentProvider)
+    }
+
+    @Test
+    fun `build with PaymentIntentSource without customerId`() {
+        val testSource = TestPaymentIntentSource(
+            currency = "EUR",
+            amount = BigDecimal(75.0)
+        )
+
+        val airwallexPaymentSession = AirwallexPaymentSession.Builder(
+            paymentIntentSource = testSource,
+            countryCode = "DE"
+        ).build()
+
+        assertNotNull(airwallexPaymentSession)
+        assertEquals("EUR", airwallexPaymentSession.currency)
+        assertEquals(BigDecimal(75.0), airwallexPaymentSession.amount)
+        assertEquals(null, airwallexPaymentSession.customerId)
+        assertNotNull(airwallexPaymentSession.paymentIntentProvider)
+    }
+
+    private class TestPaymentIntentProvider(
+        override val currency: String,
+        override val amount: BigDecimal
+    ) : PaymentIntentProvider {
+        override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+            callback.onSuccess(PaymentIntentFixtures.PAYMENT_INTENT)
+        }
+    }
+
+    private class TestPaymentIntentSource(
+        override val currency: String,
+        override val amount: BigDecimal
+    ) : PaymentIntentSource {
+        override suspend fun getPaymentIntent(): PaymentIntent {
+            return PaymentIntentFixtures.PAYMENT_INTENT
+        }
     }
 }

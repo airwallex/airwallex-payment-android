@@ -6,7 +6,6 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.Airwallex.Companion.initialize
 import com.airwallex.android.core.AirwallexConfiguration
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -16,6 +15,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.PaymentMethodsLayoutType
+import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
@@ -58,7 +58,7 @@ class AirwallexStarter {
                 is AirwallexPaymentSession -> {
                     AnalyticsLogger.setSessionInformation(
                         transactionMode = TransactionMode.ONE_OFF.value,
-                        paymentIntentId = session.paymentIntent.id,
+                        paymentIntentId = session.paymentIntent?.id,
                     )
                 }
                 is AirwallexRecurringSession -> {
@@ -69,7 +69,7 @@ class AirwallexStarter {
                 is AirwallexRecurringWithIntentSession -> {
                     AnalyticsLogger.setSessionInformation(
                         transactionMode = TransactionMode.RECURRING.value,
-                        paymentIntentId = session.paymentIntent.id,
+                        paymentIntentId = session.paymentIntent?.id,
                     )
                 }
             }
@@ -92,6 +92,10 @@ class AirwallexStarter {
             AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentCardPaymentFlow[$intentId]")
+
+            // Bind session's PaymentIntentProvider to this Activity's lifecycle
+            session.bindToActivity(activity)
+
             AddPaymentMethodActivityLaunch(activity)
                 .launchForResult(
                     AddPaymentMethodActivityLaunch.Args.Builder()

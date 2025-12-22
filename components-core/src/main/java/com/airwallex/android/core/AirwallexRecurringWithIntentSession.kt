@@ -5,6 +5,7 @@ import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
@@ -16,9 +17,15 @@ import java.math.BigDecimal
 class AirwallexRecurringWithIntentSession internal constructor(
 
     /**
-     * the ID of the [PaymentIntent], required.
+     * The [PaymentIntent] object, optional when using paymentIntentProvider.
      */
-    val paymentIntent: PaymentIntent,
+    override val paymentIntent: PaymentIntent?,
+
+    /**
+     * Internal identifier for the PaymentIntentProvider stored in the repository.
+     * This is set when bindToActivity is called.
+     */
+    override var paymentIntentProviderId: String? = null,
 
     /**
      * The party to trigger subsequent payments. Can be one of merchant, customer. required.
@@ -93,14 +100,76 @@ class AirwallexRecurringWithIntentSession internal constructor(
      * Default: true
      */
     val autoCapture: Boolean = true
-) : AirwallexSession(), Parcelable {
+) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 
-    class Builder(
-        private val paymentIntent: PaymentIntent,
-        private val customerId: String,
-        private val nextTriggerBy: PaymentConsent.NextTriggeredBy,
+    /**
+     * PaymentIntentProvider instance. This field is transient and not parceled.
+     * It is stored only in memory and bound to the Activity lifecycle via PaymentIntentProviderRepository.
+     */
+    @IgnoredOnParcel
+    @Transient
+    override var paymentIntentProvider: PaymentIntentProvider? = null
+
+    class Builder : ObjectBuilder<AirwallexRecurringWithIntentSession> {
+        private var paymentIntent: PaymentIntent? = null
+        private var paymentIntentProvider: PaymentIntentProvider? = null
+        private val customerId: String
+        private val nextTriggerBy: PaymentConsent.NextTriggeredBy
         private val countryCode: String
-    ) : ObjectBuilder<AirwallexRecurringWithIntentSession> {
+        private val currency: String
+        private val amount: BigDecimal
+
+        /**
+         * Constructor for static PaymentIntent
+         */
+        constructor(
+            paymentIntent: PaymentIntent,
+            customerId: String,
+            nextTriggerBy: PaymentConsent.NextTriggeredBy,
+            countryCode: String
+        ) {
+            this.paymentIntent = paymentIntent
+            this.customerId = customerId
+            this.nextTriggerBy = nextTriggerBy
+            this.countryCode = countryCode
+            this.currency = paymentIntent.currency
+            this.amount = paymentIntent.amount
+        }
+
+        /**
+         * Constructor for PaymentIntentProvider
+         */
+        constructor(
+            paymentIntentProvider: PaymentIntentProvider,
+            customerId: String,
+            nextTriggerBy: PaymentConsent.NextTriggeredBy,
+            countryCode: String
+        ) {
+            this.paymentIntentProvider = paymentIntentProvider
+            this.customerId = customerId
+            this.nextTriggerBy = nextTriggerBy
+            this.countryCode = countryCode
+            this.currency = paymentIntentProvider.currency
+            this.amount = paymentIntentProvider.amount
+        }
+
+        /**
+         * Constructor for PaymentIntentSource (modern suspend-based version)
+         */
+        constructor(
+            paymentIntentSource: PaymentIntentSource,
+            customerId: String,
+            nextTriggerBy: PaymentConsent.NextTriggeredBy,
+            countryCode: String
+        ) {
+            // Automatically wrap suspend source with callback adapter
+            this.paymentIntentProvider = SourceToProviderAdapter(paymentIntentSource)
+            this.customerId = customerId
+            this.nextTriggerBy = nextTriggerBy
+            this.countryCode = countryCode
+            this.currency = paymentIntentSource.currency
+            this.amount = paymentIntentSource.amount
+        }
 
         private var requiresCVC: Boolean = false
         private var isBillingInformationRequired: Boolean = true
@@ -114,7 +183,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
         private var shipping: Shipping? = null
 
         init {
-            paymentIntent.clientSecret?.apply {
+            paymentIntent?.clientSecret?.apply {
                 TokenManager.updateClientSecret(this)
             }
         }
@@ -157,17 +226,18 @@ class AirwallexRecurringWithIntentSession internal constructor(
         }
 
         override fun build(): AirwallexRecurringWithIntentSession {
-            if (paymentIntent.customerId == null) {
-                throw Exception("Customer id is required if the PaymentIntent is created for recurring payment.")
+            require(paymentIntent != null || paymentIntentProvider != null) {
+                "Either paymentIntent or paymentIntentProvider must be provided"
             }
-            return AirwallexRecurringWithIntentSession(
+
+            val session = AirwallexRecurringWithIntentSession(
                 paymentIntent = paymentIntent,
                 nextTriggerBy = nextTriggerBy,
                 requiresCVC = requiresCVC,
                 customerId = customerId,
-                currency = paymentIntent.currency,
+                currency = currency,
                 countryCode = countryCode,
-                amount = paymentIntent.amount,
+                amount = amount,
                 shipping = shipping,
                 isBillingInformationRequired = isBillingInformationRequired,
                 isEmailRequired = isEmailRequired,
@@ -176,7 +246,11 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 paymentMethods = paymentMethods,
                 googlePayOptions = googlePayOptions,
                 merchantTriggerReason = merchantTriggerReason
-            )
+            ).apply {
+                // Set the provider directly on the session (transient field, won't be parceled)
+                paymentIntentProvider = this@Builder.paymentIntentProvider
+            }
+            return session
         }
     }
 }

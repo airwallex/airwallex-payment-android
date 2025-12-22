@@ -11,6 +11,8 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebViewFeature
 import com.airwallex.android.core.AirwallexPlugins.AIRWALLEX_USER_AGENT
 import com.airwallex.paymentacceptance.databinding.ActivityH5WebviewBinding
 
@@ -48,6 +50,10 @@ class H5WebViewActivity : AppCompatActivity() {
             settings.cacheMode = WebSettings.LOAD_NO_CACHE
             settings.defaultTextEncodingName = "UTF-8"
             settings.userAgentString = AIRWALLEX_USER_AGENT
+            if (WebViewFeature.isFeatureSupported(
+                    WebViewFeature.PAYMENT_REQUEST)) {
+                WebSettingsCompat.setPaymentRequestEnabled(settings, true);
+            }
 
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
