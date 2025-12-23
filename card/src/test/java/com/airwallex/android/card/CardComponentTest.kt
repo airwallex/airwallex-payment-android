@@ -1,7 +1,7 @@
 package com.airwallex.android.card
 
-import android.app.Activity
 import android.content.Context
+import androidx.activity.ComponentActivity
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexApiRepository
 import com.airwallex.android.core.AirwallexPaymentManager
@@ -20,7 +20,7 @@ import kotlin.test.assertNotNull
 
 class CardComponentTest {
     private lateinit var component: CardComponent
-    private lateinit var activity: Activity
+    private lateinit var activity: ComponentActivity
     private lateinit var context: Context
     private lateinit var listener: Airwallex.PaymentResultListener
 

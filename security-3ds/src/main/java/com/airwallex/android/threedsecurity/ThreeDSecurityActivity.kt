@@ -3,6 +3,7 @@ package com.airwallex.android.threedsecurity
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexApiRepository
 import com.airwallex.android.core.AirwallexPaymentManager
@@ -40,13 +41,18 @@ class ThreeDSecurityActivity : AirwallexActivity() {
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_close
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val webView = viewBinding.webView.apply {
-            webViewClient = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
+        val client = ThreeDSecureWebViewClient(
+            { lifecycleScope },
+            object : ThreeDSecureWebViewClient.Callbacks {
                 override fun onWebViewConfirmation(payload: String) {
-                    AirwallexLogger.info("ThreeDSecurityActivity onWebViewConfirmation", sensitiveMessage = "payload = $payload")
+                    AirwallexLogger.info(
+                        "ThreeDSecurityActivity onWebViewConfirmation",
+                        sensitiveMessage = "payload = $payload"
+                    )
                     paymentManager.startOperation(
                         args.options,
                         object : Airwallex.PaymentListener<PaymentIntent> {
@@ -83,9 +89,13 @@ class ThreeDSecurityActivity : AirwallexActivity() {
                 override fun onPageStarted(url: String?) {
                     AirwallexLogger.debug("onPageStarted $url")
                 }
-            })
+            }
+        )
+
+        viewBinding.webView.apply {
+            this.webViewClient = client
+            postUrl(args.url, args.body.toByteArray())
         }
-        webView.postUrl(args.url, args.body.toByteArray())
     }
 
     private fun finishWithData(

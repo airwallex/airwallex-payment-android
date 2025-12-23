@@ -1,7 +1,7 @@
 package com.airwallex.android.core.extension
 
-import android.app.Activity
 import android.content.Context
+import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
@@ -12,7 +12,7 @@ import java.util.*
 @Suppress("LongParameterList")
 internal fun ActionComponent.confirmGooglePayIntent(
     fragment: Fragment?,
-    activityProvider: (() -> Activity),
+    activityProvider: (() -> ComponentActivity),
     paymentManager: PaymentManager,
     applicationContext: Context,
     paymentIntentId: String,
