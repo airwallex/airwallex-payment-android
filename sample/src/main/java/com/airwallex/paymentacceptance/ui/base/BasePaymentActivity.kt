@@ -135,7 +135,7 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
      * Override in subclasses to handle cancellation (e.g., stop polling, finish activity).
      */
     open fun onLoadingCancelled() {
-        // Default: do nothing
+        mViewModel.stopPolling()
     }
 
     private fun endWait() {

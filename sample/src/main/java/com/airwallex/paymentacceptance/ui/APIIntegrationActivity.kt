@@ -44,10 +44,6 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
         return emptyList()
     }
 
-    override fun onLoadingCancelled() {
-        mViewModel.stopPolling()
-    }
-
     private fun handlePollingResult(result: PaymentStatusPoller.PollingResult) {
         when (result) {
             is PaymentStatusPoller.PollingResult.Complete -> {
