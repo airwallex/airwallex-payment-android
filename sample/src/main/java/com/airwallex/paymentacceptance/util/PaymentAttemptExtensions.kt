@@ -12,7 +12,7 @@ fun PaymentIntent.PaymentAttempt.getDescription(): String {
 
     // Otherwise, show status description
     return when (status?.uppercase()) {
-        "AUTHORIZED", "CAPTURE_REQUESTED", "SETTLED", "PAID" -> "SUCCEED"
+        "AUTHORIZED", "CAPTURE_REQUESTED", "REQUESTED_CAPTURE", "SETTLED", "PAID" -> "SUCCEED"
         else -> status ?: "UNKNOWN"
     }
 }
@@ -34,7 +34,7 @@ fun PaymentIntent.PaymentAttempt.isFinal(): Boolean {
 
     // Check if status is one of the final statuses
     return status?.uppercase() in listOf(
-        "AUTHORIZED", "CAPTURE_REQUESTED", "EXPIRED",
+        "AUTHORIZED", "CAPTURE_REQUESTED", "REQUESTED_CAPTURE", "EXPIRED",
         "CANCELLED", "FAILED", "SETTLED", "PAID"
     )
 }
