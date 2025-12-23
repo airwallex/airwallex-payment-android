@@ -3,7 +3,7 @@ package com.airwallex.paymentacceptance.repo
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.paymentacceptance.Settings
 
-enum class ReturnUrl(private val subpath: String) {
+enum class DemoReturnUrl(private val subpath: String) {
     UIIntegration("/ui"),
     APIIntegration("/api");
 
@@ -15,7 +15,7 @@ interface BaseRepository {
     suspend fun getPaymentIntentFromServer(
         force3DS: Boolean? = false,
         customerId: String? = null,
-        returnUrl: ReturnUrl
+        returnUrl: DemoReturnUrl
     ): PaymentIntent
 
     suspend fun getCustomerIdFromServer(saveCustomerIdToSetting: Boolean): String

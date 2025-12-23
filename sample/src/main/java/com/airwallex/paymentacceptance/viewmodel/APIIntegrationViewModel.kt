@@ -3,7 +3,6 @@ package com.airwallex.paymentacceptance.viewmodel
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -24,10 +23,9 @@ import com.airwallex.paymentacceptance.DemoPaymentIntentSource
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.nextTriggerBy
-import com.airwallex.paymentacceptance.repo.ReturnUrl
+import com.airwallex.paymentacceptance.repo.DemoReturnUrl
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -262,7 +260,7 @@ class APIIntegrationViewModel : BaseViewModel() {
                 } else {
                     //get the paymentIntent object from your server
                     //please do not directly copy this method!
-                    val paymentIntent = getPaymentIntentFromServer(force3DS, customerId, ReturnUrl.APIIntegration)
+                    val paymentIntent = getPaymentIntentFromServer(force3DS, customerId, DemoReturnUrl.APIIntegration)
                     buildAirwallexPaymentSession(googlePayOptions, paymentIntent)
                 }
             }
@@ -290,7 +288,7 @@ class APIIntegrationViewModel : BaseViewModel() {
                     //please do not directly copy these method!
                     val customerId = getCustomerIdFromServer()
                     val paymentIntent =
-                        getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId, ReturnUrl.APIIntegration)
+                        getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId, DemoReturnUrl.APIIntegration)
                     //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                     return buildAirwallexRecurringWithIntentSession(googlePayOptions, paymentIntent)
                 }
@@ -313,7 +311,7 @@ class APIIntegrationViewModel : BaseViewModel() {
         )
             .setRequireBillingInformation(true)
             .setRequireEmail(Settings.requiresEmail.toBoolean())
-            .setReturnUrl(ReturnUrl.APIIntegration.fullUrl)
+            .setReturnUrl(DemoReturnUrl.APIIntegration.fullUrl)
             .setAutoCapture(autoCapture)
             .setHidePaymentConsents(false)
             .setPaymentMethods(listOf())
@@ -342,7 +340,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setShipping(shipping)
             //only nextTriggerBy is merchant, merchantTriggerReason is required
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-            .setReturnUrl(ReturnUrl.APIIntegration.fullUrl)
+            .setReturnUrl(DemoReturnUrl.APIIntegration.fullUrl)
             .setPaymentMethods(listOf())
             .setGooglePayOptions(googlePayOptions)
             .build()
@@ -367,7 +365,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setRequireEmail(Settings.requiresEmail.toBoolean())
             //only nextTriggerBy is merchant, merchantTriggerReason is required
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
-            .setReturnUrl(ReturnUrl.APIIntegration.fullUrl)
+            .setReturnUrl(DemoReturnUrl.APIIntegration.fullUrl)
             .setAutoCapture(autoCapture)
             .setPaymentMethods(listOf())
             .setGooglePayOptions(googlePayOptions)
@@ -387,7 +385,7 @@ class APIIntegrationViewModel : BaseViewModel() {
         paymentIntentSource = DemoPaymentIntentSource(
             force3DS = force3DS,
             customerId = Settings.cachedCustomerId,
-            returnUrl = ReturnUrl.APIIntegration
+            returnUrl = DemoReturnUrl.APIIntegration
         ),
         countryCode = Settings.countryCode,
         customerId = customerId,
@@ -395,7 +393,7 @@ class APIIntegrationViewModel : BaseViewModel() {
     )
         .setRequireBillingInformation(true)
         .setRequireEmail(Settings.requiresEmail.toBoolean())
-        .setReturnUrl(ReturnUrl.APIIntegration.fullUrl)
+        .setReturnUrl(DemoReturnUrl.APIIntegration.fullUrl)
         .setAutoCapture(autoCapture)
         .setHidePaymentConsents(false)
         .setPaymentMethods(listOf())
@@ -415,7 +413,7 @@ class APIIntegrationViewModel : BaseViewModel() {
         paymentIntentProvider = DemoPaymentIntentProvider(
             force3DS = com.airwallex.paymentacceptance.force3DS,
             customerId = Settings.cachedCustomerId,
-            returnUrl = ReturnUrl.APIIntegration
+            returnUrl = DemoReturnUrl.APIIntegration
         ),
         customerId = customerId,
         nextTriggerBy = nextTriggerBy,
@@ -423,7 +421,7 @@ class APIIntegrationViewModel : BaseViewModel() {
     )
         .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-        .setReturnUrl(ReturnUrl.APIIntegration.fullUrl)
+        .setReturnUrl(DemoReturnUrl.APIIntegration.fullUrl)
         .setAutoCapture(autoCapture)
         .setGooglePayOptions(googlePayOptions)
         .setPaymentMethods(listOf())

@@ -2,7 +2,7 @@ package com.airwallex.paymentacceptance
 
 import com.airwallex.android.core.PaymentIntentProvider
 import com.airwallex.paymentacceptance.repo.PACheckoutDemoRepository
-import com.airwallex.paymentacceptance.repo.ReturnUrl
+import com.airwallex.paymentacceptance.repo.DemoReturnUrl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,7 +17,7 @@ class DemoPaymentIntentProvider(
     override val amount: java.math.BigDecimal = Settings.price.toBigDecimal(),
     private val force3DS: Boolean = Settings.force3DS == "True",
     private val customerId: String? = Settings.cachedCustomerId,
-    private val returnUrl: ReturnUrl,
+    private val returnUrl: DemoReturnUrl,
 ) : PaymentIntentProvider {
 
     override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {

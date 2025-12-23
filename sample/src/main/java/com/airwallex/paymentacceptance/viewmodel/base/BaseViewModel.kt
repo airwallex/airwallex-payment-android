@@ -15,7 +15,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.paymentacceptance.repo.RepositoryProvider
-import com.airwallex.paymentacceptance.repo.ReturnUrl
+import com.airwallex.paymentacceptance.repo.DemoReturnUrl
 import com.airwallex.paymentacceptance.util.PaymentStatusPoller
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -141,7 +141,7 @@ abstract class BaseViewModel : ViewModel() {
     suspend fun getPaymentIntentFromServer(
         force3DS: Boolean = false,
         customerId: String? = null,
-        returnUrl: ReturnUrl
+        returnUrl: DemoReturnUrl
     ): PaymentIntent {
         return repository.getPaymentIntentFromServer(force3DS, customerId, returnUrl)
     }

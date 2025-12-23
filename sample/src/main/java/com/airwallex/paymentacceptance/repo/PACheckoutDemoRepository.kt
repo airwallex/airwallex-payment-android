@@ -34,7 +34,7 @@ class PACheckoutDemoRepository : BaseRepository {
     override suspend fun getPaymentIntentFromServer(
         force3DS: Boolean?,
         customerId: String?,
-        returnUrl: ReturnUrl
+        returnUrl: DemoReturnUrl
     ): PaymentIntent {
         val body = mutableMapOf(
             "apiKey" to Settings.apiKey,

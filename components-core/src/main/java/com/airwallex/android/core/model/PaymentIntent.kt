@@ -204,12 +204,12 @@ data class PaymentIntent(
             /**
              * Original response code from payment provider
              */
-            val originalResponseCode: String? = null,
+            val originalResponseCode: String?,
 
             /**
              * Original response message from payment provider
              */
-            val originalResponseMessage: String? = null
+            val originalResponseMessage: String?
         ) : AirwallexModel, Parcelable
     }
 

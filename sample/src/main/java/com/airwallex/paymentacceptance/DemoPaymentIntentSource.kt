@@ -3,7 +3,7 @@ package com.airwallex.paymentacceptance
 import com.airwallex.android.core.PaymentIntentSource
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.paymentacceptance.repo.PACheckoutDemoRepository
-import com.airwallex.paymentacceptance.repo.ReturnUrl
+import com.airwallex.paymentacceptance.repo.DemoReturnUrl
 
 /**
  * Example implementation of PaymentIntentSource using modern suspend functions.
@@ -16,7 +16,7 @@ class DemoPaymentIntentSource(
     override val amount: java.math.BigDecimal = Settings.price.toBigDecimal(),
     private val force3DS: Boolean = Settings.force3DS == "True",
     private val customerId: String? = Settings.cachedCustomerId,
-    private val returnUrl: ReturnUrl
+    private val returnUrl: DemoReturnUrl
 ) : PaymentIntentSource {
     private val repository = PACheckoutDemoRepository()
 
