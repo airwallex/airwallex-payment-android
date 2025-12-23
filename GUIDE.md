@@ -124,9 +124,23 @@ AirwallexStarter.initialize(
 
 ## Payment Flow
 
+The Airwallex Android SDK supports two payment flows:
+
+1. **Standard Flow**: Create PaymentIntent on your server before presenting the payment UI. This is the traditional approach where the payment amount and details are known upfront.
+
+2. **Express Checkout**: Provide a `PaymentIntentProvider` or `PaymentIntentSource` that creates the PaymentIntent on demand after collecting payment details from the user. This is useful when:
+   - You want to minimize upfront server calls
+   - You want to reduce the chance of PaymentIntent expiration by creating it only when the user is actively proceeding with payment
+   - You want to avoid creating PaymentIntents for users who abandon the checkout flow early
+   - You need real-time validation of inventory or stock availability at the moment of payment
+
+Both flows are fully supported and you can choose the one that best fits your use case.
+
 ### 1. Create a Payment Intent (Server-side)
 
-Before using the SDK, you need to create a Payment Intent on your server:
+For the **Standard Flow**, you need to create a Payment Intent on your server before presenting the payment UI.
+
+For **Express Checkout**, you'll create the PaymentIntent within your `PaymentIntentProvider` or `PaymentIntentSource` implementation when the SDK requests it.
 
 1. **Obtain an access token**: Generate this using your Client ID and API key from [Account settings > API keys](https://www.airwallex.com/app/settings/api) and call the Authentication API.
 
@@ -136,16 +150,20 @@ Before using the SDK, you need to create a Payment Intent on your server:
 
 ### 2. Create an Airwallex Session
 
-Create an appropriate session object based on your payment scenario:
+Create an appropriate session object based on your payment scenario. You can choose between two approaches:
+- **Standard Flow**: Create PaymentIntent upfront on your server, then pass it to the SDK
+- **Express Checkout**: Provide a PaymentIntentProvider to create PaymentIntent on demand after collecting payment details
 
 #### Standard Payment Session
+
+**Standard Flow** (PaymentIntent created upfront):
 ```kotlin
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.AirwallexPaymentSession
 
 
-// call https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post api 
-// and get intent id, client secret from response.   
+// call https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post api
+// and get intent id, client secret from response.
 val paymentIntent = PaymentIntent(
     id = "REPLACE_WITH_YOUR_PAYMENT_INTENT_ID",
     clientSecret = "REPLACE_WITH_YOUR_CLIENT_SECRET",
@@ -164,6 +182,72 @@ val paymentSession = AirwallexPaymentSession.Builder(
     .setAutoCapture(autoCapture)
     .setHidePaymentConsents(false)
     .setPaymentMethods(listOf()) // Empty list for all available methods
+    .build()
+```
+
+**Express Checkout Flow** (PaymentIntent created on demand):
+```kotlin
+import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.PaymentIntentProvider
+import com.airwallex.android.core.PaymentIntentSource
+
+
+// Option 1: Using PaymentIntentProvider (callback-based, Java-compatible)
+class MyPaymentIntentProvider : PaymentIntentProvider {
+    override val currency: String = "USD"
+    override val amount: BigDecimal = 100.toBigDecimal()
+
+    override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+        // Make API call to create PaymentIntent when needed
+        myApiService.createPaymentIntent { result ->
+            when (result) {
+                is Success -> callback.onSuccess(result.paymentIntent)
+                is Error -> callback.onError(result.exception)
+            }
+        }
+    }
+}
+
+val provider = MyPaymentIntentProvider()
+val session = AirwallexPaymentSession.Builder(
+    paymentIntentProvider = provider,
+    countryCode = countryCode,
+    customerId = customerId, // Optional
+    googlePayOptions = googlePayOptions // Optional
+)
+    .setRequireBillingInformation(true)
+    .setRequireEmail(requireEmail)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .setHidePaymentConsents(false)
+    .setPaymentMethods(listOf())
+    .build()
+
+
+// Option 2: Using PaymentIntentSource (suspend-based, recommended for Kotlin)
+class MyPaymentIntentSource : PaymentIntentSource {
+    override val currency: String = "USD"
+    override val amount: BigDecimal = 100.toBigDecimal()
+
+    override suspend fun getPaymentIntent(): PaymentIntent {
+        // Make API call using suspend functions
+        return myApiService.createPaymentIntent()
+    }
+}
+
+val source = MyPaymentIntentSource()
+val session = AirwallexPaymentSession.Builder(
+    paymentIntentSource = source,
+    countryCode = countryCode,
+    customerId = customerId, // Optional
+    googlePayOptions = googlePayOptions // Optional
+)
+    .setRequireBillingInformation(true)
+    .setRequireEmail(requireEmail)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .setHidePaymentConsents(false)
+    .setPaymentMethods(listOf())
     .build()
 ```
 
@@ -190,12 +274,55 @@ val recurringSession = AirwallexRecurringSession.Builder(
 ```
 
 #### Recurring Payment with Intent Session
+
+**Standard Flow** (PaymentIntent created upfront):
 ```kotlin
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.model.PaymentIntent
 
 val recurringWithIntentSession = AirwallexRecurringWithIntentSession.Builder(
     paymentIntent = paymentIntent,
+    customerId = customerId,
+    nextTriggerBy = nextTriggerBy,
+    countryCode = countryCode
+)
+    .setRequireEmail(requireEmail)
+    .setRequireCvc(requireCVC)
+    .setMerchantTriggerReason(merchantTriggerReason)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .setPaymentMethods(listOf())
+    .build()
+```
+
+**Express Checkout Flow** (PaymentIntent created on demand):
+```kotlin
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
+import com.airwallex.android.core.PaymentIntentProvider
+import com.airwallex.android.core.PaymentIntentSource
+
+
+// Option 1: Using PaymentIntentProvider
+val provider = MyPaymentIntentProvider() // Same provider implementation as above
+val session = AirwallexRecurringWithIntentSession.Builder(
+    paymentIntentProvider = provider,
+    customerId = customerId,
+    nextTriggerBy = nextTriggerBy,
+    countryCode = countryCode
+)
+    .setRequireEmail(requireEmail)
+    .setRequireCvc(requireCVC)
+    .setMerchantTriggerReason(merchantTriggerReason)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .setPaymentMethods(listOf())
+    .build()
+
+
+// Option 2: Using PaymentIntentSource (recommended for Kotlin)
+val source = MyPaymentIntentSource() // Same source implementation as above
+val session = AirwallexRecurringWithIntentSession.Builder(
+    paymentIntentSource = source,
     customerId = customerId,
     nextTriggerBy = nextTriggerBy,
     countryCode = countryCode
