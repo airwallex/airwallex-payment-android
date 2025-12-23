@@ -1,16 +1,14 @@
 package com.airwallex.paymentacceptance.ui
 
-import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.airwallex.android.core.Airwallex.Companion.AIRWALLEX_CHECKOUT_SCHEMA
 import com.airwallex.android.core.AirwallexPaymentStatus
-import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.ui.base.BasePaymentTypeActivity
 import com.airwallex.paymentacceptance.ui.bean.ButtonItem
+import com.airwallex.paymentacceptance.util.PaymentStatusPoller
 import com.airwallex.paymentacceptance.viewmodel.UIIntegrationViewModel
 import kotlinx.coroutines.launch
 
@@ -31,6 +29,13 @@ class UIIntegrationActivity :
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 mViewModel.airwallexPaymentStatus.collect { status ->
                     handleStatusUpdate(status)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                mViewModel.pollingResult.collect { result ->
+                    handlePollingResult(result)
                 }
             }
         }
@@ -100,6 +105,7 @@ class UIIntegrationActivity :
                 // redirecting
                 Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
                 showPaymentInProgress()
+                setLoadingProgress(loading = true, cancellable = true)
             }
 
             is AirwallexPaymentStatus.Failure -> {
@@ -141,14 +147,20 @@ class UIIntegrationActivity :
         refreshButtons(selectedOption)
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-
-        if (intent.scheme == AIRWALLEX_CHECKOUT_SCHEMA) {
-            showAlert(
-                getString(R.string.payment_successful),
-                getString(R.string.payment_successful_message)
-            )
+    private fun handlePollingResult(result: PaymentStatusPoller.PollingResult) {
+        when (result) {
+            is PaymentStatusPoller.PollingResult.Complete -> {
+                showAlert("Payment Result", result.description)
+            }
+            is PaymentStatusPoller.PollingResult.Timeout -> {
+                showAlert("Polling Timeout", result.description)
+            }
+            is PaymentStatusPoller.PollingResult.Error -> {
+                showPaymentError(result.message)
+            }
+            is PaymentStatusPoller.PollingResult.PaymentAttemptNotFound -> {
+                showPaymentError("Payment attempt not found")
+            }
         }
     }
 

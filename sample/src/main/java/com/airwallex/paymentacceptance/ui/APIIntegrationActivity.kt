@@ -19,6 +19,7 @@ import com.airwallex.paymentacceptance.card
 import com.airwallex.paymentacceptance.card3DS
 import com.airwallex.paymentacceptance.ui.base.BasePaymentTypeActivity
 import com.airwallex.paymentacceptance.ui.bean.ButtonItem
+import com.airwallex.paymentacceptance.util.PaymentStatusPoller
 import com.airwallex.paymentacceptance.viewmodel.APIIntegrationViewModel
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
@@ -41,6 +42,23 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
 
     override fun getButtonList(): List<ButtonItem> {
         return emptyList()
+    }
+
+    private fun handlePollingResult(result: PaymentStatusPoller.PollingResult) {
+        when (result) {
+            is PaymentStatusPoller.PollingResult.Complete -> {
+                showAlert("Payment Result", result.description)
+            }
+            is PaymentStatusPoller.PollingResult.Timeout -> {
+                showAlert("Polling Timeout", result.description)
+            }
+            is PaymentStatusPoller.PollingResult.Error -> {
+                showPaymentError(result.message)
+            }
+            is PaymentStatusPoller.PollingResult.PaymentAttemptNotFound -> {
+                showPaymentError("Payment attempt not found")
+            }
+        }
     }
 
     override fun refreshButtons(selectedOption: Int) {
@@ -132,6 +150,13 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 }
             }
         }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                mViewModel.pollingResult.collect { result ->
+                    handlePollingResult(result)
+                }
+            }
+        }
         mViewModel.isLoading.observe(this) { isLoading ->
             setLoadingProgress(isLoading)
         }
@@ -216,6 +241,7 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 // redirecting
                 Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
                 showPaymentInProgress()
+                setLoadingProgress(loading = true, cancellable = true)
             }
 
             is AirwallexPaymentStatus.Failure -> {

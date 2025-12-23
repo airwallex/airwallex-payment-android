@@ -168,8 +168,50 @@ data class PaymentIntent(
         /**
          * Authentication data used by the payment attempt
          */
-        val authenticationData: PaymentAttemptAuthData?
+        val authenticationData: PaymentAttemptAuthData?,
+
+        /**
+         * Status of the payment attempt
+         */
+        val status: String? = null,
+
+        /**
+         * Failure details if the payment attempt failed
+         */
+        val failureDetails: FailureDetails? = null
     ) : AirwallexModel, Parcelable
+
+    @Parcelize
+    data class FailureDetails(
+        /**
+         * Failure code
+         */
+        val code: String,
+
+        /**
+         * Failure message
+         */
+        val message: String,
+
+        /**
+         * Additional failure details
+         */
+        val details: Details?
+    ) : AirwallexModel, Parcelable {
+
+        @Parcelize
+        data class Details(
+            /**
+             * Original response code from payment provider
+             */
+            val originalResponseCode: String?,
+
+            /**
+             * Original response message from payment provider
+             */
+            val originalResponseMessage: String?
+        ) : AirwallexModel, Parcelable
+    }
 
     @Parcelize
     data class PaymentAttemptAuthData(

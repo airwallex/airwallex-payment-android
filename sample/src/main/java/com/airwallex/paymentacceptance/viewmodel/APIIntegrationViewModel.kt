@@ -3,7 +3,6 @@ package com.airwallex.paymentacceptance.viewmodel
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -24,12 +23,9 @@ import com.airwallex.paymentacceptance.DemoPaymentIntentSource
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.nextTriggerBy
+import com.airwallex.paymentacceptance.repo.DemoReturnUrl
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -38,13 +34,6 @@ class APIIntegrationViewModel : BaseViewModel() {
     //create your own Airwallex instance to call the APIs.
     private var airwallex: Airwallex? = null
 
-    // AirwallexPaymentStatus is the result returned by the payment flow. You can add your own handling logic based on the final result.
-    // Using SharedFlow with default replay=0 ensures the event is only delivered once to active collectors
-    // This prevents duplicate callbacks on configuration changes
-    private val _airwallexPaymentStatus = MutableSharedFlow<AirwallexPaymentStatus>()
-    val airwallexPaymentStatus: SharedFlow<AirwallexPaymentStatus> =
-        _airwallexPaymentStatus.asSharedFlow()
-
     private val _paymentMethodList = MutableLiveData<List<AvailablePaymentMethodType>>()
     val paymentMethodList: LiveData<List<AvailablePaymentMethodType>> = _paymentMethodList
 
@@ -52,6 +41,7 @@ class APIIntegrationViewModel : BaseViewModel() {
     val paymentConsentList: LiveData<List<PaymentConsent>> = _paymentConsentList
 
     override fun init(activity: ComponentActivity) {
+        super.init(activity)
         airwallex = Airwallex(activity)
     }
 
@@ -93,9 +83,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             session = session,
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    viewModelScope.launch {
-                        _airwallexPaymentStatus.emit(status)
-                    }
+                    handlePaymentStatus(session, status)
                 }
             }
         )
@@ -122,10 +110,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             paymentMethodName = "alipayhk",
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    viewModelScope.launch {
-                        stopLoading()
-                        _airwallexPaymentStatus.emit(status)
-                    }
+                    handlePaymentStatus(session, status)
                 }
             }
         )
@@ -144,10 +129,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             paymentConsent = paymentConsent,
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    viewModelScope.launch {
-                        stopLoading()
-                        _airwallexPaymentStatus.emit(status)
-                    }
+                    handlePaymentStatus(session, status)
                 }
             }
         )
@@ -244,11 +226,8 @@ class APIIntegrationViewModel : BaseViewModel() {
                 saveCard = saveCard,
                 listener = object : Airwallex.PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
-                        viewModelScope.launch {
-                            stopLoading()
-                            _airwallexPaymentStatus.emit(status)
-                            continuation.resume(Unit)
-                        }
+                        handlePaymentStatus(session, status)
+                        continuation.resume(Unit)
                     }
                 }
             )
@@ -281,7 +260,7 @@ class APIIntegrationViewModel : BaseViewModel() {
                 } else {
                     //get the paymentIntent object from your server
                     //please do not directly copy this method!
-                    val paymentIntent = getPaymentIntentFromServer(force3DS, customerId)
+                    val paymentIntent = getPaymentIntentFromServer(force3DS, customerId, DemoReturnUrl.APIIntegration)
                     buildAirwallexPaymentSession(googlePayOptions, paymentIntent)
                 }
             }
@@ -309,7 +288,7 @@ class APIIntegrationViewModel : BaseViewModel() {
                     //please do not directly copy these method!
                     val customerId = getCustomerIdFromServer()
                     val paymentIntent =
-                        getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId)
+                        getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId, DemoReturnUrl.APIIntegration)
                     //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                     return buildAirwallexRecurringWithIntentSession(googlePayOptions, paymentIntent)
                 }
@@ -332,7 +311,7 @@ class APIIntegrationViewModel : BaseViewModel() {
         )
             .setRequireBillingInformation(true)
             .setRequireEmail(Settings.requiresEmail.toBoolean())
-            .setReturnUrl(Settings.returnUrl)
+            .setReturnUrl(DemoReturnUrl.APIIntegration.fullUrl)
             .setAutoCapture(autoCapture)
             .setHidePaymentConsents(false)
             .setPaymentMethods(listOf())
@@ -361,7 +340,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setShipping(shipping)
             //only nextTriggerBy is merchant, merchantTriggerReason is required
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-            .setReturnUrl(Settings.returnUrl)
+            .setReturnUrl(DemoReturnUrl.APIIntegration.fullUrl)
             .setPaymentMethods(listOf())
             .setGooglePayOptions(googlePayOptions)
             .build()
@@ -386,7 +365,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             .setRequireEmail(Settings.requiresEmail.toBoolean())
             //only nextTriggerBy is merchant, merchantTriggerReason is required
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
-            .setReturnUrl(Settings.returnUrl)
+            .setReturnUrl(DemoReturnUrl.APIIntegration.fullUrl)
             .setAutoCapture(autoCapture)
             .setPaymentMethods(listOf())
             .setGooglePayOptions(googlePayOptions)
@@ -405,7 +384,8 @@ class APIIntegrationViewModel : BaseViewModel() {
         // Example with paymentIntentProvider: paymentIntentProvider = DemoPaymentIntentProvider(force3DS = force3DS, customerId = Settings.cachedCustomerId)
         paymentIntentSource = DemoPaymentIntentSource(
             force3DS = force3DS,
-            customerId = Settings.cachedCustomerId
+            customerId = Settings.cachedCustomerId,
+            returnUrl = DemoReturnUrl.APIIntegration
         ),
         countryCode = Settings.countryCode,
         customerId = customerId,
@@ -413,7 +393,7 @@ class APIIntegrationViewModel : BaseViewModel() {
     )
         .setRequireBillingInformation(true)
         .setRequireEmail(Settings.requiresEmail.toBoolean())
-        .setReturnUrl(Settings.returnUrl)
+        .setReturnUrl(DemoReturnUrl.APIIntegration.fullUrl)
         .setAutoCapture(autoCapture)
         .setHidePaymentConsents(false)
         .setPaymentMethods(listOf())
@@ -432,7 +412,8 @@ class APIIntegrationViewModel : BaseViewModel() {
         // Example with paymentIntentSource: PaymentIntentSource = DemoPaymentIntentSource(force3DS = force3DS, customerId = Settings.cachedCustomerId)
         paymentIntentProvider = DemoPaymentIntentProvider(
             force3DS = com.airwallex.paymentacceptance.force3DS,
-            customerId = Settings.cachedCustomerId
+            customerId = Settings.cachedCustomerId,
+            returnUrl = DemoReturnUrl.APIIntegration
         ),
         customerId = customerId,
         nextTriggerBy = nextTriggerBy,
@@ -440,11 +421,10 @@ class APIIntegrationViewModel : BaseViewModel() {
     )
         .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
-        .setReturnUrl(Settings.returnUrl)
+        .setReturnUrl(DemoReturnUrl.APIIntegration.fullUrl)
         .setAutoCapture(autoCapture)
         .setGooglePayOptions(googlePayOptions)
         .setPaymentMethods(listOf())
         .setShipping(shipping)
         .build()
-
 }
