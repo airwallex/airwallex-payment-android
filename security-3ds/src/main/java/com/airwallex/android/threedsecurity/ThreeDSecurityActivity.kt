@@ -3,6 +3,7 @@ package com.airwallex.android.threedsecurity
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexApiRepository
 import com.airwallex.android.core.AirwallexPaymentManager
@@ -33,8 +34,6 @@ class ThreeDSecurityActivity : AirwallexActivity() {
         AirwallexPaymentManager(AirwallexApiRepository())
     }
 
-    private var webViewClient: ThreeDSecureWebViewClient? = null
-
     override fun onBackButtonPressed() {
         finishWithData(exception = AirwallexCheckoutException(message = "3DS has been cancelled!"))
     }
@@ -42,12 +41,18 @@ class ThreeDSecurityActivity : AirwallexActivity() {
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_close
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val client = ThreeDSecureWebViewClient(object : ThreeDSecureWebViewClient.Callbacks {
-            override fun onWebViewConfirmation(payload: String) {
-                    AirwallexLogger.info("ThreeDSecurityActivity onWebViewConfirmation", sensitiveMessage = "payload = $payload")
+        val client = ThreeDSecureWebViewClient(
+            { lifecycleScope },
+            object : ThreeDSecureWebViewClient.Callbacks {
+                override fun onWebViewConfirmation(payload: String) {
+                    AirwallexLogger.info(
+                        "ThreeDSecurityActivity onWebViewConfirmation",
+                        sensitiveMessage = "payload = $payload"
+                    )
                     paymentManager.startOperation(
                         args.options,
                         object : Airwallex.PaymentListener<PaymentIntent> {
@@ -81,21 +86,16 @@ class ThreeDSecurityActivity : AirwallexActivity() {
                     AirwallexLogger.debug("onPageFinished $url")
                 }
 
-            override fun onPageStarted(url: String?) {
-                AirwallexLogger.debug("onPageStarted $url")
+                override fun onPageStarted(url: String?) {
+                    AirwallexLogger.debug("onPageStarted $url")
+                }
             }
-        })
-        webViewClient = client
+        )
 
         viewBinding.webView.apply {
             this.webViewClient = client
             postUrl(args.url, args.body.toByteArray())
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        webViewClient?.cleanup()
     }
 
     private fun finishWithData(

@@ -1,7 +1,7 @@
 package com.airwallex.android.core.extension
 
-import android.app.Activity
 import android.content.Context
+import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
@@ -16,7 +16,7 @@ import org.junit.Test
 class ActionComponentProviderExtensionsTest {
     private val actionComponent = spyk<ActionComponent>()
     private val fragment = mockk<Fragment>()
-    private val activity = mockk<Activity>()
+    private val activity = mockk<ComponentActivity>()
     private val paymentManager = mockk<PaymentManager>(relaxed = true)
     private val context = mockk<Context>()
     private val billing = Billing(

@@ -7,15 +7,13 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
 import com.airwallex.android.ui.AirwallexWebView
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 
-class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
-    AirwallexWebViewClient(callbacks) {
-
-    private val mainScope: CoroutineScope = MainScope()
+class ThreeDSecureWebViewClient(
+    private val scopeProvider: () -> CoroutineScope,
+    private val callbacks: Callbacks
+) : AirwallexWebViewClient(callbacks) {
     private var es6DetectionPending = true
 
     override fun hasCallbackUrl(view: WebView?, url: String?): Boolean {
@@ -103,21 +101,13 @@ class ThreeDSecureWebViewClient(private val callbacks: Callbacks) :
             if (!isSupported) {
                 AirwallexLogger.error("WebView does not support ES6: $message")
                 // Post to main thread to ensure proper callback handling
-                mainScope.launch {
+                scopeProvider().launch {
                     callbacks.onWebViewError(
                         WebViewConnectionException("WebView does not support ES6 features required for 3DS.")
                     )
                 }
             }
         }
-    }
-
-    /**
-     * Cleanup method to cancel pending coroutines
-     * Should be called when the WebViewClient is no longer needed
-     */
-    fun cleanup() {
-        mainScope.cancel()
     }
 
     interface Callbacks : WebViewClientCallbacks {

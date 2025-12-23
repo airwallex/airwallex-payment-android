@@ -6,6 +6,7 @@ import com.airwallex.android.ui.AirwallexWebView
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -25,6 +26,7 @@ import kotlin.test.assertTrue
 class ThreeDSecureWebViewClientTest {
 
     private val testDispatcher = StandardTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
     private lateinit var webView: AirwallexWebView
     private var confirmationCalled = false
     private var errorReceived: WebViewConnectionException? = null
@@ -47,7 +49,7 @@ class ThreeDSecureWebViewClientTest {
         val url = "https://aaa?acsResponse=card"
 
         val callback = createTestCallback()
-        val webViewClient = ThreeDSecureWebViewClient(callback)
+        val webViewClient = ThreeDSecureWebViewClient({ testScope }, callback)
         val hasCallbackUrl = webViewClient.hasCallbackUrl(webView, url)
 
         assertEquals(true, hasCallbackUrl)
@@ -57,7 +59,7 @@ class ThreeDSecureWebViewClientTest {
     @Test
     fun testES6Detection_notSupported() = runTest {
         val callback = createTestCallback()
-        val webViewClient = ThreeDSecureWebViewClient(callback)
+        val webViewClient = ThreeDSecureWebViewClient({ this }, callback)
 
         // Trigger ES6 detection injection
         webViewClient.onPageStarted(webView, "https://test.com", null)
@@ -75,7 +77,7 @@ class ThreeDSecureWebViewClientTest {
     @Test
     fun testES6Detection_supported() = runTest {
         val callback = createTestCallback()
-        val webViewClient = ThreeDSecureWebViewClient(callback)
+        val webViewClient = ThreeDSecureWebViewClient({ this }, callback)
 
         // Trigger ES6 detection injection
         webViewClient.onPageStarted(webView, "https://test.com", null)
@@ -94,7 +96,7 @@ class ThreeDSecureWebViewClientTest {
     @Test
     fun testES6Detection_onlyInjectedOnce() {
         val callback = createTestCallback()
-        val webViewClient = ThreeDSecureWebViewClient(callback)
+        val webViewClient = ThreeDSecureWebViewClient({ testScope }, callback)
 
         // First page start - should inject
         webViewClient.onPageStarted(webView, "https://test.com", null)
@@ -110,7 +112,7 @@ class ThreeDSecureWebViewClientTest {
     @Test
     fun testHasCallbackUrl_withAcsResponse() {
         val callback = createTestCallback()
-        val webViewClient = ThreeDSecureWebViewClient(callback)
+        val webViewClient = ThreeDSecureWebViewClient({ testScope }, callback)
 
         val url = "https://example.com?acsResponse=encodedPayload"
         val hasCallback = webViewClient.hasCallbackUrl(webView, url)
@@ -122,7 +124,7 @@ class ThreeDSecureWebViewClientTest {
     @Test
     fun testHasCallbackUrl_withAcsResponseAndMultipleParams() {
         val callback = createTestCallback()
-        val webViewClient = ThreeDSecureWebViewClient(callback)
+        val webViewClient = ThreeDSecureWebViewClient({ testScope }, callback)
 
         val url = "https://example.com?acsResponse=encodedPayload&other=param"
         val hasCallback = webViewClient.hasCallbackUrl(webView, url)
@@ -134,7 +136,7 @@ class ThreeDSecureWebViewClientTest {
     @Test
     fun testHasCallbackUrl_withoutAcsResponse() {
         val callback = createTestCallback()
-        val webViewClient = ThreeDSecureWebViewClient(callback)
+        val webViewClient = ThreeDSecureWebViewClient({ testScope }, callback)
 
         val url = "https://example.com?other=param"
         val hasCallback = webViewClient.hasCallbackUrl(webView, url)
@@ -146,7 +148,7 @@ class ThreeDSecureWebViewClientTest {
     @Test
     fun testHasCallbackUrl_emptyAcsResponse() {
         val callback = createTestCallback()
-        val webViewClient = ThreeDSecureWebViewClient(callback)
+        val webViewClient = ThreeDSecureWebViewClient({ testScope }, callback)
 
         val url = "https://example.com?acsResponse="
         val hasCallback = webViewClient.hasCallbackUrl(webView, url)
