@@ -1,5 +1,6 @@
 package com.airwallex.paymentacceptance.viewmodel
 
+import android.content.pm.PackageInstaller
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
@@ -70,9 +71,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    viewModelScope.launch {
-                        _airwallexPaymentStatus.emit(status)
-                    }
+                    handlePaymentStatus(session, status)
                 }
             }
         )
@@ -126,9 +125,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    viewModelScope.launch {
-                        _airwallexPaymentStatus.emit(status)
-                    }
+                    handlePaymentStatus(session, status)
                 }
             }
         )
@@ -180,9 +177,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             session = session,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    viewModelScope.launch {
-                        _airwallexPaymentStatus.emit(status)
-                    }
+                    handlePaymentStatus(session, status)
                 }
             }
         )
@@ -228,9 +223,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             session = session,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    viewModelScope.launch {
-                        _airwallexPaymentStatus.emit(status)
-                    }
+                    handlePaymentStatus(session, status)
                 }
             }
         )
