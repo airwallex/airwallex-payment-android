@@ -1,15 +1,14 @@
 package com.airwallex.paymentacceptance.ui
 
-import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.airwallex.android.core.Airwallex.Companion.AIRWALLEX_CHECKOUT_SCHEMA
 import com.airwallex.android.core.AirwallexPaymentStatus
-import com.airwallex.paymentacceptance.R
+import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.ui.base.BasePaymentTypeActivity
 import com.airwallex.paymentacceptance.ui.bean.ButtonItem
+import com.airwallex.paymentacceptance.util.PaymentStatusPoller
 import com.airwallex.paymentacceptance.viewmodel.UIIntegrationViewModel
 import kotlinx.coroutines.launch
 
@@ -33,8 +32,15 @@ class UIIntegrationActivity :
                 }
             }
         }
-        mViewModel.dialogShowed.observe(this) {
-            setLoadingProgress(false)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                mViewModel.pollingResult.collect { result ->
+                    handlePollingResult(result)
+                }
+            }
+        }
+        mViewModel.isLoading.observe(this) { isLoading ->
+            setLoadingProgress(isLoading)
         }
         mViewModel.airwallexShippingStatus.observe(this) {
 
@@ -42,34 +48,39 @@ class UIIntegrationActivity :
     }
 
     override fun getButtonList(): List<ButtonItem> {
-        return listOf(
+        val allButtons = listOf(
             ButtonItem(LAUNCH_PAYMENT_LIST, "Launch payment list"),
             ButtonItem(LAUNCH_CUSTOM_PAYMENT_LIST, "Launch custom payment list"),
             ButtonItem(LAUNCH_CARD_PAYMENT, "Launch card payment"),
             ButtonItem(LAUNCH_CARD_PAYMENT_DIALOG, "Launch card payment (dialog)"),
             ButtonItem(LAUNCH_SHIPPING_ADDRESS_DIALOG, "Launch shipping address (dialog)")
         )
+
+        return if (Settings.expressCheckout == "Enabled") {
+            // Hide "Launch payment list" and "Launch custom payment list" when Express Checkout is enabled
+            allButtons.filter {
+                it.id != LAUNCH_PAYMENT_LIST && it.id != LAUNCH_CUSTOM_PAYMENT_LIST
+            }
+        } else {
+            allButtons
+        }
     }
 
     override fun handleBtnClick(id: Int) {
         when (id) {
             LAUNCH_PAYMENT_LIST -> {
-                setLoadingProgress(true)
                 mViewModel.launchPaymentList(this)
             }
 
             LAUNCH_CUSTOM_PAYMENT_LIST -> {
-                setLoadingProgress(true)
                 mViewModel.launchCustomPaymentList(this)
             }
 
             LAUNCH_CARD_PAYMENT -> {
-                setLoadingProgress(true)
                 mViewModel.launchCardPage(this)
             }
 
             LAUNCH_CARD_PAYMENT_DIALOG -> {
-                setLoadingProgress(true)
                 mViewModel.launchCardDialog(this)
             }
 
@@ -81,7 +92,6 @@ class UIIntegrationActivity :
 
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
-        setLoadingProgress(false)
         when (status) {
             is AirwallexPaymentStatus.Success -> {
                 Log.d(
@@ -95,6 +105,7 @@ class UIIntegrationActivity :
                 // redirecting
                 Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
                 showPaymentInProgress()
+                setLoadingProgress(loading = true, cancellable = true)
             }
 
             is AirwallexPaymentStatus.Failure -> {
@@ -113,17 +124,43 @@ class UIIntegrationActivity :
     }
 
     override fun refreshButtons(selectedOption: Int) {
-
+        // Update the button list to reflect Express Checkout changes
+        adapter.updateButtons(getButtonList())
+        // Adjust line margin with tighter spacing for better button positioning
+        mBinding.rvContent.post {
+            adjustLineMargin(60.dpToPx())
+        }
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
+    private fun Int.dpToPx(): Int {
+        return (this * resources.displayMetrics.density).toInt()
+    }
 
-        if (intent.scheme == AIRWALLEX_CHECKOUT_SCHEMA) {
-            showAlert(
-                getString(R.string.payment_successful),
-                getString(R.string.payment_successful_message)
-            )
+    override fun onResume() {
+        super.onResume()
+        // Refresh buttons when returning from settings to reflect Express Checkout changes
+        val selectedOption = when (mBinding.dropdownView.currentOption) {
+            "Recurring" -> 1
+            "Recurring and payment" -> 2
+            else -> 0
+        }
+        refreshButtons(selectedOption)
+    }
+
+    private fun handlePollingResult(result: PaymentStatusPoller.PollingResult) {
+        when (result) {
+            is PaymentStatusPoller.PollingResult.Complete -> {
+                showAlert("Payment Result", result.description)
+            }
+            is PaymentStatusPoller.PollingResult.Timeout -> {
+                showAlert("Polling Timeout", result.description)
+            }
+            is PaymentStatusPoller.PollingResult.Error -> {
+                showPaymentError(result.message)
+            }
+            is PaymentStatusPoller.PollingResult.PaymentAttemptNotFound -> {
+                showPaymentError("Payment attempt not found")
+            }
         }
     }
 

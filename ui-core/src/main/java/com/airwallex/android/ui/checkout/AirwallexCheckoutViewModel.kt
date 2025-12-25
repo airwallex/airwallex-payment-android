@@ -123,15 +123,16 @@ open class AirwallexCheckoutViewModel(
         return suspendCancellableCoroutine { continuation ->
             when (session) {
                 is AirwallexPaymentSession -> {
-                    val paymentIntent = session.paymentIntent
-                    airwallex.retrieveBanks(
-                        RetrieveBankParams.Builder(
-                            clientSecret = requireNotNull(paymentIntent.clientSecret),
-                            paymentMethodType = paymentMethodTypeName
-                        )
-                            .setCountryCode(session.countryCode)
-                            .build(),
-                        object : Airwallex.PaymentListener<BankResponse> {
+                    session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
+                        override fun onSuccess(paymentIntent: PaymentIntent) {
+                            airwallex.retrieveBanks(
+                                RetrieveBankParams.Builder(
+                                    clientSecret = requireNotNull(paymentIntent.clientSecret),
+                                    paymentMethodType = paymentMethodTypeName
+                                )
+                                    .setCountryCode(session.countryCode)
+                                    .build(),
+                                object : Airwallex.PaymentListener<BankResponse> {
                             override fun onFailed(exception: AirwallexException) {
                                 continuation.resume(Result.failure(exception))
                             }
@@ -140,7 +141,13 @@ open class AirwallexCheckoutViewModel(
                                 continuation.resume(Result.success(response))
                             }
                         }
-                    )
+                            )
+                        }
+
+                        override fun onError(error: Throwable) {
+                            continuation.resume(Result.failure(AirwallexCheckoutException(message = error.message, e = error)))
+                        }
+                    })
                 }
 
                 else -> {
@@ -156,29 +163,46 @@ open class AirwallexCheckoutViewModel(
         paymentMethodTypeName: String
     ): Result<PaymentMethodTypeInfo> {
         return suspendCancellableCoroutine { continuation ->
-            val clientSecret = when (session) {
-                is AirwallexPaymentSession -> session.paymentIntent.clientSecret
-                is AirwallexRecurringSession -> session.clientSecret
-                is AirwallexRecurringWithIntentSession -> session.paymentIntent.clientSecret
-                else -> throw AirwallexCheckoutException(message = "Session is not available")
-            }
-            airwallex.retrievePaymentMethodTypeInfo(
-                RetrievePaymentMethodTypeInfoParams.Builder(
-                    clientSecret = requireNotNull(clientSecret),
-                    paymentMethodType = paymentMethodTypeName
-                )
-                    .setFlow(AirwallexPaymentRequestFlow.IN_APP)
-                    .build(),
-                object : Airwallex.PaymentListener<PaymentMethodTypeInfo> {
-                    override fun onFailed(exception: AirwallexException) {
-                        continuation.resume(Result.failure(exception))
-                    }
 
-                    override fun onSuccess(response: PaymentMethodTypeInfo) {
-                        continuation.resume(Result.success(response))
+            fun performRetrieval(clientSecret: String?) {
+                airwallex.retrievePaymentMethodTypeInfo(
+                    RetrievePaymentMethodTypeInfoParams.Builder(
+                        clientSecret = requireNotNull(clientSecret),
+                        paymentMethodType = paymentMethodTypeName
+                    )
+                        .setFlow(AirwallexPaymentRequestFlow.IN_APP)
+                        .build(),
+                    object : Airwallex.PaymentListener<PaymentMethodTypeInfo> {
+                        override fun onFailed(exception: AirwallexException) {
+                            continuation.resume(Result.failure(exception))
+                        }
+
+                        override fun onSuccess(response: PaymentMethodTypeInfo) {
+                            continuation.resume(Result.success(response))
+                        }
                     }
+                )
+            }
+
+            when (session) {
+                is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
+                    session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
+                        override fun onSuccess(paymentIntent: PaymentIntent) {
+                            performRetrieval(paymentIntent.clientSecret)
+                        }
+
+                        override fun onError(error: Throwable) {
+                            continuation.resume(Result.failure(AirwallexCheckoutException(message = error.message, e = error)))
+                        }
+                    })
                 }
-            )
+                is AirwallexRecurringSession -> {
+                    performRetrieval(session.clientSecret)
+                }
+                else -> {
+                    continuation.resume(Result.failure(AirwallexCheckoutException(message = "Session is not available")))
+                }
+            }
         }
     }
 
@@ -186,8 +210,16 @@ open class AirwallexCheckoutViewModel(
         AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_CANCELLED)
     }
 
-    fun trackPaymentLaunched() {
-        AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_LAUNCHED)
+    fun trackPaymentLaunched(
+        subtype: String,
+        paymentMethod: String? = null
+    ) {
+        val additionalInfo = mutableMapOf<String, Any>(
+            "subtype" to subtype,
+            "expressCheckout" to session.isExpressCheckout
+        )
+        paymentMethod?.let { additionalInfo["paymentMethod"] = it }
+        AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_LAUNCHED, additionalInfo = additionalInfo)
     }
 
     fun trackScreenViewed(eventName: String, params: Map<String, Any> = emptyMap()) {

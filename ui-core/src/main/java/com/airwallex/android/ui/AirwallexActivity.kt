@@ -10,12 +10,13 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.airwallex.android.core.AirwallexInternalActivity
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.ui.databinding.ActivityAirwallexBinding
 
-abstract class AirwallexActivity : AppCompatActivity() {
+abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivity {
 
     private val viewBinding: ActivityAirwallexBinding by lazy {
         ActivityAirwallexBinding.inflate(layoutInflater)

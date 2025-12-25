@@ -1,0 +1,42 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card
+  - guest
+  - express-checkout
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_guest_express_checkout_api_integration
+- launchApp
+- runScript: ../Card/cards.js
+- runScript: ../Common/settings.js
+- tapOn: "Integrate with low-level API"
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+# ensure settings for express checkout
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env:
+      EXPRESS_CHECKOUT: true
+# card payment
+- tapOn: "Pay with card and trigger 3DS"
+- tapOn: "PAY"
+- runFlow:
+    file: ../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

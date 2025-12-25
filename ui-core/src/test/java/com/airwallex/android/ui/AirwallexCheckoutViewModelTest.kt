@@ -14,6 +14,7 @@ import com.airwallex.android.core.model.BankResponse
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import io.mockk.coEvery
@@ -21,13 +22,17 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.runs
 import io.mockk.slot
+import io.mockk.spyk
+import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class AirwallexCheckoutViewModelTest {
@@ -299,13 +304,12 @@ class AirwallexCheckoutViewModelTest {
     fun `test suspend function retrievePaymentMethodTypeInfo unsupported session`() = runTest {
         val paymentMethodTypeName = "card"
 
-        val result = try {
-            viewModel.retrievePaymentMethodTypeInfo(paymentMethodTypeName)
-        } catch (e: AirwallexCheckoutException) {
-            e.message
-        }
+        val result = viewModel.retrievePaymentMethodTypeInfo(paymentMethodTypeName)
 
-        assertEquals("Session is not available", result)
+        assertTrue(result.isFailure)
+        assertIs<AirwallexCheckoutException>(result.exceptionOrNull()).apply {
+            assertEquals("Session is not available", message)
+        }
     }
 
     @Test
@@ -347,5 +351,177 @@ class AirwallexCheckoutViewModelTest {
         val newActivity = mockk<androidx.activity.ComponentActivity>()
         viewModel.updateActivity(newActivity)
         verify(exactly = 1) { airwallex.updateActivity(newActivity) }
+    }
+
+    @Test
+    fun `test retrieveBanks with AirwallexPaymentSession using PaymentIntent`() = runTest {
+        val paymentIntent = mockk<PaymentIntent> {
+            every { clientSecret } returns "test_client_secret"
+        }
+        val session = mockk<AirwallexPaymentSession> {
+            every { countryCode } returns "US"
+            every { this@mockk.paymentIntent } returns paymentIntent
+        }
+
+        val expectedBankResponse = mockk<BankResponse>()
+        val bankListenerSlot = slot<Airwallex.PaymentListener<BankResponse>>()
+
+        every {
+            airwallex.retrieveBanks(any(), capture(bankListenerSlot))
+        } answers {
+            bankListenerSlot.captured.onSuccess(expectedBankResponse)
+        }
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, session)
+        val result = viewModel.retrieveBanks("test_payment_method")
+
+        assertTrue(result.isSuccess)
+        assertEquals(expectedBankResponse, result.getOrNull())
+    }
+
+    @Test
+    fun `test retrievePaymentMethodTypeInfo with AirwallexPaymentSession using PaymentIntent`() = runTest {
+        val paymentIntent = mockk<PaymentIntent> {
+            every { clientSecret } returns "test_client_secret"
+        }
+        val session = mockk<AirwallexPaymentSession> {
+            every { this@mockk.paymentIntent } returns paymentIntent
+        }
+
+        val expectedTypeInfo = mockk<PaymentMethodTypeInfo>()
+        val typeInfoListenerSlot = slot<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+
+        every {
+            airwallex.retrievePaymentMethodTypeInfo(any(), capture(typeInfoListenerSlot))
+        } answers {
+            typeInfoListenerSlot.captured.onSuccess(expectedTypeInfo)
+        }
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, session)
+        val result = viewModel.retrievePaymentMethodTypeInfo("test_payment_method")
+
+        assertTrue(result.isSuccess)
+        assertEquals(expectedTypeInfo, result.getOrNull())
+    }
+
+    @Test
+    fun `test retrievePaymentMethodTypeInfo with AirwallexRecurringWithIntentSession resolvePaymentIntent success`() = runTest {
+        val paymentIntent = mockk<PaymentIntent> {
+            every { clientSecret } returns "test_recurring_client_secret"
+        }
+        val session = mockk<AirwallexRecurringWithIntentSession> {
+            every { this@mockk.paymentIntent } returns paymentIntent
+        }
+
+        val expectedTypeInfo = mockk<PaymentMethodTypeInfo>()
+        val typeInfoListenerSlot = slot<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+
+        every {
+            airwallex.retrievePaymentMethodTypeInfo(any(), capture(typeInfoListenerSlot))
+        } answers {
+            typeInfoListenerSlot.captured.onSuccess(expectedTypeInfo)
+        }
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, session)
+        val result = viewModel.retrievePaymentMethodTypeInfo("test_payment_method")
+
+        assertTrue(result.isSuccess)
+        assertEquals(expectedTypeInfo, result.getOrNull())
+    }
+
+    @Test
+    fun `test retrievePaymentMethodTypeInfo with AirwallexRecurringWithIntentSession resolvePaymentIntent error`() = runTest {
+        val session = mockk<AirwallexRecurringWithIntentSession>()
+
+        // Use spyk to replace paymentIntent with null
+        val sessionSpy = spyk(session) {
+            every { paymentIntent } returns null
+        }
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, sessionSpy)
+        val result = viewModel.retrievePaymentMethodTypeInfo("test_payment_method")
+
+        assertTrue(result.isFailure)
+        assertIs<AirwallexCheckoutException>(result.exceptionOrNull()).apply {
+            assertEquals("Neither paymentIntent nor paymentIntentProvider available", message)
+        }
+    }
+
+    @Test
+    fun `test trackPaymentLaunched logs with subtype and expressCheckout false`() {
+        mockkObject(AnalyticsLogger)
+        every { AnalyticsLogger.logAction(any(), any()) } just runs
+
+        // Mock a session without PaymentIntentProvider (not express checkout)
+        val paymentSession = mockk<AirwallexPaymentSession>()
+        every { paymentSession.paymentIntentProvider } returns null
+        every { paymentSession.paymentIntentProviderId } returns null
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, paymentSession)
+        viewModel.trackPaymentLaunched(subtype = "dropin")
+
+        verify(exactly = 1) {
+            AnalyticsLogger.logAction(
+                "payment_launched",
+                match { info ->
+                    info["subtype"] == "dropin" &&
+                    info["expressCheckout"] == false &&
+                    !info.containsKey("paymentMethod")
+                }
+            )
+        }
+
+        unmockkObject(AnalyticsLogger)
+    }
+
+    @Test
+    fun `test trackPaymentLaunched logs with subtype paymentMethod and expressCheckout true`() {
+        mockkObject(AnalyticsLogger)
+        every { AnalyticsLogger.logAction(any(), any()) } just runs
+
+        // Mock a session with PaymentIntentProvider (express checkout)
+        val paymentSession = mockk<AirwallexPaymentSession>()
+        every { paymentSession.paymentIntentProvider } returns mockk()
+        every { paymentSession.paymentIntentProviderId } returns null
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, paymentSession)
+        viewModel.trackPaymentLaunched(subtype = "component", paymentMethod = "card")
+
+        verify(exactly = 1) {
+            AnalyticsLogger.logAction(
+                "payment_launched",
+                match { info ->
+                    info["subtype"] == "component" &&
+                    info["paymentMethod"] == "card" &&
+                    info["expressCheckout"] == true
+                }
+            )
+        }
+
+        unmockkObject(AnalyticsLogger)
+    }
+
+    @Test
+    fun `test trackPaymentLaunched with non-express checkout session`() {
+        mockkObject(AnalyticsLogger)
+        every { AnalyticsLogger.logAction(any(), any()) } just runs
+
+        // AirwallexRecurringSession does not implement PaymentIntentResolvableSession
+        val recurringSession = mockk<AirwallexRecurringSession>()
+
+        val viewModel = AirwallexCheckoutViewModel(application, airwallex, recurringSession)
+        viewModel.trackPaymentLaunched(subtype = "dropin")
+
+        verify(exactly = 1) {
+            AnalyticsLogger.logAction(
+                "payment_launched",
+                match { info ->
+                    info["subtype"] == "dropin" &&
+                    info["expressCheckout"] == false
+                }
+            )
+        }
+
+        unmockkObject(AnalyticsLogger)
     }
 }

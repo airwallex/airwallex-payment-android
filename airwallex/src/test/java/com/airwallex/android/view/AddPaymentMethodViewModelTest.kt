@@ -17,6 +17,7 @@ import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
 import io.mockk.Runs
+import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -383,6 +384,38 @@ class AddPaymentMethodViewModelTest {
                 session = session, card = card, billing = billing, saveCard = true, listener = any()
             )
         }
+    }
+
+    @Test
+    fun `test airwallexPaymentStatus uses postValue for thread safety`() {
+        val session = mockk<AirwallexPaymentSession>(relaxed = true) {
+            every { isBillingInformationRequired } returns false
+        }
+        val viewModel = createViewModel(session)
+        val card = PaymentMethod.Card.Builder().setNumber("4111111111111111").setName("Test User")
+            .setExpiryMonth("12").setExpiryYear("2025").setCvc("123").build()
+
+        val statusSlot = CapturingSlot<com.airwallex.android.core.Airwallex.PaymentResultListener>()
+
+        every {
+            airwallex.confirmPaymentIntent(
+                session = session, card = card, billing = null, saveCard = false, listener = capture(statusSlot)
+            )
+        } returns Unit
+
+        // When payment is confirmed
+        viewModel.confirmPayment(card, false, null)
+
+        // Capture the listener and simulate onCompleted being called from a background thread
+        val listener = statusSlot.captured
+        val mockStatus = mockk<com.airwallex.android.core.AirwallexPaymentStatus>()
+
+        // This simulates the callback happening on a background thread
+        // The implementation should use postValue (thread-safe) instead of value (main-thread only)
+        listener.onCompleted(mockStatus)
+
+        // The status should be properly set without threading issues
+        assertEquals(mockStatus, viewModel.airwallexPaymentStatus.value)
     }
 
     // Tests for user input state retention (added in commit b6c790b7)

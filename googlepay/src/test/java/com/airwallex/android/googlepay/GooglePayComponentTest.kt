@@ -1,9 +1,9 @@
 package com.airwallex.android.googlepay
 
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import androidx.activity.ComponentActivity
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
@@ -22,7 +22,7 @@ import java.math.BigDecimal
 
 class GooglePayComponentTest {
     private lateinit var component: GooglePayComponent
-    private lateinit var activity: Activity
+    private lateinit var activity: ComponentActivity
     private lateinit var context: Context
     private lateinit var listener: Airwallex.PaymentResultListener
 
@@ -55,9 +55,8 @@ class GooglePayComponentTest {
 
         every { anyConstructed<GooglePayActivityLaunch>().launchForResult(any(), any()) } just runs
         val session = mockk<AirwallexSession>(relaxed = true)
-        val mockPaymentType = mockk<AvailablePaymentMethodType>()
         component.session = session
-        component.paymentMethodType = mockResponse.items.first() ?: mockPaymentType
+        component.paymentMethodType = mockResponse.items.first()
         activity = mockk()
         context = mockk()
         listener = mockk(relaxed = true)

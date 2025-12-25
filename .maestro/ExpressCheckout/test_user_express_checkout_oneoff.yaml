@@ -1,0 +1,40 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card
+  - user
+  - express-checkout
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+env:
+  CAN_SAVE_CARD: true
+  SHOULD_SAVE_CARD: true
+  IS_GUEST: false
+onFlowStart:
+  - runFlow:
+      when:
+        true: ${IS_RECORDING}
+      commands:
+        - startRecording: test_user_express_checkout_oneoff
+onFlowComplete:
+  - runFlow:
+      file: flow_cleanup_consents.yaml
+      env:
+        ASSERT_EXISTING: true
+  - runFlow:
+      when:
+        true: ${IS_RECORDING}
+      commands:
+        - stopRecording
+---
+- launchApp
+- runScript: ../Card/cards.js
+- runScript: ../Common/settings.js
+- tapOn: "Integrate with Airwallex UI"
+# start one-off express checkout - save card
+- runFlow:
+    file: flow_card_express_checkout.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+      CARD_NUMBER: ${output.cards.visa3DS}
+      HANDLE_3DS: true

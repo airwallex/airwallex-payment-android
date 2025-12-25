@@ -1,4 +1,7 @@
 appId: com.airwallex.paymentacceptance
+env:
+  CAN_SAVE_CARD: ${CAN_SAVE_CARD || "false"}
+  SHOULD_SAVE_CARD: ${SHOULD_SAVE_CARD || "false"}
 ---
 # check if there are existing consents
 - runFlow:

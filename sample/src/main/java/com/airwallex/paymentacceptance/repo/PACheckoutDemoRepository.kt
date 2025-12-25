@@ -33,7 +33,8 @@ class PACheckoutDemoRepository : BaseRepository {
 
     override suspend fun getPaymentIntentFromServer(
         force3DS: Boolean?,
-        customerId: String?
+        customerId: String?,
+        returnUrl: DemoReturnUrl
     ): PaymentIntent {
         val body = mutableMapOf(
             "apiKey" to Settings.apiKey,
@@ -52,7 +53,7 @@ class PACheckoutDemoRepository : BaseRepository {
             "descriptor" to "Airwallex - T-sh  irt",
             "metadata" to mapOf("id" to 1),
             "email" to "yimadangxian@airwallex.com",
-            "return_url" to Settings.returnUrl
+            "return_url" to returnUrl.fullUrl
         )
         if (force3DS == true) {
             body["payment_method_options"] =

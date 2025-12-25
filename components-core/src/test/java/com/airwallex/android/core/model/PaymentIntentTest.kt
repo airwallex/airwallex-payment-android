@@ -205,6 +205,15 @@ class PaymentIntentTest {
                     PaymentIntent.PaymentAttemptAuthFraudData(action = "VERIFY", score = "0"),
                     "U",
                     "U"
+                ),
+                status = "SUCCEEDED",
+                failureDetails = PaymentIntent.FailureDetails(
+                    code = "authentication_declined",
+                    message = "The user failed authentication.",
+                    details = PaymentIntent.FailureDetails.Details(
+                        originalResponseCode = "FAILED",
+                        originalResponseMessage = "Authentication failed"
+                    )
                 )
             )
         )

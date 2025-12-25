@@ -96,6 +96,12 @@
                 android:layout_height="wrap_content"
                 app:labelText="Auto capture" />
 
+            <com.airwallex.paymentacceptance.ui.widget.SwitchView
+                android:id="@+id/swExpressCheckout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:labelText="Express Checkout" />
+
             <com.airwallex.paymentacceptance.ui.widget.ActionEditText
                 android:id="@+id/etCustomerId"
                 style="@style/AppEditText"

@@ -59,6 +59,9 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         Airwallex(this)
     }
 
+    override val paymentLaunchSubtype: String = "component"
+    override val paymentMethodName: String = PaymentMethodType.CARD.value
+
     private val viewModel: AddPaymentMethodViewModel by lazy {
         ViewModelProvider(
             this,

@@ -237,7 +237,7 @@ class AddPaymentMethodViewModel(
             saveCard = saveCard,
             listener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.value = status
+                    _airwallexPaymentStatus.postValue(status)
                 }
             },
         )

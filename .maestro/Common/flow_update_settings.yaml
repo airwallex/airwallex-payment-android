@@ -1,4 +1,11 @@
 appId: com.airwallex.paymentacceptance
+env:
+  ENVIRONMENT: ${ENVIRONMENT || "DEMO"}
+  NEXT_TRIGGERED_BY: ${NEXT_TRIGGERED_BY || "Customer"}
+  LAYOUT: ${LAYOUT || "Tab"}
+  FORCE_3DS: ${FORCE_3DS || "false"}
+  EXPRESS_CHECKOUT: ${EXPRESS_CHECKOUT || "false"}
+  IS_GUEST: ${IS_GUEST || "true"}
 ---
 - assertVisible: "Settings"
 - runFlow: # ensure environment
@@ -26,31 +33,76 @@ appId: com.airwallex.paymentacceptance
     when:
       true: ${FORCE_3DS}
       visible:
+        childOf:
+            id: "com.airwallex.paymentacceptance:id/sw3DS"
         id: "com.airwallex.paymentacceptance:id/switchControl"
-        index: 1
         checked: false
     commands:
       - tapOn:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/sw3DS"
           id: "com.airwallex.paymentacceptance:id/switchControl"
-          index: 1
       - assertVisible:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/sw3DS"
           id: "com.airwallex.paymentacceptance:id/switchControl"
-          index: 1
           checked: true
 - runFlow: # ensure value of force 3DS switch
     when:
       true: ${FORCE_3DS == 'false'}
       visible:
+        childOf:
+          id: "com.airwallex.paymentacceptance:id/sw3DS"
         id: "com.airwallex.paymentacceptance:id/switchControl"
-        index: 1
         checked: true
     commands:
       - tapOn:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/sw3DS"
           id: "com.airwallex.paymentacceptance:id/switchControl"
-          index: 1
       - assertVisible:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/sw3DS"
           id: "com.airwallex.paymentacceptance:id/switchControl"
-          index: 1
+          checked: false
+- scrollUntilVisible:
+    element:
+      id: "com.airwallex.paymentacceptance:id/swExpressCheckout"
+- runFlow: # ensure value of express checkout switch
+    when:
+      true: ${EXPRESS_CHECKOUT}
+      visible:
+        childOf:
+          id: "com.airwallex.paymentacceptance:id/swExpressCheckout"
+        id: "com.airwallex.paymentacceptance:id/switchControl"
+        checked: false
+    commands:
+      - tapOn:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/swExpressCheckout"
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+      - assertVisible:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/swExpressCheckout"
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          checked: true
+- runFlow: # ensure value of express checkout switch is off when EXPRESS_CHECKOUT is undefined, empty or false
+    when:
+      true: ${!EXPRESS_CHECKOUT || EXPRESS_CHECKOUT == 'false'}
+      visible:
+        childOf:
+          id: "com.airwallex.paymentacceptance:id/swExpressCheckout"
+        id: "com.airwallex.paymentacceptance:id/switchControl"
+        checked: true
+    commands:
+      - tapOn:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/swExpressCheckout"
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+      - assertVisible:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/swExpressCheckout"
+          id: "com.airwallex.paymentacceptance:id/switchControl"
           checked: false
 - scrollUntilVisible:
     element:
@@ -93,4 +145,3 @@ appId: com.airwallex.paymentacceptance
     id: "com.airwallex.paymentacceptance:id/btnSave"
 - assertVisible: "settings saved"
 - tapOn: "OK"
-- assertVisible: "Integrate with Airwallex UI"

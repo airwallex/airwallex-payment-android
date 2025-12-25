@@ -49,30 +49,49 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+        </activity>
+
+        <activity
+            android:name="com.airwallex.paymentacceptance.ui.UIIntegrationActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            tools:ignore="LockedOrientationActivity,ExportedActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <!--airwallexcheckout://com.airwallex.paymentacceptance-->
+                <!--airwallexcheckout://com.airwallex.paymentacceptance/ui-->
                 <data
+                    android:scheme="airwallexcheckout"
                     android:host="${applicationId}"
-                    android:scheme="airwallexcheckout" />
+                    android:path="/ui" />
             </intent-filter>
 
         </activity>
 
         <activity
-            android:name="com.airwallex.paymentacceptance.ui.UIIntegrationActivity"
+            android:name="com.airwallex.paymentacceptance.ui.APIIntegrationActivity"
             android:exported="true"
-            tools:ignore="LockedOrientationActivity">
+            android:launchMode="singleTask"
+            tools:ignore="LockedOrientationActivity,ExportedActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!--airwallexcheckout://com.airwallex.paymentacceptance/api-->
+                <data
+                    android:scheme="airwallexcheckout"
+                    android:host="${applicationId}"
+                    android:path="/api" />
+            </intent-filter>
 
         </activity>
-
-        <activity
-            android:name="com.airwallex.paymentacceptance.ui.APIIntegrationActivity"
-            tools:ignore="LockedOrientationActivity" />
 
         <activity
             android:name="com.airwallex.paymentacceptance.h5.H5WebViewActivity"
@@ -93,4 +112,15 @@
 
     </application>
 
+    <queries>
+        <intent>
+            <action android:name="org.chromium.intent.action.PAY"/>
+        </intent>
+        <intent>
+            <action android:name="org.chromium.intent.action.IS_READY_TO_PAY"/>
+        </intent>
+        <intent>
+            <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS"/>
+        </intent>
+    </queries>
 </manifest>

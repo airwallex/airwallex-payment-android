@@ -19,6 +19,7 @@ import com.airwallex.paymentacceptance.card
 import com.airwallex.paymentacceptance.card3DS
 import com.airwallex.paymentacceptance.ui.base.BasePaymentTypeActivity
 import com.airwallex.paymentacceptance.ui.bean.ButtonItem
+import com.airwallex.paymentacceptance.util.PaymentStatusPoller
 import com.airwallex.paymentacceptance.viewmodel.APIIntegrationViewModel
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
@@ -43,6 +44,23 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
         return emptyList()
     }
 
+    private fun handlePollingResult(result: PaymentStatusPoller.PollingResult) {
+        when (result) {
+            is PaymentStatusPoller.PollingResult.Complete -> {
+                showAlert("Payment Result", result.description)
+            }
+            is PaymentStatusPoller.PollingResult.Timeout -> {
+                showAlert("Polling Timeout", result.description)
+            }
+            is PaymentStatusPoller.PollingResult.Error -> {
+                showPaymentError(result.message)
+            }
+            is PaymentStatusPoller.PollingResult.PaymentAttemptNotFound -> {
+                showPaymentError("Payment attempt not found")
+            }
+        }
+    }
+
     override fun refreshButtons(selectedOption: Int) {
         val fullButtonList = listOf(
             ButtonItem(PAY_WITH_CARD, "Pay with card"),
@@ -62,6 +80,7 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
             when (item.id) {
                 PAY_WITH_3DS -> Settings.getEnvironment() != Environment.PRODUCTION// Hide "3DS" in PRODUCTION
                 PAY_WITH_CARD_AND_SAVE -> selectedOption != 1 // Hide "Pay with card and save" in "Recurring" mode
+                GET_PAYMENT_METHODS -> Settings.expressCheckout != "Enabled" // Hide "Get payment methods" when Express Checkout is enabled
                 else -> true
             }
         }
@@ -80,7 +99,6 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 DemoCardDialog(this)
                     .setCardInfo(card)
                     .setPayCallBack { card ->
-                        setLoadingProgress(true)
                         mViewModel.startPayWithCardDetail(card, saveCard = false)
                     }.show()
             }
@@ -89,7 +107,6 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 DemoCardDialog(this)
                     .setCardInfo(card)
                     .setPayCallBack { card ->
-                        setLoadingProgress(true)
                         mViewModel.startPayWithCardDetail(card, saveCard = true)
                     }.show()
             }
@@ -98,33 +115,27 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 DemoCardDialog(this)
                     .setCardInfo(card3DS, false)
                     .setPayCallBack { card ->
-                        setLoadingProgress(true)
                         mViewModel.startPayWithCardDetail(card, force3DS = true)
                     }.show()
             }
 
             PAY_WITH_GOOGLE_PAY -> {
-                setLoadingProgress(true)
                 mViewModel.startGooglePay()
             }
 
             GOOGLE_PAY_3DS -> {
-                setLoadingProgress(true)
                 mViewModel.startGooglePay(true)
             }
 
             REDIRECT_PAYMENT -> {
-                setLoadingProgress(true)
                 mViewModel.startPayByRedirection()
             }
 
             GET_PAYMENT_METHODS -> {
-                setLoadingProgress(true)
                 mViewModel.getPaymentMethodsList()
             }
 
             GET_SAVED_CARDS -> {
-                setLoadingProgress(true)
                 mViewModel.getPaymentConsentList()
             }
         }
@@ -139,13 +150,20 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 }
             }
         }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                mViewModel.pollingResult.collect { result ->
+                    handlePollingResult(result)
+                }
+            }
+        }
+        mViewModel.isLoading.observe(this) { isLoading ->
+            setLoadingProgress(isLoading)
+        }
         mViewModel.paymentMethodList.observe(this) { list ->
-            setLoadingProgress(false)
             showPaymentMethodList(list)
-
         }
         mViewModel.paymentConsentList.observe(this) { list ->
-            setLoadingProgress(false)
             showPaymentConsentList(list)
         }
     }
@@ -178,7 +196,6 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                         }
                         holder.btnPay.setOnClickListener {
                             mViewModel.startPayWithConsent(item)
-                            setLoadingProgress(true)
                             customerDialog?.dismiss()
                         }
                         setBtnEnabled(
@@ -211,7 +228,6 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
-        setLoadingProgress(false)
         when (status) {
             is AirwallexPaymentStatus.Success -> {
                 Log.d(
@@ -225,6 +241,7 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 // redirecting
                 Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
                 showPaymentInProgress()
+                setLoadingProgress(loading = true, cancellable = true)
             }
 
             is AirwallexPaymentStatus.Failure -> {
@@ -236,6 +253,17 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                 showPaymentCancelled()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh buttons when returning from settings to reflect Express Checkout changes
+        val selectedOption = when (mBinding.dropdownView.currentOption) {
+            "Recurring" -> 1
+            "Recurring and payment" -> 2
+            else -> 0
+        }
+        refreshButtons(selectedOption)
     }
 
     companion object {

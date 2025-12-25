@@ -6,7 +6,6 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.Airwallex.Companion.initialize
 import com.airwallex.android.core.AirwallexConfiguration
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -16,6 +15,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.PaymentMethodsLayoutType
+import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
@@ -27,6 +27,7 @@ import com.airwallex.android.view.AddPaymentMethodActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
 import com.airwallex.android.core.util.SessionUtils.getIntentId
+import com.airwallex.risk.AirwallexRisk
 
 /**
  *  Entry-point to the Airwallex Payment Flow. Create a AirwallexStarter attached to the given host Activity.
@@ -57,7 +58,7 @@ class AirwallexStarter {
                 is AirwallexPaymentSession -> {
                     AnalyticsLogger.setSessionInformation(
                         transactionMode = TransactionMode.ONE_OFF.value,
-                        paymentIntentId = session.paymentIntent.id,
+                        paymentIntentId = session.paymentIntent?.id,
                     )
                 }
                 is AirwallexRecurringSession -> {
@@ -68,7 +69,7 @@ class AirwallexStarter {
                 is AirwallexRecurringWithIntentSession -> {
                     AnalyticsLogger.setSessionInformation(
                         transactionMode = TransactionMode.RECURRING.value,
-                        paymentIntentId = session.paymentIntent.id,
+                        paymentIntentId = session.paymentIntent?.id,
                     )
                 }
             }
@@ -88,8 +89,13 @@ class AirwallexStarter {
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             setupAnalyticsLogger(session)
+            AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentCardPaymentFlow[$intentId]")
+
+            // Bind session's PaymentIntentProvider to this Activity's lifecycle
+            session.bindToActivity(activity)
+
             AddPaymentMethodActivityLaunch(activity)
                 .launchForResult(
                     AddPaymentMethodActivityLaunch.Args.Builder()
@@ -228,6 +234,7 @@ class AirwallexStarter {
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             setupAnalyticsLogger(session)
+            AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentPaymentFlow[$intentId]")
             launch.launchForResult(

@@ -1,4 +1,6 @@
 appId: com.airwallex.paymentacceptance
+env:
+  CHECKOUT_MODE: ${CHECKOUT_MODE || "One-off payment"}
 ---
 - runFlow: # ensure checkout mode 
     when:
