@@ -1,7 +1,6 @@
 package com.airwallex.android.core.log
 
 import android.content.Context
-import android.util.Log
 import com.airwallex.airtracker.Config
 import com.airwallex.airtracker.Environment
 import com.airwallex.airtracker.Tracker
