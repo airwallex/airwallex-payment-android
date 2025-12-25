@@ -335,7 +335,7 @@ class Airwallex internal constructor(
 
         setupAnalyticsLogger(session)
         // Only log payment_launched for API integration (when activity is NOT an Airwallex UI activity)
-        if (!isAirwallexUIActivity()) {
+        if (!isAirwallexUIActivity) {
             AnalyticsLogger.logAction(
                 actionName = "payment_launched",
                 additionalInfo = mapOf(
@@ -811,7 +811,7 @@ class Airwallex internal constructor(
     ) {
         setupAnalyticsLogger(session)
         // Only log payment_launched for API integration (when activity is NOT an Airwallex UI activity)
-        if (!isAirwallexUIActivity()) {
+        if (!isAirwallexUIActivity) {
             AnalyticsLogger.logAction(
                 actionName = "payment_launched",
                 additionalInfo = mutableMapOf<String, Any>(
@@ -1605,7 +1605,8 @@ class Airwallex internal constructor(
      * Used to determine if payment_launched should be logged (only for API integration).
      * UI integration activities already log payment_launched via AirwallexCheckoutBaseActivity.
      */
-    private fun isAirwallexUIActivity(): Boolean = activity is AirwallexInternalActivity
+    private val isAirwallexUIActivity: Boolean
+        get() = activity is AirwallexInternalActivity
 
     companion object {
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout"
