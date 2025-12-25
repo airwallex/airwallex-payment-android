@@ -210,8 +210,16 @@ open class AirwallexCheckoutViewModel(
         AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_CANCELLED)
     }
 
-    fun trackPaymentLaunched() {
-        AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_LAUNCHED)
+    fun trackPaymentLaunched(
+        subtype: String,
+        paymentMethod: String? = null
+    ) {
+        val additionalInfo = mutableMapOf<String, Any>(
+            "subtype" to subtype,
+            "expressCheckout" to session.isExpressCheckout
+        )
+        paymentMethod?.let { additionalInfo["paymentMethod"] = it }
+        AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_LAUNCHED, additionalInfo = additionalInfo)
     }
 
     fun trackScreenViewed(eventName: String, params: Map<String, Any> = emptyMap()) {

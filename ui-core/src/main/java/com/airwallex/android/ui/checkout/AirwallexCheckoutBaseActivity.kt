@@ -14,6 +14,19 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
     abstract val airwallex: Airwallex
     abstract val session: AirwallexSession
 
+    /**
+     * The subtype for payment_launched event tracking.
+     * Override with "dropin" for PaymentMethodsActivity, "component" for single payment method activities.
+     * Default is null to skip logging (e.g., for intermediate screens like CVC collection).
+     */
+    open val paymentLaunchSubtype: String? = null
+
+    /**
+     * The payment method name for payment_launched event tracking.
+     * Optional - only needed for "component" subtype.
+     */
+    open val paymentMethodName: String? = null
+
     private val viewModel: AirwallexCheckoutViewModel by lazy {
         ViewModelProvider(
             this,
@@ -29,7 +42,12 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         // Update the Airwallex instance in the ViewModel to ensure it always refers to the current Activity
         viewModel.updateActivity(this)
         super.onCreate(savedInstanceState)
-        viewModel.trackPaymentLaunched()
+        paymentLaunchSubtype?.let { subtype ->
+            viewModel.trackPaymentLaunched(
+                subtype = subtype,
+                paymentMethod = paymentMethodName
+            )
+        }
     }
 
     override fun onBackButtonPressed() {

@@ -61,6 +61,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         Airwallex(this)
     }
 
+    override val paymentLaunchSubtype: String = "dropin"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setLoadingProgress(loading = true, cancelable = false)

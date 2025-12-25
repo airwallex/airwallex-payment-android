@@ -334,6 +334,17 @@ class Airwallex internal constructor(
         session.bindToActivity(activity)
 
         setupAnalyticsLogger(session)
+        // Only log payment_launched for API integration (when activity is NOT an Airwallex UI activity)
+        if (!isAirwallexUIActivity()) {
+            AnalyticsLogger.logAction(
+                actionName = "payment_launched",
+                additionalInfo = mapOf(
+                    "subtype" to "api",
+                    "paymentMethod" to PaymentMethodType.GOOGLEPAY.value,
+                    "expressCheckout" to session.isExpressCheckout
+                )
+            )
+        }
         val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
         if (googlePayProvider != null) {
             val coroutineScope = fragment?.lifecycleScope
@@ -799,6 +810,18 @@ class Airwallex internal constructor(
         saveCard: Boolean = false,
     ) {
         setupAnalyticsLogger(session)
+        // Only log payment_launched for API integration (when activity is NOT an Airwallex UI activity)
+        if (!isAirwallexUIActivity()) {
+            AnalyticsLogger.logAction(
+                actionName = "payment_launched",
+                additionalInfo = mutableMapOf<String, Any>(
+                    "subtype" to "api",
+                    "expressCheckout" to session.isExpressCheckout
+                ).apply {
+                    paymentMethod.type?.let { put("paymentMethod", it) }
+                }
+            )
+        }
         AirwallexLogger.info("Airwallex checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
         when (session) {
             is AirwallexPaymentSession -> {
@@ -1576,6 +1599,13 @@ class Airwallex internal constructor(
         }
 
     }
+
+    /**
+     * Checks if the current activity is an internal Airwallex UI activity.
+     * Used to determine if payment_launched should be logged (only for API integration).
+     * UI integration activities already log payment_launched via AirwallexCheckoutBaseActivity.
+     */
+    private fun isAirwallexUIActivity(): Boolean = activity is AirwallexInternalActivity
 
     companion object {
         const val AIRWALLEX_CHECKOUT_SCHEMA = "airwallexcheckout"

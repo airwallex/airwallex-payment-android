@@ -60,7 +60,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             val session = createSession(force3DS = force3DS, saveCard = saveCard)
             startLoading()
             confirmPaymentIntentWithCard(
-                session = session as AirwallexPaymentSession,
+                session = session,
                 card = card,
                 saveCard = saveCard
             )
@@ -214,7 +214,7 @@ class APIIntegrationViewModel : BaseViewModel() {
     }
 
     private suspend fun confirmPaymentIntentWithCard(
-        session: AirwallexPaymentSession,
+        session: AirwallexSession,
         card: PaymentMethod.Card,
         saveCard: Boolean
     ) {
