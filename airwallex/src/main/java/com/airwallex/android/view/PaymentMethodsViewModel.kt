@@ -1,6 +1,7 @@
 package com.airwallex.android.view
 
 import android.app.Application
+import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -124,10 +125,11 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    val schemaButtonTitle = if (session is AirwallexRecurringSession) {
-        application.getString(R.string.airwallex_confirm)
+    @StringRes
+    val ctaRes: Int = if (session is AirwallexRecurringSession) {
+        R.string.airwallex_confirm
     } else {
-        application.getString(R.string.airwallex_pay_now)
+        R.string.airwallex_pay_now
     }
 
     fun confirmPaymentIntent(paymentConsent: PaymentConsent) {
