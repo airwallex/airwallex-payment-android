@@ -118,7 +118,23 @@ AirwallexStarter.initialize(
 
 ### 支付流程
 
+Airwallex Android SDK 支持两种支付流程：
+
+1. **标准流程**：在展示支付 UI 前，先在服务端创建 PaymentIntent。这是传统方式，适用于支付金额和详情已确定的场景。
+
+2. **Express Checkout（快速结账）**：提供 `PaymentIntentProvider` 或 `PaymentIntentSource`，在收集完用户支付详情后按需创建 PaymentIntent。适用于以下场景：
+   - 希望减少前置服务端调用
+   - 希望降低 PaymentIntent 过期风险，仅在用户主动进行支付时才创建
+   - 希望避免为早期放弃结账流程的用户创建不必要的 PaymentIntent
+   - 需要在支付时实时验证库存或商品可用性
+
+两种流程都完全支持，你可以选择最适合你业务场景的方式。
+
 #### 1. 创建 PaymentIntent（服务端）
+
+对于**标准流程**，需要在展示支付 UI 前在服务端创建 PaymentIntent。
+
+对于 **Express Checkout**，你将在 `PaymentIntentProvider` 或 `PaymentIntentSource` 实现中，当 SDK 请求时创建 PaymentIntent。
 
 1. 获取 access token：用 Client ID 和 API key 调用认证 API（见 [API keys 设置](https://www.airwallex.com/app/settings/api)）
 2. 创建客户（可选）：用 [`/api/v1/pa/customers/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Customers/_api_v1_pa_customers_create/post)
@@ -126,10 +142,13 @@ AirwallexStarter.initialize(
 
 #### 2. 创建 Airwallex Session
 
-根据业务场景创建 session 对象：
+根据业务场景创建 session 对象。你可以选择两种方式：
+- **标准流程**：预先在服务端创建 PaymentIntent，然后传给 SDK
+- **Express Checkout**：提供 PaymentIntentProvider 在收集完支付详情后按需创建 PaymentIntent
 
 ##### 标准支付 Session
 
+**标准流程**（预先创建 PaymentIntent）：
 ```kotlin
 val paymentSession = AirwallexPaymentSession.Builder(
     paymentIntent = paymentIntent,
@@ -142,6 +161,72 @@ val paymentSession = AirwallexPaymentSession.Builder(
     .setAutoCapture(autoCapture)
     .setHidePaymentConsents(false)
     .setPaymentMethods(listOf()) // 空列表表示所有可用方式
+    .build()
+```
+
+**Express Checkout 流程**（按需创建 PaymentIntent）：
+```kotlin
+import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.PaymentIntentProvider
+import com.airwallex.android.core.PaymentIntentSource
+
+
+// 方式 1：使用 PaymentIntentProvider（基于回调，兼容 Java）
+class MyPaymentIntentProvider : PaymentIntentProvider {
+    override val currency: String = "USD"
+    override val amount: BigDecimal = 100.toBigDecimal()
+
+    override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+        // 在需要时调用 API 创建 PaymentIntent
+        myApiService.createPaymentIntent { result ->
+            when (result) {
+                is Success -> callback.onSuccess(result.paymentIntent)
+                is Error -> callback.onError(result.exception)
+            }
+        }
+    }
+}
+
+val provider = MyPaymentIntentProvider()
+val session = AirwallexPaymentSession.Builder(
+    paymentIntentProvider = provider,
+    countryCode = countryCode,
+    customerId = customerId, // 可选
+    googlePayOptions = googlePayOptions // 可选
+)
+    .setRequireBillingInformation(true)
+    .setRequireEmail(requireEmail)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .setHidePaymentConsents(false)
+    .setPaymentMethods(listOf())
+    .build()
+
+
+// 方式 2：使用 PaymentIntentSource（基于 suspend，推荐 Kotlin 使用）
+class MyPaymentIntentSource : PaymentIntentSource {
+    override val currency: String = "USD"
+    override val amount: BigDecimal = 100.toBigDecimal()
+
+    override suspend fun getPaymentIntent(): PaymentIntent {
+        // 使用 suspend 函数调用 API
+        return myApiService.createPaymentIntent()
+    }
+}
+
+val source = MyPaymentIntentSource()
+val session = AirwallexPaymentSession.Builder(
+    paymentIntentSource = source,
+    countryCode = countryCode,
+    customerId = customerId, // 可选
+    googlePayOptions = googlePayOptions // 可选
+)
+    .setRequireBillingInformation(true)
+    .setRequireEmail(requireEmail)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .setHidePaymentConsents(false)
+    .setPaymentMethods(listOf())
     .build()
 ```
 
@@ -167,9 +252,51 @@ val recurringSession = AirwallexRecurringSession.Builder(
 
 ##### 循环支付（带 Intent）Session
 
+**标准流程**（预先创建 PaymentIntent）：
 ```kotlin
 val recurringWithIntentSession = AirwallexRecurringWithIntentSession.Builder(
     paymentIntent = paymentIntent,
+    customerId = customerId,
+    nextTriggerBy = nextTriggerBy,
+    countryCode = countryCode
+)
+    .setRequireEmail(requireEmail)
+    .setRequireCvc(requireCVC)
+    .setMerchantTriggerReason(merchantTriggerReason)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .setPaymentMethods(listOf())
+    .build()
+```
+
+**Express Checkout 流程**（按需创建 PaymentIntent）：
+```kotlin
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
+import com.airwallex.android.core.PaymentIntentProvider
+import com.airwallex.android.core.PaymentIntentSource
+
+
+// 方式 1：使用 PaymentIntentProvider
+val provider = MyPaymentIntentProvider() // 同上文的实现
+val session = AirwallexRecurringWithIntentSession.Builder(
+    paymentIntentProvider = provider,
+    customerId = customerId,
+    nextTriggerBy = nextTriggerBy,
+    countryCode = countryCode
+)
+    .setRequireEmail(requireEmail)
+    .setRequireCvc(requireCVC)
+    .setMerchantTriggerReason(merchantTriggerReason)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .setPaymentMethods(listOf())
+    .build()
+
+
+// 方式 2：使用 PaymentIntentSource（推荐 Kotlin 使用）
+val source = MyPaymentIntentSource() // 同上文的实现
+val session = AirwallexRecurringWithIntentSession.Builder(
+    paymentIntentSource = source,
     customerId = customerId,
     nextTriggerBy = nextTriggerBy,
     countryCode = countryCode
