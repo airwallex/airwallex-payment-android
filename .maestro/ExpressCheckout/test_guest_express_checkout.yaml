@@ -1,0 +1,30 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card 
+  - guest
+  - express-checkout
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_guest_express_checkout
+- launchApp
+- runScript: ../Card/cards.js
+- runScript: ../Common/settings.js
+- runFlow:
+    file: flow_card_express_checkout.yaml
+    env:
+      CARD_NUMBER: ${output.cards.visa3DS}
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+      HANDLE_3DS: true
+      CAN_SAVE_CARD: false
+      SHOULD_SAVE_CARD: false
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

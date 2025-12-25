@@ -1,0 +1,39 @@
+appId: com.airwallex.paymentacceptance
+env:
+  ASSERT_EXISTING: false
+  ASSERT_NOT_EXISTING: false
+---
+- runScript: ../Common/settings.js
+- runScript: ../Card/cards.js
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env:
+      IS_GUEST: false
+      EXPRESS_CHECKOUT: false
+- tapOn: "Launch payment list"
+- runFlow:
+    when:
+      true: ${ASSERT_EXISTING}
+    commands:
+      - assertVisible:
+          id: "saved-consent"
+          index: 0
+- runFlow:
+    when:
+      true: ${ASSERT_NOT_EXISTING}
+    commands:
+        - assertVisible: "Card information"
+- runFlow:
+    when:
+      true: ${ASSERT_NOT_EXISTING == "false"}
+    file: ../Card/flow_remove_all_consents.yaml
+- tapOn: "Navigate up"
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: CANCELLED
