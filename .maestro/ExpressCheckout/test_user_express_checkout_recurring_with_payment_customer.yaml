@@ -8,33 +8,31 @@ platform:
     disableAnimations: true  # Disables system animations on the Android emulator
 env:
   IS_GUEST: false
+onFlowStart:
+  - runFlow:
+      when:
+        true: ${IS_RECORDING}
+      commands:
+        - startRecording: test_user_express_checkout_recurring_customer
+onFlowComplete:
+  - runFlow:
+      file: flow_cleanup_consents.yaml
+      env:
+        ASSERT_EXISTING: true
+  - runFlow:
+      when:
+        true: ${IS_RECORDING}
+      commands:
+        - stopRecording
 ---
-- runFlow:
-    when:
-      true: ${IS_RECORDING}
-    commands:
-      - startRecording: test_user_express_checkout_recurring_customer
 - launchApp
 - runScript: ../Card/cards.js
 - runScript: ../Common/settings.js
 - tapOn: "Integrate with Airwallex UI"
-# cleanup existing consents for current user
-- runFlow:
-    file: flow_cleanup_consents.yaml
-# start one-off express checkout - save card
+# start recurring express checkout with customer-initiated payment
 - runFlow:
     file: flow_card_express_checkout.yaml
     env:
       CHECKOUT_MODE: ${output.settings.checkoutMode.recurringAndPayment}
       CARD_NUMBER: ${output.cards.visa3DS}
       HANDLE_3DS: true
-# cleanup existing consents
-- runFlow:
-    file: flow_cleanup_consents.yaml
-    env:
-      ASSERT_EXISTING: true
-- runFlow:
-    when:
-      true: ${IS_RECORDING}
-    commands:
-      - stopRecording
