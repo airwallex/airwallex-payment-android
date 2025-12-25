@@ -1,6 +1,5 @@
 package com.airwallex.paymentacceptance.viewmodel
 
-import android.content.pm.PackageInstaller
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
