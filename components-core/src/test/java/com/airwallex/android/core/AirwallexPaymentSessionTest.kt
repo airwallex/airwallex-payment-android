@@ -157,4 +157,56 @@ class AirwallexPaymentSessionTest {
             return PaymentIntentFixtures.PAYMENT_INTENT
         }
     }
+
+    @Test
+    fun `isExpressCheckout returns false when session has no PaymentIntentProvider`() {
+        val session = AirwallexPaymentSession.Builder(
+            PaymentIntentFixtures.PAYMENT_INTENT, "CN"
+        ).build()
+
+        assertEquals(false, session.isExpressCheckout)
+    }
+
+    @Test
+    fun `isExpressCheckout returns true when session has PaymentIntentProvider`() {
+        val testProvider = TestPaymentIntentProvider(
+            currency = "USD",
+            amount = BigDecimal(50.0)
+        )
+
+        val session = AirwallexPaymentSession.Builder(
+            paymentIntentProvider = testProvider,
+            countryCode = "US",
+            customerId = "test_customer"
+        ).build()
+
+        assertEquals(true, session.isExpressCheckout)
+    }
+
+    @Test
+    fun `isExpressCheckout returns true when session has PaymentIntentSource`() {
+        val testSource = TestPaymentIntentSource(
+            currency = "EUR",
+            amount = BigDecimal(75.0)
+        )
+
+        val session = AirwallexPaymentSession.Builder(
+            paymentIntentSource = testSource,
+            countryCode = "DE"
+        ).build()
+
+        assertEquals(true, session.isExpressCheckout)
+    }
+
+    @Test
+    fun `isExpressCheckout returns true when paymentIntentProviderId is set`() {
+        val session = AirwallexPaymentSession.Builder(
+            PaymentIntentFixtures.PAYMENT_INTENT, "CN"
+        ).build()
+
+        // Simulate binding to activity which sets paymentIntentProviderId
+        session.paymentIntentProviderId = "test-provider-id"
+
+        assertEquals(true, session.isExpressCheckout)
+    }
 }
