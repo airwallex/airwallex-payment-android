@@ -15,6 +15,7 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexSupportedCard
+import com.airwallex.android.core.isExpressCheckout
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
@@ -72,6 +73,14 @@ class AirwallexAddPaymentDialog(
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
         AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
+        AnalyticsLogger.logAction(
+            actionName = "payment_launched",
+            additionalInfo = mapOf(
+                "subtype" to "component",
+                "paymentMethod" to PaymentMethodType.CARD.value,
+                "expressCheckout" to session.isExpressCheckout
+            )
+        )
         initDialog()
         initView()
         addListener()

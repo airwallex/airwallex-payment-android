@@ -57,3 +57,14 @@ abstract class AirwallexSession : Parcelable {
      */
     abstract val paymentMethods: List<String>?
 }
+
+/**
+ * Indicates whether this session is configured for Express Checkout.
+ * Returns true when the session uses a PaymentIntentProvider for lazy payment intent creation.
+ */
+val AirwallexSession.isExpressCheckout: Boolean
+    get() {
+        val resolvable = this as? PaymentIntentResolvableSession ?: return false
+        // Check both transient provider (before binding) and provider ID (after binding to activity)
+        return resolvable.paymentIntentProvider != null || resolvable.paymentIntentProviderId != null
+    }
