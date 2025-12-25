@@ -136,6 +136,18 @@ class PaymentMethodsViewModelTest {
     }
 
     @Test
+    fun `test ctaRes returns pay_now for AirwallexPaymentSession`() = runTest {
+        val viewModel = mockViewModel(transactionMode = TransactionMode.ONE_OFF)
+        assertEquals(com.airwallex.android.R.string.airwallex_pay_now, viewModel.ctaRes)
+    }
+
+    @Test
+    fun `test ctaRes returns confirm for AirwallexRecurringSession`() = runTest {
+        val viewModel = mockViewModel(transactionMode = TransactionMode.RECURRING)
+        assertEquals(com.airwallex.android.R.string.airwallex_confirm, viewModel.ctaRes)
+    }
+
+    @Test
     fun `test appendParamsToMapForSchemaSubmission with empty additionalParams`() {
         // Given
         val viewModel = mockViewModel()
