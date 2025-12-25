@@ -58,7 +58,7 @@ internal fun ConsentDetailSection(
     Spacer(modifier = Modifier.height(16.dp))
 
     StandardSolidButton(
-        text = viewModel.ctaTitle,
+        text = stringResource(viewModel.ctaRes),
         onClick = {
             if (isCvcRequired) {
                 cvvErrorMessage = viewModel.getCvvValidationMessage(cvv, cardBrand)

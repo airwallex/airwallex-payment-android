@@ -109,7 +109,7 @@ internal fun SchemaSection(
         Spacer(modifier = Modifier.height(24.dp))
 
         StandardSolidButton(
-            text = viewModel.schemaButtonTitle,
+            text = stringResource(viewModel.ctaRes),
             onClick = {
                 coroutineScope.launch {
                     viewModel.retrieveSchemaDataFromCache(type)?.let {

@@ -538,7 +538,7 @@ internal fun AddCardSection(
         Spacer(modifier = Modifier.height(48.dp))
 
         StandardSolidButton(
-            text = viewModel.ctaTitle,
+            text = stringResource(viewModel.ctaRes),
             onClick = {
                 focusManager.clearFocus()
 
