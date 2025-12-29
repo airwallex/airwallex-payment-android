@@ -23,6 +23,9 @@ class H5DemoActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setTitle(R.string.h5demo)
 
+        viewBinding.airwallexUrl.setText("https://demo-pacheckoutdemo.airwallex.com/shopping-cart")
+        viewBinding.refererUrl.setText("https://demo-pacheckoutdemo.airwallex.com")
+
         viewBinding.flArrow.setOnClickListener {
             finish()
         }

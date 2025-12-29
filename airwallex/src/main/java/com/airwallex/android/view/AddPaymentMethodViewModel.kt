@@ -41,10 +41,11 @@ class AddPaymentMethodViewModel(
     val additionalInfo: Map<String, List<String>> =
         mapOf("supportedSchemes" to supportedCardSchemes.map { it.name })
 
-    val ctaTitle = if (session is AirwallexRecurringSession) {
-        application.getString(R.string.airwallex_confirm)
+    @StringRes
+    val ctaRes: Int = if (session is AirwallexRecurringSession) {
+        R.string.airwallex_confirm
     } else {
-        application.getString(R.string.airwallex_pay_now)
+        R.string.airwallex_pay_now
     }
 
     val shipping: Shipping? by lazy {

@@ -49,7 +49,8 @@ class H5WebViewActivity : AppCompatActivity() {
             settings.setSupportMultipleWindows(true)
             settings.cacheMode = WebSettings.LOAD_NO_CACHE
             settings.defaultTextEncodingName = "UTF-8"
-            settings.userAgentString = AIRWALLEX_USER_AGENT
+            // Append custom identifier to default user agent (preserves Chrome/WebView detection for Google Pay)
+            settings.userAgentString = "${settings.userAgentString} $AIRWALLEX_USER_AGENT"
             if (WebViewFeature.isFeatureSupported(
                     WebViewFeature.PAYMENT_REQUEST)) {
                 WebSettingsCompat.setPaymentRequestEnabled(settings, true);

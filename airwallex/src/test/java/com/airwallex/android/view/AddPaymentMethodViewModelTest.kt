@@ -107,6 +107,27 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
+    fun `test ctaRes returns pay_now for AirwallexPaymentSession`() {
+        val mockSession = mockk<AirwallexPaymentSession>(relaxed = true)
+        val viewModel = createViewModel(mockSession)
+        assertEquals(R.string.airwallex_pay_now, viewModel.ctaRes)
+    }
+
+    @Test
+    fun `test ctaRes returns confirm for AirwallexRecurringSession`() {
+        val mockSession = mockk<AirwallexRecurringSession>(relaxed = true)
+        val viewModel = createViewModel(mockSession)
+        assertEquals(R.string.airwallex_confirm, viewModel.ctaRes)
+    }
+
+    @Test
+    fun `test ctaRes returns pay_now for AirwallexRecurringWithIntentSession`() {
+        val mockSession = mockk<AirwallexRecurringWithIntentSession>(relaxed = true)
+        val viewModel = createViewModel(mockSession)
+        assertEquals(R.string.airwallex_pay_now, viewModel.ctaRes)
+    }
+
+    @Test
     fun `one off payment method includes provided billing when information is required by session`() {
         val card: PaymentMethod.Card = mockk()
         val billing: Billing = mockk()
