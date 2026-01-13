@@ -70,7 +70,7 @@ class ExpiryDateUtilsTest {
     @Test
     fun `isValidExpiryDate should validate full expiry date string`() {
         // Valid dates
-        assertTrue(ExpiryDateUtils.isValidExpiryDate("12/25")) // Future date
+        assertTrue(ExpiryDateUtils.isValidExpiryDate("12/30")) // Future date
 
         // Invalid formats
         assertFalse(ExpiryDateUtils.isValidExpiryDate(""))
