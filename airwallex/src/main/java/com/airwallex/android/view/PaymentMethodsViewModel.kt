@@ -18,7 +18,6 @@ import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
@@ -186,7 +185,7 @@ internal class PaymentMethodsViewModel(
     fun checkoutWithSchema(paymentMethodType: AvailablePaymentMethodType) = viewModelScope.launch {
         AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchema, type = ${paymentMethodType.name}")
         val paymentMethod = PaymentMethod.Builder().setType(paymentMethodType.name).build()
-        paymentMethod.type?.let { type ->
+        paymentMethod.type?.let { _ ->
             AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
             checkout(paymentMethod).also {
                 _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
@@ -533,7 +532,6 @@ internal class PaymentMethodsViewModel(
         private const val OS_TYPE = "os_type"
         private const val OS_NAME = "android"
         private const val PAYMENT_METHOD = "payment_method"
-        private const val PAYMENT_SUCCESS = "payment_success"
         private const val PAYMENT_SELECT = "select_payment"
     }
 }
