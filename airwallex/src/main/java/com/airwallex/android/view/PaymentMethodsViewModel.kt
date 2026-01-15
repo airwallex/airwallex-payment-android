@@ -237,30 +237,9 @@ internal class PaymentMethodsViewModel(
         })
     }
 
-    fun trackPaymentSuccess(status: AirwallexPaymentStatus, paymentType: String?) {
-        if (status is AirwallexPaymentStatus.Success) {
-            trackPaymentSuccess(paymentType)
-        }
-    }
-
-    fun trackCardPaymentSuccess() {
-        AnalyticsLogger.logAction(
-            PAYMENT_SUCCESS, mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
-        )
-    }
-
     fun trackCardPaymentSelection() {
         AnalyticsLogger.logAction(
             PAYMENT_SELECT, mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
-        )
-    }
-
-    fun trackPaymentSuccess(paymentType: String?) {
-        AnalyticsLogger.logAction(
-            PAYMENT_SUCCESS,
-            mutableMapOf<String, String>().apply {
-                putIfNotNull(PAYMENT_METHOD, paymentType)
-            }
         )
     }
 
