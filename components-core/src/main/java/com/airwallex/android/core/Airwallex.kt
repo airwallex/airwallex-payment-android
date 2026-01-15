@@ -252,6 +252,17 @@ class Airwallex internal constructor(
         }
         if (paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN) {
             AirwallexLogger.info("confirmPaymentIntent, need cvc")
+            // Only log payment_launched for API integration (when activity is NOT an Airwallex UI activity)
+            if (!isAirwallexUIActivity) {
+                AnalyticsLogger.logAction(
+                    actionName = "payment_launched",
+                    additionalInfo = mutableMapOf<String, Any>(
+                        "subtype" to "api",
+                        "paymentMethod" to PaymentMethodType.CARD.value,
+                        "expressCheckout" to session.isExpressCheckout
+                    )
+                )
+            }
             val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
             provider?.get()?.let { paymentProvider ->
                 paymentProvider.handlePaymentData(
@@ -298,6 +309,17 @@ class Airwallex internal constructor(
         session.bindToActivity(activity)
 
         setupAnalyticsLogger(session)
+        // Only log payment_launched for API integration (when activity is NOT an Airwallex UI activity)
+        if (!isAirwallexUIActivity) {
+            AnalyticsLogger.logAction(
+                actionName = "payment_launched",
+                additionalInfo = mutableMapOf<String, Any>(
+                    "subtype" to "api",
+                    "paymentMethod" to PaymentMethodType.CARD.value,
+                    "expressCheckout" to session.isExpressCheckout
+                )
+            )
+        }
         session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
             override fun onSuccess(paymentIntent: PaymentIntent) {
                 val params = ConfirmPaymentIntentParams.createCardParams(
