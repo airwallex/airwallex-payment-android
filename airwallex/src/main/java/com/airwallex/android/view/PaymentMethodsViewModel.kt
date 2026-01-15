@@ -139,7 +139,6 @@ internal class PaymentMethodsViewModel(
                 object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(status)
-                        trackPaymentSuccess(status, paymentConsent.paymentMethod?.type)
                     }
                 }
             )
@@ -164,7 +163,6 @@ internal class PaymentMethodsViewModel(
                 paymentConsentId = paymentConsent.id,
                 cvc = cvc,
             ).also {
-                trackPaymentSuccess(it, paymentMethod.type)
                 _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
             }
         } else {
@@ -181,7 +179,6 @@ internal class PaymentMethodsViewModel(
     ) = viewModelScope.launch {
         AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchema, type = ${paymentMethod.type}")
         checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow(transactionMode)).also {
-                trackPaymentSuccess(it, paymentMethod.type)
                 _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
             }
     }
@@ -192,7 +189,6 @@ internal class PaymentMethodsViewModel(
         paymentMethod.type?.let { type ->
             AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
             checkout(paymentMethod).also {
-                trackPaymentSuccess(it, paymentMethod.type)
                 _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
             }
         }
@@ -202,7 +198,6 @@ internal class PaymentMethodsViewModel(
         viewModelScope.launch {
             AirwallexLogger.info("PaymentMethodsViewModel checkoutWithGooglePay")
             checkoutGooglePay().also {
-                trackPaymentSuccess(it, PaymentMethodType.GOOGLEPAY.value)
                 _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
             }
         }

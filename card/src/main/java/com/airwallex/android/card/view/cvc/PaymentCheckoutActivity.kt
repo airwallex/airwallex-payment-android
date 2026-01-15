@@ -102,13 +102,6 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                 when (result) {
                     is AirwallexPaymentStatus.Success -> {
                         AirwallexLogger.info("PaymentCheckoutActivity startConfirmPaymentIntent success")
-                        AnalyticsLogger.logAction(
-                            "payment_success",
-                            mutableMapOf<String, String>().apply {
-                                putIfNotNull("paymentMethod", paymentMethod.type)
-                            }
-                        )
-
                         finishWithPaymentIntent(paymentIntentId = result.paymentIntentId)
                     }
                     is AirwallexPaymentStatus.Failure -> {

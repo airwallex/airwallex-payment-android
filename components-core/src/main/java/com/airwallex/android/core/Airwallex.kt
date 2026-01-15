@@ -618,6 +618,10 @@ class Airwallex internal constructor(
                     // for redirect, initialPaymentIntentId is empty now. so we don support recurring in redirect flow
                     val paymentIntentId = response.initialPaymentIntentId
                     if (response.nextAction == null) {
+                        AnalyticsLogger.logAction(
+                            "payment_success",
+                            mapOf("payment_method" to paymentMethodType)
+                        )
                         listener.onCompleted(
                             AirwallexPaymentStatus.Success(
                                 paymentIntentId,
@@ -636,6 +640,18 @@ class Airwallex internal constructor(
                             )
                         )
                         return
+                    }
+                    // Wrap listener to log payment success/failure after 3DS or redirect flow
+                    val loggingListener = object : PaymentResultListener {
+                        override fun onCompleted(status: AirwallexPaymentStatus) {
+                            if (status is AirwallexPaymentStatus.Success) {
+                                AnalyticsLogger.logAction(
+                                    "payment_success",
+                                    mapOf("payment_method" to paymentMethodType)
+                                )
+                            }
+                            listener.onCompleted(status)
+                        }
                     }
                     when (paymentMethodType) {
                         PaymentMethodType.CARD.value, PaymentMethodType.GOOGLEPAY.value -> {
@@ -670,7 +686,7 @@ class Airwallex internal constructor(
                                 activity,
                                 applicationContext,
                                 nextActionModel,
-                                listener,
+                                loggingListener,
                                 response.id
                             )
                         }
@@ -683,7 +699,7 @@ class Airwallex internal constructor(
                                 activity,
                                 applicationContext,
                                 null,
-                                listener,
+                                loggingListener,
                                 response.id
                             )
                         }
@@ -1323,6 +1339,10 @@ class Airwallex internal constructor(
                     AirwallexLogger.info("Airwallex confirmPaymentIntentWithDevice success: type = ${params.paymentMethodType}, nextAction = ${response.nextAction?.type}")
                     // If the nextAction is null, the payment is completed
                     if (response.nextAction == null) {
+                        AnalyticsLogger.logAction(
+                            "payment_success",
+                            mapOf("payment_method" to params.paymentMethodType)
+                        )
                         listener.onCompleted(
                             AirwallexPaymentStatus.Success(
                                 response.id,
@@ -1353,6 +1373,18 @@ class Airwallex internal constructor(
 
                         else -> null
                     }
+                    val loggingListener = object : PaymentResultListener {
+                        override fun onCompleted(status: AirwallexPaymentStatus) {
+                            if (status is AirwallexPaymentStatus.Success) {
+                                    AnalyticsLogger.logAction(
+                                        "payment_success",
+                                        mapOf("payment_method" to params.paymentMethodType)
+                                    )
+                                }
+
+                            listener.onCompleted(status)
+                        }
+                    }
                     provider.get().handlePaymentIntentResponse(
                         response.id,
                         response.nextAction,
@@ -1360,7 +1392,7 @@ class Airwallex internal constructor(
                         activity,
                         applicationContext,
                         nextActionModel,
-                        listener,
+                        loggingListener,
                         params.paymentConsentId
                     )
                 }
