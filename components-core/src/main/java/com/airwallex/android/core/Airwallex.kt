@@ -259,7 +259,8 @@ class Airwallex internal constructor(
                     additionalInfo = mutableMapOf<String, Any>(
                         "subtype" to "api",
                         "paymentMethod" to PaymentMethodType.CARD.value,
-                        "expressCheckout" to session.isExpressCheckout
+                        "expressCheckout" to session.isExpressCheckout,
+                        "consentId" to paymentConsentId
                     )
                 )
             }
@@ -316,7 +317,8 @@ class Airwallex internal constructor(
                 additionalInfo = mutableMapOf<String, Any>(
                     "subtype" to "api",
                     "paymentMethod" to PaymentMethodType.CARD.value,
-                    "expressCheckout" to session.isExpressCheckout
+                    "expressCheckout" to session.isExpressCheckout,
+                    "consentId" to paymentConsentId
                 )
             )
         }
