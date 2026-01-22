@@ -8,8 +8,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.annotation.VisibleForTesting
 import androidx.browser.customtabs.CustomTabsIntent
-import com.airwallex.android.redirect.exception.RedirectException
 import androidx.core.net.toUri
+import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.android.core.RedirectMode
+import com.airwallex.android.redirect.exception.RedirectException
 
 object RedirectUtil {
 
@@ -53,20 +55,36 @@ object RedirectUtil {
     @Suppress("DEPRECATION")
     @VisibleForTesting
     fun createRedirectIntent(context: Context, uri: Uri, packageName: String?): Intent {
+        val redirectMode = AirwallexPlugins.redirectMode
         return if (determineResolveResult(context, uri, packageName) === ResolveResultType.APPLICATION) {
             Intent(Intent.ACTION_VIEW, uri).apply {
                 setPackage(packageName)
             }
+        } else if (redirectMode == RedirectMode.EXTERNAL_BROWSER) {
+            // Open in external browser instead of Custom Tabs
+            Intent(Intent.ACTION_VIEW, uri)
         } else {
-            val customTabsIntent: CustomTabsIntent = CustomTabsIntent.Builder()
+            val builder = CustomTabsIntent.Builder()
                 .setShowTitle(true)
                 .setToolbarColor(ThemeUtil.getPrimaryThemeColor(context))
-                .build()
+
+            // Set full screen height to disable PiP and show full screen bottom sheet
+            if (redirectMode == RedirectMode.CUSTOM_TAB_BOTTOM_SHEET) {
+                val screenHeight = context.resources.displayMetrics.heightPixels
+                builder.setInitialActivityHeightPx(screenHeight, CustomTabsIntent.ACTIVITY_HEIGHT_DEFAULT)
+                // Set high breakpoint to force bottom sheet behavior (not side sheet)
+                builder.setActivitySideSheetBreakpointDp(10000)
+            }
+
+            val customTabsIntent = builder.build()
             customTabsIntent.intent.data = uri
             customTabsIntent.intent
         }
     }
 
+    private const val CUSTOM_TAB_REQUEST_CODE = 1001
+
+    @Suppress("DEPRECATION")
     @Throws(RedirectException::class)
     fun makeRedirect(
         activity: Activity,
@@ -74,10 +92,18 @@ object RedirectUtil {
         fallBackUrl: String? = null,
         packageName: String? = null
     ) {
+        val redirectMode = AirwallexPlugins.redirectMode
         val redirectUri = redirectUrl.toUri()
         val redirectIntent = createRedirectIntent(activity, redirectUri, packageName)
         try {
-            activity.startActivity(redirectIntent)
+            // Use startActivityForResult to disable PiP minimize button (not needed for external browser)
+            if (redirectMode == RedirectMode.CUSTOM_TAB_BOTTOM_SHEET &&
+                determineResolveResult(activity, redirectUri, packageName) != ResolveResultType.APPLICATION
+            ) {
+                activity.startActivityForResult(redirectIntent, CUSTOM_TAB_REQUEST_CODE)
+            } else {
+                activity.startActivity(redirectIntent)
+            }
         } catch (e: ActivityNotFoundException) {
             if (!fallBackUrl.isNullOrEmpty()) {
                 makeRedirect(activity, fallBackUrl, null, packageName)

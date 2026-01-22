@@ -5,7 +5,8 @@ data class AirwallexConfiguration internal constructor(
     val environment: Environment,
     val supportComponentProviders: List<ActionComponentProvider<out ActionComponent>>,
     val enableAnalytics: Boolean,
-    val saveLogToLocal: Boolean = false
+    val saveLogToLocal: Boolean = false,
+    val redirectMode: RedirectMode = RedirectMode.CUSTOM_TAB
 ) {
     class Builder {
 
@@ -35,6 +36,11 @@ data class AirwallexConfiguration internal constructor(
          */
         private var enableAnalytics: Boolean = true
 
+        /**
+         * Set the browser mode for redirect-based payment methods
+         */
+        private var redirectMode: RedirectMode = RedirectMode.CUSTOM_TAB
+
         fun enableLogging(enable: Boolean): Builder = apply {
             this.enableLogging = enable
         }
@@ -56,13 +62,18 @@ data class AirwallexConfiguration internal constructor(
             this.saveLogToLocal = saveLogToLocal
         }
 
+        fun setRedirectMode(mode: RedirectMode): Builder = apply {
+            this.redirectMode = mode
+        }
+
         fun build(): AirwallexConfiguration {
             return AirwallexConfiguration(
                 enableLogging = enableLogging,
                 environment = environment,
                 supportComponentProviders = supportComponentProviders,
                 enableAnalytics = enableAnalytics,
-                saveLogToLocal = saveLogToLocal
+                saveLogToLocal = saveLogToLocal,
+                redirectMode = redirectMode
             )
         }
     }
