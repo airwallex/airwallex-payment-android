@@ -120,7 +120,7 @@ class RedirectUtilTest {
         assertEquals(Intent.ACTION_VIEW, intent.action)
         assertEquals(uri, intent.data)
         // External browser intent should not have CustomTabsIntent extras
-        assertTrue(intent.extras == null || !intent.extras!!.containsKey(CustomTabsIntent.EXTRA_SESSION))
+        assertTrue(intent.extras?.containsKey(CustomTabsIntent.EXTRA_SESSION) != true)
     }
 
     @Test
@@ -135,7 +135,7 @@ class RedirectUtilTest {
         assertEquals(uri, intent.data)
         // CustomTabsIntent should have session extras
         assertNotNull(intent.extras)
-        assertTrue(intent.extras!!.containsKey(CustomTabsIntent.EXTRA_SESSION))
+        assertTrue(intent.extras?.containsKey(CustomTabsIntent.EXTRA_SESSION) == true)
     }
 
     @Test
@@ -150,7 +150,7 @@ class RedirectUtilTest {
         assertEquals(uri, intent.data)
         assertNotNull(intent.extras)
         // Bottom sheet mode should have initial height set
-        assertTrue(intent.extras!!.containsKey(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX))
+        assertTrue(intent.extras?.containsKey(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX) == true)
     }
 
     @Suppress("DEPRECATION")
