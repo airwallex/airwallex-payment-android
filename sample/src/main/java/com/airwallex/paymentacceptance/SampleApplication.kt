@@ -76,9 +76,9 @@ class SampleApplication : Application() {
                         GooglePayComponent.PROVIDER
                     )
                 )
-//                .setRedirectMode(RedirectMode.CUSTOM_TAB)
+                .setRedirectMode(RedirectMode.CUSTOM_TAB)
 //                .setRedirectMode(RedirectMode.CUSTOM_TAB_BOTTOM_SHEET)
-                .setRedirectMode(RedirectMode.EXTERNAL_BROWSER)
+//                .setRedirectMode(RedirectMode.EXTERNAL_BROWSER)
                 .build()
         )
     }

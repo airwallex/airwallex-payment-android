@@ -82,7 +82,7 @@ object RedirectUtil {
         }
     }
 
-    private const val CUSTOM_TAB_REQUEST_CODE = 1001
+    private const val CUSTOM_TAB_REQUEST_CODE = 1002
 
     @Suppress("DEPRECATION")
     @Throws(RedirectException::class)
