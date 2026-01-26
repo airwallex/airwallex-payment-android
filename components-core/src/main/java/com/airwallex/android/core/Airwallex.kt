@@ -53,6 +53,7 @@ import com.airwallex.android.core.model.RetrievePaymentMethodTypeInfoParams
 import com.airwallex.android.core.model.ThreeDSecure
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.core.model.VerifyPaymentConsentParams
+import com.airwallex.android.core.util.BuildConfigHelper
 import com.airwallex.android.core.util.SessionUtils.getIntentId
 import com.airwallex.risk.AirwallexRisk
 import com.airwallex.risk.RiskConfiguration
@@ -1626,6 +1627,8 @@ class Airwallex internal constructor(
                 configuration.enableLogging,
                 configuration.saveLogToLocal
             )
+            AirwallexLogger.debug("Airwallex SDK v${BuildConfigHelper.versionName} initialized")
+            AirwallexLogger.debug("Current connected domain: ${configuration.environment.baseUrl()}")
             AirwallexRisk.start(
                 applicationContext = application,
                 accountId = null,
