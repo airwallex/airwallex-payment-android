@@ -13,7 +13,7 @@ android {
 dependencies {
     api project(':ui-core')
     api project(':security-3ds')
-    implementation 'androidx.browser:browser:1.4.0'
+    implementation 'androidx.browser:browser:1.8.0'
 
     // test
     testImplementation "junit:junit:$junitVersion"
