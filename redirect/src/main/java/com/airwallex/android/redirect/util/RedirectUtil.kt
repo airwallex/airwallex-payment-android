@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.annotation.VisibleForTesting
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import com.airwallex.android.core.AirwallexPlugins
@@ -25,7 +24,7 @@ object RedirectUtil {
         val intent = Intent(Intent.ACTION_VIEW, uri).apply {
             setPackage(packageName)
         }
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://"))
+        val browserIntent = Intent(Intent.ACTION_VIEW, "http://".toUri())
         try {
             val packageManager = context.packageManager
             val resolveInfo = packageManager.resolveActivity(intent, 0)
@@ -53,7 +52,6 @@ object RedirectUtil {
     }
 
     @Suppress("DEPRECATION")
-    @VisibleForTesting
     fun createRedirectIntent(context: Context, uri: Uri, packageName: String?): Intent {
         val redirectMode = AirwallexPlugins.redirectMode
         return if (determineResolveResult(context, uri, packageName) === ResolveResultType.APPLICATION) {
@@ -73,7 +71,7 @@ object RedirectUtil {
                 val screenHeight = context.resources.displayMetrics.heightPixels
                 builder.setInitialActivityHeightPx(screenHeight, CustomTabsIntent.ACTIVITY_HEIGHT_DEFAULT)
                 // Set high breakpoint to force bottom sheet behavior (not side sheet)
-                builder.setActivitySideSheetBreakpointDp(10000)
+                builder.setActivitySideSheetBreakpointDp(Int.MAX_VALUE)
             }
 
             val customTabsIntent = builder.build()
@@ -84,7 +82,6 @@ object RedirectUtil {
 
     private const val CUSTOM_TAB_REQUEST_CODE = 1008
 
-    @Suppress("DEPRECATION")
     @Throws(RedirectException::class)
     fun makeRedirect(
         activity: Activity,
