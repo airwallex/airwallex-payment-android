@@ -185,11 +185,9 @@ internal class PaymentMethodsViewModel(
     fun checkoutWithSchema(paymentMethodType: AvailablePaymentMethodType) = viewModelScope.launch {
         AirwallexLogger.info("PaymentMethodsViewModel checkoutWithSchema, type = ${paymentMethodType.name}")
         val paymentMethod = PaymentMethod.Builder().setType(paymentMethodType.name).build()
-        paymentMethod.type?.let { _ ->
-            AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
-            checkout(paymentMethod).also {
-                _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
-            }
+        AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
+        checkout(paymentMethod).also {
+            _paymentFlowStatus.value = PaymentFlowStatus.PaymentStatus(it)
         }
     }
 
