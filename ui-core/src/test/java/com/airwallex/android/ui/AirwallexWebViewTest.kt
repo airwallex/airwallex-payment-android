@@ -4,10 +4,12 @@ import android.content.Context
 import android.webkit.WebSettings
 import androidx.test.core.app.ApplicationProvider
 import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.android.core.util.BuildConfigHelper
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class AirwallexWebViewTest {
@@ -25,6 +27,6 @@ class AirwallexWebViewTest {
         assertEquals("UTF-8", settings.defaultTextEncodingName)
 
         val userAgent = settings.userAgentString
-        assertEquals(AirwallexPlugins.AIRWALLEX_USER_AGENT, userAgent)
+        assertTrue(userAgent.endsWith("${AirwallexPlugins.AIRWALLEX_USER_AGENT}/${BuildConfigHelper.versionName}"))
     }
 }

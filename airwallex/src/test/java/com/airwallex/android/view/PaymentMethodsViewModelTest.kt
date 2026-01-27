@@ -48,7 +48,6 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.runs
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.unmockkAll
@@ -484,15 +483,11 @@ class PaymentMethodsViewModelTest {
             listenerSlot.captured.onCompleted(expectedStatus)
         }
 
-        every { viewModel.trackPaymentSuccess(expectedStatus, paymentMethod.type) } just runs
         val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
         viewModel.paymentFlowStatus.observeForever(observer)
         viewModel.checkoutWithSchema(paymentMethod, additionalInfo, paymentMethodTypeInfo)
         advanceUntilIdle()
 
-        coVerify(exactly = 1) {
-            viewModel.trackPaymentSuccess(expectedStatus, paymentMethod.type)
-        }
         verify(exactly = 1) { observer.onChanged(expectedPaymentFlowStatus) }
         viewModel.paymentFlowStatus.removeObserver(observer)
     }
@@ -523,16 +518,12 @@ class PaymentMethodsViewModelTest {
         }
 
         // When
-        every { viewModel.trackPaymentSuccess(any(), any()) } just runs
         val observer = mockk<Observer<PaymentMethodsViewModel.PaymentFlowStatus>>(relaxed = true)
         viewModel.paymentFlowStatus.observeForever(observer)
         viewModel.checkoutWithCvc(paymentConsent, cvc)
         advanceUntilIdle()
 
         // Then
-        coVerify(exactly = 1) {
-            viewModel.trackPaymentSuccess(any(), any())
-        }
         verify(exactly = 1) { observer.onChanged(expectedPaymentFlowStatus) }
         viewModel.paymentFlowStatus.removeObserver(observer)
     }
@@ -1374,8 +1365,6 @@ class PaymentMethodsViewModelTest {
         // Mock track methods
         every { viewModel.trackPaymentSelection(any()) } returns Unit
         every { viewModel.trackCardPaymentSelection() } returns Unit
-        every { viewModel.trackPaymentSuccess(any()) } returns Unit
-        every { viewModel.trackCardPaymentSuccess() } returns Unit
 
         return viewModel
     }
