@@ -206,7 +206,7 @@ internal class PaymentMethodsViewModel(
             return@launch
         }
 
-        val result = fetchAvailablePaymentMethodsAndConsents()
+        val result = airwallex.fetchAvailablePaymentMethodsAndConsents(session)
         result.fold(onSuccess = { methodsAndConsents ->
             val availableMethodTypes = methodsAndConsents.first
             val availablePaymentConsents = methodsAndConsents.second

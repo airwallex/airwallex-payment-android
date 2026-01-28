@@ -23,6 +23,7 @@ import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.PaymentScreen
+import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.risk.AirwallexRisk
 
@@ -134,22 +135,22 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             addPaymentMethodViewModel.updateActivity(this)
 
             // Observe payment status changes from AddPaymentMethodViewModel (only once)
-            addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
-                when (result) {
-                    is AirwallexPaymentStatus.Success -> {
-                        finishWithPaymentIntent(
-                            paymentIntentId = result.paymentIntentId,
-                            consentId = result.consentId,
-                        )
-                    }
-
-                    is AirwallexPaymentStatus.Failure -> {
-                        finishWithPaymentIntent(exception = result.exception)
-                    }
-
-                    else -> Unit
-                }
-            }
+//            addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
+//                when (result) {
+//                    is AirwallexPaymentStatus.Success -> {
+//                        finishWithPaymentIntent(
+//                            paymentIntentId = result.paymentIntentId,
+//                            consentId = result.consentId,
+//                        )
+//                    }
+//
+//                    is AirwallexPaymentStatus.Failure -> {
+//                        finishWithPaymentIntent(exception = result.exception)
+//                    }
+//
+//                    else -> Unit
+//                }
+//            }
         }
 
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
@@ -174,7 +175,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         allowedPaymentMethods = allowedPaymentMethods,
                         availablePaymentMethodTypes = availablePaymentMethodTypes,
                         availablePaymentConsents = availablePaymentConsents,
-                        onAddCard = ::onAddCard,
+//                        onAddCard = ::onAddCard,
                         onDeleteCard = { consent ->
                             onDeleteCard(consent) {
                                 addPaymentMethodViewModel.deleteCardSuccess(consent)
@@ -186,6 +187,31 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         onPayWithFields = ::onPayWithSchema,
                         onLoading = { isLoading ->
                             setLoadingProgress(loading = isLoading)
+                        },
+                        onCardLoadingChanged = { operation ->
+                            when (operation) {
+                                null -> setLoadingProgress(false)
+                                is CardOperation.AddCard -> {
+                                    setLoadingProgress(loading = true, cancelable = false)
+                                    // new implementation
+                                    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
+                                    onAddCard()
+                                }
+                            }
+                        },
+                        onCardPaymentResult = { status ->
+                            when (status) {
+                                is AirwallexPaymentStatus.Success -> {
+                                    finishWithPaymentIntent(
+                                        paymentIntentId = status.paymentIntentId,
+                                        consentId = status.consentId,
+                                    )
+                                }
+                                is AirwallexPaymentStatus.Failure -> {
+                                    finishWithPaymentIntent(exception = status.exception)
+                                }
+                                else -> Unit
+                            }
                         },
                     )
                 }

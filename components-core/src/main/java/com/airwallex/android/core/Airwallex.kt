@@ -59,9 +59,13 @@ import com.airwallex.risk.AirwallexRisk
 import com.airwallex.risk.RiskConfiguration
 import com.airwallex.risk.Tenant
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import java.math.BigDecimal
+import java.util.Collections
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicInteger
 
 @Suppress("LongMethod")
 class Airwallex internal constructor(
@@ -564,11 +568,169 @@ class Airwallex internal constructor(
         }
     }
 
-    /**
-     * Verify a [PaymentConsent]
-     *
-     * @param params [VerifyPaymentConsentParams] used to verify the [PaymentConsent]
-     * @param listener a [PaymentListener] to receive the response or error
+    suspend fun fetchAvailablePaymentMethodsAndConsents(session: AirwallexSession): Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>> {
+        val secret = getClientSecret(session).takeIf { !it.isNullOrBlank() } ?: return Result.failure(
+            AirwallexCheckoutException(message = "Client secret is empty or blank")
+        )
+        val customerId = session.customerId
+        return supervisorScope {
+            val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
+            AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
+            val retrieveConsents = async {
+                customerId?.takeIf { needRequestConsent(session) }
+                    ?.let { retrieveAvailablePaymentConsentsPaged(secret, it) } ?: emptyList()
+            }
+            val retrieveMethods = async { retrieveAvailablePaymentMethodsPaged(session, secret) }
+            try {
+                val methods = filterPaymentMethodsBySession(
+                    retrieveMethods.await(), session.paymentMethods
+                )
+                val consents = retrieveConsents.await()
+                Result.success(Pair(methods, filterPaymentConsentsBySession(session, methods, consents)))
+            } catch (exception: AirwallexException) {
+                AirwallexLogger.error(
+                    "PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: failed ",
+                    exception
+                )
+                Result.failure(exception)
+            }
+        }
+    }
+
+    fun getPaymentIntent(session: AirwallexSession) =
+        when (session) {
+            is AirwallexPaymentSession -> {
+                session.paymentIntent
+            }
+
+            is AirwallexRecurringWithIntentSession -> {
+                session.paymentIntent
+            }
+
+            is AirwallexRecurringSession -> {
+                null
+            }
+
+            else -> {
+                throw Exception("Not supported session $session")
+            }
+        }
+
+    fun getClientSecret(session: AirwallexSession) =
+        when (session) {
+            is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
+                getPaymentIntent(session)?.clientSecret
+            }
+
+            is AirwallexRecurringSession -> {
+                session.clientSecret
+            }
+
+            else -> {
+                null
+            }
+        }
+
+    fun shouldHidePaymentConsents(session: AirwallexSession) =
+        when (session) {
+            is AirwallexPaymentSession -> {
+                session.hidePaymentConsents
+            }
+
+            else -> {
+                false
+            }
+        }
+
+
+    private suspend fun retrieveAvailablePaymentConsentsPaged(
+        clientSecret: String,
+        customerId: String,
+    ) = loadPagedItems(
+        loadPage = { pageNum ->
+            retrieveAvailablePaymentConsents(
+                RetrieveAvailablePaymentConsentsParams.Builder(
+                    clientSecret = clientSecret,
+                    customerId = customerId,
+                    pageNum = pageNum,
+                ).setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
+                    .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED).build()
+            )
+        }
+    )
+
+    private suspend fun retrieveAvailablePaymentMethodsPaged(
+        session: AirwallexSession,
+        clientSecret: String
+    ) = loadPagedItems(
+        loadPage = { pageNum ->
+            retrieveAvailablePaymentMethods(
+                session = session,
+                params = RetrieveAvailablePaymentMethodParams.Builder(
+                    clientSecret = clientSecret,
+                    pageNum = pageNum,
+                )
+                    .setActive(true)
+                    .setTransactionCurrency(session.currency)
+                    .setCountryCode(session.countryCode).build()
+            )
+        }
+    )
+
+    private fun filterPaymentMethodsBySession(
+        sourceList: List<AvailablePaymentMethodType>,
+        filterList: List<String>?,
+    ): List<AvailablePaymentMethodType> {
+        if (filterList.isNullOrEmpty()) return sourceList
+        return filterList.mapNotNull { name ->
+            sourceList.find { it.name.equals(name, ignoreCase = true) }
+        }
+    }
+
+    private fun filterPaymentConsentsBySession(
+        session: AirwallexSession,
+        paymentMethodList: List<AvailablePaymentMethodType>,
+        paymentConsentList: List<PaymentConsent>
+    ): List<PaymentConsent> {
+        val cardPaymentMethod = paymentMethodList.find { it.name == PaymentMethodType.CARD.value }
+        return if (cardPaymentMethod != null && session is AirwallexPaymentSession) {
+            paymentConsentList.filter { it.paymentMethod?.type == PaymentMethodType.CARD.value }
+        } else {
+            emptyList()
+        }
+    }
+    private suspend fun <T> loadPagedItems(
+        loadPage: suspend (Int) -> Page<T>,
+        items: MutableList<T> = Collections.synchronizedList(mutableListOf()),
+        pageNum: AtomicInteger = AtomicInteger(0)
+    ): List<T> {
+        val response = loadPage(pageNum.get())
+        pageNum.incrementAndGet()
+        items.addAll(response.items)
+        return if (response.hasMore) {
+            loadPagedItems(
+                loadPage,
+                items,
+                pageNum,
+            )
+        } else {
+            items
+        }
+    }
+    private fun needRequestConsent(session: AirwallexSession): Boolean {
+        // if the customerId is null or empty ,there is no need to request consents
+        if (session.customerId.isNullOrEmpty()) return false
+        // only payment mode needs to request consents
+        if (session !is AirwallexPaymentSession) return false
+        // if user wants to hide consents,there is no need to request consents
+        return !shouldHidePaymentConsents(session)
+    }
+
+/**
+ * Verify a [PaymentConsent]
+ *
+ * @param params [VerifyPaymentConsentParams] used to verify the [PaymentConsent]
+ * @param listener a [PaymentListener] to receive the response or error
      */
     @UiThread
     fun verifyPaymentConsent(

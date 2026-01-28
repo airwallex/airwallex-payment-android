@@ -25,6 +25,7 @@ import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexTheme
+import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.risk.AirwallexRisk
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -112,14 +113,37 @@ class AirwallexAddPaymentDialog(
                     CardSection(
                         addPaymentMethodViewModel = viewModel,
                         cardSchemes = supportedCardSchemes,
-                        onAddCard = {
-                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-                            setLoadingProgress(true)
-                        },
+//                        onAddCard = {
+//                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
+//                            setLoadingProgress(true)
                         onDeleteCard = {},
                         onCheckoutWithoutCvc = {},
                         onCheckoutWithCvc = { _, _ -> },
                         isSinglePaymentMethod = true,
+                        onLoadingChanged = { operation ->
+                            when (operation) {
+                                null -> setLoadingProgress(false)
+                                is CardOperation.AddCard -> {
+                                    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
+                                    setLoadingProgress(true)
+                                }
+                            }
+                        },
+                        onPaymentResult = {
+                            when (it) {
+                                is AirwallexPaymentStatus.Success -> {
+                                    dismissWithPaymentResult(
+                                        paymentIntentId = it.paymentIntentId,
+                                        paymentConsentId = it.consentId
+                                    )
+                                }
+
+                                is AirwallexPaymentStatus.Failure -> {
+                                    dismissWithPaymentResult(exception = it.exception)
+                                }
+                                else -> Unit
+                            }
+                        }
                     )
                 }
             }
@@ -130,22 +154,22 @@ class AirwallexAddPaymentDialog(
         viewBinding.closeIcon.setOnClickListener {
             cancelPayment()
         }
-        viewModel.airwallexPaymentStatus.observe(activity) { result ->
-            when (result) {
-                is AirwallexPaymentStatus.Success -> {
-                    dismissWithPaymentResult(
-                        paymentIntentId = result.paymentIntentId,
-                        paymentConsentId = result.consentId
-                    )
-                }
-
-                is AirwallexPaymentStatus.Failure -> {
-                    dismissWithPaymentResult(exception = result.exception)
-                }
-
-                else -> Unit
-            }
-        }
+//        viewModel.airwallexPaymentStatus.observe(activity) { result ->
+//            when (result) {
+//                is AirwallexPaymentStatus.Success -> {
+//                    dismissWithPaymentResult(
+//                        paymentIntentId = result.paymentIntentId,
+//                        paymentConsentId = result.consentId
+//                    )
+//                }
+//
+//                is AirwallexPaymentStatus.Failure -> {
+//                    dismissWithPaymentResult(exception = result.exception)
+//                }
+//
+//                else -> Unit
+//            }
+//        }
     }
 
     private fun dismissWithPaymentResult(

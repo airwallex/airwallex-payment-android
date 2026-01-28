@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.airwallex.android.R
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
@@ -45,6 +46,7 @@ import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
+import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.schema.SchemaSection
 import com.airwallex.android.view.util.toSupportedIcons
@@ -56,13 +58,15 @@ internal fun PaymentMethodsAccordionSection(
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
-    onAddCard: () -> Unit,
+//    onAddCard: () -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
+    onCardLoadingChanged: ((CardOperation?) -> Unit),
+    onCardPaymentResult: ((AirwallexPaymentStatus) -> Unit),
 ) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethodTypes.first()) }
     var selectedIndex by remember { mutableIntStateOf(0) }
@@ -166,10 +170,12 @@ internal fun PaymentMethodsAccordionSection(
                                 addPaymentMethodViewModel = addPaymentMethodViewModel,
                                 cardSchemes = type.cardSchemes.orEmpty(),
                                 availablePaymentConsents = availablePaymentConsents,
-                                onAddCard = onAddCard,
+//                                onAddCard = onAddCard,
                                 onDeleteCard = onDeleteCard,
                                 onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                                 onCheckoutWithCvc = onCheckoutWithCvc,
+                                onLoadingChanged = onCardLoadingChanged,
+                                onPaymentResult = onCardPaymentResult,
                             )
                         }
                         else -> {

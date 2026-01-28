@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.airwallex.android.R
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
@@ -56,7 +57,9 @@ import com.airwallex.risk.AirwallexRisk
 internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
     cardSchemes: List<CardScheme>,
-    onConfirm: () -> Unit,
+//    onConfirm: () -> Unit = {},
+    onLoadingChanged: ((CardOperation?) -> Unit),
+    onPaymentResult: ((AirwallexPaymentStatus) -> Unit),
 ) {
     val focusManager = LocalFocusManager.current
     val expiryFocusRequester = remember { FocusRequester() }
@@ -579,20 +582,32 @@ internal fun AddCardSection(
                     // All fields are valid, so proceed to confirm payment.
                     val card = viewModel.createCard(cardNumber, cardHolderName, expiryDate, cvv)
                         ?: return@StandardSolidButton
-                    viewModel.confirmPayment(
-                        card = card,
-                        saveCard = isSaveCardChecked,
-                        billing = viewModel.createBilling(
-                            countryCode = selectedCountryCode,
-                            state = state,
-                            city = city,
-                            street = street,
-                            postcode = zipCode,
-                            phoneNumber = phoneNumber,
-                            email = email,
-                        ),
+                    val billing = viewModel.createBilling(
+                        countryCode = selectedCountryCode,
+                        state = state,
+                        city = city,
+                        street = street,
+                        postcode = zipCode,
+                        phoneNumber = phoneNumber,
+                        email = email,
                     )
-                    onConfirm()
+                        onLoadingChanged(CardOperation.AddCard)
+                        viewModel.confirmPayment(
+                            card = card,
+                            saveCard = isSaveCardChecked,
+                            billing = billing,
+                            onResult = { status ->
+                                onLoadingChanged(null)
+                                onPaymentResult(status)
+                            }
+                        )
+                    // prev approach
+//                        viewModel.confirmPayment(
+//                            card = card,
+//                            saveCard = isSaveCardChecked,
+//                            billing = billing,
+//                        )
+//                        onConfirm()
                 }
                 // Otherwise do nothing
             },

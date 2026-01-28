@@ -27,6 +27,7 @@ import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
+import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.risk.AirwallexRisk
 
@@ -94,11 +95,34 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                         CardSection(
                             addPaymentMethodViewModel = viewModel,
                             cardSchemes = args.supportedCardSchemes,
-                            onAddCard = ::onAddCard,
+//                            onAddCard = ::onAddCard,
                             onDeleteCard = {},
                             onCheckoutWithoutCvc = {},
                             onCheckoutWithCvc = { _, _ -> },
                             isSinglePaymentMethod = args.isSinglePaymentMethod,
+                            onLoadingChanged = { operation ->
+                                when (operation) {
+                                    null -> setLoadingProgress(false)
+                                    is CardOperation.AddCard -> {
+                                        setLoadingProgress(loading = true, cancelable = false)
+                                        onAddCard()
+                                    }
+                                }
+                            },
+                            onPaymentResult = { status ->
+                                when (status) {
+                                    is AirwallexPaymentStatus.Success -> {
+                                        finishWithPaymentIntent(
+                                            paymentIntentId = status.paymentIntentId,
+                                            consentId = status.consentId,
+                                        )
+                                    }
+                                    is AirwallexPaymentStatus.Failure -> {
+                                        finishWithPaymentIntent(exception = status.exception)
+                                    }
+                                    else -> Unit
+                                }
+                            },
                         )
                     }
                 }
@@ -106,22 +130,22 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         }
     }
 
-    override fun addListener() {
-        super.addListener()
-        viewModel.airwallexPaymentStatus.observe(this) { result ->
-            when (result) {
-                is AirwallexPaymentStatus.Success -> {
-                    finishWithPaymentIntent(
-                        paymentIntentId = result.paymentIntentId, consentId = result.consentId
-                    )
-                }
-                is AirwallexPaymentStatus.Failure -> {
-                    finishWithPaymentIntent(exception = result.exception)
-                }
-                else -> Unit
-            }
-        }
-    }
+//    override fun addListener() {
+//        super.addListener()
+//        viewModel.airwallexPaymentStatus.observe(this) { result ->
+//            when (result) {
+//                is AirwallexPaymentStatus.Success -> {
+//                    finishWithPaymentIntent(
+//                        paymentIntentId = result.paymentIntentId, consentId = result.consentId
+//                    )
+//                }
+//                is AirwallexPaymentStatus.Failure -> {
+//                    finishWithPaymentIntent(exception = result.exception)
+//                }
+//                else -> Unit
+//            }
+//        }
+//    }
 
     override fun onBackButtonPressed() {
         super.onBackButtonPressed()

@@ -12,7 +12,7 @@ import com.airwallex.android.core.extension.getAppVersion
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.util.BuildConfigHelper
 
-private typealias AirwallexEnviornment = com.airwallex.android.core.Environment
+private typealias AirwallexEnvironment = com.airwallex.android.core.Environment
 
 /**
  * A singleton object responsible for handling analytics logging throughout the Airwallex SDK.
@@ -172,11 +172,11 @@ object AnalyticsLogger {
 
     // region Private Helpers
 
-    private fun AirwallexEnviornment.toTrackerEnvironment(): Environment {
+    private fun AirwallexEnvironment.toTrackerEnvironment(): Environment {
         return when (this) {
-            AirwallexEnviornment.STAGING -> Environment.STAGING
-            AirwallexEnviornment.DEMO -> Environment.DEMO
-            AirwallexEnviornment.PRODUCTION -> Environment.PROD
+            AirwallexEnvironment.STAGING -> Environment.STAGING
+            AirwallexEnvironment.DEMO -> Environment.DEMO
+            AirwallexEnvironment.PRODUCTION -> Environment.PROD
         }
     }
 

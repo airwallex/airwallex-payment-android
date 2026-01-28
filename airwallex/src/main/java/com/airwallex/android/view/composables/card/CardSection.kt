@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
@@ -39,12 +40,14 @@ import java.util.Locale
 internal fun CardSection(
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     cardSchemes: List<CardScheme>,
-    onAddCard: () -> Unit,
+//    onAddCard: () -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     availablePaymentConsents: List<PaymentConsent> = emptyList(),
     isSinglePaymentMethod: Boolean = false,
+    onLoadingChanged: ((CardOperation?) -> Unit),
+    onPaymentResult: ((AirwallexPaymentStatus) -> Unit),
 ) {
     val deletedConsent by addPaymentMethodViewModel.deleteCardSuccess.collectAsState()
 
@@ -91,7 +94,9 @@ internal fun CardSection(
                 AddCardSection(
                     viewModel = addPaymentMethodViewModel,
                     cardSchemes = cardSchemes,
-                    onConfirm = onAddCard,
+//                    onConfirm = onAddCard,
+                    onLoadingChanged = onLoadingChanged,
+                    onPaymentResult = onPaymentResult,
                 )
             }
             is CardSectionType.ConsentList -> {
@@ -191,6 +196,39 @@ internal fun CardSection(
             }
         }
     }
+}
+
+/**
+ * Java-friendly overload of CardSection that uses a listener interface instead of lambda callbacks.
+ *
+ * This overload is designed for Java compatibility. Kotlin code should prefer the lambda-based version.
+ *
+ * @param listener Listener for card operation events (loading state and payment results)
+ * @see CardSectionListener
+ */
+@Suppress("ComplexMethod", "LongMethod", "LongParameterList")
+@Composable
+internal fun CardSection(
+    addPaymentMethodViewModel: AddPaymentMethodViewModel,
+    cardSchemes: List<CardScheme>,
+    onDeleteCard: (PaymentConsent) -> Unit,
+    onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
+    onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
+    availablePaymentConsents: List<PaymentConsent> = emptyList(),
+    isSinglePaymentMethod: Boolean = false,
+    listener: CardSectionListener,
+) {
+    CardSection(
+        addPaymentMethodViewModel = addPaymentMethodViewModel,
+        cardSchemes = cardSchemes,
+        onDeleteCard = onDeleteCard,
+        onCheckoutWithoutCvc = onCheckoutWithoutCvc,
+        onCheckoutWithCvc = onCheckoutWithCvc,
+        availablePaymentConsents = availablePaymentConsents,
+        isSinglePaymentMethod = isSinglePaymentMethod,
+        onLoadingChanged = listener::onLoadingChanged,
+        onPaymentResult = listener::onPaymentResult
+    )
 }
 
 sealed interface CardSectionType {

@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
+import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
@@ -28,6 +29,7 @@ import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
+import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.google.GooglePaySection
 import org.json.JSONArray
 
@@ -40,13 +42,15 @@ internal fun PaymentScreen(
     allowedPaymentMethods: JSONArray?,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
-    onAddCard: () -> Unit,
+//    onAddCard: () -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
+    onCardLoadingChanged: ((CardOperation?) -> Unit),
+    onCardPaymentResult: ((AirwallexPaymentStatus) -> Unit),
 ) {
     val availableTypes by remember {
         mutableStateOf(
@@ -93,16 +97,18 @@ internal fun PaymentScreen(
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
                         availablePaymentMethodTypes = availableTypes,
                         availablePaymentConsents = availablePaymentConsents,
-                        onAddCard = {
-                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-                            onAddCard()
-                        },
+//                        onAddCard = {
+//                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
+//                            onAddCard()
+//                        },
                         onDeleteCard = onDeleteCard,
                         onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                         onDirectPay = onDirectPay,
                         onCheckoutWithCvc = onCheckoutWithCvc,
                         onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
+                        onCardLoadingChanged = onCardLoadingChanged,
+                        onCardPaymentResult = onCardPaymentResult,
                     )
                 }
                 PaymentMethodsLayoutType.ACCORDION -> {
@@ -111,16 +117,18 @@ internal fun PaymentScreen(
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
                         availablePaymentMethodTypes = availableTypes,
                         availablePaymentConsents = availablePaymentConsents,
-                        onAddCard = {
-                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-                            onAddCard()
-                        },
+//                        onAddCard = {
+//                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
+//                            onAddCard()
+//                        },
                         onDeleteCard = onDeleteCard,
                         onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                         onDirectPay = onDirectPay,
                         onCheckoutWithCvc = onCheckoutWithCvc,
                         onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
+                        onCardLoadingChanged = onCardLoadingChanged,
+                        onCardPaymentResult = onCardPaymentResult,
                     )
                 }
             }

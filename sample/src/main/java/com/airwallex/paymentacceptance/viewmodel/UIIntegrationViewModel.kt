@@ -116,7 +116,8 @@ class UIIntegrationViewModel : BaseViewModel() {
         val session = buildAirwallexPaymentSessionWithProvider(
             googlePayOptions,
             //customize the payment methods and their order
-            listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
+            listOf("card")
+//            listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
         )
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
@@ -138,7 +139,8 @@ class UIIntegrationViewModel : BaseViewModel() {
         val session = createSession(
             googlePayOptions,
             //customize the payment methods and their order
-            listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
+            listOf("card")
+//                    listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
         )
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,

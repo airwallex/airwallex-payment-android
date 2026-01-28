@@ -244,6 +244,28 @@ class AddPaymentMethodViewModel(
         )
     }
 
+    /**
+     * Confirm payment with callback - allows caller to handle result directly
+     */
+    fun confirmPayment(
+        card: PaymentMethod.Card,
+        saveCard: Boolean,
+        billing: Billing?,
+        onResult: (AirwallexPaymentStatus) -> Unit
+    ) {
+        airwallex.confirmPaymentIntent(
+            session = session,
+            card = card,
+            billing = billing,
+            saveCard = saveCard,
+            listener = object : Airwallex.PaymentResultListener {
+                override fun onCompleted(status: AirwallexPaymentStatus) {
+                    onResult(status)
+                }
+            },
+        )
+    }
+
     fun createCard(
         cardNumber: String,
         name: String,
