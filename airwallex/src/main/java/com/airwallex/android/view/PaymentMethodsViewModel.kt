@@ -47,8 +47,9 @@ import kotlinx.coroutines.supervisorScope
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 
+//TODO: temporarily make it public, will be internal later. this is to support prototype only
 @Suppress("ComplexMethod", "LongMethod")
-internal class PaymentMethodsViewModel(
+class PaymentMethodsViewModel(
     application: Application,
     airwallex: Airwallex,
     internal val session: AirwallexSession
@@ -488,7 +489,8 @@ internal class PaymentMethodsViewModel(
         return isWaitingForAddPaymentMethodResult
     }
 
-    internal class Factory(
+    // TODO: return back to internal after prototype
+    class Factory(
         private val application: Application,
         private val airwallex: Airwallex,
         private val session: AirwallexSession
@@ -500,14 +502,16 @@ internal class PaymentMethodsViewModel(
         }
     }
 
-    internal sealed class PaymentMethodResult {
+    // TODO: return back to internal after prototype
+    sealed class PaymentMethodResult {
         data class Show(val methods: Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>) :
             PaymentMethodResult()
 
         data class Skip(val schemes: List<CardScheme>) : PaymentMethodResult()
     }
 
-    internal sealed class PaymentFlowStatus {
+    // TODO: return back to internal after prototype
+    sealed class PaymentFlowStatus {
         data class ErrorAlert(
             val message: String,
         ) : PaymentFlowStatus()

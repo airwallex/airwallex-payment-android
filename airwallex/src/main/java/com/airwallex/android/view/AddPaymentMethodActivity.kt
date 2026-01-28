@@ -93,6 +93,8 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             modifier = Modifier.padding(horizontal = 24.dp),
                         )
                         CardSection(
+                            session = session,
+                            airwallex = airwallex,
                             addPaymentMethodViewModel = viewModel,
                             cardSchemes = args.supportedCardSchemes,
 //                            onAddCard = ::onAddCard,

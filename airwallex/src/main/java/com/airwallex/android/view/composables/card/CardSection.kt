@@ -1,5 +1,7 @@
 package com.airwallex.android.view.composables.card
 
+import android.app.Application
+import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -19,10 +21,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airwallex.android.R
+import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
@@ -30,6 +36,7 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
+import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.common.CardBrandIcon
 import com.airwallex.android.view.composables.consent.ConsentDetailSection
 import com.airwallex.android.view.composables.consent.ConsentListSection
@@ -37,18 +44,29 @@ import java.util.Locale
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
-internal fun CardSection(
+fun CardSection(
+    session: AirwallexSession,
+    airwallex: Airwallex,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     cardSchemes: List<CardScheme>,
-//    onAddCard: () -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
-    availablePaymentConsents: List<PaymentConsent> = emptyList(),
     isSinglePaymentMethod: Boolean = false,
     onLoadingChanged: ((CardOperation?) -> Unit),
     onPaymentResult: ((AirwallexPaymentStatus) -> Unit),
 ) {
+    val context = LocalContext.current
+
+    val operationsViewModel: PaymentOperationsViewModel = viewModel(
+        factory = PaymentOperationsViewModel.Factory(
+            application = context.applicationContext as Application,
+            airwallex = airwallex,
+            session = session
+        )
+    )
+
+    val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
     val deletedConsent by addPaymentMethodViewModel.deleteCardSuccess.collectAsState()
 
     var localConsents by remember { mutableStateOf(availablePaymentConsents) }
@@ -94,7 +112,6 @@ internal fun CardSection(
                 AddCardSection(
                     viewModel = addPaymentMethodViewModel,
                     cardSchemes = cardSchemes,
-//                    onConfirm = onAddCard,
                     onLoadingChanged = onLoadingChanged,
                     onPaymentResult = onPaymentResult,
                 )
@@ -208,23 +225,25 @@ internal fun CardSection(
  */
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
-internal fun CardSection(
+fun CardSection(
+    session: AirwallexSession,
+    airwallex: Airwallex,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     cardSchemes: List<CardScheme>,
     onDeleteCard: (PaymentConsent) -> Unit,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
-    availablePaymentConsents: List<PaymentConsent> = emptyList(),
     isSinglePaymentMethod: Boolean = false,
     listener: CardSectionListener,
 ) {
     CardSection(
+        session = session,
+        airwallex = airwallex,
         addPaymentMethodViewModel = addPaymentMethodViewModel,
         cardSchemes = cardSchemes,
         onDeleteCard = onDeleteCard,
         onCheckoutWithoutCvc = onCheckoutWithoutCvc,
         onCheckoutWithCvc = onCheckoutWithCvc,
-        availablePaymentConsents = availablePaymentConsents,
         isSinglePaymentMethod = isSinglePaymentMethod,
         onLoadingChanged = listener::onLoadingChanged,
         onPaymentResult = listener::onPaymentResult

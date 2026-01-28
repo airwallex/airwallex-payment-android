@@ -303,7 +303,8 @@ class AddPaymentMethodViewModel(
     fun isCvcRequired(paymentConsent: PaymentConsent) =
         paymentConsent.paymentMethod?.card?.numberType == PaymentMethod.Card.NumberType.PAN
 
-    internal class Factory(
+    // TODO: return back to internal after prototype
+    class Factory(
         private val application: Application,
         private val airwallex: Airwallex,
         private val session: AirwallexSession,

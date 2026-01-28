@@ -53,7 +53,8 @@ class UIIntegrationActivity :
             ButtonItem(LAUNCH_CUSTOM_PAYMENT_LIST, "Launch custom payment list"),
             ButtonItem(LAUNCH_CARD_PAYMENT, "Launch card payment"),
             ButtonItem(LAUNCH_CARD_PAYMENT_DIALOG, "Launch card payment (dialog)"),
-            ButtonItem(LAUNCH_SHIPPING_ADDRESS_DIALOG, "Launch shipping address (dialog)")
+            ButtonItem(LAUNCH_SHIPPING_ADDRESS_DIALOG, "Launch shipping address (dialog)"),
+            ButtonItem(LAUNCH_EMBEDDED_PAYMENT, "Launch embedded payment activity")
         )
 
         return if (Settings.expressCheckout == "Enabled") {
@@ -86,6 +87,10 @@ class UIIntegrationActivity :
 
             LAUNCH_SHIPPING_ADDRESS_DIALOG -> {
                 mViewModel.launchShipping(this)
+            }
+
+            LAUNCH_EMBEDDED_PAYMENT -> {
+                mViewModel.launchEmbeddedPayment(this)
             }
         }
     }
@@ -171,5 +176,6 @@ class UIIntegrationActivity :
         const val LAUNCH_CARD_PAYMENT = 3
         const val LAUNCH_CARD_PAYMENT_DIALOG = 4
         const val LAUNCH_SHIPPING_ADDRESS_DIALOG = 5
+        const val LAUNCH_EMBEDDED_PAYMENT = 6
     }
 }

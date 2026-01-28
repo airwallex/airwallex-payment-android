@@ -110,6 +110,10 @@
             android:name=".ui.SettingActivity"
             tools:ignore="LockedOrientationActivity" />
 
+        <activity
+            android:name=".ui.EmbeddedPaymentActivity"
+            tools:ignore="LockedOrientationActivity" />
+
     </application>
 
     <queries>

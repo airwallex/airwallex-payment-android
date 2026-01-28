@@ -17,9 +17,11 @@ import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.PaymentMethodsLayoutType
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
+import com.airwallex.paymentacceptance.ui.EmbeddedPaymentActivity
 import com.airwallex.paymentacceptance.DemoPaymentIntentProvider
 import com.airwallex.paymentacceptance.DemoPaymentIntentSource
 import com.airwallex.paymentacceptance.Settings
@@ -116,8 +118,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         val session = buildAirwallexPaymentSessionWithProvider(
             googlePayOptions,
             //customize the payment methods and their order
-            listOf("card")
-//            listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
+            listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
         )
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
@@ -139,8 +140,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         val session = createSession(
             googlePayOptions,
             //customize the payment methods and their order
-            listOf("card")
-//                    listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
+            listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
         )
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
@@ -260,6 +260,30 @@ class UIIntegrationViewModel : BaseViewModel() {
                     _airwallexShippingStatus.value = status
                 }
             })
+    }
+
+    fun launchEmbeddedPayment(activity: ComponentActivity) {
+        // Check if Express Checkout is enabled to determine loading strategy
+        if (Settings.expressCheckout == "Enabled" && Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
+            // Express Checkout: Create session immediately without API calls, no loading needed
+            launchEmbeddedPaymentExpressCheckout(activity)
+        } else {
+            // Traditional flow: Show loading for API calls
+            launchEmbeddedPaymentTraditional(activity)
+        }
+    }
+
+    private fun launchEmbeddedPaymentExpressCheckout(activity: ComponentActivity) {
+        val session = buildAirwallexPaymentSessionWithProvider(googlePayOptions)
+        EmbeddedPaymentActivity.start(activity, session)
+    }
+
+    private fun launchEmbeddedPaymentTraditional(activity: ComponentActivity) = launch {
+        val session = createSession(
+            googlePayOptions,
+            listOf("paypal", "Googlepay", "fps", "alipay", "alipayhk")
+        )
+        EmbeddedPaymentActivity.start(activity, session)
     }
 
     /**

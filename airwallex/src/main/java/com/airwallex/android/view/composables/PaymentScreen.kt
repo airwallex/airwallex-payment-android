@@ -16,7 +16,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
+import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
@@ -36,6 +38,8 @@ import org.json.JSONArray
 @Suppress("LongMethod", "LongParameterList")
 @Composable
 internal fun PaymentScreen(
+    session: AirwallexSession,
+    airwallex: Airwallex,
     layoutType: PaymentMethodsLayoutType,
     paymentMethodsViewModel: PaymentMethodsViewModel,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
@@ -93,10 +97,12 @@ internal fun PaymentScreen(
             when (layoutType) {
                 PaymentMethodsLayoutType.TAB -> {
                     PaymentMethodsTabSection(
+                        session = session,
+                        airwallex = airwallex,
                         paymentMethodViewModel = paymentMethodsViewModel,
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
-                        availablePaymentMethodTypes = availableTypes,
-                        availablePaymentConsents = availablePaymentConsents,
+//                        availablePaymentMethodTypes = availableTypes,
+//                        availablePaymentConsents = availablePaymentConsents,
 //                        onAddCard = {
 //                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
 //                            onAddCard()
@@ -113,6 +119,8 @@ internal fun PaymentScreen(
                 }
                 PaymentMethodsLayoutType.ACCORDION -> {
                     PaymentMethodsAccordionSection(
+                        session = session,
+                        airwallex = airwallex,
                         paymentMethodViewModel = paymentMethodsViewModel,
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
                         availablePaymentMethodTypes = availableTypes,

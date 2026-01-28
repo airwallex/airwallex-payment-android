@@ -52,6 +52,10 @@ class AirwallexAddPaymentDialog(
     override val additionalInfo: Map<String, Any>
         get() = viewModel.additionalInfo
 
+    private val airwallex: Airwallex by lazy {
+        Airwallex(activity)
+    }
+
     private val viewModel: AddPaymentMethodViewModel by lazy {
         createViewModel()
     }
@@ -63,7 +67,7 @@ class AirwallexAddPaymentDialog(
             viewModelStore,
             AddPaymentMethodViewModel.Factory(
                 (activity.applicationContext as Application),
-                Airwallex(activity),
+                airwallex,
                 session,
                 supportedCardSchemes
             )
@@ -111,6 +115,8 @@ class AirwallexAddPaymentDialog(
             setContent {
                 AirwallexTheme {
                     CardSection(
+                        session = session,
+                        airwallex = airwallex,
                         addPaymentMethodViewModel = viewModel,
                         cardSchemes = supportedCardSchemes,
 //                        onAddCard = {
