@@ -84,12 +84,12 @@ SDK 已发布至 [Maven Central](https://repo1.maven.org/maven2/io/github/airwal
 ```groovy
 dependencies {
     // 必须
-    implementation 'io.github.airwallex:payment:6.4.1'
+    implementation 'io.github.airwallex:payment:6.4.2'
     // 按需添加支付方式
-    implementation 'io.github.airwallex:payment-card:6.4.1'
-    implementation 'io.github.airwallex:payment-redirect:6.4.1'
-    implementation 'io.github.airwallex:payment-wechat:6.4.1'
-    implementation 'io.github.airwallex:payment-googlepay:6.4.1'
+    implementation 'io.github.airwallex:payment-card:6.4.2'
+    implementation 'io.github.airwallex:payment-redirect:6.4.2'
+    implementation 'io.github.airwallex:payment-wechat:6.4.2'
+    implementation 'io.github.airwallex:payment-googlepay:6.4.2'
 }
 ```
 
@@ -444,11 +444,11 @@ SDK 支持 Android API 21 及以上。
 ```groovy
 dependencies {
     // 必须
-    implementation 'io.github.airwallex:payment-components-core:6.4.1'
+    implementation 'io.github.airwallex:payment-components-core:6.4.2'
     // 按需添加支付方式
-    implementation 'io.github.airwallex:payment-card:6.4.1'
-    implementation 'io.github.airwallex:payment-googlepay:6.4.1'
-    implementation 'io.github.airwallex:payment-redirect:6.4.1'
+    implementation 'io.github.airwallex:payment-card:6.4.2'
+    implementation 'io.github.airwallex:payment-googlepay:6.4.2'
+    implementation 'io.github.airwallex:payment-redirect:6.4.2'
 }
 ```
 
