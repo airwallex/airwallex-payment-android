@@ -38,6 +38,11 @@ object AirwallexPlugins {
             return configuration.enableAnalytics
         }
 
+    val redirectMode: RedirectMode
+        get() {
+             return configuration.redirectMode
+        }
+
     @Suppress("SwallowedException")
     fun getProvider(paymentMethodType: AvailablePaymentMethodType): ActionComponentProvider<out ActionComponent>? {
         return runCatching {

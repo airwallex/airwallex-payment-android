@@ -209,9 +209,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             RESULT_OK -> {
                 val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
                 result?.let {
-                    if (it.exception == null) {
-                        viewModel.trackCardPaymentSuccess()
-                    }
                     finishWithPaymentIntent(
                         paymentIntentId = result.paymentIntentId,
                         exception = result.exception,

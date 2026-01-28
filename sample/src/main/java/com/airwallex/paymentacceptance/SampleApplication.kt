@@ -6,6 +6,7 @@ import com.airwallex.android.card.CardComponent
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexConfiguration
 import com.airwallex.android.core.Environment
+import com.airwallex.android.core.RedirectMode
 import com.airwallex.android.googlepay.GooglePayComponent
 import com.airwallex.android.redirect.RedirectComponent
 import com.airwallex.android.wechat.WeChatComponent
@@ -75,6 +76,9 @@ class SampleApplication : Application() {
                         GooglePayComponent.PROVIDER
                     )
                 )
+                .setRedirectMode(RedirectMode.CUSTOM_TAB)
+//                .setRedirectMode(RedirectMode.CUSTOM_TAB_BOTTOM_SHEET)
+//                .setRedirectMode(RedirectMode.EXTERNAL_BROWSER)
                 .build()
         )
     }
