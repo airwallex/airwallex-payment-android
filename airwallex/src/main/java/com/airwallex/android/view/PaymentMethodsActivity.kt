@@ -86,13 +86,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 is PaymentMethodsViewModel.PaymentMethodResult.Show -> {
                     initView(result.methods.first, result.methods.second)
                 }
-
-                is PaymentMethodsViewModel.PaymentMethodResult.Skip -> {
-                    // Only start AddPaymentMethodActivity if not already waiting for result
-                    if (!viewModel.isWaitingForAddPaymentMethodResult()) {
-                        startAddPaymentMethod(result.schemes)
-                    }
-                }
             }
         }
         viewModel.paymentFlowStatus.observe(this) { flowStatus ->
@@ -134,23 +127,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             )[AddPaymentMethodViewModel::class.java]
             addPaymentMethodViewModel.updateActivity(this)
 
-            // Observe payment status changes from AddPaymentMethodViewModel (only once)
-//            addPaymentMethodViewModel.airwallexPaymentStatus.observe(this) { result ->
-//                when (result) {
-//                    is AirwallexPaymentStatus.Success -> {
-//                        finishWithPaymentIntent(
-//                            paymentIntentId = result.paymentIntentId,
-//                            consentId = result.consentId,
-//                        )
-//                    }
-//
-//                    is AirwallexPaymentStatus.Failure -> {
-//                        finishWithPaymentIntent(exception = result.exception)
-//                    }
-//
-//                    else -> Unit
-//                }
-//            }
         }
 
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
@@ -216,43 +192,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                             }
                         },
                     )
-                }
-            }
-        }
-    }
-
-    private fun startAddPaymentMethod(cardSchemes: List<CardScheme>) {
-        viewModel.setWaitingForAddPaymentMethodResult(true) // Set flag before launching
-        AddPaymentMethodActivityLaunch(this@PaymentMethodsActivity).launchForResult(
-            AddPaymentMethodActivityLaunch.Args.Builder().setAirwallexSession(session)
-                .setSupportedCardSchemes(cardSchemes).setSinglePaymentMethod(true).build()
-        ) { _, result ->
-            viewModel.setWaitingForAddPaymentMethodResult(false) // Clear flag when result received
-            handleAddPaymentMethodActivityResult(result.resultCode, result.data)
-        }
-    }
-
-    private fun handleAddPaymentMethodActivityResult(resultCode: Int, data: Intent?) {
-        when (resultCode) {
-            RESULT_OK -> {
-                val result = AddPaymentMethodActivityLaunch.Result.fromIntent(data)
-                result?.let {
-                    finishWithPaymentIntent(
-                        paymentIntentId = result.paymentIntentId,
-                        exception = result.exception,
-                        consentId = it.consentId
-                    )
-                }
-            }
-
-            RESULT_CANCELED -> {
-                val result = AddPaymentMethodActivityLaunch.CancellationResult.fromIntent(data)
-                AirwallexLogger.info("PaymentMethodsActivity onActivityResult: result_canceled")
-                result?.let {
-                    if (it.isSinglePaymentMethod) {
-                        setResult(RESULT_CANCELED)
-                        finish()
-                    }
                 }
             }
         }

@@ -23,7 +23,6 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.Bank
-import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.DynamicSchemaFieldType
@@ -38,7 +37,6 @@ import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.findWithType
-import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import com.airwallex.android.view.util.needHiddenParam
 import com.airwallex.android.view.util.toPaymentFlow
 import kotlinx.coroutines.async
@@ -62,9 +60,6 @@ class PaymentMethodsViewModel(
 
     private val _paymentMethodResult = MutableLiveData<PaymentMethodResult>()
     val paymentMethodResult: LiveData<PaymentMethodResult> = _paymentMethodResult
-
-    // State variable to track if we're waiting for AddPaymentMethodActivity result
-    private var isWaitingForAddPaymentMethodResult = false
 
     // Cache for schema data by payment method type
     @VisibleForTesting
@@ -202,34 +197,14 @@ class PaymentMethodsViewModel(
     }
 
     fun fetchPaymentMethodsAndConsents() = viewModelScope.launch {
-        // Only fetch payment methods if we're not waiting for a result
-        if (isWaitingForAddPaymentMethodResult) {
-            return@launch
-        }
-
         val result = airwallex.fetchAvailablePaymentMethodsAndConsents(session)
         result.fold(onSuccess = { methodsAndConsents ->
             val availableMethodTypes = methodsAndConsents.first
             val availablePaymentConsents = methodsAndConsents.second
             AirwallexLogger.info("PaymentMethodsViewModel fetchPaymentMethodsAndConsents availableMethodTypes = $availableMethodTypes, availablePaymentConsents = $availablePaymentConsents")
-
-            // skip straight to the individual card screen?
-            val singleCardPaymentMethod =
-                availableMethodTypes.getSinglePaymentMethodOrNull(availablePaymentConsents)
-            // only one payment method and it's Card.
-            if (singleCardPaymentMethod != null) {
-                // Only skip to AddPaymentMethodActivity if not already waiting for result
-                if (!isWaitingForAddPaymentMethodResult) {
-                    _paymentMethodResult.value =
-                        PaymentMethodResult.Skip(singleCardPaymentMethod.cardSchemes ?: emptyList())
-                }
-            } else {
-                _paymentMethodResult.value = PaymentMethodResult.Show(
-                    Pair(
-                        availableMethodTypes, availablePaymentConsents
-                    )
-                )
-            }
+            _paymentMethodResult.value = PaymentMethodResult.Show(
+                Pair(availableMethodTypes, availablePaymentConsents)
+            )
         }, onFailure = {
             _paymentFlowStatus.value = PaymentFlowStatus.ErrorAlert(it.message ?: it.toString())
         })
@@ -475,20 +450,6 @@ class PaymentMethodsViewModel(
         return map + additionalParams
     }
 
-    /**
-     * Sets the flag indicating we're waiting for AddPaymentMethodActivity result
-     */
-    fun setWaitingForAddPaymentMethodResult(waiting: Boolean) {
-        isWaitingForAddPaymentMethodResult = waiting
-    }
-
-    /**
-     * Gets the current state of whether we're waiting for AddPaymentMethodActivity result
-     */
-    fun isWaitingForAddPaymentMethodResult(): Boolean {
-        return isWaitingForAddPaymentMethodResult
-    }
-
     // TODO: return back to internal after prototype
     class Factory(
         private val application: Application,
@@ -506,8 +467,6 @@ class PaymentMethodsViewModel(
     sealed class PaymentMethodResult {
         data class Show(val methods: Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>) :
             PaymentMethodResult()
-
-        data class Skip(val schemes: List<CardScheme>) : PaymentMethodResult()
     }
 
     // TODO: return back to internal after prototype

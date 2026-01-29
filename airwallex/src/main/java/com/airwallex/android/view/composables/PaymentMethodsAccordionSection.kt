@@ -51,6 +51,7 @@ import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
 import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.schema.SchemaSection
+import com.airwallex.android.view.util.notOnlyCard
 import com.airwallex.android.view.util.toSupportedIcons
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
@@ -75,127 +76,145 @@ internal fun PaymentMethodsAccordionSection(
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethodTypes.first()) }
     var selectedIndex by remember { mutableIntStateOf(0) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-    ) {
-        availablePaymentMethodTypes.forEachIndexed { index, type ->
-            Column(
-                modifier = Modifier
-                    .padding(
-                        top = if (type == selectedOption && index != 0) 16.dp else 0.dp,
-                        bottom = if (type == selectedOption && index != availablePaymentMethodTypes.size - 1) 16.dp else 0.dp,
-                    )
-                    .border(
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = if (type == selectedOption) MaterialTheme.colorScheme.outline else Color.Transparent,
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                    ),
-            ) {
-                Row(
+    if (availablePaymentMethodTypes.notOnlyCard()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+        ) {
+            availablePaymentMethodTypes.forEachIndexed { index, type ->
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .selectable(
-                            selected = (type == selectedOption),
-                            onClick = {
-                                selectedIndex = index
-                                onOptionSelected(type)
-                            },
-                            role = Role.RadioButton,
+                        .padding(
+                            top = if (type == selectedOption && index != 0) 16.dp else 0.dp,
+                            bottom = if (type == selectedOption && index != availablePaymentMethodTypes.size - 1) 16.dp else 0.dp,
                         )
                         .border(
                             border = BorderStroke(
-                                width = (0.5).dp,
-                                color = if (type == selectedOption) Color.Transparent else MaterialTheme.colorScheme.outline,
+                                width = 1.dp,
+                                color = if (type == selectedOption) MaterialTheme.colorScheme.outline else Color.Transparent,
                             ),
-                            shape = RoundedCornerShape(
-                                topStart = if (index == selectedIndex + 1 || index == 0) 8.dp else 0.dp,
-                                topEnd = if (index == selectedIndex + 1 || index == 0) 8.dp else 0.dp,
-                                bottomStart = if (index == selectedIndex - 1 || index == availablePaymentMethodTypes.size - 1) 8.dp else 0.dp,
-                                bottomEnd = if (index == selectedIndex - 1 || index == availablePaymentMethodTypes.size - 1) 8.dp else 0.dp,
-                            ),
-                        )
-                        .padding(horizontal = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                            shape = RoundedCornerShape(8.dp),
+                        ),
                 ) {
-                    RadioButton(
-                        selected = (type == selectedOption),
-                        onClick = null, // null recommended for accessibility with screen readers
-                        colors = RadioButtonDefaults.colors(unselectedColor = MaterialTheme.colorScheme.onSurface),
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    AsyncImage(
-                        model = type.resources?.logos?.png ?: painterResource(id = R.drawable.airwallex_ic_card_default),
-                        contentDescription = "payment method icon",
-                        contentScale = ContentScale.Fit,
+                    Row(
                         modifier = Modifier
-                            .width(32.dp)
-                            .height(24.dp)
-                            .clip(RoundedCornerShape(4.dp)),
-                    )
-
-                    StandardText(
-                        text = type.displayName ?: type.name,
-                        color = if (type == selectedOption) MaterialTheme.colorScheme.primary else AirwallexColor.TextPrimary,
-                        typography = if (type == selectedOption) AirwallexTypography.Body200Bold else AirwallexTypography.Body200,
-                        textAlign = TextAlign.Left,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                    )
-
-                    if (type != selectedOption) {
-                        type.cardSchemes?.toSupportedIcons()?.let { icons ->
-                            Spacer(modifier = Modifier.weight(1f))
-                            CardBrandTrailingAccessory(
-                                icons = icons,
-                                displayAllSchemes = true,
-                                modifier = Modifier
-                                    .size(width = 28.dp, height = 19.dp)
-                                    .padding(horizontal = 2.dp),
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .selectable(
+                                selected = (type == selectedOption),
+                                onClick = {
+                                    selectedIndex = index
+                                    onOptionSelected(type)
+                                },
+                                role = Role.RadioButton,
                             )
+                            .border(
+                                border = BorderStroke(
+                                    width = (0.5).dp,
+                                    color = if (type == selectedOption) Color.Transparent else MaterialTheme.colorScheme.outline,
+                                ),
+                                shape = RoundedCornerShape(
+                                    topStart = if (index == selectedIndex + 1 || index == 0) 8.dp else 0.dp,
+                                    topEnd = if (index == selectedIndex + 1 || index == 0) 8.dp else 0.dp,
+                                    bottomStart = if (index == selectedIndex - 1 || index == availablePaymentMethodTypes.size - 1) 8.dp else 0.dp,
+                                    bottomEnd = if (index == selectedIndex - 1 || index == availablePaymentMethodTypes.size - 1) 8.dp else 0.dp,
+                                ),
+                            )
+                            .padding(horizontal = 24.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(
+                            selected = (type == selectedOption),
+                            onClick = null, // null recommended for accessibility with screen readers
+                            colors = RadioButtonDefaults.colors(unselectedColor = MaterialTheme.colorScheme.onSurface),
+                        )
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        AsyncImage(
+                            model = type.resources?.logos?.png
+                                ?: painterResource(id = R.drawable.airwallex_ic_card_default),
+                            contentDescription = "payment method icon",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .width(32.dp)
+                                .height(24.dp)
+                                .clip(RoundedCornerShape(4.dp)),
+                        )
+
+                        StandardText(
+                            text = type.displayName ?: type.name,
+                            color = if (type == selectedOption) MaterialTheme.colorScheme.primary else AirwallexColor.TextPrimary,
+                            typography = if (type == selectedOption) AirwallexTypography.Body200Bold else AirwallexTypography.Body200,
+                            textAlign = TextAlign.Left,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                        )
+
+                        if (type != selectedOption) {
+                            type.cardSchemes?.toSupportedIcons()?.let { icons ->
+                                Spacer(modifier = Modifier.weight(1f))
+                                CardBrandTrailingAccessory(
+                                    icons = icons,
+                                    displayAllSchemes = true,
+                                    modifier = Modifier
+                                        .size(width = 28.dp, height = 19.dp)
+                                        .padding(horizontal = 2.dp),
+                                )
+                            }
                         }
                     }
-                }
 
-                AnimatedVisibility(
-                    visible = (type == selectedOption),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    when (type.name) {
-                        PaymentMethodType.CARD.value -> {
-                            CardSection(
-                                session = session,
-                                airwallex = airwallex,
-                                addPaymentMethodViewModel = addPaymentMethodViewModel,
-                                cardSchemes = type.cardSchemes.orEmpty(),
+                    AnimatedVisibility(
+                        visible = (type == selectedOption),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        when (type.name) {
+                            PaymentMethodType.CARD.value -> {
+                                CardSection(
+                                    session = session,
+                                    airwallex = airwallex,
+                                    addPaymentMethodViewModel = addPaymentMethodViewModel,
+                                    cardSchemes = type.cardSchemes.orEmpty(),
 //                                availablePaymentConsents = availablePaymentConsents,
 //                                onAddCard = onAddCard,
-                                onDeleteCard = onDeleteCard,
-                                onCheckoutWithoutCvc = onCheckoutWithoutCvc,
-                                onCheckoutWithCvc = onCheckoutWithCvc,
-                                onLoadingChanged = onCardLoadingChanged,
-                                onPaymentResult = onCardPaymentResult,
-                            )
-                        }
-                        else -> {
-                            SchemaSection(
-                                viewModel = paymentMethodViewModel,
-                                type = type,
-                                onDirectPay = onDirectPay,
-                                onPayWithFields = onPayWithFields,
-                                onLoading = onLoading,
-                            )
+                                    onDeleteCard = onDeleteCard,
+                                    onCheckoutWithoutCvc = onCheckoutWithoutCvc,
+                                    onCheckoutWithCvc = onCheckoutWithCvc,
+                                    onLoadingChanged = onCardLoadingChanged,
+                                    onPaymentResult = onCardPaymentResult,
+                                )
+                            }
+
+                            else -> {
+                                SchemaSection(
+                                    viewModel = paymentMethodViewModel,
+                                    type = type,
+                                    onDirectPay = onDirectPay,
+                                    onPayWithFields = onPayWithFields,
+                                    onLoading = onLoading,
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+    } else {
+        CardSection(
+            session = session,
+            airwallex = airwallex,
+            addPaymentMethodViewModel = addPaymentMethodViewModel,
+            cardSchemes = availablePaymentMethodTypes.first().cardSchemes.orEmpty(),
+//                                availablePaymentConsents = availablePaymentConsents,
+//                                onAddCard = onAddCard,
+            onDeleteCard = onDeleteCard,
+            onCheckoutWithoutCvc = onCheckoutWithoutCvc,
+            onCheckoutWithCvc = onCheckoutWithCvc,
+            onLoadingChanged = onCardLoadingChanged,
+            onPaymentResult = onCardPaymentResult,
+        )
     }
 }

@@ -591,16 +591,16 @@ internal fun AddCardSection(
                         phoneNumber = phoneNumber,
                         email = email,
                     )
-                        onLoadingChanged(CardOperation.AddCard(loading = true))
-                        viewModel.confirmPayment(
-                            card = card,
-                            saveCard = isSaveCardChecked,
-                            billing = billing,
-                            onResult = { status ->
-                                onLoadingChanged(CardOperation.AddCard(loading = false))
-                                onPaymentResult(status)
-                            }
-                        )
+                    onLoadingChanged(CardOperation.AddCard(loading = true))
+                    viewModel.confirmPayment(
+                        card = card,
+                        saveCard = isSaveCardChecked,
+                        billing = billing,
+                        onResult = { status ->
+                            onLoadingChanged(CardOperation.AddCard(loading = false))
+                            onPaymentResult(status)
+                        }
+                    )
                     // prev approach
 //                        viewModel.confirmPayment(
 //                            card = card,

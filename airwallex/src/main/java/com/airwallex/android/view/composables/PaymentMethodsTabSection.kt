@@ -21,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airwallex.android.core.Airwallex
@@ -40,6 +39,7 @@ import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.common.PaymentMethodTabCard
 import com.airwallex.android.view.composables.schema.SchemaSection
+import com.airwallex.android.view.util.notOnlyCard
 import kotlinx.coroutines.launch
 
 /**
@@ -100,43 +100,44 @@ fun PaymentMethodsTabSection(
         var selectedIndex by remember { mutableIntStateOf(0) }
 
         Column {
-            LazyRow(
-                state = lazyListState,
-                modifier = Modifier.padding(horizontal = 24.dp),
-            ) {
-                availablePaymentMethods.forEachIndexed { index, availablePaymentMethodType ->
-                    item(key = "payment_method_$index") {
-                        if (index != 0) {
-                            Spacer(modifier = Modifier.width(12.dp))
-                        }
+            if(availablePaymentMethods.notOnlyCard()) {
+                LazyRow(
+                    state = lazyListState,
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                ) {
+                    availablePaymentMethods.forEachIndexed { index, availablePaymentMethodType ->
+                        item(key = "payment_method_$index") {
+                            if (index != 0) {
+                                Spacer(modifier = Modifier.width(12.dp))
+                            }
 
-                        PaymentMethodTabCard(
-                            isSelected = selectedIndex == index,
-                            selectedType = availablePaymentMethodType,
-                            onClick = {
-                                AirwallexLogger.info("PaymentMethodsActivity onPaymentMethodClick: type = ${type.name}")
-                                coroutineScope.launch {
-                                    selectedIndex = index
-                                    type = availablePaymentMethodType
-                                    pagerState.scrollToPage(page = index)
-                                    // Position the selected item as the second item in the UI
-                                    lazyListState.animateScrollToItem(
-                                        index = if (index < 1) index else index - 1,
-                                        scrollOffset = 0,
-                                    )
-                                }
-                            },
-                        )
+                            PaymentMethodTabCard(
+                                isSelected = selectedIndex == index,
+                                selectedType = availablePaymentMethodType,
+                                onClick = {
+                                    coroutineScope.launch {
+                                        selectedIndex = index
+                                        type = availablePaymentMethodType
+                                        AirwallexLogger.info("PaymentMethodsActivity onPaymentMethodClick: type = ${type.name}")
+                                        pagerState.scrollToPage(page = index)
+                                        // Position the selected item as the second item in the UI
+                                        lazyListState.animateScrollToItem(
+                                            index = if (index < 1) index else index - 1,
+                                            scrollOffset = 0,
+                                        )
+                                    }
+                                },
+                            )
 
-                        if (index != availablePaymentMethods.size - 1) {
-                            Spacer(modifier = Modifier.width(12.dp))
+                            if (index != availablePaymentMethods.size - 1) {
+                                Spacer(modifier = Modifier.width(12.dp))
+                            }
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
             HorizontalPager(
                 state = pagerState,
                 userScrollEnabled = false,
