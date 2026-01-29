@@ -153,6 +153,7 @@ class AirwallexAddPaymentDialog(
                                 else -> Unit
                             }
                         },
+                        needFetchConsentsAndSchemes = false
                     )
                 }
             }

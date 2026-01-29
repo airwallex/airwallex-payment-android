@@ -18,7 +18,6 @@ import kotlinx.coroutines.launch
  * Handles fetching and storing payment methods and consents.
  */
 class PaymentOperationsViewModel(
-    application: Application,
     private val airwallex: Airwallex,
     private val session: AirwallexSession
 ) : ViewModel() {
@@ -35,12 +34,14 @@ class PaymentOperationsViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    init {
-        println("PaymentOperationsViewModel init. start fetchAvailablePaymentMethodsAndConsents")
-        fetchAvailablePaymentMethodsAndConsents()
-    }
+    private var hasFetched = false
 
-    private fun fetchAvailablePaymentMethodsAndConsents() {
+    fun fetchAvailablePaymentMethodsAndConsents() {
+        // Only fetch if we haven't fetched yet and are not currently loading
+        if (hasFetched || _isLoading.value) {
+            return
+        }
+
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
@@ -50,10 +51,13 @@ class PaymentOperationsViewModel(
                     _availablePaymentMethods.value = methods
                     _availablePaymentConsents.value = consents
                     _isLoading.value = false
+                    hasFetched = true
                     println("PaymentOperationsViewModel successfully fetched payment data")
 
                 },
                 onFailure = { exception ->
+                    println("PaymentOperationsViewModel Failed to fetch payment data")
+
                     _error.value = exception.message ?: "Failed to fetch payment data"
                     _isLoading.value = false
                 }
@@ -62,13 +66,12 @@ class PaymentOperationsViewModel(
     }
 
     class Factory(
-        private val application: Application,
         private val airwallex: Airwallex,
         private val session: AirwallexSession
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return PaymentOperationsViewModel(application, airwallex, session) as T
+            return PaymentOperationsViewModel(airwallex, session) as T
         }
     }
 }

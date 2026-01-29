@@ -128,6 +128,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                                     else -> Unit
                                 }
                             },
+                            needFetchConsentsAndSchemes = false
                         )
                     }
                 }

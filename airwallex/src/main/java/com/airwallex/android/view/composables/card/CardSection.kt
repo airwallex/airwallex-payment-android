@@ -1,6 +1,5 @@
 package com.airwallex.android.view.composables.card
 
-import android.app.Application
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -20,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,17 +52,23 @@ fun CardSection(
     isSinglePaymentMethod: Boolean = false,
     onLoadingChanged: ((CardOperation) -> Unit),
     onPaymentResult: ((AirwallexPaymentStatus) -> Unit),
+    needFetchConsentsAndSchemes: Boolean = true
 ) {
-    val context = LocalContext.current
 
     val operationsViewModel: PaymentOperationsViewModel = viewModel(
         factory = PaymentOperationsViewModel.Factory(
-            application = context.applicationContext as Application,
             airwallex = airwallex,
             session = session
         ),
         viewModelStoreOwner = airwallex.activity
     )
+
+    LaunchedEffect(needFetchConsentsAndSchemes, cardSchemes) {
+        val shouldFetch = needFetchConsentsAndSchemes || cardSchemes.isEmpty()
+        if (shouldFetch) {
+            operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
+        }
+    }
 
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
     val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
@@ -73,8 +77,12 @@ fun CardSection(
     var localConsents by remember { mutableStateOf(availablePaymentConsents) }
     var selectedScreen by remember { mutableStateOf(if (localConsents.isEmpty()) CardSectionType.AddCard else CardSectionType.ConsentList) }
 
-    LaunchedEffect(localConsents, deletedConsent) {
-        localConsents = localConsents.filterNot { it.id == deletedConsent?.id }
+    LaunchedEffect(availablePaymentConsents, deletedConsent, needFetchConsentsAndSchemes) {
+        localConsents = if (needFetchConsentsAndSchemes) {
+            availablePaymentConsents.filterNot { it.id == deletedConsent?.id }
+        } else {
+            emptyList()
+        }
         selectedScreen = if (localConsents.isEmpty() || isSinglePaymentMethod) {
             CardSectionType.AddCard
         } else {
@@ -112,7 +120,11 @@ fun CardSection(
 
                 AddCardSection(
                     viewModel = addPaymentMethodViewModel,
-                    cardSchemes = airwallex.getSupportedCardSchemes(availablePaymentMethods),
+                    cardSchemes = if (needFetchConsentsAndSchemes || cardSchemes.isEmpty()) {
+                        airwallex.getSupportedCardSchemes(availablePaymentMethods)
+                    } else {
+                        cardSchemes
+                    },
                     onLoadingChanged = onLoadingChanged,
                     onPaymentResult = onPaymentResult,
                 )

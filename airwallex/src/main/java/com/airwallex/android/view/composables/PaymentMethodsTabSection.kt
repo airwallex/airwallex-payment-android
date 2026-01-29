@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -74,15 +75,16 @@ fun PaymentMethodsTabSection(
     onCardLoadingChanged: ((CardOperation?) -> Unit),
     onCardPaymentResult: ((AirwallexPaymentStatus) -> Unit),
 ) {
-    val context = LocalContext.current
-
     val operationsViewModel: PaymentOperationsViewModel = viewModel(
         factory = PaymentOperationsViewModel.Factory(
-            application = context.applicationContext as Application,
             airwallex = airwallex,
             session = session
-        )
+        ),
+        viewModelStoreOwner = airwallex.activity
     )
+    LaunchedEffect(Unit) {
+        operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
+    }
 
     val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
     val isLoading by operationsViewModel.isLoading.collectAsState()
