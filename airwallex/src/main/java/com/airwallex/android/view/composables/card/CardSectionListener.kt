@@ -1,10 +1,8 @@
 package com.airwallex.android.view.composables.card
 
-import com.airwallex.android.core.AirwallexPaymentStatus
-
 /**
  * Listener interface for CardSection events.
- * This interface provides Java-friendly callbacks for card operations.
+ * This interface provides Java-friendly callbacks for payment operations.
  *
  * Usage from Java:
  * ```java
@@ -15,20 +13,25 @@ import com.airwallex.android.core.AirwallexPaymentStatus
  *     false,
  *     new CardSectionListener() {
  *         @Override
- *         public void onLoadingChanged(@NonNull CardOperation operation) {
- *             if (operation instanceof CardOperation.AddCard) {
- *                 CardOperation.AddCard addCard = (CardOperation.AddCard) operation;
- *                 if (addCard.isLoading()) {
- *                     showLoading();
- *                 } else {
- *                     hideLoading();
- *                 }
+ *         public void onOperationStart(@NonNull PaymentOperation operation) {
+ *             if (operation instanceof PaymentOperation.AddCard) {
+ *                 showLoading();
  *             }
  *         }
  *
  *         @Override
- *         public void onPaymentResult(@NonNull AirwallexPaymentStatus status) {
- *             // Handle result
+ *         public void onOperationDone(@NonNull PaymentOperationResult result) {
+ *             hideLoading();
+ *             if (result instanceof PaymentOperationResult.AddCard) {
+ *                 PaymentOperationResult.AddCard addCardResult =
+ *                     (PaymentOperationResult.AddCard) result;
+ *                 AirwallexPaymentStatus status = addCardResult.getStatus();
+ *                 if (status instanceof AirwallexPaymentStatus.Success) {
+ *                     handleSuccess((AirwallexPaymentStatus.Success) status);
+ *                 } else if (status instanceof AirwallexPaymentStatus.Failure) {
+ *                     handleFailure((AirwallexPaymentStatus.Failure) status);
+ *                 }
+ *             }
  *         }
  *     }
  * );
@@ -36,19 +39,16 @@ import com.airwallex.android.core.AirwallexPaymentStatus
  */
 interface CardSectionListener {
     /**
-     * Called when the loading state changes for a card operation.
+     * Called when a payment operation starts.
      *
-     * @param operation The operation with its loading state
+     * @param operation The operation that is starting
      */
-    fun onLoadingChanged(operation: CardOperation)
+    fun onOperationStart(operation: PaymentOperation)
 
     /**
-     * Called when a payment operation completes.
+     * Called when a payment operation completes (success or error).
      *
-     * @param status The payment status result
+     * @param result The operation result containing success or error data
      */
-    fun onPaymentResult(status: AirwallexPaymentStatus)
-
-    // Future: Add other callbacks as needed
-    // fun onDeleteResult(result: Result<PaymentConsent>)
+    fun onOperationDone(result: PaymentOperationResult)
 }

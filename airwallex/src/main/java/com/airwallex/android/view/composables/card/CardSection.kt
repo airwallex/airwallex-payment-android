@@ -50,8 +50,8 @@ fun CardSection(
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     isSinglePaymentMethod: Boolean = false,
-    onLoadingChanged: ((CardOperation) -> Unit),
-    onPaymentResult: ((AirwallexPaymentStatus) -> Unit),
+    onOperationStart: (PaymentOperation) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit,
     needFetchConsentsAndSchemes: Boolean = true
 ) {
 
@@ -125,8 +125,8 @@ fun CardSection(
                     } else {
                         cardSchemes
                     },
-                    onLoadingChanged = onLoadingChanged,
-                    onPaymentResult = onPaymentResult,
+                    onOperationStart = onOperationStart,
+                    onOperationDone = onOperationDone,
                 )
             }
             is CardSectionType.ConsentList -> {
@@ -233,7 +233,7 @@ fun CardSection(
  *
  * This overload is designed for Java compatibility. Kotlin code should prefer the lambda-based version.
  *
- * @param listener Listener for card operation events (loading state and payment results)
+ * @param listener Listener for card operation events
  * @see CardSectionListener
  */
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
@@ -258,8 +258,8 @@ fun CardSection(
         onCheckoutWithoutCvc = onCheckoutWithoutCvc,
         onCheckoutWithCvc = onCheckoutWithCvc,
         isSinglePaymentMethod = isSinglePaymentMethod,
-        onLoadingChanged = listener::onLoadingChanged,
-        onPaymentResult = listener::onPaymentResult
+        onOperationStart = listener::onOperationStart,
+        onOperationDone = listener::onOperationDone
     )
 }
 

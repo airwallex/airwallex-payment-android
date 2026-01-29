@@ -25,8 +25,9 @@ import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexTheme
-import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
+import com.airwallex.android.view.composables.card.PaymentOperation
+import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.risk.AirwallexRisk
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -119,38 +120,35 @@ class AirwallexAddPaymentDialog(
                         airwallex = airwallex,
                         addPaymentMethodViewModel = viewModel,
                         cardSchemes = supportedCardSchemes,
-//                        onAddCard = {
-//                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-//                            setLoadingProgress(true)
                         onDeleteCard = {},
                         onCheckoutWithoutCvc = {},
                         onCheckoutWithCvc = { _, _ -> },
                         isSinglePaymentMethod = true,
-                        onLoadingChanged = { operation ->
+                        onOperationStart = { operation ->
                             when (operation) {
-                                is CardOperation.AddCard -> {
-                                    if (operation.isLoading) {
-                                        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-                                        setLoadingProgress(true)
-                                    } else {
-                                        setLoadingProgress(false)
-                                    }
+                                is PaymentOperation.AddCard -> {
+                                    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
+                                    setLoadingProgress(true)
                                 }
+                                else -> {} // Other operations will be handled later
                             }
                         },
-                        onPaymentResult = {
-                            when (it) {
-                                is AirwallexPaymentStatus.Success -> {
-                                    dismissWithPaymentResult(
-                                        paymentIntentId = it.paymentIntentId,
-                                        paymentConsentId = it.consentId
-                                    )
+                        onOperationDone = { result ->
+                            when (result) {
+                                is PaymentOperationResult.AddCard -> {
+                                    when (result.status) {
+                                        is AirwallexPaymentStatus.Success -> {
+                                            dismissWithPaymentResult(
+                                                paymentIntentId = result.status.paymentIntentId,
+                                                paymentConsentId = result.status.consentId
+                                            )
+                                        }
+                                        is AirwallexPaymentStatus.Failure -> {
+                                            dismissWithPaymentResult(exception = result.status.exception)
+                                        }
+                                        else -> Unit
+                                    }
                                 }
-
-                                is AirwallexPaymentStatus.Failure -> {
-                                    dismissWithPaymentResult(exception = it.exception)
-                                }
-                                else -> Unit
                             }
                         },
                         needFetchConsentsAndSchemes = false

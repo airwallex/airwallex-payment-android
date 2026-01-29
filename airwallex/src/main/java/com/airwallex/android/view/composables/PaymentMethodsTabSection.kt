@@ -35,8 +35,9 @@ import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.PaymentOperationsViewModel
-import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
+import com.airwallex.android.view.composables.card.PaymentOperation
+import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.composables.common.PaymentMethodTabCard
 import com.airwallex.android.view.composables.schema.SchemaSection
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
@@ -56,8 +57,8 @@ import kotlinx.coroutines.launch
  * @param onDirectPay Callback for direct payment
  * @param onPayWithFields Callback for payment with fields
  * @param onLoading Callback for loading state changes
- * @param onCardLoadingChanged Callback for card operation loading changes
- * @param onCardPaymentResult Callback for card payment result
+ * @param onOperationStart Callback when a card operation starts
+ * @param onOperationDone Callback when a card operation completes
  */
 @Suppress("LongMethod", "LongParameterList")
 @Composable
@@ -72,8 +73,8 @@ fun PaymentMethodsTabSection(
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
-    onCardLoadingChanged: ((CardOperation?) -> Unit),
-    onCardPaymentResult: ((AirwallexPaymentStatus) -> Unit),
+    onOperationStart: (PaymentOperation) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
     val operationsViewModel: PaymentOperationsViewModel = viewModel(
         factory = PaymentOperationsViewModel.Factory(
@@ -150,12 +151,11 @@ fun PaymentMethodsTabSection(
                             airwallex = airwallex,
                             addPaymentMethodViewModel = addPaymentMethodViewModel,
                             cardSchemes = type.cardSchemes.orEmpty(),
-//                            availablePaymentConsents = availablePaymentConsents,
                             onDeleteCard = onDeleteCard,
                             onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                             onCheckoutWithCvc = onCheckoutWithCvc,
-                            onLoadingChanged = onCardLoadingChanged,
-                            onPaymentResult = onCardPaymentResult,
+                            onOperationStart = onOperationStart,
+                            onOperationDone = onOperationDone,
                         )
                     }
 

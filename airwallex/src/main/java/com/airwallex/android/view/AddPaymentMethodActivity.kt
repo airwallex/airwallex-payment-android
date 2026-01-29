@@ -27,8 +27,9 @@ import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
-import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
+import com.airwallex.android.view.composables.card.PaymentOperation
+import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.risk.AirwallexRisk
 
 /**
@@ -97,35 +98,35 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             airwallex = airwallex,
                             addPaymentMethodViewModel = viewModel,
                             cardSchemes = args.supportedCardSchemes,
-//                            onAddCard = ::onAddCard,
                             onDeleteCard = {},
                             onCheckoutWithoutCvc = {},
                             onCheckoutWithCvc = { _, _ -> },
                             isSinglePaymentMethod = args.isSinglePaymentMethod,
-                            onLoadingChanged = { operation ->
+                            onOperationStart = { operation ->
                                 when (operation) {
-                                    is CardOperation.AddCard -> {
-                                        if (operation.isLoading) {
-                                            setLoadingProgress(loading = true, cancelable = false)
-                                            onAddCard()
-                                        } else {
-                                            setLoadingProgress(false)
-                                        }
+                                    is PaymentOperation.AddCard -> {
+                                        setLoadingProgress(loading = true, cancelable = false)
+                                        onAddCard()
                                     }
+                                    else -> {} // Other operations will be handled later
                                 }
                             },
-                            onPaymentResult = { status ->
-                                when (status) {
-                                    is AirwallexPaymentStatus.Success -> {
-                                        finishWithPaymentIntent(
-                                            paymentIntentId = status.paymentIntentId,
-                                            consentId = status.consentId,
-                                        )
+                            onOperationDone = { result ->
+                                when (result) {
+                                    is PaymentOperationResult.AddCard -> {
+                                        when (result.status) {
+                                            is AirwallexPaymentStatus.Success -> {
+                                                finishWithPaymentIntent(
+                                                    paymentIntentId = result.status.paymentIntentId,
+                                                    consentId = result.status.consentId,
+                                                )
+                                            }
+                                            is AirwallexPaymentStatus.Failure -> {
+                                                finishWithPaymentIntent(exception = result.status.exception)
+                                            }
+                                            else -> Unit
+                                        }
                                     }
-                                    is AirwallexPaymentStatus.Failure -> {
-                                        finishWithPaymentIntent(exception = status.exception)
-                                    }
-                                    else -> Unit
                                 }
                             },
                             needFetchConsentsAndSchemes = false

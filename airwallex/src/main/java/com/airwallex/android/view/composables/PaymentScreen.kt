@@ -31,7 +31,8 @@ import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
-import com.airwallex.android.view.composables.card.CardOperation
+import com.airwallex.android.view.composables.card.PaymentOperation
+import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.composables.google.GooglePaySection
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import org.json.JSONArray
@@ -47,15 +48,14 @@ internal fun PaymentScreen(
     allowedPaymentMethods: JSONArray?,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
-//    onAddCard: () -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
-    onCardLoadingChanged: ((CardOperation?) -> Unit),
-    onCardPaymentResult: ((AirwallexPaymentStatus) -> Unit),
+    onOperationStart: (PaymentOperation) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
     val availableTypes by remember {
         mutableStateOf(
@@ -104,20 +104,14 @@ internal fun PaymentScreen(
                         airwallex = airwallex,
                         paymentMethodViewModel = paymentMethodsViewModel,
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
-//                        availablePaymentMethodTypes = availableTypes,
-//                        availablePaymentConsents = availablePaymentConsents,
-//                        onAddCard = {
-//                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-//                            onAddCard()
-//                        },
                         onDeleteCard = onDeleteCard,
                         onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                         onDirectPay = onDirectPay,
                         onCheckoutWithCvc = onCheckoutWithCvc,
                         onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
-                        onCardLoadingChanged = onCardLoadingChanged,
-                        onCardPaymentResult = onCardPaymentResult,
+                        onOperationStart = onOperationStart,
+                        onOperationDone = onOperationDone,
                     )
                 }
                 PaymentMethodsLayoutType.ACCORDION -> {
@@ -128,18 +122,14 @@ internal fun PaymentScreen(
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
                         availablePaymentMethodTypes = availableTypes,
                         availablePaymentConsents = availablePaymentConsents,
-//                        onAddCard = {
-//                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-//                            onAddCard()
-//                        },
                         onDeleteCard = onDeleteCard,
                         onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                         onDirectPay = onDirectPay,
                         onCheckoutWithCvc = onCheckoutWithCvc,
                         onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
-                        onCardLoadingChanged = onCardLoadingChanged,
-                        onCardPaymentResult = onCardPaymentResult,
+                        onOperationStart = onOperationStart,
+                        onOperationDone = onOperationDone,
                     )
                 }
             }

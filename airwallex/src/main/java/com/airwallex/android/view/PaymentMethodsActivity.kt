@@ -23,7 +23,8 @@ import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.PaymentScreen
-import com.airwallex.android.view.composables.card.CardOperation
+import com.airwallex.android.view.composables.card.PaymentOperation
+import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.risk.AirwallexRisk
 
@@ -153,7 +154,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         allowedPaymentMethods = allowedPaymentMethods,
                         availablePaymentMethodTypes = availablePaymentMethodTypes,
                         availablePaymentConsents = availablePaymentConsents,
-//                        onAddCard = ::onAddCard,
                         onDeleteCard = { consent ->
                             onDeleteCard(consent) {
                                 addPaymentMethodViewModel.deleteCardSuccess(consent)
@@ -166,29 +166,33 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         onLoading = { isLoading ->
                             setLoadingProgress(loading = isLoading)
                         },
-                        onCardLoadingChanged = { operation ->
+                        onOperationStart = { operation ->
                             when (operation) {
-                                null -> setLoadingProgress(false)
-                                is CardOperation.AddCard -> {
+                                is PaymentOperation.AddCard -> {
                                     setLoadingProgress(loading = true, cancelable = false)
-                                    // new implementation
                                     AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
                                     onAddCard()
                                 }
+                                else -> {} // Other operations will be handled later
                             }
                         },
-                        onCardPaymentResult = { status ->
-                            when (status) {
-                                is AirwallexPaymentStatus.Success -> {
-                                    finishWithPaymentIntent(
-                                        paymentIntentId = status.paymentIntentId,
-                                        consentId = status.consentId,
-                                    )
+                        onOperationDone = { result ->
+                            setLoadingProgress(loading = false)
+                            when (result) {
+                                is PaymentOperationResult.AddCard -> {
+                                    when (result.status) {
+                                        is AirwallexPaymentStatus.Success -> {
+                                            finishWithPaymentIntent(
+                                                paymentIntentId = result.status.paymentIntentId,
+                                                consentId = result.status.consentId,
+                                            )
+                                        }
+                                        is AirwallexPaymentStatus.Failure -> {
+                                            finishWithPaymentIntent(exception = result.status.exception)
+                                        }
+                                        else -> Unit
+                                    }
                                 }
-                                is AirwallexPaymentStatus.Failure -> {
-                                    finishWithPaymentIntent(exception = status.exception)
-                                }
-                                else -> Unit
                             }
                         },
                     )

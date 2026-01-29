@@ -57,9 +57,8 @@ import com.airwallex.risk.AirwallexRisk
 internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
     cardSchemes: List<CardScheme>,
-//    onConfirm: () -> Unit = {},
-    onLoadingChanged: ((CardOperation) -> Unit),
-    onPaymentResult: ((AirwallexPaymentStatus) -> Unit),
+    onOperationStart: (PaymentOperation) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     val expiryFocusRequester = remember { FocusRequester() }
@@ -591,23 +590,15 @@ internal fun AddCardSection(
                         phoneNumber = phoneNumber,
                         email = email,
                     )
-                    onLoadingChanged(CardOperation.AddCard(loading = true))
+                    onOperationStart(PaymentOperation.AddCard)
                     viewModel.confirmPayment(
                         card = card,
                         saveCard = isSaveCardChecked,
                         billing = billing,
                         onResult = { status ->
-                            onLoadingChanged(CardOperation.AddCard(loading = false))
-                            onPaymentResult(status)
+                            onOperationDone(PaymentOperationResult.AddCard(status))
                         }
                     )
-                    // prev approach
-//                        viewModel.confirmPayment(
-//                            card = card,
-//                            saveCard = isSaveCardChecked,
-//                            billing = billing,
-//                        )
-//                        onConfirm()
                 }
                 // Otherwise do nothing
             },

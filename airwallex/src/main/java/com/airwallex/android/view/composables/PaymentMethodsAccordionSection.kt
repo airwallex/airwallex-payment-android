@@ -48,8 +48,9 @@ import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
-import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
+import com.airwallex.android.view.composables.card.PaymentOperation
+import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.composables.schema.SchemaSection
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import com.airwallex.android.view.util.toSupportedIcons
@@ -63,15 +64,14 @@ internal fun PaymentMethodsAccordionSection(
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
-//    onAddCard: () -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
-    onCardLoadingChanged: ((CardOperation) -> Unit),
-    onCardPaymentResult: ((AirwallexPaymentStatus) -> Unit),
+    onOperationStart: (PaymentOperation) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethodTypes.first()) }
     var selectedIndex by remember { mutableIntStateOf(0) }
@@ -178,13 +178,11 @@ internal fun PaymentMethodsAccordionSection(
                                     airwallex = airwallex,
                                     addPaymentMethodViewModel = addPaymentMethodViewModel,
                                     cardSchemes = type.cardSchemes.orEmpty(),
-//                                availablePaymentConsents = availablePaymentConsents,
-//                                onAddCard = onAddCard,
                                     onDeleteCard = onDeleteCard,
                                     onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                                     onCheckoutWithCvc = onCheckoutWithCvc,
-                                    onLoadingChanged = onCardLoadingChanged,
-                                    onPaymentResult = onCardPaymentResult,
+                                    onOperationStart = onOperationStart,
+                                    onOperationDone = onOperationDone,
                                 )
                             }
 
@@ -208,13 +206,12 @@ internal fun PaymentMethodsAccordionSection(
             airwallex = airwallex,
             addPaymentMethodViewModel = addPaymentMethodViewModel,
             cardSchemes = availablePaymentMethodTypes.first().cardSchemes.orEmpty(),
-//                                availablePaymentConsents = availablePaymentConsents,
-//                                onAddCard = onAddCard,
             onDeleteCard = onDeleteCard,
             onCheckoutWithoutCvc = onCheckoutWithoutCvc,
             onCheckoutWithCvc = onCheckoutWithCvc,
-            onLoadingChanged = onCardLoadingChanged,
-            onPaymentResult = onCardPaymentResult,
+            onOperationStart = onOperationStart,
+            onOperationDone = onOperationDone,
+            isSinglePaymentMethod = true,
         )
     }
 }
