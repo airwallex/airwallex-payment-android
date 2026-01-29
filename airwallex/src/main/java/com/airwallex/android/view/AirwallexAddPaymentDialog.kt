@@ -128,10 +128,13 @@ class AirwallexAddPaymentDialog(
                         isSinglePaymentMethod = true,
                         onLoadingChanged = { operation ->
                             when (operation) {
-                                null -> setLoadingProgress(false)
                                 is CardOperation.AddCard -> {
-                                    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-                                    setLoadingProgress(true)
+                                    if (operation.isLoading) {
+                                        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
+                                        setLoadingProgress(true)
+                                    } else {
+                                        setLoadingProgress(false)
+                                    }
                                 }
                             }
                         },
@@ -149,7 +152,7 @@ class AirwallexAddPaymentDialog(
                                 }
                                 else -> Unit
                             }
-                        }
+                        },
                     )
                 }
             }

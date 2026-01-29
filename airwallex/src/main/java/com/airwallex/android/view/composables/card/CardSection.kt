@@ -1,7 +1,6 @@
 package com.airwallex.android.view.composables.card
 
 import android.app.Application
-import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -53,7 +52,7 @@ fun CardSection(
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     isSinglePaymentMethod: Boolean = false,
-    onLoadingChanged: ((CardOperation?) -> Unit),
+    onLoadingChanged: ((CardOperation) -> Unit),
     onPaymentResult: ((AirwallexPaymentStatus) -> Unit),
 ) {
     val context = LocalContext.current
@@ -63,10 +62,12 @@ fun CardSection(
             application = context.applicationContext as Application,
             airwallex = airwallex,
             session = session
-        )
+        ),
+        viewModelStoreOwner = airwallex.activity
     )
 
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
+    val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
     val deletedConsent by addPaymentMethodViewModel.deleteCardSuccess.collectAsState()
 
     var localConsents by remember { mutableStateOf(availablePaymentConsents) }
@@ -111,7 +112,7 @@ fun CardSection(
 
                 AddCardSection(
                     viewModel = addPaymentMethodViewModel,
-                    cardSchemes = cardSchemes,
+                    cardSchemes = airwallex.getSupportedCardSchemes(availablePaymentMethods),
                     onLoadingChanged = onLoadingChanged,
                     onPaymentResult = onPaymentResult,
                 )

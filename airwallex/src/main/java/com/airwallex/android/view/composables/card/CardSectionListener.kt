@@ -15,11 +15,14 @@ import com.airwallex.android.core.AirwallexPaymentStatus
  *     false,
  *     new CardSectionListener() {
  *         @Override
- *         public void onLoadingChanged(@Nullable CardOperation operation) {
+ *         public void onLoadingChanged(@NonNull CardOperation operation) {
  *             if (operation instanceof CardOperation.AddCard) {
- *                 showLoading();
- *             } else {
- *                 hideLoading();
+ *                 CardOperation.AddCard addCard = (CardOperation.AddCard) operation;
+ *                 if (addCard.isLoading()) {
+ *                     showLoading();
+ *                 } else {
+ *                     hideLoading();
+ *                 }
  *             }
  *         }
  *
@@ -35,9 +38,9 @@ interface CardSectionListener {
     /**
      * Called when the loading state changes for a card operation.
      *
-     * @param operation The operation in progress, or null if no operation is running
+     * @param operation The operation with its loading state
      */
-    fun onLoadingChanged(operation: CardOperation?)
+    fun onLoadingChanged(operation: CardOperation)
 
     /**
      * Called when a payment operation completes.

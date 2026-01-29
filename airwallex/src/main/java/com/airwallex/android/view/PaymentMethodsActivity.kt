@@ -68,7 +68,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         super.onCreate(savedInstanceState)
         setLoadingProgress(loading = true, cancelable = false)
 
-        viewModel.updateActivity(this)
+        airwallex.updateActivity(this)
         viewModel.fetchPaymentMethodsAndConsents()
     }
 

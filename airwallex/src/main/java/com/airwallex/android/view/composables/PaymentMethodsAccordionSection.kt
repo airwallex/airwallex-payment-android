@@ -69,7 +69,7 @@ internal fun PaymentMethodsAccordionSection(
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
-    onCardLoadingChanged: ((CardOperation?) -> Unit),
+    onCardLoadingChanged: ((CardOperation) -> Unit),
     onCardPaymentResult: ((AirwallexPaymentStatus) -> Unit),
 ) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethodTypes.first()) }

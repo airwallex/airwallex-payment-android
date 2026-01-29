@@ -78,7 +78,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
-        viewModel.updateActivity(this)
+        airwallex.updateActivity(this)
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
 
         viewBinding.composeView.apply {
@@ -104,10 +104,13 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             isSinglePaymentMethod = args.isSinglePaymentMethod,
                             onLoadingChanged = { operation ->
                                 when (operation) {
-                                    null -> setLoadingProgress(false)
                                     is CardOperation.AddCard -> {
-                                        setLoadingProgress(loading = true, cancelable = false)
-                                        onAddCard()
+                                        if (operation.isLoading) {
+                                            setLoadingProgress(loading = true, cancelable = false)
+                                            onAddCard()
+                                        } else {
+                                            setLoadingProgress(false)
+                                        }
                                     }
                                 }
                             },

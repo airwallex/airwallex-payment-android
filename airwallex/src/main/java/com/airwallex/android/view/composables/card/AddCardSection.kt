@@ -58,7 +58,7 @@ internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
     cardSchemes: List<CardScheme>,
 //    onConfirm: () -> Unit = {},
-    onLoadingChanged: ((CardOperation?) -> Unit),
+    onLoadingChanged: ((CardOperation) -> Unit),
     onPaymentResult: ((AirwallexPaymentStatus) -> Unit),
 ) {
     val focusManager = LocalFocusManager.current
@@ -591,13 +591,13 @@ internal fun AddCardSection(
                         phoneNumber = phoneNumber,
                         email = email,
                     )
-                        onLoadingChanged(CardOperation.AddCard)
+                        onLoadingChanged(CardOperation.AddCard(loading = true))
                         viewModel.confirmPayment(
                             card = card,
                             saveCard = isSaveCardChecked,
                             billing = billing,
                             onResult = { status ->
-                                onLoadingChanged(null)
+                                onLoadingChanged(CardOperation.AddCard(loading = false))
                                 onPaymentResult(status)
                             }
                         )
