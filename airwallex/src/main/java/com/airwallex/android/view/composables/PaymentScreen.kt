@@ -33,7 +33,7 @@ import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.google.GooglePaySection
-import com.airwallex.android.view.util.notOnlyCard
+import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import org.json.JSONArray
 
 @Suppress("LongMethod", "LongParameterList")
@@ -66,8 +66,8 @@ internal fun PaymentScreen(
     }
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        val notOnlyCard = availablePaymentMethodTypes.notOnlyCard()
-        val titleResId = if(notOnlyCard) R.string.airwallex_payment_methods else R.string.airwallex_new_card
+        val isSinglePaymentMethod = availablePaymentMethodTypes.getSinglePaymentMethodOrNull(availablePaymentConsents) != null
+        val titleResId = if(!isSinglePaymentMethod) R.string.airwallex_payment_methods else R.string.airwallex_new_card
         StandardText(
             text = stringResource(id = titleResId),
             color = AirwallexColor.TextPrimary,
@@ -95,7 +95,7 @@ internal fun PaymentScreen(
         }
 
         if (availableTypes.isNotEmpty()) {
-            if(notOnlyCard) Spacer(modifier = Modifier.height(24.dp))
+            if(!isSinglePaymentMethod) Spacer(modifier = Modifier.height(24.dp))
 
             when (layoutType) {
                 PaymentMethodsLayoutType.TAB -> {

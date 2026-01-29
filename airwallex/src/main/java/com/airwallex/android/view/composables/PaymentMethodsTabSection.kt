@@ -39,7 +39,7 @@ import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.common.PaymentMethodTabCard
 import com.airwallex.android.view.composables.schema.SchemaSection
-import com.airwallex.android.view.util.notOnlyCard
+import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import kotlinx.coroutines.launch
 
 /**
@@ -87,6 +87,7 @@ fun PaymentMethodsTabSection(
     }
 
     val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
+    val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
     val isLoading by operationsViewModel.isLoading.collectAsState()
 
     onLoading(isLoading)
@@ -100,7 +101,7 @@ fun PaymentMethodsTabSection(
         var selectedIndex by remember { mutableIntStateOf(0) }
 
         Column {
-            if(availablePaymentMethods.notOnlyCard()) {
+            if (availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
                 LazyRow(
                     state = lazyListState,
                     modifier = Modifier.padding(horizontal = 24.dp),
@@ -157,6 +158,7 @@ fun PaymentMethodsTabSection(
                             onPaymentResult = onCardPaymentResult,
                         )
                     }
+
                     else -> {
                         SchemaSection(
                             viewModel = paymentMethodViewModel,

@@ -51,7 +51,7 @@ import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
 import com.airwallex.android.view.composables.card.CardOperation
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.schema.SchemaSection
-import com.airwallex.android.view.util.notOnlyCard
+import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import com.airwallex.android.view.util.toSupportedIcons
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
@@ -76,7 +76,7 @@ internal fun PaymentMethodsAccordionSection(
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethodTypes.first()) }
     var selectedIndex by remember { mutableIntStateOf(0) }
 
-    if (availablePaymentMethodTypes.notOnlyCard()) {
+    if (availablePaymentMethodTypes.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
