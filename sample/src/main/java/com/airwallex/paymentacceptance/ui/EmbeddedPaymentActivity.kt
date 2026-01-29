@@ -62,19 +62,19 @@ class EmbeddedPaymentActivity : ComponentActivity() {
         )[EmbeddedPaymentViewModel::class.java]
     }
 
-    private val paymentMethodsViewModel: PaymentMethodsViewModel by lazy {
-        ViewModelProvider(
-            this,
-            PaymentMethodsViewModel.Factory(application, airwallex, session)
-        )[PaymentMethodsViewModel::class.java]
-    }
-
-    private val addPaymentMethodViewModel: AddPaymentMethodViewModel by lazy {
-        ViewModelProvider(
-            this,
-            AddPaymentMethodViewModel.Factory(application, airwallex, session, cardSchemes)
-        )[AddPaymentMethodViewModel::class.java]
-    }
+//    private val paymentMethodsViewModel: PaymentMethodsViewModel by lazy {
+//        ViewModelProvider(
+//            this,
+//            PaymentMethodsViewModel.Factory(application, airwallex, session)
+//        )[PaymentMethodsViewModel::class.java]
+//    }
+//
+//    private val addPaymentMethodViewModel: AddPaymentMethodViewModel by lazy {
+//        ViewModelProvider(
+//            this,
+//            AddPaymentMethodViewModel.Factory(application, airwallex, session, cardSchemes)
+//        )[AddPaymentMethodViewModel::class.java]
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,86 +92,86 @@ class EmbeddedPaymentActivity : ComponentActivity() {
 
     @Composable
     fun MainContent() {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Below is the embedded section for list of available payments",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            PaymentMethodsTabSection(
-                session = session,
-                airwallex = airwallex,
-                paymentMethodViewModel = paymentMethodsViewModel,
-                addPaymentMethodViewModel = addPaymentMethodViewModel,
-                onDeleteCard = { consent ->
-                    viewModel.deleteCard(consent) {
-                        addPaymentMethodViewModel.deleteCardSuccess(consent)
-                    }
-                },
-                onCheckoutWithoutCvc = { consent ->
-                    viewModel.checkoutWithoutCvc(consent)
-                },
-                onCheckoutWithCvc = { consent, cvc ->
-                    viewModel.checkoutWithCvc(consent, cvc)
-                },
-                onDirectPay = { type ->
-                    viewModel.directPay(type)
-                },
-                onPayWithFields = { method, typeInfo, fields ->
-                    viewModel.payWithFields(method, typeInfo, fields)
-                },
-                onLoading = { isLoading ->
-                    // Handle loading state if needed
-                },
-                onCardLoadingChanged = { operation ->
-                    // Handle card loading state if needed
-                },
-                onCardPaymentResult = { status ->
-                    handlePaymentResult(status)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                text = "And below is the embedded section for card only",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            CardSection(
-                session = session,
-                airwallex = airwallex,
-                addPaymentMethodViewModel = addPaymentMethodViewModel,
-                cardSchemes = cardSchemes,
-                onDeleteCard = { consent ->
-                    viewModel.deleteCard(consent) {
-                        addPaymentMethodViewModel.deleteCardSuccess(consent)
-                    }
-                },
-                onCheckoutWithoutCvc = { consent ->
-                    viewModel.checkoutWithoutCvc(consent)
-                },
-                onCheckoutWithCvc = { consent, cvc ->
-                    viewModel.checkoutWithCvc(consent, cvc)
-                },
-                isSinglePaymentMethod = false,
-                onLoadingChanged = { operation ->
-                    // Handle loading state if needed
-                },
-                onPaymentResult = { status ->
-                    handlePaymentResult(status)
-                }
-            )
-        }
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .verticalScroll(rememberScrollState())
+//                .padding(16.dp)
+//        ) {
+//            Text(
+//                text = "Below is the embedded section for list of available payments",
+//                style = MaterialTheme.typography.titleMedium
+//            )
+//
+//            Spacer(modifier = Modifier.height(16.dp))
+//
+//            PaymentMethodsTabSection(
+//                session = session,
+//                airwallex = airwallex,
+//                paymentMethodViewModel = paymentMethodsViewModel,
+//                addPaymentMethodViewModel = addPaymentMethodViewModel,
+//                onDeleteCard = { consent ->
+//                    viewModel.deleteCard(consent) {
+//                        addPaymentMethodViewModel.deleteCardSuccess(consent)
+//                    }
+//                },
+//                onCheckoutWithoutCvc = { consent ->
+//                    viewModel.checkoutWithoutCvc(consent)
+//                },
+//                onCheckoutWithCvc = { consent, cvc ->
+//                    viewModel.checkoutWithCvc(consent, cvc)
+//                },
+//                onDirectPay = { type ->
+//                    viewModel.directPay(type)
+//                },
+//                onPayWithFields = { method, typeInfo, fields ->
+//                    viewModel.payWithFields(method, typeInfo, fields)
+//                },
+//                onLoading = { isLoading ->
+//                    // Handle loading state if needed
+//                },
+//                onCardLoadingChanged = { operation ->
+//                    // Handle card loading state if needed
+//                },
+//                onCardPaymentResult = { status ->
+//                    handlePaymentResult(status)
+//                }
+//            )
+//
+//            Spacer(modifier = Modifier.height(32.dp))
+//
+//            Text(
+//                text = "And below is the embedded section for card only",
+//                style = MaterialTheme.typography.titleMedium
+//            )
+//
+//            Spacer(modifier = Modifier.height(16.dp))
+//
+//            CardSection(
+//                session = session,
+//                airwallex = airwallex,
+//                addPaymentMethodViewModel = addPaymentMethodViewModel,
+//                cardSchemes = cardSchemes,
+//                onDeleteCard = { consent ->
+//                    viewModel.deleteCard(consent) {
+//                        addPaymentMethodViewModel.deleteCardSuccess(consent)
+//                    }
+//                },
+//                onCheckoutWithoutCvc = { consent ->
+//                    viewModel.checkoutWithoutCvc(consent)
+//                },
+//                onCheckoutWithCvc = { consent, cvc ->
+//                    viewModel.checkoutWithCvc(consent, cvc)
+//                },
+//                isSinglePaymentMethod = false,
+//                onLoadingChanged = { operation ->
+//                    // Handle loading state if needed
+//                },
+//                onPaymentResult = { status ->
+//                    handlePaymentResult(status)
+//                }
+//            )
+//        }
     }
 
     private fun handlePaymentResult(status: AirwallexPaymentStatus) {
