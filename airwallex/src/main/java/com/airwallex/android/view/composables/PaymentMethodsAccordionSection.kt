@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
@@ -45,7 +44,6 @@ import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
 import com.airwallex.android.view.composables.card.CardSection
@@ -61,7 +59,6 @@ internal fun PaymentMethodsAccordionSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     paymentMethodViewModel: PaymentMethodsViewModel,
-    addPaymentMethodViewModel: AddPaymentMethodViewModel,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
@@ -175,7 +172,6 @@ internal fun PaymentMethodsAccordionSection(
                                 CardSection(
                                     session = session,
                                     airwallex = airwallex,
-                                    addPaymentMethodViewModel = addPaymentMethodViewModel,
                                     cardSchemes = type.cardSchemes.orEmpty(),
                                     onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                                     onCheckoutWithCvc = onCheckoutWithCvc,
@@ -202,7 +198,6 @@ internal fun PaymentMethodsAccordionSection(
         CardSection(
             session = session,
             airwallex = airwallex,
-            addPaymentMethodViewModel = addPaymentMethodViewModel,
             cardSchemes = availablePaymentMethodTypes.first().cardSchemes.orEmpty(),
             onCheckoutWithoutCvc = onCheckoutWithoutCvc,
             onCheckoutWithCvc = onCheckoutWithCvc,

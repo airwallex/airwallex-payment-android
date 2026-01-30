@@ -35,11 +35,18 @@ class AddPaymentMethodViewModel(
     application: Application,
     airwallex: Airwallex,
     private val session: AirwallexSession,
-    private val supportedCardSchemes: List<CardScheme>
+    supportedCardSchemes: List<CardScheme>
 ) : AirwallexCheckoutViewModel(application, airwallex, session) {
     val pageName: String = "card_payment_view"
-    val additionalInfo: Map<String, List<String>> =
-        mapOf("supportedSchemes" to supportedCardSchemes.map { it.name })
+
+    private var cardSchemes = supportedCardSchemes
+
+    fun updateSupportedCardSchemes(schemes: List<CardScheme>) {
+        cardSchemes = schemes
+    }
+
+    val additionalInfo: Map<String, List<String>>
+        get() = mapOf("supportedSchemes" to cardSchemes.map { it.name })
 
     @StringRes
     val ctaRes: Int = if (session is AirwallexRecurringSession) {
@@ -176,7 +183,7 @@ class AddPaymentMethodViewModel(
         return when {
             cardNumber.isBlank() -> R.string.airwallex_empty_card_number
             !CardUtils.isValidCardNumber(cardNumber) -> R.string.airwallex_invalid_card_number
-            supportedCardSchemes.none {
+            cardSchemes.none {
                 CardBrand.fromType(it.name) == CardUtils.getPossibleCardBrand(
                     cardNumber, true
                 )
@@ -223,7 +230,6 @@ class AddPaymentMethodViewModel(
                 BillingFieldType.STREET -> type.errorMessage
                 BillingFieldType.CITY -> type.errorMessage
                 BillingFieldType.STATE -> type.errorMessage
-                else -> null
             }
 
             else -> null
@@ -307,8 +313,7 @@ class AddPaymentMethodViewModel(
     fun isCvcRequired(paymentConsent: PaymentConsent) =
         paymentConsent.paymentMethod?.card?.numberType == PaymentMethod.Card.NumberType.PAN
 
-    // TODO: return back to internal after prototype
-    class Factory(
+    internal class Factory(
         private val application: Application,
         private val airwallex: Airwallex,
         private val session: AirwallexSession,

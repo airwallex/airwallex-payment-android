@@ -1,23 +1,20 @@
 package com.airwallex.android.view
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexSupportedCard
-import com.airwallex.android.core.isExpressCheckout
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.isExpressCheckout
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
@@ -28,6 +25,9 @@ import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.card.PaymentOperation
 import com.airwallex.android.view.composables.card.PaymentOperationResult
+import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
+import com.airwallex.android.view.util.AnalyticsConstants.EVENT_PAYMENT_CANCELLED
+import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -48,31 +48,13 @@ class AirwallexAddPaymentDialog(
     }
 
     override val pageName: String
-        get() = viewModel.pageName
+        get() = CARD_PAYMENT_VIEW
 
     override val additionalInfo: Map<String, Any>
-        get() = viewModel.additionalInfo
+        get() = mapOf(SUPPORTED_SCHEMES to supportedCardSchemes.map { it.name })
 
     private val airwallex: Airwallex by lazy {
         Airwallex(activity)
-    }
-
-    private val viewModel: AddPaymentMethodViewModel by lazy {
-        createViewModel()
-    }
-
-    private val viewModelStore = ViewModelStore()
-    private fun createViewModel(): AddPaymentMethodViewModel {
-        val factoryKey = System.currentTimeMillis().toString()
-        return ViewModelProvider(
-            viewModelStore,
-            AddPaymentMethodViewModel.Factory(
-                (activity.applicationContext as Application),
-                airwallex,
-                session,
-                supportedCardSchemes
-            )
-        )[factoryKey, AddPaymentMethodViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,7 +100,6 @@ class AirwallexAddPaymentDialog(
                     CardSection(
                         session = session,
                         airwallex = airwallex,
-                        addPaymentMethodViewModel = viewModel,
                         cardSchemes = supportedCardSchemes,
                         onCheckoutWithoutCvc = {},
                         onCheckoutWithCvc = { _, _ -> },
@@ -163,22 +144,6 @@ class AirwallexAddPaymentDialog(
         viewBinding.closeIcon.setOnClickListener {
             cancelPayment()
         }
-//        viewModel.airwallexPaymentStatus.observe(activity) { result ->
-//            when (result) {
-//                is AirwallexPaymentStatus.Success -> {
-//                    dismissWithPaymentResult(
-//                        paymentIntentId = result.paymentIntentId,
-//                        paymentConsentId = result.consentId
-//                    )
-//                }
-//
-//                is AirwallexPaymentStatus.Failure -> {
-//                    dismissWithPaymentResult(exception = result.exception)
-//                }
-//
-//                else -> Unit
-//            }
-//        }
     }
 
     private fun dismissWithPaymentResult(
@@ -218,17 +183,12 @@ class AirwallexAddPaymentDialog(
     private fun cancelPayment() {
         val paymentSession = session as? AirwallexPaymentSession
         AirwallexLogger.info("AddPaymentMethodDialog cancelPayment[${paymentSession?.paymentIntent?.id}]: cancel")
-        viewModel.trackPaymentCancelled()
+        AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_CANCELLED)
         paymentResultListener.onCompleted(AirwallexPaymentStatus.Cancel)
         dismiss()
     }
 
     private fun setLoadingProgress(loading: Boolean) {
         viewBinding.frLoading.visibility = if (loading) View.VISIBLE else View.GONE
-    }
-
-    override fun dismiss() {
-        super.dismiss()
-        viewModelStore.clear()
     }
 }

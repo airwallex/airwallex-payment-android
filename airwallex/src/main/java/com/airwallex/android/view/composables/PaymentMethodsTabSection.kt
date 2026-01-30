@@ -1,7 +1,5 @@
 package com.airwallex.android.view.composables
 
-import android.app.Application
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -24,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
@@ -32,7 +29,6 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
-import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardSection
@@ -65,7 +61,6 @@ fun PaymentMethodsTabSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     paymentMethodViewModel: PaymentMethodsViewModel,
-    addPaymentMethodViewModel: AddPaymentMethodViewModel,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
@@ -147,7 +142,6 @@ fun PaymentMethodsTabSection(
                         CardSection(
                             session = session,
                             airwallex = airwallex,
-                            addPaymentMethodViewModel = addPaymentMethodViewModel,
                             cardSchemes = type.cardSchemes.orEmpty(),
                             onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                             onCheckoutWithCvc = onCheckoutWithCvc,

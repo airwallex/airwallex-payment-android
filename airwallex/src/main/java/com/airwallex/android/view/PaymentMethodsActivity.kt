@@ -13,7 +13,6 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
@@ -56,8 +55,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             ),
         )[PaymentMethodsViewModel::class.java]
     }
-
-    private lateinit var addPaymentMethodViewModel: AddPaymentMethodViewModel
 
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
@@ -111,25 +108,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
         availablePaymentConsents: List<PaymentConsent>,
     ) {
-        // Initialize AddPaymentMethodViewModel only if not already initialized
-        if (!::addPaymentMethodViewModel.isInitialized) {
-            val supportedCardSchemes = availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
-                paymentMethodType.name == PaymentMethodType.CARD.value
-            }?.cardSchemes ?: emptyList()
-
-            addPaymentMethodViewModel = ViewModelProvider(
-                this,
-                AddPaymentMethodViewModel.Factory(
-                    application = application,
-                    airwallex = airwallex,
-                    session = session,
-                    supportedCardSchemes = supportedCardSchemes
-                ),
-            )[AddPaymentMethodViewModel::class.java]
-            addPaymentMethodViewModel.updateActivity(this)
-
-        }
-
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
         val allowedPaymentMethods = session.googlePayOptions?.let { googlePayOptions ->
             availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
@@ -150,7 +128,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         airwallex = airwallex,
                         layoutType = args.layoutType,
                         paymentMethodsViewModel = viewModel,
-                        addPaymentMethodViewModel = addPaymentMethodViewModel,
                         allowedPaymentMethods = allowedPaymentMethods,
                         availablePaymentMethodTypes = availablePaymentMethodTypes,
                         availablePaymentConsents = availablePaymentConsents,
@@ -192,7 +169,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                 is PaymentOperationResult.DeleteCard -> {
                                     setLoadingProgress(false)
                                     result.result.fold(
-                                        onSuccess = { consent ->
+                                        onSuccess = { _ ->
                                             // nothing to do
                                         },
                                         onFailure = { exception ->

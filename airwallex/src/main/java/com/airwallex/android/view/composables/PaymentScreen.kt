@@ -28,7 +28,6 @@ import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.composables.card.PaymentOperation
 import com.airwallex.android.view.composables.card.PaymentOperationResult
@@ -43,7 +42,6 @@ internal fun PaymentScreen(
     airwallex: Airwallex,
     layoutType: PaymentMethodsLayoutType,
     paymentMethodsViewModel: PaymentMethodsViewModel,
-    addPaymentMethodViewModel: AddPaymentMethodViewModel,
     allowedPaymentMethods: JSONArray?,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
@@ -101,7 +99,6 @@ internal fun PaymentScreen(
                         session = session,
                         airwallex = airwallex,
                         paymentMethodViewModel = paymentMethodsViewModel,
-                        addPaymentMethodViewModel = addPaymentMethodViewModel,
                         onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                         onDirectPay = onDirectPay,
                         onCheckoutWithCvc = onCheckoutWithCvc,
@@ -116,7 +113,6 @@ internal fun PaymentScreen(
                         session = session,
                         airwallex = airwallex,
                         paymentMethodViewModel = paymentMethodsViewModel,
-                        addPaymentMethodViewModel = addPaymentMethodViewModel,
                         availablePaymentMethodTypes = availableTypes,
                         availablePaymentConsents = availablePaymentConsents,
                         onCheckoutWithoutCvc = onCheckoutWithoutCvc,

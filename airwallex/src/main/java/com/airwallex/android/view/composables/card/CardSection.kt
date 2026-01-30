@@ -43,7 +43,6 @@ import java.util.Locale
 fun CardSection(
     session: AirwallexSession,
     airwallex: Airwallex,
-    addPaymentMethodViewModel: AddPaymentMethodViewModel,
     cardSchemes: List<CardScheme>,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
@@ -52,7 +51,6 @@ fun CardSection(
     onOperationDone: (PaymentOperationResult) -> Unit,
     needFetchConsentsAndSchemes: Boolean = true
 ) {
-
     val operationsViewModel: PaymentOperationsViewModel = viewModel(
         factory = PaymentOperationsViewModel.Factory(
             airwallex = airwallex,
@@ -60,9 +58,8 @@ fun CardSection(
         ),
         viewModelStoreOwner = airwallex.activity
     )
-
+    val shouldFetch = needFetchConsentsAndSchemes || cardSchemes.isEmpty()
     LaunchedEffect(needFetchConsentsAndSchemes, cardSchemes) {
-        val shouldFetch = needFetchConsentsAndSchemes || cardSchemes.isEmpty()
         if (shouldFetch) {
             operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
         }
@@ -70,7 +67,23 @@ fun CardSection(
 
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
     val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
+    val addPaymentMethodViewModel: AddPaymentMethodViewModel = viewModel(
+        factory = AddPaymentMethodViewModel.Factory(
+            airwallex = airwallex,
+            session = session,
+            supportedCardSchemes = cardSchemes,
+            application = airwallex.activity.application
+        ),
+        viewModelStoreOwner = airwallex.activity
+    )
     val deletedConsents by addPaymentMethodViewModel.deletedCardList.collectAsState()
+
+    LaunchedEffect(shouldFetch, availablePaymentMethods) {
+        if (shouldFetch && availablePaymentMethods.isNotEmpty()) {
+            val newSchemes = airwallex.getSupportedCardSchemes(availablePaymentMethods)
+            addPaymentMethodViewModel.updateSupportedCardSchemes(newSchemes)
+        }
+    }
 
     var localConsents by remember { mutableStateOf(availablePaymentConsents) }
     var selectedScreen by remember { mutableStateOf(if (localConsents.isEmpty()) CardSectionType.AddCard else CardSectionType.ConsentList) }
@@ -289,7 +302,6 @@ private fun onDeleteOperationStart(
 fun CardSection(
     session: AirwallexSession,
     airwallex: Airwallex,
-    addPaymentMethodViewModel: AddPaymentMethodViewModel,
     cardSchemes: List<CardScheme>,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
@@ -299,7 +311,6 @@ fun CardSection(
     CardSection(
         session = session,
         airwallex = airwallex,
-        addPaymentMethodViewModel = addPaymentMethodViewModel,
         cardSchemes = cardSchemes,
         onCheckoutWithoutCvc = onCheckoutWithoutCvc,
         onCheckoutWithCvc = onCheckoutWithCvc,

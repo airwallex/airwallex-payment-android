@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -30,6 +29,8 @@ import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.card.PaymentOperation
 import com.airwallex.android.view.composables.card.PaymentOperationResult
+import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
+import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
 
 /**
@@ -48,10 +49,10 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
     }
 
     override val pageName: String
-        get() = viewModel.pageName
+        get() = CARD_PAYMENT_VIEW
 
     override val additionalInfo: Map<String, Any>
-        get() = viewModel.additionalInfo
+        get() = mapOf(SUPPORTED_SCHEMES to args.supportedCardSchemes.map { it.name })
 
     override val session: AirwallexSession by lazy {
         args.session
@@ -63,15 +64,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override val paymentLaunchSubtype: String = "component"
     override val paymentMethodName: String = PaymentMethodType.CARD.value
-
-    private val viewModel: AddPaymentMethodViewModel by lazy {
-        ViewModelProvider(
-            this,
-            AddPaymentMethodViewModel.Factory(
-                application, airwallex, session, args.supportedCardSchemes
-            )
-        )[AddPaymentMethodViewModel::class.java]
-    }
 
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_close
@@ -96,7 +88,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                         CardSection(
                             session = session,
                             airwallex = airwallex,
-                            addPaymentMethodViewModel = viewModel,
                             cardSchemes = args.supportedCardSchemes,
                             onCheckoutWithoutCvc = {},
                             onCheckoutWithCvc = { _, _ -> },
@@ -137,23 +128,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
             }
         }
     }
-
-//    override fun addListener() {
-//        super.addListener()
-//        viewModel.airwallexPaymentStatus.observe(this) { result ->
-//            when (result) {
-//                is AirwallexPaymentStatus.Success -> {
-//                    finishWithPaymentIntent(
-//                        paymentIntentId = result.paymentIntentId, consentId = result.consentId
-//                    )
-//                }
-//                is AirwallexPaymentStatus.Failure -> {
-//                    finishWithPaymentIntent(exception = result.exception)
-//                }
-//                else -> Unit
-//            }
-//        }
-//    }
 
     override fun onBackButtonPressed() {
         super.onBackButtonPressed()
