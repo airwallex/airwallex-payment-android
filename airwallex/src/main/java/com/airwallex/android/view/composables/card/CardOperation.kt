@@ -21,9 +21,20 @@ sealed class PaymentOperation {
      */
     data class DeleteCard(val deletedConsent: PaymentConsent? = null) : PaymentOperation()
 
-    // TODO: Add other operations as needed
-    // data object CheckoutWithCvc : PaymentOperation()
-    // data object CheckoutWithoutCvc : PaymentOperation()
+    /**
+     * Operation for checkout with CVC
+     *
+     * @param consent The payment consent to checkout with
+     * @param cvc The CVC code
+     */
+    data class CheckoutWithCvc(val consent: PaymentConsent, val cvc: String) : PaymentOperation()
+
+    /**
+     * Operation for checkout without CVC
+     *
+     * @param consent The payment consent to checkout with
+     */
+    data class CheckoutWithoutCvc(val consent: PaymentConsent) : PaymentOperation()
 }
 
 /**
@@ -38,6 +49,17 @@ sealed class PaymentOperationResult {
     data class AddCard(val status: AirwallexPaymentStatus) : PaymentOperationResult()
     data class DeleteCard(val result: Result<PaymentConsent>) : PaymentOperationResult()
 
-    // TODO: Add other operation results as needed
-    // data class CheckoutWithCvc(val status: AirwallexPaymentStatus) : PaymentOperationResult()
+    /**
+     * Result for the CheckoutWithCvc operation
+     *
+     * @param status The payment status result (contains success or failure state)
+     */
+    data class CheckoutWithCvc(val status: AirwallexPaymentStatus) : PaymentOperationResult()
+
+    /**
+     * Result for the CheckoutWithoutCvc operation
+     *
+     * @param status The payment status result (contains success or failure state)
+     */
+    data class CheckoutWithoutCvc(val status: AirwallexPaymentStatus) : PaymentOperationResult()
 }

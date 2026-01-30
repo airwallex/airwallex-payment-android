@@ -24,7 +24,7 @@ internal fun ConsentDetailSection(
     isCvcRequired: Boolean,
     cardBrand: CardBrand,
     onCheckoutWithCvc: (String) -> Unit,
-    onCheckoutWithoutCvv: () -> Unit,
+    onCheckoutWithoutCvc: () -> Unit,
     onScreenViewed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -66,7 +66,7 @@ internal fun ConsentDetailSection(
                     onCheckoutWithCvc(cvv)
                 }
             } else {
-                onCheckoutWithoutCvv()
+                onCheckoutWithoutCvc()
             }
         },
         modifier = modifier,

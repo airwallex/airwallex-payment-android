@@ -44,8 +44,6 @@ fun CardSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     cardSchemes: List<CardScheme>,
-    onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
-    onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     isSinglePaymentMethod: Boolean = false,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
@@ -246,10 +244,20 @@ fun CardSection(
                     isCvcRequired = addPaymentMethodViewModel.isCvcRequired(consent),
                     cardBrand = cardBrand,
                     onCheckoutWithCvc = { cvc ->
-                        onCheckoutWithCvc(consent, cvc)
+                        onCheckoutWithCvcOperationStart(
+                            PaymentOperation.CheckoutWithCvc(consent, cvc),
+                            operationsViewModel,
+                            onOperationStart,
+                            onOperationDone
+                        )
                     },
-                    onCheckoutWithoutCvv = {
-                        onCheckoutWithoutCvc(consent)
+                    onCheckoutWithoutCvc = {
+                        onCheckoutWithoutCvcOperationStart(
+                            PaymentOperation.CheckoutWithoutCvc(consent),
+                            operationsViewModel,
+                            onOperationStart,
+                            onOperationDone
+                        )
                     },
                     onScreenViewed = {
                         addPaymentMethodViewModel.trackScreenViewed(
@@ -283,9 +291,32 @@ private fun onDeleteOperationStart(
             },
             onFailure = { exception ->
                 onOperationDone(PaymentOperationResult.DeleteCard(Result.failure(exception)))
-//                                    alert(message = it.message ?: it.toString())
             },
         )
+    }
+}
+
+private fun onCheckoutWithoutCvcOperationStart(
+    operation: PaymentOperation.CheckoutWithoutCvc,
+    operationsViewModel: PaymentOperationsViewModel,
+    onOperationStart: (PaymentOperation.CheckoutWithoutCvc) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit,
+) {
+    onOperationStart(operation)
+    operationsViewModel.confirmPaymentIntent(operation.consent) { status ->
+        onOperationDone(PaymentOperationResult.CheckoutWithoutCvc(status))
+    }
+}
+
+private fun onCheckoutWithCvcOperationStart(
+    operation: PaymentOperation.CheckoutWithCvc,
+    operationsViewModel: PaymentOperationsViewModel,
+    onOperationStart: (PaymentOperation.CheckoutWithCvc) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit,
+) {
+    onOperationStart(operation)
+    operationsViewModel.checkoutWithCvc(operation.consent, operation.cvc) { status ->
+        onOperationDone(PaymentOperationResult.CheckoutWithCvc(status))
     }
 }
 
@@ -303,8 +334,6 @@ fun CardSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     cardSchemes: List<CardScheme>,
-    onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
-    onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     isSinglePaymentMethod: Boolean = false,
     listener: CardSectionListener,
 ) {
@@ -312,8 +341,6 @@ fun CardSection(
         session = session,
         airwallex = airwallex,
         cardSchemes = cardSchemes,
-        onCheckoutWithoutCvc = onCheckoutWithoutCvc,
-        onCheckoutWithCvc = onCheckoutWithCvc,
         isSinglePaymentMethod = isSinglePaymentMethod,
         onOperationStart = listener::onOperationStart,
         onOperationDone = listener::onOperationDone

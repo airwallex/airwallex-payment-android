@@ -89,8 +89,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             session = session,
                             airwallex = airwallex,
                             cardSchemes = args.supportedCardSchemes,
-                            onCheckoutWithoutCvc = {},
-                            onCheckoutWithCvc = { _, _ -> },
                             isSinglePaymentMethod = args.isSinglePaymentMethod,
                             onOperationStart = { operation ->
                                 when (operation) {

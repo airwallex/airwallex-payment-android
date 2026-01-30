@@ -131,8 +131,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         allowedPaymentMethods = allowedPaymentMethods,
                         availablePaymentMethodTypes = availablePaymentMethodTypes,
                         availablePaymentConsents = availablePaymentConsents,
-                        onCheckoutWithoutCvc = ::onCheckoutWithoutCvc,
-                        onCheckoutWithCvc = ::onCheckoutWithCvc,
                         onDirectPay = ::onDirectPay,
                         onPayWithFields = ::onPayWithSchema,
                         onLoading = { isLoading ->
@@ -145,7 +143,17 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                     AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
                                     onAddCard()
                                 }
-                                else -> {} // Other operations will be handled later
+                                is PaymentOperation.CheckoutWithCvc,
+                                is PaymentOperation.CheckoutWithoutCvc -> {
+                                    setLoadingProgress(loading = true, cancelable = false)
+                                    val paymentMethodType = when (operation) {
+                                        is PaymentOperation.CheckoutWithCvc -> operation.consent.paymentMethod?.type
+                                        is PaymentOperation.CheckoutWithoutCvc -> operation.consent.paymentMethod?.type
+                                        else -> null
+                                    }
+                                    viewModel.trackPaymentSelection(paymentMethodType)
+                                }
+                                else -> {}
                             }
                         },
                         onOperationDone = { result ->
@@ -159,9 +167,11 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                                 consentId = result.status.consentId,
                                             )
                                         }
+
                                         is AirwallexPaymentStatus.Failure -> {
                                             finishWithPaymentIntent(exception = result.status.exception)
                                         }
+
                                         else -> Unit
                                     }
                                 }
@@ -173,9 +183,21 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                             // nothing to do
                                         },
                                         onFailure = { exception ->
-                                            alert(message = exception.message ?: exception.toString())
+                                            alert(
+                                                message = exception.message ?: exception.toString()
+                                            )
                                         }
                                     )
+                                }
+
+                                is PaymentOperationResult.CheckoutWithCvc,
+                                is PaymentOperationResult.CheckoutWithoutCvc -> {
+                                    val status = when (result) {
+                                        is PaymentOperationResult.CheckoutWithCvc -> result.status
+                                        is PaymentOperationResult.CheckoutWithoutCvc -> result.status
+                                        else -> return@PaymentScreen
+                                    }
+                                    handlePaymentStatus(status)
                                 }
                             }
                         },
@@ -231,18 +253,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             ),
         )
         finish()
-    }
-
-    private fun onCheckoutWithoutCvc(paymentConsent: PaymentConsent) {
-        setLoadingProgress(true, cancelable = false)
-        viewModel.trackPaymentSelection(paymentConsent.paymentMethod?.type)
-        viewModel.confirmPaymentIntent(paymentConsent)
-    }
-
-    private fun onCheckoutWithCvc(paymentConsent: PaymentConsent, cvc: String) {
-        setLoadingProgress(true, cancelable = false)
-        viewModel.trackPaymentSelection(paymentConsent.paymentMethod?.type)
-        viewModel.checkoutWithCvc(paymentConsent, cvc)
     }
 
     private fun onAddCard() {

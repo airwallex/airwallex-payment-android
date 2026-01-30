@@ -101,8 +101,6 @@ class AirwallexAddPaymentDialog(
                         session = session,
                         airwallex = airwallex,
                         cardSchemes = supportedCardSchemes,
-                        onCheckoutWithoutCvc = {},
-                        onCheckoutWithCvc = { _, _ -> },
                         isSinglePaymentMethod = true,
                         onOperationStart = { operation ->
                             when (operation) {

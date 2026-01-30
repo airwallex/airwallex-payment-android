@@ -46,9 +46,6 @@ import kotlinx.coroutines.launch
  * @param session The Airwallex session for the payment flow
  * @param airwallex The Airwallex instance for payment operations
  * @param paymentMethodViewModel ViewModel for schema-based payment methods
- * @param addPaymentMethodViewModel ViewModel for card payment operations
- * @param onCheckoutWithoutCvc Callback for checkout without CVC
- * @param onCheckoutWithCvc Callback for checkout with CVC
  * @param onDirectPay Callback for direct payment
  * @param onPayWithFields Callback for payment with fields
  * @param onLoading Callback for loading state changes
@@ -61,8 +58,6 @@ fun PaymentMethodsTabSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     paymentMethodViewModel: PaymentMethodsViewModel,
-    onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
-    onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
     onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
@@ -143,8 +138,6 @@ fun PaymentMethodsTabSection(
                             session = session,
                             airwallex = airwallex,
                             cardSchemes = type.cardSchemes.orEmpty(),
-                            onCheckoutWithoutCvc = onCheckoutWithoutCvc,
-                            onCheckoutWithCvc = onCheckoutWithCvc,
                             onOperationStart = onOperationStart,
                             onOperationDone = onOperationDone,
                         )
