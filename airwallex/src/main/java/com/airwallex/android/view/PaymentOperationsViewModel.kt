@@ -6,7 +6,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.PaymentConsent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -63,6 +66,32 @@ class PaymentOperationsViewModel(
                 }
             )
         }
+    }
+
+    fun deletePaymentConsent(
+        paymentConsent: PaymentConsent,
+        onOperationDone: (Result<PaymentConsent>) -> Unit
+    ) {
+        val clientSecret = airwallex.getClientSecret(session)
+        if (clientSecret == null) {
+            onOperationDone(Result.failure(AirwallexCheckoutException(message = "clientSecret is null")))
+            return
+        }
+        airwallex.disablePaymentConsent(
+            DisablePaymentConsentParams(
+                clientSecret = clientSecret,
+                paymentConsentId = requireNotNull(paymentConsent.id),
+            ),
+            object : Airwallex.PaymentListener<PaymentConsent> {
+                override fun onFailed(exception: AirwallexException) {
+                    onOperationDone(Result.failure(exception))
+                }
+
+                override fun onSuccess(response: PaymentConsent) {
+                    onOperationDone(Result.success(paymentConsent))
+                }
+            },
+        )
     }
 
     class Factory(

@@ -98,7 +98,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             airwallex = airwallex,
                             addPaymentMethodViewModel = viewModel,
                             cardSchemes = args.supportedCardSchemes,
-                            onDeleteCard = {},
                             onCheckoutWithoutCvc = {},
                             onCheckoutWithCvc = { _, _ -> },
                             isSinglePaymentMethod = args.isSinglePaymentMethod,
@@ -127,6 +126,8 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                                             else -> Unit
                                         }
                                     }
+
+                                    else -> {}
                                 }
                             },
                             needFetchConsentsAndSchemes = false

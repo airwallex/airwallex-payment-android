@@ -120,7 +120,6 @@ class AirwallexAddPaymentDialog(
                         airwallex = airwallex,
                         addPaymentMethodViewModel = viewModel,
                         cardSchemes = supportedCardSchemes,
-                        onDeleteCard = {},
                         onCheckoutWithoutCvc = {},
                         onCheckoutWithCvc = { _, _ -> },
                         isSinglePaymentMethod = true,
@@ -149,6 +148,8 @@ class AirwallexAddPaymentDialog(
                                         else -> Unit
                                     }
                                 }
+
+                                else -> {}
                             }
                         },
                         needFetchConsentsAndSchemes = false

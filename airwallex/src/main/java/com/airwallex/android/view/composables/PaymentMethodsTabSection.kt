@@ -51,7 +51,6 @@ import kotlinx.coroutines.launch
  * @param airwallex The Airwallex instance for payment operations
  * @param paymentMethodViewModel ViewModel for schema-based payment methods
  * @param addPaymentMethodViewModel ViewModel for card payment operations
- * @param onDeleteCard Callback when a card is deleted
  * @param onCheckoutWithoutCvc Callback for checkout without CVC
  * @param onCheckoutWithCvc Callback for checkout with CVC
  * @param onDirectPay Callback for direct payment
@@ -67,7 +66,6 @@ fun PaymentMethodsTabSection(
     airwallex: Airwallex,
     paymentMethodViewModel: PaymentMethodsViewModel,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
-    onDeleteCard: (PaymentConsent) -> Unit,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
@@ -151,7 +149,6 @@ fun PaymentMethodsTabSection(
                             airwallex = airwallex,
                             addPaymentMethodViewModel = addPaymentMethodViewModel,
                             cardSchemes = type.cardSchemes.orEmpty(),
-                            onDeleteCard = onDeleteCard,
                             onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                             onCheckoutWithCvc = onCheckoutWithCvc,
                             onOperationStart = onOperationStart,

@@ -336,35 +336,6 @@ class PaymentMethodsViewModel(
         }
     }
 
-    fun deletePaymentConsent(paymentConsent: PaymentConsent): LiveData<Result<PaymentConsent>> {
-        val resultData = MutableLiveData<Result<PaymentConsent>>()
-        try {
-            clientSecret?.let {
-                airwallex.disablePaymentConsent(
-                    DisablePaymentConsentParams(
-                        clientSecret = it,
-                        paymentConsentId = requireNotNull(paymentConsent.id),
-                    ),
-                    object : Airwallex.PaymentListener<PaymentConsent> {
-                        override fun onFailed(exception: AirwallexException) {
-                            resultData.value = Result.failure(exception)
-                        }
-
-                        override fun onSuccess(response: PaymentConsent) {
-                            resultData.value = Result.success(paymentConsent)
-                        }
-                    },
-                )
-            } ?: {
-                resultData.value =
-                    Result.failure(AirwallexCheckoutException(message = "clientSecret is null"))
-            }
-        } catch (e: AirwallexCheckoutException) {
-            resultData.value = Result.failure(e)
-        }
-        return resultData
-    }
-
     fun retrieveSchemaDataFromCache(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
         return schemaDataCache[paymentMethodType]
     }

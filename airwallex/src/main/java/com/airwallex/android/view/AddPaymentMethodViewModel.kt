@@ -71,8 +71,8 @@ class AddPaymentMethodViewModel(
     private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
     val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
 
-    private val _deleteCardSuccess = MutableStateFlow<PaymentConsent?>(null)
-    val deleteCardSuccess: StateFlow<PaymentConsent?> = _deleteCardSuccess.asStateFlow()
+    private val _deletedCardList = MutableStateFlow<MutableList<PaymentConsent>>(mutableListOf())
+    val deletedCardList: StateFlow<MutableList<PaymentConsent>> = _deletedCardList.asStateFlow()
 
     // Card input state
     private val _cardNumber = MutableStateFlow("")
@@ -297,7 +297,11 @@ class AddPaymentMethodViewModel(
     }
 
     fun deleteCardSuccess(consent: PaymentConsent) {
-        _deleteCardSuccess.update { consent }
+        _deletedCardList.update { currentList ->
+            val newList = currentList.toMutableList()
+            newList.add(consent)
+            newList
+        }
     }
 
     fun isCvcRequired(paymentConsent: PaymentConsent) =

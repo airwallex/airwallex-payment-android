@@ -16,13 +16,14 @@ import com.airwallex.android.R
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardAlertDialog
+import com.airwallex.android.view.composables.card.PaymentOperation
 import java.util.Locale
 
 @Composable
 internal fun ConsentListSection(
     availablePaymentConsents: List<PaymentConsent>,
     onSelectCard: (PaymentConsent) -> Unit,
-    onDeleteCard: (PaymentConsent) -> Unit,
+    onOperationStart: (PaymentOperation) -> Unit,
     onScreenViewed: () -> Unit,
 ) {
     var localConsentToBeDeleted by remember { mutableStateOf<PaymentConsent?>(null) }
@@ -60,7 +61,7 @@ internal fun ConsentListSection(
             confirmButtonTitle = stringResource(R.string.airwallex_delete_payment_method_positive),
             dismissButtonTitle = stringResource(R.string.airwallex_delete_payment_method_negative),
             onConfirm = {
-                localConsentToBeDeleted?.let { onDeleteCard(it) }
+                localConsentToBeDeleted?.let { onOperationStart(PaymentOperation.DeleteCard(deletedConsent = it)) }
                 localConsentToBeDeleted = null
             },
             onDismiss = {

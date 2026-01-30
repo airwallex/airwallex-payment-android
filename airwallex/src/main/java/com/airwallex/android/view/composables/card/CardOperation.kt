@@ -19,11 +19,7 @@ sealed class PaymentOperation {
      * @param deletedConsent The deleted consent when operation succeeds (null during loading or on failure)
      * @param error Error message when operation fails (null during loading or on success)
      */
-    data class DeleteCard(
-        val loading: Boolean,
-        val deletedConsent: PaymentConsent? = null,
-        val error: String? = null
-    ) : PaymentOperation()
+    data class DeleteCard(val deletedConsent: PaymentConsent? = null) : PaymentOperation()
 
     // TODO: Add other operations as needed
     // data object CheckoutWithCvc : PaymentOperation()
@@ -40,6 +36,7 @@ sealed class PaymentOperationResult {
      * @param status The payment status result (contains success or failure state)
      */
     data class AddCard(val status: AirwallexPaymentStatus) : PaymentOperationResult()
+    data class DeleteCard(val result: Result<PaymentConsent>) : PaymentOperationResult()
 
     // TODO: Add other operation results as needed
     // data class CheckoutWithCvc(val status: AirwallexPaymentStatus) : PaymentOperationResult()

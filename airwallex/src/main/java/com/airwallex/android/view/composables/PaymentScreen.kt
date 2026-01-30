@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AnalyticsLogger
@@ -48,7 +47,6 @@ internal fun PaymentScreen(
     allowedPaymentMethods: JSONArray?,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
-    onDeleteCard: (PaymentConsent) -> Unit,
     onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
     onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
     onDirectPay: (AvailablePaymentMethodType) -> Unit,
@@ -104,7 +102,6 @@ internal fun PaymentScreen(
                         airwallex = airwallex,
                         paymentMethodViewModel = paymentMethodsViewModel,
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
-                        onDeleteCard = onDeleteCard,
                         onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                         onDirectPay = onDirectPay,
                         onCheckoutWithCvc = onCheckoutWithCvc,
@@ -122,7 +119,6 @@ internal fun PaymentScreen(
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
                         availablePaymentMethodTypes = availableTypes,
                         availablePaymentConsents = availablePaymentConsents,
-                        onDeleteCard = onDeleteCard,
                         onCheckoutWithoutCvc = onCheckoutWithoutCvc,
                         onDirectPay = onDirectPay,
                         onCheckoutWithCvc = onCheckoutWithCvc,

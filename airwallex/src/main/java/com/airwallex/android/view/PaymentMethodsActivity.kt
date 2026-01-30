@@ -154,11 +154,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         allowedPaymentMethods = allowedPaymentMethods,
                         availablePaymentMethodTypes = availablePaymentMethodTypes,
                         availablePaymentConsents = availablePaymentConsents,
-                        onDeleteCard = { consent ->
-                            onDeleteCard(consent) {
-                                addPaymentMethodViewModel.deleteCardSuccess(consent)
-                            }
-                        },
                         onCheckoutWithoutCvc = ::onCheckoutWithoutCvc,
                         onCheckoutWithCvc = ::onCheckoutWithCvc,
                         onDirectPay = ::onDirectPay,
@@ -192,6 +187,18 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                         }
                                         else -> Unit
                                     }
+                                }
+
+                                is PaymentOperationResult.DeleteCard -> {
+                                    setLoadingProgress(false)
+                                    result.result.fold(
+                                        onSuccess = { consent ->
+                                            // nothing to do
+                                        },
+                                        onFailure = { exception ->
+                                            alert(message = exception.message ?: exception.toString())
+                                        }
+                                    )
                                 }
                             }
                         },
@@ -247,25 +254,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             ),
         )
         finish()
-    }
-
-    private fun onDeleteCard(
-        paymentConsent: PaymentConsent,
-        onDeleteCompleted: (PaymentConsent) -> Unit,
-    ) {
-        setLoadingProgress(loading = true, cancelable = false)
-        viewModel.deletePaymentConsent(paymentConsent).observe(this) { result ->
-            result.fold(
-                onSuccess = { consent ->
-                    setLoadingProgress(false)
-                    onDeleteCompleted(consent)
-                },
-                onFailure = {
-                    setLoadingProgress(false)
-                    alert(message = it.message ?: it.toString())
-                },
-            )
-        }
     }
 
     private fun onCheckoutWithoutCvc(paymentConsent: PaymentConsent) {
