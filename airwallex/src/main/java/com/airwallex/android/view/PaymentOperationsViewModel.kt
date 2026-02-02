@@ -10,12 +10,12 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,33 +41,11 @@ class PaymentOperationsViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private var hasFetched = false
-    private var ongoingFetch: CompletableDeferred<Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>>? = null
-
     /**
      * Fetches available payment methods and consents.
-     *
-     * @return Result if this is the first/initiating call, or null if data is already cached
-     *         or another fetch is in progress. Returning null indicates the caller should
-     *         not handle the result (no loading/error callbacks needed).
+     * Should only be called once from the parent component.
      */
-    suspend fun fetchAvailablePaymentMethodsAndConsents(): Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>? {
-        // Data already cached - no need to notify caller
-        if (hasFetched) {
-            return null
-        }
-
-        // Already loading - wait for result but don't notify this caller
-        // (only the first caller should handle the result)
-        ongoingFetch?.let {
-            it.await()  // Wait for completion so data is available
-            return null  // But don't notify this caller
-        }
-
-        // Start new fetch operation - this caller will get the result
-        val deferred = CompletableDeferred<Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>>()
-        ongoingFetch = deferred
-
+    suspend fun fetchAvailablePaymentMethodsAndConsents(): Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>> {
         _isLoading.value = true
 
         val result = airwallex.fetchAvailablePaymentMethodsAndConsents(session)
@@ -77,17 +55,13 @@ class PaymentOperationsViewModel(
                 _availablePaymentMethods.value = methods
                 _availablePaymentConsents.value = consents
                 _isLoading.value = false
-                hasFetched = true
             },
             onFailure = { _ ->
                 _isLoading.value = false
             }
         )
 
-        deferred.complete(result)
-        ongoingFetch = null
-
-        return result  // Only the first caller gets the result
+        return result
     }
 
     suspend fun deletePaymentConsent(
@@ -171,6 +145,20 @@ class PaymentOperationsViewModel(
         }
     }
 
+    fun checkoutWithGooglePay(
+        onOperationDone: (AirwallexPaymentStatus) -> Unit
+    ) = viewModelScope.launch {
+        val status = checkoutGooglePay()
+        onOperationDone(status)
+    }
+
+    fun trackScreenViewed(eventName: String, params: Map<String, Any> = emptyMap()) {
+        AnalyticsLogger.logPaymentView(
+            viewName = eventName,
+            additionalInfo = params,
+        )
+    }
+
     private suspend fun checkout(
         paymentMethod: PaymentMethod,
         paymentConsentId: String?,
@@ -184,6 +172,19 @@ class PaymentOperationsViewModel(
                 paymentConsentId = paymentConsentId,
                 cvc = cvc,
                 flow = flow,
+                listener = object : Airwallex.PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        continuation.resume(status)
+                    }
+                }
+            )
+        }
+    }
+
+    private suspend fun checkoutGooglePay(): AirwallexPaymentStatus {
+        return suspendCancellableCoroutine { continuation ->
+            airwallex.startGooglePay(
+                session = session,
                 listener = object : Airwallex.PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         continuation.resume(status)

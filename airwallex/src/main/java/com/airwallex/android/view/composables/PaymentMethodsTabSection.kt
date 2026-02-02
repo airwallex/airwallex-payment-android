@@ -65,19 +65,14 @@ fun PaymentMethodsTabSection(
         ),
         viewModelStoreOwner = airwallex.activity
     )
-    LaunchedEffect(Unit) {
-        onFetchPaymentMethodsOperationStart(
-            operationsViewModel,
-            onOperationStart,
-            onOperationDone
-        )
-    }
 
     val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
     val isLoading by operationsViewModel.isLoading.collectAsState()
 
-    onLoading(isLoading)
+    LaunchedEffect(isLoading) {
+        onLoading(isLoading)
+    }
 
     if (availablePaymentMethods.isNotEmpty()) {
         val lazyListState = rememberLazyListState()
@@ -154,17 +149,5 @@ fun PaymentMethodsTabSection(
                 }
             }
         }
-    }
-}
-
-private suspend fun onFetchPaymentMethodsOperationStart(
-    operationsViewModel: PaymentOperationsViewModel,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
-) {
-    onOperationStart(PaymentOperation.FetchPaymentMethods)
-    val result = operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
-    result?.let {
-        onOperationDone(PaymentOperationResult.FetchPaymentMethods(it))
     }
 }

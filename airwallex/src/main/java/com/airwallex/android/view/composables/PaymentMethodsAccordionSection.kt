@@ -33,7 +33,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
@@ -44,7 +43,6 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.card.PaymentOperation
@@ -64,20 +62,6 @@ internal fun PaymentMethodsAccordionSection(
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
-    val operationsViewModel: PaymentOperationsViewModel = viewModel(
-        factory = PaymentOperationsViewModel.Factory(
-            airwallex = airwallex,
-            session = session
-        ),
-        viewModelStoreOwner = airwallex.activity
-    )
-    LaunchedEffect(Unit) {
-        onFetchPaymentMethodsOperationStart(
-            operationsViewModel,
-            onOperationStart,
-            onOperationDone
-        )
-    }
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethodTypes.first()) }
     var selectedIndex by remember { mutableIntStateOf(0) }
 
@@ -211,17 +195,5 @@ internal fun PaymentMethodsAccordionSection(
             onOperationDone = onOperationDone,
             isSinglePaymentMethod = true,
         )
-    }
-}
-
-private suspend fun onFetchPaymentMethodsOperationStart(
-    operationsViewModel: PaymentOperationsViewModel,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
-) {
-    onOperationStart(PaymentOperation.FetchPaymentMethods)
-    val result = operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
-    result?.let {
-        onOperationDone(PaymentOperationResult.FetchPaymentMethods(it))
     }
 }

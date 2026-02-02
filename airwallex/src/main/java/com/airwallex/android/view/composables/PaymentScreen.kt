@@ -1,16 +1,10 @@
 package com.airwallex.android.view.composables
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -19,19 +13,14 @@ import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.composables.card.PaymentOperation
 import com.airwallex.android.view.composables.card.PaymentOperationResult
-import com.airwallex.android.view.composables.google.GooglePaySection
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
-import org.json.JSONArray
 
 @Suppress("LongMethod", "LongParameterList")
 @Composable
@@ -39,22 +28,12 @@ internal fun PaymentScreen(
     session: AirwallexSession,
     airwallex: Airwallex,
     layoutType: PaymentMethodsLayoutType,
-    paymentMethodsViewModel: PaymentMethodsViewModel,
-    allowedPaymentMethods: JSONArray?,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
     onLoading: (Boolean) -> Unit,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
-    val availableTypes by remember {
-        mutableStateOf(
-            availablePaymentMethodTypes.filterNot { paymentMethodType ->
-                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
-            }
-        )
-    }
-
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         val isSinglePaymentMethod = availablePaymentMethodTypes.getSinglePaymentMethodOrNull(availablePaymentConsents) != null
         val titleResId = if(!isSinglePaymentMethod) R.string.airwallex_payment_methods else R.string.airwallex_new_card
@@ -66,51 +45,13 @@ internal fun PaymentScreen(
             modifier = Modifier.padding(horizontal = 24.dp),
         )
 
-        allowedPaymentMethods?.let { allowedPaymentMethods ->
-            Spacer(modifier = Modifier.height(24.dp))
-
-            GooglePaySection(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .fillMaxWidth(),
-                allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
-                onClick = {
-                    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
-                    paymentMethodsViewModel.checkoutWithGooglePay()
-                },
-                onScreenViewed = {
-                    paymentMethodsViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
-                },
-            )
-        }
-
-        if (availableTypes.isNotEmpty()) {
-            if(!isSinglePaymentMethod) Spacer(modifier = Modifier.height(24.dp))
-
-            when (layoutType) {
-                PaymentMethodsLayoutType.TAB -> {
-                    PaymentMethodsTabSection(
-                        session = session,
-                        airwallex = airwallex,
-                        onLoading = onLoading,
-                        onOperationStart = onOperationStart,
-                        onOperationDone = onOperationDone,
-                    )
-                }
-                PaymentMethodsLayoutType.ACCORDION -> {
-                    PaymentMethodsAccordionSection(
-                        session = session,
-                        airwallex = airwallex,
-                        availablePaymentMethodTypes = availableTypes,
-                        availablePaymentConsents = availablePaymentConsents,
-                        onLoading = onLoading,
-                        onOperationStart = onOperationStart,
-                        onOperationDone = onOperationDone,
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(48.dp))
+        AwxPaymentElement(
+            session = session,
+            airwallex = airwallex,
+            configuration = AwxPaymentElementConfiguration.PaymentSheet(type = layoutType),
+            onLoading = onLoading,
+            onOperationStart = onOperationStart,
+            onOperationDone = onOperationDone,
+        )
     }
 }

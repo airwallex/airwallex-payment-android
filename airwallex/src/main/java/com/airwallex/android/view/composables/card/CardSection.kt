@@ -59,14 +59,12 @@ fun CardSection(
         ),
         viewModelStoreOwner = airwallex.activity
     )
-    val shouldFetch = needFetchConsentsAndSchemes || cardSchemes.isEmpty()
-    LaunchedEffect(needFetchConsentsAndSchemes, cardSchemes) {
+    val shouldFetch = needFetchConsentsAndSchemes && cardSchemes.isEmpty()
+    LaunchedEffect(shouldFetch) {
         if (shouldFetch) {
-            onFetchPaymentMethodsOperationStart(
-                operationsViewModel,
-                onOperationStart,
-                onOperationDone
-            )
+            onOperationStart(PaymentOperation.FetchPaymentMethods)
+            val result = operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
+            onOperationDone(PaymentOperationResult.FetchPaymentMethods(result))
         }
     }
 
@@ -280,18 +278,6 @@ fun CardSection(
                 )
             }
         }
-    }
-}
-
-private suspend fun onFetchPaymentMethodsOperationStart(
-    operationsViewModel: PaymentOperationsViewModel,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
-) {
-    onOperationStart(PaymentOperation.FetchPaymentMethods)
-    val result = operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
-    result?.let {
-        onOperationDone(PaymentOperationResult.FetchPaymentMethods(it))
     }
 }
 

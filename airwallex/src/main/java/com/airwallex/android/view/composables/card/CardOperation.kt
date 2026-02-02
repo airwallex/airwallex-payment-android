@@ -46,6 +46,11 @@ sealed class PaymentOperation {
     data class CheckoutWithoutCvc(val consent: PaymentConsent) : PaymentOperation()
 
     /**
+     * Operation for checkout with Google Pay
+     */
+    data object CheckoutWithGooglePay : PaymentOperation()
+
+    /**
      * Operation for direct payment with schema (no additional fields)
      *
      * @param paymentMethodType The payment method type to pay with
@@ -100,6 +105,13 @@ sealed class PaymentOperationResult {
      * @param status The payment status result (contains success or failure state)
      */
     data class CheckoutWithoutCvc(val status: AirwallexPaymentStatus) : PaymentOperationResult()
+
+    /**
+     * Result for the CheckoutWithGooglePay operation
+     *
+     * @param status The payment status result (contains success or failure state)
+     */
+    data class CheckoutWithGooglePay(val status: AirwallexPaymentStatus) : PaymentOperationResult()
 
     /**
      * Result for the DirectPay operation

@@ -109,17 +109,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         availablePaymentConsents: List<PaymentConsent>,
     ) {
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
-        val allowedPaymentMethods = session.googlePayOptions?.let { googlePayOptions ->
-            availablePaymentMethodTypes.firstOrNull { paymentMethodType ->
-                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
-            }?.let { paymentMethodType ->
-                GooglePayUtil.retrieveAllowedPaymentMethods(
-                    googlePayOptions,
-                    paymentMethodType.cardSchemes,
-                )
-            }
-        }
-
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
@@ -127,8 +116,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         session = session,
                         airwallex = airwallex,
                         layoutType = args.layoutType,
-                        paymentMethodsViewModel = viewModel,
-                        allowedPaymentMethods = allowedPaymentMethods,
                         availablePaymentMethodTypes = availablePaymentMethodTypes,
                         availablePaymentConsents = availablePaymentConsents,
                         onLoading = { isLoading ->
@@ -151,13 +138,16 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                     }
                                     viewModel.trackPaymentSelection(paymentMethodType)
                                 }
-                                is PaymentOperation.DirectPay -> {
+                                is PaymentOperation.DirectPay,
+                                is PaymentOperation.PayWithFields,
+                                is PaymentOperation.DeleteCard,
+                                PaymentOperation.CheckoutWithGooglePay -> {
                                     setLoadingProgress(loading = true, cancelable = false)
                                 }
-                                is PaymentOperation.PayWithFields -> {
-                                    setLoadingProgress(loading = true, cancelable = false)
+
+                                PaymentOperation.FetchPaymentMethods -> {
+                                    // do nothing
                                 }
-                                else -> {}
                             }
                         },
                         onOperationDone = { result ->
@@ -214,6 +204,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                             )
                                         }
                                     )
+                                }
+
+                                is PaymentOperationResult.CheckoutWithGooglePay -> {
+                                    handlePaymentStatus(result.status)
                                 }
                             }
                         },
@@ -272,7 +266,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     private fun onAddCard() {
-        setLoadingProgress(loading = true, cancelable = false)
         viewModel.trackCardPaymentSelection()
         AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
     }
