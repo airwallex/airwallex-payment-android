@@ -15,7 +15,7 @@ import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
-import com.airwallex.android.view.PaymentMethodsViewModel.PaymentFlowStatus
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,64 +41,78 @@ class PaymentOperationsViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
-
     private var hasFetched = false
+    private var ongoingFetch: CompletableDeferred<Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>>? = null
 
-    fun fetchAvailablePaymentMethodsAndConsents() {
-        // Only fetch if we haven't fetched yet and are not currently loading
-        if (hasFetched || _isLoading.value) {
-            return
+    /**
+     * Fetches available payment methods and consents.
+     *
+     * @return Result if this is the first/initiating call, or null if data is already cached
+     *         or another fetch is in progress. Returning null indicates the caller should
+     *         not handle the result (no loading/error callbacks needed).
+     */
+    suspend fun fetchAvailablePaymentMethodsAndConsents(): Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>? {
+        // Data already cached - no need to notify caller
+        if (hasFetched) {
+            return null
         }
 
-        viewModelScope.launch {
-            _isLoading.value = true
-            _error.value = null
-
-            airwallex.fetchAvailablePaymentMethodsAndConsents(session).fold(
-                onSuccess = { (methods, consents) ->
-                    _availablePaymentMethods.value = methods
-                    _availablePaymentConsents.value = consents
-                    _isLoading.value = false
-                    hasFetched = true
-                    println("PaymentOperationsViewModel successfully fetched payment data")
-
-                },
-                onFailure = { exception ->
-                    println("PaymentOperationsViewModel Failed to fetch payment data")
-
-                    _error.value = exception.message ?: "Failed to fetch payment data"
-                    _isLoading.value = false
-                }
-            )
+        // Already loading - wait for result but don't notify this caller
+        // (only the first caller should handle the result)
+        ongoingFetch?.let {
+            it.await()  // Wait for completion so data is available
+            return null  // But don't notify this caller
         }
+
+        // Start new fetch operation - this caller will get the result
+        val deferred = CompletableDeferred<Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>>()
+        ongoingFetch = deferred
+
+        _isLoading.value = true
+
+        val result = airwallex.fetchAvailablePaymentMethodsAndConsents(session)
+
+        result.fold(
+            onSuccess = { (methods, consents) ->
+                _availablePaymentMethods.value = methods
+                _availablePaymentConsents.value = consents
+                _isLoading.value = false
+                hasFetched = true
+            },
+            onFailure = { _ ->
+                _isLoading.value = false
+            }
+        )
+
+        deferred.complete(result)
+        ongoingFetch = null
+
+        return result  // Only the first caller gets the result
     }
 
-    fun deletePaymentConsent(
-        paymentConsent: PaymentConsent,
-        onOperationDone: (Result<PaymentConsent>) -> Unit
-    ) {
+    suspend fun deletePaymentConsent(
+        paymentConsent: PaymentConsent
+    ): Result<Unit> {
         val clientSecret = airwallex.getClientSecret(session)
-        if (clientSecret == null) {
-            onOperationDone(Result.failure(AirwallexCheckoutException(message = "clientSecret is null")))
-            return
-        }
-        airwallex.disablePaymentConsent(
-            DisablePaymentConsentParams(
-                clientSecret = clientSecret,
-                paymentConsentId = requireNotNull(paymentConsent.id),
-            ),
-            object : Airwallex.PaymentListener<PaymentConsent> {
-                override fun onFailed(exception: AirwallexException) {
-                    onOperationDone(Result.failure(exception))
-                }
+            ?: return Result.failure(AirwallexCheckoutException(message = "clientSecret is null"))
 
-                override fun onSuccess(response: PaymentConsent) {
-                    onOperationDone(Result.success(paymentConsent))
-                }
-            },
-        )
+        return suspendCancellableCoroutine { continuation ->
+            airwallex.disablePaymentConsent(
+                DisablePaymentConsentParams(
+                    clientSecret = clientSecret,
+                    paymentConsentId = requireNotNull(paymentConsent.id),
+                ),
+                object : Airwallex.PaymentListener<PaymentConsent> {
+                    override fun onFailed(exception: AirwallexException) {
+                        continuation.resume(Result.failure(exception))
+                    }
+
+                    override fun onSuccess(response: PaymentConsent) {
+                        continuation.resume(Result.success(Unit))
+                    }
+                },
+            )
+        }
     }
 
     fun confirmPaymentIntent(

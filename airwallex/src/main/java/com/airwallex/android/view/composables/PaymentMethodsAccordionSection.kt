@@ -72,7 +72,11 @@ internal fun PaymentMethodsAccordionSection(
         viewModelStoreOwner = airwallex.activity
     )
     LaunchedEffect(Unit) {
-        operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
+        onFetchPaymentMethodsOperationStart(
+            operationsViewModel,
+            onOperationStart,
+            onOperationDone
+        )
     }
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethodTypes.first()) }
     var selectedIndex by remember { mutableIntStateOf(0) }
@@ -207,5 +211,17 @@ internal fun PaymentMethodsAccordionSection(
             onOperationDone = onOperationDone,
             isSinglePaymentMethod = true,
         )
+    }
+}
+
+private suspend fun onFetchPaymentMethodsOperationStart(
+    operationsViewModel: PaymentOperationsViewModel,
+    onOperationStart: (PaymentOperation) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit,
+) {
+    onOperationStart(PaymentOperation.FetchPaymentMethods)
+    val result = operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
+    result?.let {
+        onOperationDone(PaymentOperationResult.FetchPaymentMethods(it))
     }
 }

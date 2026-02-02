@@ -202,6 +202,19 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                 is PaymentOperationResult.Error -> {
                                     alert(message = result.message)
                                 }
+
+                                is PaymentOperationResult.FetchPaymentMethods -> {
+                                    result.result.fold(
+                                        onSuccess = { _ ->
+                                            // nothing to do
+                                        },
+                                        onFailure = { exception ->
+                                            alert(
+                                                message = exception.message ?: exception.toString()
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         },
                     )

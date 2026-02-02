@@ -16,12 +16,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
@@ -59,7 +62,11 @@ fun CardSection(
     val shouldFetch = needFetchConsentsAndSchemes || cardSchemes.isEmpty()
     LaunchedEffect(needFetchConsentsAndSchemes, cardSchemes) {
         if (shouldFetch) {
-            operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
+            onFetchPaymentMethodsOperationStart(
+                operationsViewModel,
+                onOperationStart,
+                onOperationDone
+            )
         }
     }
 
@@ -83,6 +90,7 @@ fun CardSection(
         }
     }
 
+    val coroutineScope = rememberCoroutineScope()
     var localConsents by remember { mutableStateOf(availablePaymentConsents) }
     var selectedScreen by remember { mutableStateOf(if (localConsents.isEmpty()) CardSectionType.AddCard else CardSectionType.ConsentList) }
 
@@ -178,6 +186,7 @@ fun CardSection(
                                     it,
                                     operationsViewModel,
                                     addPaymentMethodViewModel,
+                                    coroutineScope,
                                     onOperationStart,
                                     onOperationDone
                                 )
@@ -274,18 +283,33 @@ fun CardSection(
     }
 }
 
+private suspend fun onFetchPaymentMethodsOperationStart(
+    operationsViewModel: PaymentOperationsViewModel,
+    onOperationStart: (PaymentOperation) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit,
+) {
+    onOperationStart(PaymentOperation.FetchPaymentMethods)
+    val result = operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
+    result?.let {
+        onOperationDone(PaymentOperationResult.FetchPaymentMethods(it))
+    }
+}
+
 private fun onDeleteOperationStart(
     operation: PaymentOperation.DeleteCard,
     operationsViewModel: PaymentOperationsViewModel,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
+    coroutineScope: CoroutineScope,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
     val consent = operation.deletedConsent ?: return
     onOperationStart(operation)
-    operationsViewModel.deletePaymentConsent(consent) { result ->
+
+    coroutineScope.launch {
+        val result = operationsViewModel.deletePaymentConsent(consent)
         result.fold(
-            onSuccess = { consent ->
+            onSuccess = {
                 onOperationDone(PaymentOperationResult.DeleteCard(Result.success(consent)))
                 addPaymentMethodViewModel.deleteCardSuccess(consent)
             },

@@ -11,6 +11,12 @@ import com.airwallex.android.core.model.PaymentMethodTypeInfo
  */
 sealed class PaymentOperation {
     /**
+     * Operation for fetching available payment methods and consents
+     * This is typically triggered automatically on screen initialization
+     */
+    data object FetchPaymentMethods : PaymentOperation()
+
+    /**
      * Operation for adding a new card and processing payment
      */
     data object AddCard : PaymentOperation()
@@ -64,6 +70,15 @@ sealed class PaymentOperation {
  * Represents the result of a payment operation
  */
 sealed class PaymentOperationResult {
+    /**
+     * Result for the FetchPaymentMethods operation
+     *
+     * @param result The result containing available payment methods and consents, or failure
+     */
+    data class FetchPaymentMethods(
+        val result: Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>
+    ) : PaymentOperationResult()
+
     /**
      * Result for the AddCard operation
      *
