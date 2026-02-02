@@ -62,7 +62,7 @@ internal fun SchemaSection(
 
     var fieldsToSubmit by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var validateFields: (() -> Unit)? by remember { mutableStateOf(null) }
-    var schemaData by remember { mutableStateOf<PaymentMethodsViewModel.SchemaData?>(null) }
+    var schemaData by remember { mutableStateOf<SchemaPaymentViewModel.SchemaData?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var isValidated by remember { mutableStateOf(false) }
 

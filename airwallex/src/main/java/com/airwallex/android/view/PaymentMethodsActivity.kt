@@ -67,7 +67,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         setLoadingProgress(loading = true, cancelable = false)
 
         airwallex.updateActivity(this)
-        viewModel.fetchPaymentMethodsAndConsents()
+        initView(listOf(), listOf())
     }
 
     override fun onBackButtonPressed() {
@@ -78,26 +78,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     override fun addObserver() {
-        viewModel.paymentMethodResult.observe(this) { result ->
-            setLoadingProgress(loading = false)
-            when (result) {
-                is PaymentMethodsViewModel.PaymentMethodResult.Show -> {
-                    initView(result.methods.first, result.methods.second)
-                }
-            }
-        }
-        viewModel.paymentFlowStatus.observe(this) { flowStatus ->
-            setLoadingProgress(loading = false)
-            when (flowStatus) {
-                is PaymentMethodsViewModel.PaymentFlowStatus.PaymentStatus -> {
-                    handlePaymentStatus(flowStatus.status)
-                }
-
-                is PaymentMethodsViewModel.PaymentFlowStatus.ErrorAlert -> {
-                    alert(message = flowStatus.message)
-                }
-            }
-        }
     }
 
     override fun homeAsUpIndicatorResId(): Int {
@@ -108,6 +88,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
         availablePaymentConsents: List<PaymentConsent>,
     ) {
+        // Update the latest values
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
         viewBinding.composeView.apply {
             setContent {
@@ -121,11 +102,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         onOperationStart = { operation ->
                             when (operation) {
                                 is PaymentOperation.AddCard -> {
-                                    setLoadingProgress(loading = true, cancelable = false)
-                                    AnalyticsLogger.logAction(
-                                        "tap_pay_button",
-                                        mapOf("payment_method" to PaymentMethodType.CARD.value)
-                                    )
                                     onAddCard()
                                 }
 
@@ -203,8 +179,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
                                 is PaymentOperationResult.FetchPaymentMethods -> {
                                     result.result.fold(
-                                        onSuccess = { _ ->
-                                            // nothing to do
+                                        onSuccess = { methodsPair ->
+                                            val methodTypes = methodsPair.first
+                                            val consents = methodsPair.second
+                                            initView(methodTypes, consents)
                                         },
                                         onFailure = { exception ->
                                             alert(
@@ -278,6 +256,11 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     private fun onAddCard() {
+        setLoadingProgress(loading = true, cancelable = false)
+        AnalyticsLogger.logAction(
+            "tap_pay_button",
+            mapOf("payment_method" to PaymentMethodType.CARD.value)
+        )
         viewModel.trackCardPaymentSelection()
         AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
     }

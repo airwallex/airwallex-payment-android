@@ -26,7 +26,8 @@ import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
-import com.airwallex.android.view.composables.card.CardSection
+import com.airwallex.android.view.composables.AwxPaymentElement
+import com.airwallex.android.view.composables.AwxPaymentElementConfiguration
 import com.airwallex.android.view.composables.card.PaymentOperation
 import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
@@ -85,11 +86,12 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             textAlign = TextAlign.Left,
                             modifier = Modifier.padding(horizontal = 24.dp),
                         )
-                        CardSection(
+                        AwxPaymentElement(
                             session = session,
                             airwallex = airwallex,
-                            cardSchemes = args.supportedCardSchemes,
-                            isSinglePaymentMethod = args.isSinglePaymentMethod,
+                            configuration = AwxPaymentElementConfiguration.Card(
+                                cardSchemes = args.supportedCardSchemes
+                            ),
                             onOperationStart = { operation ->
                                 when (operation) {
                                     is PaymentOperation.AddCard -> {
@@ -119,7 +121,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                                     else -> {}
                                 }
                             },
-                            needFetchConsentsAndSchemes = false
                         )
                     }
                 }

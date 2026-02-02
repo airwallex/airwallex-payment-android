@@ -6,29 +6,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.ui.composables.AirwallexTheme
-import com.airwallex.android.view.AddPaymentMethodViewModel
-import com.airwallex.android.view.PaymentMethodsViewModel
-import com.airwallex.android.view.composables.PaymentMethodsTabSection
-import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.paymentacceptance.viewmodel.EmbeddedPaymentViewModel
 
 class EmbeddedPaymentActivity : ComponentActivity() {

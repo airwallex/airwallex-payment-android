@@ -43,7 +43,7 @@ import java.util.Locale
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
-fun CardSection(
+internal fun CardSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     cardSchemes: List<CardScheme>,

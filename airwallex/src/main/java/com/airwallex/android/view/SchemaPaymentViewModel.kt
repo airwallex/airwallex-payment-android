@@ -14,11 +14,12 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.Bank
+import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.DynamicSchemaFieldType
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
-import com.airwallex.android.view.PaymentMethodsViewModel.SchemaData
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.needHiddenParam
 import com.airwallex.android.view.util.toPaymentFlow
@@ -154,6 +155,12 @@ class SchemaPaymentViewModel(
     private fun requireHandleSchemaFields(paymentMethodType: AvailablePaymentMethodType) =
         paymentMethodType.resources?.hasSchema == true
 
+    data class SchemaData(
+        val fields: List<DynamicSchemaField> = emptyList(),
+        val paymentMethod: PaymentMethod? = null,
+        val typeInfo: PaymentMethodTypeInfo? = null,
+        val banks: List<Bank> = emptyList(),
+    )
     companion object {
         const val COUNTRY_CODE = "country_code"
         const val FLOW = "flow"

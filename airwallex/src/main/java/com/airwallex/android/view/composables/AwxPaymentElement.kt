@@ -26,6 +26,180 @@ import com.airwallex.android.view.composables.google.GooglePaySection
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 
+/**
+ * Airwallex Payment Element - A unified composable for rendering payment UI.
+ *
+ * This component provides a flexible payment interface that can be configured to show either:
+ * - A standalone card payment UI ([AwxPaymentElementConfiguration.Card])
+ * - A full payment sheet with multiple payment methods ([AwxPaymentElementConfiguration.PaymentSheet])
+ *
+ * The component manages payment operations internally using [PaymentOperationsViewModel] and
+ * automatically handles fetching payment methods, consents, and rendering the appropriate UI
+ * based on the configuration.
+ *
+ * ## Configuration
+ *
+ * ### Card Configuration
+ * Use [AwxPaymentElementConfiguration.Card] for a standalone card payment interface:
+ * ```kotlin
+ * AwxPaymentElement(
+ *     session = session,
+ *     airwallex = airwallex,
+ *     configuration = AwxPaymentElementConfiguration.Card(
+ *         cardSchemes = listOf(CardScheme("visa"), CardScheme("mastercard"))
+ *     ),
+ *     onOperationStart = { operation -> /* Handle operation start */ },
+ *     onOperationDone = { result -> /* Handle operation result */ }
+ * )
+ * ```
+ *
+ * **Features:**
+ * - Shows card input form
+ * - if card schemes provided, no additional API fetch is made
+ * - Otherwise, automatically fetches card schemes if not provided and displays saved cards (if available and customer is authenticated)
+ * -
+
+ *
+ * ### Payment Sheet Configuration
+ * Use [AwxPaymentElementConfiguration.PaymentSheet] for a multi-payment method interface:
+ * ```kotlin
+ * AwxPaymentElement(
+ *     session = session,
+ *     airwallex = airwallex,
+ *     configuration = AwxPaymentElementConfiguration.PaymentSheet(
+ *         type = PaymentMethodsLayoutType.TAB // or ACCORDION
+ *     ),
+ *     onOperationStart = { operation -> /* Handle operation start */ },
+ *     onOperationDone = { result -> /* Handle operation result */ }
+ * )
+ * ```
+ *
+ * **Features:**
+ * - Shows Google Pay (if eligible)
+ * - Shows multiple payment methods (cards, bank transfers, wallets, etc.)
+ * - Can display as tabs or accordion
+ * - Automatically fetches available payment methods
+ *
+ * ## Callbacks
+ *
+ * ### onOperationStart
+ * Called when a payment operation begins. Use this to show loading indicators or track analytics.
+ *
+ * **Common Operations:**
+ * - [PaymentOperation.FetchPaymentMethods] - Fetching available payment methods
+ * - [PaymentOperation.AddCard] - User submitted card for payment
+ * - [PaymentOperation.CheckoutWithCvc] - User entered CVC for saved card
+ * - [PaymentOperation.CheckoutWithoutCvc] - Using saved card without CVC
+ * - [PaymentOperation.CheckoutWithGooglePay] - User tapped Google Pay button
+ * - [PaymentOperation.DeleteCard] - User requested to delete a saved card
+ * - [PaymentOperation.DirectPay] - Direct payment with schema (no additional fields)
+ * - [PaymentOperation.PayWithFields] - Payment with additional schema fields
+ *
+ * **Example:**
+ * ```kotlin
+ * onOperationStart = { operation ->
+ *     when (operation) {
+ *         is PaymentOperation.AddCard -> {
+ *             showLoading(true)
+ *             logEvent("card_payment_started")
+ *         }
+ *         is PaymentOperation.CheckoutWithGooglePay -> {
+ *             showLoading(true)
+ *             logEvent("google_pay_started")
+ *         }
+ *         is PaymentOperation.FetchPaymentMethods -> {
+ *             showLoading(true)
+ *         }
+ *         else -> {}
+ *     }
+ * }
+ * ```
+ *
+ * ### onOperationDone
+ * Called when a payment operation completes. Handle the result to update UI or navigate.
+ *
+ * **Common Results:**
+ * - [PaymentOperationResult.FetchPaymentMethods] - Contains fetched payment methods/consents
+ * - [PaymentOperationResult.AddCard] - Contains [AirwallexPaymentStatus] after card payment
+ * - [PaymentOperationResult.CheckoutWithCvc] - Contains [AirwallexPaymentStatus] after CVC checkout
+ * - [PaymentOperationResult.CheckoutWithoutCvc] - Contains [AirwallexPaymentStatus] after no-CVC checkout
+ * - [PaymentOperationResult.CheckoutWithGooglePay] - Contains [AirwallexPaymentStatus] after Google Pay
+ * - [PaymentOperationResult.DeleteCard] - Contains result of card deletion
+ * - [PaymentOperationResult.DirectPay] - Contains [AirwallexPaymentStatus] after direct payment
+ * - [PaymentOperationResult.PayWithFields] - Contains [AirwallexPaymentStatus] after schema payment
+ * - [PaymentOperationResult.Error] - Contains error message and optional exception
+ *
+ * **Example:**
+ * ```kotlin
+ * onOperationDone = { result ->
+ *     when (result) {
+ *         is PaymentOperationResult.AddCard -> {
+ *             showLoading(false)
+ *             when (result.status) {
+ *                 is AirwallexPaymentStatus.Success -> {
+ *                     navigateToSuccess(result.status.paymentIntentId)
+ *                 }
+ *                 is AirwallexPaymentStatus.Failure -> {
+ *                     showError(result.status.exception.message)
+ *                 }
+ *                 is AirwallexPaymentStatus.Cancel -> {
+ *                     // User cancelled
+ *                 }
+ *                 else -> {}
+ *             }
+ *         }
+ *         is PaymentOperationResult.FetchPaymentMethods -> {
+ *             showLoading(false)
+ *             result.result.onFailure { error ->
+ *                 showError(error.message)
+ *             }
+ *         }
+ *         is PaymentOperationResult.CheckoutWithGooglePay -> {
+ *             handlePaymentStatus(result.status)
+ *         }
+ *         is PaymentOperationResult.Error -> {
+ *             showLoading(false)
+ *             showError(result.message)
+ *         }
+ *         else -> {}
+ *     }
+ * }
+ * ```
+ *
+ * ## Payment Flow
+ *
+ * ### Card Payment Flow:
+ * 1. User enters card details
+ * 2. `onOperationStart(PaymentOperation.AddCard)` called
+ * 3. Payment processed
+ * 4. `onOperationDone(PaymentOperationResult.AddCard)` called with status
+ *
+ * ### Google Pay Flow:
+ * 1. User taps Google Pay button
+ * 2. `onOperationStart(PaymentOperation.CheckoutWithGooglePay)` called
+ * 3. Google Pay sheet shown
+ * 4. `onOperationDone(PaymentOperationResult.CheckoutWithGooglePay)` called with status
+ *
+ * ### Saved Card with CVC Flow:
+ * 1. User selects saved card and enters CVC
+ * 2. `onOperationStart(PaymentOperation.CheckoutWithCvc)` called
+ * 3. Payment processed
+ * 4. `onOperationDone(PaymentOperationResult.CheckoutWithCvc)` called with status
+ *
+ * @param session The Airwallex session containing payment intent or recurring session information
+ * @param airwallex The Airwallex SDK instance for processing payments
+ * @param configuration The UI configuration - either [AwxPaymentElementConfiguration.Card] for standalone
+ *                      card UI or [AwxPaymentElementConfiguration.PaymentSheet] for multi-method UI
+ * @param onOperationStart Callback invoked when a payment operation begins. Use this to show loading
+ *                         indicators or track analytics events
+ * @param onOperationDone Callback invoked when a payment operation completes. Handle the result to
+ *                        update UI, navigate, or show errors
+ *
+ * @see AwxPaymentElementConfiguration
+ * @see PaymentOperation
+ * @see PaymentOperationResult
+ * @see com.airwallex.android.core.AirwallexPaymentStatus
+ */
 @Suppress("LongMethod", "LongParameterList")
 @Composable
 fun AwxPaymentElement(

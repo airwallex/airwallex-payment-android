@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -24,12 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.log.AirwallexLogger
-import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.core.model.PaymentMethodTypeInfo
-import com.airwallex.android.view.PaymentMethodsViewModel
 import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.card.PaymentOperation
@@ -51,7 +45,7 @@ import kotlinx.coroutines.launch
  */
 @Suppress("LongMethod", "LongParameterList")
 @Composable
-fun PaymentMethodsTabSection(
+internal fun PaymentMethodsTabSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     onOperationStart: (PaymentOperation) -> Unit,

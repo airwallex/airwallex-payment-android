@@ -22,7 +22,8 @@ import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexTheme
-import com.airwallex.android.view.composables.card.CardSection
+import com.airwallex.android.view.composables.AwxPaymentElement
+import com.airwallex.android.view.composables.AwxPaymentElementConfiguration
 import com.airwallex.android.view.composables.card.PaymentOperation
 import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
@@ -97,11 +98,12 @@ class AirwallexAddPaymentDialog(
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
-                    CardSection(
+                    AwxPaymentElement(
                         session = session,
                         airwallex = airwallex,
-                        cardSchemes = supportedCardSchemes,
-                        isSinglePaymentMethod = true,
+                        configuration = AwxPaymentElementConfiguration.Card(
+                            cardSchemes = supportedCardSchemes
+                        ),
                         onOperationStart = { operation ->
                             when (operation) {
                                 is PaymentOperation.AddCard -> {
@@ -131,7 +133,6 @@ class AirwallexAddPaymentDialog(
                                 else -> {}
                             }
                         },
-                        needFetchConsentsAndSchemes = false
                     )
                 }
             }
