@@ -120,13 +120,6 @@ class PaymentMethodsViewModel(
         }
     }
 
-    @StringRes
-    val ctaRes: Int = if (session is AirwallexRecurringSession) {
-        R.string.airwallex_confirm
-    } else {
-        R.string.airwallex_pay_now
-    }
-
     fun confirmPaymentIntent(paymentConsent: PaymentConsent) {
         if (session is AirwallexPaymentSession) {
             airwallex.confirmPaymentIntent(

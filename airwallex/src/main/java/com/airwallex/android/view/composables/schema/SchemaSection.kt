@@ -21,7 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airwallex.android.R
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
@@ -31,18 +35,31 @@ import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.PaymentMethodsViewModel
+import com.airwallex.android.view.PaymentOperationsViewModel
+import com.airwallex.android.view.SchemaPaymentViewModel
+import com.airwallex.android.view.composables.card.PaymentOperation
+import com.airwallex.android.view.composables.card.PaymentOperationResult
 import kotlinx.coroutines.launch
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
 internal fun SchemaSection(
-    viewModel: PaymentMethodsViewModel,
+    session: AirwallexSession,
+    airwallex: Airwallex,
     type: AvailablePaymentMethodType,
-    onDirectPay: (AvailablePaymentMethodType) -> Unit,
-    onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
+    onOperationStart: (PaymentOperation) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val schemaPaymentViewModel: SchemaPaymentViewModel = viewModel(
+        factory = SchemaPaymentViewModel.Factory(
+            application = airwallex.activity.application,
+            airwallex = airwallex,
+            session = session
+        ),
+        viewModelStoreOwner = airwallex.activity
+    )
 
     var fieldsToSubmit by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var validateFields: (() -> Unit)? by remember { mutableStateOf(null) }
@@ -50,16 +67,34 @@ internal fun SchemaSection(
     var isLoading by remember { mutableStateOf(false) }
     var isValidated by remember { mutableStateOf(false) }
 
-    ScreenView { viewModel.trackScreenViewed(type.name) }
+    ScreenView { schemaPaymentViewModel.trackScreenViewed(type.name) }
 
     LaunchedEffect(type) {
-        schemaData = viewModel.retrieveSchemaDataFromCache(type) ?: run {
+        val cachedResult = schemaPaymentViewModel.retrieveSchemaDataFromCache(type)
+        if (cachedResult != null) {
+            cachedResult
+                .onSuccess { data -> schemaData = data }
+                .onFailure { exception ->
+                    onOperationDone(
+                        PaymentOperationResult.Error(
+                            exception.message ?: "Failed to load payment fields",
+                            exception
+                        )
+                    )
+                }
+        } else {
             isLoading = true
-            try {
-                viewModel.loadSchemaFields(type)
-            } finally {
-                isLoading = false
-            }
+            schemaPaymentViewModel.loadSchemaFields(type)
+                .onSuccess { data -> schemaData = data }
+                .onFailure { exception ->
+                    onOperationDone(
+                        PaymentOperationResult.Error(
+                            exception.message ?: "Failed to load payment fields",
+                            exception
+                        )
+                    )
+                }
+            isLoading = false
         }
     }
 
@@ -109,30 +144,59 @@ internal fun SchemaSection(
         Spacer(modifier = Modifier.height(24.dp))
 
         StandardSolidButton(
-            text = stringResource(viewModel.ctaRes),
+            text = stringResource(schemaPaymentViewModel.ctaRes),
             onClick = {
                 coroutineScope.launch {
-                    viewModel.retrieveSchemaDataFromCache(type)?.let {
-                        schemaData = it
-                    } ?: run {
+                    val cachedResult = schemaPaymentViewModel.retrieveSchemaDataFromCache(type)
+                    if (cachedResult != null) {
+                        cachedResult
+                            .onSuccess { data -> schemaData = data }
+                            .onFailure { exception ->
+                                onOperationDone(
+                                    PaymentOperationResult.Error(
+                                        exception.message ?: "Failed to load payment fields",
+                                        exception
+                                    )
+                                )
+                                return@launch
+                            }
+                    } else {
                         isLoading = true
-                        schemaData = viewModel.loadSchemaFields(type)
+                        schemaPaymentViewModel.loadSchemaFields(type)
+                            .onSuccess { data -> schemaData = data }
+                            .onFailure { exception ->
+                                onOperationDone(
+                                    PaymentOperationResult.Error(
+                                        exception.message ?: "Failed to load payment fields",
+                                        exception
+                                    )
+                                )
+                                isLoading = false
+                                return@launch
+                            }
                         isLoading = false
                     }
 
                     // BE will need to make sure no schema available is null. Currently in certain cases it is possible to be null.
                     if (schemaData == null || schemaData?.fields?.isEmpty() == true) {
                         // No fields to validate
-                        onDirectPay(type)
+                        onDirectPayOperation(type, schemaPaymentViewModel, onOperationStart, onOperationDone)
                     } else {
                         validateFields?.invoke()
                         if (isValidated) {
                             val paymentMethod = schemaData?.paymentMethod
                             val typeInfo = schemaData?.typeInfo
                             if (paymentMethod == null || typeInfo == null) {
-                                onDirectPay(type)
+                                onDirectPayOperation(type, schemaPaymentViewModel, onOperationStart, onOperationDone)
                             } else {
-                                onPayWithFields(paymentMethod, typeInfo, viewModel.appendParamsToMapForSchemaSubmission(fieldsToSubmit))
+                                onPayWithFieldsOperation(
+                                    paymentMethod,
+                                    typeInfo,
+                                    schemaPaymentViewModel.appendParamsToMapForSchemaSubmission(fieldsToSubmit),
+                                    schemaPaymentViewModel,
+                                    onOperationStart,
+                                    onOperationDone
+                                )
                             }
                         }
                     }
@@ -142,5 +206,39 @@ internal fun SchemaSection(
         )
 
         Spacer(modifier = Modifier.height(36.dp))
+    }
+}
+
+private fun onDirectPayOperation(
+    type: AvailablePaymentMethodType,
+    viewModel: SchemaPaymentViewModel,
+    onOperationStart: (PaymentOperation) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit
+) {
+    val operation = PaymentOperation.DirectPay(type)
+    onOperationStart(operation)
+    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to type.name))
+    viewModel.checkoutWithSchema(type) { status ->
+        onOperationDone(PaymentOperationResult.DirectPay(status))
+    }
+}
+
+private fun onPayWithFieldsOperation(
+    paymentMethod: PaymentMethod,
+    info: PaymentMethodTypeInfo,
+    fieldMap: Map<String, String>,
+    viewModel: SchemaPaymentViewModel,
+    onOperationStart: (PaymentOperation) -> Unit,
+    onOperationDone: (PaymentOperationResult) -> Unit
+) {
+    val operation = PaymentOperation.PayWithFields(paymentMethod, info, fieldMap)
+    onOperationStart(operation)
+    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to info.name.orEmpty()))
+    viewModel.checkoutWithSchema(
+        paymentMethod = paymentMethod,
+        additionalInfo = fieldMap,
+        typeInfo = info
+    ) { status ->
+        onOperationDone(PaymentOperationResult.PayWithFields(status))
     }
 }

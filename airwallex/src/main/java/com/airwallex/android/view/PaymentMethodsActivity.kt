@@ -131,8 +131,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         allowedPaymentMethods = allowedPaymentMethods,
                         availablePaymentMethodTypes = availablePaymentMethodTypes,
                         availablePaymentConsents = availablePaymentConsents,
-                        onDirectPay = ::onDirectPay,
-                        onPayWithFields = ::onPayWithSchema,
                         onLoading = { isLoading ->
                             setLoadingProgress(loading = isLoading)
                         },
@@ -152,6 +150,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                         else -> null
                                     }
                                     viewModel.trackPaymentSelection(paymentMethodType)
+                                }
+                                is PaymentOperation.DirectPay -> {
+                                    setLoadingProgress(loading = true, cancelable = false)
+                                }
+                                is PaymentOperation.PayWithFields -> {
+                                    setLoadingProgress(loading = true, cancelable = false)
                                 }
                                 else -> {}
                             }
@@ -190,14 +194,13 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                     )
                                 }
 
-                                is PaymentOperationResult.CheckoutWithCvc,
-                                is PaymentOperationResult.CheckoutWithoutCvc -> {
-                                    val status = when (result) {
-                                        is PaymentOperationResult.CheckoutWithCvc -> result.status
-                                        is PaymentOperationResult.CheckoutWithoutCvc -> result.status
-                                        else -> return@PaymentScreen
-                                    }
-                                    handlePaymentStatus(status)
+                                is PaymentOperationResult.CheckoutWithCvc -> handlePaymentStatus(result.status)
+                                is PaymentOperationResult.CheckoutWithoutCvc -> handlePaymentStatus(result.status)
+                                is PaymentOperationResult.DirectPay -> handlePaymentStatus(result.status)
+                                is PaymentOperationResult.PayWithFields -> handlePaymentStatus(result.status)
+
+                                is PaymentOperationResult.Error -> {
+                                    alert(message = result.message)
                                 }
                             }
                         },
@@ -259,25 +262,5 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.trackCardPaymentSelection()
         AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
-    }
-
-    private fun onDirectPay(type: AvailablePaymentMethodType) {
-        setLoadingProgress(loading = true, cancelable = false)
-        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to type.name))
-        viewModel.checkoutWithSchema(type)
-    }
-
-    private fun onPayWithSchema(
-        paymentMethod: PaymentMethod,
-        info: PaymentMethodTypeInfo,
-        fieldMap: Map<String, String>,
-    ) {
-        setLoadingProgress(loading = true, cancelable = false)
-        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to info.name.orEmpty()))
-        viewModel.checkoutWithSchema(
-            paymentMethod = paymentMethod,
-            additionalInfo = fieldMap,
-            typeInfo = info,
-        )
     }
 }

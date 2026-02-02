@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,19 +33,18 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.view.PaymentMethodsViewModel
+import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.card.PaymentOperation
@@ -58,15 +58,22 @@ import com.airwallex.android.view.util.toSupportedIcons
 internal fun PaymentMethodsAccordionSection(
     session: AirwallexSession,
     airwallex: Airwallex,
-    paymentMethodViewModel: PaymentMethodsViewModel,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
-    onDirectPay: (AvailablePaymentMethodType) -> Unit,
-    onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
+    val operationsViewModel: PaymentOperationsViewModel = viewModel(
+        factory = PaymentOperationsViewModel.Factory(
+            airwallex = airwallex,
+            session = session
+        ),
+        viewModelStoreOwner = airwallex.activity
+    )
+    LaunchedEffect(Unit) {
+        operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
+    }
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethodTypes.first()) }
     var selectedIndex by remember { mutableIntStateOf(0) }
 
@@ -178,11 +185,12 @@ internal fun PaymentMethodsAccordionSection(
 
                             else -> {
                                 SchemaSection(
-                                    viewModel = paymentMethodViewModel,
+                                    session = session,
+                                    airwallex = airwallex,
                                     type = type,
-                                    onDirectPay = onDirectPay,
-                                    onPayWithFields = onPayWithFields,
                                     onLoading = onLoading,
+                                    onOperationStart = onOperationStart,
+                                    onOperationDone = onOperationDone,
                                 )
                             }
                         }

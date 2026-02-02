@@ -22,9 +22,7 @@ import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
@@ -45,8 +43,6 @@ internal fun PaymentScreen(
     allowedPaymentMethods: JSONArray?,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
-    onDirectPay: (AvailablePaymentMethodType) -> Unit,
-    onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
     onLoading: (Boolean) -> Unit,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
@@ -96,9 +92,6 @@ internal fun PaymentScreen(
                     PaymentMethodsTabSection(
                         session = session,
                         airwallex = airwallex,
-                        paymentMethodViewModel = paymentMethodsViewModel,
-                        onDirectPay = onDirectPay,
-                        onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
                         onOperationStart = onOperationStart,
                         onOperationDone = onOperationDone,
@@ -108,11 +101,8 @@ internal fun PaymentScreen(
                     PaymentMethodsAccordionSection(
                         session = session,
                         airwallex = airwallex,
-                        paymentMethodViewModel = paymentMethodsViewModel,
                         availablePaymentMethodTypes = availableTypes,
                         availablePaymentConsents = availablePaymentConsents,
-                        onDirectPay = onDirectPay,
-                        onPayWithFields = onPayWithFields,
                         onLoading = onLoading,
                         onOperationStart = onOperationStart,
                         onOperationDone = onOperationDone,
