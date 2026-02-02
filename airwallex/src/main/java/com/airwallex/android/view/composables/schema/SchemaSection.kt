@@ -47,7 +47,6 @@ internal fun SchemaSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     type: AvailablePaymentMethodType,
-    onLoading: (Boolean) -> Unit,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
@@ -75,6 +74,7 @@ internal fun SchemaSection(
             schemaData = cachedResult
         } else {
             isLoading = true
+            onOperationStart(PaymentOperation.LoadSchemaFields)
             schemaPaymentViewModel.loadSchemaFields(type)
                 .onSuccess { data -> schemaData = data }
                 .onFailure { exception ->
@@ -86,14 +86,12 @@ internal fun SchemaSection(
                     )
                 }
             isLoading = false
+            onOperationDone(PaymentOperationResult.LoadSchemaFields)
         }
     }
 
     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
         if (isLoading) {
-            onLoading(true)
-        } else {
-            onLoading(false)
             schemaData?.let {
                 if (it.fields.isNotEmpty()) {
                     SchemaFieldsSection(
@@ -143,6 +141,7 @@ internal fun SchemaSection(
                         schemaData = cachedResult
                     } else {
                         isLoading = true
+                        onOperationStart(PaymentOperation.LoadSchemaFields)
                         schemaPaymentViewModel.loadSchemaFields(type)
                             .onSuccess { data -> schemaData = data }
                             .onFailure { exception ->
@@ -153,9 +152,11 @@ internal fun SchemaSection(
                                     )
                                 )
                                 isLoading = false
+                                onOperationDone(PaymentOperationResult.LoadSchemaFields)
                                 return@launch
                             }
                         isLoading = false
+                        onOperationDone(PaymentOperationResult.LoadSchemaFields)
                     }
 
                     // BE will need to make sure no schema available is null. Currently in certain cases it is possible to be null.

@@ -118,16 +118,17 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         layoutType = args.layoutType,
                         availablePaymentMethodTypes = availablePaymentMethodTypes,
                         availablePaymentConsents = availablePaymentConsents,
-                        onLoading = { isLoading ->
-                            setLoadingProgress(loading = isLoading)
-                        },
                         onOperationStart = { operation ->
                             when (operation) {
                                 is PaymentOperation.AddCard -> {
                                     setLoadingProgress(loading = true, cancelable = false)
-                                    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
+                                    AnalyticsLogger.logAction(
+                                        "tap_pay_button",
+                                        mapOf("payment_method" to PaymentMethodType.CARD.value)
+                                    )
                                     onAddCard()
                                 }
+
                                 is PaymentOperation.CheckoutWithCvc,
                                 is PaymentOperation.CheckoutWithoutCvc -> {
                                     setLoadingProgress(loading = true, cancelable = false)
@@ -138,15 +139,14 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                     }
                                     viewModel.trackPaymentSelection(paymentMethodType)
                                 }
+
                                 is PaymentOperation.DirectPay,
                                 is PaymentOperation.PayWithFields,
                                 is PaymentOperation.DeleteCard,
-                                PaymentOperation.CheckoutWithGooglePay -> {
+                                PaymentOperation.CheckoutWithGooglePay,
+                                PaymentOperation.FetchPaymentMethods,
+                                PaymentOperation.LoadSchemaFields -> {
                                     setLoadingProgress(loading = true, cancelable = false)
-                                }
-
-                                PaymentOperation.FetchPaymentMethods -> {
-                                    // do nothing
                                 }
                             }
                         },
@@ -184,10 +184,18 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                     )
                                 }
 
-                                is PaymentOperationResult.CheckoutWithCvc -> handlePaymentStatus(result.status)
-                                is PaymentOperationResult.CheckoutWithoutCvc -> handlePaymentStatus(result.status)
+                                is PaymentOperationResult.CheckoutWithCvc -> handlePaymentStatus(
+                                    result.status
+                                )
+
+                                is PaymentOperationResult.CheckoutWithoutCvc -> handlePaymentStatus(
+                                    result.status
+                                )
+
                                 is PaymentOperationResult.DirectPay -> handlePaymentStatus(result.status)
-                                is PaymentOperationResult.PayWithFields -> handlePaymentStatus(result.status)
+                                is PaymentOperationResult.PayWithFields -> handlePaymentStatus(
+                                    result.status
+                                )
 
                                 is PaymentOperationResult.Error -> {
                                     alert(message = result.message)
@@ -208,6 +216,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
                                 is PaymentOperationResult.CheckoutWithGooglePay -> {
                                     handlePaymentStatus(result.status)
+                                }
+
+                                is PaymentOperationResult.LoadSchemaFields -> {
+                                    // Just stop loading, nothing else needed
                                 }
                             }
                         },

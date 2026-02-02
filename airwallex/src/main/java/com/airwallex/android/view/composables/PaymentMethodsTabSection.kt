@@ -54,7 +54,6 @@ import kotlinx.coroutines.launch
 fun PaymentMethodsTabSection(
     session: AirwallexSession,
     airwallex: Airwallex,
-    onLoading: (Boolean) -> Unit,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
@@ -69,10 +68,6 @@ fun PaymentMethodsTabSection(
     val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
     val isLoading by operationsViewModel.isLoading.collectAsState()
-
-    LaunchedEffect(isLoading) {
-        onLoading(isLoading)
-    }
 
     if (availablePaymentMethods.isNotEmpty()) {
         val lazyListState = rememberLazyListState()
@@ -141,7 +136,6 @@ fun PaymentMethodsTabSection(
                             session = session,
                             airwallex = airwallex,
                             type = type,
-                            onLoading = onLoading,
                             onOperationStart = onOperationStart,
                             onOperationDone = onOperationDone,
                         )

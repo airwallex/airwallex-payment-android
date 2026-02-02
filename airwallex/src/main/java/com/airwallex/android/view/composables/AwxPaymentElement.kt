@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.view.PaymentOperationsViewModel
@@ -31,7 +32,6 @@ fun AwxPaymentElement(
     session: AirwallexSession,
     airwallex: Airwallex,
     configuration: AwxPaymentElementConfiguration,
-    onLoading: (Boolean) -> Unit,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
@@ -83,10 +83,6 @@ fun AwxPaymentElement(
         }
     }
 
-    LaunchedEffect(isLoading) {
-        onLoading(isLoading)
-    }
-
     Column {
         when (configuration) {
             is AwxPaymentElementConfiguration.Card -> {
@@ -135,22 +131,20 @@ fun AwxPaymentElement(
                     if (!isSinglePaymentMethod) Spacer(modifier = Modifier.height(24.dp))
 
                     when (configuration.type) {
-                        com.airwallex.android.core.PaymentMethodsLayoutType.TAB -> {
+                        PaymentMethodsLayoutType.TAB -> {
                             PaymentMethodsTabSection(
                                 session = session,
                                 airwallex = airwallex,
-                                onLoading = onLoading,
                                 onOperationStart = onOperationStart,
                                 onOperationDone = onOperationDone,
                             )
                         }
-                        com.airwallex.android.core.PaymentMethodsLayoutType.ACCORDION -> {
+                        PaymentMethodsLayoutType.ACCORDION -> {
                             PaymentMethodsAccordionSection(
                                 session = session,
                                 airwallex = airwallex,
                                 availablePaymentMethodTypes = availableTypes,
                                 availablePaymentConsents = availablePaymentConsents,
-                                onLoading = onLoading,
                                 onOperationStart = onOperationStart,
                                 onOperationDone = onOperationDone,
                             )

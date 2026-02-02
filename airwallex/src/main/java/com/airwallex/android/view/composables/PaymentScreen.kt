@@ -30,7 +30,6 @@ internal fun PaymentScreen(
     layoutType: PaymentMethodsLayoutType,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
-    onLoading: (Boolean) -> Unit,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
@@ -49,7 +48,6 @@ internal fun PaymentScreen(
             session = session,
             airwallex = airwallex,
             configuration = AwxPaymentElementConfiguration.PaymentSheet(type = layoutType),
-            onLoading = onLoading,
             onOperationStart = onOperationStart,
             onOperationDone = onOperationDone,
         )

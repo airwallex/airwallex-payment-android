@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,7 +57,6 @@ internal fun PaymentMethodsAccordionSection(
     airwallex: Airwallex,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
-    onLoading: (Boolean) -> Unit,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
@@ -176,7 +174,6 @@ internal fun PaymentMethodsAccordionSection(
                                     session = session,
                                     airwallex = airwallex,
                                     type = type,
-                                    onLoading = onLoading,
                                     onOperationStart = onOperationStart,
                                     onOperationDone = onOperationDone,
                                 )

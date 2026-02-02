@@ -69,6 +69,11 @@ sealed class PaymentOperation {
         val typeInfo: PaymentMethodTypeInfo,
         val fieldMap: Map<String, String>
     ) : PaymentOperation()
+
+    /**
+     * Operation for loading schema fields
+     */
+    data object LoadSchemaFields : PaymentOperation()
 }
 
 /**
@@ -126,6 +131,11 @@ sealed class PaymentOperationResult {
      * @param status The payment status result (contains success or failure state)
      */
     data class PayWithFields(val status: AirwallexPaymentStatus) : PaymentOperationResult()
+
+    /**
+     * Result for the LoadSchemaFields operation
+     */
+    data object LoadSchemaFields : PaymentOperationResult()
 
     /**
      * Result for any operation error
