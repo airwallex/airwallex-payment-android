@@ -35,17 +35,17 @@ class SchemaPaymentViewModel(
 ) : AirwallexCheckoutViewModel(application, airwallex, session)  {
     // Cache for schema data by payment method type
     @VisibleForTesting
-    internal val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, Result<SchemaData>?>()
+    internal val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData?>()
     // Map for additional params. Currently only used for country code in Enum type fields.
     private val additionalParams = mutableMapOf<String, String>()
 
-    fun retrieveSchemaDataFromCache(paymentMethodType: AvailablePaymentMethodType): Result<SchemaData>? {
+    fun retrieveSchemaDataFromCache(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
         return schemaDataCache[paymentMethodType]
     }
 
-    suspend fun loadSchemaFields(paymentMethodType: AvailablePaymentMethodType): Result<SchemaData> {
+    suspend fun loadSchemaFields(paymentMethodType: AvailablePaymentMethodType): Result<SchemaData?> {
         // Return cached data if available
-        schemaDataCache[paymentMethodType]?.let { return it }
+        schemaDataCache[paymentMethodType]?.let { return Result.success(it) }
 
         AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields, type = ${paymentMethodType.name}")
         val paymentMethod = PaymentMethod.Builder().setType(paymentMethodType.name).build()
@@ -54,9 +54,8 @@ class SchemaPaymentViewModel(
                 AirwallexLogger.info("PaymentMethodsViewModel get more payment Info fields on one-off flow.")
                 // 1.Retrieve all required schema fields of the payment method
                 val typeInfo = retrievePaymentMethodTypeInfo(type).getOrElse { exception ->
-                    val failure = Result.failure<SchemaData>(exception)
-                    schemaDataCache[paymentMethodType] = failure
-                    return failure
+                    schemaDataCache[paymentMethodType] = null
+                    return Result.failure<SchemaData>(exception)
                 }
                 // Ad hoc. Aligned with BE that we do not show Enum types in UI, instead we pass fixed values when we have the field.
                 listOf(
@@ -69,14 +68,13 @@ class SchemaPaymentViewModel(
                     }
                 }
                 val fields = typeInfo.filterRequiredFields(transactionMode)
-                    ?: return Result.failure(Exception("Failed to filter required fields"))
+                    ?: return Result.success(null)
                 AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields: filterRequiredFields = $fields")
                 // 2.If all fields are hidden, start checkout directly
                 if (fields.isEmpty()) {
                     val emptySchema = SchemaData()
-                    val success = Result.success(emptySchema)
-                    schemaDataCache[paymentMethodType] = success
-                    return success
+                    schemaDataCache[paymentMethodType] = emptySchema
+                    return Result.success(emptySchema)
                 }
                 val bankField = fields.find { field -> field.type == DynamicSchemaFieldType.BANKS }
                 AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields: bankField = $bankField")
@@ -86,15 +84,13 @@ class SchemaPaymentViewModel(
                         paymentMethod = paymentMethod,
                         typeInfo = typeInfo,
                     )
-                    val success = Result.success(schemaData)
-                    schemaDataCache[paymentMethodType] = success
-                    return success
+                    schemaDataCache[paymentMethodType] = schemaData
+                    return Result.success(schemaData)
                 }
                 // 3.If the bank is needed, need to retrieve the bank list.
                 val banks = retrieveBanks(type).getOrElse { exception ->
-                    val failure = Result.failure<SchemaData>(exception)
-                    schemaDataCache[paymentMethodType] = failure
-                    return failure
+                    schemaDataCache[paymentMethodType] = null
+                    return Result.failure<SchemaData>(exception)
                 }.items
                 AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields: banks = $banks")
                 // 4.If the bank is not needed or bank list is empty, then show the schema fields.
@@ -112,16 +108,12 @@ class SchemaPaymentViewModel(
                         banks = banks,
                     )
                 }
-                val success = Result.success(schemaData)
-                schemaDataCache[paymentMethodType] = success
-                return success
+                schemaDataCache[paymentMethodType] = schemaData
+                return Result.success(schemaData)
             }
         }
-        // Default to empty schema
-        val emptySchema = SchemaData()
-        val success = Result.success(emptySchema)
-        schemaDataCache[paymentMethodType] = success
-        return success
+        // Default to null
+        return Result.success(null)
     }
 
     fun appendParamsToMapForSchemaSubmission(map: Map<String, String>): Map<String, String> {

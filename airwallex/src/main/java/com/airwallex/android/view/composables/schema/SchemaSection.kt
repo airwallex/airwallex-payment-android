@@ -72,16 +72,7 @@ internal fun SchemaSection(
     LaunchedEffect(type) {
         val cachedResult = schemaPaymentViewModel.retrieveSchemaDataFromCache(type)
         if (cachedResult != null) {
-            cachedResult
-                .onSuccess { data -> schemaData = data }
-                .onFailure { exception ->
-                    onOperationDone(
-                        PaymentOperationResult.Error(
-                            exception.message ?: "Failed to load payment fields",
-                            exception
-                        )
-                    )
-                }
+            schemaData = cachedResult
         } else {
             isLoading = true
             schemaPaymentViewModel.loadSchemaFields(type)
@@ -89,7 +80,7 @@ internal fun SchemaSection(
                 .onFailure { exception ->
                     onOperationDone(
                         PaymentOperationResult.Error(
-                            exception.message ?: "Failed to load payment fields",
+                            exception.localizedMessage ?: "",
                             exception
                         )
                     )
@@ -149,17 +140,7 @@ internal fun SchemaSection(
                 coroutineScope.launch {
                     val cachedResult = schemaPaymentViewModel.retrieveSchemaDataFromCache(type)
                     if (cachedResult != null) {
-                        cachedResult
-                            .onSuccess { data -> schemaData = data }
-                            .onFailure { exception ->
-                                onOperationDone(
-                                    PaymentOperationResult.Error(
-                                        exception.message ?: "Failed to load payment fields",
-                                        exception
-                                    )
-                                )
-                                return@launch
-                            }
+                        schemaData = cachedResult
                     } else {
                         isLoading = true
                         schemaPaymentViewModel.loadSchemaFields(type)
@@ -167,7 +148,7 @@ internal fun SchemaSection(
                             .onFailure { exception ->
                                 onOperationDone(
                                     PaymentOperationResult.Error(
-                                        exception.message ?: "Failed to load payment fields",
+                                        exception.localizedMessage ?: "",
                                         exception
                                     )
                                 )
