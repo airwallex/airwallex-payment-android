@@ -61,7 +61,12 @@ internal fun ConsentListSection(
             confirmButtonTitle = stringResource(R.string.airwallex_delete_payment_method_positive),
             dismissButtonTitle = stringResource(R.string.airwallex_delete_payment_method_negative),
             onConfirm = {
-                localConsentToBeDeleted?.let { onOperationStart(PaymentOperation.DeleteCard(deletedConsent = it)) }
+                localConsentToBeDeleted?.let { consent ->
+                    // PCI-DSS: Only pass consent ID in the operation
+                    consent.id?.let { consentId ->
+                        onOperationStart(PaymentOperation.DeleteCard(consentId = consentId))
+                    }
+                }
                 localConsentToBeDeleted = null
             },
             onDismiss = {

@@ -33,6 +33,12 @@ import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
  * - A standalone card payment UI ([AwxPaymentElementConfiguration.Card])
  * - A full payment sheet with multiple payment methods ([AwxPaymentElementConfiguration.PaymentSheet])
  *
+ * **PCI-DSS Compliance:**
+ * All payment operations are designed to be PCI-DSS compliant. Sensitive data (CVC codes, full card details)
+ * are never stored in operation objects that might be logged or persisted. Operations only carry
+ * non-sensitive identifiers (consent IDs, payment method IDs) and non-sensitive metadata
+ * (payment method types for analytics).
+ *
  * The component manages payment operations internally using [PaymentOperationsViewModel] and
  * automatically handles fetching payment methods, consents, and rendering the appropriate UI
  * based on the configuration.
@@ -124,7 +130,7 @@ import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
  * - [PaymentOperationResult.CheckoutWithCvc] - Contains [AirwallexPaymentStatus] after CVC checkout
  * - [PaymentOperationResult.CheckoutWithoutCvc] - Contains [AirwallexPaymentStatus] after no-CVC checkout
  * - [PaymentOperationResult.CheckoutWithGooglePay] - Contains [AirwallexPaymentStatus] after Google Pay
- * - [PaymentOperationResult.DeleteCard] - Contains result of card deletion
+ * - [PaymentOperationResult.DeleteCard] - Card deleted successfully (contains deleted consent ID)
  * - [PaymentOperationResult.DirectPay] - Contains [AirwallexPaymentStatus] after direct payment
  * - [PaymentOperationResult.PayWithFields] - Contains [AirwallexPaymentStatus] after schema payment
  * - [PaymentOperationResult.Error] - Contains error message and optional exception
@@ -218,7 +224,6 @@ fun AwxPaymentElement(
 
     val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
-    val isLoading by operationsViewModel.isLoading.collectAsState()
 
     // Observe payment results from operations ViewModel
     val paymentResult by operationsViewModel.paymentResult.collectAsState()

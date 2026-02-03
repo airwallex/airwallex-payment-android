@@ -70,7 +70,7 @@ internal fun CardSection(
                 .onFailure { exception ->
                     onOperationDone(
                         PaymentOperationResult.Error(
-                            exception.message ?: "Failed to fetch payment methods",
+                            exception.message ?: exception.toString(),
                             exception
                         )
                     )
@@ -208,14 +208,19 @@ internal fun CardSection(
                     onOperationStart = {
                         when (it) {
                             is PaymentOperation.DeleteCard -> {
-                                onDeleteOperationStart(
-                                    it,
-                                    operationsViewModel,
-                                    addPaymentMethodViewModel,
-                                    coroutineScope,
-                                    onOperationStart,
-                                    onOperationDone
-                                )
+                                // Find the consent from the list using the ID
+                                val consent = localConsents.find { c -> c.id == it.consentId }
+                                if (consent != null) {
+                                    onDeleteOperationStart(
+                                        operation = it,
+                                        consent = consent,
+                                        operationsViewModel = operationsViewModel,
+                                        addPaymentMethodViewModel = addPaymentMethodViewModel,
+                                        coroutineScope = coroutineScope,
+                                        onOperationStart = onOperationStart,
+                                        onOperationDone = onOperationDone
+                                    )
+                                }
                             }
 
                             else -> {}
@@ -280,18 +285,25 @@ internal fun CardSection(
                     cardBrand = cardBrand,
                     onCheckoutWithCvc = { cvc ->
                         onCheckoutWithCvcOperationStart(
-                            PaymentOperation.CheckoutWithCvc(consent, cvc),
-                            operationsViewModel,
-                            onOperationStart,
-                            onOperationDone
+                            operation = PaymentOperation.CheckoutWithCvc(
+                                consentId = requireNotNull(consent.id),
+                                paymentMethodType = consent.paymentMethod?.type
+                            ),
+                            consent = consent,
+                            cvc = cvc,
+                            operationsViewModel = operationsViewModel,
+                            onOperationStart = onOperationStart,
                         )
                     },
                     onCheckoutWithoutCvc = {
                         onCheckoutWithoutCvcOperationStart(
-                            PaymentOperation.CheckoutWithoutCvc(consent),
-                            operationsViewModel,
-                            onOperationStart,
-                            onOperationDone
+                            operation = PaymentOperation.CheckoutWithoutCvc(
+                                consentId = requireNotNull(consent.id),
+                                paymentMethodType = consent.paymentMethod?.type
+                            ),
+                            consent = consent,
+                            operationsViewModel = operationsViewModel,
+                            onOperationStart = onOperationStart,
                         )
                     },
                     onScreenViewed = {
@@ -311,47 +323,51 @@ internal fun CardSection(
 
 private fun onDeleteOperationStart(
     operation: PaymentOperation.DeleteCard,
+    consent: PaymentConsent,
     operationsViewModel: PaymentOperationsViewModel,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     coroutineScope: CoroutineScope,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
-    val consent = operation.deletedConsent ?: return
     onOperationStart(operation)
 
     coroutineScope.launch {
-        val result = operationsViewModel.deletePaymentConsent(consent)
-        result.fold(
-            onSuccess = {
-                onOperationDone(PaymentOperationResult.DeleteCard(Result.success(consent)))
+        operationsViewModel.deletePaymentConsent(consent)
+            .onSuccess {
+                onOperationDone(PaymentOperationResult.DeleteCard(operation.consentId))
                 addPaymentMethodViewModel.deleteCardSuccess(consent)
-            },
-            onFailure = { exception ->
-                onOperationDone(PaymentOperationResult.DeleteCard(Result.failure(exception)))
-            },
-        )
+            }
+            .onFailure { exception ->
+                onOperationDone(
+                    PaymentOperationResult.Error(
+                        exception.message ?: exception.toString(),
+                        exception
+                    )
+                )
+            }
     }
 }
 
 private fun onCheckoutWithoutCvcOperationStart(
     operation: PaymentOperation.CheckoutWithoutCvc,
+    consent: PaymentConsent,
     operationsViewModel: PaymentOperationsViewModel,
     onOperationStart: (PaymentOperation.CheckoutWithoutCvc) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
     onOperationStart(operation)
-    operationsViewModel.confirmPaymentIntent(operation.consent)
+    operationsViewModel.confirmPaymentIntent(consent)
 }
 
 private fun onCheckoutWithCvcOperationStart(
     operation: PaymentOperation.CheckoutWithCvc,
+    consent: PaymentConsent,
+    cvc: String,
     operationsViewModel: PaymentOperationsViewModel,
     onOperationStart: (PaymentOperation.CheckoutWithCvc) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
     onOperationStart(operation)
-    operationsViewModel.checkoutWithCvc(operation.consent, operation.cvc)
+    operationsViewModel.checkoutWithCvc(consent, cvc)
 }
 
 /**

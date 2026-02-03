@@ -38,9 +38,6 @@ class PaymentOperationsViewModel(
     private val _availablePaymentConsents = MutableStateFlow<List<PaymentConsent>>(emptyList())
     val availablePaymentConsents: StateFlow<List<PaymentConsent>> = _availablePaymentConsents.asStateFlow()
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
     // Payment operation result event with operation type tracking
     private val _paymentResult = MutableStateFlow<PaymentResultEvent?>(null)
     val paymentResult: StateFlow<PaymentResultEvent?> = _paymentResult.asStateFlow()
@@ -64,18 +61,15 @@ class PaymentOperationsViewModel(
      * Should only be called once from the parent component.
      */
     suspend fun fetchAvailablePaymentMethodsAndConsents(): Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>> {
-        _isLoading.value = true
-
         val result = airwallex.fetchAvailablePaymentMethodsAndConsents(session)
 
         result.fold(
             onSuccess = { (methods, consents) ->
                 _availablePaymentMethods.value = methods
                 _availablePaymentConsents.value = consents
-                _isLoading.value = false
             },
             onFailure = { _ ->
-                _isLoading.value = false
+                // nothing, we return the entire result
             }
         )
 
@@ -199,7 +193,7 @@ class PaymentOperationsViewModel(
                 paymentConsentId = paymentConsentId,
                 cvc = cvc,
                 flow = flow,
-                listener = object : Airwallex.PaymentResultListener {
+                listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         continuation.resume(status)
                     }

@@ -109,8 +109,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                 is PaymentOperation.CheckoutWithoutCvc -> {
                                     setLoadingProgress(loading = true, cancelable = false)
                                     val paymentMethodType = when (operation) {
-                                        is PaymentOperation.CheckoutWithCvc -> operation.consent.paymentMethod?.type
-                                        is PaymentOperation.CheckoutWithoutCvc -> operation.consent.paymentMethod?.type
+                                        is PaymentOperation.CheckoutWithCvc -> operation.paymentMethodType
+                                        is PaymentOperation.CheckoutWithoutCvc -> operation.paymentMethodType
                                         else -> null
                                     }
                                     viewModel.trackPaymentSelection(paymentMethodType)
@@ -132,17 +132,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                 is PaymentOperationResult.AddCard -> handlePaymentStatus(result.status)
 
                                 is PaymentOperationResult.DeleteCard -> {
-                                    setLoadingProgress(false)
-                                    result.result.fold(
-                                        onSuccess = { _ ->
-                                            // nothing to do
-                                        },
-                                        onFailure = { exception ->
-                                            alert(
-                                                message = exception.message ?: exception.toString()
-                                            )
-                                        }
-                                    )
+                                    // Card deleted successfully, nothing to do
                                 }
 
                                 is PaymentOperationResult.CheckoutWithCvc -> handlePaymentStatus(

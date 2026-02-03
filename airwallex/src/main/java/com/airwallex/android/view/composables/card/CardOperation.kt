@@ -24,26 +24,31 @@ sealed class PaymentOperation {
     /**
      * Operation for deleting a card
      *
-     * @param loading Whether the delete operation is in progress
-     * @param deletedConsent The deleted consent when operation succeeds (null during loading or on failure)
-     * @param error Error message when operation fails (null during loading or on success)
+     * @param consentId The ID of the payment consent to delete
      */
-    data class DeleteCard(val deletedConsent: PaymentConsent? = null) : PaymentOperation()
+    data class DeleteCard(val consentId: String) : PaymentOperation()
 
     /**
      * Operation for checkout with CVC
      *
-     * @param consent The payment consent to checkout with
-     * @param cvc The CVC code
+     * @param consentId The ID of the payment consent to checkout with
+     * @param paymentMethodType The payment method type for analytics (non-sensitive)
      */
-    data class CheckoutWithCvc(val consent: PaymentConsent, val cvc: String) : PaymentOperation()
+    data class CheckoutWithCvc(
+        val consentId: String,
+        val paymentMethodType: String? = null
+    ) : PaymentOperation()
 
     /**
      * Operation for checkout without CVC
      *
-     * @param consent The payment consent to checkout with
+     * @param consentId The ID of the payment consent to checkout with
+     * @param paymentMethodType The payment method type for analytics (non-sensitive)
      */
-    data class CheckoutWithoutCvc(val consent: PaymentConsent) : PaymentOperation()
+    data class CheckoutWithoutCvc(
+        val consentId: String,
+        val paymentMethodType: String? = null
+    ) : PaymentOperation()
 
     /**
      * Operation for checkout with Google Pay
@@ -92,7 +97,14 @@ sealed class PaymentOperationResult {
      * @param status The payment status result (contains success or failure state)
      */
     data class AddCard(val status: AirwallexPaymentStatus) : PaymentOperationResult()
-    data class DeleteCard(val result: Result<PaymentConsent>) : PaymentOperationResult()
+
+    /**
+     * Result for the DeleteCard operation
+     * PCI-DSS Compliant: Only returns the consent ID, not the full consent object
+     *
+     * @param deletedConsentId The ID of the payment consent that was successfully deleted
+     */
+    data class DeleteCard(val deletedConsentId: String) : PaymentOperationResult()
 
     /**
      * Result for the CheckoutWithCvc operation

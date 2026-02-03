@@ -39,7 +39,6 @@ import kotlinx.coroutines.launch
  *
  * @param session The Airwallex session for the payment flow
  * @param airwallex The Airwallex instance for payment operations
- * @param onLoading Callback for loading state changes
  * @param onOperationStart Callback when a card operation starts
  * @param onOperationDone Callback when a card operation completes
  */
@@ -61,7 +60,6 @@ internal fun PaymentMethodsTabSection(
 
     val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
-    val isLoading by operationsViewModel.isLoading.collectAsState()
 
     if (availablePaymentMethods.isNotEmpty()) {
         val lazyListState = rememberLazyListState()
