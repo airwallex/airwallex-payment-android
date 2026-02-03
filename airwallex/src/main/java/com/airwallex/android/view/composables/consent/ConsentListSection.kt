@@ -30,7 +30,7 @@ internal fun ConsentListSection(
 
     ScreenView { onScreenViewed() }
 
-    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+    Column {
         availablePaymentConsents.forEach { consent ->
             if (consent.paymentMethod?.card != null) {
                 ConsentItem(

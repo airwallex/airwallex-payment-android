@@ -6,6 +6,10 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -98,42 +102,44 @@ class AirwallexAddPaymentDialog(
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
-                    AwxPaymentElement(
-                        session = session,
-                        airwallex = airwallex,
-                        configuration = AwxPaymentElementConfiguration.Card(
-                            cardSchemes = supportedCardSchemes
-                        ),
-                        onOperationStart = { operation ->
-                            when (operation) {
-                                is PaymentOperation.AddCard -> {
-                                    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-                                    setLoadingProgress(true)
-                                }
-                                else -> {} // Other operations will be handled later
-                            }
-                        },
-                        onOperationDone = { result ->
-                            when (result) {
-                                is PaymentOperationResult.AddCard -> {
-                                    when (result.status) {
-                                        is AirwallexPaymentStatus.Success -> {
-                                            dismissWithPaymentResult(
-                                                paymentIntentId = result.status.paymentIntentId,
-                                                paymentConsentId = result.status.consentId
-                                            )
-                                        }
-                                        is AirwallexPaymentStatus.Failure -> {
-                                            dismissWithPaymentResult(exception = result.status.exception)
-                                        }
-                                        else -> Unit
+                    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                        AwxPaymentElement(
+                            session = session,
+                            airwallex = airwallex,
+                            configuration = AwxPaymentElementConfiguration.Card(
+                                cardSchemes = supportedCardSchemes
+                            ),
+                            onOperationStart = { operation ->
+                                when (operation) {
+                                    is PaymentOperation.AddCard -> {
+                                        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
+                                        setLoadingProgress(true)
                                     }
+                                    else -> {} // Other operations will be handled later
                                 }
+                            },
+                            onOperationDone = { result ->
+                                when (result) {
+                                    is PaymentOperationResult.AddCard -> {
+                                        when (result.status) {
+                                            is AirwallexPaymentStatus.Success -> {
+                                                dismissWithPaymentResult(
+                                                    paymentIntentId = result.status.paymentIntentId,
+                                                    paymentConsentId = result.status.consentId
+                                                )
+                                            }
+                                            is AirwallexPaymentStatus.Failure -> {
+                                                dismissWithPaymentResult(exception = result.status.exception)
+                                            }
+                                            else -> Unit
+                                        }
+                                    }
 
-                                else -> {}
-                            }
-                        },
-                    )
+                                    else -> {}
+                                }
+                            },
+                        )
+                    }
                 }
             }
         }

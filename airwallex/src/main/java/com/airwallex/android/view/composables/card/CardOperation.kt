@@ -87,9 +87,14 @@ sealed class PaymentOperation {
 sealed class PaymentOperationResult {
     /**
      * Result for the FetchPaymentMethods operation
-     * Data is already available in the ViewModel state flows (availablePaymentMethods, availablePaymentConsents)
+     *
+     * @param availablePaymentMethods The list of available payment method types
+     * @param hasPaymentConsents Whether there are any saved payment consents available
      */
-    data object FetchPaymentMethods : PaymentOperationResult()
+    data class FetchPaymentMethods(
+        val availablePaymentMethods: List<AvailablePaymentMethodType>,
+        val hasPaymentConsents: Boolean
+    ) : PaymentOperationResult()
 
     /**
      * Result for the AddCard operation

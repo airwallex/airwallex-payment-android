@@ -33,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.airwallex.android.R
-import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
@@ -118,7 +117,6 @@ internal fun AddCardSection(
             typography = AirwallexTypography.Body200,
             color = AirwallexColor.TextPrimary,
             modifier = Modifier.padding(
-                horizontal = 24.dp,
                 vertical = 12.dp,
             ),
         )
@@ -131,7 +129,6 @@ internal fun AddCardSection(
                 cardNumberErrorMessage = null
             },
             modifier = Modifier
-                .padding(horizontal = 24.dp)
                 .zIndex(1f),
             onComplete = { input ->
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(input)
@@ -162,7 +159,6 @@ internal fun AddCardSection(
                 },
                 modifier = Modifier
                     .focusRequester(expiryFocusRequester)
-                    .padding(start = 24.dp)
                     .weight(1f),
                 onFocusLost = { input ->
                     expiryDateErrorMessage = viewModel.getExpiryValidationMessage(input)
@@ -191,7 +187,6 @@ internal fun AddCardSection(
                 },
                 modifier = Modifier
                     .focusRequester(cvvFocusRequester)
-                    .padding(end = 24.dp)
                     .weight(1f),
                 isError = cvvErrorMessage != null,
                 shape = RoundedCornerShape(
@@ -212,7 +207,7 @@ internal fun AddCardSection(
                 textAlign = TextAlign.Left,
                 typography = AirwallexTypography.Caption100,
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(start = 40.dp),
+                modifier = Modifier.padding(start = 16.dp),
             )
         }
 
@@ -224,7 +219,6 @@ internal fun AddCardSection(
             typography = AirwallexTypography.Body200,
             color = AirwallexColor.TextPrimary,
             modifier = Modifier.padding(
-                horizontal = 24.dp,
                 vertical = 12.dp,
             ),
         )
@@ -250,7 +244,6 @@ internal fun AddCardSection(
             modifier = Modifier
                 .focusRequester(nameFocusRequest)
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
                 .clickable(
                     onClick = {
                         AirwallexRisk.log(
@@ -270,7 +263,6 @@ internal fun AddCardSection(
                 typography = AirwallexTypography.Body200,
                 color = AirwallexColor.TextPrimary,
                 modifier = Modifier.padding(
-                    horizontal = 24.dp,
                     vertical = 12.dp,
                 ),
             )
@@ -291,7 +283,6 @@ internal fun AddCardSection(
                 errorText = cardHolderEmailErrorMessage?.let { stringResource(id = it) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
                     .contentType(ContentType.EmailAddress)
             )
         }
@@ -307,7 +298,6 @@ internal fun AddCardSection(
                     textAlign = TextAlign.Left,
                     typography = AirwallexTypography.Body200,
                     color = AirwallexColor.TextPrimary,
-                    modifier = Modifier.padding(horizontal = 24.dp),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -337,7 +327,6 @@ internal fun AddCardSection(
                     onOptionSelected = {
                         viewModel.updateSelectedCountryCode(it.second)
                     },
-                    modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
                     shape = RoundedCornerShape(
                         topStart = 8.dp,
@@ -368,7 +357,6 @@ internal fun AddCardSection(
                         )
                     },
                     modifier = Modifier
-                        .padding(horizontal = 24.dp)
                         .zIndex(1f)
                         .contentType(ContentType.AddressStreet),
                     enabled = !isSameAddressChecked,
@@ -403,7 +391,6 @@ internal fun AddCardSection(
                             )
                         },
                         modifier = Modifier
-                            .padding(start = 24.dp)
                             .weight(1f)
                             .contentType(ContentType.AddressRegion),
                         enabled = !isSameAddressChecked,
@@ -436,7 +423,6 @@ internal fun AddCardSection(
                             )
                         },
                         modifier = Modifier
-                            .padding(end = 24.dp)
                             .weight(1f)
                             .contentType(ContentType.AddressLocality),
                         enabled = !isSameAddressChecked,
@@ -460,7 +446,6 @@ internal fun AddCardSection(
                         focusManager.moveFocus(FocusDirection.Down)
                     },
                     modifier = Modifier
-                        .padding(horizontal = 24.dp)
                         .contentType(ContentType.PostalCode),
                     enabled = !isSameAddressChecked,
                     shape = RoundedCornerShape(
@@ -481,7 +466,6 @@ internal fun AddCardSection(
                         focusManager.clearFocus()
                     },
                     modifier = Modifier
-                        .padding(horizontal = 24.dp)
                         .contentType(ContentType.PhoneNumber),
                     enabled = !isSameAddressChecked,
                     options = StandardTextFieldOptions(
@@ -506,7 +490,7 @@ internal fun AddCardSection(
                         textAlign = TextAlign.Left,
                         typography = AirwallexTypography.Caption100,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(start = 40.dp),
+                        modifier = Modifier.padding(start = 16.dp),
                     )
                 }
             }
@@ -602,9 +586,7 @@ internal fun AddCardSection(
                 }
                 // Otherwise do nothing
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(36.dp))

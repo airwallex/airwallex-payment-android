@@ -1,6 +1,8 @@
 package com.airwallex.android.view.composables
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,11 +17,13 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.composables.card.PaymentOperation
 import com.airwallex.android.view.composables.card.PaymentOperationResult
+import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 
 @Suppress("LongMethod", "LongParameterList")
@@ -33,7 +37,11 @@ internal fun PaymentScreen(
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp)
+    ) {
         val isSinglePaymentMethod = availablePaymentMethodTypes.getSinglePaymentMethodOrNull(availablePaymentConsents) != null
         val titleResId = if(!isSinglePaymentMethod) R.string.airwallex_payment_methods else R.string.airwallex_new_card
         StandardText(
@@ -41,9 +49,20 @@ internal fun PaymentScreen(
             color = AirwallexColor.TextPrimary,
             typography = AirwallexTypography.Title200,
             textAlign = TextAlign.Left,
-            modifier = Modifier.padding(horizontal = 24.dp),
         )
-
+        val allowedPaymentMethods = session.googlePayOptions?.let { googlePayOptions ->
+                availablePaymentMethodTypes.firstOrNull {
+                    it.name == PaymentMethodType.GOOGLEPAY.value
+                }?.let { paymentMethodType ->
+                    GooglePayUtil.retrieveAllowedPaymentMethods(
+                        googlePayOptions,
+                        paymentMethodType.cardSchemes,
+                    )
+                }
+            }
+        if(allowedPaymentMethods != null || !isSinglePaymentMethod) {
+            Spacer(modifier = Modifier.height(24.dp))
+        }
         AwxPaymentElement(
             session = session,
             airwallex = airwallex,

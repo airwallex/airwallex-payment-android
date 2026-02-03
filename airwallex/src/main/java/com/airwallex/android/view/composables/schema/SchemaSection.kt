@@ -90,7 +90,7 @@ internal fun SchemaSection(
         }
     }
 
-    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+    Column {
         if (isLoading) {
             schemaData?.let {
                 if (it.fields.isNotEmpty()) {

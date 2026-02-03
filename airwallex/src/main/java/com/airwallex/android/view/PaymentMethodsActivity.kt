@@ -153,7 +153,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                 }
 
                                 is PaymentOperationResult.FetchPaymentMethods -> {
-                                    // Data is already available in the composable's ViewModel state
+                                    // Data is available in result and in ViewModel state flows
+                                    // Just stop loading, data will be displayed by the composable
                                 }
 
                                 is PaymentOperationResult.CheckoutWithGooglePay -> {

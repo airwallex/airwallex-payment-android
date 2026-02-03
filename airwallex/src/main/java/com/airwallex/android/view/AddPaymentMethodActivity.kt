@@ -78,13 +78,16 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
-                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 24.dp)
+                    ) {
                         StandardText(
                             text = stringResource(id = R.string.airwallex_new_card),
                             color = AirwallexColor.TextPrimary,
                             typography = AirwallexTypography.Title200,
                             textAlign = TextAlign.Left,
-                            modifier = Modifier.padding(horizontal = 24.dp),
                         )
                         AwxPaymentElement(
                             session = session,

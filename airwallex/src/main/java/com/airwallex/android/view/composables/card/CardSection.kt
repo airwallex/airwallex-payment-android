@@ -64,8 +64,13 @@ internal fun CardSection(
         if (shouldFetch) {
             onOperationStart(PaymentOperation.FetchPaymentMethods)
             operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
-                .onSuccess {
-                    onOperationDone(PaymentOperationResult.FetchPaymentMethods)
+                .onSuccess { (methods, consents) ->
+                    onOperationDone(
+                        PaymentOperationResult.FetchPaymentMethods(
+                            availablePaymentMethods = methods,
+                            hasPaymentConsents = consents.isNotEmpty()
+                        )
+                    )
                 }
                 .onFailure { exception ->
                     onOperationDone(
@@ -140,7 +145,7 @@ internal fun CardSection(
                 if (localConsents.isNotEmpty()) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 24.dp),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         StandardText(
                             text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }
@@ -178,7 +183,7 @@ internal fun CardSection(
             is CardSectionType.ConsentList -> {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     StandardText(
                         text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }
@@ -244,7 +249,7 @@ internal fun CardSection(
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     CardBrandIcon(brand = cardBrand)
 
@@ -314,7 +319,7 @@ internal fun CardSection(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
+                        .fillMaxWidth(),
                 )
             }
         }

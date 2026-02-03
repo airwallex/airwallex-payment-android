@@ -73,7 +73,6 @@ internal fun PaymentMethodsTabSection(
             if (availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
                 LazyRow(
                     state = lazyListState,
-                    modifier = Modifier.padding(horizontal = 24.dp),
                 ) {
                     availablePaymentMethods.forEachIndexed { index, availablePaymentMethodType ->
                         item(key = "payment_method_$index") {

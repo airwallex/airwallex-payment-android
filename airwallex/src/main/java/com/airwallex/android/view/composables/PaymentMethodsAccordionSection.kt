@@ -67,7 +67,7 @@ internal fun PaymentMethodsAccordionSection(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+                ,
         ) {
             availablePaymentMethodTypes.forEachIndexed { index, type ->
                 Column(
@@ -108,7 +108,7 @@ internal fun PaymentMethodsAccordionSection(
                                     bottomEnd = if (index == selectedIndex - 1 || index == availablePaymentMethodTypes.size - 1) 8.dp else 0.dp,
                                 ),
                             )
-                            .padding(horizontal = 24.dp),
+                            ,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(

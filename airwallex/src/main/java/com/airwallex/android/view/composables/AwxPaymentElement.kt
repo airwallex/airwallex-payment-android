@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -125,7 +124,7 @@ import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
  * Called when a payment operation completes. Handle the result to update UI or navigate.
  *
  * **Common Results:**
- * - [PaymentOperationResult.FetchPaymentMethods] - Payment methods/consents fetched successfully (data available in ViewModel state)
+ * - [PaymentOperationResult.FetchPaymentMethods] - Contains available payment methods and consent availability flag
  * - [PaymentOperationResult.AddCard] - Contains [AirwallexPaymentStatus] after card payment
  * - [PaymentOperationResult.CheckoutWithCvc] - Contains [AirwallexPaymentStatus] after CVC checkout
  * - [PaymentOperationResult.CheckoutWithoutCvc] - Contains [AirwallexPaymentStatus] after no-CVC checkout
@@ -156,7 +155,10 @@ import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
  *         }
  *         is PaymentOperationResult.FetchPaymentMethods -> {
  *             showLoading(false)
- *             // Data is already available in ViewModel state flows
+ *             // Access fetched data
+ *             val methods = result.availablePaymentMethods
+ *             val hasConsents = result.hasPaymentConsents
+ *             // Data is also available in ViewModel state flows for composables
  *         }
  *         is PaymentOperationResult.CheckoutWithGooglePay -> {
  *             handlePaymentStatus(result.status)
@@ -254,8 +256,13 @@ fun AwxPaymentElement(
         if (shouldFetch) {
             onOperationStart(PaymentOperation.FetchPaymentMethods)
             operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
-                .onSuccess {
-                    onOperationDone(PaymentOperationResult.FetchPaymentMethods)
+                .onSuccess { (methods, consents) ->
+                    onOperationDone(
+                        PaymentOperationResult.FetchPaymentMethods(
+                            availablePaymentMethods = methods,
+                            hasPaymentConsents = consents.isNotEmpty()
+                        )
+                    )
                 }
                 .onFailure { exception ->
                     onOperationDone(
@@ -311,12 +318,8 @@ fun AwxPaymentElement(
             is AwxPaymentElementConfiguration.PaymentSheet -> {
                 // Google Pay Section (if eligible)
                 allowedPaymentMethods?.let { allowedPaymentMethods ->
-                    Spacer(modifier = Modifier.height(24.dp))
-
                     GooglePaySection(
-                        modifier = Modifier
-                            .padding(horizontal = 24.dp)
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
                         onClick = {
                             AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
@@ -327,12 +330,12 @@ fun AwxPaymentElement(
                             operationsViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
                         },
                     )
+                    if (availableTypes.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
                 }
 
                 if (availableTypes.isNotEmpty()) {
-                    val isSinglePaymentMethod = availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) != null
-                    if (!isSinglePaymentMethod) Spacer(modifier = Modifier.height(24.dp))
-
                     when (configuration.type) {
                         PaymentMethodsLayoutType.TAB -> {
                             PaymentMethodsTabSection(
