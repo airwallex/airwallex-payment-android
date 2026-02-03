@@ -63,8 +63,18 @@ internal fun CardSection(
     LaunchedEffect(shouldFetch) {
         if (shouldFetch) {
             onOperationStart(PaymentOperation.FetchPaymentMethods)
-            val result = operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
-            onOperationDone(PaymentOperationResult.FetchPaymentMethods(result))
+            operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
+                .onSuccess {
+                    onOperationDone(PaymentOperationResult.FetchPaymentMethods)
+                }
+                .onFailure { exception ->
+                    onOperationDone(
+                        PaymentOperationResult.Error(
+                            exception.message ?: "Failed to fetch payment methods",
+                            exception
+                        )
+                    )
+                }
         }
     }
 
@@ -85,6 +95,24 @@ internal fun CardSection(
         if (shouldFetch && availablePaymentMethods.isNotEmpty()) {
             val newSchemes = airwallex.getSupportedCardSchemes(availablePaymentMethods)
             addPaymentMethodViewModel.updateSupportedCardSchemes(newSchemes)
+        }
+    }
+
+    // Observe payment results from operations ViewModel
+    val paymentResult by operationsViewModel.paymentResult.collectAsState()
+
+    LaunchedEffect(paymentResult) {
+        paymentResult?.let { event ->
+            val result = when (event.operationType) {
+                PaymentOperationsViewModel.PaymentOperationType.CHECKOUT_WITH_CVC ->
+                    PaymentOperationResult.CheckoutWithCvc(event.status)
+                PaymentOperationsViewModel.PaymentOperationType.CHECKOUT_WITHOUT_CVC ->
+                    PaymentOperationResult.CheckoutWithoutCvc(event.status)
+                PaymentOperationsViewModel.PaymentOperationType.CHECKOUT_WITH_GOOGLE_PAY ->
+                    PaymentOperationResult.CheckoutWithGooglePay(event.status)
+            }
+            onOperationDone(result)
+            operationsViewModel.clearPaymentResult()
         }
     }
 
@@ -313,9 +341,7 @@ private fun onCheckoutWithoutCvcOperationStart(
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
     onOperationStart(operation)
-    operationsViewModel.confirmPaymentIntent(operation.consent) { status ->
-        onOperationDone(PaymentOperationResult.CheckoutWithoutCvc(status))
-    }
+    operationsViewModel.confirmPaymentIntent(operation.consent)
 }
 
 private fun onCheckoutWithCvcOperationStart(
@@ -325,9 +351,7 @@ private fun onCheckoutWithCvcOperationStart(
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
     onOperationStart(operation)
-    operationsViewModel.checkoutWithCvc(operation.consent, operation.cvc) { status ->
-        onOperationDone(PaymentOperationResult.CheckoutWithCvc(status))
-    }
+    operationsViewModel.checkoutWithCvc(operation.consent, operation.cvc)
 }
 
 /**

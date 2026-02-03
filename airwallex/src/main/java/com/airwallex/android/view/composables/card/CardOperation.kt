@@ -82,12 +82,9 @@ sealed class PaymentOperation {
 sealed class PaymentOperationResult {
     /**
      * Result for the FetchPaymentMethods operation
-     *
-     * @param result The result containing available payment methods and consents, or failure
+     * Data is already available in the ViewModel state flows (availablePaymentMethods, availablePaymentConsents)
      */
-    data class FetchPaymentMethods(
-        val result: Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>>
-    ) : PaymentOperationResult()
+    data object FetchPaymentMethods : PaymentOperationResult()
 
     /**
      * Result for the AddCard operation

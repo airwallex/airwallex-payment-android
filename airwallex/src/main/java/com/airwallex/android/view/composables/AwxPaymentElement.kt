@@ -119,7 +119,7 @@ import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
  * Called when a payment operation completes. Handle the result to update UI or navigate.
  *
  * **Common Results:**
- * - [PaymentOperationResult.FetchPaymentMethods] - Contains fetched payment methods/consents
+ * - [PaymentOperationResult.FetchPaymentMethods] - Payment methods/consents fetched successfully (data available in ViewModel state)
  * - [PaymentOperationResult.AddCard] - Contains [AirwallexPaymentStatus] after card payment
  * - [PaymentOperationResult.CheckoutWithCvc] - Contains [AirwallexPaymentStatus] after CVC checkout
  * - [PaymentOperationResult.CheckoutWithoutCvc] - Contains [AirwallexPaymentStatus] after no-CVC checkout
@@ -150,9 +150,7 @@ import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
  *         }
  *         is PaymentOperationResult.FetchPaymentMethods -> {
  *             showLoading(false)
- *             result.result.onFailure { error ->
- *                 showError(error.message)
- *             }
+ *             // Data is already available in ViewModel state flows
  *         }
  *         is PaymentOperationResult.CheckoutWithGooglePay -> {
  *             handlePaymentStatus(result.status)
@@ -222,6 +220,24 @@ fun AwxPaymentElement(
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
     val isLoading by operationsViewModel.isLoading.collectAsState()
 
+    // Observe payment results from operations ViewModel
+    val paymentResult by operationsViewModel.paymentResult.collectAsState()
+
+    LaunchedEffect(paymentResult) {
+        paymentResult?.let { event ->
+            val result = when (event.operationType) {
+                PaymentOperationsViewModel.PaymentOperationType.CHECKOUT_WITH_CVC ->
+                    PaymentOperationResult.CheckoutWithCvc(event.status)
+                PaymentOperationsViewModel.PaymentOperationType.CHECKOUT_WITHOUT_CVC ->
+                    PaymentOperationResult.CheckoutWithoutCvc(event.status)
+                PaymentOperationsViewModel.PaymentOperationType.CHECKOUT_WITH_GOOGLE_PAY ->
+                    PaymentOperationResult.CheckoutWithGooglePay(event.status)
+            }
+            onOperationDone(result)
+            operationsViewModel.clearPaymentResult()
+        }
+    }
+
     // Determine if we need to fetch based on configuration
     val shouldFetch = when (configuration) {
         is AwxPaymentElementConfiguration.Card -> configuration.cardSchemes.isEmpty()
@@ -232,8 +248,18 @@ fun AwxPaymentElement(
     LaunchedEffect(shouldFetch) {
         if (shouldFetch) {
             onOperationStart(PaymentOperation.FetchPaymentMethods)
-            val result = operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
-            onOperationDone(PaymentOperationResult.FetchPaymentMethods(result))
+            operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
+                .onSuccess {
+                    onOperationDone(PaymentOperationResult.FetchPaymentMethods)
+                }
+                .onFailure { exception ->
+                    onOperationDone(
+                        PaymentOperationResult.Error(
+                            exception.message ?: "Failed to fetch payment methods",
+                            exception
+                        )
+                    )
+                }
         }
     }
 
@@ -290,9 +316,7 @@ fun AwxPaymentElement(
                         onClick = {
                             AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
                             onOperationStart(PaymentOperation.CheckoutWithGooglePay)
-                            operationsViewModel.checkoutWithGooglePay { status ->
-                                onOperationDone(PaymentOperationResult.CheckoutWithGooglePay(status))
-                            }
+                            operationsViewModel.checkoutWithGooglePay()
                         },
                         onScreenViewed = {
                             operationsViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)

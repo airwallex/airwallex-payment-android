@@ -41,6 +41,24 @@ class PaymentOperationsViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    // Payment operation result event with operation type tracking
+    private val _paymentResult = MutableStateFlow<PaymentResultEvent?>(null)
+    val paymentResult: StateFlow<PaymentResultEvent?> = _paymentResult.asStateFlow()
+
+    /**
+     * Event that wraps payment status with the operation type that triggered it
+     */
+    data class PaymentResultEvent(
+        val operationType: PaymentOperationType,
+        val status: AirwallexPaymentStatus
+    )
+
+    enum class PaymentOperationType {
+        CHECKOUT_WITH_CVC,
+        CHECKOUT_WITHOUT_CVC,
+        CHECKOUT_WITH_GOOGLE_PAY
+    }
+
     /**
      * Fetches available payment methods and consents.
      * Should only be called once from the parent component.
@@ -89,13 +107,11 @@ class PaymentOperationsViewModel(
         }
     }
 
-    fun confirmPaymentIntent(
-        paymentConsent: PaymentConsent,
-        onOperationDone: (AirwallexPaymentStatus) -> Unit
-    ) {
+    fun confirmPaymentIntent(paymentConsent: PaymentConsent) {
         if (session !is AirwallexPaymentSession) {
-            onOperationDone(
-                AirwallexPaymentStatus.Failure(
+            _paymentResult.value = PaymentResultEvent(
+                operationType = PaymentOperationType.CHECKOUT_WITHOUT_CVC,
+                status = AirwallexPaymentStatus.Failure(
                     AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession")
                 )
             )
@@ -107,7 +123,10 @@ class PaymentOperationsViewModel(
             paymentConsent,
             object : PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
-                    onOperationDone(status)
+                    _paymentResult.value = PaymentResultEvent(
+                        operationType = PaymentOperationType.CHECKOUT_WITHOUT_CVC,
+                        status = status
+                    )
                 }
             }
         )
@@ -115,41 +134,49 @@ class PaymentOperationsViewModel(
 
     fun checkoutWithCvc(
         paymentConsent: PaymentConsent,
-        cvc: String,
-        onOperationDone: (AirwallexPaymentStatus) -> Unit
-    )  = viewModelScope.launch {
+        cvc: String
+    ) = viewModelScope.launch {
         val paymentMethod = paymentConsent.paymentMethod
         if (paymentMethod == null) {
-            onOperationDone(
-                AirwallexPaymentStatus.Failure(
+            _paymentResult.value = PaymentResultEvent(
+                operationType = PaymentOperationType.CHECKOUT_WITH_CVC,
+                status = AirwallexPaymentStatus.Failure(
                     AirwallexCheckoutException(message = "checkout with paymentConsent without paymentMethod")
                 )
             )
             return@launch
         }
         if (session !is AirwallexPaymentSession) {
-            onOperationDone(
-                AirwallexPaymentStatus.Failure(
+            _paymentResult.value = PaymentResultEvent(
+                operationType = PaymentOperationType.CHECKOUT_WITH_CVC,
+                status = AirwallexPaymentStatus.Failure(
                     AirwallexCheckoutException(message = "checkout with paymentConsent only support AirwallexPaymentSession")
                 )
             )
             return@launch
         }
 
-        checkout(
+        val status = checkout(
             paymentMethod = paymentMethod,
             paymentConsentId = paymentConsent.id,
             cvc = cvc,
-        ).let { status ->
-            onOperationDone(status)
-        }
+        )
+        _paymentResult.value = PaymentResultEvent(
+            operationType = PaymentOperationType.CHECKOUT_WITH_CVC,
+            status = status
+        )
     }
 
-    fun checkoutWithGooglePay(
-        onOperationDone: (AirwallexPaymentStatus) -> Unit
-    ) = viewModelScope.launch {
+    fun checkoutWithGooglePay() = viewModelScope.launch {
         val status = checkoutGooglePay()
-        onOperationDone(status)
+        _paymentResult.value = PaymentResultEvent(
+            operationType = PaymentOperationType.CHECKOUT_WITH_GOOGLE_PAY,
+            status = status
+        )
+    }
+
+    fun clearPaymentResult() {
+        _paymentResult.value = null
     }
 
     fun trackScreenViewed(eventName: String, params: Map<String, Any> = emptyMap()) {
@@ -185,7 +212,7 @@ class PaymentOperationsViewModel(
         return suspendCancellableCoroutine { continuation ->
             airwallex.startGooglePay(
                 session = session,
-                listener = object : Airwallex.PaymentResultListener {
+                listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         continuation.resume(status)
                     }

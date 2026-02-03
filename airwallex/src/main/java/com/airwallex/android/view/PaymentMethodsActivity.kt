@@ -163,18 +163,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                                 }
 
                                 is PaymentOperationResult.FetchPaymentMethods -> {
-                                    result.result.fold(
-                                        onSuccess = { methodsPair ->
-                                            val methodTypes = methodsPair.first
-                                            val consents = methodsPair.second
-                                            initView(methodTypes, consents)
-                                        },
-                                        onFailure = { exception ->
-                                            alert(
-                                                message = exception.message ?: exception.toString()
-                                            )
-                                        }
-                                    )
+                                    // Data is already available in the composable's ViewModel state
                                 }
 
                                 is PaymentOperationResult.CheckoutWithGooglePay -> {
