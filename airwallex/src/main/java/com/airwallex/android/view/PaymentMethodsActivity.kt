@@ -66,7 +66,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         super.onCreate(savedInstanceState)
         setLoadingProgress(loading = true, cancelable = false)
 
-        airwallex.updateActivity(this)
+        viewModel.updateActivity(this)
         initView(listOf(), listOf())
     }
 
@@ -129,22 +129,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         onOperationDone = { result ->
                             setLoadingProgress(loading = false)
                             when (result) {
-                                is PaymentOperationResult.AddCard -> {
-                                    when (result.status) {
-                                        is AirwallexPaymentStatus.Success -> {
-                                            finishWithPaymentIntent(
-                                                paymentIntentId = result.status.paymentIntentId,
-                                                consentId = result.status.consentId,
-                                            )
-                                        }
-
-                                        is AirwallexPaymentStatus.Failure -> {
-                                            finishWithPaymentIntent(exception = result.status.exception)
-                                        }
-
-                                        else -> Unit
-                                    }
-                                }
+                                is PaymentOperationResult.AddCard -> handlePaymentStatus(result.status)
 
                                 is PaymentOperationResult.DeleteCard -> {
                                     setLoadingProgress(false)
