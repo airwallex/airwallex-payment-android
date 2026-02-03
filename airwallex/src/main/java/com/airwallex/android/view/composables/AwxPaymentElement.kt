@@ -275,19 +275,6 @@ fun AwxPaymentElement(
         }
     }
 
-    val allowedPaymentMethods = remember(availablePaymentMethods) {
-        session.googlePayOptions?.let { googlePayOptions ->
-            availablePaymentMethods.firstOrNull {
-                it.name == PaymentMethodType.GOOGLEPAY.value
-            }?.let { paymentMethodType ->
-                GooglePayUtil.retrieveAllowedPaymentMethods(
-                    googlePayOptions,
-                    paymentMethodType.cardSchemes,
-                )
-            }
-        }
-    }
-
     // Filter out Google Pay from available types
     val availableTypes = remember(availablePaymentMethods) {
         availablePaymentMethods.filterNot { paymentMethodType ->
@@ -316,25 +303,6 @@ fun AwxPaymentElement(
             }
 
             is AwxPaymentElementConfiguration.PaymentSheet -> {
-                // Google Pay Section (if eligible)
-                allowedPaymentMethods?.let { allowedPaymentMethods ->
-                    GooglePaySection(
-                        modifier = Modifier.fillMaxWidth(),
-                        allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
-                        onClick = {
-                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
-                            onOperationStart(PaymentOperation.CheckoutWithGooglePay)
-                            operationsViewModel.checkoutWithGooglePay()
-                        },
-                        onScreenViewed = {
-                            operationsViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
-                        },
-                    )
-                    if (availableTypes.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(24.dp))
-                    }
-                }
-
                 if (availableTypes.isNotEmpty()) {
                     when (configuration.type) {
                         PaymentMethodsLayoutType.TAB -> {
@@ -349,8 +317,6 @@ fun AwxPaymentElement(
                             PaymentMethodsAccordionSection(
                                 session = session,
                                 airwallex = airwallex,
-                                availablePaymentMethodTypes = availableTypes,
-                                availablePaymentConsents = availablePaymentConsents,
                                 onOperationStart = onOperationStart,
                                 onOperationDone = onOperationDone,
                             )

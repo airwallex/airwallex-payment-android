@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,21 +33,24 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
+import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.card.PaymentOperation
 import com.airwallex.android.view.composables.card.PaymentOperationResult
+import com.airwallex.android.view.composables.google.GooglePaySection
 import com.airwallex.android.view.composables.schema.SchemaSection
+import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import com.airwallex.android.view.util.toSupportedIcons
 
@@ -55,26 +59,66 @@ import com.airwallex.android.view.util.toSupportedIcons
 internal fun PaymentMethodsAccordionSection(
     session: AirwallexSession,
     airwallex: Airwallex,
-    availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
-    availablePaymentConsents: List<PaymentConsent>,
     onOperationStart: (PaymentOperation) -> Unit,
     onOperationDone: (PaymentOperationResult) -> Unit,
 ) {
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethodTypes.first()) }
+    val operationsViewModel: PaymentOperationsViewModel = viewModel(
+        factory = PaymentOperationsViewModel.Factory(
+            airwallex = airwallex,
+            session = session
+        ),
+        viewModelStoreOwner = airwallex.activity
+    )
+    val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
+    val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethods.first()) }
     var selectedIndex by remember { mutableIntStateOf(0) }
 
-    if (availablePaymentMethodTypes.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
+    if (availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
+        val allowedPaymentMethods = remember(availablePaymentMethods) {
+            session.googlePayOptions?.let { googlePayOptions ->
+                availablePaymentMethods.firstOrNull {
+                    it.name == PaymentMethodType.GOOGLEPAY.value
+                }?.let { paymentMethodType ->
+                    GooglePayUtil.retrieveAllowedPaymentMethods(
+                        googlePayOptions,
+                        paymentMethodType.cardSchemes,
+                    )
+                }
+            }
+        }
+        // Google Pay Section (if eligible)
+        allowedPaymentMethods?.let { allowedPaymentMethods ->
+            GooglePaySection(
+                modifier = Modifier.fillMaxWidth(),
+                allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
+                onClick = {
+                    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
+                    onOperationStart(PaymentOperation.CheckoutWithGooglePay)
+                    operationsViewModel.checkoutWithGooglePay()
+                },
+                onScreenViewed = {
+                    operationsViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
+                },
+            )
+            if (availablePaymentMethods.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+        val nonGooglePaymentMethods = availablePaymentMethods.filterNot { paymentMethodType ->
+            paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 ,
         ) {
-            availablePaymentMethodTypes.forEachIndexed { index, type ->
+            nonGooglePaymentMethods.forEachIndexed { index, type ->
                 Column(
                     modifier = Modifier
                         .padding(
                             top = if (type == selectedOption && index != 0) 16.dp else 0.dp,
-                            bottom = if (type == selectedOption && index != availablePaymentMethodTypes.size - 1) 16.dp else 0.dp,
+                            bottom = if (type == selectedOption && index != nonGooglePaymentMethods.size - 1) 16.dp else 0.dp,
                         )
                         .border(
                             border = BorderStroke(
@@ -104,10 +148,11 @@ internal fun PaymentMethodsAccordionSection(
                                 shape = RoundedCornerShape(
                                     topStart = if (index == selectedIndex + 1 || index == 0) 8.dp else 0.dp,
                                     topEnd = if (index == selectedIndex + 1 || index == 0) 8.dp else 0.dp,
-                                    bottomStart = if (index == selectedIndex - 1 || index == availablePaymentMethodTypes.size - 1) 8.dp else 0.dp,
-                                    bottomEnd = if (index == selectedIndex - 1 || index == availablePaymentMethodTypes.size - 1) 8.dp else 0.dp,
+                                    bottomStart = if (index == selectedIndex - 1 || index == nonGooglePaymentMethods.size - 1) 8.dp else 0.dp,
+                                    bottomEnd = if (index == selectedIndex - 1 || index == nonGooglePaymentMethods.size - 1) 8.dp else 0.dp,
                                 ),
                             )
+                            .padding(horizontal = 24.dp)
                             ,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -156,7 +201,8 @@ internal fun PaymentMethodsAccordionSection(
 
                     AnimatedVisibility(
                         visible = (type == selectedOption),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 24.dp),
                     ) {
                         when (type.name) {
                             PaymentMethodType.CARD.value -> {
@@ -187,7 +233,7 @@ internal fun PaymentMethodsAccordionSection(
         CardSection(
             session = session,
             airwallex = airwallex,
-            cardSchemes = availablePaymentMethodTypes.first().cardSchemes.orEmpty(),
+            cardSchemes = availablePaymentMethods.first().cardSchemes.orEmpty(),
             onOperationStart = onOperationStart,
             onOperationDone = onOperationDone,
             isSinglePaymentMethod = true,

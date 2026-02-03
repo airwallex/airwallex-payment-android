@@ -2,6 +2,7 @@ package com.airwallex.android.view.composables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -23,13 +24,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.card.PaymentOperation
 import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.composables.common.PaymentMethodTabCard
+import com.airwallex.android.view.composables.google.GooglePaySection
 import com.airwallex.android.view.composables.schema.SchemaSection
+import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import kotlinx.coroutines.launch
 
@@ -68,13 +72,45 @@ internal fun PaymentMethodsTabSection(
 
         var type by remember { mutableStateOf(availablePaymentMethods.first()) }
         var selectedIndex by remember { mutableIntStateOf(0) }
-
+        val allowedPaymentMethods = remember(availablePaymentMethods) {
+            session.googlePayOptions?.let { googlePayOptions ->
+                availablePaymentMethods.firstOrNull {
+                    it.name == PaymentMethodType.GOOGLEPAY.value
+                }?.let { paymentMethodType ->
+                    GooglePayUtil.retrieveAllowedPaymentMethods(
+                        googlePayOptions,
+                        paymentMethodType.cardSchemes,
+                    )
+                }
+            }
+        }
         Column {
-            if (availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
+            // Google Pay Section (if eligible)
+            allowedPaymentMethods?.let { allowedPaymentMethods ->
+                GooglePaySection(
+                    modifier = Modifier.fillMaxWidth(),
+                    allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
+                    onClick = {
+                        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
+                        onOperationStart(PaymentOperation.CheckoutWithGooglePay)
+                        operationsViewModel.checkoutWithGooglePay()
+                    },
+                    onScreenViewed = {
+                        operationsViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
+                    },
+                )
+                if (availablePaymentMethods.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+            }
+            val nonGooglePaymentMethods = availablePaymentMethods.filterNot { paymentMethodType ->
+                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
+            }
+            if (nonGooglePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
                 LazyRow(
                     state = lazyListState,
                 ) {
-                    availablePaymentMethods.forEachIndexed { index, availablePaymentMethodType ->
+                    nonGooglePaymentMethods.forEachIndexed { index, availablePaymentMethodType ->
                         item(key = "payment_method_$index") {
                             if (index != 0) {
                                 Spacer(modifier = Modifier.width(12.dp))
@@ -98,7 +134,7 @@ internal fun PaymentMethodsTabSection(
                                 },
                             )
 
-                            if (index != availablePaymentMethods.size - 1) {
+                            if (index != nonGooglePaymentMethods.size - 1) {
                                 Spacer(modifier = Modifier.width(12.dp))
                             }
                         }
