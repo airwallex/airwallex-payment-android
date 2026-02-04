@@ -53,3 +53,30 @@ jobs:
           commit: ${{ steps.commit.outputs.commit_hash }}
           tag: ${{ env.VERSION }}
           token: ${{ secrets.SERVICE_ACCOUNT_PAT }}
+
+  merge-to-develop:
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # 3.6.0
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.SERVICE_ACCOUNT_PAT }}
+
+      - name: Fast-forward merge main to develop
+        id: merge
+        continue-on-error: true
+        run: |
+          git checkout develop
+          git merge origin/main --ff-only
+          git push origin develop
+
+      - name: Create PR if fast-forward not possible
+        if: steps.merge.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.SERVICE_ACCOUNT_PAT }}
+        run: |
+          gh pr create --base develop --head main \
+            --title "[skip ci] Merge main back to develop" \
+            --body "Fast-forward merge was not possible. Please review and merge manually."
