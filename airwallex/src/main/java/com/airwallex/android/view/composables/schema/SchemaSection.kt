@@ -84,7 +84,7 @@ internal fun SchemaSection(
     }
 
     Column {
-        if (isLoading) {
+        if (!isLoading) {
             schemaData?.let {
                 if (it.fields.isNotEmpty()) {
                     SchemaFieldsSection(
