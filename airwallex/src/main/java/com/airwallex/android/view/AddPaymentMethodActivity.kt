@@ -113,7 +113,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                                 }
 
                                 override fun onError(exception: Throwable) {
-                                    alert(message = exception.message ?: "An error occurred")
+                                    alert(message = exception.message ?: exception.toString())
                                 }
                             },
                         )
