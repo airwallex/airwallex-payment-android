@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -34,11 +33,10 @@ import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.view.PaymentMethodsViewModel
-import com.airwallex.android.view.PaymentOperationsViewModel
+import com.airwallex.android.view.PaymentOperationListener
 import com.airwallex.android.view.SchemaPaymentViewModel
-import com.airwallex.android.view.composables.card.PaymentOperation
-import com.airwallex.android.view.composables.card.PaymentOperationResult
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
+import com.airwallex.android.view.util.AnalyticsConstants.TAP_PAY_BUTTON
 import kotlinx.coroutines.launch
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
@@ -47,8 +45,7 @@ internal fun SchemaSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     type: AvailablePaymentMethodType,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
+    operationListener: PaymentOperationListener,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val schemaPaymentViewModel: SchemaPaymentViewModel = viewModel(
@@ -74,19 +71,15 @@ internal fun SchemaSection(
             schemaData = cachedResult
         } else {
             isLoading = true
-            onOperationStart(PaymentOperation.LoadSchemaFields)
+            operationListener.onLoadingStateChanged(true)
             schemaPaymentViewModel.loadSchemaFields(type)
                 .onSuccess { data -> schemaData = data }
                 .onFailure { exception ->
-                    onOperationDone(
-                        PaymentOperationResult.Error(
-                            exception.localizedMessage ?: "",
-                            exception
-                        )
-                    )
+                    operationListener.onLoadingStateChanged(false)
+                    operationListener.onError(exception)
                 }
             isLoading = false
-            onOperationDone(PaymentOperationResult.LoadSchemaFields)
+            operationListener.onLoadingStateChanged(false)
         }
     }
 
@@ -141,43 +134,34 @@ internal fun SchemaSection(
                         schemaData = cachedResult
                     } else {
                         isLoading = true
-                        onOperationStart(PaymentOperation.LoadSchemaFields)
                         schemaPaymentViewModel.loadSchemaFields(type)
                             .onSuccess { data -> schemaData = data }
                             .onFailure { exception ->
-                                onOperationDone(
-                                    PaymentOperationResult.Error(
-                                        exception.localizedMessage ?: "",
-                                        exception
-                                    )
-                                )
+                                operationListener.onError(exception)
                                 isLoading = false
-                                onOperationDone(PaymentOperationResult.LoadSchemaFields)
                                 return@launch
                             }
                         isLoading = false
-                        onOperationDone(PaymentOperationResult.LoadSchemaFields)
                     }
 
                     // BE will need to make sure no schema available is null. Currently in certain cases it is possible to be null.
                     if (schemaData == null || schemaData?.fields?.isEmpty() == true) {
                         // No fields to validate
-                        onDirectPayOperation(type, schemaPaymentViewModel, onOperationStart, onOperationDone)
+                        onDirectPayOperation(type, schemaPaymentViewModel, operationListener)
                     } else {
                         validateFields?.invoke()
                         if (isValidated) {
                             val paymentMethod = schemaData?.paymentMethod
                             val typeInfo = schemaData?.typeInfo
                             if (paymentMethod == null || typeInfo == null) {
-                                onDirectPayOperation(type, schemaPaymentViewModel, onOperationStart, onOperationDone)
+                                onDirectPayOperation(type, schemaPaymentViewModel, operationListener)
                             } else {
                                 onPayWithFieldsOperation(
                                     paymentMethod,
                                     typeInfo,
                                     schemaPaymentViewModel.appendParamsToMapForSchemaSubmission(fieldsToSubmit),
                                     schemaPaymentViewModel,
-                                    onOperationStart,
-                                    onOperationDone
+                                    operationListener
                                 )
                             }
                         }
@@ -194,14 +178,13 @@ internal fun SchemaSection(
 private fun onDirectPayOperation(
     type: AvailablePaymentMethodType,
     viewModel: SchemaPaymentViewModel,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit
+    operationListener: PaymentOperationListener,
 ) {
-    val operation = PaymentOperation.DirectPay(type)
-    onOperationStart(operation)
-    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to type.name))
+    operationListener.onLoadingStateChanged(true)
+    AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to type.name))
     viewModel.checkoutWithSchema(type) { status ->
-        onOperationDone(PaymentOperationResult.DirectPay(status))
+        operationListener.onLoadingStateChanged(false)
+        operationListener.onPaymentResult(status)
     }
 }
 
@@ -210,17 +193,16 @@ private fun onPayWithFieldsOperation(
     info: PaymentMethodTypeInfo,
     fieldMap: Map<String, String>,
     viewModel: SchemaPaymentViewModel,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit
+    operationListener: PaymentOperationListener,
 ) {
-    val operation = PaymentOperation.PayWithFields(paymentMethod, info, fieldMap)
-    onOperationStart(operation)
-    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to info.name.orEmpty()))
+    operationListener.onLoadingStateChanged(true)
+    AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to info.name.orEmpty()))
     viewModel.checkoutWithSchema(
         paymentMethod = paymentMethod,
         additionalInfo = fieldMap,
         typeInfo = info
     ) { status ->
-        onOperationDone(PaymentOperationResult.PayWithFields(status))
+        operationListener.onLoadingStateChanged(false)
+        operationListener.onPaymentResult(status)
     }
 }

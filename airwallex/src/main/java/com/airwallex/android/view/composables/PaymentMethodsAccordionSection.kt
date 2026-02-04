@@ -43,13 +43,14 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
+import com.airwallex.android.view.PaymentOperationListener
 import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
 import com.airwallex.android.view.composables.card.CardSection
-import com.airwallex.android.view.composables.card.PaymentOperation
-import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.composables.google.GooglePaySection
 import com.airwallex.android.view.composables.schema.SchemaSection
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_SELECT
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import com.airwallex.android.view.util.toSupportedIcons
@@ -59,8 +60,7 @@ import com.airwallex.android.view.util.toSupportedIcons
 internal fun PaymentMethodsAccordionSection(
     session: AirwallexSession,
     airwallex: Airwallex,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
+    operationListener: PaymentOperationListener,
 ) {
     val operationsViewModel: PaymentOperationsViewModel = viewModel(
         factory = PaymentOperationsViewModel.Factory(
@@ -94,7 +94,7 @@ internal fun PaymentMethodsAccordionSection(
                 allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
                 onClick = {
                     AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
-                    onOperationStart(PaymentOperation.CheckoutWithGooglePay)
+                    operationListener.onLoadingStateChanged(true)
                     operationsViewModel.checkoutWithGooglePay()
                 },
                 onScreenViewed = {
@@ -137,6 +137,9 @@ internal fun PaymentMethodsAccordionSection(
                                 onClick = {
                                     selectedIndex = index
                                     onOptionSelected(type)
+                                    AnalyticsLogger.logAction(
+                                        PAYMENT_SELECT, mapOf(PAYMENT_METHOD to type)
+                                    )
                                 },
                                 role = Role.RadioButton,
                             )
@@ -210,8 +213,7 @@ internal fun PaymentMethodsAccordionSection(
                                     session = session,
                                     airwallex = airwallex,
                                     cardSchemes = type.cardSchemes.orEmpty(),
-                                    onOperationStart = onOperationStart,
-                                    onOperationDone = onOperationDone,
+                                    operationListener = operationListener,
                                 )
                             }
 
@@ -220,8 +222,7 @@ internal fun PaymentMethodsAccordionSection(
                                     session = session,
                                     airwallex = airwallex,
                                     type = type,
-                                    onOperationStart = onOperationStart,
-                                    onOperationDone = onOperationDone,
+                                    operationListener = operationListener,
                                 )
                             }
                         }
@@ -234,9 +235,8 @@ internal fun PaymentMethodsAccordionSection(
             session = session,
             airwallex = airwallex,
             cardSchemes = availablePaymentMethods.first().cardSchemes.orEmpty(),
-            onOperationStart = onOperationStart,
-            onOperationDone = onOperationDone,
             isSinglePaymentMethod = true,
+            operationListener = operationListener
         )
     }
 }

@@ -28,8 +28,6 @@ import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.composables.AwxPaymentElement
 import com.airwallex.android.view.composables.AwxPaymentElementConfiguration
-import com.airwallex.android.view.composables.card.PaymentOperation
-import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.EVENT_PAYMENT_CANCELLED
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
@@ -109,33 +107,33 @@ class AirwallexAddPaymentDialog(
                             configuration = AwxPaymentElementConfiguration.Card(
                                 cardSchemes = supportedCardSchemes
                             ),
-                            onOperationStart = { operation ->
-                                when (operation) {
-                                    is PaymentOperation.AddCard -> {
-                                        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-                                        setLoadingProgress(true)
-                                    }
-                                    else -> {} // Other operations will be handled later
+                            operationListener = object : PaymentOperationListener {
+                                override fun onLoadingStateChanged(isLoading: Boolean) {
+                                    setLoadingProgress(isLoading)
                                 }
-                            },
-                            onOperationDone = { result ->
-                                when (result) {
-                                    is PaymentOperationResult.AddCard -> {
-                                        when (result.status) {
-                                            is AirwallexPaymentStatus.Success -> {
-                                                dismissWithPaymentResult(
-                                                    paymentIntentId = result.status.paymentIntentId,
-                                                    paymentConsentId = result.status.consentId
-                                                )
-                                            }
-                                            is AirwallexPaymentStatus.Failure -> {
-                                                dismissWithPaymentResult(exception = result.status.exception)
-                                            }
-                                            else -> Unit
-                                        }
-                                    }
 
-                                    else -> {}
+                                override fun onPaymentResult(status: AirwallexPaymentStatus) {
+                                    when (status) {
+                                        is AirwallexPaymentStatus.Success -> {
+                                            dismissWithPaymentResult(
+                                                paymentIntentId = status.paymentIntentId,
+                                                paymentConsentId = status.consentId
+                                            )
+                                        }
+                                        is AirwallexPaymentStatus.Failure -> {
+                                            dismissWithPaymentResult(exception = status.exception)
+                                        }
+                                        else -> Unit
+                                    }
+                                }
+
+                                override fun onError(exception: Throwable) {
+                                    // Show error to user
+                                    android.widget.Toast.makeText(
+                                        activity,
+                                        exception.message ?: "An error occurred",
+                                        android.widget.Toast.LENGTH_LONG
+                                    ).show()
                                 }
                             },
                         )

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -23,22 +22,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
+import com.airwallex.android.view.PaymentOperationListener
 import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.common.CardBrandIcon
 import com.airwallex.android.view.composables.consent.ConsentDetailSection
 import com.airwallex.android.view.composables.consent.ConsentListSection
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
+import com.airwallex.android.view.util.AnalyticsConstants.TAP_PAY_BUTTON
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
@@ -48,8 +51,7 @@ internal fun CardSection(
     airwallex: Airwallex,
     cardSchemes: List<CardScheme>,
     isSinglePaymentMethod: Boolean = false,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
+    operationListener: PaymentOperationListener,
     needFetchConsentsAndSchemes: Boolean = true
 ) {
     val operationsViewModel: PaymentOperationsViewModel = viewModel(
@@ -62,23 +64,14 @@ internal fun CardSection(
     val shouldFetch = needFetchConsentsAndSchemes && cardSchemes.isEmpty()
     LaunchedEffect(shouldFetch) {
         if (shouldFetch) {
-            onOperationStart(PaymentOperation.FetchPaymentMethods)
+            operationListener.onLoadingStateChanged(true)
             operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
                 .onSuccess { (methods, consents) ->
-                    onOperationDone(
-                        PaymentOperationResult.FetchPaymentMethods(
-                            availablePaymentMethods = methods,
-                            hasPaymentConsents = consents.isNotEmpty()
-                        )
-                    )
+                    operationListener.onLoadingStateChanged(false)
                 }
                 .onFailure { exception ->
-                    onOperationDone(
-                        PaymentOperationResult.Error(
-                            exception.message ?: exception.toString(),
-                            exception
-                        )
-                    )
+                    operationListener.onLoadingStateChanged(false)
+                    operationListener.onError(exception)
                 }
         }
     }
@@ -108,15 +101,8 @@ internal fun CardSection(
 
     LaunchedEffect(paymentResult) {
         paymentResult?.let { event ->
-            val result = when (event.operationType) {
-                PaymentOperationsViewModel.PaymentOperationType.CHECKOUT_WITH_CVC ->
-                    PaymentOperationResult.CheckoutWithCvc(event.status)
-                PaymentOperationsViewModel.PaymentOperationType.CHECKOUT_WITHOUT_CVC ->
-                    PaymentOperationResult.CheckoutWithoutCvc(event.status)
-                PaymentOperationsViewModel.PaymentOperationType.CHECKOUT_WITH_GOOGLE_PAY ->
-                    PaymentOperationResult.CheckoutWithGooglePay(event.status)
-            }
-            onOperationDone(result)
+            operationListener.onLoadingStateChanged(false)
+            operationListener.onPaymentResult(event.status)
             operationsViewModel.clearPaymentResult()
         }
     }
@@ -175,8 +161,7 @@ internal fun CardSection(
                     } else {
                         cardSchemes
                     },
-                    onOperationStart = onOperationStart,
-                    onOperationDone = onOperationDone,
+                    operationListener = operationListener,
                 )
             }
 
@@ -210,26 +195,14 @@ internal fun CardSection(
                     onSelectCard = { consent ->
                         selectedScreen = CardSectionType.ConsentDetail(consent = consent)
                     },
-                    onOperationStart = {
-                        when (it) {
-                            is PaymentOperation.DeleteCard -> {
-                                // Find the consent from the list using the ID
-                                val consent = localConsents.find { c -> c.id == it.consentId }
-                                if (consent != null) {
+                    onDeleteCard = { consent ->
                                     onDeleteOperationStart(
-                                        operation = it,
                                         consent = consent,
                                         operationsViewModel = operationsViewModel,
                                         addPaymentMethodViewModel = addPaymentMethodViewModel,
                                         coroutineScope = coroutineScope,
-                                        onOperationStart = onOperationStart,
-                                        onOperationDone = onOperationDone
+                                        operationListener = operationListener,
                                     )
-                                }
-                            }
-
-                            else -> {}
-                        }
 
                     },
                     onScreenViewed = {
@@ -290,25 +263,17 @@ internal fun CardSection(
                     cardBrand = cardBrand,
                     onCheckoutWithCvc = { cvc ->
                         onCheckoutWithCvcOperationStart(
-                            operation = PaymentOperation.CheckoutWithCvc(
-                                consentId = requireNotNull(consent.id),
-                                paymentMethodType = consent.paymentMethod?.type
-                            ),
                             consent = consent,
                             cvc = cvc,
                             operationsViewModel = operationsViewModel,
-                            onOperationStart = onOperationStart,
+                            operationListener = operationListener,
                         )
                     },
                     onCheckoutWithoutCvc = {
                         onCheckoutWithoutCvcOperationStart(
-                            operation = PaymentOperation.CheckoutWithoutCvc(
-                                consentId = requireNotNull(consent.id),
-                                paymentMethodType = consent.paymentMethod?.type
-                            ),
                             consent = consent,
                             operationsViewModel = operationsViewModel,
-                            onOperationStart = onOperationStart,
+                            operationListener = operationListener,
                         )
                     },
                     onScreenViewed = {
@@ -327,79 +292,49 @@ internal fun CardSection(
 }
 
 private fun onDeleteOperationStart(
-    operation: PaymentOperation.DeleteCard,
     consent: PaymentConsent,
     operationsViewModel: PaymentOperationsViewModel,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     coroutineScope: CoroutineScope,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
+    operationListener: PaymentOperationListener,
 ) {
-    onOperationStart(operation)
-
+    operationListener.onLoadingStateChanged(true)
     coroutineScope.launch {
         operationsViewModel.deletePaymentConsent(consent)
             .onSuccess {
-                onOperationDone(PaymentOperationResult.DeleteCard(operation.consentId))
+                operationListener.onLoadingStateChanged(false)
                 addPaymentMethodViewModel.deleteCardSuccess(consent)
             }
             .onFailure { exception ->
-                onOperationDone(
-                    PaymentOperationResult.Error(
-                        exception.message ?: exception.toString(),
-                        exception
-                    )
-                )
+                operationListener.onLoadingStateChanged(false)
+                operationListener.onError(exception)
             }
     }
 }
 
 private fun onCheckoutWithoutCvcOperationStart(
-    operation: PaymentOperation.CheckoutWithoutCvc,
     consent: PaymentConsent,
     operationsViewModel: PaymentOperationsViewModel,
-    onOperationStart: (PaymentOperation.CheckoutWithoutCvc) -> Unit,
+    operationListener: PaymentOperationListener,
 ) {
-    onOperationStart(operation)
+    operationListener.onLoadingStateChanged(true)
+    consent.paymentMethod?.type?.let {
+        AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
+    }
     operationsViewModel.confirmPaymentIntent(consent)
 }
 
 private fun onCheckoutWithCvcOperationStart(
-    operation: PaymentOperation.CheckoutWithCvc,
     consent: PaymentConsent,
     cvc: String,
     operationsViewModel: PaymentOperationsViewModel,
-    onOperationStart: (PaymentOperation.CheckoutWithCvc) -> Unit,
+    operationListener: PaymentOperationListener,
 ) {
-    onOperationStart(operation)
+    operationListener.onLoadingStateChanged(true)
+    consent.paymentMethod?.type?.let {
+        AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
+    }
     operationsViewModel.checkoutWithCvc(consent, cvc)
-}
-
-/**
- * Java-friendly overload of CardSection that uses a listener interface instead of lambda callbacks.
- *
- * This overload is designed for Java compatibility. Kotlin code should prefer the lambda-based version.
- *
- * @param listener Listener for card operation events
- * @see CardSectionListener
- */
-@Suppress("ComplexMethod", "LongMethod", "LongParameterList")
-@Composable
-fun CardSection(
-    session: AirwallexSession,
-    airwallex: Airwallex,
-    cardSchemes: List<CardScheme>,
-    isSinglePaymentMethod: Boolean = false,
-    listener: CardSectionListener,
-) {
-    CardSection(
-        session = session,
-        airwallex = airwallex,
-        cardSchemes = cardSchemes,
-        isSinglePaymentMethod = isSinglePaymentMethod,
-        onOperationStart = listener::onOperationStart,
-        onOperationDone = listener::onOperationDone
-    )
 }
 
 sealed interface CardSectionType {

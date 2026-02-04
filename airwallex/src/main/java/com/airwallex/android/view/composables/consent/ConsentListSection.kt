@@ -3,7 +3,6 @@ package com.airwallex.android.view.composables.consent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,14 +15,13 @@ import com.airwallex.android.R
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardAlertDialog
-import com.airwallex.android.view.composables.card.PaymentOperation
 import java.util.Locale
 
 @Composable
 internal fun ConsentListSection(
     availablePaymentConsents: List<PaymentConsent>,
     onSelectCard: (PaymentConsent) -> Unit,
-    onOperationStart: (PaymentOperation) -> Unit,
+    onDeleteCard: (PaymentConsent) -> Unit,
     onScreenViewed: () -> Unit,
 ) {
     var localConsentToBeDeleted by remember { mutableStateOf<PaymentConsent?>(null) }
@@ -62,10 +60,7 @@ internal fun ConsentListSection(
             dismissButtonTitle = stringResource(R.string.airwallex_delete_payment_method_negative),
             onConfirm = {
                 localConsentToBeDeleted?.let { consent ->
-                    // PCI-DSS: Only pass consent ID in the operation
-                    consent.id?.let { consentId ->
-                        onOperationStart(PaymentOperation.DeleteCard(consentId = consentId))
-                    }
+                    onDeleteCard(consent)
                 }
                 localConsentToBeDeleted = null
             },

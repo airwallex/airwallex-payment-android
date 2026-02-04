@@ -18,12 +18,6 @@ class PaymentMethodsViewModel(
 
     val pageName: String = "payment_method_list"
 
-    fun trackCardPaymentSelection() {
-        AnalyticsLogger.logAction(
-            PAYMENT_SELECT, mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
-        )
-    }
-
     fun trackPaymentSelection(paymentMethodType: String?) {
         paymentMethodType?.takeIf { it.isNotEmpty() }?.let { type ->
             AnalyticsLogger.logAction(PAYMENT_SELECT, mapOf(PAYMENT_METHOD to type))

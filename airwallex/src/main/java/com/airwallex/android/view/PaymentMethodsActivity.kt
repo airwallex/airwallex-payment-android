@@ -10,21 +10,14 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentMethod
-import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.PaymentScreen
-import com.airwallex.android.view.composables.card.PaymentOperation
-import com.airwallex.android.view.composables.card.PaymentOperationResult
-import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.risk.AirwallexRisk
 
 @Suppress("LongMethod")
@@ -99,71 +92,17 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                         layoutType = args.layoutType,
                         availablePaymentMethodTypes = availablePaymentMethodTypes,
                         availablePaymentConsents = availablePaymentConsents,
-                        onOperationStart = { operation ->
-                            when (operation) {
-                                is PaymentOperation.AddCard -> {
-                                    onAddCard()
-                                }
-
-                                is PaymentOperation.CheckoutWithCvc,
-                                is PaymentOperation.CheckoutWithoutCvc -> {
-                                    setLoadingProgress(loading = true, cancelable = false)
-                                    val paymentMethodType = when (operation) {
-                                        is PaymentOperation.CheckoutWithCvc -> operation.paymentMethodType
-                                        is PaymentOperation.CheckoutWithoutCvc -> operation.paymentMethodType
-                                        else -> null
-                                    }
-                                    viewModel.trackPaymentSelection(paymentMethodType)
-                                }
-
-                                is PaymentOperation.DirectPay,
-                                is PaymentOperation.PayWithFields,
-                                is PaymentOperation.DeleteCard,
-                                PaymentOperation.CheckoutWithGooglePay,
-                                PaymentOperation.FetchPaymentMethods,
-                                PaymentOperation.LoadSchemaFields -> {
-                                    setLoadingProgress(loading = true, cancelable = false)
-                                }
+                        operationListener = object : PaymentOperationListener {
+                            override fun onLoadingStateChanged(isLoading: Boolean) {
+                                setLoadingProgress(loading = isLoading, cancelable = false)
                             }
-                        },
-                        onOperationDone = { result ->
-                            setLoadingProgress(loading = false)
-                            when (result) {
-                                is PaymentOperationResult.AddCard -> handlePaymentStatus(result.status)
 
-                                is PaymentOperationResult.DeleteCard -> {
-                                    // Card deleted successfully, nothing to do
-                                }
+                            override fun onPaymentResult(status: AirwallexPaymentStatus) {
+                                handlePaymentStatus(status)
+                            }
 
-                                is PaymentOperationResult.CheckoutWithCvc -> handlePaymentStatus(
-                                    result.status
-                                )
-
-                                is PaymentOperationResult.CheckoutWithoutCvc -> handlePaymentStatus(
-                                    result.status
-                                )
-
-                                is PaymentOperationResult.DirectPay -> handlePaymentStatus(result.status)
-                                is PaymentOperationResult.PayWithFields -> handlePaymentStatus(
-                                    result.status
-                                )
-
-                                is PaymentOperationResult.Error -> {
-                                    alert(message = result.message)
-                                }
-
-                                is PaymentOperationResult.FetchPaymentMethods -> {
-                                    // Data is available in result and in ViewModel state flows
-                                    // Just stop loading, data will be displayed by the composable
-                                }
-
-                                is PaymentOperationResult.CheckoutWithGooglePay -> {
-                                    handlePaymentStatus(result.status)
-                                }
-
-                                is PaymentOperationResult.LoadSchemaFields -> {
-                                    // Just stop loading, nothing else needed
-                                }
+                            override fun onError(exception: Throwable) {
+                                alert(message = exception.message ?: "An error occurred")
                             }
                         },
                     )
@@ -218,15 +157,5 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             ),
         )
         finish()
-    }
-
-    private fun onAddCard() {
-        setLoadingProgress(loading = true, cancelable = false)
-        AnalyticsLogger.logAction(
-            "tap_pay_button",
-            mapOf("payment_method" to PaymentMethodType.CARD.value)
-        )
-        viewModel.trackCardPaymentSelection()
-        AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
     }
 }

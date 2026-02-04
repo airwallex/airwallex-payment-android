@@ -16,7 +16,6 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.ActivityAddCardBinding
@@ -28,8 +27,6 @@ import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.AwxPaymentElement
 import com.airwallex.android.view.composables.AwxPaymentElementConfiguration
-import com.airwallex.android.view.composables.card.PaymentOperation
-import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
@@ -95,33 +92,28 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             configuration = AwxPaymentElementConfiguration.Card(
                                 cardSchemes = args.supportedCardSchemes
                             ),
-                            onOperationStart = { operation ->
-                                when (operation) {
-                                    is PaymentOperation.AddCard -> {
-                                        setLoadingProgress(loading = true, cancelable = false)
-                                        onAddCard()
-                                    }
-                                    else -> {} // Other operations will be handled later
+                            operationListener = object : PaymentOperationListener {
+                                override fun onLoadingStateChanged(isLoading: Boolean) {
+                                    setLoadingProgress(loading = isLoading, cancelable = false)
                                 }
-                            },
-                            onOperationDone = { result ->
-                                when (result) {
-                                    is PaymentOperationResult.AddCard -> {
-                                        when (result.status) {
-                                            is AirwallexPaymentStatus.Success -> {
-                                                finishWithPaymentIntent(
-                                                    paymentIntentId = result.status.paymentIntentId,
-                                                    consentId = result.status.consentId,
-                                                )
-                                            }
-                                            is AirwallexPaymentStatus.Failure -> {
-                                                finishWithPaymentIntent(exception = result.status.exception)
-                                            }
-                                            else -> Unit
-                                        }
-                                    }
 
-                                    else -> {}
+                                override fun onPaymentResult(status: AirwallexPaymentStatus) {
+                                    when (status) {
+                                        is AirwallexPaymentStatus.Success -> {
+                                            finishWithPaymentIntent(
+                                                paymentIntentId = status.paymentIntentId,
+                                                consentId = status.consentId,
+                                            )
+                                        }
+                                        is AirwallexPaymentStatus.Failure -> {
+                                            finishWithPaymentIntent(exception = status.exception)
+                                        }
+                                        else -> Unit
+                                    }
+                                }
+
+                                override fun onError(exception: Throwable) {
+                                    alert(message = exception.message ?: "An error occurred")
                                 }
                             },
                         )
@@ -163,11 +155,5 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
             )
         )
         finish()
-    }
-
-    private fun onAddCard() {
-        setLoadingProgress(loading = true, cancelable = false)
-        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-        AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
     }
 }

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -28,11 +27,11 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardSection
-import com.airwallex.android.view.composables.card.PaymentOperation
-import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.composables.common.PaymentMethodTabCard
 import com.airwallex.android.view.composables.google.GooglePaySection
 import com.airwallex.android.view.composables.schema.SchemaSection
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_SELECT
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import kotlinx.coroutines.launch
@@ -43,16 +42,13 @@ import kotlinx.coroutines.launch
  *
  * @param session The Airwallex session for the payment flow
  * @param airwallex The Airwallex instance for payment operations
- * @param onOperationStart Callback when a card operation starts
- * @param onOperationDone Callback when a card operation completes
  */
 @Suppress("LongMethod", "LongParameterList")
 @Composable
 internal fun PaymentMethodsTabSection(
     session: AirwallexSession,
     airwallex: Airwallex,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
+    operationListener: com.airwallex.android.view.PaymentOperationListener,
 ) {
     val operationsViewModel: PaymentOperationsViewModel = viewModel(
         factory = PaymentOperationsViewModel.Factory(
@@ -92,7 +88,7 @@ internal fun PaymentMethodsTabSection(
                     allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
                     onClick = {
                         AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
-                        onOperationStart(PaymentOperation.CheckoutWithGooglePay)
+                        operationListener.onLoadingStateChanged(true)
                         operationsViewModel.checkoutWithGooglePay()
                     },
                     onScreenViewed = {
@@ -123,6 +119,9 @@ internal fun PaymentMethodsTabSection(
                                     coroutineScope.launch {
                                         selectedIndex = index
                                         type = availablePaymentMethodType
+                                        AnalyticsLogger.logAction(
+                                            PAYMENT_SELECT, mapOf(PAYMENT_METHOD to type)
+                                        )
                                         AirwallexLogger.info("PaymentMethodsActivity onPaymentMethodClick: type = ${type.name}")
                                         pagerState.scrollToPage(page = index)
                                         // Position the selected item as the second item in the UI
@@ -153,8 +152,7 @@ internal fun PaymentMethodsTabSection(
                             session = session,
                             airwallex = airwallex,
                             cardSchemes = type.cardSchemes.orEmpty(),
-                            onOperationStart = onOperationStart,
-                            onOperationDone = onOperationDone,
+                            operationListener = operationListener,
                         )
                     }
 
@@ -163,8 +161,7 @@ internal fun PaymentMethodsTabSection(
                             session = session,
                             airwallex = airwallex,
                             type = type,
-                            onOperationStart = onOperationStart,
-                            onOperationDone = onOperationDone,
+                            operationListener = operationListener,
                         )
                     }
                 }

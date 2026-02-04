@@ -21,8 +21,6 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.view.composables.card.PaymentOperation
-import com.airwallex.android.view.composables.card.PaymentOperationResult
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 
@@ -34,8 +32,7 @@ internal fun PaymentScreen(
     layoutType: PaymentMethodsLayoutType,
     availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
     availablePaymentConsents: List<PaymentConsent>,
-    onOperationStart: (PaymentOperation) -> Unit,
-    onOperationDone: (PaymentOperationResult) -> Unit,
+    operationListener: com.airwallex.android.view.PaymentOperationListener,
 ) {
     Column(
         modifier = Modifier
@@ -67,8 +64,7 @@ internal fun PaymentScreen(
             session = session,
             airwallex = airwallex,
             configuration = AwxPaymentElementConfiguration.PaymentSheet(type = layoutType),
-            onOperationStart = onOperationStart,
-            onOperationDone = onOperationDone,
+            operationListener = operationListener,
         )
     }
 }
