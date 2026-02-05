@@ -46,6 +46,7 @@ import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentOperationListener
+import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.common.CountrySelectRow
 import com.airwallex.android.view.composables.common.PaymentTextField
 import com.airwallex.android.view.composables.common.WarningBanner
@@ -61,6 +62,7 @@ import com.airwallex.risk.AirwallexRisk
 @Composable
 internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
+    operationsViewModel: PaymentOperationsViewModel,
     cardSchemes: List<CardScheme>,
     operationListener: PaymentOperationListener,
 ) {
@@ -585,14 +587,10 @@ internal fun AddCardSection(
                         mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
                     )
                     AirwallexRisk.log(event = CLICK_PAY_BUTTON, screen = PAGE_CREATE_CARD)
-                    viewModel.confirmPayment(
+                    operationsViewModel.checkoutWithNewCard(
                         card = card,
                         saveCard = isSaveCardChecked,
                         billing = billing,
-                        onResult = { status ->
-                            operationListener.onLoadingStateChanged(false)
-                            operationListener.onPaymentResult(status)
-                        }
                     )
                 }
                 // Otherwise do nothing

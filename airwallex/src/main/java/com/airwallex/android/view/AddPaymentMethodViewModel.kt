@@ -2,14 +2,11 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.annotation.StringRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
-import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
@@ -74,9 +71,6 @@ class AddPaymentMethodViewModel(
     }
 
     val countryCode: String by lazy { session.countryCode }
-
-    private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
-    val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
 
     private val _deletedCardList = MutableStateFlow<MutableList<PaymentConsent>>(mutableListOf())
     val deletedCardList: StateFlow<MutableList<PaymentConsent>> = _deletedCardList.asStateFlow()
@@ -234,42 +228,6 @@ class AddPaymentMethodViewModel(
 
             else -> null
         }
-    }
-
-    fun confirmPayment(card: PaymentMethod.Card, saveCard: Boolean, billing: Billing?) {
-        airwallex.confirmPaymentIntent(
-            session = session,
-            card = card,
-            billing = billing,
-            saveCard = saveCard,
-            listener = object : Airwallex.PaymentResultListener {
-                override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.postValue(status)
-                }
-            },
-        )
-    }
-
-    /**
-     * Confirm payment with callback - allows caller to handle result directly
-     */
-    fun confirmPayment(
-        card: PaymentMethod.Card,
-        saveCard: Boolean,
-        billing: Billing?,
-        onResult: (AirwallexPaymentStatus) -> Unit
-    ) {
-        airwallex.confirmPaymentIntent(
-            session = session,
-            card = card,
-            billing = billing,
-            saveCard = saveCard,
-            listener = object : Airwallex.PaymentResultListener {
-                override fun onCompleted(status: AirwallexPaymentStatus) {
-                    onResult(status)
-                }
-            },
-        )
     }
 
     fun createCard(

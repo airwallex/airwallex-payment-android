@@ -14,6 +14,7 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
@@ -52,6 +53,7 @@ class PaymentOperationsViewModel(
     )
 
     enum class PaymentOperationType {
+        CHECKOUT_WITH_NEW_CARD,
         CHECKOUT_WITH_CVC,
         CHECKOUT_WITHOUT_CVC,
         CHECKOUT_WITH_GOOGLE_PAY
@@ -170,6 +172,37 @@ class PaymentOperationsViewModel(
         val status = checkoutGooglePay()
         _paymentResult.value = PaymentResultEvent(
             operationType = PaymentOperationType.CHECKOUT_WITH_GOOGLE_PAY,
+            status = status
+        )
+    }
+
+    fun checkoutWithNewCard(
+        card: PaymentMethod.Card, saveCard: Boolean, billing: Billing?
+    ) = viewModelScope.launch {
+        if (session !is AirwallexPaymentSession) {
+            _paymentResult.value = PaymentResultEvent(
+                operationType = PaymentOperationType.CHECKOUT_WITH_NEW_CARD,
+                status = AirwallexPaymentStatus.Failure(
+                    AirwallexCheckoutException(message = "checkout with new card only supports AirwallexPaymentSession")
+                )
+            )
+            return@launch
+        }
+        val status = suspendCancellableCoroutine { continuation ->
+            airwallex.confirmPaymentIntent(
+                session = session,
+                card = card,
+                billing = billing,
+                saveCard = saveCard,
+                listener = object : PaymentResultListener {
+                    override fun onCompleted(status: AirwallexPaymentStatus) {
+                        continuation.resume(status)
+                    }
+                }
+            )
+        }
+        _paymentResult.value = PaymentResultEvent(
+            operationType = PaymentOperationType.CHECKOUT_WITH_NEW_CARD,
             status = status
         )
     }

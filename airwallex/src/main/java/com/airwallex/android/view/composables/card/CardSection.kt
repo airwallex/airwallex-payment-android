@@ -131,6 +131,7 @@ internal fun CardSection(
 
                 AddCardSection(
                     viewModel = addPaymentMethodViewModel,
+                    operationsViewModel = operationsViewModel,
                     cardSchemes = cardSchemes,
                     operationListener = operationListener,
                 )
