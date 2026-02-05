@@ -17,6 +17,7 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.view.PaymentOperationListener
 import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
@@ -31,25 +32,15 @@ import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
  */
 @Suppress("LongMethod", "LongParameterList")
 @Composable
-fun AwxPaymentElement(
+internal fun AwxPaymentElement(
     session: AirwallexSession,
     airwallex: Airwallex,
     configuration: AwxPaymentElementConfiguration,
-    operationListener: com.airwallex.android.view.PaymentOperationListener,
+    operationListener: PaymentOperationListener,
+    operationsViewModel: PaymentOperationsViewModel
 ) {
-    // Initialize PaymentOperationsViewModel (shared across all child sections)
-    val operationsViewModel: PaymentOperationsViewModel = viewModel(
-        factory = PaymentOperationsViewModel.Factory(
-            airwallex = airwallex,
-            session = session
-        ),
-        viewModelStoreOwner = airwallex.activity
-    )
-
     val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
-
-    // Observe payment results from operations ViewModel
     val paymentResult by operationsViewModel.paymentResult.collectAsState()
 
     LaunchedEffect(paymentResult) {
@@ -57,27 +48,6 @@ fun AwxPaymentElement(
             operationListener.onLoadingStateChanged(false)
             operationListener.onPaymentResult(event.status)
             operationsViewModel.clearPaymentResult()
-        }
-    }
-
-    // Determine if we need to fetch based on configuration
-    val shouldFetch = when (configuration) {
-        is AwxPaymentElementConfiguration.Card -> configuration.cardSchemes.isEmpty()
-        is AwxPaymentElementConfiguration.PaymentSheet -> true
-    }
-
-    // Fetch data on first composition (if needed)
-    LaunchedEffect(shouldFetch) {
-        if (shouldFetch) {
-            operationListener.onLoadingStateChanged(true)
-            operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
-                .onSuccess { (_, _) ->
-                    operationListener.onLoadingStateChanged(false)
-                }
-                .onFailure { exception ->
-                    operationListener.onLoadingStateChanged(false)
-                    operationListener.onError(exception)
-                }
         }
     }
 
@@ -105,7 +75,6 @@ fun AwxPaymentElement(
                     airwallex = airwallex,
                     cardSchemes = cardSchemes,
                     isSinglePaymentMethod = isSinglePaymentMethod,
-                    needFetchConsentsAndSchemes = configuration.cardSchemes.isEmpty(),
                     operationListener = operationListener,
                 )
             }
@@ -135,58 +104,4 @@ fun AwxPaymentElement(
 
         Spacer(modifier = Modifier.height(48.dp))
     }
-}
-
-/**
- * Airwallex payment element with lambda callbacks.
- *
- * Uses [rememberUpdatedState] to ensure callbacks always reference the current composition,
- * avoiding stale references after configuration changes.
- *
- * @param session The Airwallex session containing payment information
- * @param airwallex The Airwallex instance for payment operations
- * @param configuration Configuration for the payment element (Card or PaymentSheet)
- * @param onLoadingStateChanged Callback invoked when loading state changes
- * @param onPaymentResult Callback invoked when a payment operation completes
- * @param onError Callback invoked when an error occurs
- */
-@Suppress("LongParameterList")
-@Composable
-fun AwxPaymentElement(
-    session: AirwallexSession,
-    airwallex: Airwallex,
-    configuration: AwxPaymentElementConfiguration,
-    onLoadingStateChanged: (Boolean) -> Unit = {},
-    onPaymentResult: (AirwallexPaymentStatus) -> Unit = {},
-    onError: (Throwable) -> Unit = {},
-) {
-    // Use rememberUpdatedState to ensure callbacks always reference current values
-    // This prevents stale references after configuration changes
-    val currentOnLoadingStateChanged by rememberUpdatedState(onLoadingStateChanged)
-    val currentOnPaymentResult by rememberUpdatedState(onPaymentResult)
-    val currentOnError by rememberUpdatedState(onError)
-
-    // Create a stable listener that delegates to current callbacks
-    val listener = remember {
-        object : com.airwallex.android.view.PaymentOperationListener {
-            override fun onLoadingStateChanged(isLoading: Boolean) {
-                currentOnLoadingStateChanged(isLoading)
-            }
-
-            override fun onPaymentResult(status: AirwallexPaymentStatus) {
-                currentOnPaymentResult(status)
-            }
-
-            override fun onError(exception: Throwable) {
-                currentOnError(exception)
-            }
-        }
-    }
-
-    AwxPaymentElement(
-        session = session,
-        airwallex = airwallex,
-        configuration = configuration,
-        operationListener = listener
-    )
 }

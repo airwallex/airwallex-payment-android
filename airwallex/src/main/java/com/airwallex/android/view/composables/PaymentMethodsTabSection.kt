@@ -25,6 +25,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.view.PaymentOperationListener
 import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.common.PaymentMethodTabCard
@@ -48,7 +49,7 @@ import kotlinx.coroutines.launch
 internal fun PaymentMethodsTabSection(
     session: AirwallexSession,
     airwallex: Airwallex,
-    operationListener: com.airwallex.android.view.PaymentOperationListener,
+    operationListener: PaymentOperationListener,
 ) {
     val operationsViewModel: PaymentOperationsViewModel = viewModel(
         factory = PaymentOperationsViewModel.Factory(

@@ -1,5 +1,6 @@
 package com.airwallex.android.view
 
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -54,6 +55,10 @@ class PaymentOperationsViewModel(
         CHECKOUT_WITH_CVC,
         CHECKOUT_WITHOUT_CVC,
         CHECKOUT_WITH_GOOGLE_PAY
+    }
+
+    fun updateActivity(newActivity: ComponentActivity) {
+        airwallex.updateActivity(newActivity)
     }
 
     /**

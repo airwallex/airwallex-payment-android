@@ -52,7 +52,6 @@ internal fun CardSection(
     cardSchemes: List<CardScheme>,
     isSinglePaymentMethod: Boolean = false,
     operationListener: PaymentOperationListener,
-    needFetchConsentsAndSchemes: Boolean = true
 ) {
     val operationsViewModel: PaymentOperationsViewModel = viewModel(
         factory = PaymentOperationsViewModel.Factory(
@@ -61,23 +60,8 @@ internal fun CardSection(
         ),
         viewModelStoreOwner = airwallex.activity
     )
-    val shouldFetch = needFetchConsentsAndSchemes && cardSchemes.isEmpty()
-    LaunchedEffect(shouldFetch) {
-        if (shouldFetch) {
-            operationListener.onLoadingStateChanged(true)
-            operationsViewModel.fetchAvailablePaymentMethodsAndConsents()
-                .onSuccess { (methods, consents) ->
-                    operationListener.onLoadingStateChanged(false)
-                }
-                .onFailure { exception ->
-                    operationListener.onLoadingStateChanged(false)
-                    operationListener.onError(exception)
-                }
-        }
-    }
 
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
-    val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
     val addPaymentMethodViewModel: AddPaymentMethodViewModel = viewModel(
         factory = AddPaymentMethodViewModel.Factory(
             airwallex = airwallex,
@@ -89,12 +73,7 @@ internal fun CardSection(
     )
     val deletedConsents by addPaymentMethodViewModel.deletedCardList.collectAsState()
 
-    LaunchedEffect(shouldFetch, availablePaymentMethods) {
-        if (shouldFetch && availablePaymentMethods.isNotEmpty()) {
-            val newSchemes = airwallex.getSupportedCardSchemes(availablePaymentMethods)
-            addPaymentMethodViewModel.updateSupportedCardSchemes(newSchemes)
-        }
-    }
+    addPaymentMethodViewModel.updateSupportedCardSchemes(cardSchemes)
 
     // Observe payment results from operations ViewModel
     val paymentResult by operationsViewModel.paymentResult.collectAsState()
@@ -111,13 +90,9 @@ internal fun CardSection(
     var localConsents by remember { mutableStateOf(availablePaymentConsents) }
     var selectedScreen by remember { mutableStateOf(if (localConsents.isEmpty()) CardSectionType.AddCard else CardSectionType.ConsentList) }
 
-    LaunchedEffect(availablePaymentConsents, deletedConsents, needFetchConsentsAndSchemes) {
+    LaunchedEffect(availablePaymentConsents, deletedConsents) {
         val deletedIds = deletedConsents.map { it.id }
-        localConsents = if (needFetchConsentsAndSchemes) {
-            availablePaymentConsents.filterNot { it.id in deletedIds }
-        } else {
-            emptyList()
-        }
+        localConsents = availablePaymentConsents.filterNot { it.id in deletedIds }
         selectedScreen = if (localConsents.isEmpty() || isSinglePaymentMethod) {
             CardSectionType.AddCard
         } else {
@@ -156,11 +131,7 @@ internal fun CardSection(
 
                 AddCardSection(
                     viewModel = addPaymentMethodViewModel,
-                    cardSchemes = if (needFetchConsentsAndSchemes || cardSchemes.isEmpty()) {
-                        airwallex.getSupportedCardSchemes(availablePaymentMethods)
-                    } else {
-                        cardSchemes
-                    },
+                    cardSchemes = cardSchemes,
                     operationListener = operationListener,
                 )
             }

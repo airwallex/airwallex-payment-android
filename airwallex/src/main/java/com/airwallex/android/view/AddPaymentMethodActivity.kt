@@ -6,6 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -25,8 +30,8 @@ import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
-import com.airwallex.android.view.composables.AwxPaymentElement
 import com.airwallex.android.view.composables.AwxPaymentElementConfiguration
+import com.airwallex.android.view.composables.AwxPaymentElementManager
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
@@ -86,18 +91,21 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             typography = AirwallexTypography.Title200,
                             textAlign = TextAlign.Left,
                         )
-                        AwxPaymentElement(
-                            session = session,
-                            airwallex = airwallex,
-                            configuration = AwxPaymentElementConfiguration.Card(
-                                cardSchemes = args.supportedCardSchemes
-                            ),
-                            operationListener = object : PaymentOperationListener {
-                                override fun onLoadingStateChanged(isLoading: Boolean) {
-                                    setLoadingProgress(loading = isLoading, cancelable = false)
-                                }
 
-                                override fun onPaymentResult(status: AirwallexPaymentStatus) {
+                        var paymentState by remember { mutableStateOf<AwxPaymentElementManager?>(null) }
+
+                        LaunchedEffect(Unit) {
+                            setLoadingProgress(loading = true, cancelable = false)
+                            AwxPaymentElementManager.create(
+                                session = session,
+                                airwallex = airwallex,
+                                configuration = AwxPaymentElementConfiguration.Card(
+                                    cardSchemes = args.supportedCardSchemes
+                                ),
+                                onLoadingStateChanged = { isLoading ->
+                                    setLoadingProgress(loading = isLoading, cancelable = false)
+                                },
+                                onPaymentResult = { status ->
                                     when (status) {
                                         is AirwallexPaymentStatus.Success -> {
                                             finishWithPaymentIntent(
@@ -110,13 +118,22 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                                         }
                                         else -> Unit
                                     }
+                                },
+                                onError = { exception ->
+                                    // Shouldn't be any error since data is pre-fetched
                                 }
-
-                                override fun onError(exception: Throwable) {
-                                    alert(message = exception.message ?: exception.toString())
+                            ).fold(
+                                onSuccess = { state ->
+                                    paymentState = state
+                                    setLoadingProgress(loading = false, cancelable = false)
+                                },
+                                onFailure = { error ->
+                                    setLoadingProgress(loading = false, cancelable = false)
+                                    alert(message = error.message ?: "Failed to load payment methods")
                                 }
-                            },
-                        )
+                            )
+                        }
+                        paymentState?.Content()
                     }
                 }
             }

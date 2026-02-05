@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -11,12 +13,12 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.TrackablePage
-import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
+import com.airwallex.android.view.composables.AwxPaymentElementConfiguration
+import com.airwallex.android.view.composables.AwxPaymentElementManager
 import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.risk.AirwallexRisk
 
@@ -60,7 +62,37 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         setLoadingProgress(loading = true, cancelable = false)
 
         viewModel.updateActivity(this)
-        initView(listOf(), listOf())
+
+        lifecycleScope.launch {
+            AwxPaymentElementManager.create(
+                session = session,
+                airwallex = airwallex,
+                configuration = AwxPaymentElementConfiguration.PaymentSheet(type = args.layoutType),
+                operationListener = object : PaymentOperationListener {
+                    override fun onLoadingStateChanged(isLoading: Boolean) {
+                        setLoadingProgress(loading = isLoading, cancelable = false)
+                    }
+
+                    override fun onPaymentResult(status: AirwallexPaymentStatus) {
+                        handlePaymentStatus(status)
+                    }
+
+                    override fun onError(exception: Throwable) {
+                        alert(message = exception.message ?: exception.toString())
+                    }
+                }
+            ).fold(
+                onSuccess = { state ->
+                    setLoadingProgress(loading = false, cancelable = false)
+                    initView(state)
+                },
+                onFailure = { error ->
+                    setLoadingProgress(loading = false, cancelable = false)
+                    alert(message = error.message ?: error.toString())
+                    finish()
+                }
+            )
+        }
     }
 
     override fun onBackButtonPressed() {
@@ -77,34 +109,13 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         return R.drawable.airwallex_ic_close
     }
 
-    private fun initView(
-        availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
-        availablePaymentConsents: List<PaymentConsent>,
-    ) {
-        // Update the latest values
+    private fun initView(paymentElementState: AwxPaymentElementManager) {
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
                     PaymentScreen(
-                        session = session,
-                        airwallex = airwallex,
-                        layoutType = args.layoutType,
-                        availablePaymentMethodTypes = availablePaymentMethodTypes,
-                        availablePaymentConsents = availablePaymentConsents,
-                        operationListener = object : PaymentOperationListener {
-                            override fun onLoadingStateChanged(isLoading: Boolean) {
-                                setLoadingProgress(loading = isLoading, cancelable = false)
-                            }
-
-                            override fun onPaymentResult(status: AirwallexPaymentStatus) {
-                                handlePaymentStatus(status)
-                            }
-
-                            override fun onError(exception: Throwable) {
-                                alert(message = exception.message ?: "An error occurred")
-                            }
-                        },
+                        paymentElementState = paymentElementState
                     )
                 }
             }

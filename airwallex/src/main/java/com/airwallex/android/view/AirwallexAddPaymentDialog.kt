@@ -8,6 +8,11 @@ import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
@@ -26,8 +31,8 @@ import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexTheme
-import com.airwallex.android.view.composables.AwxPaymentElement
 import com.airwallex.android.view.composables.AwxPaymentElementConfiguration
+import com.airwallex.android.view.composables.AwxPaymentElementManager
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.EVENT_PAYMENT_CANCELLED
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
@@ -36,7 +41,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 @SuppressLint("InflateParams")
-class AirwallexAddPaymentDialog(
+class AirwallexAddPaymentDialog @JvmOverloads constructor(
     private val activity: ComponentActivity,
     private val session: AirwallexSession,
     private val supportedCardSchemes: List<CardScheme> =
@@ -101,18 +106,20 @@ class AirwallexAddPaymentDialog(
             setContent {
                 AirwallexTheme {
                     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                        AwxPaymentElement(
-                            session = session,
-                            airwallex = airwallex,
-                            configuration = AwxPaymentElementConfiguration.Card(
-                                cardSchemes = supportedCardSchemes
-                            ),
-                            operationListener = object : PaymentOperationListener {
-                                override fun onLoadingStateChanged(isLoading: Boolean) {
-                                    setLoadingProgress(isLoading)
-                                }
+                        var paymentState by remember { mutableStateOf<AwxPaymentElementManager?>(null) }
 
-                                override fun onPaymentResult(status: AirwallexPaymentStatus) {
+                        LaunchedEffect(Unit) {
+                            setLoadingProgress(true)
+                            AwxPaymentElementManager.create(
+                                session = session,
+                                airwallex = airwallex,
+                                configuration = AwxPaymentElementConfiguration.Card(
+                                    cardSchemes = supportedCardSchemes
+                                ),
+                                onLoadingStateChanged = { isLoading ->
+                                    setLoadingProgress(isLoading)
+                                },
+                                onPaymentResult = { status ->
                                     when (status) {
                                         is AirwallexPaymentStatus.Success -> {
                                             dismissWithPaymentResult(
@@ -125,18 +132,23 @@ class AirwallexAddPaymentDialog(
                                         }
                                         else -> Unit
                                     }
+                                },
+                                onError = { exception ->
+                                    // shouldn't be any error
                                 }
+                            ).fold(
+                                onSuccess = { state ->
+                                    paymentState = state
+                                    setLoadingProgress(false)
+                                },
+                                onFailure = { error ->
+                                    setLoadingProgress(false)
+                                    dismiss()
+                                }
+                            )
+                        }
 
-                                override fun onError(exception: Throwable) {
-                                    // Show error to user
-                                    android.widget.Toast.makeText(
-                                        activity,
-                                        exception.message ?: "An error occurred",
-                                        android.widget.Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                            },
-                        )
+                        paymentState?.Content()
                     }
                 }
             }
