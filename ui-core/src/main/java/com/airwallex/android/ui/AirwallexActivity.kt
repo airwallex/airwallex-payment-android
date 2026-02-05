@@ -96,6 +96,8 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
 
     override fun onDestroy() {
         AirwallexLogger.debug("$localClassName#onDestroy()")
+        loadingDialog?.dismiss()
+        loadingDialog = null
         super.onDestroy()
     }
 
