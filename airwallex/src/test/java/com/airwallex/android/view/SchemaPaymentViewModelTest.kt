@@ -58,6 +58,7 @@ import io.mockk.unmockkAll
 import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -266,17 +267,23 @@ class SchemaPaymentViewModelTest {
             listenerSlot.captured.onCompleted(expectedStatus)
         }
 
-        testViewModel.checkoutWithSchema(paymentMethod, additionalInfo, typeInfo)
+        val results = mutableListOf<AirwallexPaymentStatus>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            testViewModel.paymentResult.collect { results.add(it) }
+        }
 
+        testViewModel.checkoutWithSchema(paymentMethod, additionalInfo, typeInfo)
         advanceUntilIdle()
 
-        assertEquals(expectedStatus, testViewModel.paymentResult.value)
+        assertEquals(1, results.size)
+        assertEquals(expectedStatus, results.first())
+
+        job.cancel()
     }
 
     @Test
     fun `test checkoutWithSchema when fields is null`() = runTest {
         val availablePaymentMethodType = createAvailablePaymentMethodType()
-        val paymentMethodTypeInfo = createPaymentMethodTypeInfo()
         val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
         val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
 
@@ -293,17 +300,23 @@ class SchemaPaymentViewModelTest {
             listenerSlot.captured.onCompleted(expectedStatus)
         }
 
-        testViewModel.checkoutWithSchema(availablePaymentMethodType)
+        val results = mutableListOf<AirwallexPaymentStatus>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            testViewModel.paymentResult.collect { results.add(it) }
+        }
 
+        testViewModel.checkoutWithSchema(availablePaymentMethodType)
         advanceUntilIdle()
 
-        assertEquals(expectedStatus, testViewModel.paymentResult.value)
+        assertEquals(1, results.size)
+        assertEquals(expectedStatus, results.first())
+
+        job.cancel()
     }
 
     @Test
     fun `test checkoutWithSchema when bankField is null`() = runTest {
         val availablePaymentMethodType = createAvailablePaymentMethodType()
-        val paymentMethodTypeInfo = createPaymentMethodTypeInfo(SAMPLE_ENUM_FIELD)
         val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
         val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
 
@@ -320,18 +333,23 @@ class SchemaPaymentViewModelTest {
             listenerSlot.captured.onCompleted(expectedStatus)
         }
 
-        testViewModel.checkoutWithSchema(availablePaymentMethodType)
+        val results = mutableListOf<AirwallexPaymentStatus>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            testViewModel.paymentResult.collect { results.add(it) }
+        }
 
+        testViewModel.checkoutWithSchema(availablePaymentMethodType)
         advanceUntilIdle()
 
-        assertEquals(expectedStatus, testViewModel.paymentResult.value)
+        assertEquals(1, results.size)
+        assertEquals(expectedStatus, results.first())
+
+        job.cancel()
     }
 
     @Test
     fun `test checkoutWithSchema when banks is empty`() = runTest {
         val availablePaymentMethodType = createAvailablePaymentMethodType()
-        val paymentMethodTypeInfo = createPaymentMethodTypeInfo(SAMPLE_BANK_FIELD)
-        val bankResponse = createBankResponse()
         val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
         val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
 
@@ -348,18 +366,23 @@ class SchemaPaymentViewModelTest {
             listenerSlot.captured.onCompleted(expectedStatus)
         }
 
-        testViewModel.checkoutWithSchema(availablePaymentMethodType)
+        val results = mutableListOf<AirwallexPaymentStatus>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            testViewModel.paymentResult.collect { results.add(it) }
+        }
 
+        testViewModel.checkoutWithSchema(availablePaymentMethodType)
         advanceUntilIdle()
 
-        assertEquals(expectedStatus, testViewModel.paymentResult.value)
+        assertEquals(1, results.size)
+        assertEquals(expectedStatus, results.first())
+
+        job.cancel()
     }
 
     @Test
     fun `test checkoutWithSchema when banks is not empty`() = runTest {
         val availablePaymentMethodType = createAvailablePaymentMethodType()
-        val paymentMethodTypeInfo = createPaymentMethodTypeInfo(SAMPLE_BANK_FIELD)
-        val bankResponse = createBankResponse(SAMPLE_BANK_RESPONSE)
         val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
         val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
 
@@ -376,11 +399,18 @@ class SchemaPaymentViewModelTest {
             listenerSlot.captured.onCompleted(expectedStatus)
         }
 
-        testViewModel.checkoutWithSchema(availablePaymentMethodType)
+        val results = mutableListOf<AirwallexPaymentStatus>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            testViewModel.paymentResult.collect { results.add(it) }
+        }
 
+        testViewModel.checkoutWithSchema(availablePaymentMethodType)
         advanceUntilIdle()
 
-        assertEquals(expectedStatus, testViewModel.paymentResult.value)
+        assertEquals(1, results.size)
+        assertEquals(expectedStatus, results.first())
+
+        job.cancel()
     }
 
     @Test
