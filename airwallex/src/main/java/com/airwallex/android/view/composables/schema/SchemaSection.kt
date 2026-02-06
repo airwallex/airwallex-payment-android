@@ -83,6 +83,12 @@ internal fun SchemaSection(
         }
     }
 
+    LaunchedEffect(Unit) {
+        schemaPaymentViewModel.paymentResult.collect { status ->
+            operationListener.onLoadingStateChanged(false)
+            operationListener.onPaymentResult(status)
+        }
+    }
     Column {
         if (!isLoading) {
             schemaData?.let {
