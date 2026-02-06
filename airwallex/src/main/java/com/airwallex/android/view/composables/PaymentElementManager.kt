@@ -1,5 +1,6 @@
 package com.airwallex.android.view.composables
 
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.Composable
@@ -97,8 +98,8 @@ class PaymentElementManager private constructor(
                     onPaymentResult(status)
                 }
 
-                override fun onError(exception: Throwable, activity: ComponentActivity) {
-                    onError ?: super.onError(exception, activity)
+                override fun onError(exception: Throwable, context: Context) {
+                    onError ?: super.onError(exception, context)
                 }
             }
             return create(session, airwallex, configuration, listener)

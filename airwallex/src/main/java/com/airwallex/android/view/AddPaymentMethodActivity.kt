@@ -6,18 +6,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.ActivityAddCardBinding
@@ -27,7 +30,10 @@ import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
-import com.airwallex.android.view.composables.card.CardSection
+import com.airwallex.android.view.composables.PaymentElementConfiguration
+import com.airwallex.android.view.composables.PaymentElementManager
+import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
+import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
 
 /**
@@ -46,10 +52,10 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
     }
 
     override val pageName: String
-        get() = viewModel.pageName
+        get() = CARD_PAYMENT_VIEW
 
     override val additionalInfo: Map<String, Any>
-        get() = viewModel.additionalInfo
+        get() = mapOf(SUPPORTED_SCHEMES to args.supportedCardSchemes.map { it.name })
 
     override val session: AirwallexSession by lazy {
         args.session
@@ -62,63 +68,74 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
     override val paymentLaunchSubtype: String = "component"
     override val paymentMethodName: String = PaymentMethodType.CARD.value
 
-    private val viewModel: AddPaymentMethodViewModel by lazy {
-        ViewModelProvider(
-            this,
-            AddPaymentMethodViewModel.Factory(
-                application, airwallex, session, args.supportedCardSchemes
-            )
-        )[AddPaymentMethodViewModel::class.java]
-    }
-
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_close
     }
 
     override fun initView() {
         super.initView()
-        viewModel.updateActivity(this)
+        airwallex.updateActivity(this)
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
 
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
-                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 24.dp)
+                    ) {
                         StandardText(
                             text = stringResource(id = R.string.airwallex_new_card),
                             color = AirwallexColor.TextPrimary,
                             typography = AirwallexTypography.Title200,
                             textAlign = TextAlign.Left,
-                            modifier = Modifier.padding(horizontal = 24.dp),
                         )
-                        CardSection(
-                            addPaymentMethodViewModel = viewModel,
-                            cardSchemes = args.supportedCardSchemes,
-                            onAddCard = ::onAddCard,
-                            onDeleteCard = {},
-                            onCheckoutWithoutCvc = {},
-                            onCheckoutWithCvc = { _, _ -> },
-                            isSinglePaymentMethod = args.isSinglePaymentMethod,
-                        )
+
+                        var paymentState by remember { mutableStateOf<PaymentElementManager?>(null) }
+
+                        LaunchedEffect(Unit) {
+                            setLoadingProgress(loading = true, cancelable = false)
+                            PaymentElementManager.create(
+                                session = session,
+                                airwallex = airwallex,
+                                configuration = PaymentElementConfiguration.Card(
+                                    cardSchemes = args.supportedCardSchemes
+                                ),
+                                onLoadingStateChanged = { isLoading ->
+                                    setLoadingProgress(loading = isLoading, cancelable = false)
+                                },
+                                onPaymentResult = { status ->
+                                    when (status) {
+                                        is AirwallexPaymentStatus.Success -> {
+                                            finishWithPaymentIntent(
+                                                paymentIntentId = status.paymentIntentId,
+                                                consentId = status.consentId,
+                                            )
+                                        }
+                                        is AirwallexPaymentStatus.Failure -> {
+                                            finishWithPaymentIntent(exception = status.exception)
+                                        }
+                                        else -> Unit
+                                    }
+                                },
+                                onError = { exception ->
+                                    // Shouldn't be any error since data is pre-fetched
+                                }
+                            ).fold(
+                                onSuccess = { state ->
+                                    paymentState = state
+                                    setLoadingProgress(loading = false, cancelable = false)
+                                },
+                                onFailure = { error ->
+                                    setLoadingProgress(loading = false, cancelable = false)
+                                    alert(message = error.message ?: "Failed to load payment methods")
+                                }
+                            )
+                        }
+                        paymentState?.Content()
                     }
                 }
-            }
-        }
-    }
-
-    override fun addListener() {
-        super.addListener()
-        viewModel.airwallexPaymentStatus.observe(this) { result ->
-            when (result) {
-                is AirwallexPaymentStatus.Success -> {
-                    finishWithPaymentIntent(
-                        paymentIntentId = result.paymentIntentId, consentId = result.consentId
-                    )
-                }
-                is AirwallexPaymentStatus.Failure -> {
-                    finishWithPaymentIntent(exception = result.exception)
-                }
-                else -> Unit
             }
         }
     }
@@ -155,11 +172,5 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
             )
         )
         finish()
-    }
-
-    private fun onAddCard() {
-        setLoadingProgress(loading = true, cancelable = false)
-        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-        AirwallexRisk.log(event = "click_payment_button", screen = "page_create_card")
     }
 }

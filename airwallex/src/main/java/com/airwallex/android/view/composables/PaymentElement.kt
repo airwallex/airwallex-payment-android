@@ -41,13 +41,11 @@ internal fun PaymentElement(
 ) {
     val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
     val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
-    val paymentResult by operationsViewModel.paymentResult.collectAsState()
 
-    LaunchedEffect(paymentResult) {
-        paymentResult?.let { event ->
+    LaunchedEffect(Unit) {
+        operationsViewModel.paymentResult.collect { event ->
             operationListener.onLoadingStateChanged(false)
             operationListener.onPaymentResult(event.status)
-            operationsViewModel.clearPaymentResult()
         }
     }
 
@@ -70,13 +68,13 @@ internal fun PaymentElement(
                 val isSinglePaymentMethod =
                     availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) != null
 
-//                CardSection(
-//                    session = session,
-//                    airwallex = airwallex,
-//                    cardSchemes = cardSchemes,
-//                    isSinglePaymentMethod = isSinglePaymentMethod,
-//                    operationListener = operationListener,
-//                )
+                CardSection(
+                    session = session,
+                    airwallex = airwallex,
+                    cardSchemes = cardSchemes,
+                    isSinglePaymentMethod = isSinglePaymentMethod,
+                    operationListener = operationListener,
+                )
             }
 
             is PaymentElementConfiguration.PaymentSheet -> {
