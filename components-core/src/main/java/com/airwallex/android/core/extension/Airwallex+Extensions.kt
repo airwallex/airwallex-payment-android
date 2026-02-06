@@ -7,13 +7,13 @@ import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentIntentProvider
-import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CreatePaymentMethodParams
+import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.resolvePaymentIntent
 
 @UiThread

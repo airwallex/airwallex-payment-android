@@ -3,7 +3,7 @@ package com.airwallex.android.core.model
 import android.os.Parcelable
 import com.airwallex.android.core.model.parser.AddressParser
 import kotlinx.parcelize.Parcelize
-import java.util.*
+import java.util.Locale
 
 /**
  * Address information.

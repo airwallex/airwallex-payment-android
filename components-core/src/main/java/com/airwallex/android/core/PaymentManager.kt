@@ -1,7 +1,12 @@
 package com.airwallex.android.core
 
 import com.airwallex.android.core.Airwallex.PaymentListener
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.Device
+import com.airwallex.android.core.model.Options
+import com.airwallex.android.core.model.Page
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethod
 
 interface PaymentManager {
 

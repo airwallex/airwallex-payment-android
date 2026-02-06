@@ -6,9 +6,9 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.annotation.VisibleForTesting
+import com.airwallex.android.R
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Shipping
-import com.airwallex.android.R
 import com.airwallex.android.databinding.WidgetShippingBinding
 
 /**

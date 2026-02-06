@@ -3,11 +3,23 @@ package com.airwallex.android.core.extension
 import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
-import com.airwallex.android.core.*
+import com.airwallex.android.core.ActionComponent
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.android.core.CardNextActionModel
+import com.airwallex.android.core.PaymentManager
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.Options
+import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.model.PaymentIntentConfirmRequest
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodOptions
+import com.airwallex.android.core.model.PaymentMethodRequest
+import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.core.model.ThreeDSecure
 import com.airwallex.risk.AirwallexRisk
-import java.util.*
+import java.util.UUID
 
 @Suppress("LongParameterList")
 internal fun ActionComponent.confirmGooglePayIntent(

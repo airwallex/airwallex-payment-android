@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
+import com.airwallex.android.AirwallexStarter.Companion.initialize
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexConfiguration
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -22,11 +23,11 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.core.model.TransactionMode
+import com.airwallex.android.core.util.SessionUtils.getIntentId
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
-import com.airwallex.android.core.util.SessionUtils.getIntentId
 import com.airwallex.risk.AirwallexRisk
 
 /**

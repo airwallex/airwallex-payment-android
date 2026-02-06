@@ -1,18 +1,41 @@
 package com.airwallex.android.core
 
 import android.net.Uri
-import com.airwallex.android.core.exception.*
+import com.airwallex.android.core.exception.APIConnectionException
+import com.airwallex.android.core.exception.APIException
+import com.airwallex.android.core.exception.AuthenticationException
+import com.airwallex.android.core.exception.InvalidRequestException
+import com.airwallex.android.core.exception.PermissionException
 import com.airwallex.android.core.http.AirwallexHttpClient
 import com.airwallex.android.core.http.AirwallexHttpRequest
 import com.airwallex.android.core.http.AirwallexHttpResponse
 import com.airwallex.android.core.log.AirwallexLogger
-import com.airwallex.android.core.model.*
-import com.airwallex.android.core.model.parser.*
+import com.airwallex.android.core.model.AirwallexModel
+import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.BankResponse
+import com.airwallex.android.core.model.Options
+import com.airwallex.android.core.model.Page
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodTypeInfo
+import com.airwallex.android.core.model.TransactionMode
+import com.airwallex.android.core.model.parser.AirwallexErrorParser
+import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
+import com.airwallex.android.core.model.parser.BankResponseParser
+import com.airwallex.android.core.model.parser.ModelJsonParser
+import com.airwallex.android.core.model.parser.PageParser
+import com.airwallex.android.core.model.parser.PaymentConsentParser
+import com.airwallex.android.core.model.parser.PaymentIntentParser
+import com.airwallex.android.core.model.parser.PaymentMethodParser
+import com.airwallex.android.core.model.parser.PaymentMethodTypeInfoParser
+import com.airwallex.android.core.model.toAirwallexHttpRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.HttpURLConnection
-import java.util.*
+import java.util.Locale
 
 /**
  * The implementation of [ApiRepository] to request the Airwallex API.

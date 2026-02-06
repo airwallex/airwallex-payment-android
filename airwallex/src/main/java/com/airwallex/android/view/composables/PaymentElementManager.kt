@@ -11,6 +11,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.ui.R
 import com.airwallex.android.view.PaymentOperationListener
 import com.airwallex.android.view.PaymentOperationsViewModel
+import com.airwallex.android.view.composables.PaymentElementManager.Companion.create
 
 class PaymentElementManager private constructor(
     private val session: AirwallexSession,
