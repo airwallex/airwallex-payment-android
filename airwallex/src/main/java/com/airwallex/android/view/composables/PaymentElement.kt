@@ -81,19 +81,19 @@ internal fun PaymentElement(
                 if (availableTypes.isNotEmpty()) {
                     when (configuration.type) {
                         PaymentMethodsLayoutType.TAB -> {
-//                            PaymentMethodsTabSection(
-//                                session = session,
-//                                airwallex = airwallex,
-//                                operationListener = operationListener,
-//                            )
+                            PaymentMethodsTabSection(
+                                session = session,
+                                airwallex = airwallex,
+                                operationListener = operationListener,
+                            )
                         }
 
                         PaymentMethodsLayoutType.ACCORDION -> {
-//                            PaymentMethodsAccordionSection(
-//                                session = session,
-//                                airwallex = airwallex,
-//                                operationListener = operationListener,
-//                            )
+                            PaymentMethodsAccordionSection(
+                                session = session,
+                                airwallex = airwallex,
+                                operationListener = operationListener,
+                            )
                         }
                     }
                 }

@@ -2,14 +2,15 @@ package com.airwallex.android.view.composables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -18,103 +19,152 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.log.AirwallexLogger
-import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.core.model.PaymentMethodTypeInfo
-import com.airwallex.android.view.AddPaymentMethodViewModel
-import com.airwallex.android.view.PaymentMethodsViewModel
+import com.airwallex.android.view.PaymentOperationListener
+import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.common.PaymentMethodTabCard
+import com.airwallex.android.view.composables.google.GooglePaySection
 import com.airwallex.android.view.composables.schema.SchemaSection
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_SELECT
+import com.airwallex.android.view.util.GooglePayUtil
+import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import kotlinx.coroutines.launch
 
+/**
+ * PaymentMethodsTabSection with internal ViewModel management.
+ * Automatically fetches and manages payment methods and consents.
+ *
+ * @param session The Airwallex session for the payment flow
+ * @param airwallex The Airwallex instance for payment operations
+ */
 @Suppress("LongMethod", "LongParameterList")
 @Composable
 internal fun PaymentMethodsTabSection(
-    paymentMethodViewModel: PaymentMethodsViewModel,
-    addPaymentMethodViewModel: AddPaymentMethodViewModel,
-    availablePaymentMethodTypes: List<AvailablePaymentMethodType>,
-    availablePaymentConsents: List<PaymentConsent>,
-    onAddCard: () -> Unit,
-    onDeleteCard: (PaymentConsent) -> Unit,
-    onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
-    onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
-    onDirectPay: (AvailablePaymentMethodType) -> Unit,
-    onPayWithFields: (PaymentMethod, PaymentMethodTypeInfo, Map<String, String>) -> Unit,
-    onLoading: (Boolean) -> Unit,
+    session: AirwallexSession,
+    airwallex: Airwallex,
+    operationListener: PaymentOperationListener,
 ) {
-    val lazyListState = rememberLazyListState()
-    val pagerState = rememberPagerState(pageCount = { availablePaymentMethodTypes.size })
-    val coroutineScope = rememberCoroutineScope()
+    val operationsViewModel: PaymentOperationsViewModel = viewModel(
+        factory = PaymentOperationsViewModel.Factory(
+            airwallex = airwallex,
+            session = session
+        ),
+        viewModelStoreOwner = airwallex.activity
+    )
 
-    var type by remember { mutableStateOf(availablePaymentMethodTypes.first()) }
-    var selectedIndex by remember { mutableIntStateOf(0) }
+    val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
+    val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
 
-    Column {
-        LazyRow(
-            state = lazyListState,
-            modifier = Modifier.padding(horizontal = 24.dp),
-        ) {
-            availablePaymentMethodTypes.forEachIndexed { index, availablePaymentMethodType ->
-                item(key = "payment_method_$index") {
-                    if (index != 0) {
-                        Spacer(modifier = Modifier.width(12.dp))
-                    }
+    if (availablePaymentMethods.isNotEmpty()) {
+        val lazyListState = rememberLazyListState()
+        val pagerState = rememberPagerState(pageCount = { availablePaymentMethods.size })
+        val coroutineScope = rememberCoroutineScope()
 
-                    PaymentMethodTabCard(
-                        isSelected = selectedIndex == index,
-                        selectedType = availablePaymentMethodType,
-                        onClick = {
-                            AirwallexLogger.info("PaymentMethodsActivity onPaymentMethodClick: type = ${type.name}")
-                            coroutineScope.launch {
-                                selectedIndex = index
-                                type = availablePaymentMethodType
-                                pagerState.scrollToPage(page = index)
-                                // Position the selected item as the second item in the UI
-                                lazyListState.animateScrollToItem(
-                                    index = if (index < 1) index else index - 1,
-                                    scrollOffset = 0,
-                                )
-                            }
-                        },
+        var type by remember { mutableStateOf(availablePaymentMethods.first()) }
+        var selectedIndex by remember { mutableIntStateOf(0) }
+        val allowedPaymentMethods = remember(availablePaymentMethods) {
+            session.googlePayOptions?.let { googlePayOptions ->
+                availablePaymentMethods.firstOrNull {
+                    it.name == PaymentMethodType.GOOGLEPAY.value
+                }?.let { paymentMethodType ->
+                    GooglePayUtil.retrieveAllowedPaymentMethods(
+                        googlePayOptions,
+                        paymentMethodType.cardSchemes,
                     )
-
-                    if (index != availablePaymentMethodTypes.size - 1) {
-                        Spacer(modifier = Modifier.width(12.dp))
-                    }
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        HorizontalPager(
-            state = pagerState,
-            userScrollEnabled = false,
-        ) {
-            when (type.name) {
-                PaymentMethodType.CARD.value -> {
-                    CardSection(
-                        addPaymentMethodViewModel = addPaymentMethodViewModel,
-                        cardSchemes = type.cardSchemes.orEmpty(),
-                        availablePaymentConsents = availablePaymentConsents,
-                        onAddCard = onAddCard,
-                        onDeleteCard = onDeleteCard,
-                        onCheckoutWithoutCvc = onCheckoutWithoutCvc,
-                        onCheckoutWithCvc = onCheckoutWithCvc,
-                    )
+        Column {
+            // Google Pay Section (if eligible)
+            allowedPaymentMethods?.let { allowedPaymentMethods ->
+                GooglePaySection(
+                    modifier = Modifier.fillMaxWidth(),
+                    allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
+                    onClick = {
+                        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
+                        operationListener.onLoadingStateChanged(true)
+                        operationsViewModel.checkoutWithGooglePay()
+                    },
+                    onScreenViewed = {
+                        operationsViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
+                    },
+                )
+                if (availablePaymentMethods.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
-                else -> {
-                    SchemaSection(
-                        viewModel = paymentMethodViewModel,
-                        type = type,
-                        onDirectPay = onDirectPay,
-                        onPayWithFields = onPayWithFields,
-                        onLoading = onLoading,
-                    )
+            }
+            val nonGooglePaymentMethods = availablePaymentMethods.filterNot { paymentMethodType ->
+                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
+            }
+            if (nonGooglePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
+                LazyRow(
+                    state = lazyListState,
+                ) {
+                    nonGooglePaymentMethods.forEachIndexed { index, availablePaymentMethodType ->
+                        item(key = "payment_method_$index") {
+                            if (index != 0) {
+                                Spacer(modifier = Modifier.width(12.dp))
+                            }
+
+                            PaymentMethodTabCard(
+                                isSelected = selectedIndex == index,
+                                selectedType = availablePaymentMethodType,
+                                onClick = {
+                                    coroutineScope.launch {
+                                        selectedIndex = index
+                                        type = availablePaymentMethodType
+                                        AnalyticsLogger.logAction(
+                                            PAYMENT_SELECT, mapOf(PAYMENT_METHOD to type)
+                                        )
+                                        AirwallexLogger.info("PaymentMethodsActivity onPaymentMethodClick: type = ${type.name}")
+                                        pagerState.scrollToPage(page = index)
+                                        // Position the selected item as the second item in the UI
+                                        lazyListState.animateScrollToItem(
+                                            index = if (index < 1) index else index - 1,
+                                            scrollOffset = 0,
+                                        )
+                                    }
+                                },
+                            )
+
+                            if (index != nonGooglePaymentMethods.size - 1) {
+                                Spacer(modifier = Modifier.width(12.dp))
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+            HorizontalPager(
+                state = pagerState,
+                userScrollEnabled = false,
+            ) {
+                when (type.name) {
+                    PaymentMethodType.CARD.value -> {
+                        CardSection(
+                            session = session,
+                            airwallex = airwallex,
+                            cardSchemes = type.cardSchemes.orEmpty(),
+                            operationListener = operationListener,
+                        )
+                    }
+
+                    else -> {
+                        SchemaSection(
+                            session = session,
+                            airwallex = airwallex,
+                            type = type,
+                            operationListener = operationListener,
+                        )
+                    }
                 }
             }
         }
