@@ -166,6 +166,7 @@ class AirwallexPaymentSession internal constructor(
         private var shipping: Shipping? = null
 
         init {
+            //TODO: INIT block is run before the constructor. so paymentIntent is almost always null here
             paymentIntent?.clientSecret?.apply {
                 TokenManager.updateClientSecret(this)
             }
