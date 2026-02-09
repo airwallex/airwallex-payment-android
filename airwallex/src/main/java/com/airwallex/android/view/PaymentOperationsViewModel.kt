@@ -219,19 +219,10 @@ class PaymentOperationsViewModel(
     }
 
     fun checkoutWithNewCard(
-        card: PaymentMethod.Card, saveCard: Boolean, billing: Billing?
+        card: PaymentMethod.Card,
+        saveCard: Boolean,
+        billing: Billing?
     ) = viewModelScope.launch {
-        if (session !is AirwallexPaymentSession) {
-            _paymentResult.emit(
-                PaymentResultEvent(
-                    operationType = PaymentOperationType.CHECKOUT_WITH_NEW_CARD,
-                    status = AirwallexPaymentStatus.Failure(
-                        AirwallexCheckoutException(message = "checkout with new card only supports AirwallexPaymentSession")
-                    )
-                )
-            )
-            return@launch
-        }
         val status = suspendCancellableCoroutine { continuation ->
             airwallex.confirmPaymentIntent(
                 session = session,
