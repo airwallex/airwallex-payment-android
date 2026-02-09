@@ -131,7 +131,7 @@ class PaymentMethodTypeInfoParserTest {
         assertNull(typeInfo.name)
         assertNull(typeInfo.displayName)
         assertNull(typeInfo.logos)
-        assertNull(typeInfo.hasSchema)
+        assertEquals(false, typeInfo.hasSchema)
         assertNotNull(typeInfo.fieldSchemas)
         assertEquals(0, typeInfo.fieldSchemas?.size)
     }
