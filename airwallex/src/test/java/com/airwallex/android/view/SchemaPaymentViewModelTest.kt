@@ -177,7 +177,6 @@ class SchemaPaymentViewModelTest {
         return createViewModel(session)
     }
 
-
     @Test
     fun `test ctaRes returns pay_now for AirwallexPaymentSession`() {
         val testViewModel = mockViewModel(transactionMode = TransactionMode.ONE_OFF)

@@ -109,9 +109,7 @@ internal fun PaymentMethodsAccordionSection(
             paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
         }
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-            ,
+            modifier = Modifier.fillMaxWidth(),
         ) {
             nonGooglePaymentMethods.forEachIndexed { index, type ->
                 Column(
@@ -155,8 +153,7 @@ internal fun PaymentMethodsAccordionSection(
                                     bottomEnd = if (index == selectedIndex - 1 || index == nonGooglePaymentMethods.size - 1) 8.dp else 0.dp,
                                 ),
                             )
-                            .padding(horizontal = 24.dp)
-                        ,
+                            .padding(horizontal = 24.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(

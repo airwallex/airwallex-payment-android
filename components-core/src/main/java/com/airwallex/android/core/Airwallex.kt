@@ -598,6 +598,7 @@ class Airwallex internal constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionThrown")
     fun getPaymentIntent(session: AirwallexSession) =
         when (session) {
             is AirwallexPaymentSession -> {
