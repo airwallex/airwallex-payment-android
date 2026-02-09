@@ -53,6 +53,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Suppress("LargeClass")
 class SchemaPaymentViewModelTest {
 
     @get:Rule

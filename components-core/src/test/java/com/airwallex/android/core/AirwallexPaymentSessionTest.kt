@@ -16,9 +16,7 @@ import org.junit.Test
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AirwallexPaymentSessionTest {
@@ -222,7 +220,8 @@ class AirwallexPaymentSessionTest {
     @Test
     fun `init block calls TokenManager when clientSecret is not null`() {
         val paymentIntent = PaymentIntentFixtures.PAYMENT_INTENT
-        assertNotNull(paymentIntent.clientSecret, "PaymentIntent fixture should have a non-null clientSecret")
+        val clientSecret = paymentIntent.clientSecret
+        assertNotNull(clientSecret, "PaymentIntent fixture should have a non-null clientSecret")
 
         // TokenManager is already mocked in setup()
         AirwallexPaymentSession.Builder(
@@ -231,7 +230,7 @@ class AirwallexPaymentSessionTest {
         )
 
         verify(exactly = 1) {
-            TokenManager.updateClientSecret(paymentIntent.clientSecret!!)
+            TokenManager.updateClientSecret(clientSecret)
         }
     }
 

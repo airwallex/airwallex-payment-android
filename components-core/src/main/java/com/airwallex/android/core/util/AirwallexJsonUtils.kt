@@ -59,7 +59,6 @@ object AirwallexJsonUtils {
         }
     }
 
-
     // TODO: according to claude, the null is not equivalent to "null", but rather this private val NULL = JSONObject.NULL
     // but no changes made now since this is existing code.
     // check `jsonObjectToMap with null values filtered` test case for reference
