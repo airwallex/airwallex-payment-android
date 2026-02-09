@@ -56,20 +56,25 @@ fun Airwallex.createCardPaymentMethod(
         )
     } else {
         when (session) {
-            is AirwallexRecurringSession -> {
-                createPaymentMethod(session.clientSecret)
-            }
-            is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
-                session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
-                    override fun onSuccess(paymentIntent: PaymentIntent) {
-                        createPaymentMethod(requireNotNull(paymentIntent.clientSecret))
-                    }
+            is AirwallexRecurringSession -> createPaymentMethod(session.clientSecret)
+            is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession ->
+                session.resolvePaymentIntent(
+                    object : PaymentIntentProvider.PaymentIntentCallback {
+                        override fun onSuccess(paymentIntent: PaymentIntent) {
+                            createPaymentMethod(requireNotNull(paymentIntent.clientSecret))
+                        }
 
-                    override fun onError(error: Throwable) {
-                        listener.onFailed(AirwallexCheckoutException(message = error.message, e = error))
+                        override fun onError(error: Throwable) {
+                            listener.onFailed(
+                                AirwallexCheckoutException(
+                                    message = error.message,
+                                    e = error
+                                )
+                            )
+                        }
                     }
-                })
-            }
+                )
+
             else -> listener.onFailed(AirwallexCheckoutException(message = "Unsupported session type"))
         }
     }

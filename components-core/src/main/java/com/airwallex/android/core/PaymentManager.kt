@@ -18,11 +18,9 @@ interface PaymentManager {
     suspend fun retrieveAvailablePaymentMethods(options: Options.RetrieveAvailablePaymentMethodsOptions):
             Page<AvailablePaymentMethodType>
 
-    suspend fun createPaymentMethod(options: Options.CreatePaymentMethodOptions):
-            PaymentMethod
+    suspend fun createPaymentMethod(options: Options.CreatePaymentMethodOptions): PaymentMethod
 
-    suspend fun createPaymentConsent(options: Options.CreatePaymentConsentOptions):
-            PaymentConsent
+    suspend fun createPaymentConsent(options: Options.CreatePaymentConsentOptions): PaymentConsent
 
     fun buildDeviceInfo(deviceId: String): Device
 }
