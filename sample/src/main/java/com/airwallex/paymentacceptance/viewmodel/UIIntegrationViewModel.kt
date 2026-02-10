@@ -4,7 +4,6 @@ import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexCheckoutMode
@@ -16,7 +15,7 @@ import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
-import com.airwallex.android.core.PaymentMethodsLayoutType
+import com.airwallex.android.core.PaymentLayout
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
@@ -29,7 +28,6 @@ import com.airwallex.paymentacceptance.nextTriggerBy
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.repo.DemoReturnUrl
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 class UIIntegrationViewModel : BaseViewModel() {
@@ -67,7 +65,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
-            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
+            layoutType = PaymentLayout.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
@@ -85,7 +83,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
-            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
+            layoutType = PaymentLayout.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
@@ -121,7 +119,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
-            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
+            layoutType = PaymentLayout.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
@@ -143,7 +141,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
-            layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
+            layoutType = PaymentLayout.valueOf(Settings.paymentLayout.uppercase()),
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)

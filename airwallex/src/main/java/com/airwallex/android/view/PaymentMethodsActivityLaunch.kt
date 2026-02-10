@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
 import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.core.PaymentMethodsLayoutType
+import com.airwallex.android.core.PaymentLayout
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.*
 import com.airwallex.android.ui.AirwallexActivityLaunch
@@ -32,18 +32,18 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
     @Parcelize
     data class Args internal constructor(
         val session: AirwallexSession,
-        val layoutType: PaymentMethodsLayoutType,
+        val layoutType: PaymentLayout,
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var session: AirwallexSession
-            private lateinit var layoutType: PaymentMethodsLayoutType
+            private lateinit var layoutType: PaymentLayout
 
             fun setAirwallexSession(session: AirwallexSession): Builder = apply {
                 this.session = session
             }
 
-            fun setLayoutType(layoutType: PaymentMethodsLayoutType): Builder = apply {
+            fun setLayoutType(layoutType: PaymentLayout): Builder = apply {
                 this.layoutType = layoutType
             }
 
