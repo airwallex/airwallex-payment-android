@@ -1,38 +1,19 @@
 package com.airwallex.android.core
 
-import android.app.Application
 import android.content.Context
 import androidx.activity.ComponentActivity
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
-import com.airwallex.android.core.model.Billing
-import com.airwallex.android.core.model.ConfirmPaymentIntentParams
-import com.airwallex.android.core.model.CreatePaymentConsentParams
-import com.airwallex.android.core.model.CreatePaymentMethodParams
-import com.airwallex.android.core.model.Device
-import com.airwallex.android.core.model.DisablePaymentConsentParams
-import com.airwallex.android.core.model.Options
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentConsentFixtures
-import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentFixtures
-import com.airwallex.android.core.model.PaymentMethod
-import com.airwallex.android.core.model.PaymentMethodFixtures
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
-import com.airwallex.android.core.model.RetrievePaymentIntentParams
 import com.airwallex.android.core.model.TransactionMode
-import com.airwallex.android.core.model.VerifyPaymentConsentParams
 import com.airwallex.android.core.util.BuildHelper
 import com.airwallex.risk.AirwallexRisk
 import io.mockk.MockKAnnotations
@@ -44,12 +25,10 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.unmockkAll
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -74,24 +53,10 @@ class AirwallexTest {
     private lateinit var mockActivity: ComponentActivity
 
     @MockK
-    private lateinit var mockFragment: Fragment
-
-    @MockK
     private lateinit var mockPaymentManager: PaymentManager
 
     @MockK
     private lateinit var mockApplicationContext: Context
-
-    @RelaxedMockK
-    private lateinit var mockApplication: Application
-
-    @MockK
-    private lateinit var mockLifecycleOwner: LifecycleOwner
-
-    @MockK
-    private lateinit var mockLifecycle: Lifecycle
-
-    private lateinit var lifecycleRegistry: LifecycleRegistry
 
     // Mock sessions
     @RelaxedMockK
@@ -118,16 +83,10 @@ class AirwallexTest {
 
     // Test fixtures
     private val testPaymentIntent = PaymentIntentFixtures.PAYMENT_INTENT
-    private val testPaymentMethod = PaymentMethodFixtures.PAYMENT_METHOD
-    private val testPaymentConsent = PaymentConsentFixtures.PAYMENTCONSENT
 
     // Test data
     private val testClientSecret = "test_client_secret_abc123"
     private val testCustomerId = "cus_test_customer_id"
-    private val testPaymentIntentId = "int_test_payment_intent_id"
-    private val testPaymentConsentId = "cst_test_consent_id"
-    private val testCurrency = "USD"
-    private val testCvc = "123"
 
     @Before
     fun setUp() {
@@ -153,7 +112,6 @@ class AirwallexTest {
         every { AnalyticsLogger.logPageView(any(), any()) } just runs
         every { AnalyticsLogger.logPaymentView(any(), any()) } just runs
         every { AnalyticsLogger.logError(any(), any<Map<String, Any>>()) } just runs
-//        every { AnalyticsLogger.logError(any(), any<Exception>()) } just runs
 
         // Mock AirwallexLogger static methods
         every { AirwallexLogger.debug(any()) } just runs
@@ -165,7 +123,6 @@ class AirwallexTest {
         // Mock AirwallexRisk static methods
         every { AirwallexRisk.sessionId } returns mockk(relaxed = true)
         every { AirwallexRisk.start(any(), any(), any()) } just runs
-//        every { AirwallexRisk.log(any(), any()) } just runs
 
         // Mock PaymentIntentProviderRepository
         every { PaymentIntentProviderRepository.initialize(any()) } just runs
