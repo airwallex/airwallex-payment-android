@@ -14,7 +14,7 @@ import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
-import com.airwallex.android.core.PaymentLayout
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
@@ -171,7 +171,7 @@ class AirwallexStarter {
         fun presentPaymentFlow(
             fragment: Fragment,
             session: AirwallexSession,
-            layoutType: PaymentLayout = PaymentLayout.TAB,
+            layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
@@ -194,7 +194,7 @@ class AirwallexStarter {
         fun presentPaymentFlow(
             activity: ComponentActivity,
             session: AirwallexSession,
-            layoutType: PaymentLayout = PaymentLayout.TAB,
+            layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
@@ -216,7 +216,7 @@ class AirwallexStarter {
         fun presentEntirePaymentFlow(
             activity: ComponentActivity,
             session: AirwallexSession,
-            layoutType: PaymentLayout = PaymentLayout.TAB,
+            layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
@@ -230,7 +230,7 @@ class AirwallexStarter {
         private fun presentPaymentFlow(
             launch: PaymentMethodsActivityLaunch,
             session: AirwallexSession,
-            layoutType: PaymentLayout,
+            layoutType: PaymentMethodsLayoutType,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             setupAnalyticsLogger(session)

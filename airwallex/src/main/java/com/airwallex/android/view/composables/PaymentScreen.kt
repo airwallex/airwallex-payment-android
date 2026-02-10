@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
-import com.airwallex.android.core.PaymentLayout
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentConsent
@@ -34,7 +34,7 @@ import org.json.JSONArray
 @Suppress("LongMethod", "LongParameterList")
 @Composable
 internal fun PaymentScreen(
-    layoutType: PaymentLayout,
+    layoutType: PaymentMethodsLayoutType,
     paymentMethodsViewModel: PaymentMethodsViewModel,
     addPaymentMethodViewModel: AddPaymentMethodViewModel,
     allowedPaymentMethods: JSONArray?,
@@ -87,7 +87,7 @@ internal fun PaymentScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             when (layoutType) {
-                PaymentLayout.TAB -> {
+                PaymentMethodsLayoutType.TAB -> {
                     PaymentMethodsTabSection(
                         paymentMethodViewModel = paymentMethodsViewModel,
                         addPaymentMethodViewModel = addPaymentMethodViewModel,
@@ -105,7 +105,7 @@ internal fun PaymentScreen(
                         onLoading = onLoading,
                     )
                 }
-                PaymentLayout.ACCORDION -> {
+                PaymentMethodsLayoutType.ACCORDION -> {
                     PaymentMethodsAccordionSection(
                         paymentMethodViewModel = paymentMethodsViewModel,
                         addPaymentMethodViewModel = addPaymentMethodViewModel,

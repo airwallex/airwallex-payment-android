@@ -1,6 +1,6 @@
 package com.airwallex.android.core
 
-enum class PaymentLayout {
+enum class PaymentMethodsLayoutType {
     TAB,
     ACCORDION,
 }

@@ -1,6 +1,6 @@
 package com.airwallex.android.view.composables
 
-import com.airwallex.android.core.PaymentLayout
+import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.CardScheme
 
 /**
@@ -22,9 +22,9 @@ sealed class PaymentElementConfiguration {
      * Configuration for payment sheet with multiple payment methods.
      * Can display in Tab or Accordion layout.
      *
-     * @param type The layout type - TAB or ACCORDION
+     * @param layout The layout type - TAB or ACCORDION
      */
     data class PaymentSheet(
-        val type: PaymentLayout = PaymentLayout.TAB
+        val layout: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB
     ) : PaymentElementConfiguration()
 }
