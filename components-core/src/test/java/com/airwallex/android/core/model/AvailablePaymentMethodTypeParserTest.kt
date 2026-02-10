@@ -64,4 +64,157 @@ class AvailablePaymentMethodTypeParserTest {
         )
         assertEquals(availablePaymentMethodType.cardSchemes?.firstOrNull()?.name, "mastercard")
     }
+
+    @Test
+    fun testParseWithNullFlows() {
+        // Line 22: Test .orEmpty() branch when flows is null
+        val availablePaymentMethodType = AvailablePaymentMethodTypeParser().parse(
+            JSONObject(
+                """
+    {
+        "name":"card",
+        "display_name":"display",
+        "transaction_mode":"oneoff",
+        "active":true
+    }
+                """.trimIndent()
+            )
+        )
+        assertEquals(availablePaymentMethodType.name, "card")
+        assertEquals(availablePaymentMethodType.flows, emptyList())
+    }
+
+    @Test
+    fun testParseWithNullResources() {
+        // Line 30: Test ?.let null branch when resources is missing
+        val availablePaymentMethodType = AvailablePaymentMethodTypeParser().parse(
+            JSONObject(
+                """
+    {
+        "name":"card",
+        "display_name":"display",
+        "transaction_mode":"oneoff",
+        "active":true
+    }
+                """.trimIndent()
+            )
+        )
+        assertEquals(availablePaymentMethodType.name, "card")
+        assertEquals(availablePaymentMethodType.resources, null)
+    }
+
+    @Test
+    fun testParseWithNullCardSchemes() {
+        // Line 33: Test ?.let null branch when card_schemes is missing
+        val availablePaymentMethodType = AvailablePaymentMethodTypeParser().parse(
+            JSONObject(
+                """
+    {
+        "name":"card",
+        "display_name":"display",
+        "transaction_mode":"oneoff",
+        "active":true
+    }
+                """.trimIndent()
+            )
+        )
+        assertEquals(availablePaymentMethodType.name, "card")
+        assertEquals(availablePaymentMethodType.cardSchemes, null)
+    }
+
+    @Test
+    fun testParseWithCardSchemeMissingName() {
+        // Line 36: Test when card scheme name is missing (optString returns empty string)
+        val availablePaymentMethodType = AvailablePaymentMethodTypeParser().parse(
+            JSONObject(
+                """
+    {
+        "name":"card",
+        "display_name":"display",
+        "transaction_mode":"oneoff",
+        "active":true,
+        "card_schemes": [
+            {
+                "display_name": "Mastercard"
+            }
+        ]
+    }
+                """.trimIndent()
+            )
+        )
+        assertEquals(availablePaymentMethodType.name, "card")
+        // When name field is missing, optString returns empty string, so CardScheme is still created
+        assertEquals(availablePaymentMethodType.cardSchemes?.size, 1)
+        assertEquals(availablePaymentMethodType.cardSchemes?.firstOrNull()?.name, "")
+    }
+
+    @Test
+    fun testParseWithCardSchemeNullObject() {
+        // Line 36: Test when cardSchemes array contains null
+        val availablePaymentMethodType = AvailablePaymentMethodTypeParser().parse(
+            JSONObject(
+                """
+    {
+        "name":"card",
+        "display_name":"display",
+        "transaction_mode":"oneoff",
+        "active":true,
+        "card_schemes": [
+            null,
+            {
+                "name": "visa"
+            }
+        ]
+    }
+                """.trimIndent()
+            )
+        )
+        assertEquals(availablePaymentMethodType.name, "card")
+        assertEquals(availablePaymentMethodType.cardSchemes?.size, 1)
+        assertEquals(availablePaymentMethodType.cardSchemes?.firstOrNull()?.name, "visa")
+    }
+
+    @Test
+    fun testParseWithEmptyFlows() {
+        // Line 22: Test .orEmpty() branch with empty flows array
+        val availablePaymentMethodType = AvailablePaymentMethodTypeParser().parse(
+            JSONObject(
+                """
+    {
+        "name":"card",
+        "display_name":"display",
+        "transaction_mode":"oneoff",
+        "active":true,
+        "flows": []
+    }
+                """.trimIndent()
+            )
+        )
+        assertEquals(availablePaymentMethodType.name, "card")
+        assertEquals(availablePaymentMethodType.flows, emptyList())
+    }
+
+    @Test
+    fun testParseWithResourcesButNoLogos() {
+        // AvailablePaymentMethodTypeResourceParser line 13: Test ?.let null branch when logos is missing
+        val availablePaymentMethodType = AvailablePaymentMethodTypeParser().parse(
+            JSONObject(
+                """
+    {
+        "name":"card",
+        "display_name":"display",
+        "transaction_mode":"oneoff",
+        "active":true,
+        "resources": {
+            "has_schema": true
+        }
+    }
+                """.trimIndent()
+            )
+        )
+        assertEquals(availablePaymentMethodType.name, "card")
+        assertEquals(availablePaymentMethodType.resources?.hasSchema, true)
+        assertEquals(availablePaymentMethodType.resources?.logos, null)
+    }
+
 }

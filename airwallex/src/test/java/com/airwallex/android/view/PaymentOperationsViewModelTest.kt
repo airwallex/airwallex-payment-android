@@ -612,6 +612,21 @@ class PaymentOperationsViewModelTest {
         job.cancel()
     }
 
+    @Test
+    fun `test updateActivity updates airwallex activity`() = runTest {
+        val session = createPaymentSession()
+        val viewModel = createViewModel(session)
+        val newActivity = mockk<androidx.activity.ComponentActivity>(relaxed = true)
+
+        every { airwallex.updateActivity(newActivity) } just Runs
+
+        viewModel.updateActivity(newActivity)
+
+        verify(exactly = 1) {
+            airwallex.updateActivity(newActivity)
+        }
+    }
+
     // ========== Analytics Tests ==========
 
     @Test
@@ -635,6 +650,19 @@ class PaymentOperationsViewModelTest {
                 additionalInfo = testAdditionalInfo
             )
         }
+    }
+
+    @Test
+    fun `test Factory creates ViewModel correctly`() {
+        val session = createPaymentSession()
+        val factory = PaymentOperationsViewModel.Factory(airwallex, session)
+
+        val viewModel = factory.create(PaymentOperationsViewModel::class.java)
+
+        assertNotNull(viewModel)
+        assertTrue(viewModel is PaymentOperationsViewModel)
+        assertTrue(viewModel.availablePaymentMethods.value.isEmpty())
+        assertTrue(viewModel.availablePaymentConsents.value.isEmpty())
     }
 
     // ========== Helper Method Tests ==========

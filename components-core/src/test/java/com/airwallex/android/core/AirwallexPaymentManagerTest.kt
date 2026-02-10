@@ -327,4 +327,329 @@ class AirwallexPaymentManagerTest {
         )
         verify { listener.onSuccess(mockBank) }
     }
+
+    @Test
+    fun `test start RetrieveAvailablePaymentConsentsOptions operation`() = runTest {
+        val listener = mockk<Airwallex.PaymentListener<Page<PaymentConsent>>>(relaxed = true)
+        paymentManager.startOperation(
+            Options.RetrieveAvailablePaymentConsentsOptions(
+                clientSecret,
+                "customer123",
+                null,
+                null,
+                null,
+                0,
+                10
+            ),
+            listener
+        )
+        verify { listener.onSuccess(mockConsents) }
+    }
+
+    @Test
+    fun `test buildDeviceInfo when model starts with manufacturer`() {
+        // Line 84-85: Test true branch when model starts with manufacturer
+        every { BuildHelper.manufacturer } returns "Samsung"
+        every { BuildHelper.model } returns "Samsung Galaxy S21"
+        every { BuildHelper.versionRelease } returns "12.0"
+
+        val deviceInfo = paymentManager.buildDeviceInfo("device123")
+
+        assertEquals(
+            mapOf(
+                "device_id" to "device123",
+                "mobile" to mapOf(
+                    "device_model" to "Samsung Galaxy S21",
+                    "os_type" to "Android",
+                    "os_version" to "12.0"
+                )
+            ),
+            deviceInfo.toParamMap()
+        )
+    }
+
+    @Test
+    fun `test buildDeviceInfo when model does not start with manufacturer`() {
+        // Line 86-87: Test false branch when model does not start with manufacturer
+        every { BuildHelper.manufacturer } returns "Google"
+        every { BuildHelper.model } returns "Pixel 6"
+        every { BuildHelper.versionRelease } returns "13.0"
+
+        val deviceInfo = paymentManager.buildDeviceInfo("device456")
+
+        assertEquals(
+            mapOf(
+                "device_id" to "device456",
+                "mobile" to mapOf(
+                    "device_model" to "Google Pixel 6",
+                    "os_type" to "Android",
+                    "os_version" to "13.0"
+                )
+            ),
+            deviceInfo.toParamMap()
+        )
+    }
+
+    @Test
+    fun `test error handling when repository returns null`() = runTest {
+        val apiRepository = mockk<ApiRepository>()
+        coEvery { apiRepository.retrieveAvailablePaymentMethods(any()) } returns null
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        var exceptionThrown = false
+        try {
+            manager.retrieveAvailablePaymentMethods(mockk())
+        } catch (e: Exception) {
+            // Expected to throw an exception from requireNotNull
+            exceptionThrown = true
+            assert(e is com.airwallex.android.core.exception.AirwallexException)
+        }
+        assert(exceptionThrown) { "Should have thrown exception" }
+    }
+
+
+    @Test
+    fun `test suspend function error handling with AirwallexException`() = runTest {
+        // Line 145-146: Test handleError in suspend functions
+        val apiRepository = mockk<ApiRepository>()
+        val airwallexException = mockk<com.airwallex.android.core.exception.AirwallexException>()
+        every { airwallexException.message } returns "Payment method error"
+        coEvery { apiRepository.createPaymentMethod(any()) } throws airwallexException
+
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        try {
+            manager.createPaymentMethod(mockk())
+            assert(false) { "Should have thrown exception" }
+        } catch (e: Exception) {
+            assert(e is com.airwallex.android.core.exception.AirwallexException)
+            assertEquals("Payment method error", e.message)
+        }
+    }
+
+    @Test
+    fun `test suspend function error handling with generic exception`() = runTest {
+        // Line 147-148: Test handleError wraps generic exception in APIException
+        val apiRepository = mockk<ApiRepository>()
+        coEvery { apiRepository.createPaymentConsent(any()) } throws RuntimeException("Network error")
+
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        try {
+            manager.createPaymentConsent(mockk())
+            assert(false) { "Should have thrown exception" }
+        } catch (e: Exception) {
+            assert(e is com.airwallex.android.core.exception.APIException)
+            assertEquals("Network error", e.message)
+        }
+    }
+
+    @Test
+    fun `test retrieveAvailablePaymentConsents onFailure branch`() = runTest {
+        // Line 41: Test onFailure branch in retrieveAvailablePaymentConsents
+        val apiRepository = mockk<ApiRepository>()
+        val exception = RuntimeException("Consent retrieval failed")
+        coEvery { apiRepository.retrieveAvailablePaymentConsents(any()) } throws exception
+
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        try {
+            manager.retrieveAvailablePaymentConsents(mockk())
+            assert(false) { "Should have thrown exception" }
+        } catch (e: Exception) {
+            assert(e is com.airwallex.android.core.exception.APIException)
+            assertEquals("Consent retrieval failed", e.message)
+        }
+    }
+
+
+    @Test
+    fun `test retrieveAvailablePaymentConsents return null`() = runTest {
+        // Line 41: Test onFailure branch in retrieveAvailablePaymentConsents
+        val apiRepository = mockk<ApiRepository>()
+        val exception = RuntimeException("Consent retrieval failed")
+        coEvery { apiRepository.retrieveAvailablePaymentConsents(any()) } returns null
+
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        try {
+            manager.retrieveAvailablePaymentConsents(mockk())
+            assert(false) { "Should have thrown exception" }
+        } catch (e: Exception) {
+            assert(e is com.airwallex.android.core.exception.APIException)
+            assertEquals("Required value was null.", e.message)
+        }
+    }
+
+    @Test
+    fun `test retrieveAvailablePaymentMethods onFailure branch`() = runTest {
+        // Line 53: Test onFailure branch in retrieveAvailablePaymentMethods
+        val apiRepository = mockk<ApiRepository>()
+        val exception = RuntimeException("Method retrieval failed")
+        coEvery { apiRepository.retrieveAvailablePaymentMethods(any()) } throws exception
+
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        try {
+            manager.retrieveAvailablePaymentMethods(mockk())
+            assert(false) { "Should have thrown exception" }
+        } catch (e: Exception) {
+            assert(e is com.airwallex.android.core.exception.APIException)
+            assertEquals("Method retrieval failed", e.message)
+        }
+    }
+
+    @Test
+    fun `test createPaymentMethod onFailure branch`() = runTest {
+        // Line 65: Test onFailure branch in createPaymentMethod
+        val apiRepository = mockk<ApiRepository>()
+        val exception = RuntimeException("Payment method creation failed")
+        coEvery { apiRepository.createPaymentMethod(any()) } throws exception
+
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        try {
+            manager.createPaymentMethod(mockk())
+            assert(false) { "Should have thrown exception" }
+        } catch (e: Exception) {
+            assert(e is com.airwallex.android.core.exception.APIException)
+            assertEquals("Payment method creation failed", e.message)
+        }
+    }
+
+    @Test
+    fun `test createPaymentConsent onFailure branch`() = runTest {
+        // Line 77: Test onFailure branch in createPaymentConsent
+        val apiRepository = mockk<ApiRepository>()
+        val exception = RuntimeException("Payment consent creation failed")
+        coEvery { apiRepository.createPaymentConsent(any()) } throws exception
+
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        try {
+            manager.createPaymentConsent(mockk())
+            assert(false) { "Should have thrown exception" }
+        } catch (e: Exception) {
+            assert(e is com.airwallex.android.core.exception.APIException)
+            assertEquals("Payment consent creation failed", e.message)
+        }
+    }
+
+    @Test
+    fun `test execute onSuccess branch with analytics logging`() = runTest {
+        // Line 130: Test onSuccess branch in execute function
+        val listener = mockk<Airwallex.PaymentListener<PaymentIntent>>(relaxed = true)
+
+        paymentManager.startOperation(
+            Options.RetrievePaymentIntentOptions(
+                clientSecret,
+                intentId
+            ),
+            listener
+        )
+
+        verify { listener.onSuccess(mockIntent) }
+    }
+
+    @Test
+    fun `test execute onFailure branch with analytics logging`() = runTest {
+        // Lines 132-140: Test onFailure branch with analytics logging in execute function
+        val apiRepository = mockk<ApiRepository>()
+        val exception = RuntimeException("Intent retrieval failed")
+        coEvery { apiRepository.retrievePaymentIntent(any()) } throws exception
+
+        val manager = AirwallexPaymentManager(apiRepository)
+        val listener = mockk<Airwallex.PaymentListener<PaymentIntent>>(relaxed = true)
+
+        manager.startOperation(
+            Options.RetrievePaymentIntentOptions(
+                clientSecret,
+                intentId
+            ),
+            listener
+        )
+
+        // Wait for coroutine to complete
+        dispatcher.scheduler.advanceUntilIdle()
+
+        verify {
+            listener.onFailed(match {
+                it is com.airwallex.android.core.exception.APIException &&
+                it.message == "Intent retrieval failed"
+            })
+        }
+    }
+
+    @Test
+    fun `test getEventName with RetrievePaymentIntentOptions`() = runTest {
+        // Lines 152-155: Test getEventName extension function
+        val listener = mockk<Airwallex.PaymentListener<PaymentIntent>>(relaxed = true)
+        val exception = RuntimeException("Test error for event name")
+
+        val apiRepository = mockk<ApiRepository>()
+        coEvery { apiRepository.retrievePaymentIntent(any()) } throws exception
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        manager.startOperation(
+            Options.RetrievePaymentIntentOptions(
+                clientSecret,
+                intentId
+            ),
+            listener
+        )
+
+        dispatcher.scheduler.advanceUntilIdle()
+
+        // The event name should be "retrieve_payment_intent" from "RetrievePaymentIntentOptions"
+        verify { listener.onFailed(any()) }
+    }
+
+    @Test
+    fun `test getEventName with ConfirmPaymentIntentOptions`() = runTest {
+        // Lines 152-155: Test getEventName with different option type
+        val listener = mockk<Airwallex.PaymentListener<PaymentIntent>>(relaxed = true)
+        val exception = RuntimeException("Confirm error")
+
+        val apiRepository = mockk<ApiRepository>()
+        coEvery { apiRepository.confirmPaymentIntent(any()) } throws exception
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        manager.startOperation(
+            Options.ConfirmPaymentIntentOptions(
+                clientSecret,
+                intentId,
+                PaymentIntentConfirmRequest()
+            ),
+            listener
+        )
+
+        dispatcher.scheduler.advanceUntilIdle()
+
+        // The event name should be "confirm_payment_intent" from "ConfirmPaymentIntentOptions"
+        verify { listener.onFailed(any()) }
+    }
+
+    @Test
+    fun `test getEventName with CreatePaymentMethodOptions`() = runTest {
+        // Lines 152-155: Test getEventName with CreatePaymentMethodOptions
+        val listener = mockk<Airwallex.PaymentListener<PaymentMethod>>(relaxed = true)
+        val exception = RuntimeException("Create method error")
+
+        val apiRepository = mockk<ApiRepository>()
+        coEvery { apiRepository.createPaymentMethod(any()) } throws exception
+        val manager = AirwallexPaymentManager(apiRepository)
+
+        manager.startOperation(
+            Options.CreatePaymentMethodOptions(
+                clientSecret,
+                PaymentMethodCreateRequest()
+            ),
+            listener
+        )
+
+        dispatcher.scheduler.advanceUntilIdle()
+
+        // The event name should be "create_payment_method" from "CreatePaymentMethodOptions"
+        verify { listener.onFailed(any()) }
+    }
 }

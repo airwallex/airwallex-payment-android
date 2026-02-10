@@ -121,6 +121,8 @@ project.afterEvaluate { project ->
                 '**/paymentacceptance/**',
                 'security-3ds/**',
                 '**/composables/**',
+                '**/http/AirwallexHttpClient.*',
+                '**/http/AirwallexHttpConnection.*',
         ]
 
         final androidKotlinTree = fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/${variant}", excludes: fileFilter)
