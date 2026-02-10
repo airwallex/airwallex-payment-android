@@ -407,7 +407,6 @@ class AirwallexPaymentManagerTest {
         assert(exceptionThrown) { "Should have thrown exception" }
     }
 
-
     @Test
     fun `test suspend function error handling with AirwallexException`() = runTest {
         // Line 145-146: Test handleError in suspend functions
@@ -461,7 +460,6 @@ class AirwallexPaymentManagerTest {
             assertEquals("Consent retrieval failed", e.message)
         }
     }
-
 
     @Test
     fun `test retrieveAvailablePaymentConsents return null`() = runTest {
@@ -573,10 +571,12 @@ class AirwallexPaymentManagerTest {
         dispatcher.scheduler.advanceUntilIdle()
 
         verify {
-            listener.onFailed(match {
-                it is com.airwallex.android.core.exception.APIException &&
-                it.message == "Intent retrieval failed"
-            })
+            listener.onFailed(
+                match {
+                    it is com.airwallex.android.core.exception.APIException &&
+                            it.message == "Intent retrieval failed"
+                }
+            )
         }
     }
 
