@@ -32,7 +32,7 @@ import kotlin.coroutines.resume
  * ViewModel for managing payment operations data.
  * Handles fetching and storing payment methods and consents.
  */
-class PaymentOperationsViewModel(
+class PaymentFlowViewModel(
     private val airwallex: Airwallex,
     private val session: AirwallexSession
 ) : ViewModel() {
@@ -301,7 +301,7 @@ class PaymentOperationsViewModel(
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return PaymentOperationsViewModel(airwallex, session) as T
+            return PaymentFlowViewModel(airwallex, session) as T
         }
     }
 }
