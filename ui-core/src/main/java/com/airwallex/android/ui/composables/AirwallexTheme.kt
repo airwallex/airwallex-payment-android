@@ -105,7 +105,7 @@ private fun createDarkColorScheme(tintColor: Color): ColorScheme {
         onTertiaryContainer = primaryColor,
         background = AirwallexColor.Gray100,
         onBackground = AirwallexColor.Gray10,
-        surface = AirwallexColor.Gray90,
+        surface = AirwallexColor.Gray100,
         onSurface = AirwallexColor.Gray50,
         surfaceVariant = primaryColor,
         onSurfaceVariant = AirwallexColor.Gray30,

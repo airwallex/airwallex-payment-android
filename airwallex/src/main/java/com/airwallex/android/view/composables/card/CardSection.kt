@@ -29,6 +29,7 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
@@ -113,6 +114,7 @@ internal fun CardSection(
                             text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }
                                 .orEmpty(),
                             typography = AirwallexTypography.Body200Bold,
+                            color = AirwallexColor.textPrimary()
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
@@ -120,7 +122,7 @@ internal fun CardSection(
                         StandardText(
                             text = stringResource(id = selectedScreen.buttonTitleRes),
                             typography = AirwallexTypography.Body200Bold,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = AirwallexColor.theme(),
                             modifier = Modifier.clickable(
                                 onClick = { selectedScreen = CardSectionType.ConsentList },
                             ),
@@ -147,6 +149,7 @@ internal fun CardSection(
                         text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }
                             .orEmpty(),
                         typography = AirwallexTypography.Body200Bold,
+                        color = AirwallexColor.textPrimary()
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -154,7 +157,7 @@ internal fun CardSection(
                     StandardText(
                         text = stringResource(id = selectedScreen.buttonTitleRes),
                         typography = AirwallexTypography.Body200Bold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = AirwallexColor.theme(),
                         modifier = Modifier.clickable(
                             onClick = { selectedScreen = CardSectionType.AddCard },
                         ),
@@ -215,7 +218,7 @@ internal fun CardSection(
                     StandardText(
                         text = stringResource(id = selectedScreen.buttonTitleRes),
                         typography = AirwallexTypography.Body200Bold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = AirwallexColor.theme(),
                         modifier = Modifier.clickable(
                             onClick = { selectedScreen = CardSectionType.ConsentList },
                         ),

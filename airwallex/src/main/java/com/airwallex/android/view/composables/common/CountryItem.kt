@@ -62,7 +62,7 @@ internal fun CountryItem(
 
         StandardText(
             text = countryName,
-            color = AirwallexColor.TextPrimary,
+            color = AirwallexColor.textPrimary(),
             typography = AirwallexTypography.Body100,
         )
 
@@ -73,7 +73,7 @@ internal fun CountryItem(
                 drawableRes = R.drawable.airwallex_ic_tick,
                 size = 16.dp,
                 padding = 0.dp,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = AirwallexColor.theme(),
             )
 
             Spacer(modifier = Modifier.width(24.dp))

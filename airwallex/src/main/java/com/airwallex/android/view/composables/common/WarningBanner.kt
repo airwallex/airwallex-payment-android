@@ -40,7 +40,7 @@ fun WarningBanner(message: String) {
         StandardText(
             text = message,
             typography = AirwallexTypography.Body200,
-            color = MaterialTheme.colorScheme.error,
+            color = AirwallexColor.textError(),
             modifier = Modifier.padding(vertical = 8.dp),
         )
     }

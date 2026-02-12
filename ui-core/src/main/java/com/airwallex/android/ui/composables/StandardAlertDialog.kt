@@ -25,10 +25,11 @@ fun StandardAlertDialog(
     onDismiss: () -> Unit,
 ) {
     AlertDialog(
+        backgroundColor = AirwallexColor.backgroundPrimary(),
         title = {
             StandardText(
                 text = title,
-                color = AirwallexColor.TextPrimary,
+                color = AirwallexColor.textPrimary(),
                 typography = AirwallexTypography.Title300,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -37,7 +38,7 @@ fun StandardAlertDialog(
         text = {
             StandardText(
                 text = content,
-                color = AirwallexColor.TextPrimary,
+                color = AirwallexColor.textPrimary(),
                 typography = AirwallexTypography.Body200,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -49,7 +50,7 @@ fun StandardAlertDialog(
                     .fillMaxWidth()
                     .background(
                         shape = RoundedCornerShape(8.dp),
-                        color = AirwallexColor.White,
+                        color = AirwallexColor.backgroundPrimary(),
                     )
                     .padding(
                         vertical = 12.dp,
@@ -59,7 +60,7 @@ fun StandardAlertDialog(
                 StandardOutlinedButton(
                     text = dismissButtonTitle,
                     onClick = onDismiss,
-                    textColor = AirwallexColor.TextPrimary,
+                    textColor = AirwallexColor.textPrimary(),
                     borderColor = AirwallexColor.Transparent,
                     modifier = Modifier.weight(1f),
                 )
@@ -68,7 +69,7 @@ fun StandardAlertDialog(
 
                 StandardSolidButton(
                     text = confirmButtonTitle,
-                    containerColor = AirwallexColor.TextError,
+                    containerColor = AirwallexColor.textError(),
                     onClick = onConfirm,
                     modifier = Modifier.weight(1f),
                 )

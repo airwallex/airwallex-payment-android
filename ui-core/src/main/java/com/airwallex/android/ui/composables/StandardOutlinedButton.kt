@@ -21,7 +21,7 @@ fun StandardOutlinedButton(
     text: String,
     buttonHeight: Dp = 52.dp,
     buttonWidth: Modifier.() -> Modifier = { this.fillMaxWidth() },
-    textColor: Color = MaterialTheme.colorScheme.primary,
+    textColor: Color = AirwallexColor.theme(),
     borderColor: Color = AirwallexColor.Gray30,
 ) {
     OutlinedButton(

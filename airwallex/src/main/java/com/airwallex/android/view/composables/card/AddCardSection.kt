@@ -121,7 +121,7 @@ internal fun AddCardSection(
             text = stringResource(R.string.airwallex_card_information_title),
             textAlign = TextAlign.Left,
             typography = AirwallexTypography.Body200,
-            color = AirwallexColor.TextPrimary,
+            color = AirwallexColor.textPrimary(),
             modifier = Modifier.padding(
                 vertical = 12.dp,
             ),
@@ -212,7 +212,7 @@ internal fun AddCardSection(
                 text = stringResource(id = errorMessage),
                 textAlign = TextAlign.Left,
                 typography = AirwallexTypography.Caption100,
-                color = MaterialTheme.colorScheme.error,
+                color = AirwallexColor.textError(),
                 modifier = Modifier.padding(start = 16.dp),
             )
         }
@@ -223,7 +223,7 @@ internal fun AddCardSection(
             text = stringResource(R.string.airwallex_card_name_hint),
             textAlign = TextAlign.Left,
             typography = AirwallexTypography.Body200,
-            color = AirwallexColor.TextPrimary,
+            color = AirwallexColor.textPrimary(),
             modifier = Modifier.padding(
                 vertical = 12.dp,
             ),
@@ -267,7 +267,7 @@ internal fun AddCardSection(
                 text = stringResource(R.string.airwallex_email_hint),
                 textAlign = TextAlign.Left,
                 typography = AirwallexTypography.Body200,
-                color = AirwallexColor.TextPrimary,
+                color = AirwallexColor.textPrimary(),
                 modifier = Modifier.padding(
                     vertical = 12.dp,
                 ),
@@ -303,7 +303,7 @@ internal fun AddCardSection(
                     text = stringResource(R.string.airwallex_billing_info),
                     textAlign = TextAlign.Left,
                     typography = AirwallexTypography.Body200,
-                    color = AirwallexColor.TextPrimary,
+                    color = AirwallexColor.textPrimary(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -495,7 +495,7 @@ internal fun AddCardSection(
                         text = stringResource(id = billingErrorMessage),
                         textAlign = TextAlign.Left,
                         typography = AirwallexTypography.Caption100,
-                        color = MaterialTheme.colorScheme.error,
+                        color = AirwallexColor.textError(),
                         modifier = Modifier.padding(start = 16.dp),
                     )
                 }

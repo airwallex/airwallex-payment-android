@@ -41,7 +41,7 @@ fun StandardCheckBox(
             Checkbox(
                 checked = checked,
                 onCheckedChange = null,
-                colors = CheckboxDefaults.colors(uncheckedColor = MaterialTheme.colorScheme.tertiaryContainer),
+                colors = CheckboxDefaults.colors(uncheckedColor = AirwallexColor.borderPerceivable()),
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -50,7 +50,7 @@ fun StandardCheckBox(
                 text = text,
                 textAlign = TextAlign.Left,
                 typography = AirwallexTypography.Caption100,
-                color = AirwallexColor.TextPrimary,
+                color = AirwallexColor.textPrimary(),
                 modifier = Modifier
                     .padding(top = 2.dp)
                     .weight(1f),

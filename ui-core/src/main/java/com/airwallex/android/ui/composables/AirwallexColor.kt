@@ -11,7 +11,6 @@ object AirwallexColor {
     val Transparent = Color(0x00000000)
     val Black = Color(red = 0, green = 0, blue = 0)
     val White = Color(red = 255, green = 255, blue = 255)
-    val Grey100 = Color(0xff1A1D21)
     val Gray100 = Color(0xFF1A1D21)
     val Gray90 = Color(0xFF2F3237)
     val Gray80 = Color(0xFF42474D)
@@ -150,6 +149,7 @@ object AirwallexColor {
 
     // Border Colors
     fun borderDecorative(): Color = if (AirwallexThemeConfig.isDarkTheme) Gray80 else Gray20
+    fun borderDecorativeStrong(): Color = if (AirwallexThemeConfig.isDarkTheme) Gray70 else Gray40
 
     fun borderPerceivable(): Color = if (AirwallexThemeConfig.isDarkTheme) Gray60 else Gray50
 
