@@ -177,7 +177,7 @@ internal fun PaymentMethodsAccordionSection(
 
                         StandardText(
                             text = type.displayName ?: type.name,
-                            color = if (type == selectedOption) MaterialTheme.colorScheme.primary else AirwallexColor.TextPrimary,
+                            color = if (type == selectedOption) AirwallexColor.theme() else AirwallexColor.textPrimary(),
                             typography = if (type == selectedOption) AirwallexTypography.Body200Bold else AirwallexTypography.Body200,
                             textAlign = TextAlign.Left,
                             overflow = TextOverflow.Ellipsis,

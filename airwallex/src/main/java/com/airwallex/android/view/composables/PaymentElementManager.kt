@@ -1,14 +1,12 @@
 package com.airwallex.android.view.composables
 
 import android.content.Context
-import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.ui.R
+import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.PaymentOperationListener
 import com.airwallex.android.view.PaymentOperationsViewModel
 import com.airwallex.android.view.composables.PaymentElementManager.Companion.create
@@ -105,20 +103,6 @@ class PaymentElementManager private constructor(
             }
             return create(session, airwallex, configuration, listener)
         }
-
-        private fun alert(title: String = "", message: String, activity: ComponentActivity) {
-            if (!activity.isFinishing) {
-                AlertDialog.Builder(activity)
-                    .setTitle(title)
-                    .setMessage(message)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.airwallex_okay) { dialogInterface, _ ->
-                        dialogInterface.dismiss()
-                    }
-                    .create()
-                    .show()
-            }
-        }
     }
 
     /**
@@ -129,12 +113,14 @@ class PaymentElementManager private constructor(
      */
     @Composable
     fun Content() {
-        PaymentElement(
-            session = session,
-            airwallex = airwallex,
-            configuration = configuration,
-            operationListener = operationListener,
-            operationsViewModel = operationsViewModel
-        )
+        AirwallexTheme {
+            PaymentElement(
+                session = session,
+                airwallex = airwallex,
+                configuration = configuration,
+                operationListener = operationListener,
+                operationsViewModel = operationsViewModel
+            )
+        }
     }
 }
