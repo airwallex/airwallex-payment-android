@@ -14,7 +14,7 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentStatus
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.view.Constants.createPaymentMethod
-import com.airwallex.android.view.PaymentFlowViewModel.PaymentOperationType
+import com.airwallex.android.view.PaymentFlowViewModel.PaymentFlowType
 import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -247,7 +247,7 @@ class PaymentFlowViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITHOUT_CVC, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITHOUT_CVC, result.flowType)
         assertTrue(result.status is AirwallexPaymentStatus.Failure)
         assertEquals(
             "confirm with paymentConsent only support AirwallexPaymentSession",
@@ -286,7 +286,7 @@ class PaymentFlowViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITHOUT_CVC, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITHOUT_CVC, result.flowType)
         assertEquals(expectedStatus, result.status)
 
         job.cancel()
@@ -328,7 +328,7 @@ class PaymentFlowViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_CVC, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_CVC, result.flowType)
         assertEquals(expectedStatus, result.status)
 
         job.cancel()
@@ -354,7 +354,7 @@ class PaymentFlowViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_CVC, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_CVC, result.flowType)
         assertTrue(result.status is AirwallexPaymentStatus.Failure)
         assertEquals(
             "checkout with paymentConsent without paymentMethod",
@@ -384,7 +384,7 @@ class PaymentFlowViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_CVC, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_CVC, result.flowType)
         assertTrue(result.status is AirwallexPaymentStatus.Failure)
         assertEquals(
             "checkout with paymentConsent only support AirwallexPaymentSession",
@@ -421,7 +421,7 @@ class PaymentFlowViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_GOOGLE_PAY, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_GOOGLE_PAY, result.flowType)
         assertEquals(expectedStatus, result.status)
 
         job.cancel()
@@ -455,7 +455,7 @@ class PaymentFlowViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_GOOGLE_PAY, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_GOOGLE_PAY, result.flowType)
         assertTrue(result.status is AirwallexPaymentStatus.Failure)
 
         job.cancel()
@@ -493,7 +493,7 @@ class PaymentFlowViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_NEW_CARD, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_NEW_CARD, result.flowType)
         assertEquals(expectedStatus, result.status)
 
         job.cancel()
@@ -516,7 +516,7 @@ class PaymentFlowViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_NEW_CARD, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_NEW_CARD, result.flowType)
         assertTrue(result.status is AirwallexPaymentStatus.Failure)
         assertEquals(
             "checkout with new card only supports AirwallexPaymentSession",
