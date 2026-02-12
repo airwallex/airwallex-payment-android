@@ -3,6 +3,8 @@ package com.airwallex.android.ui.composables
 import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.ui.graphics.Color
+import androidx.core.content.ContextCompat
+import com.airwallex.android.ui.R
 
 /**
  * Dark mode configuration for Airwallex SDK UI.
@@ -25,7 +27,7 @@ enum class DarkMode {
  */
 object AirwallexThemeConfig {
     private var configuredDarkMode: DarkMode = DarkMode.SYSTEM
-    private var configuredThemeColor: Color = AirwallexColor.Ultraviolet70
+    private var configuredThemeColor: Color? = null
     private var applicationContext: Context? = null
 
     /**
@@ -41,16 +43,34 @@ object AirwallexThemeConfig {
             }
         }
 
-    val themeColor: Color
-        get() = configuredThemeColor
-
     /**
-     * Initialize context for system dark mode detection.
-     * Called lazily when AirwallexTheme is first rendered.
-     *
-     * @param context Application or Activity context
+     * Current theme color. If not set programmatically, reads from airwallex_tint_color resource.
+     * Falls back to Ultraviolet70 if context is not available.
      */
-    internal fun initializeContext(context: Context) {
+    val themeColor: Color
+        get() {
+            // If color was set programmatically, use it
+            configuredThemeColor?.let { return it }
+
+            // Try to read from airwallex_tint_color resource
+            applicationContext?.let { context ->
+                try {
+                    val colorInt = ContextCompat.getColor(context, R.color.airwallex_tint_color)
+                    val color = Color(colorInt)
+                    configuredThemeColor = color // Cache it
+                    return color
+                } catch (e: Exception) {
+                    android.util.Log.w("AirwallexThemeConfig", "Failed to read airwallex_tint_color", e)
+                }
+            }
+
+            // Fallback to default
+            val defaultColor = AirwallexColor.Ultraviolet70
+            configuredThemeColor = defaultColor
+            return defaultColor
+        }
+
+    fun initializeContext(context: Context) {
         if (applicationContext == null) {
             applicationContext = context.applicationContext
         }

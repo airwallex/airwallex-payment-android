@@ -57,6 +57,7 @@ class AirwallexStarter {
             Airwallex.initialize(application, configuration)
 
             // Configure theme
+            AirwallexThemeConfig.initializeContext(application)
             themeColor?.let { AirwallexThemeConfig.setThemeColor(it) }
             AirwallexThemeConfig.setDarkMode(darkMode)
         }

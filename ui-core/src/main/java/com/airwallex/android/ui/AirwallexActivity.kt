@@ -2,18 +2,22 @@ package com.airwallex.android.ui
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.ViewStub
+import android.widget.ProgressBar
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.ui.graphics.toArgb
 import com.airwallex.android.core.AirwallexInternalActivity
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
+import com.airwallex.android.ui.composables.AirwallexThemeConfig
 import com.airwallex.android.ui.databinding.ActivityAirwallexBinding
 
 abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivity {
@@ -144,6 +148,10 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
             try {
                 loadingDialog = Dialog(activity).apply {
                     setContentView(R.layout.airwallex_loading)
+                    val progressBar = findViewById<ProgressBar>(R.id.airwallex_progress_bar)
+                    progressBar.indeterminateTintList = ColorStateList.valueOf(
+                        AirwallexThemeConfig.themeColor.toArgb()
+                    )
                     window?.apply {
                         setBackgroundDrawableResource(android.R.color.transparent)
                         // Clear any dim behind

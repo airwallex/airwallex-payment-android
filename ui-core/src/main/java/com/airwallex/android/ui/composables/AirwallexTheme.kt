@@ -17,9 +17,7 @@ fun AirwallexTheme(
 ) {
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        AirwallexThemeConfig.initializeContext(context)
-    }
+    AirwallexThemeConfig.initializeContext(context)
 
     val tintColor = customTintColor ?: AirwallexThemeConfig.themeColor
     val isDark = darkTheme ?: AirwallexThemeConfig.isDarkTheme
