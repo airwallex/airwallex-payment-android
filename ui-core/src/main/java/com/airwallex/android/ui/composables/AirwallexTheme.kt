@@ -92,49 +92,34 @@ private fun createDarkColorScheme(tintColor: Color): ColorScheme {
     val primaryColor = tintColor.adjustByLevel(AirwallexColor.Level.Level40)
 
     return ColorScheme(
-        // Primary theme color (borderInteractive, iconLink, textLink)
         primary = primaryColor,
         onPrimary = AirwallexColor.Gray90,
         primaryContainer = AirwallexColor.Gray90,
         onPrimaryContainer = primaryColor,
         inversePrimary = primaryColor,
-
-        // Secondary colors
-        secondary = AirwallexColor.Gray50, // textSecondary, iconSecondary
+        secondary = AirwallexColor.Gray50,
         onSecondary = AirwallexColor.Gray90,
-        secondaryContainer = AirwallexColor.Gray90, // backgroundSecondary
+        secondaryContainer = AirwallexColor.Gray90,
         onSecondaryContainer = primaryColor,
-
-        // Tertiary colors
         tertiary = AirwallexColor.Gray80,
         onTertiary = primaryColor,
         tertiaryContainer = AirwallexColor.Gray80,
         onTertiaryContainer = primaryColor,
-
-        // Background colors
-        background = AirwallexColor.Gray100, // backgroundPrimary
-        onBackground = AirwallexColor.Gray10, // textPrimary
-
-        // Surface colors
+        background = AirwallexColor.Gray100,
+        onBackground = AirwallexColor.Gray10,
         surface = AirwallexColor.Gray90,
-        onSurface = AirwallexColor.Gray50, // textSecondary
+        onSurface = AirwallexColor.Gray50,
         surfaceVariant = primaryColor,
-        onSurfaceVariant = AirwallexColor.Gray30, // iconPrimary
+        onSurfaceVariant = AirwallexColor.Gray30,
         surfaceTint = primaryColor,
         inverseSurface = AirwallexColor.Gray20,
-        inverseOnSurface = AirwallexColor.Gray100, // textInverse
-
-        // Error colors
-        error = AirwallexColor.Red60, // borderError (dark mode uses red60)
+        inverseOnSurface = AirwallexColor.Gray100,
+        error = AirwallexColor.Red60,
         onError = AirwallexColor.White,
         errorContainer = tintColor.adjustByLevel(AirwallexColor.Level.Level90),
-        onErrorContainer = AirwallexColor.Red40, // textError
-
-        // Border colors
-        outline = AirwallexColor.Gray60, // borderPerceivable
-        outlineVariant = AirwallexColor.Gray80, // borderDecorative
-
-        // Other colors
+        onErrorContainer = AirwallexColor.Red40,
+        outline = AirwallexColor.Gray60,
+        outlineVariant = AirwallexColor.Gray80,
         scrim = AirwallexColor.Black,
         surfaceBright = AirwallexColor.Gray70,
         surfaceContainer = tintColor.adjustByLevel(AirwallexColor.Level.Level90),

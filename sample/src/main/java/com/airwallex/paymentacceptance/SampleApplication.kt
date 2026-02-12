@@ -79,7 +79,8 @@ class SampleApplication : Application() {
                 .setRedirectMode(RedirectMode.CUSTOM_TAB)
 //                .setRedirectMode(RedirectMode.CUSTOM_TAB_BOTTOM_SHEET)
 //                .setRedirectMode(RedirectMode.EXTERNAL_BROWSER)
-                .build()
+                .build(),
+//            themeColor = "0xFF08AF61", // set theme color here
         )
     }
 }
