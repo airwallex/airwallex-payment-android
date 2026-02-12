@@ -23,8 +23,11 @@ import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.needHiddenParam
 import com.airwallex.android.view.util.toPaymentFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -43,16 +46,9 @@ class SchemaPaymentViewModel(
     // Map for additional params. Currently only used for country code in Enum type fields.
     private val additionalParams = mutableMapOf<String, String>()
 
-    // StateFlow for payment result - safe during configuration changes
-    private val _paymentResult = MutableStateFlow<AirwallexPaymentStatus?>(null)
-    val paymentResult: StateFlow<AirwallexPaymentStatus?> = _paymentResult.asStateFlow()
-
-    /**
-     * Clears the payment result. Call this after handling the result in the UI.
-     */
-    fun clearPaymentResult() {
-        _paymentResult.value = null
-    }
+    // SharedFlow for payment result - one-time event stream
+    private val _paymentResult = MutableSharedFlow<AirwallexPaymentStatus>(replay = 0)
+    val paymentResult: SharedFlow<AirwallexPaymentStatus> = _paymentResult.asSharedFlow()
 
     fun retrieveSchemaDataFromCache(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
         return schemaDataCache[paymentMethodType]
@@ -141,9 +137,8 @@ class SchemaPaymentViewModel(
         typeInfo: PaymentMethodTypeInfo
     ) = viewModelScope.launch {
         AirwallexLogger.info("SchemaPaymentViewModel checkoutWithSchema, type = ${paymentMethod.type}")
-        checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow(transactionMode)).also { status ->
-            _paymentResult.value = status
-        }
+        val status = checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow(transactionMode))
+        _paymentResult.emit(status)
     }
 
     fun checkoutWithSchema(
@@ -152,9 +147,8 @@ class SchemaPaymentViewModel(
         AirwallexLogger.info("SchemaPaymentViewModel checkoutWithSchema, type = ${paymentMethodType.name}")
         val paymentMethod = PaymentMethod.Builder().setType(paymentMethodType.name).build()
         AirwallexLogger.info("SchemaPaymentViewModel get more payment Info fields on one-off flow.")
-        checkout(paymentMethod).also { status ->
-            _paymentResult.value = status
-        }
+        val status = checkout(paymentMethod)
+        _paymentResult.emit(status)
     }
 
     @StringRes
