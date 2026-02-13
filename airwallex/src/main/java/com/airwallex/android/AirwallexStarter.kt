@@ -26,7 +26,6 @@ import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.core.util.SessionUtils.getIntentId
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.ui.composables.AirwallexThemeConfig
-import com.airwallex.android.ui.composables.DarkMode
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
@@ -46,20 +45,15 @@ class AirwallexStarter {
          * @param themeColor Optional theme color as hex string ("#00FF00", "0xFF00FF00", etc). If null or invalid, uses default purple.
          * @param darkMode Dark mode preference. Defaults to SYSTEM (follows device setting).
          */
-        @JvmOverloads
         fun initialize(
             application: Application,
             configuration: AirwallexConfiguration,
-            themeColor: String? = null,
-            darkMode: DarkMode = DarkMode.SYSTEM
         ) {
             initializeActivityLaunch(application)
             Airwallex.initialize(application, configuration)
 
             // Configure theme
             AirwallexThemeConfig.initializeContext(application)
-            themeColor?.let { AirwallexThemeConfig.setThemeColor(it) }
-            AirwallexThemeConfig.setDarkMode(darkMode)
         }
 
         /**

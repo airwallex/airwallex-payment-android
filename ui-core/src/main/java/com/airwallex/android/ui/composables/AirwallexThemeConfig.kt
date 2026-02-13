@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.ui.R
 
 /**
@@ -32,23 +33,32 @@ object AirwallexThemeConfig {
 
     /**
      * Current dark theme state. Resolves SYSTEM mode to actual boolean.
+     * Priority: PaymentAppearance > programmatic config > system setting
      */
     val isDarkTheme: Boolean
-        get() = when (configuredDarkMode) {
-            DarkMode.LIGHT -> false
-            DarkMode.DARK -> true
-            DarkMode.SYSTEM -> {
-                // Get from application context if available, otherwise default to false
-                applicationContext?.isSystemInDarkMode() ?: false
+        get() {
+            // Check PaymentAppearance from AirwallexConfiguration first
+            AirwallexPlugins.paymentAppearance?.isDarkTheme?.let { return it }
+
+            // Fall back to programmatic configuration
+            return when (configuredDarkMode) {
+                DarkMode.LIGHT -> false
+                DarkMode.DARK -> true
+                DarkMode.SYSTEM -> {
+                    // Get from application context if available, otherwise default to false
+                    applicationContext?.isSystemInDarkMode() ?: false
+                }
             }
         }
 
     /**
-     * Current theme color. If not set programmatically, reads from airwallex_tint_color resource.
-     * Falls back to Ultraviolet70 if context is not available.
+     * Current theme color.
+     * Priority: PaymentAppearance > programmatic config > resource > default
      */
     val themeColor: Color
         get() {
+            AirwallexPlugins.paymentAppearance?.themeColor?.let { return Color(it) }
+
             // If color was set programmatically, use it
             configuredThemeColor?.let { return it }
 
@@ -65,9 +75,7 @@ object AirwallexThemeConfig {
             }
 
             // Fallback to default
-            val defaultColor = AirwallexColor.Ultraviolet70
-            configuredThemeColor = defaultColor
-            return defaultColor
+            return AirwallexColor.Ultraviolet70
         }
 
     fun initializeContext(context: Context) {
