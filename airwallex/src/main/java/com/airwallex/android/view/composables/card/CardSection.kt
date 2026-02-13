@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -211,6 +210,7 @@ internal fun CardSection(
                             card.last4,
                         ),
                         typography = AirwallexTypography.Body200,
+                        color = AirwallexColor.textPrimary()
                     )
 
                     Spacer(modifier = Modifier.weight(1f))

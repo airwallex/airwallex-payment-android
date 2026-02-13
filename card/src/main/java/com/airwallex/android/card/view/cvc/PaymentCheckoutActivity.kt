@@ -1,8 +1,14 @@
 package com.airwallex.android.card.view.cvc
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.drawable.DrawableCompat
 import com.airwallex.android.card.R
 import com.airwallex.android.card.databinding.ActivityPaymentCheckoutBinding
 import com.airwallex.android.core.Airwallex
@@ -15,6 +21,7 @@ import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.core.util.CurrencyUtils.formatPrice
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
+import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.extension.getExtraArgs
 import java.util.*
 
@@ -60,6 +67,20 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         return R.drawable.airwallex_ic_back
     }
 
+    override fun initView() {
+        super.initView()
+
+        // Tint the back button with AirwallexColor.iconPrimary()
+        supportActionBar?.let { actionBar ->
+            val upArrow = AppCompatResources.getDrawable(this, homeAsUpIndicatorResId())
+            upArrow?.let {
+                val wrappedDrawable = DrawableCompat.wrap(it)
+                DrawableCompat.setTint(wrappedDrawable, AirwallexColor.iconPrimary().toArgb())
+                actionBar.setHomeAsUpIndicator(wrappedDrawable)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding.header.text = getString(
@@ -76,9 +97,14 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                 paymentMethod.card?.last4
             )
         )
+        viewBinding.header.setTextColor(AirwallexColor.textPrimary().toArgb())
+
         viewBinding.atlCardCvc.setCardNumber(paymentMethod.card?.number)
         viewBinding.tvTotalPrice.text =
             getString(R.string.airwallex_card_total, formatPrice(session.currency, session.amount))
+        viewBinding.tvTotalPrice.setTextColor(AirwallexColor.textSecondary().toArgb())
+
+        setupButtonColors()
 
         viewBinding.atlCardCvc.afterTextChanged {
             updateButtonStatus()
@@ -88,6 +114,38 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
             startConfirmPaymentIntent()
         }
         updateButtonStatus()
+    }
+
+    private fun setupButtonColors() {
+        val textColorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(-android.R.attr.state_enabled),
+                intArrayOf()
+            ),
+            intArrayOf(
+                AirwallexColor.textSecondary().toArgb(),
+                AirwallexColor.textInverse().toArgb()
+            )
+        )
+        viewBinding.rlPayNow.setTextColor(textColorStateList)
+
+        val backgroundDrawable = StateListDrawable()
+
+        val disabledDrawable = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            setColor(AirwallexColor.borderDecorative().toArgb())
+            cornerRadius = 6f * resources.displayMetrics.density
+        }
+        backgroundDrawable.addState(intArrayOf(-android.R.attr.state_enabled), disabledDrawable)
+
+        val enabledDrawable = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            setColor(AirwallexColor.theme().toArgb())
+            cornerRadius = 6f * resources.displayMetrics.density
+        }
+        backgroundDrawable.addState(intArrayOf(), enabledDrawable)
+
+        viewBinding.rlPayNow.background = backgroundDrawable
     }
 
     private fun startConfirmPaymentIntent() {

@@ -2,6 +2,7 @@ package com.airwallex.android.ui.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -12,8 +13,11 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.compose.ui.graphics.toArgb
 import com.airwallex.android.ui.R
 import com.airwallex.android.ui.R.styleable
+import com.airwallex.android.ui.composables.AirwallexColor
+import com.airwallex.android.ui.util.EditTextColorUtil
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
@@ -59,6 +63,34 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
 
         tlInput = findViewById(R.id.tlInput)
         teInput = findViewById(R.id.teInput)
+
+        teInput.setTextColor(AirwallexColor.textPrimary().toArgb())
+
+        EditTextColorUtil.applyCursorColor(teInput, AirwallexColor.theme(), context)
+
+        val boxStrokeStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_focused),
+                intArrayOf()
+            ),
+            intArrayOf(
+                AirwallexColor.theme().toArgb(),
+                AirwallexColor.borderDecorative().toArgb()
+            )
+        )
+        tlInput.setBoxStrokeColorStateList(boxStrokeStateList)
+
+        val hintStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_focused),
+                intArrayOf()
+            ),
+            intArrayOf(
+                AirwallexColor.theme().toArgb(),
+                AirwallexColor.textPlaceholder().toArgb()
+            )
+        )
+        tlInput.setHintTextColor(hintStateList)
 
         context.theme.obtainStyledAttributes(
             attrs,

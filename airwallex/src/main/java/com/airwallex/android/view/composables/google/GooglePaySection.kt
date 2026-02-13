@@ -65,8 +65,10 @@ internal fun GooglePaySection(
                 typography = AirwallexTypography.Body200,
             )
 
-            HorizontalDivider(modifier = Modifier.weight(1f),
-                color = AirwallexColor.borderDecorative())
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = AirwallexColor.borderDecorative()
+            )
         }
     }
 }
