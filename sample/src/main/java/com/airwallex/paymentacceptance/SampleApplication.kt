@@ -80,11 +80,11 @@ class SampleApplication : Application() {
                     )
                 )
                 .setRedirectMode(RedirectMode.CUSTOM_TAB)
-                .setPaymentAppearance(
-                    PaymentAppearance(
-                        themeColor = "DA8C21".toColorInt(), // set theme color here
-                    )
-                )
+//                .setPaymentAppearance(
+//                    PaymentAppearance(
+//                        themeColor = "#DA8C21".toColorInt(), // set theme color here
+//                    )
+//                )
 //                .setRedirectMode(RedirectMode.CUSTOM_TAB_BOTTOM_SHEET)
 //                .setRedirectMode(RedirectMode.EXTERNAL_BROWSER)
                 .build(),
