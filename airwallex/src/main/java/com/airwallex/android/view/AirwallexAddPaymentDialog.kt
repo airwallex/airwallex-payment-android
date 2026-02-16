@@ -32,7 +32,7 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.composables.PaymentElementConfiguration
-import com.airwallex.android.view.composables.PaymentElementManager
+import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.EVENT_PAYMENT_CANCELLED
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
@@ -106,11 +106,11 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
             setContent {
                 AirwallexTheme {
                     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                        var paymentState by remember { mutableStateOf<PaymentElementManager?>(null) }
+                        var paymentState by remember { mutableStateOf<PaymentElement?>(null) }
 
                         LaunchedEffect(Unit) {
                             setLoadingProgress(true)
-                            PaymentElementManager.create(
+                            PaymentElement.create(
                                 session = session,
                                 airwallex = airwallex,
                                 configuration = PaymentElementConfiguration.Card(
