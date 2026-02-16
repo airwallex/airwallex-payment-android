@@ -304,4 +304,9 @@ class PaymentFlowViewModel(
             return PaymentFlowViewModel(airwallex, session) as T
         }
     }
+
+    companion object {
+        const val COUNTRY_CODE = "country_code"
+        const val FLOW = "flow"
+    }
 }
