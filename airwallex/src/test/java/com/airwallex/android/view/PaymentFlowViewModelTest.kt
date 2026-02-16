@@ -14,7 +14,7 @@ import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentStatus
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.view.Constants.createPaymentMethod
-import com.airwallex.android.view.PaymentOperationsViewModel.PaymentOperationType
+import com.airwallex.android.view.PaymentFlowViewModel.PaymentFlowType
 import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -43,7 +43,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.math.BigDecimal
 
-class PaymentOperationsViewModelTest {
+class PaymentFlowViewModelTest {
     private lateinit var airwallex: Airwallex
     private val testDispatcher = StandardTestDispatcher()
 
@@ -89,7 +89,7 @@ class PaymentOperationsViewModelTest {
             airwallex.fetchAvailablePaymentMethodsAndConsents(session)
         } returns Result.success(Pair(mockMethods, mockConsents))
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
         val result = viewModel.fetchAvailablePaymentMethodsAndConsents()
 
         assertTrue(result.isSuccess)
@@ -108,7 +108,7 @@ class PaymentOperationsViewModelTest {
             airwallex.fetchAvailablePaymentMethodsAndConsents(session)
         } returns Result.failure(exception)
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
         val result = viewModel.fetchAvailablePaymentMethodsAndConsents()
 
         assertTrue(result.isFailure)
@@ -136,10 +136,10 @@ class PaymentOperationsViewModelTest {
             slot.captured.onSuccess(paymentConsent)
         }
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
         // Collect the SharedFlow in background
-        val results = mutableListOf<PaymentOperationsViewModel.DeleteConsentResult>()
+        val results = mutableListOf<PaymentFlowViewModel.DeleteConsentResult>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.deleteConsentResult.collect { results.add(it) }
         }
@@ -149,8 +149,8 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertTrue(result is PaymentOperationsViewModel.DeleteConsentResult.Success)
-        assertEquals(paymentConsent, (result as PaymentOperationsViewModel.DeleteConsentResult.Success).consent)
+        assertTrue(result is PaymentFlowViewModel.DeleteConsentResult.Success)
+        assertEquals(paymentConsent, (result as PaymentFlowViewModel.DeleteConsentResult.Success).consent)
 
         coVerify {
             airwallex.disablePaymentConsent(
@@ -173,9 +173,9 @@ class PaymentOperationsViewModelTest {
             airwallex.getClientSecret(session)
         } returns null
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.DeleteConsentResult>()
+        val results = mutableListOf<PaymentFlowViewModel.DeleteConsentResult>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.deleteConsentResult.collect { results.add(it) }
         }
@@ -185,8 +185,8 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertTrue(result is PaymentOperationsViewModel.DeleteConsentResult.Failure)
-        assertTrue((result as PaymentOperationsViewModel.DeleteConsentResult.Failure).exception is AirwallexCheckoutException)
+        assertTrue(result is PaymentFlowViewModel.DeleteConsentResult.Failure)
+        assertTrue((result as PaymentFlowViewModel.DeleteConsentResult.Failure).exception is AirwallexCheckoutException)
         assertEquals("clientSecret is null", result.exception.message)
 
         job.cancel()
@@ -212,9 +212,9 @@ class PaymentOperationsViewModelTest {
             slot.captured.onFailed(exception)
         }
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.DeleteConsentResult>()
+        val results = mutableListOf<PaymentFlowViewModel.DeleteConsentResult>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.deleteConsentResult.collect { results.add(it) }
         }
@@ -224,8 +224,8 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertTrue(result is PaymentOperationsViewModel.DeleteConsentResult.Failure)
-        assertTrue((result as PaymentOperationsViewModel.DeleteConsentResult.Failure).exception is AirwallexCheckoutException)
+        assertTrue(result is PaymentFlowViewModel.DeleteConsentResult.Failure)
+        assertTrue((result as PaymentFlowViewModel.DeleteConsentResult.Failure).exception is AirwallexCheckoutException)
 
         job.cancel()
     }
@@ -235,9 +235,9 @@ class PaymentOperationsViewModelTest {
         val session = createRecurringSession()
         val paymentConsent = mockk<PaymentConsent>(relaxed = true)
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.PaymentResultEvent>()
+        val results = mutableListOf<PaymentFlowViewModel.PaymentResultEvent>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.paymentResult.collect { results.add(it) }
         }
@@ -247,7 +247,7 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITHOUT_CVC, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITHOUT_CVC, result.flowType)
         assertTrue(result.status is AirwallexPaymentStatus.Failure)
         assertEquals(
             "confirm with paymentConsent only support AirwallexPaymentSession",
@@ -274,9 +274,9 @@ class PaymentOperationsViewModelTest {
             slot.captured.onCompleted(expectedStatus)
         }
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.PaymentResultEvent>()
+        val results = mutableListOf<PaymentFlowViewModel.PaymentResultEvent>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.paymentResult.collect { results.add(it) }
         }
@@ -286,7 +286,7 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITHOUT_CVC, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITHOUT_CVC, result.flowType)
         assertEquals(expectedStatus, result.status)
 
         job.cancel()
@@ -316,9 +316,9 @@ class PaymentOperationsViewModelTest {
             slot.captured.onCompleted(expectedStatus)
         }
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.PaymentResultEvent>()
+        val results = mutableListOf<PaymentFlowViewModel.PaymentResultEvent>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.paymentResult.collect { results.add(it) }
         }
@@ -328,7 +328,7 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_CVC, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_CVC, result.flowType)
         assertEquals(expectedStatus, result.status)
 
         job.cancel()
@@ -342,9 +342,9 @@ class PaymentOperationsViewModelTest {
         }
         val cvc = "123"
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.PaymentResultEvent>()
+        val results = mutableListOf<PaymentFlowViewModel.PaymentResultEvent>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.paymentResult.collect { results.add(it) }
         }
@@ -354,7 +354,7 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_CVC, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_CVC, result.flowType)
         assertTrue(result.status is AirwallexPaymentStatus.Failure)
         assertEquals(
             "checkout with paymentConsent without paymentMethod",
@@ -372,9 +372,9 @@ class PaymentOperationsViewModelTest {
         }
         val cvc = "123"
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.PaymentResultEvent>()
+        val results = mutableListOf<PaymentFlowViewModel.PaymentResultEvent>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.paymentResult.collect { results.add(it) }
         }
@@ -384,7 +384,7 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_CVC, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_CVC, result.flowType)
         assertTrue(result.status is AirwallexPaymentStatus.Failure)
         assertEquals(
             "checkout with paymentConsent only support AirwallexPaymentSession",
@@ -409,9 +409,9 @@ class PaymentOperationsViewModelTest {
             slot.captured.onCompleted(expectedStatus)
         }
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.PaymentResultEvent>()
+        val results = mutableListOf<PaymentFlowViewModel.PaymentResultEvent>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.paymentResult.collect { results.add(it) }
         }
@@ -421,7 +421,7 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_GOOGLE_PAY, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_GOOGLE_PAY, result.flowType)
         assertEquals(expectedStatus, result.status)
 
         job.cancel()
@@ -443,9 +443,9 @@ class PaymentOperationsViewModelTest {
             slot.captured.onCompleted(expectedStatus)
         }
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.PaymentResultEvent>()
+        val results = mutableListOf<PaymentFlowViewModel.PaymentResultEvent>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.paymentResult.collect { results.add(it) }
         }
@@ -455,7 +455,7 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_GOOGLE_PAY, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_GOOGLE_PAY, result.flowType)
         assertTrue(result.status is AirwallexPaymentStatus.Failure)
 
         job.cancel()
@@ -481,9 +481,9 @@ class PaymentOperationsViewModelTest {
             slot.captured.onCompleted(expectedStatus)
         }
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.PaymentResultEvent>()
+        val results = mutableListOf<PaymentFlowViewModel.PaymentResultEvent>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.paymentResult.collect { results.add(it) }
         }
@@ -493,7 +493,7 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_NEW_CARD, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_NEW_CARD, result.flowType)
         assertEquals(expectedStatus, result.status)
 
         job.cancel()
@@ -518,9 +518,9 @@ class PaymentOperationsViewModelTest {
             slot.captured.onCompleted(expectedStatus)
         }
 
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
-        val results = mutableListOf<PaymentOperationsViewModel.PaymentResultEvent>()
+        val results = mutableListOf<PaymentFlowViewModel.PaymentResultEvent>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.paymentResult.collect { results.add(it) }
         }
@@ -530,9 +530,8 @@ class PaymentOperationsViewModelTest {
 
         assertEquals(1, results.size)
         val result = results.first()
-        assertEquals(PaymentOperationType.CHECKOUT_WITH_NEW_CARD, result.operationType)
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_NEW_CARD, result.flowType)
         assertEquals(expectedStatus, result.status)
-
         job.cancel()
     }
 
@@ -542,7 +541,7 @@ class PaymentOperationsViewModelTest {
         every { AnalyticsLogger.logPaymentView(any(), any()) } just Runs
 
         val session = createPaymentSession()
-        val viewModel = PaymentOperationsViewModel(airwallex, session)
+        val viewModel = PaymentFlowViewModel(airwallex, session)
 
         viewModel.trackScreenViewed("test_screen", mapOf("key" to "value"))
 
