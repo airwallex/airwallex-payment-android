@@ -9,50 +9,50 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.ui.R
-import com.airwallex.android.view.PaymentOperationListener
-import com.airwallex.android.view.PaymentOperationsViewModel
+import com.airwallex.android.view.PaymentFlowListener
+import com.airwallex.android.view.PaymentFlowViewModel
 
 class PaymentElementManager private constructor(
     private val session: AirwallexSession,
     private val airwallex: Airwallex,
     private val configuration: PaymentElementConfiguration,
-    private val operationsViewModel: PaymentOperationsViewModel,
-    private val operationListener: PaymentOperationListener
+    private val flowViewModel: PaymentFlowViewModel,
+    private val paymentFlowListener: PaymentFlowListener
 ) {
 
     companion object {
         /**
          * Creates an [PaymentElementManager] by fetching required data.
          *
-         * This method obtains a [PaymentOperationsViewModel] scoped to the Activity,
+         * This method obtains a [PaymentFlowViewModel] scoped to the Activity,
          * checks if data is already loaded (for configuration changes), and fetches
          * if necessary.
          *
          * @param session The Airwallex session containing payment information
          * @param airwallex The Airwallex instance for payment operations
          * @param configuration Configuration for the payment element
-         * @param operationListener Listener for payment operation callbacks
+         * @param paymentFlowListener Listener for payment operation callbacks
          * @return Result containing the state or an error if fetching failed
          */
         suspend fun create(
             session: AirwallexSession,
             airwallex: Airwallex,
             configuration: PaymentElementConfiguration,
-            operationListener: PaymentOperationListener
+            paymentFlowListener: PaymentFlowListener
         ): Result<PaymentElementManager> {
             val viewModel = ViewModelProvider(
                 airwallex.activity,
-                PaymentOperationsViewModel.Factory(
+                PaymentFlowViewModel.Factory(
                     airwallex = airwallex,
                     session = session
                 )
-            )[PaymentOperationsViewModel::class.java]
+            )[PaymentFlowViewModel::class.java]
             viewModel.updateActivity(airwallex.activity)
             val alreadyLoaded = viewModel.availablePaymentMethods.value.isNotEmpty()
 
             // Determine if we need to fetch based on configuration
             val shouldFetch = when (configuration) {
-                is PaymentElementConfiguration.Card -> configuration.cardSchemes.isEmpty()
+                is PaymentElementConfiguration.Card -> configuration.supportedCardBrands.isEmpty()
                 is PaymentElementConfiguration.PaymentSheet -> true
             } && !alreadyLoaded
 
@@ -63,8 +63,8 @@ class PaymentElementManager private constructor(
                             session = session,
                             airwallex = airwallex,
                             configuration = configuration,
-                            operationsViewModel = viewModel,
-                            operationListener = operationListener
+                            flowViewModel = viewModel,
+                            paymentFlowListener = paymentFlowListener
                         )
                     }
             } else {
@@ -74,8 +74,8 @@ class PaymentElementManager private constructor(
                         session = session,
                         airwallex = airwallex,
                         configuration = configuration,
-                        operationsViewModel = viewModel,
-                        operationListener = operationListener
+                        flowViewModel = viewModel,
+                        paymentFlowListener = paymentFlowListener
                     )
                 )
             }
@@ -89,7 +89,7 @@ class PaymentElementManager private constructor(
             onPaymentResult: (AirwallexPaymentStatus) -> Unit,
             onError: ((Throwable) -> Unit)? = null
         ): Result<PaymentElementManager> {
-            val listener = object : PaymentOperationListener {
+            val listener = object : PaymentFlowListener {
                 override fun onLoadingStateChanged(isLoading: Boolean) {
                     onLoadingStateChanged(isLoading)
                 }
@@ -124,7 +124,7 @@ class PaymentElementManager private constructor(
      * Renders the payment element composable using pre-fetched data from the ViewModel.
      *
      * This composable does NOT fetch data - all data is already loaded during [create].
-     * It always uses the [PaymentOperationListener] provided at creation.
+     * It always uses the [PaymentFlowListener] provided at creation.
      */
     @Composable
     fun Content() {
@@ -132,8 +132,8 @@ class PaymentElementManager private constructor(
             session = session,
             airwallex = airwallex,
             configuration = configuration,
-            operationListener = operationListener,
-            operationsViewModel = operationsViewModel
+            paymentFlowListener = paymentFlowListener,
+            flowViewModel = flowViewModel
         )
     }
 }

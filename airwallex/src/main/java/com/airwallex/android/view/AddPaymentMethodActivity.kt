@@ -100,7 +100,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                                 session = session,
                                 airwallex = airwallex,
                                 configuration = PaymentElementConfiguration.Card(
-                                    cardSchemes = args.supportedCardSchemes
+                                    supportedCardBrands = args.supportedCardSchemes
                                 ),
                                 onLoadingStateChanged = { isLoading ->
                                     setLoadingProgress(loading = isLoading, cancelable = false)

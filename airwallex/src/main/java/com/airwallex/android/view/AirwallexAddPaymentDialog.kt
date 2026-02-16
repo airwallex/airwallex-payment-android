@@ -114,7 +114,7 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
                                 session = session,
                                 airwallex = airwallex,
                                 configuration = PaymentElementConfiguration.Card(
-                                    cardSchemes = supportedCardSchemes
+                                    supportedCardBrands = supportedCardSchemes
                                 ),
                                 onLoadingStateChanged = { isLoading ->
                                     setLoadingProgress(isLoading)
