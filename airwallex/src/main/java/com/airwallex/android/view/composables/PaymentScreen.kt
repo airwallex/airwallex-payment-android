@@ -19,7 +19,7 @@ import com.airwallex.android.ui.composables.StandardText
 @Suppress("LongMethod", "LongParameterList")
 @Composable
 internal fun PaymentScreen(
-    paymentElementState: PaymentElementManager,
+    paymentElementState: PaymentElement,
 ) {
     Column(
         modifier = Modifier

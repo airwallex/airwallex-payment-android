@@ -35,7 +35,7 @@ import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.PaymentElementConfiguration
-import com.airwallex.android.view.composables.PaymentElementManager
+import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
@@ -109,15 +109,15 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     @Composable
     private fun PaymentElementContent() {
-        var paymentState by remember { mutableStateOf<PaymentElementManager?>(null) }
+        var paymentState by remember { mutableStateOf<PaymentElement?>(null) }
 
         LaunchedEffect(Unit) {
             setLoadingProgress(loading = true, cancelable = false)
-            PaymentElementManager.create(
+            PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
                 configuration = PaymentElementConfiguration.Card(
-                    cardSchemes = args.supportedCardSchemes
+                    supportedCardBrands = args.supportedCardSchemes
                 ),
                 onLoadingStateChanged = { isLoading ->
                     setLoadingProgress(loading = isLoading, cancelable = false)

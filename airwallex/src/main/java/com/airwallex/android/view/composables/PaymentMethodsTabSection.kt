@@ -25,8 +25,8 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.view.PaymentOperationListener
-import com.airwallex.android.view.PaymentOperationsViewModel
+import com.airwallex.android.view.PaymentFlowListener
+import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.common.PaymentMethodTabCard
 import com.airwallex.android.view.composables.google.GooglePaySection
@@ -49,18 +49,18 @@ import kotlinx.coroutines.launch
 internal fun PaymentMethodsTabSection(
     session: AirwallexSession,
     airwallex: Airwallex,
-    operationListener: PaymentOperationListener,
+    paymentFlowListener: PaymentFlowListener,
 ) {
-    val operationsViewModel: PaymentOperationsViewModel = viewModel(
-        factory = PaymentOperationsViewModel.Factory(
+    val flowViewModel: PaymentFlowViewModel = viewModel(
+        factory = PaymentFlowViewModel.Factory(
             airwallex = airwallex,
             session = session
         ),
         viewModelStoreOwner = airwallex.activity
     )
 
-    val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
-    val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
+    val availablePaymentMethods by flowViewModel.availablePaymentMethods.collectAsState()
+    val availablePaymentConsents by flowViewModel.availablePaymentConsents.collectAsState()
 
     if (availablePaymentMethods.isNotEmpty()) {
         val lazyListState = rememberLazyListState()
@@ -89,11 +89,11 @@ internal fun PaymentMethodsTabSection(
                     allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
                     onClick = {
                         AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
-                        operationListener.onLoadingStateChanged(true)
-                        operationsViewModel.checkoutWithGooglePay()
+                        paymentFlowListener.onLoadingStateChanged(true)
+                        flowViewModel.checkoutWithGooglePay()
                     },
                     onScreenViewed = {
-                        operationsViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
+                        flowViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
                     },
                 )
                 if (availablePaymentMethods.isNotEmpty()) {
@@ -153,7 +153,7 @@ internal fun PaymentMethodsTabSection(
                             session = session,
                             airwallex = airwallex,
                             cardSchemes = type.cardSchemes.orEmpty(),
-                            operationListener = operationListener,
+                            paymentFlowListener = paymentFlowListener,
                         )
                     }
 
@@ -162,7 +162,7 @@ internal fun PaymentMethodsTabSection(
                             session = session,
                             airwallex = airwallex,
                             type = type,
-                            operationListener = operationListener,
+                            paymentFlowListener = paymentFlowListener,
                         )
                     }
                 }

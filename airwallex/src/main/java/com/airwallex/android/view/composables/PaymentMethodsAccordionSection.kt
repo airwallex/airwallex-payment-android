@@ -42,8 +42,8 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.view.PaymentOperationListener
-import com.airwallex.android.view.PaymentOperationsViewModel
+import com.airwallex.android.view.PaymentFlowListener
+import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.google.GooglePaySection
@@ -59,17 +59,17 @@ import com.airwallex.android.view.util.toSupportedIcons
 internal fun PaymentMethodsAccordionSection(
     session: AirwallexSession,
     airwallex: Airwallex,
-    operationListener: PaymentOperationListener,
+    paymentFlowListener: PaymentFlowListener,
 ) {
-    val operationsViewModel: PaymentOperationsViewModel = viewModel(
-        factory = PaymentOperationsViewModel.Factory(
+    val flowViewModel: PaymentFlowViewModel = viewModel(
+        factory = PaymentFlowViewModel.Factory(
             airwallex = airwallex,
             session = session
         ),
         viewModelStoreOwner = airwallex.activity
     )
-    val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
-    val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
+    val availablePaymentMethods by flowViewModel.availablePaymentMethods.collectAsState()
+    val availablePaymentConsents by flowViewModel.availablePaymentConsents.collectAsState()
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethods.first()) }
     var selectedIndex by remember { mutableIntStateOf(0) }
 
@@ -93,11 +93,11 @@ internal fun PaymentMethodsAccordionSection(
                 allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
                 onClick = {
                     AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
-                    operationListener.onLoadingStateChanged(true)
-                    operationsViewModel.checkoutWithGooglePay()
+                    paymentFlowListener.onLoadingStateChanged(true)
+                    flowViewModel.checkoutWithGooglePay()
                 },
                 onScreenViewed = {
-                    operationsViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
+                    flowViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
                 },
             )
             if (availablePaymentMethods.isNotEmpty()) {
@@ -209,7 +209,7 @@ internal fun PaymentMethodsAccordionSection(
                                     session = session,
                                     airwallex = airwallex,
                                     cardSchemes = type.cardSchemes.orEmpty(),
-                                    operationListener = operationListener,
+                                    paymentFlowListener = paymentFlowListener,
                                 )
                             }
 
@@ -218,7 +218,7 @@ internal fun PaymentMethodsAccordionSection(
                                     session = session,
                                     airwallex = airwallex,
                                     type = type,
-                                    operationListener = operationListener,
+                                    paymentFlowListener = paymentFlowListener,
                                 )
                             }
                         }
@@ -232,7 +232,7 @@ internal fun PaymentMethodsAccordionSection(
             airwallex = airwallex,
             cardSchemes = availablePaymentMethods.first().cardSchemes.orEmpty(),
             isSinglePaymentMethod = true,
-            operationListener = operationListener
+            paymentFlowListener = paymentFlowListener
         )
     }
 }

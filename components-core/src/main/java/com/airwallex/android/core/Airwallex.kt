@@ -575,7 +575,7 @@ class Airwallex internal constructor(
         val customerId = session.customerId
         return supervisorScope {
             val intentId = (session as? AirwallexPaymentSession)?.paymentIntent?.id
-            AirwallexLogger.info("PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
+            AirwallexLogger.info("Airwallex fetchAvailablePaymentMethodsAndConsents$intentId: customerId = $customerId")
             val retrieveConsents = async {
                 customerId?.takeIf { needRequestConsent(session) }
                     ?.let { retrieveAvailablePaymentConsentsPaged(secret, it) } ?: emptyList()
@@ -589,7 +589,7 @@ class Airwallex internal constructor(
                 Result.success(Pair(methods, filterPaymentConsentsBySession(session, methods, consents)))
             } catch (exception: AirwallexException) {
                 AirwallexLogger.error(
-                    "PaymentMethodsViewModel fetchAvailablePaymentMethodsAndConsents$intentId: failed ",
+                    "Airwallex fetchAvailablePaymentMethodsAndConsents$intentId: failed ",
                     exception
                 )
                 Result.failure(exception)

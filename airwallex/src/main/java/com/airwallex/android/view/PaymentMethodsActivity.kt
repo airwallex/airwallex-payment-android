@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
@@ -21,7 +20,7 @@ import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.PaymentElementConfiguration
-import com.airwallex.android.view.composables.PaymentElementManager
+import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.launch
@@ -44,16 +43,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     override val pageName: String
-        get() = viewModel.pageName
-
-    private val viewModel: PaymentMethodsViewModel by lazy {
-        ViewModelProvider(
-            this,
-            PaymentMethodsViewModel.Factory(
-                application, airwallex, session
-            ),
-        )[PaymentMethodsViewModel::class.java]
-    }
+        get() = "payment_method_list"
 
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
@@ -76,14 +66,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         super.onCreate(savedInstanceState)
         setLoadingProgress(loading = true, cancelable = false)
 
-        viewModel.updateActivity(this)
-
         lifecycleScope.launch {
-            PaymentElementManager.create(
+            PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
-                configuration = PaymentElementConfiguration.PaymentSheet(type = args.layoutType),
-                operationListener = object : PaymentOperationListener {
+                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType),
+                paymentFlowListener = object : PaymentFlowListener {
                     override fun onLoadingStateChanged(isLoading: Boolean) {
                         setLoadingProgress(loading = isLoading, cancelable = false)
                     }
@@ -120,7 +108,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         return R.drawable.airwallex_ic_close
     }
 
-    private fun initView(paymentElementState: PaymentElementManager) {
+    private fun initView(paymentElementState: PaymentElement) {
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
         viewBinding.composeView.apply {
             setContent {
