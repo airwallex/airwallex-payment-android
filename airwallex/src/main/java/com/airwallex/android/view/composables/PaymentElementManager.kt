@@ -3,6 +3,7 @@ package com.airwallex.android.view.composables
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModelProvider
+import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
@@ -39,6 +40,8 @@ class PaymentElementManager private constructor(
             configuration: PaymentElementConfiguration,
             operationListener: PaymentOperationListener
         ): Result<PaymentElementManager> {
+            AirwallexStarter.setupAnalyticsLogger(session)
+
             val viewModel = ViewModelProvider(
                 airwallex.activity,
                 PaymentOperationsViewModel.Factory(
@@ -98,7 +101,7 @@ class PaymentElementManager private constructor(
                 }
 
                 override fun onError(exception: Throwable, context: Context) {
-                    onError ?: super.onError(exception, context)
+                    onError?.invoke(exception) ?: super.onError(exception, context)
                 }
             }
             return create(session, airwallex, configuration, listener)

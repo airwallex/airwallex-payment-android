@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-parcelize'
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -40,6 +41,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
     }
 
     defaultConfig {
@@ -86,6 +91,11 @@ android {
 
     buildFeatures {
         viewBinding true
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.5.15'
     }
 
     lint {
@@ -122,6 +132,10 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.2"
     implementation 'androidx.webkit:webkit:1.14.0'
+
+    // Minimal Compose dependencies for ComposeView
+    implementation 'androidx.compose.ui:ui:1.9.4'
+    implementation 'androidx.compose.runtime:runtime:1.9.4'
 
     debugImplementation "com.squareup.leakcanary:leakcanary-android:2.14"
 }

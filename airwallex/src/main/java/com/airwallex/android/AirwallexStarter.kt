@@ -63,7 +63,7 @@ class AirwallexStarter {
             AirwallexActivityLaunch.initialize(application)
         }
 
-        private fun setupAnalyticsLogger(session: AirwallexSession) {
+        internal fun setupAnalyticsLogger(session: AirwallexSession) {
             when (session) {
                 is AirwallexPaymentSession -> {
                     AnalyticsLogger.setSessionInformation(
