@@ -67,8 +67,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             PaymentElementManager.create(
                 session = session,
                 airwallex = airwallex,
-                configuration = PaymentElementConfiguration.PaymentSheet(type = args.layoutType),
-                operationListener = object : PaymentOperationListener {
+                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType),
+                paymentFlowListener = object : PaymentFlowListener {
                     override fun onLoadingStateChanged(isLoading: Boolean) {
                         setLoadingProgress(loading = isLoading, cancelable = false)
                     }
