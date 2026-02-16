@@ -3,7 +3,6 @@ package com.airwallex.android.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
@@ -40,16 +39,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     override val pageName: String
-        get() = viewModel.pageName
-
-    private val viewModel: PaymentMethodsViewModel by lazy {
-        ViewModelProvider(
-            this,
-            PaymentMethodsViewModel.Factory(
-                application, airwallex, session
-            ),
-        )[PaymentMethodsViewModel::class.java]
-    }
+        get() = "payment_method_list"
 
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
@@ -61,14 +51,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         super.onCreate(savedInstanceState)
         setLoadingProgress(loading = true, cancelable = false)
 
-        viewModel.updateActivity(this)
-
         lifecycleScope.launch {
             PaymentElementManager.create(
                 session = session,
                 airwallex = airwallex,
-                configuration = PaymentElementConfiguration.PaymentSheet(type = args.layoutType),
-                operationListener = object : PaymentOperationListener {
+                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType),
+                paymentFlowListener = object : PaymentFlowListener {
                     override fun onLoadingStateChanged(isLoading: Boolean) {
                         setLoadingProgress(loading = isLoading, cancelable = false)
                     }

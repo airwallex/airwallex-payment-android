@@ -14,8 +14,8 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentMethodType
-import com.airwallex.android.view.PaymentOperationListener
-import com.airwallex.android.view.PaymentOperationsViewModel
+import com.airwallex.android.view.PaymentFlowListener
+import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 
@@ -25,7 +25,7 @@ import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
  * @param session The Airwallex session containing payment information
  * @param airwallex The Airwallex instance for payment operations
  * @param configuration Configuration for the payment element (Card or PaymentSheet)
- * @param operationListener Listener for payment operation callbacks
+ * @param paymentFlowListener Listener for payment operation callbacks
  */
 @Suppress("LongMethod", "LongParameterList")
 @Composable
@@ -33,16 +33,16 @@ internal fun PaymentElement(
     session: AirwallexSession,
     airwallex: Airwallex,
     configuration: PaymentElementConfiguration,
-    operationListener: PaymentOperationListener,
-    operationsViewModel: PaymentOperationsViewModel
+    paymentFlowListener: PaymentFlowListener,
+    flowViewModel: PaymentFlowViewModel
 ) {
-    val availablePaymentMethods by operationsViewModel.availablePaymentMethods.collectAsState()
-    val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
+    val availablePaymentMethods by flowViewModel.availablePaymentMethods.collectAsState()
+    val availablePaymentConsents by flowViewModel.availablePaymentConsents.collectAsState()
 
     LaunchedEffect(Unit) {
-        operationsViewModel.paymentResult.collect { event ->
-            operationListener.onLoadingStateChanged(false)
-            operationListener.onPaymentResult(event.status)
+        flowViewModel.paymentResult.collect { event ->
+            paymentFlowListener.onLoadingStateChanged(false)
+            paymentFlowListener.onPaymentResult(event.status)
         }
     }
 
@@ -59,7 +59,7 @@ internal fun PaymentElement(
                 val cardSchemes =
                     availableTypes.firstOrNull { it.name == PaymentMethodType.CARD.value }?.cardSchemes.orEmpty()
                         .ifEmpty {
-                            configuration.cardSchemes
+                            configuration.supportedCardBrands
                         }
 
                 val isSinglePaymentMethod =
@@ -70,18 +70,18 @@ internal fun PaymentElement(
                     airwallex = airwallex,
                     cardSchemes = cardSchemes,
                     isSinglePaymentMethod = isSinglePaymentMethod,
-                    operationListener = operationListener,
+                    paymentFlowListener = paymentFlowListener,
                 )
             }
 
             is PaymentElementConfiguration.PaymentSheet -> {
                 if (availableTypes.isNotEmpty()) {
-                    when (configuration.type) {
+                    when (configuration.layout) {
                         PaymentMethodsLayoutType.TAB -> {
                             PaymentMethodsTabSection(
                                 session = session,
                                 airwallex = airwallex,
-                                operationListener = operationListener,
+                                paymentFlowListener = paymentFlowListener,
                             )
                         }
 
@@ -89,7 +89,7 @@ internal fun PaymentElement(
                             PaymentMethodsAccordionSection(
                                 session = session,
                                 airwallex = airwallex,
-                                operationListener = operationListener,
+                                paymentFlowListener = paymentFlowListener,
                             )
                         }
                     }
