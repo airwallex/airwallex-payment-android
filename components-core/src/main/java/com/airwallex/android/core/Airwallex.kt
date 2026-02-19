@@ -1878,6 +1878,20 @@ class Airwallex internal constructor(
                     bufferTimeMillis = 5_000L
                 )
             )
+            if(configuration.paymentAppearance != null) {
+                // Initialize theme context using reflection to avoid dependency on ui-core
+                try {
+                    val themeConfigClass = Class.forName("com.airwallex.android.ui.composables.AirwallexThemeConfig")
+                    // Get the INSTANCE field for Kotlin object singleton
+                    val instanceField = themeConfigClass.getField("INSTANCE")
+                    val instance = instanceField.get(null)
+                    // Call initializeContext on the instance
+                    val initMethod = themeConfigClass.getMethod("initializeContext", Context::class.java)
+                    initMethod.invoke(instance, application)
+                } catch (e: Exception) {
+                    // ui-core module not available or reflection failed, ignore
+                }
+            }
         }
 
         /**
