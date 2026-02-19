@@ -1,5 +1,6 @@
 package com.airwallex.android.view.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -14,6 +15,7 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.card.CardSection
@@ -53,7 +55,7 @@ internal fun PaymentElementComponent(
         }
     }
 
-    Column {
+    Column(Modifier.background(AirwallexColor.backgroundPrimary())) {
         when (configuration) {
             is PaymentElementConfiguration.Card -> {
                 val cardSchemes =
