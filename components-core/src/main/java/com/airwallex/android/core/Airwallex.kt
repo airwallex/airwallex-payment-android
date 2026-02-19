@@ -1878,7 +1878,7 @@ class Airwallex internal constructor(
                     bufferTimeMillis = 5_000L
                 )
             )
-            if(configuration.paymentAppearance != null) {
+            if (configuration.paymentAppearance != null) {
                 // Initialize theme context using reflection to avoid dependency on ui-core
                 try {
                     val themeConfigClass = Class.forName("com.airwallex.android.ui.composables.AirwallexThemeConfig")
