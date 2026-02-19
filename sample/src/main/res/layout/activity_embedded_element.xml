@@ -3,17 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/white">
+    android:orientation="vertical">
 
     <!-- Toolbar with back button and title -->
     <RelativeLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:elevation="4dp"
-        android:background="@android:color/white">
+        android:elevation="4dp">
 
         <ImageView
             android:id="@+id/btnBack"
@@ -31,7 +30,6 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Shopping Cart"
-            android:textColor="#1A1D21"
             android:textSize="18sp"
             android:textStyle="bold" />
     </RelativeLayout>
@@ -50,19 +48,19 @@
 
             <!-- Order Summary Section -->
             <TextView
+                android:id="@+id/tvOrderSummaryTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Order Summary"
-                android:textColor="#1A1D21"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp" />
 
             <LinearLayout
+                android:id="@+id/orderSummaryCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#F6F7F8"
                 android:padding="16dp"
                 android:layout_marginBottom="24dp">
 
@@ -74,18 +72,18 @@
                     android:layout_marginBottom="8dp">
 
                     <TextView
+                        android:id="@+id/tvAirpodsProLabel"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="AirPods Pro x1"
-                        android:textColor="#1A1D21"
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/tvAirpodsProPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$399"
-                        android:textColor="#1A1D21"
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -97,26 +95,26 @@
                     android:layout_marginBottom="12dp">
 
                     <TextView
+                        android:id="@+id/tvHomepodLabel"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="HomePod x1"
-                        android:textColor="#1A1D21"
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/tvHomepodPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$469"
-                        android:textColor="#1A1D21"
                         android:textSize="14sp" />
                 </LinearLayout>
 
                 <!-- Divider -->
                 <View
+                    android:id="@+id/divider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
                     android:layout_marginBottom="12dp" />
 
                 <!-- Total -->
@@ -126,19 +124,19 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/tvTotalLabel"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Total"
-                        android:textColor="#1A1D21"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvTotalPrice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="$868"
-                        android:textColor="#1A1D21"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -146,36 +144,36 @@
 
             <!-- Shipping Address Section -->
             <TextView
+                android:id="@+id/tvShippingAddressTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Shipping Address"
-                android:textColor="#1A1D21"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp" />
 
             <LinearLayout
+                android:id="@+id/shippingAddressCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#F6F7F8"
                 android:padding="16dp"
                 android:layout_marginBottom="24dp">
 
                 <TextView
+                    android:id="@+id/tvShippingName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Jason Wang"
-                    android:textColor="#1A1D21"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="4dp" />
 
                 <TextView
+                    android:id="@+id/tvShippingAddress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Pudong District, Shanghai, Shanghai, 100000, CN"
-                    android:textColor="#666666"
                     android:textSize="14sp"
                     android:lineSpacingExtra="2dp" />
             </LinearLayout>

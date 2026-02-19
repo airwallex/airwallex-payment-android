@@ -1,5 +1,6 @@
 package com.airwallex.paymentacceptance.ui
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
@@ -74,6 +75,7 @@ class EmbeddedElementActivity : AppCompatActivity() {
         binding = ActivityEmbeddedElementBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupColors()
         setupToolbar()
         setupObservers()
         setupCardInfoCompose()
@@ -83,6 +85,32 @@ class EmbeddedElementActivity : AppCompatActivity() {
         super.onDestroy()
         paymentStatusPoller?.stop()
         loadingDialog?.dismiss()
+    }
+
+    private fun setupColors() {
+        binding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+
+        binding.toolbar.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+        binding.btnBack.setColorFilter(AirwallexColor.iconPrimary().toArgb())
+
+        binding.tvTitle.setTextColor(AirwallexColor.textPrimary().toArgb())
+
+        binding.orderSummaryCard.setBackgroundColor(AirwallexColor.backgroundSecondary().toArgb())
+        binding.shippingAddressCard.setBackgroundColor(AirwallexColor.backgroundSecondary().toArgb())
+
+        binding.tvOrderSummaryTitle.setTextColor(AirwallexColor.textPrimary().toArgb())
+        binding.tvAirpodsProLabel.setTextColor(AirwallexColor.textPrimary().toArgb())
+        binding.tvAirpodsProPrice.setTextColor(AirwallexColor.textPrimary().toArgb())
+        binding.tvHomepodLabel.setTextColor(AirwallexColor.textPrimary().toArgb())
+        binding.tvHomepodPrice.setTextColor(AirwallexColor.textPrimary().toArgb())
+        binding.tvTotalLabel.setTextColor(AirwallexColor.textPrimary().toArgb())
+        binding.tvTotalPrice.setTextColor(AirwallexColor.textPrimary().toArgb())
+        binding.tvShippingAddressTitle.setTextColor(AirwallexColor.textPrimary().toArgb())
+        binding.tvShippingName.setTextColor(AirwallexColor.textPrimary().toArgb())
+        binding.tvShippingAddress.setTextColor(AirwallexColor.textSecondary().toArgb())
+
+        // Set divider color
+        binding.divider.setBackgroundColor(AirwallexColor.borderDecorative().toArgb())
     }
 
     private fun setupToolbar() {
@@ -341,7 +369,9 @@ class EmbeddedElementActivity : AppCompatActivity() {
                 }
                 .create()
             dialog.show()
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(AirwallexColor.theme().toArgb())
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
+                ColorStateList.valueOf(AirwallexColor.theme().toArgb())
+            )
         }
     }
 
@@ -375,6 +405,10 @@ class EmbeddedElementActivity : AppCompatActivity() {
                 })
             }
             context.startActivity(intent)
+            (context as? Activity)?.overridePendingTransition(
+                R.anim.slide_in_right,
+                R.anim.slide_out_left
+            )
         }
 
         private fun Intent.getArgs(): Args {
