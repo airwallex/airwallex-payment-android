@@ -7,7 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.ui.R
 
-interface PaymentOperationListener {
+interface PaymentFlowListener {
     fun onLoadingStateChanged(isLoading: Boolean)
     fun onPaymentResult(status: AirwallexPaymentStatus)
     fun onError(exception: Throwable, context: Context) {

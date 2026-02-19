@@ -32,8 +32,8 @@ import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
-import com.airwallex.android.view.PaymentOperationListener
-import com.airwallex.android.view.PaymentOperationsViewModel
+import com.airwallex.android.view.PaymentFlowListener
+import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.common.CardBrandIcon
 import com.airwallex.android.view.composables.consent.ConsentDetailSection
 import com.airwallex.android.view.composables.consent.ConsentListSection
@@ -48,17 +48,17 @@ internal fun CardSection(
     airwallex: Airwallex,
     cardSchemes: List<CardScheme>,
     isSinglePaymentMethod: Boolean = false,
-    operationListener: PaymentOperationListener,
+    paymentFlowListener: PaymentFlowListener,
 ) {
-    val operationsViewModel: PaymentOperationsViewModel = viewModel(
-        factory = PaymentOperationsViewModel.Factory(
+    val flowViewModel: PaymentFlowViewModel = viewModel(
+        factory = PaymentFlowViewModel.Factory(
             airwallex = airwallex,
             session = session
         ),
         viewModelStoreOwner = airwallex.activity
     )
 
-    val availablePaymentConsents by operationsViewModel.availablePaymentConsents.collectAsState()
+    val availablePaymentConsents by flowViewModel.availablePaymentConsents.collectAsState()
     val addPaymentMethodViewModel: AddPaymentMethodViewModel = viewModel(
         factory = AddPaymentMethodViewModel.Factory(
             airwallex = airwallex,
@@ -74,15 +74,15 @@ internal fun CardSection(
 
     // Observe delete consent results
     LaunchedEffect(Unit) {
-        operationsViewModel.deleteConsentResult.collect { result ->
-            operationListener.onLoadingStateChanged(false)
+        flowViewModel.deleteConsentResult.collect { result ->
+            paymentFlowListener.onLoadingStateChanged(false)
             when (result) {
-                is PaymentOperationsViewModel.DeleteConsentResult.Success -> {
+                is PaymentFlowViewModel.DeleteConsentResult.Success -> {
                     addPaymentMethodViewModel.deleteCardSuccess(result.consent)
                 }
 
-                is PaymentOperationsViewModel.DeleteConsentResult.Failure -> {
-                    operationListener.onError(result.exception, airwallex.activity)
+                is PaymentFlowViewModel.DeleteConsentResult.Failure -> {
+                    paymentFlowListener.onError(result.exception, airwallex.activity)
                 }
             }
         }
@@ -133,9 +133,9 @@ internal fun CardSection(
 
                 AddCardSection(
                     viewModel = addPaymentMethodViewModel,
-                    operationsViewModel = operationsViewModel,
+                    flowViewModel = flowViewModel,
                     cardSchemes = cardSchemes,
-                    operationListener = operationListener,
+                    paymentFlowListener = paymentFlowListener,
                 )
             }
 
@@ -171,8 +171,8 @@ internal fun CardSection(
                         selectedScreen = CardSectionType.ConsentDetail(consent = consent)
                     },
                     onDeleteCard = { consent ->
-                        operationListener.onLoadingStateChanged(true)
-                        operationsViewModel.deletePaymentConsent(consent)
+                        paymentFlowListener.onLoadingStateChanged(true)
+                        flowViewModel.deletePaymentConsent(consent)
                     },
                     onScreenViewed = {
                         addPaymentMethodViewModel.trackScreenViewed(
@@ -235,15 +235,15 @@ internal fun CardSection(
                         onCheckoutWithCvcOperationStart(
                             consent = consent,
                             cvc = cvc,
-                            operationsViewModel = operationsViewModel,
-                            operationListener = operationListener,
+                            flowViewModel = flowViewModel,
+                            paymentFlowListener = paymentFlowListener,
                         )
                     },
                     onCheckoutWithoutCvv = {
                         onCheckoutWithoutCvcOperationStart(
                             consent = consent,
-                            operationsViewModel = operationsViewModel,
-                            operationListener = operationListener,
+                            flowViewModel = flowViewModel,
+                            paymentFlowListener = paymentFlowListener,
                         )
                     },
                     onScreenViewed = {
@@ -263,27 +263,27 @@ internal fun CardSection(
 
 private fun onCheckoutWithoutCvcOperationStart(
     consent: PaymentConsent,
-    operationsViewModel: PaymentOperationsViewModel,
-    operationListener: PaymentOperationListener,
+    flowViewModel: PaymentFlowViewModel,
+    paymentFlowListener: PaymentFlowListener,
 ) {
-    operationListener.onLoadingStateChanged(true)
+    paymentFlowListener.onLoadingStateChanged(true)
     consent.paymentMethod?.type?.let {
         AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
     }
-    operationsViewModel.confirmPaymentIntent(consent)
+    flowViewModel.confirmPaymentIntent(consent)
 }
 
 private fun onCheckoutWithCvcOperationStart(
     consent: PaymentConsent,
     cvc: String,
-    operationsViewModel: PaymentOperationsViewModel,
-    operationListener: PaymentOperationListener,
+    flowViewModel: PaymentFlowViewModel,
+    paymentFlowListener: PaymentFlowListener,
 ) {
-    operationListener.onLoadingStateChanged(true)
+    paymentFlowListener.onLoadingStateChanged(true)
     consent.paymentMethod?.type?.let {
         AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
     }
-    operationsViewModel.checkoutWithCvc(consent, cvc)
+    flowViewModel.checkoutWithCvc(consent, cvc)
 }
 
 sealed interface CardSectionType {

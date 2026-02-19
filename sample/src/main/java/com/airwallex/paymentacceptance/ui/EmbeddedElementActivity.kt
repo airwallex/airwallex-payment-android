@@ -26,7 +26,7 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.view.composables.PaymentElementConfiguration
-import com.airwallex.android.view.composables.PaymentElementManager
+import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ActivityEmbeddedElementBinding
 import com.airwallex.paymentacceptance.util.PaymentStatusPoller
@@ -116,17 +116,17 @@ class EmbeddedElementActivity : AppCompatActivity() {
             // Determine configuration based on layoutType
             val configuration = when (args.layoutType) {
                 PaymentMethodsLayoutType.TAB -> PaymentElementConfiguration.PaymentSheet(
-                    type = PaymentMethodsLayoutType.TAB
+                    layout = PaymentMethodsLayoutType.TAB
                 )
                 PaymentMethodsLayoutType.ACCORDION -> PaymentElementConfiguration.PaymentSheet(
-                    type = PaymentMethodsLayoutType.ACCORDION
+                    layout = PaymentMethodsLayoutType.ACCORDION
                 )
                 null -> PaymentElementConfiguration.Card(
-                    cardSchemes = args.supportedCardSchemes ?: emptyList()
+                    supportedCardBrands = args.supportedCardSchemes ?: emptyList()
                 )
             }
 
-            val result = PaymentElementManager.create(
+            val result = PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
                 configuration = configuration,
@@ -146,12 +146,12 @@ class EmbeddedElementActivity : AppCompatActivity() {
             )
 
             result.onSuccess { manager ->
-                // Set up the ComposeView with PaymentElementManager
+                // Set up the ComposeView with PaymentElement
                 binding.composeCardInfo.setContent {
                     manager.Content()
                 }
             }.onFailure { throwable ->
-                AirwallexLogger.error("Failed to create PaymentElementManager", throwable)
+                AirwallexLogger.error("Failed to create PaymentElement", throwable)
                 // Handle error - show error message
             }
         }
@@ -331,7 +331,7 @@ class EmbeddedElementActivity : AppCompatActivity() {
 
     private fun showAlert(title: String, message: String, callback: (() -> Unit)? = null) {
         if (!isFinishing) {
-            AlertDialog.Builder(this)
+            val dialog = AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
                 .setCancelable(false)
@@ -340,7 +340,8 @@ class EmbeddedElementActivity : AppCompatActivity() {
                     callback?.invoke()
                 }
                 .create()
-                .show()
+            dialog.show()
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(AirwallexColor.theme().toArgb())
         }
     }
 

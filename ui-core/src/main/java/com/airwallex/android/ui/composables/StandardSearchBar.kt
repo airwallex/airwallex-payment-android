@@ -51,7 +51,7 @@ fun StandardSearchBar(
     modifier: Modifier = Modifier,
     typeface: TextStyle = AirwallexTypography.Body200.toComposeTextStyle(),
     textColorStyle: Color = AirwallexColor.textPrimary(),
-    backgroundColorStyle: Color = MaterialTheme.colorScheme.secondaryContainer,
+    backgroundColorStyle: Color = AirwallexColor.backgroundSecondary(),
     hint: String = "",
     singleLine: Boolean = true,
 ) {

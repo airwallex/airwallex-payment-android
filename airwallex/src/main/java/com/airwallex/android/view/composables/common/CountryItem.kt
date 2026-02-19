@@ -35,7 +35,7 @@ internal fun CountryItem(
                 if (isSelected) {
                     Modifier
                         .background(
-                            color = AirwallexColor.Ultraviolet10,
+                            color = AirwallexColor.backgroundPrimary(),
                             shape = RoundedCornerShape(8.dp),
                         )
                 } else {

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -35,7 +36,7 @@ import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.PaymentElementConfiguration
-import com.airwallex.android.view.composables.PaymentElementManager
+import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
@@ -78,7 +79,13 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
+        supportActionBar?.let { actionBar ->
+            actionBar.setBackgroundDrawable(
+                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+            )
+        }
         supportActionBar?.themedContext?.let { context ->
             ContextCompat.getDrawable(context, homeAsUpIndicatorResId())?.let { drawable ->
                 val tintedDrawable = DrawableCompat.wrap(drawable.mutate())
@@ -109,15 +116,15 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     @Composable
     private fun PaymentElementContent() {
-        var paymentState by remember { mutableStateOf<PaymentElementManager?>(null) }
+        var paymentState by remember { mutableStateOf<PaymentElement?>(null) }
 
         LaunchedEffect(Unit) {
             setLoadingProgress(loading = true, cancelable = false)
-            PaymentElementManager.create(
+            PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
                 configuration = PaymentElementConfiguration.Card(
-                    cardSchemes = args.supportedCardSchemes
+                    supportedCardBrands = args.supportedCardSchemes
                 ),
                 onLoadingStateChanged = { isLoading ->
                     setLoadingProgress(loading = isLoading, cancelable = false)

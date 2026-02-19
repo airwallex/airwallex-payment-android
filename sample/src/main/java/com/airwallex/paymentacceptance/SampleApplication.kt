@@ -83,6 +83,7 @@ class SampleApplication : Application() {
 //                .setPaymentAppearance(
 //                    PaymentAppearance(
 //                        themeColor = "#DA8C21".toColorInt(), // set theme color here
+//                        isDarkTheme = true
 //                    )
 //                )
 //                .setRedirectMode(RedirectMode.CUSTOM_TAB_BOTTOM_SHEET)

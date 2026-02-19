@@ -44,8 +44,8 @@ import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
 import com.airwallex.android.view.AddPaymentMethodViewModel
-import com.airwallex.android.view.PaymentOperationListener
-import com.airwallex.android.view.PaymentOperationsViewModel
+import com.airwallex.android.view.PaymentFlowListener
+import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.common.CountrySelectRow
 import com.airwallex.android.view.composables.common.PaymentTextField
 import com.airwallex.android.view.composables.common.WarningBanner
@@ -60,9 +60,9 @@ import com.airwallex.risk.AirwallexRisk
 @Composable
 internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
-    operationsViewModel: PaymentOperationsViewModel,
+    flowViewModel: PaymentFlowViewModel,
     cardSchemes: List<CardScheme>,
-    operationListener: PaymentOperationListener,
+    paymentFlowListener: PaymentFlowListener,
 ) {
     val focusManager = LocalFocusManager.current
     val expiryFocusRequester = remember { FocusRequester() }
@@ -579,13 +579,13 @@ internal fun AddCardSection(
                         phoneNumber = phoneNumber,
                         email = email,
                     )
-                    operationListener.onLoadingStateChanged(true)
+                    paymentFlowListener.onLoadingStateChanged(true)
                     AnalyticsLogger.logAction(
                         TAP_PAY_BUTTON,
                         mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
                     )
                     AirwallexRisk.log(event = CLICK_PAY_BUTTON, screen = PAGE_CREATE_CARD)
-                    operationsViewModel.checkoutWithNewCard(
+                    flowViewModel.checkoutWithNewCard(
                         card = card,
                         saveCard = isSaveCardChecked,
                         billing = billing,
