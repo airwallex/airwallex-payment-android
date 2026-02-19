@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.toAnalyticsLayoutString
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
@@ -48,6 +50,15 @@ class PaymentElement private constructor(
             )[PaymentFlowViewModel::class.java]
             viewModel.updateActivity(airwallex.activity)
             val alreadyLoaded = viewModel.availablePaymentMethods.value.isNotEmpty()
+
+            // Set up analytics for embedded flow if not already set up
+            if (!AnalyticsLogger.isSessionSetup(session)) {
+                val layout = when (configuration) {
+                    is PaymentElementConfiguration.PaymentSheet -> configuration.layout?.toAnalyticsLayoutString()
+                    else -> null
+                }
+                AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.EMBEDDED, layout)
+            }
 
             // Determine if we need to fetch based on configuration
             val shouldFetch = when (configuration) {

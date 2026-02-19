@@ -141,23 +141,9 @@ class Airwallex internal constructor(
     )
 
     private fun setupAnalyticsLogger(session: AirwallexSession) {
-        when (session) {
-            is AirwallexPaymentSession ->
-                AnalyticsLogger.setSessionInformation(
-                    transactionMode = TransactionMode.ONE_OFF.value,
-                    paymentIntentId = session.paymentIntent?.id,
-                )
-
-            is AirwallexRecurringSession ->
-                AnalyticsLogger.setSessionInformation(
-                    transactionMode = TransactionMode.RECURRING.value,
-                )
-
-            is AirwallexRecurringWithIntentSession ->
-                AnalyticsLogger.setSessionInformation(
-                    transactionMode = TransactionMode.RECURRING.value,
-                    paymentIntentId = session.paymentIntent?.id,
-                )
+        // Set up analytics for API flow if not already set up (e.g., by UI components)
+        if (!AnalyticsLogger.isSessionSetup(session)) {
+            AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.API, null)
         }
     }
 
@@ -1878,7 +1864,7 @@ class Airwallex internal constructor(
                     bufferTimeMillis = 5_000L
                 )
             )
-            if(configuration.paymentAppearance != null) {
+            if (configuration.paymentAppearance != null) {
                 // Initialize theme context using reflection to avoid dependency on ui-core
                 try {
                     val themeConfigClass = Class.forName("com.airwallex.android.ui.composables.AirwallexThemeConfig")
