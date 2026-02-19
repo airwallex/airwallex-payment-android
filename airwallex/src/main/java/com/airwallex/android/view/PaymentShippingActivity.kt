@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.airwallex.android.R
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.databinding.ActivityAddShippingBinding
@@ -40,7 +41,11 @@ class PaymentShippingActivity : AirwallexActivity() {
 
     override fun initView() {
         super.initView()
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
         supportActionBar?.let { actionBar ->
+            actionBar.setBackgroundDrawable(
+                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+            )
             val upArrow = AppCompatResources.getDrawable(this, homeAsUpIndicatorResId())
             upArrow?.let {
                 val wrappedDrawable = DrawableCompat.wrap(it)

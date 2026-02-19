@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.airwallex.android.card.R
 import com.airwallex.android.card.databinding.ActivityPaymentCheckoutBinding
 import com.airwallex.android.core.Airwallex
@@ -70,8 +71,10 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
     override fun initView() {
         super.initView()
 
-        // Tint the back button with AirwallexColor.iconPrimary()
         supportActionBar?.let { actionBar ->
+            actionBar.setBackgroundDrawable(
+                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+            )
             val upArrow = AppCompatResources.getDrawable(this, homeAsUpIndicatorResId())
             upArrow?.let {
                 val wrappedDrawable = DrawableCompat.wrap(it)
@@ -83,6 +86,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
         viewBinding.header.text = getString(
             R.string.airwallex_card_enter_cvv,
             String.format(

@@ -24,6 +24,7 @@ import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.launch
+import androidx.core.graphics.drawable.toDrawable
 
 @Suppress("LongMethod")
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
@@ -53,6 +54,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
     override fun initView() {
         super.initView()
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+        supportActionBar?.let { actionBar ->
+            actionBar.setBackgroundDrawable(
+                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+            )
+        }
         supportActionBar?.themedContext?.let { context ->
             ContextCompat.getDrawable(context, homeAsUpIndicatorResId())?.let { drawable ->
                 val tintedDrawable = DrawableCompat.wrap(drawable.mutate())

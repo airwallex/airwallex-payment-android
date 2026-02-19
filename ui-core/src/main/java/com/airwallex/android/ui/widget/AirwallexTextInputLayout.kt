@@ -9,7 +9,6 @@ import android.text.TextWatcher
 import android.text.method.KeyListener
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -59,7 +58,7 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
         }
 
     init {
-        View.inflate(getContext(), resourceLayout, this)
+        inflate(getContext(), resourceLayout, this)
 
         tlInput = findViewById(R.id.tlInput)
         teInput = findViewById(R.id.teInput)
@@ -75,7 +74,7 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
             ),
             intArrayOf(
                 AirwallexColor.theme().toArgb(),
-                AirwallexColor.borderDecorative().toArgb()
+                AirwallexColor.borderDecorativeStrong().toArgb()
             )
         )
         tlInput.setBoxStrokeColorStateList(boxStrokeStateList)
@@ -90,7 +89,8 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
                 AirwallexColor.textPlaceholder().toArgb()
             )
         )
-        tlInput.setHintTextColor(hintStateList)
+        tlInput.hintTextColor = hintStateList
+        tlInput.defaultHintTextColor = hintStateList
 
         context.theme.obtainStyledAttributes(
             attrs,

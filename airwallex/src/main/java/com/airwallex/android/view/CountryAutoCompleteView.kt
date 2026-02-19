@@ -2,6 +2,7 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -70,7 +71,7 @@ class CountryAutoCompleteView constructor(
             ),
             intArrayOf(
                 AirwallexColor.theme().toArgb(),
-                AirwallexColor.borderDecorative().toArgb()
+                AirwallexColor.borderDecorativeStrong().toArgb()
             )
         )
         viewBinding.tlCountry.setBoxStrokeColorStateList(boxStrokeStateList)
@@ -85,10 +86,14 @@ class CountryAutoCompleteView constructor(
                 AirwallexColor.textPlaceholder().toArgb()
             )
         )
-        viewBinding.tlCountry.hintTextColor = hintStateList
+        viewBinding.tlCountry.setHintTextColor(hintStateList)
+        viewBinding.tlCountry.defaultHintTextColor = hintStateList
 
         viewBinding.actCountry.threshold = 0
         viewBinding.actCountry.setAdapter(countryAdapter)
+        viewBinding.actCountry.setDropDownBackgroundDrawable(
+            ColorDrawable(AirwallexColor.backgroundSecondary().toArgb())
+        )
 
         viewBinding.actCountry.onItemClickListener =
             AdapterView.OnItemClickListener { _, _, position, _ ->

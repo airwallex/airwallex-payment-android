@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -78,7 +79,13 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
+        supportActionBar?.let { actionBar ->
+            actionBar.setBackgroundDrawable(
+                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+            )
+        }
         supportActionBar?.themedContext?.let { context ->
             ContextCompat.getDrawable(context, homeAsUpIndicatorResId())?.let { drawable ->
                 val tintedDrawable = DrawableCompat.wrap(drawable.mutate())
