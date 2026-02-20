@@ -26,6 +26,7 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.ActivityAddCardBinding
@@ -126,6 +127,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                 configuration = PaymentElementConfiguration.Card(
                     supportedCardBrands = args.supportedCardSchemes
                 ),
+                launchType = AnalyticsLogger.LaunchType.COMPONENT,
                 onLoadingStateChanged = { isLoading ->
                     setLoadingProgress(loading = isLoading, cancelable = false)
                 },

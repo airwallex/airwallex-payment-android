@@ -139,6 +139,7 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
                         configuration = PaymentElementConfiguration.Card(
                             supportedCardBrands = supportedCardSchemes
                         ),
+                        launchType = AnalyticsLogger.LaunchType.COMPONENT,
                         onLoadingStateChanged = { isLoading ->
                             setLoadingProgress(isLoading)
                         },
