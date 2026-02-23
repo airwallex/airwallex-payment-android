@@ -1487,7 +1487,6 @@ class AirwallexTest {
             every { enableLogging } returns true
             every { saveLogToLocal } returns false
             every { environment } returns mockEnvironment
-            every { paymentAppearance } returns PaymentAppearance(isDarkTheme = true)
         }
 
         Airwallex.initialize(mockApplication, configuration)
@@ -1511,7 +1510,6 @@ class AirwallexTest {
             configuration.enableLogging
             configuration.saveLogToLocal
             configuration.environment
-            configuration.paymentAppearance // Accessed to check if reflection is needed
         }
 
         // Verify environment methods are called
