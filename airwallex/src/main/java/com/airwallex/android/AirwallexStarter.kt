@@ -25,7 +25,6 @@ import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.core.util.SessionUtils.getIntentId
 import com.airwallex.android.ui.AirwallexActivityLaunch
-import com.airwallex.android.ui.composables.AirwallexThemeConfig
 import com.airwallex.android.view.AddPaymentMethodActivityLaunch
 import com.airwallex.android.view.PaymentMethodsActivityLaunch
 import com.airwallex.android.view.PaymentShippingActivityLaunch
@@ -52,8 +51,6 @@ class AirwallexStarter {
             initializeActivityLaunch(application)
             Airwallex.initialize(application, configuration)
 
-            // Configure theme
-            AirwallexThemeConfig.initializeContext(application)
         }
 
         /**
