@@ -25,6 +25,7 @@ sealed class PaymentElementConfiguration {
      * @param layout The layout type - TAB or ACCORDION
      */
     data class PaymentSheet(
-        val layout: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB
+        val layout: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
+        val prioritizeGooglePay: Boolean = true,
     ) : PaymentElementConfiguration()
 }
