@@ -75,7 +75,7 @@ internal fun CardSection(
     // Observe delete consent results
     LaunchedEffect(Unit) {
         flowViewModel.deleteConsentResult.collect { result ->
-            paymentFlowListener.onLoadingStateChanged(false)
+            paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
             when (result) {
                 is PaymentFlowViewModel.DeleteConsentResult.Success -> {
                     addPaymentMethodViewModel.deleteCardSuccess(result.consent)
@@ -136,6 +136,7 @@ internal fun CardSection(
                     flowViewModel = flowViewModel,
                     cardSchemes = cardSchemes,
                     paymentFlowListener = paymentFlowListener,
+                    airwallex = airwallex,
                 )
             }
 
@@ -171,7 +172,7 @@ internal fun CardSection(
                         selectedScreen = CardSectionType.ConsentDetail(consent = consent)
                     },
                     onDeleteCard = { consent ->
-                        paymentFlowListener.onLoadingStateChanged(true)
+                        paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
                         flowViewModel.deletePaymentConsent(consent)
                     },
                     onScreenViewed = {
@@ -237,6 +238,7 @@ internal fun CardSection(
                             cvc = cvc,
                             flowViewModel = flowViewModel,
                             paymentFlowListener = paymentFlowListener,
+                            airwallex = airwallex,
                         )
                     },
                     onCheckoutWithoutCvv = {
@@ -244,6 +246,7 @@ internal fun CardSection(
                             consent = consent,
                             flowViewModel = flowViewModel,
                             paymentFlowListener = paymentFlowListener,
+                            airwallex = airwallex,
                         )
                     },
                     onScreenViewed = {
@@ -265,8 +268,9 @@ private fun onCheckoutWithoutCvcOperationStart(
     consent: PaymentConsent,
     flowViewModel: PaymentFlowViewModel,
     paymentFlowListener: PaymentFlowListener,
+    airwallex: Airwallex,
 ) {
-    paymentFlowListener.onLoadingStateChanged(true)
+    paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
     consent.paymentMethod?.type?.let {
         AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
     }
@@ -278,8 +282,9 @@ private fun onCheckoutWithCvcOperationStart(
     cvc: String,
     flowViewModel: PaymentFlowViewModel,
     paymentFlowListener: PaymentFlowListener,
+    airwallex: Airwallex,
 ) {
-    paymentFlowListener.onLoadingStateChanged(true)
+    paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
     consent.paymentMethod?.type?.let {
         AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
     }

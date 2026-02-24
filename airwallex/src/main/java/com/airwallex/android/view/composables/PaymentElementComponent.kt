@@ -43,7 +43,7 @@ internal fun PaymentElementComponent(
 
     LaunchedEffect(Unit) {
         flowViewModel.paymentResult.collect { event ->
-            paymentFlowListener.onLoadingStateChanged(false)
+            paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
             paymentFlowListener.onPaymentResult(event.status)
         }
     }
