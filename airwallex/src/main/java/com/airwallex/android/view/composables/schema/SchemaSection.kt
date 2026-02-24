@@ -1,6 +1,7 @@
 package com.airwallex.android.view.composables.schema
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -71,15 +73,12 @@ internal fun SchemaSection(
             schemaData = cachedResult
         } else {
             isLoading = true
-            paymentFlowListener.onLoadingStateChanged(true)
             schemaPaymentViewModel.loadSchemaFields(type)
                 .onSuccess { data -> schemaData = data }
                 .onFailure { exception ->
-                    paymentFlowListener.onLoadingStateChanged(false)
                     paymentFlowListener.onError(exception, airwallex.activity)
                 }
             isLoading = false
-            paymentFlowListener.onLoadingStateChanged(false)
         }
     }
 
@@ -105,6 +104,15 @@ internal fun SchemaSection(
                         },
                     )
                 }
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    color = AirwallexColor.theme()
+                )
             }
         }
 
