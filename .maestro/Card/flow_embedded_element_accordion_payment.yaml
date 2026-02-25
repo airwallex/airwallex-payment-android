@@ -1,0 +1,118 @@
+appId: com.airwallex.paymentacceptance
+---
+- launchApp
+- tapOn: "Integrate with Airwallex UI"
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff} # Ensure one-off checkout mode
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env:
+      LAYOUT: ${LAYOUT}
+      ENVIRONMENT: ${output.settings.environment.demo}
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
+      IS_GUEST: false
+      UI_TESTING_CUSTOMER_ID: "cus_hkdm6wpflhg39amewc4"
+- tapOn: "Launch Embedded Element"
+# Wait for the embedded element activity to load
+- assertVisible: "Shopping Cart"
+# Assert Google Pay button exists
+- scrollUntilVisible:
+    element: "Buy with GPay"
+- assertVisible: "Buy with GPay"
+# Scroll down to the card information section
+- scrollUntilVisible:
+    element: "Card information"
+# Fill in card details
+- tapOn:
+    id: "card-number-text-field"
+- inputText: ${CARD_NUMBER}
+- tapOn:
+    id: "card-expiry-text-field"
+- inputText: "1233"
+- tapOn:
+    id: "card-cvc-text-field"
+- inputText: "333"
+# Scroll to billing info section
+- scrollUntilVisible:
+    element: "Billing info"
+# Ensure "Same as shipping address" is checked if needed
+- assertVisible: "Same as shipping address"
+# Ensure "Save this card for future payments" checkbox is checked
+- scrollUntilVisible:
+    element: "Save this card for future payments"
+- assertVisible: "Save this card for future payments"
+- runFlow:
+    when:
+      visible:
+        id: "card-saving-toggle-unchecked"
+    commands:
+      - tapOn:
+          id: "card-saving-toggle-unchecked"
+      - assertVisible:
+          id: "card-saving-toggle-checked"
+# Scroll to the Pay/Confirm button
+- scrollUntilVisible:
+    element: "^(Pay|Confirm)$"
+- tapOn: "^(Pay|Confirm)$"
+# Handle payment result
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+# Launch Embedded Element again to pay with saved card
+- tapOn: "Launch Embedded Element"
+# Wait for the embedded element activity to load
+- assertVisible: "Shopping Cart"
+# Assert Google Pay button exists
+- scrollUntilVisible:
+    element: "Buy with GPay"
+- assertVisible: "Buy with GPay"
+# Scroll down to see if there are saved cards
+- scrollUntilVisible:
+    element: "Choose a card"
+- assertVisible: "Choose a card"
+- assertVisible:
+    id: "saved-consent"
+    index: 0
+- tapOn:
+    id: "saved-consent"
+    index: 0
+# Enter CVC if required for saved card
+- runFlow:
+    when:
+      visible:
+        id: "card-cvc-text-field"
+    commands:
+      - tapOn:
+          id: "card-cvc-text-field"
+      - inputText: "333"
+- scrollUntilVisible:
+    element: "^(Pay|Confirm)$"
+- tapOn: "^(Pay|Confirm)$"
+# Handle payment result
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+# Launch Embedded Element one more time to delete the saved card
+- tapOn: "Launch Embedded Element"
+# Wait for the embedded element activity to load
+- assertVisible: "Shopping Cart"
+# Scroll down to the card information section
+- scrollUntilVisible:
+    element: "Choose a card"
+# Delete the saved card
+- assertVisible: "Choose a card"
+- tapOn: "three dots"
+- tapOn: "Delete"
+# Assert that card text fields are shown after deletion
+- assertVisible: "Card information"
+- assertVisible:
+    id: "card-number-text-field"
+# Navigate back to UIIntegrationActivity
+- back
+# Assert we're back at UIIntegrationActivity
+- assertVisible: "Integrate with Airwallex UI"
