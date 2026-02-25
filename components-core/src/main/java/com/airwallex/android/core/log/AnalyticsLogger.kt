@@ -175,7 +175,6 @@ object AnalyticsLogger {
             this["eventType"] = "action"
         }
         tracker?.info(actionName, extraInfo)
-        println("AnalyticsLogger - logAction: $actionName, info: $extraInfo")
     }
 
     /**
