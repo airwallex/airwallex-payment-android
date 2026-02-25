@@ -298,7 +298,10 @@ class UIIntegrationViewModel : BaseViewModel() {
      * Traditional flow: Launch embedded element with loading for API calls
      */
     private fun launchEmbeddedElementTraditional(activity: ComponentActivity) = launch {
-        val session = createSession(returnUrl = DemoReturnUrl.EmbeddedElement)
+        val session = createSession(
+            returnUrl = DemoReturnUrl.EmbeddedElement,
+            googlePayOptions = googlePayOptions
+        )
         session.bindToActivity(activity)
         // Traditional flow: use layoutType from settings
         val layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase())
