@@ -25,17 +25,15 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.isExpressCheckout
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.CardScheme
-import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTheme
-import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
+import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.EVENT_PAYMENT_CANCELLED
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
@@ -72,14 +70,6 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
         AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
-        AnalyticsLogger.logAction(
-            actionName = "payment_launched",
-            additionalInfo = mapOf(
-                "subtype" to "component",
-                "paymentMethod" to PaymentMethodType.CARD.value,
-                "expressCheckout" to session.isExpressCheckout
-            )
-        )
         initDialog()
         initView()
         addListener()

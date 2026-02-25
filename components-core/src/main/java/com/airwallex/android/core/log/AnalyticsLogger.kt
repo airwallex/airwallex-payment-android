@@ -175,6 +175,7 @@ object AnalyticsLogger {
             this["eventType"] = "action"
         }
         tracker?.info(actionName, extraInfo)
+        println("AnalyticsLogger - logAction: $actionName, info: $extraInfo")
     }
 
     /**
@@ -206,7 +207,7 @@ object AnalyticsLogger {
         this.transactionMode = transactionMode
         this.launchType = launchType
         this.expressCheckout = expressCheckout
-        this.layout = layout
+        this.layout = layout ?: Layout.NONE
     }
 
     /**
@@ -219,6 +220,8 @@ object AnalyticsLogger {
     fun isSessionSetup(session: AirwallexSession): Boolean {
         return this.launchType != null && this.currentSession === session
     }
+
+    fun getLaunchType(): String? = launchType
 
     /**
      * Helper function to set up analytics session information from an AirwallexSession.

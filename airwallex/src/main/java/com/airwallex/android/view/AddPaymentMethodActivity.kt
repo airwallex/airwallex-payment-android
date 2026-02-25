@@ -28,7 +28,6 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
-import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.ActivityAddCardBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexColor
@@ -36,8 +35,8 @@ import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
-import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
+import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
@@ -70,9 +69,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
     }
-
-    override val paymentLaunchSubtype: String = "component"
-    override val paymentMethodName: String = PaymentMethodType.CARD.value
 
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_close
