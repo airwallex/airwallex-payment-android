@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -106,53 +107,60 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
             setContent {
                 AirwallexTheme {
                     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                        var paymentState by remember { mutableStateOf<PaymentElementManager?>(null) }
-
-                        LaunchedEffect(Unit) {
-                            setLoadingProgress(true)
-                            PaymentElementManager.create(
-                                session = session,
-                                airwallex = airwallex,
-                                configuration = PaymentElementConfiguration.Card(
-                                    supportedCardBrands = supportedCardSchemes
-                                ),
-                                onLoadingStateChanged = { isLoading ->
-                                    setLoadingProgress(isLoading)
-                                },
-                                onPaymentResult = { status ->
-                                    when (status) {
-                                        is AirwallexPaymentStatus.Success -> {
-                                            dismissWithPaymentResult(
-                                                paymentIntentId = status.paymentIntentId,
-                                                paymentConsentId = status.consentId
-                                            )
-                                        }
-                                        is AirwallexPaymentStatus.Failure -> {
-                                            dismissWithPaymentResult(exception = status.exception)
-                                        }
-                                        else -> Unit
-                                    }
-                                },
-                                onError = { exception ->
-                                    // shouldn't be any error
-                                }
-                            ).fold(
-                                onSuccess = { state ->
-                                    paymentState = state
-                                    setLoadingProgress(false)
-                                },
-                                onFailure = { error ->
-                                    setLoadingProgress(false)
-                                    dismiss()
-                                }
-                            )
-                        }
-
-                        paymentState?.Content()
+                        PaymentElementContent()
                     }
                 }
             }
         }
+    }
+
+    @Composable
+    private fun PaymentElementContent() {
+        var paymentState by remember { mutableStateOf<PaymentElementManager?>(null) }
+
+        LaunchedEffect(Unit) {
+            setLoadingProgress(true)
+            PaymentElementManager.create(
+                session = session,
+                airwallex = airwallex,
+                configuration = PaymentElementConfiguration.Card(
+                    supportedCardBrands = supportedCardSchemes
+                ),
+                onLoadingStateChanged = { isLoading ->
+                    setLoadingProgress(isLoading)
+                },
+                onPaymentResult = { status ->
+                    when (status) {
+                        is AirwallexPaymentStatus.Success -> {
+                            dismissWithPaymentResult(
+                                paymentIntentId = status.paymentIntentId,
+                                paymentConsentId = status.consentId
+                            )
+                        }
+
+                        is AirwallexPaymentStatus.Failure -> {
+                            dismissWithPaymentResult(exception = status.exception)
+                        }
+
+                        else -> Unit
+                    }
+                },
+                onError = { exception ->
+                    // shouldn't be any error
+                }
+            ).fold(
+                onSuccess = { state ->
+                    paymentState = state
+                    setLoadingProgress(false)
+                },
+                onFailure = { error ->
+                    setLoadingProgress(false)
+                    dismiss()
+                }
+            )
+        }
+
+        paymentState?.Content()
     }
 
     private fun addListener() {

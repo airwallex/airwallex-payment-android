@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,52 +93,59 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             textAlign = TextAlign.Left,
                         )
 
-                        var paymentState by remember { mutableStateOf<PaymentElementManager?>(null) }
-
-                        LaunchedEffect(Unit) {
-                            setLoadingProgress(loading = true, cancelable = false)
-                            PaymentElementManager.create(
-                                session = session,
-                                airwallex = airwallex,
-                                configuration = PaymentElementConfiguration.Card(
-                                    supportedCardBrands = args.supportedCardSchemes
-                                ),
-                                onLoadingStateChanged = { isLoading ->
-                                    setLoadingProgress(loading = isLoading, cancelable = false)
-                                },
-                                onPaymentResult = { status ->
-                                    when (status) {
-                                        is AirwallexPaymentStatus.Success -> {
-                                            finishWithPaymentIntent(
-                                                paymentIntentId = status.paymentIntentId,
-                                                consentId = status.consentId,
-                                            )
-                                        }
-                                        is AirwallexPaymentStatus.Failure -> {
-                                            finishWithPaymentIntent(exception = status.exception)
-                                        }
-                                        else -> Unit
-                                    }
-                                },
-                                onError = { exception ->
-                                    // Shouldn't be any error since data is pre-fetched
-                                }
-                            ).fold(
-                                onSuccess = { state ->
-                                    paymentState = state
-                                    setLoadingProgress(loading = false, cancelable = false)
-                                },
-                                onFailure = { error ->
-                                    setLoadingProgress(loading = false, cancelable = false)
-                                    alert(message = error.message ?: "Failed to load payment methods")
-                                }
-                            )
-                        }
-                        paymentState?.Content()
+                        PaymentElementContent()
                     }
                 }
             }
         }
+    }
+
+    @Composable
+    private fun PaymentElementContent() {
+        var paymentState by remember { mutableStateOf<PaymentElementManager?>(null) }
+
+        LaunchedEffect(Unit) {
+            setLoadingProgress(loading = true, cancelable = false)
+            PaymentElementManager.create(
+                session = session,
+                airwallex = airwallex,
+                configuration = PaymentElementConfiguration.Card(
+                    supportedCardBrands = args.supportedCardSchemes
+                ),
+                onLoadingStateChanged = { isLoading ->
+                    setLoadingProgress(loading = isLoading, cancelable = false)
+                },
+                onPaymentResult = { status ->
+                    when (status) {
+                        is AirwallexPaymentStatus.Success -> {
+                            finishWithPaymentIntent(
+                                paymentIntentId = status.paymentIntentId,
+                                consentId = status.consentId,
+                            )
+                        }
+
+                        is AirwallexPaymentStatus.Failure -> {
+                            finishWithPaymentIntent(exception = status.exception)
+                        }
+
+                        else -> Unit
+                    }
+                },
+                onError = { exception ->
+                    // Shouldn't be any error since data is pre-fetched
+                }
+            ).fold(
+                onSuccess = { state ->
+                    paymentState = state
+                    setLoadingProgress(loading = false, cancelable = false)
+                },
+                onFailure = { error ->
+                    setLoadingProgress(loading = false, cancelable = false)
+                    alert(message = error.message ?: "Failed to load payment methods")
+                }
+            )
+        }
+        paymentState?.Content()
     }
 
     override fun onBackButtonPressed() {
