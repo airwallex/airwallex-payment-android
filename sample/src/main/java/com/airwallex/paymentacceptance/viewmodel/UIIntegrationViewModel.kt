@@ -19,6 +19,7 @@ import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
@@ -219,6 +220,11 @@ class UIIntegrationViewModel : BaseViewModel() {
      */
     private fun launchCardDialogExpressCheckout(activity: ComponentActivity) {
         val session = buildAirwallexPaymentSessionWithProvider()
+        AnalyticsLogger.setupSession(
+            session,
+            launchType = AnalyticsLogger.LaunchType.COMPONENT,
+            layout = AnalyticsLogger.Layout.NONE
+        )
         val dialog = AirwallexAddPaymentDialog(
             activity = activity,
             session = session,

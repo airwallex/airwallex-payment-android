@@ -8,7 +8,25 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.ui.R
 
 interface PaymentFlowListener {
-    fun onLoadingStateChanged(isLoading: Boolean)
+    fun onLoadingStateChanged(isLoading: Boolean, context: Context) {
+        var currentContext: Context? = context
+        while (currentContext is ContextWrapper) {
+            if (currentContext is Activity) {
+                if (currentContext.isFinishing) {
+                    return
+                }
+                break
+            }
+            currentContext = currentContext.baseContext
+        }
+
+        if (isLoading) {
+            AirwallexLoadingDialogFragment.show(context)
+        } else {
+            AirwallexLoadingDialogFragment.hide(context)
+        }
+    }
+
     fun onPaymentResult(status: AirwallexPaymentStatus)
     fun onError(exception: Throwable, context: Context) {
         var currentContext: Context? = context

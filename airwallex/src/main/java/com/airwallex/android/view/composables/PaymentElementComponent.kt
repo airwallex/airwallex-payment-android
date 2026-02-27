@@ -43,7 +43,7 @@ internal fun PaymentElementComponent(
 
     LaunchedEffect(Unit) {
         flowViewModel.paymentResult.collect { event ->
-            paymentFlowListener.onLoadingStateChanged(false)
+            paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
             paymentFlowListener.onPaymentResult(event.status)
         }
     }
@@ -84,6 +84,7 @@ internal fun PaymentElementComponent(
                                 session = session,
                                 airwallex = airwallex,
                                 paymentFlowListener = paymentFlowListener,
+                                prioritizeGooglePay = configuration.prioritizeGooglePay,
                             )
                         }
 
@@ -92,6 +93,7 @@ internal fun PaymentElementComponent(
                                 session = session,
                                 airwallex = airwallex,
                                 paymentFlowListener = paymentFlowListener,
+                                prioritizeGooglePay = configuration.prioritizeGooglePay,
                             )
                         }
                     }
