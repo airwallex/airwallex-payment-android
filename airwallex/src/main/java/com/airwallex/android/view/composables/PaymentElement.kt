@@ -156,7 +156,7 @@ class PaymentElement private constructor(
             session: AirwallexSession,
             airwallex: Airwallex,
             configuration: PaymentElementConfiguration,
-            onLoadingStateChanged: ((Boolean) -> Unit)?,
+            onLoadingStateChanged: ((Boolean) -> Unit)? = null,
             onPaymentResult: (AirwallexPaymentStatus) -> Unit,
             onError: ((Throwable) -> Unit)? = null,
             launchType: String

@@ -1,7 +1,6 @@
 package com.airwallex.android.view
 
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.ContextWrapper
 import androidx.appcompat.app.AlertDialog
@@ -22,9 +21,9 @@ interface PaymentFlowListener {
         }
 
         if (isLoading) {
-            AirwallexLoadingDialog.show(context)
+            AirwallexLoadingDialogFragment.show(context)
         } else {
-            AirwallexLoadingDialog.hide()
+            AirwallexLoadingDialogFragment.hide(context)
         }
     }
 
@@ -50,28 +49,5 @@ interface PaymentFlowListener {
             }
             .create()
             .show()
-    }
-}
-
-/**
- * Singleton to manage loading dialog state across payment flow.
- * Ensures only one loading dialog is shown at a time.
- */
-internal object AirwallexLoadingDialog {
-    private var dialog: ProgressDialog? = null
-
-    fun show(context: Context) {
-        if (dialog?.isShowing == true) return
-
-        dialog = ProgressDialog(context).apply {
-            setMessage("Loading...")
-            setCancelable(false)
-            show()
-        }
-    }
-
-    fun hide() {
-        dialog?.dismiss()
-        dialog = null
     }
 }
