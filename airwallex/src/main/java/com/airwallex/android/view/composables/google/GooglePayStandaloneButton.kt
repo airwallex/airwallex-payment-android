@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.view.PaymentFlowListener
@@ -20,12 +21,14 @@ import org.json.JSONArray
  * @param allowedPaymentMethods JSONArray of allowed payment methods for Google Pay
  * @param paymentFlowListener Listener for payment flow events
  * @param flowViewModel ViewModel for payment flow operations
+ * @param airwallex The Airwallex instance for payment operations
  */
 @Composable
 internal fun GooglePayStandaloneButton(
     allowedPaymentMethods: JSONArray?,
     paymentFlowListener: PaymentFlowListener,
     flowViewModel: PaymentFlowViewModel,
+    airwallex: Airwallex,
 ) {
     var googlePayButtonVisible by remember { mutableStateOf(false) }
 
@@ -38,7 +41,7 @@ internal fun GooglePayStandaloneButton(
                     "tap_pay_button",
                     mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value)
                 )
-                paymentFlowListener.onLoadingStateChanged(true)
+                paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
                 flowViewModel.checkoutWithGooglePay()
             },
             onScreenViewed = {

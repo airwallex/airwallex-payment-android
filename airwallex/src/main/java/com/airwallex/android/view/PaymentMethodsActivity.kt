@@ -1,5 +1,6 @@
 package com.airwallex.android.view
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
@@ -79,7 +80,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType),
                 launchType = AnalyticsLogger.LaunchType.DROPIN,
                 paymentFlowListener = object : PaymentFlowListener {
-                    override fun onLoadingStateChanged(isLoading: Boolean) {
+                    override fun onLoadingStateChanged(isLoading: Boolean, context: Context) {
                         setLoadingProgress(loading = isLoading, cancelable = false)
                     }
 

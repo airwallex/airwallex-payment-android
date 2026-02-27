@@ -132,7 +132,7 @@ class PaymentElement private constructor(
             session: AirwallexSession,
             airwallex: Airwallex,
             configuration: PaymentElementConfiguration,
-            onLoadingStateChanged: (Boolean) -> Unit,
+            onLoadingStateChanged: ((Boolean) -> Unit)? = null,
             onPaymentResult: (AirwallexPaymentStatus) -> Unit,
             onError: ((Throwable) -> Unit)? = null
         ): Result<PaymentElement> {
@@ -156,14 +156,14 @@ class PaymentElement private constructor(
             session: AirwallexSession,
             airwallex: Airwallex,
             configuration: PaymentElementConfiguration,
-            onLoadingStateChanged: (Boolean) -> Unit,
+            onLoadingStateChanged: ((Boolean) -> Unit)? = null,
             onPaymentResult: (AirwallexPaymentStatus) -> Unit,
             onError: ((Throwable) -> Unit)? = null,
             launchType: String
         ): Result<PaymentElement> {
             val listener = object : PaymentFlowListener {
-                override fun onLoadingStateChanged(isLoading: Boolean) {
-                    onLoadingStateChanged(isLoading)
+                override fun onLoadingStateChanged(isLoading: Boolean, context: Context) {
+                    onLoadingStateChanged?.invoke(isLoading) ?: super.onLoadingStateChanged(isLoading, context)
                 }
 
                 override fun onPaymentResult(status: AirwallexPaymentStatus) {
@@ -171,7 +171,7 @@ class PaymentElement private constructor(
                 }
 
                 override fun onError(exception: Throwable, context: Context) {
-                    onError ?: super.onError(exception, context)
+                    onError?.invoke(exception) ?: super.onError(exception, context)
                 }
             }
             return create(session, airwallex, configuration, listener, launchType)

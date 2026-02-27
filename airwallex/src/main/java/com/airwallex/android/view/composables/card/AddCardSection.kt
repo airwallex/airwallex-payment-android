@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.airwallex.android.R
+import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
@@ -63,6 +64,7 @@ internal fun AddCardSection(
     paymentFlowViewModel: PaymentFlowViewModel,
     cardSchemes: List<CardScheme>,
     paymentFlowListener: PaymentFlowListener,
+    airwallex: Airwallex,
 ) {
     val focusManager = LocalFocusManager.current
     val expiryFocusRequester = remember { FocusRequester() }
@@ -579,7 +581,7 @@ internal fun AddCardSection(
                         phoneNumber = phoneNumber,
                         email = email,
                     )
-                    paymentFlowListener.onLoadingStateChanged(true)
+                    paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
                     AnalyticsLogger.logAction(
                         TAP_PAY_BUTTON,
                         mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)

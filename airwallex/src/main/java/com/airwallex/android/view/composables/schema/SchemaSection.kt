@@ -1,6 +1,7 @@
 package com.airwallex.android.view.composables.schema
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -71,21 +73,18 @@ internal fun SchemaSection(
             schemaData = cachedResult
         } else {
             isLoading = true
-            paymentFlowListener.onLoadingStateChanged(true)
             schemaPaymentViewModel.loadSchemaFields(type)
                 .onSuccess { data -> schemaData = data }
                 .onFailure { exception ->
-                    paymentFlowListener.onLoadingStateChanged(false)
                     paymentFlowListener.onError(exception, airwallex.activity)
                 }
             isLoading = false
-            paymentFlowListener.onLoadingStateChanged(false)
         }
     }
 
     LaunchedEffect(Unit) {
         schemaPaymentViewModel.paymentResult.collect { status ->
-            paymentFlowListener.onLoadingStateChanged(false)
+            paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
             paymentFlowListener.onPaymentResult(status)
         }
     }
@@ -105,6 +104,15 @@ internal fun SchemaSection(
                         },
                     )
                 }
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    color = AirwallexColor.theme()
+                )
             }
         }
 
@@ -153,21 +161,22 @@ internal fun SchemaSection(
                     // BE will need to make sure no schema available is null. Currently in certain cases it is possible to be null.
                     if (schemaData == null || schemaData?.fields?.isEmpty() == true) {
                         // No fields to validate
-                        onDirectPayOperation(type, schemaPaymentViewModel, paymentFlowListener)
+                        onDirectPayOperation(type, schemaPaymentViewModel, paymentFlowListener, airwallex)
                     } else {
                         validateFields?.invoke()
                         if (isValidated) {
                             val paymentMethod = schemaData?.paymentMethod
                             val typeInfo = schemaData?.typeInfo
                             if (paymentMethod == null || typeInfo == null) {
-                                onDirectPayOperation(type, schemaPaymentViewModel, paymentFlowListener)
+                                onDirectPayOperation(type, schemaPaymentViewModel, paymentFlowListener, airwallex)
                             } else {
                                 onPayWithFieldsOperation(
                                     paymentMethod,
                                     typeInfo,
                                     schemaPaymentViewModel.appendParamsToMapForSchemaSubmission(fieldsToSubmit),
                                     schemaPaymentViewModel,
-                                    paymentFlowListener
+                                    paymentFlowListener,
+                                    airwallex
                                 )
                             }
                         }
@@ -185,20 +194,23 @@ private fun onDirectPayOperation(
     type: AvailablePaymentMethodType,
     viewModel: SchemaPaymentViewModel,
     paymentFlowListener: PaymentFlowListener,
+    airwallex: Airwallex,
 ) {
-    paymentFlowListener.onLoadingStateChanged(true)
+    paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
     AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to type.name))
     viewModel.checkoutWithSchema(type)
 }
 
+@Suppress("LongParameterList")
 private fun onPayWithFieldsOperation(
     paymentMethod: PaymentMethod,
     info: PaymentMethodTypeInfo,
     fieldMap: Map<String, String>,
     viewModel: SchemaPaymentViewModel,
     paymentFlowListener: PaymentFlowListener,
+    airwallex: Airwallex,
 ) {
-    paymentFlowListener.onLoadingStateChanged(true)
+    paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
     AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to info.name.orEmpty()))
     viewModel.checkoutWithSchema(
         paymentMethod = paymentMethod,
