@@ -2,7 +2,6 @@ package com.airwallex.android.view.composables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -29,7 +28,8 @@ import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.composables.common.PaymentMethodTabCard
-import com.airwallex.android.view.composables.google.GooglePaySection
+import com.airwallex.android.view.composables.google.GooglePayListItem
+import com.airwallex.android.view.composables.google.GooglePayStandaloneButton
 import com.airwallex.android.view.composables.schema.SchemaSection
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_SELECT
@@ -43,6 +43,7 @@ import kotlinx.coroutines.launch
  *
  * @param session The Airwallex session for the payment flow
  * @param airwallex The Airwallex instance for payment operations
+ * @param prioritizeGooglePay If true, GooglePay is shown on top; if false, shown in LazyRow
  */
 @Suppress("LongMethod", "LongParameterList")
 @Composable
@@ -50,6 +51,7 @@ internal fun PaymentMethodsTabSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     paymentFlowListener: PaymentFlowListener,
+    prioritizeGooglePay: Boolean = true,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -82,32 +84,26 @@ internal fun PaymentMethodsTabSection(
             }
         }
         Column {
-            // Google Pay Section (if eligible)
-            allowedPaymentMethods?.let { allowedPaymentMethods ->
-                GooglePaySection(
-                    modifier = Modifier.fillMaxWidth(),
-                    allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
-                    onClick = {
-                        AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
-                        paymentFlowListener.onLoadingStateChanged(true)
-                        flowViewModel.checkoutWithGooglePay()
-                    },
-                    onScreenViewed = {
-                        flowViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
-                    },
+            // Google Pay Section on top (if eligible and prioritizeGooglePay is true)
+            if (prioritizeGooglePay) {
+                GooglePayStandaloneButton(
+                    allowedPaymentMethods = allowedPaymentMethods,
+                    paymentFlowListener = paymentFlowListener,
+                    flowViewModel = flowViewModel,
                 )
-                if (availablePaymentMethods.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(24.dp))
+            }
+            val paymentMethodsList = if (prioritizeGooglePay || allowedPaymentMethods == null) {
+                availablePaymentMethods.filterNot { paymentMethodType ->
+                    paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
                 }
+            } else {
+                availablePaymentMethods
             }
-            val nonGooglePaymentMethods = availablePaymentMethods.filterNot { paymentMethodType ->
-                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
-            }
-            if (nonGooglePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
+            if (paymentMethodsList.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
                 LazyRow(
                     state = lazyListState,
                 ) {
-                    nonGooglePaymentMethods.forEachIndexed { index, availablePaymentMethodType ->
+                    paymentMethodsList.forEachIndexed { index, availablePaymentMethodType ->
                         item(key = "payment_method_$index") {
                             if (index != 0) {
                                 Spacer(modifier = Modifier.width(12.dp))
@@ -134,7 +130,7 @@ internal fun PaymentMethodsTabSection(
                                 },
                             )
 
-                            if (index != nonGooglePaymentMethods.size - 1) {
+                            if (index != paymentMethodsList.size - 1) {
                                 Spacer(modifier = Modifier.width(12.dp))
                             }
                         }
@@ -154,6 +150,14 @@ internal fun PaymentMethodsTabSection(
                             airwallex = airwallex,
                             cardSchemes = type.cardSchemes.orEmpty(),
                             paymentFlowListener = paymentFlowListener,
+                        )
+                    }
+
+                    PaymentMethodType.GOOGLEPAY.value -> {
+                        GooglePayListItem(
+                            allowedPaymentMethods = allowedPaymentMethods,
+                            paymentFlowListener = paymentFlowListener,
+                            flowViewModel = flowViewModel,
                         )
                     }
 
