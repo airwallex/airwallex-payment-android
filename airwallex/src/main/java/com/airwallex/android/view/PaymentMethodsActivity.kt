@@ -52,8 +52,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         Airwallex(this)
     }
 
-    override val paymentLaunchSubtype: String = "dropin"
-
     override fun initView() {
         super.initView()
         viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())

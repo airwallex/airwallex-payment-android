@@ -45,7 +45,7 @@ internal fun GooglePayListItem(
         allowedPaymentMethods?.let { methods ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
-                    painter = painterResource(id = R.drawable.airwallex_ic_redirect),
+                    painter = painterResource(id = R.drawable.ic_mobile_redirect),
                     contentDescription = "redirect",
                     modifier = Modifier.size(
                         width = 48.dp,

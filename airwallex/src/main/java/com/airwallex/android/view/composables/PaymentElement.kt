@@ -7,11 +7,13 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.toAnalyticsLayoutString
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.PaymentElement.Companion.create
+import com.airwallex.android.view.util.AnalyticsConstants
 
 class PaymentElement private constructor(
     private val session: AirwallexSession,
@@ -86,7 +88,14 @@ class PaymentElement private constructor(
                 else -> null
             }
             AnalyticsLogger.setupSession(session, launchType, layout)
-
+            val additionalInfo = mutableMapOf<String, String>()
+            if (configuration is PaymentElementConfiguration.Card) {
+                additionalInfo["paymentMethod"] = PaymentMethodType.CARD.value
+            }
+            AnalyticsLogger.logAction(
+                actionName = AnalyticsConstants.EVENT_PAYMENT_LAUNCHED,
+                additionalInfo = additionalInfo
+            )
             // Determine if we need to fetch based on configuration
             val shouldFetch = when (configuration) {
                 is PaymentElementConfiguration.Card -> configuration.supportedCardBrands.isEmpty()
