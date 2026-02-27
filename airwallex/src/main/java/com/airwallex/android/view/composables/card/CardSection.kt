@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -21,38 +20,80 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airwallex.android.R
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.AddPaymentMethodViewModel
+import com.airwallex.android.view.PaymentFlowListener
+import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.common.CardBrandIcon
 import com.airwallex.android.view.composables.consent.ConsentDetailSection
 import com.airwallex.android.view.composables.consent.ConsentListSection
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
+import com.airwallex.android.view.util.AnalyticsConstants.TAP_PAY_BUTTON
 import java.util.Locale
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
 internal fun CardSection(
-    addPaymentMethodViewModel: AddPaymentMethodViewModel,
+    session: AirwallexSession,
+    airwallex: Airwallex,
     cardSchemes: List<CardScheme>,
-    onAddCard: () -> Unit,
-    onDeleteCard: (PaymentConsent) -> Unit,
-    onCheckoutWithoutCvc: (PaymentConsent) -> Unit,
-    onCheckoutWithCvc: (PaymentConsent, String) -> Unit,
-    availablePaymentConsents: List<PaymentConsent> = emptyList(),
     isSinglePaymentMethod: Boolean = false,
+    flowListener: PaymentFlowListener,
 ) {
-    val deletedConsent by addPaymentMethodViewModel.deleteCardSuccess.collectAsState()
+    val paymentFlowViewModel: PaymentFlowViewModel = viewModel(
+        factory = PaymentFlowViewModel.Factory(
+            airwallex = airwallex,
+            session = session
+        ),
+        viewModelStoreOwner = airwallex.activity
+    )
+
+    val availablePaymentConsents by paymentFlowViewModel.availablePaymentConsents.collectAsState()
+    val addPaymentMethodViewModel: AddPaymentMethodViewModel = viewModel(
+        factory = AddPaymentMethodViewModel.Factory(
+            airwallex = airwallex,
+            session = session,
+            supportedCardSchemes = cardSchemes,
+            application = airwallex.activity.application
+        ),
+        viewModelStoreOwner = airwallex.activity
+    )
+    val deletedConsents by addPaymentMethodViewModel.deletedCardList.collectAsState()
+
+    addPaymentMethodViewModel.updateSupportedCardSchemes(cardSchemes)
+
+    // Observe delete consent results
+    LaunchedEffect(Unit) {
+        paymentFlowViewModel.deleteConsentResult.collect { result ->
+            flowListener.onLoadingStateChanged(false)
+            when (result) {
+                is PaymentFlowViewModel.DeleteConsentResult.Success -> {
+                    addPaymentMethodViewModel.deleteCardSuccess(result.consent)
+                }
+
+                is PaymentFlowViewModel.DeleteConsentResult.Failure -> {
+                    flowListener.onError(result.exception, airwallex.activity)
+                }
+            }
+        }
+    }
 
     var localConsents by remember { mutableStateOf(availablePaymentConsents) }
     var selectedScreen by remember { mutableStateOf(if (localConsents.isEmpty()) CardSectionType.AddCard else CardSectionType.ConsentList) }
 
-    LaunchedEffect(localConsents, deletedConsent) {
-        localConsents = localConsents.filterNot { it.id == deletedConsent?.id }
+    LaunchedEffect(availablePaymentConsents, deletedConsents) {
+        val deletedIds = deletedConsents.map { it.id }
+        localConsents = availablePaymentConsents.filterNot { it.id in deletedIds }
         selectedScreen = if (localConsents.isEmpty() || isSinglePaymentMethod) {
             CardSectionType.AddCard
         } else {
@@ -66,10 +107,11 @@ internal fun CardSection(
                 if (localConsents.isNotEmpty()) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 24.dp),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         StandardText(
-                            text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }.orEmpty(),
+                            text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }
+                                .orEmpty(),
                             typography = AirwallexTypography.Body200Bold,
                         )
 
@@ -90,17 +132,20 @@ internal fun CardSection(
 
                 AddCardSection(
                     viewModel = addPaymentMethodViewModel,
+                    paymentFlowViewModel = paymentFlowViewModel,
                     cardSchemes = cardSchemes,
-                    onConfirm = onAddCard,
+                    flowListener = flowListener,
                 )
             }
+
             is CardSectionType.ConsentList -> {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     StandardText(
-                        text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }.orEmpty(),
+                        text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }
+                            .orEmpty(),
                         typography = AirwallexTypography.Body200Bold,
                     )
 
@@ -123,20 +168,28 @@ internal fun CardSection(
                     onSelectCard = { consent ->
                         selectedScreen = CardSectionType.ConsentDetail(consent = consent)
                     },
-                    onDeleteCard = onDeleteCard,
+                    onDeleteCard = { consent ->
+                        flowListener.onLoadingStateChanged(true)
+                        paymentFlowViewModel.deletePaymentConsent(consent)
+                    },
                     onScreenViewed = {
-                        addPaymentMethodViewModel.trackScreenViewed(PaymentMethodType.CARD.value, mapOf("subtype" to "consent"))
+                        addPaymentMethodViewModel.trackScreenViewed(
+                            PaymentMethodType.CARD.value,
+                            mapOf("subtype" to "consent")
+                        )
                     },
                 )
             }
+
             is CardSectionType.ConsentDetail -> {
-                val consent = (selectedScreen as? CardSectionType.ConsentDetail)?.consent ?: return@Column
+                val consent =
+                    (selectedScreen as? CardSectionType.ConsentDetail)?.consent ?: return@Column
                 val card = consent.paymentMethod?.card ?: return@Column
                 val cardBrand = card.brand?.let { CardBrand.fromName(it) } ?: return@Column
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     CardBrandIcon(brand = cardBrand)
 
@@ -176,21 +229,58 @@ internal fun CardSection(
                     isCvcRequired = addPaymentMethodViewModel.isCvcRequired(consent),
                     cardBrand = cardBrand,
                     onCheckoutWithCvc = { cvc ->
-                        onCheckoutWithCvc(consent, cvc)
+                        onCheckoutWithCvcOperationStart(
+                            consent = consent,
+                            cvc = cvc,
+                            paymentFlowViewModel = paymentFlowViewModel,
+                            flowListener = flowListener,
+                        )
                     },
                     onCheckoutWithoutCvv = {
-                        onCheckoutWithoutCvc(consent)
+                        onCheckoutWithoutCvcOperationStart(
+                            consent = consent,
+                            paymentFlowViewModel = paymentFlowViewModel,
+                            flowListener = flowListener,
+                        )
                     },
                     onScreenViewed = {
-                        addPaymentMethodViewModel.trackScreenViewed(PaymentMethodType.CARD.value, mapOf("subtype" to "consent"))
+                        addPaymentMethodViewModel.trackScreenViewed(
+                            PaymentMethodType.CARD.value,
+                            mapOf("subtype" to "consent")
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
+                        .fillMaxWidth(),
                 )
             }
         }
     }
+}
+
+private fun onCheckoutWithoutCvcOperationStart(
+    consent: PaymentConsent,
+    paymentFlowViewModel: PaymentFlowViewModel,
+    flowListener: PaymentFlowListener,
+) {
+    flowListener.onLoadingStateChanged(true)
+    consent.paymentMethod?.type?.let {
+        AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
+    }
+    paymentFlowViewModel.confirmPaymentIntent(consent)
+}
+
+private fun onCheckoutWithCvcOperationStart(
+    consent: PaymentConsent,
+    cvc: String,
+    paymentFlowViewModel: PaymentFlowViewModel,
+    flowListener: PaymentFlowListener,
+) {
+    flowListener.onLoadingStateChanged(true)
+    consent.paymentMethod?.type?.let {
+        AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
+    }
+    paymentFlowViewModel.checkoutWithCvc(consent, cvc)
 }
 
 sealed interface CardSectionType {
@@ -198,19 +288,27 @@ sealed interface CardSectionType {
     val buttonTitleRes: Int
 
     object AddCard : CardSectionType {
-        @StringRes override val screenTitleRes = R.string.airwallex_add_card_screen_title
-        @StringRes override val buttonTitleRes = R.string.airwallex_add_card_button_title
+        @StringRes
+        override val screenTitleRes = R.string.airwallex_add_card_screen_title
+
+        @StringRes
+        override val buttonTitleRes = R.string.airwallex_add_card_button_title
     }
 
     object ConsentList : CardSectionType {
-        @StringRes override val screenTitleRes = R.string.airwallex_consent_list_screen_title
-        @StringRes override val buttonTitleRes = R.string.airwallex_consent_list_button_title
+        @StringRes
+        override val screenTitleRes = R.string.airwallex_consent_list_screen_title
+
+        @StringRes
+        override val buttonTitleRes = R.string.airwallex_consent_list_button_title
     }
 
     data class ConsentDetail(
         val consent: PaymentConsent,
     ) : CardSectionType {
         override val screenTitleRes = null
-        @StringRes override val buttonTitleRes = R.string.airwallex_consent_detail_button_title
+
+        @StringRes
+        override val buttonTitleRes = R.string.airwallex_consent_detail_button_title
     }
 }

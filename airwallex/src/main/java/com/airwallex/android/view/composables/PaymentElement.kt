@@ -16,6 +16,7 @@ import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
+import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 
 /**
@@ -64,13 +65,13 @@ internal fun PaymentElement(
                 val isSinglePaymentMethod =
                     availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) != null
 
-//                CardSection(
-//                    session = session,
-//                    airwallex = airwallex,
-//                    cardSchemes = cardSchemes,
-//                    isSinglePaymentMethod = isSinglePaymentMethod,
-//                    paymentFlowListener = paymentFlowListener,
-//                )
+                CardSection(
+                    session = session,
+                    airwallex = airwallex,
+                    cardSchemes = cardSchemes,
+                    isSinglePaymentMethod = isSinglePaymentMethod,
+                    flowListener = paymentFlowListener,
+                )
             }
 
             is PaymentElementConfiguration.PaymentSheet -> {
