@@ -61,7 +61,7 @@ import com.airwallex.risk.AirwallexRisk
 @Composable
 internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
-    flowViewModel: PaymentFlowViewModel,
+    paymentFlowViewModel: PaymentFlowViewModel,
     cardSchemes: List<CardScheme>,
     paymentFlowListener: PaymentFlowListener,
 ) {
@@ -586,7 +586,7 @@ internal fun AddCardSection(
                         mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
                     )
                     AirwallexRisk.log(event = CLICK_PAY_BUTTON, screen = PAGE_CREATE_CARD)
-                    flowViewModel.checkoutWithNewCard(
+                    paymentFlowViewModel.checkoutWithNewCard(
                         card = card,
                         saveCard = isSaveCardChecked,
                         billing = billing,
