@@ -47,7 +47,12 @@ data class PaymentIntentConfirmRequest internal constructor(
     /**
      * Integration data
      */
-    val integrationData: IntegrationData? = null
+    val integrationData: IntegrationData? = null,
+
+    /**
+     * Payment consent options
+     */
+    val paymentConsent: PaymentConsentOptions? = null
 
 ) : AirwallexRequestModel, Parcelable {
 
@@ -60,6 +65,7 @@ data class PaymentIntentConfirmRequest internal constructor(
         private const val FIELD_DEVICE = "device_data"
         private const val FIELD_RETURN_URL = "return_url"
         private const val FIELD_INTEGRATION_DATA = "integration_data"
+        private const val FIELD_PAYMENT_CONSENT = "payment_consent"
     }
 
     override fun toParamMap(): Map<String, Any> {
@@ -109,6 +115,11 @@ data class PaymentIntentConfirmRequest internal constructor(
                         ).toParamMap()
                 )
             )
+            .plus(
+                paymentConsent?.let {
+                    mapOf(FIELD_PAYMENT_CONSENT to it.toParamMap())
+                }.orEmpty()
+            )
     }
 
     class Builder(
@@ -121,6 +132,7 @@ data class PaymentIntentConfirmRequest internal constructor(
         private var device: Device? = null
         private var returnUrl: String? = null
         private var integrationData: IntegrationData? = null
+        private var paymentConsent: PaymentConsentOptions? = null
 
         fun setCustomerId(customerId: String?): Builder = apply {
             this.customerId = customerId
@@ -152,6 +164,10 @@ data class PaymentIntentConfirmRequest internal constructor(
             this.integrationData = integrationData
         }
 
+        fun setPaymentConsent(paymentConsent: PaymentConsentOptions?): Builder = apply {
+            this.paymentConsent = paymentConsent
+        }
+
         override fun build(): PaymentIntentConfirmRequest {
             return PaymentIntentConfirmRequest(
                 requestId = requestId,
@@ -161,7 +177,8 @@ data class PaymentIntentConfirmRequest internal constructor(
                 paymentConsentReference = paymentConsentReference,
                 device = device,
                 returnUrl = returnUrl,
-                integrationData = integrationData
+                integrationData = integrationData,
+                paymentConsent = paymentConsent
             )
         }
     }
