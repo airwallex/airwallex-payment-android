@@ -64,7 +64,7 @@ internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
     paymentFlowViewModel: PaymentFlowViewModel,
     cardSchemes: List<CardScheme>,
-    flowListener: PaymentFlowListener,
+    paymentFlowListener: PaymentFlowListener,
 ) {
     val focusManager = LocalFocusManager.current
     val expiryFocusRequester = remember { FocusRequester() }
@@ -581,7 +581,7 @@ internal fun AddCardSection(
                         phoneNumber = phoneNumber,
                         email = email,
                     )
-                    flowListener.onLoadingStateChanged(true)
+                    paymentFlowListener.onLoadingStateChanged(true)
                     AnalyticsLogger.logAction(
                         TAP_PAY_BUTTON,
                         mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)

@@ -70,7 +70,7 @@ internal fun PaymentElement(
                     airwallex = airwallex,
                     cardSchemes = cardSchemes,
                     isSinglePaymentMethod = isSinglePaymentMethod,
-                    flowListener = paymentFlowListener,
+                    paymentFlowListener = paymentFlowListener,
                 )
             }
 
@@ -78,19 +78,19 @@ internal fun PaymentElement(
                 if (availableTypes.isNotEmpty()) {
                     when (configuration.layout) {
                         PaymentMethodsLayoutType.TAB -> {
-//                            PaymentMethodsTabSection(
-//                                session = session,
-//                                airwallex = airwallex,
-//                                paymentFlowListener = paymentFlowListener,
-//                            )
+                            PaymentMethodsTabSection(
+                                session = session,
+                                airwallex = airwallex,
+                                paymentFlowListener = paymentFlowListener,
+                            )
                         }
 
                         PaymentMethodsLayoutType.ACCORDION -> {
-//                            PaymentMethodsAccordionSection(
-//                                session = session,
-//                                airwallex = airwallex,
-//                                paymentFlowListener = paymentFlowListener,
-//                            )
+                            PaymentMethodsAccordionSection(
+                                session = session,
+                                airwallex = airwallex,
+                                paymentFlowListener = paymentFlowListener,
+                            )
                         }
                     }
                 }

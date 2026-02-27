@@ -4,7 +4,7 @@ import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TransactionMode
-import com.airwallex.android.view.PaymentMethodsViewModel.Companion.FLOW
+import com.airwallex.android.view.PaymentFlowViewModel.Companion.FLOW
 
 fun PaymentMethodTypeInfo.filterRequiredFields(transactionMode: TransactionMode): List<DynamicSchemaField>? {
     return this
