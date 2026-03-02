@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.ui.R
 import com.airwallex.android.view.composables.PaymentElement.Companion.create
 import com.airwallex.android.view.PaymentFlowListener
@@ -41,8 +42,8 @@ class PaymentElement private constructor(
             configuration: PaymentElementConfiguration,
             paymentFlowListener: PaymentFlowListener
         ): Result<PaymentElement> {
-            if(configuration is PaymentElementConfiguration.Card && configuration.supportedCardBrands.isNotEmpty()) {
-                return Result.failure(Exception("supportedCardBrands should not be empty"))
+            if (configuration is PaymentElementConfiguration.Card && configuration.supportedCardBrands.isEmpty()) {
+                return Result.failure(InvalidParamsException("supportedCardBrands should not be empty"))
             }
             val viewModel = ViewModelProvider(
                 airwallex.activity,
