@@ -2,7 +2,6 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
@@ -10,14 +9,11 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
-import com.airwallex.android.core.PaymentIntentProvider
 import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.exception.AirwallexCheckoutException
-import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AirwallexError
-import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.Bank
 import com.airwallex.android.core.model.BankResponse
@@ -25,26 +21,14 @@ import com.airwallex.android.core.model.DynamicSchema
 import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.DynamicSchemaFieldType
 import com.airwallex.android.core.model.DynamicSchemaFieldUIType
-import com.airwallex.android.core.model.Page
-import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
-import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TransactionMode
-import com.airwallex.android.core.resolvePaymentIntent
-import com.airwallex.android.view.Constants.SAMPLE_BANK_FIELD
-import com.airwallex.android.view.Constants.SAMPLE_BANK_RESPONSE
-import com.airwallex.android.view.Constants.SAMPLE_ENUM_FIELD
 import com.airwallex.android.view.Constants.createAvailablePaymentMethodType
-import com.airwallex.android.view.Constants.createBankResponse
-import com.airwallex.android.view.Constants.createPaymentConsents
 import com.airwallex.android.view.Constants.createPaymentMethod
 import com.airwallex.android.view.Constants.createPaymentMethodTypeInfo
-import com.airwallex.android.view.Constants.createPaymentMethods
 import io.mockk.MockKAnnotations
-import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
@@ -53,14 +37,10 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.runs
 import io.mockk.slot
-import io.mockk.spyk
 import io.mockk.unmockkAll
-import io.mockk.unmockkObject
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -71,8 +51,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SchemaPaymentViewModelTest {
@@ -198,7 +176,6 @@ class SchemaPaymentViewModelTest {
         }
         return createViewModel(session)
     }
-
 
     @Test
     fun `test ctaRes returns pay_now for AirwallexPaymentSession`() {

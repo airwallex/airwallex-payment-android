@@ -75,9 +75,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
-        airwallex.updateActivity(this)
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
-
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
@@ -92,7 +90,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             typography = AirwallexTypography.Title200,
                             textAlign = TextAlign.Left,
                         )
-
                         PaymentElementContent()
                     }
                 }
@@ -131,7 +128,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                         else -> Unit
                     }
                 },
-                onError = { exception ->
+                onError = { _ ->
                     // Shouldn't be any error since data is pre-fetched
                 }
             ).fold(

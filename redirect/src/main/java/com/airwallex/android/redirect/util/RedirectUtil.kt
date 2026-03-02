@@ -34,15 +34,9 @@ object RedirectUtil {
             val browserPackageName = browserInfo?.activityInfo?.packageName
             if (resolvedPackageName != null) {
                 return when (resolvedPackageName) {
-                    RESOLVER_ACTIVITY_PACKAGE_NAME -> {
-                        ResolveResultType.RESOLVER_ACTIVITY
-                    }
-                    browserPackageName -> {
-                        ResolveResultType.DEFAULT_BROWSER
-                    }
-                    else -> {
-                        ResolveResultType.APPLICATION
-                    }
+                    RESOLVER_ACTIVITY_PACKAGE_NAME -> ResolveResultType.RESOLVER_ACTIVITY
+                    browserPackageName -> ResolveResultType.DEFAULT_BROWSER
+                    else -> ResolveResultType.APPLICATION
                 }
             }
         } catch (_: Exception) {

@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.airwallex.android.core.Airwallex.Companion.initialize
 import com.airwallex.android.core.data.AirwallexCheckoutParam
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexComponentDependencyException
@@ -67,7 +68,7 @@ import java.util.Collections
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
-@Suppress("LongMethod")
+@Suppress("LongMethod, LargeClass, LongParameterList")
 class Airwallex internal constructor(
     private val fragment: Fragment?,
     var activity: ComponentActivity,
@@ -141,23 +142,22 @@ class Airwallex internal constructor(
 
     private fun setupAnalyticsLogger(session: AirwallexSession) {
         when (session) {
-            is AirwallexPaymentSession -> {
+            is AirwallexPaymentSession ->
                 AnalyticsLogger.setSessionInformation(
                     transactionMode = TransactionMode.ONE_OFF.value,
                     paymentIntentId = session.paymentIntent?.id,
                 )
-            }
-            is AirwallexRecurringSession -> {
+
+            is AirwallexRecurringSession ->
                 AnalyticsLogger.setSessionInformation(
                     transactionMode = TransactionMode.RECURRING.value,
                 )
-            }
-            is AirwallexRecurringWithIntentSession -> {
+
+            is AirwallexRecurringWithIntentSession ->
                 AnalyticsLogger.setSessionInformation(
                     transactionMode = TransactionMode.RECURRING.value,
                     paymentIntentId = session.paymentIntent?.id,
                 )
-            }
         }
     }
 
@@ -597,49 +597,31 @@ class Airwallex internal constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionThrown")
     fun getPaymentIntent(session: AirwallexSession) =
         when (session) {
-            is AirwallexPaymentSession -> {
-                session.paymentIntent
-            }
+            is AirwallexPaymentSession -> session.paymentIntent
 
-            is AirwallexRecurringWithIntentSession -> {
-                session.paymentIntent
-            }
+            is AirwallexRecurringWithIntentSession -> session.paymentIntent
 
-            is AirwallexRecurringSession -> {
-                null
-            }
+            is AirwallexRecurringSession -> null
 
-            else -> {
-                throw Exception("Not supported session $session")
-            }
+            else -> throw Exception("Not supported session $session")
         }
 
     fun getClientSecret(session: AirwallexSession) =
         when (session) {
-            is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
+            is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession ->
                 getPaymentIntent(session)?.clientSecret
-            }
 
-            is AirwallexRecurringSession -> {
-                session.clientSecret
-            }
-
-            else -> {
-                null
-            }
+            is AirwallexRecurringSession -> session.clientSecret
+            else -> null
         }
 
     fun shouldHidePaymentConsents(session: AirwallexSession) =
         when (session) {
-            is AirwallexPaymentSession -> {
-                session.hidePaymentConsents
-            }
-
-            else -> {
-                false
-            }
+            is AirwallexPaymentSession -> session.hidePaymentConsents
+            else -> false
         }
 
     fun getSupportedCardSchemes(availablePaymentMethodTypes: List<AvailablePaymentMethodType>): List<CardScheme> =
@@ -782,81 +764,101 @@ class Airwallex internal constructor(
                 }
 
                 override fun onSuccess(response: PaymentConsent) {
-                    // for redirect, initialPaymentIntentId is empty now. so we don support recurring in redirect flow
-                    val paymentIntentId = response.initialPaymentIntentId
-                    if (response.nextAction == null) {
-                        loggingListener.onCompleted(
-                            AirwallexPaymentStatus.Success(
-                                paymentIntentId,
-                                response.id
-                            )
-                        )
-                        return
-                    }
-                    val provider = AirwallexPlugins.getProvider(
-                        ActionComponentProviderType.fromValue(paymentMethodType)
+                    handlePaymentConsentVerifySuccess(
+                        response = response,
+                        params = params,
+                        paymentMethodType = paymentMethodType,
+                        loggingListener = loggingListener
                     )
-                    if (provider == null) {
-                        loggingListener.onCompleted(
-                            AirwallexPaymentStatus.Failure(
-                                AirwallexCheckoutException(message = "Missing dependency!")
-                            )
-                        )
-                        return
-                    }
-                    when (paymentMethodType) {
-                        PaymentMethodType.CARD.value, PaymentMethodType.GOOGLEPAY.value -> {
-                            if (paymentIntentId.isNullOrEmpty()) {
-                                AnalyticsLogger.logError(
-                                    "initialPaymentIntentId_null_or_empty",
-                                    mapOf("type" to paymentMethodType)
-                                )
-                                AirwallexLogger.error("Airwallex verifyPaymentConsent: type = $paymentMethodType, paymentIntentId isNullOrEmpty")
-                                loggingListener.onCompleted(
-                                    AirwallexPaymentStatus.Failure(
-                                        AirwallexCheckoutException(message = "Unsupported payment method")
-                                    )
-                                )
-                                return
-                            }
-
-                            val nextActionModel = CardNextActionModel(
-                                paymentManager = paymentManager,
-                                clientSecret = params.clientSecret,
-                                device = null,
-                                paymentIntentId = paymentIntentId,
-                                currency = requireNotNull(params.currency),
-                                amount = requireNotNull(params.amount),
-                                activityProvider = { activity }
-                            )
-
-                            provider.get().handlePaymentIntentResponse(
-                                paymentIntentId,
-                                response.nextAction,
-                                fragment,
-                                activity,
-                                applicationContext,
-                                nextActionModel,
-                                loggingListener,
-                                response.id
-                            )
-                        }
-
-                        else -> {
-                            provider.get().handlePaymentIntentResponse(
-                                null,
-                                response.nextAction,
-                                fragment,
-                                activity,
-                                applicationContext,
-                                null,
-                                loggingListener,
-                                response.id
-                            )
-                        }
-                    }
                 }
             }
+        )
+    }
+
+    private fun handlePaymentConsentVerifySuccess(
+        response: PaymentConsent,
+        params: VerifyPaymentConsentParams,
+        paymentMethodType: String,
+        loggingListener: PaymentResultListener
+    ) {
+        // for redirect, initialPaymentIntentId is empty now. so we don support recurring in redirect flow
+        val paymentIntentId = response.initialPaymentIntentId
+
+        if (response.nextAction == null) {
+            loggingListener.onCompleted(
+                AirwallexPaymentStatus.Success(paymentIntentId, response.id)
+            )
+            return
+        }
+
+        val provider = AirwallexPlugins.getProvider(
+            ActionComponentProviderType.fromValue(paymentMethodType)
+        )
+        if (provider == null) {
+            loggingListener.onCompleted(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexCheckoutException(message = "Missing dependency!")
+                )
+            )
+            return
+        }
+
+        when (paymentMethodType) {
+            PaymentMethodType.CARD.value, PaymentMethodType.GOOGLEPAY.value -> {
+                if (paymentIntentId.isNullOrEmpty()) {
+                    AnalyticsLogger.logError(
+                        "initialPaymentIntentId_null_or_empty",
+                        mapOf("type" to paymentMethodType)
+                    )
+                    AirwallexLogger.error("Airwallex verifyPaymentConsent: type = $paymentMethodType, paymentIntentId isNullOrEmpty")
+                    loggingListener.onCompleted(
+                        AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(message = "Unsupported payment method")
+                        )
+                    )
+                    return
+                }
+
+                val nextActionModel = createCardNextActionModel(params, paymentIntentId)
+
+                provider.get().handlePaymentIntentResponse(
+                    paymentIntentId,
+                    response.nextAction,
+                    fragment,
+                    activity,
+                    applicationContext,
+                    nextActionModel,
+                    loggingListener,
+                    response.id
+                )
+            }
+
+            else ->
+                provider.get().handlePaymentIntentResponse(
+                    null,
+                    response.nextAction,
+                    fragment,
+                    activity,
+                    applicationContext,
+                    null,
+                    loggingListener,
+                    response.id
+                )
+        }
+    }
+
+    private fun createCardNextActionModel(
+        params: VerifyPaymentConsentParams,
+        paymentIntentId: String
+    ): CardNextActionModel {
+        return CardNextActionModel(
+            paymentManager = paymentManager,
+            clientSecret = params.clientSecret,
+            device = null,
+            paymentIntentId = paymentIntentId,
+            currency = requireNotNull(params.currency),
+            amount = requireNotNull(params.amount),
+            activityProvider = { activity }
         )
     }
 

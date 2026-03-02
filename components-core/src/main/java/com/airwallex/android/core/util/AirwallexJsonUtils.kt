@@ -128,7 +128,8 @@ object AirwallexJsonUtils {
                     try {
                         val mapValue = value as Map<String, Any>
                         jsonObject.put(key, mapToJsonObject(mapValue))
-                    } catch (classCastException: ClassCastException) {
+                    } catch (_: ClassCastException) {
+                        // do nothing
                     }
                 } else if (value is List<*>) {
                     jsonObject.put(key, listToJsonArray(value as List<Any>))
@@ -137,7 +138,8 @@ object AirwallexJsonUtils {
                 } else {
                     jsonObject.put(key, value.toString())
                 }
-            } catch (jsonException: JSONException) {
+            } catch (_: JSONException) {
+                // do nothing
             }
         }
         return jsonObject

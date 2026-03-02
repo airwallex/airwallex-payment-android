@@ -9,6 +9,7 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.ui.R
+import com.airwallex.android.view.composables.PaymentElementManager.Companion.create
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
 
@@ -80,7 +81,7 @@ class PaymentElementManager private constructor(
                 )
             }
         }
-
+        @Suppress("LongParameterList")
         suspend fun create(
             session: AirwallexSession,
             airwallex: Airwallex,

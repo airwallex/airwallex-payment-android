@@ -3,7 +3,7 @@ package com.airwallex.android.core.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
-import java.util.*
+import java.util.Date
 
 @Parcelize
 data class PaymentConsent constructor(
