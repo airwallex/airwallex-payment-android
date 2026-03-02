@@ -13,6 +13,7 @@ object TokenManager {
         AnalyticsLogger.updateAccountId(newId)
         AirwallexRisk.setAccountId(newId)
     }
+    var businessName: String? = null
 
     fun updateClientSecret(clientSecret: String) {
         AirwallexLogger.debug("updateClientSecret: $clientSecret")
@@ -23,7 +24,9 @@ object TokenManager {
 
         runCatching {
             val decoded = String(Base64.decode(body, Base64.DEFAULT))
-            accountId = JSONObject(decoded).getString("account_id")
+            val json = JSONObject(decoded)
+            accountId = json.getString("account_id")
+            businessName = json.getString("business_name")
         }
     }
 }

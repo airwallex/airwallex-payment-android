@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,10 +20,11 @@ import androidx.compose.ui.unit.dp
 fun StandardAlertDialog(
     title: String,
     content: String,
-    confirmButtonTitle: String,
-    dismissButtonTitle: String,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
+    confirmButtonTitle: String? = null,
+    confirmButtonContainerColor: Color = AirwallexColor.textError(),
+    onConfirm: (() -> Unit)? = null,
+    dismissButtonTitle: String? = null,
+    onDismiss: (() -> Unit)? = null,
 ) {
     AlertDialog(
         backgroundColor = AirwallexColor.backgroundPrimary(),
@@ -45,37 +47,48 @@ fun StandardAlertDialog(
             )
         },
         buttons = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        shape = RoundedCornerShape(8.dp),
-                        color = AirwallexColor.backgroundPrimary(),
-                    )
-                    .padding(
-                        vertical = 12.dp,
-                        horizontal = 24.dp,
-                    ),
-            ) {
-                StandardOutlinedButton(
-                    text = dismissButtonTitle,
-                    onClick = onDismiss,
-                    textColor = AirwallexColor.textPrimary(),
-                    borderColor = AirwallexColor.Transparent,
-                    modifier = Modifier.weight(1f),
-                )
+            val showDismissButton = dismissButtonTitle != null && onDismiss != null
+            val showConfirmButton = confirmButtonTitle != null && onConfirm != null
 
-                Spacer(modifier = Modifier.width(12.dp))
+            if (showDismissButton || showConfirmButton) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            shape = RoundedCornerShape(8.dp),
+                            color = AirwallexColor.backgroundPrimary(),
+                        )
+                        .padding(
+                            vertical = 12.dp,
+                            horizontal = 24.dp,
+                        ),
+                ) {
+                    if (showDismissButton) {
+                        StandardOutlinedButton(
+                            text = dismissButtonTitle!!,
+                            onClick = onDismiss!!,
+                            textColor = AirwallexColor.textPrimary(),
+                            borderColor = AirwallexColor.Transparent,
+                            modifier = Modifier.weight(1f),
+                        )
 
-                StandardSolidButton(
-                    text = confirmButtonTitle,
-                    containerColor = AirwallexColor.textError(),
-                    onClick = onConfirm,
-                    modifier = Modifier.weight(1f),
-                )
+                        if (showConfirmButton) {
+                            Spacer(modifier = Modifier.width(12.dp))
+                        }
+                    }
+
+                    if (showConfirmButton) {
+                        StandardSolidButton(
+                            text = confirmButtonTitle!!,
+                            containerColor = confirmButtonContainerColor,
+                            onClick = onConfirm!!,
+                            modifier = if (showDismissButton) Modifier.weight(1f) else Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
             }
         },
-        onDismissRequest = onDismiss,
+        onDismissRequest = { onDismiss?.invoke() },
     )
 }
 

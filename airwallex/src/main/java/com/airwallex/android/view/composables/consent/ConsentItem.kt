@@ -84,7 +84,13 @@ internal fun ConsentItem(
             Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_three_dots_vertical),
                 contentDescription = "three dots",
-                colorFilter = ColorFilter.tint(AirwallexColor.theme()),
+                colorFilter = ColorFilter.tint(
+                    if (consent.nextTriggeredBy == PaymentConsent.NextTriggeredBy.MERCHANT) {
+                        AirwallexColor.iconDisabled()
+                    } else {
+                        AirwallexColor.theme()
+                    }
+                ),
                 modifier = Modifier.clickable(
                     onClick = {
                         onDeleteCard(consent)
