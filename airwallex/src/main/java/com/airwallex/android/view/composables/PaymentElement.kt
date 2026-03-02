@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
@@ -39,6 +40,9 @@ class PaymentElement private constructor(
             configuration: PaymentElementConfiguration,
             paymentFlowListener: PaymentFlowListener
         ): Result<PaymentElement> {
+            if (configuration is PaymentElementConfiguration.Card && configuration.supportedCardBrands.isEmpty()) {
+                return Result.failure(InvalidParamsException("supportedCardBrands should not be empty"))
+            }
             val viewModel = ViewModelProvider(
                 airwallex.activity,
                 PaymentFlowViewModel.Factory(
@@ -48,12 +52,7 @@ class PaymentElement private constructor(
             )[PaymentFlowViewModel::class.java]
             viewModel.updateActivity(airwallex.activity)
             val alreadyLoaded = viewModel.availablePaymentMethods.value.isNotEmpty()
-
-            // Determine if we need to fetch based on configuration
-            val shouldFetch = when (configuration) {
-                is PaymentElementConfiguration.Card -> configuration.supportedCardBrands.isEmpty()
-                is PaymentElementConfiguration.PaymentSheet -> true
-            } && !alreadyLoaded
+            val shouldFetch = configuration is PaymentElementConfiguration.PaymentSheet && !alreadyLoaded
 
             return if (shouldFetch) {
                 viewModel.fetchAvailablePaymentMethodsAndConsents()
