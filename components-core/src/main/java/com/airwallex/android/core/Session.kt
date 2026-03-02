@@ -5,20 +5,32 @@ import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.core.model.PaymentConsentOptions
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
 /**
- * Session for payment with payment consent options.
- * Similar to AirwallexPaymentSession but includes payment consent configuration.
+ * Unified session for payment with payment consent options.
+ * Replaces AirwallexPaymentSession with support for both static PaymentIntent and PaymentIntentProvider.
+ *
+ * This session simplifies the SDK by unifying all payment flows:
+ * - One-off payments
+ * - Recurring payments with consent creation
+ * - MIT consent used for CIT transactions
  */
 @Suppress("LongParameterList")
 @Parcelize
 class Session internal constructor(
     /**
-     * The [PaymentIntent] to handle. required.
+     * The [PaymentIntent] object, optional when using paymentIntentProvider.
      */
-    val paymentIntent: PaymentIntent,
+    override val paymentIntent: PaymentIntent?,
+
+    /**
+     * Internal identifier for the PaymentIntentProvider stored in the repository.
+     * This is set when bindToActivity is called.
+     */
+    override var paymentIntentProviderId: String? = null,
 
     /**
      * Details for payment consent. optional.
@@ -87,17 +99,84 @@ class Session internal constructor(
      */
     val hidePaymentConsents: Boolean = false
 
-) : AirwallexSession(), Parcelable {
+) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 
-    class Builder(
-        private val paymentIntent: PaymentIntent,
-        private val countryCode: String,
-        private val googlePayOptions: GooglePayOptions? = null
-    ) : ObjectBuilder<Session> {
+    /**
+     * PaymentIntentProvider instance. This field is transient and not parceled.
+     * It is stored only in memory and bound to the Activity lifecycle via PaymentIntentProviderRepository.
+     */
+    @IgnoredOnParcel
+    @Transient
+    override var paymentIntentProvider: PaymentIntentProvider? = null
 
-        private val currency: String = paymentIntent.currency
-        private val amount: BigDecimal = paymentIntent.amount
-        private val customerId: String? = paymentIntent.customerId
+    /**
+     * Returns true if this is a one-off payment session (no recurring setup)
+     */
+    val isOneOffPayment: Boolean
+        get() = paymentConsentOptions == null
+
+    class Builder : ObjectBuilder<Session> {
+        private var paymentIntent: PaymentIntent? = null
+        private var paymentIntentProvider: PaymentIntentProvider? = null
+        private val countryCode: String
+        private val currency: String
+        private val amount: BigDecimal
+        private var customerId: String? = null
+        private val googlePayOptions: GooglePayOptions?
+
+        /**
+         * Constructor for static PaymentIntent
+         */
+        constructor(
+            paymentIntent: PaymentIntent,
+            countryCode: String,
+            googlePayOptions: GooglePayOptions? = null
+        ) {
+            this.paymentIntent = paymentIntent
+            this.countryCode = countryCode
+            this.currency = paymentIntent.currency
+            this.amount = paymentIntent.amount
+            this.customerId = paymentIntent.customerId
+            this.googlePayOptions = googlePayOptions
+            paymentIntent.clientSecret?.apply {
+                TokenManager.updateClientSecret(this)
+            }
+        }
+
+        /**
+         * Constructor for PaymentIntentProvider
+         */
+        constructor(
+            paymentIntentProvider: PaymentIntentProvider,
+            countryCode: String,
+            customerId: String? = null,
+            googlePayOptions: GooglePayOptions? = null
+        ) {
+            this.paymentIntentProvider = paymentIntentProvider
+            this.countryCode = countryCode
+            this.currency = paymentIntentProvider.currency
+            this.amount = paymentIntentProvider.amount
+            this.customerId = customerId
+            this.googlePayOptions = googlePayOptions
+        }
+
+        /**
+         * Constructor for PaymentIntentSource (modern suspend-based version)
+         */
+        constructor(
+            paymentIntentSource: PaymentIntentSource,
+            countryCode: String,
+            customerId: String? = null,
+            googlePayOptions: GooglePayOptions? = null
+        ) {
+            // Automatically wrap suspend source with callback adapter
+            this.paymentIntentProvider = SourceToProviderAdapter(paymentIntentSource)
+            this.countryCode = countryCode
+            this.currency = paymentIntentSource.currency
+            this.amount = paymentIntentSource.amount
+            this.customerId = customerId
+            this.googlePayOptions = googlePayOptions
+        }
 
         private var paymentConsentOptions: PaymentConsentOptions? = null
         private var isBillingInformationRequired: Boolean = true
@@ -109,7 +188,7 @@ class Session internal constructor(
         private var shipping: Shipping? = null
 
         init {
-            paymentIntent.clientSecret?.apply {
+            paymentIntent?.clientSecret?.apply {
                 TokenManager.updateClientSecret(this)
             }
         }
@@ -147,7 +226,11 @@ class Session internal constructor(
         }
 
         override fun build(): Session {
-            return Session(
+            require(paymentIntent != null || paymentIntentProvider != null) {
+                "Either paymentIntent or paymentIntentProvider must be provided"
+            }
+
+            val session = Session(
                 paymentIntent = paymentIntent,
                 paymentConsentOptions = paymentConsentOptions,
                 currency = currency,
@@ -162,7 +245,11 @@ class Session internal constructor(
                 autoCapture = autoCapture,
                 hidePaymentConsents = hidePaymentConsents,
                 paymentMethods = paymentMethods
-            )
+            ).apply {
+                // Set the provider directly on the session (transient field, won't be parceled)
+                paymentIntentProvider = this@Builder.paymentIntentProvider
+            }
+            return session
         }
     }
 }
