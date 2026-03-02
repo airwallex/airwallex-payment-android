@@ -3,14 +3,19 @@ package com.airwallex.android.core
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentFixtures
 import com.airwallex.android.core.model.Shipping
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.runs
+import io.mockk.verify
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import java.math.BigDecimal
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -19,6 +24,7 @@ class AirwallexPaymentSessionTest {
     @Before
     fun setup() {
         mockkObject(TokenManager)
+        clearMocks(TokenManager)
         every { TokenManager.updateClientSecret(any()) } just runs
     }
 
@@ -209,4 +215,70 @@ class AirwallexPaymentSessionTest {
 
         assertEquals(true, session.isExpressCheckout)
     }
+    // TODO: check todo in init block of AirwallexPaymentSession
+    @Ignore
+    @Test
+    fun `init block calls TokenManager when clientSecret is not null`() {
+        val paymentIntent = PaymentIntentFixtures.PAYMENT_INTENT
+        val clientSecret = paymentIntent.clientSecret
+        assertNotNull(clientSecret, "PaymentIntent fixture should have a non-null clientSecret")
+
+        // TokenManager is already mocked in setup()
+        AirwallexPaymentSession.Builder(
+            paymentIntent = paymentIntent,
+            countryCode = "US"
+        )
+
+        verify(exactly = 1) {
+            TokenManager.updateClientSecret(clientSecret)
+        }
+    }
+
+    // same as above, this case will always be null for now
+    @Ignore
+    @Test
+    fun `init block does not call TokenManager when clientSecret is null`() {
+        val paymentIntentWithNullSecret = mockk<PaymentIntent> {
+            every { clientSecret } returns null
+            every { currency } returns "USD"
+            every { amount } returns BigDecimal(100.0)
+            every { customerId } returns null
+        }
+
+        AirwallexPaymentSession.Builder(
+            paymentIntent = paymentIntentWithNullSecret,
+            countryCode = "US"
+        )
+
+        // Should not crash and should not call updateClientSecret with null
+        verify(exactly = 0) {
+            TokenManager.updateClientSecret(any())
+        }
+    }
+
+    @Test
+    fun `build throws exception when both paymentIntent and paymentIntentProvider are null`() {
+        // Use reflection to test the defensive require check in build()
+        val builder = AirwallexPaymentSession.Builder(
+            PaymentIntentFixtures.PAYMENT_INTENT,
+            "CN"
+        )
+
+        // Use reflection to set both paymentIntent and paymentIntentProvider to null
+        val builderClass = builder.javaClass
+        val paymentIntentField = builderClass.getDeclaredField("paymentIntent")
+        paymentIntentField.isAccessible = true
+        paymentIntentField.set(builder, null)
+
+        val paymentIntentProviderField = builderClass.getDeclaredField("paymentIntentProvider")
+        paymentIntentProviderField.isAccessible = true
+        paymentIntentProviderField.set(builder, null)
+
+        // Now calling build() should throw IllegalArgumentException
+        val exception = assertFailsWith<IllegalArgumentException> {
+            builder.build()
+        }
+        assertEquals("Either paymentIntent or paymentIntentProvider must be provided", exception.message)
+    }
+
 }

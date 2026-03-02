@@ -143,27 +143,29 @@ internal fun PaymentMethodsTabSection(
 
                 Spacer(modifier = Modifier.height(24.dp))
             }
-            HorizontalPager(
-                state = pagerState,
-                userScrollEnabled = false,
-            ) {
-                when (type.name) {
-                    PaymentMethodType.CARD.value -> {
-                        CardSection(
-                            session = session,
-                            airwallex = airwallex,
-                            cardSchemes = type.cardSchemes.orEmpty(),
-                            paymentFlowListener = paymentFlowListener,
-                        )
-                    }
+            if (nonGooglePaymentMethods.isNotEmpty()) {
+                HorizontalPager(
+                    state = pagerState,
+                    userScrollEnabled = false,
+                ) {
+                    when (type.name) {
+                        PaymentMethodType.CARD.value -> {
+                            CardSection(
+                                session = session,
+                                airwallex = airwallex,
+                                cardSchemes = type.cardSchemes.orEmpty(),
+                                paymentFlowListener = paymentFlowListener,
+                            )
+                        }
 
-                    else -> {
-                        SchemaSection(
-                            session = session,
-                            airwallex = airwallex,
-                            type = type,
-                            paymentFlowListener = paymentFlowListener,
-                        )
+                        else -> {
+                            SchemaSection(
+                                session = session,
+                                airwallex = airwallex,
+                                type = type,
+                                paymentFlowListener = paymentFlowListener,
+                            )
+                        }
                     }
                 }
             }

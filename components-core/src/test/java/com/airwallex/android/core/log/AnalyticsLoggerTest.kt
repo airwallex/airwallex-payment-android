@@ -3,6 +3,9 @@ package com.airwallex.android.core.log
 import android.content.Context
 import android.content.pm.PackageManager
 import com.airwallex.airtracker.Tracker
+import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.android.core.Environment
+import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.getAppName
 import com.airwallex.android.core.extension.getAppVersion
@@ -13,9 +16,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkConstructor
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.runs
+import io.mockk.unmockkAll
 import io.mockk.verify
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -30,15 +36,25 @@ class AnalyticsLoggerTest {
     fun setup() {
         MockKAnnotations.init(this)
         mockkStatic(PackageManager::getAppName)
+        mockkObject(AirwallexPlugins)
+        mockkObject(TokenManager)
 
         every { context.packageName } returns "abc"
         every { packageManager.getAppName(any()) } returns "test_app"
         every { any<PackageManager>().getAppVersion(any()) } returns "1.0.1"
         every { context.packageManager } returns packageManager
+        every { AirwallexPlugins.environment } returns Environment.PRODUCTION
+        every { AirwallexPlugins.enableAnalytics } returns true
+        every { TokenManager.accountId } returns null
 
         mockkConstructor(Tracker::class)
         every { anyConstructed<Tracker>().info(any(), any()) } just runs
         every { anyConstructed<Tracker>().error(any(), any()) } just runs
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
     }
 
     @Test

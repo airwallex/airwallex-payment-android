@@ -113,7 +113,6 @@ project.afterEvaluate { project ->
 
                 '**/*ViewModelFactory.*',
                 '**/*ScreenEvent.*',
-                '**/core/Airwallex.kt',
                 '**/AirwallexStarter.kt',
                 '**/*InputLayout.kt',
                 '**/*EditText.kt',
@@ -121,6 +120,8 @@ project.afterEvaluate { project ->
                 '**/paymentacceptance/**',
                 'security-3ds/**',
                 '**/composables/**',
+                '**/http/AirwallexHttpClient.*',
+                '**/http/AirwallexHttpConnection.*',
         ]
 
         final androidKotlinTree = fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/${variant}", excludes: fileFilter)

@@ -16,7 +16,7 @@ import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.PaymentElementConfiguration
-import com.airwallex.android.view.composables.PaymentElementManager
+import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.launch
@@ -52,7 +52,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         setLoadingProgress(loading = true, cancelable = false)
 
         lifecycleScope.launch {
-            PaymentElementManager.create(
+            PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
                 configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType),
@@ -93,7 +93,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         return R.drawable.airwallex_ic_close
     }
 
-    private fun initView(paymentElementState: PaymentElementManager) {
+    private fun initView(paymentElementState: PaymentElement) {
         AirwallexRisk.log(event = "show_payment_method_list", screen = "page_payment_method_list")
         viewBinding.composeView.apply {
             setContent {

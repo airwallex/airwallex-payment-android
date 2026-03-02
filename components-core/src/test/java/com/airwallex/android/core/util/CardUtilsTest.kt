@@ -117,4 +117,118 @@ class CardUtilsTest {
         // Test full length (14 digits)
         assertEquals("3643 893643 8936", CardUtils.formatCardNumber("36438936438936", CardBrand.DINERS))
     }
+
+    @Test
+    fun `test isValidCardNumber with valid card`() {
+        assertTrue(CardUtils.isValidCardNumber("4242424242424242"))
+    }
+
+    @Test
+    fun `test isValidCardNumber with invalid card`() {
+        assertFalse(CardUtils.isValidCardNumber("4242424242424244"))
+    }
+
+    @Test
+    fun `test isValidCardNumber with card containing digits that double to greater than 9`() {
+        // This card number contains digits 5-9 which when doubled exceed 9, triggering line 45 (digitInteger -= 9)
+        assertTrue(CardUtils.isValidCardNumber("5555555555554444")) // MasterCard
+    }
+
+    @Test
+    fun `test isValidCardNumber with valid Luhn but invalid length`() {
+        // Line 17: Tests the case where isValidLuhnNumber returns true but isValidCardLength returns false
+        // Card number "424242424242" has valid Luhn checksum but is too short for Visa (needs 16 digits)
+        assertFalse(CardUtils.isValidCardNumber("424242424242"))
+    }
+
+    @Test
+    fun `test isValidCardLength with recognized brand but invalid length`() {
+        // Line 70: Tests the 'in' operator false branch
+        // "42424242" is recognized as Visa (not Unknown) but length 8 is not in Visa's valid lengths
+        assertFalse(CardUtils.isValidCardLength("42424242"))
+    }
+
+    @Test
+    fun `test isValidCardNumber with spaces and hyphens`() {
+        assertTrue(CardUtils.isValidCardNumber("4242-4242-4242-4242"))
+        assertTrue(CardUtils.isValidCardNumber("4242 4242 4242 4242"))
+    }
+
+    @Test
+    fun `test isValidCardNumber with null`() {
+        assertFalse(CardUtils.isValidCardNumber(null))
+    }
+
+    @Test
+    fun `test isValidLuhnNumber with non-digit characters`() {
+        assertFalse(CardUtils.isValidLuhnNumber("4242-4242-4242-4242"))
+        assertFalse(CardUtils.isValidLuhnNumber("4242 4242 4242 4242"))
+        assertFalse(CardUtils.isValidLuhnNumber("424242424242424a"))
+    }
+
+    @Test
+    fun `test getPossibleCardBrand with null`() {
+        assertEquals(CardBrand.Unknown, CardUtils.getPossibleCardBrand(null, false))
+        assertEquals(CardBrand.Unknown, CardUtils.getPossibleCardBrand(null, true))
+    }
+
+    @Test
+    fun `test getPossibleCardBrand with blank string`() {
+        assertEquals(CardBrand.Unknown, CardUtils.getPossibleCardBrand("", false))
+        assertEquals(CardBrand.Unknown, CardUtils.getPossibleCardBrand("  ", true))
+    }
+
+    @Test
+    fun `test removeSpacesAndHyphens with null`() {
+        assertEquals(null, CardUtils.removeSpacesAndHyphens(null))
+    }
+
+    @Test
+    fun `test removeSpacesAndHyphens with blank string`() {
+        assertEquals(null, CardUtils.removeSpacesAndHyphens(""))
+        assertEquals(null, CardUtils.removeSpacesAndHyphens("   "))
+    }
+
+    @Test
+    fun `test removeSpacesAndHyphens with spaces and hyphens`() {
+        assertEquals("4242424242424242", CardUtils.removeSpacesAndHyphens("4242-4242-4242-4242"))
+        assertEquals("4242424242424242", CardUtils.removeSpacesAndHyphens("4242 4242 4242 4242"))
+        assertEquals("4242424242424242", CardUtils.removeSpacesAndHyphens("4242 - 4242 - 4242 - 4242"))
+    }
+
+    @Test
+    fun `test removeSpacesAndHyphens with no spaces or hyphens`() {
+        assertEquals("4242424242424242", CardUtils.removeSpacesAndHyphens("4242424242424242"))
+    }
+
+    @Test
+    fun `test formatCardNumber with input longer than max length`() {
+        // Test that input is truncated before formatting
+        val longInput = "42424242424242424242424242424242" // 32 digits
+        val result = CardUtils.formatCardNumber(longInput, CardBrand.Visa)
+        // Input is truncated to maxCardLength (19), then spaces are added
+        // Result should be formatted but truncated input
+        assertTrue(result.startsWith("4242"))
+        assertTrue(result.contains(" "))
+    }
+
+    @Test
+    fun `test formatCardNumber when character at index is already a space`() {
+        // Input already has proper spacing
+        val input = "4242 4242 4242 4242"
+        assertEquals("4242 4242 4242 4242", CardUtils.formatCardNumber(input, CardBrand.Visa))
+    }
+
+    @Test
+    fun `test isValidCardLength with shouldNormalize true`() {
+        assertTrue(CardUtils.isValidCardLength("4242 4242 4242 4242", shouldNormalize = true))
+        assertFalse(CardUtils.isValidCardLength("4242 4242", shouldNormalize = true))
+    }
+
+    @Test
+    fun `test isValidCardLength with shouldNormalize false`() {
+        // Without normalization, spaces make the length invalid
+        assertFalse(CardUtils.isValidCardLength("4242 4242 4242 4242", shouldNormalize = false))
+        assertTrue(CardUtils.isValidCardLength("4242424242424242", shouldNormalize = false))
+    }
 }
