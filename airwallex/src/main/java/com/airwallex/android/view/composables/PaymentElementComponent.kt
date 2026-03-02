@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.core.Airwallex
@@ -36,8 +35,6 @@ internal fun PaymentElementComponent(
     paymentFlowListener: PaymentFlowListener,
     flowViewModel: PaymentFlowViewModel
 ) {
-    val availablePaymentMethods by flowViewModel.availablePaymentMethods.collectAsState()
-    val availablePaymentConsents by flowViewModel.availablePaymentConsents.collectAsState()
 
     LaunchedEffect(Unit) {
         flowViewModel.paymentResult.collect { event ->
@@ -46,18 +43,13 @@ internal fun PaymentElementComponent(
         }
     }
 
-    // Filter out Google Pay from available types
-    val availableTypes = remember(availablePaymentMethods) {
-        availablePaymentMethods.filterNot { paymentMethodType ->
-            paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
-        }
-    }
-
     Column {
         when (configuration) {
             is PaymentElementConfiguration.Card -> {
+                val availablePaymentMethods by flowViewModel.availablePaymentMethods.collectAsState()
+                val availablePaymentConsents by flowViewModel.availablePaymentConsents.collectAsState()
                 val cardSchemes =
-                    availableTypes.firstOrNull { it.name == PaymentMethodType.CARD.value }?.cardSchemes.orEmpty()
+                    availablePaymentMethods.firstOrNull { it.name == PaymentMethodType.CARD.value }?.cardSchemes.orEmpty()
                         .ifEmpty {
                             configuration.supportedCardBrands
                         }
@@ -75,23 +67,21 @@ internal fun PaymentElementComponent(
             }
 
             is PaymentElementConfiguration.PaymentSheet -> {
-                if (availableTypes.isNotEmpty()) {
-                    when (configuration.layout) {
-                        PaymentMethodsLayoutType.TAB -> {
-                            PaymentMethodsTabSection(
-                                session = session,
-                                airwallex = airwallex,
-                                paymentFlowListener = paymentFlowListener,
-                            )
-                        }
+                when (configuration.layout) {
+                    PaymentMethodsLayoutType.TAB -> {
+                        PaymentMethodsTabSection(
+                            session = session,
+                            airwallex = airwallex,
+                            paymentFlowListener = paymentFlowListener,
+                        )
+                    }
 
-                        PaymentMethodsLayoutType.ACCORDION -> {
-                            PaymentMethodsAccordionSection(
-                                session = session,
-                                airwallex = airwallex,
-                                paymentFlowListener = paymentFlowListener,
-                            )
-                        }
+                    PaymentMethodsLayoutType.ACCORDION -> {
+                        PaymentMethodsAccordionSection(
+                            session = session,
+                            airwallex = airwallex,
+                            paymentFlowListener = paymentFlowListener,
+                        )
                     }
                 }
             }
