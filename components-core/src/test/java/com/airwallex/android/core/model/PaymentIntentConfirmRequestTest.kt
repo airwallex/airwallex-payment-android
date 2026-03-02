@@ -1,6 +1,7 @@
 package com.airwallex.android.core.model
 
 import org.junit.Test
+import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -98,8 +99,8 @@ class PaymentIntentConfirmRequestTest {
             nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
             merchantTriggerReason = PaymentConsent.MerchantTriggerReason.SCHEDULED,
             termsOfUse = PaymentConsentOptions.TermsOfUse(
-                paymentAmountType = "FIXED",
-                fixedPaymentAmount = 100.0,
+                paymentAmountType = PaymentConsentOptions.PaymentAmountType.FIXED,
+                fixedPaymentAmount = BigDecimal("100.00"),
                 paymentCurrency = "USD",
                 billingCycleChargeDay = 15,
                 endDate = "2025-12-31T00:00:00Z",
@@ -107,7 +108,7 @@ class PaymentIntentConfirmRequestTest {
                     startDate = "2024-01-01T00:00:00Z",
                     endDate = "2025-01-01T00:00:00Z",
                     period = 1,
-                    periodUnit = "MONTH",
+                    periodUnit = PaymentConsentOptions.PeriodUnit.MONTH,
                     totalBillingCycles = 12
                 )
             )
@@ -132,7 +133,8 @@ class PaymentIntentConfirmRequestTest {
         assertNotNull(consentMap["terms_of_use"])
         val termsMap = consentMap["terms_of_use"] as Map<*, *>
         assertEquals("FIXED", termsMap["payment_amount_type"])
-        assertEquals(100.0, termsMap["fixed_payment_amount"])
+        // BigDecimal is stored directly in the map
+        assertEquals(BigDecimal("100.00"), termsMap["fixed_payment_amount"])
         assertEquals("USD", termsMap["payment_currency"])
         assertEquals(15, termsMap["billing_cycle_charge_day"])
         assertEquals("2025-12-31T00:00:00Z", termsMap["end_date"])

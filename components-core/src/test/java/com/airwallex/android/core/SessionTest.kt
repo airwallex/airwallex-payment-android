@@ -74,8 +74,8 @@ class SessionTest {
             nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
             merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
             termsOfUse = PaymentConsentOptions.TermsOfUse(
-                paymentAmountType = "VARIABLE",
-                maxPaymentAmount = 1000.0,
+                paymentAmountType = PaymentConsentOptions.PaymentAmountType.VARIABLE,
+                maxPaymentAmount = BigDecimal("1000.00"),
                 paymentCurrency = "USD"
             )
         )
@@ -94,8 +94,8 @@ class SessionTest {
         assertEquals(PaymentConsent.NextTriggeredBy.MERCHANT, session.paymentConsentOptions?.nextTriggeredBy)
         assertEquals(PaymentConsent.MerchantTriggerReason.UNSCHEDULED, session.paymentConsentOptions?.merchantTriggerReason)
         assertNotNull(session.paymentConsentOptions?.termsOfUse)
-        assertEquals("VARIABLE", session.paymentConsentOptions?.termsOfUse?.paymentAmountType)
-        assertEquals(1000.0, session.paymentConsentOptions?.termsOfUse?.maxPaymentAmount)
+        assertEquals(PaymentConsentOptions.PaymentAmountType.VARIABLE, session.paymentConsentOptions?.termsOfUse?.paymentAmountType)
+        assertEquals(BigDecimal("1000.00"), session.paymentConsentOptions?.termsOfUse?.maxPaymentAmount)
         assertEquals("USD", session.paymentConsentOptions?.termsOfUse?.paymentCurrency)
     }
 

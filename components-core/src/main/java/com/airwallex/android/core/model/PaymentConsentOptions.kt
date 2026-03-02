@@ -2,6 +2,7 @@ package com.airwallex.android.core.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 /**
  * Data class for payment_consent options in PaymentIntentConfirmRequest as per Airwallex API
@@ -30,31 +31,46 @@ data class PaymentConsentOptions(
         termsOfUse?.let { consentMap["terms_of_use"] = it.toParamMap() }
         return consentMap
     }
+
+    /**
+     * The agreed type of amounts for subsequent payment
+     */
+    @Parcelize
+    enum class PaymentAmountType(val value: String) : Parcelable {
+        FIXED("FIXED"),
+        VARIABLE("VARIABLE");
+
+        internal companion object {
+            internal fun fromValue(value: String?): PaymentAmountType? {
+                return values().firstOrNull { it.value == value }
+            }
+        }
+    }
     @Parcelize
     data class TermsOfUse(
         /**
-         * The agreed type of amounts for subsequent payment. One of FIXED, VARIABLE (required)
+         * The agreed type of amounts for subsequent payment (required)
          */
-        val paymentAmountType: String,
+        val paymentAmountType: PaymentAmountType,
         /**
          * The fixed payment amount that can be charged for a single payment.
          * Required if payment_amount_type is FIXED
          */
-        val fixedPaymentAmount: Double? = null,
+        val fixedPaymentAmount: BigDecimal? = null,
         /**
          * The maximum payment amount that can be charged for a single payment.
          * Optional if payment_amount_type is VARIABLE
          */
-        val maxPaymentAmount: Double? = null,
+        val maxPaymentAmount: BigDecimal? = null,
         /**
          * The minimum payment amount that can be charged for a single payment.
          * Optional if payment_amount_type is VARIABLE
          */
-        val minPaymentAmount: Double? = null,
+        val minPaymentAmount: BigDecimal? = null,
         /**
          * The first payment amount. Optional if payment agreement type is VARIABLE
          */
-        val firstPaymentAmount: Double? = null,
+        val firstPaymentAmount: BigDecimal? = null,
         /**
          * The currency of this payment
          */
@@ -76,7 +92,7 @@ data class PaymentConsentOptions(
 
         override fun toParamMap(): Map<String, Any> {
             val termsMap = mutableMapOf<String, Any>(
-                "payment_amount_type" to paymentAmountType
+                "payment_amount_type" to paymentAmountType.value
             )
             fixedPaymentAmount?.let { termsMap["fixed_payment_amount"] = it }
             maxPaymentAmount?.let { termsMap["max_payment_amount"] = it }
@@ -87,6 +103,23 @@ data class PaymentConsentOptions(
             endDate?.let { termsMap["end_date"] = it }
             paymentSchedule?.let { termsMap["payment_schedule"] = it.toParamMap() }
             return termsMap
+        }
+    }
+
+    /**
+     * Specifies billing frequency
+     */
+    @Parcelize
+    enum class PeriodUnit(val value: String) : Parcelable {
+        DAY("DAY"),
+        WEEK("WEEK"),
+        MONTH("MONTH"),
+        YEAR("YEAR");
+
+        internal companion object {
+            internal fun fromValue(value: String?): PeriodUnit? {
+                return values().firstOrNull { it.value == value }
+            }
         }
     }
 
@@ -107,10 +140,10 @@ data class PaymentConsentOptions(
          */
         val period: Int? = null,
         /**
-         * Specifies billing frequency. One of DAY, WEEK, MONTH, and YEAR.
+         * Specifies billing frequency.
          * Required when merchant_trigger_reason = scheduled
          */
-        val periodUnit: String? = null,
+        val periodUnit: PeriodUnit? = null,
         /**
          * Total number of billing cycles
          */
@@ -122,7 +155,7 @@ data class PaymentConsentOptions(
             startDate?.let { scheduleMap["start_date"] = it }
             endDate?.let { scheduleMap["end_date"] = it }
             period?.let { scheduleMap["period"] = it }
-            periodUnit?.let { scheduleMap["period_unit"] = it }
+            periodUnit?.let { scheduleMap["period_unit"] = it.value }
             totalBillingCycles?.let { scheduleMap["total_billing_cycles"] = it }
             return scheduleMap
         }
