@@ -89,14 +89,16 @@ class SessionTest {
 
         assertNotNull(session)
         assertNotNull(session.paymentIntent)
-        assertNotNull(session.paymentConsentOptions)
 
-        assertEquals(PaymentConsent.NextTriggeredBy.MERCHANT, session.paymentConsentOptions?.nextTriggeredBy)
-        assertEquals(PaymentConsent.MerchantTriggerReason.UNSCHEDULED, session.paymentConsentOptions?.merchantTriggerReason)
-        assertNotNull(session.paymentConsentOptions?.termsOfUse)
-        assertEquals(PaymentConsentOptions.PaymentAmountType.VARIABLE, session.paymentConsentOptions?.termsOfUse?.paymentAmountType)
-        assertEquals(BigDecimal("1000.00"), session.paymentConsentOptions?.termsOfUse?.maxPaymentAmount)
-        assertEquals("USD", session.paymentConsentOptions?.termsOfUse?.paymentCurrency)
+        val consentOptions = session.paymentConsentOptions
+        assertNotNull(consentOptions)
+        assertEquals(PaymentConsent.NextTriggeredBy.MERCHANT, consentOptions.nextTriggeredBy)
+        assertEquals(PaymentConsent.MerchantTriggerReason.UNSCHEDULED, consentOptions.merchantTriggerReason)
+        val tou = consentOptions.termsOfUse
+        assertNotNull(tou)
+        assertEquals(PaymentConsentOptions.PaymentAmountType.VARIABLE, tou.paymentAmountType)
+        assertEquals(BigDecimal("1000.00"), tou.maxPaymentAmount)
+        assertEquals("USD", tou.paymentCurrency)
     }
 
     @Test
