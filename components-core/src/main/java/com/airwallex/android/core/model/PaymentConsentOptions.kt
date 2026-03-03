@@ -81,9 +81,17 @@ data class PaymentConsentOptions(
          */
         val billingCycleChargeDay: Int? = null,
         /**
+         * Start date to expect payment request (ISO8601 format)
+         */
+        val startDate: String? = null,
+        /**
          * End date to expect payment request (ISO8601 format)
          */
         val endDate: String? = null,
+        /**
+         * Total number of billing cycles
+         */
+        val totalBillingCycles: Int? = null,
         /**
          * Payment schedule details (optional)
          */
@@ -100,7 +108,9 @@ data class PaymentConsentOptions(
             firstPaymentAmount?.let { termsMap["first_payment_amount"] = it }
             paymentCurrency?.let { termsMap["payment_currency"] = it }
             billingCycleChargeDay?.let { termsMap["billing_cycle_charge_day"] = it }
+            startDate?.let { termsMap["start_date"] = it }
             endDate?.let { termsMap["end_date"] = it }
+            totalBillingCycles?.let { termsMap["total_billing_cycles"] = it }
             paymentSchedule?.let { termsMap["payment_schedule"] = it.toParamMap() }
             return termsMap
         }
@@ -126,14 +136,6 @@ data class PaymentConsentOptions(
     @Parcelize
     data class PaymentSchedule(
         /**
-         * Start date of the payment schedule (ISO8601 format)
-         */
-        val startDate: String? = null,
-        /**
-         * End date of the payment schedule (ISO8601 format)
-         */
-        val endDate: String? = null,
-        /**
          * The number of period units between billing cycles.
          * For example, period=1 and period_unit=MONTH means monthly billing.
          * Required when merchant_trigger_reason = scheduled
@@ -144,19 +146,12 @@ data class PaymentConsentOptions(
          * Required when merchant_trigger_reason = scheduled
          */
         val periodUnit: PeriodUnit? = null,
-        /**
-         * Total number of billing cycles
-         */
-        val totalBillingCycles: Int? = null
     ) : AirwallexRequestModel, Parcelable {
 
         override fun toParamMap(): Map<String, Any> {
             val scheduleMap = mutableMapOf<String, Any>()
-            startDate?.let { scheduleMap["start_date"] = it }
-            endDate?.let { scheduleMap["end_date"] = it }
             period?.let { scheduleMap["period"] = it }
             periodUnit?.let { scheduleMap["period_unit"] = it.value }
-            totalBillingCycles?.let { scheduleMap["total_billing_cycles"] = it }
             return scheduleMap
         }
     }

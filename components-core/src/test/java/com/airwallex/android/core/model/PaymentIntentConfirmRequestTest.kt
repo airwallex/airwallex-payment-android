@@ -103,13 +103,12 @@ class PaymentIntentConfirmRequestTest {
                 fixedPaymentAmount = BigDecimal("100.00"),
                 paymentCurrency = "USD",
                 billingCycleChargeDay = 15,
+                startDate = "2024-01-01T00:00:00Z",
                 endDate = "2025-12-31T00:00:00Z",
+                totalBillingCycles = 12,
                 paymentSchedule = PaymentConsentOptions.PaymentSchedule(
-                    startDate = "2024-01-01T00:00:00Z",
-                    endDate = "2025-01-01T00:00:00Z",
                     period = 1,
                     periodUnit = PaymentConsentOptions.PeriodUnit.MONTH,
-                    totalBillingCycles = 12
                 )
             )
         )
@@ -138,14 +137,13 @@ class PaymentIntentConfirmRequestTest {
         assertEquals("USD", termsMap["payment_currency"])
         assertEquals(15, termsMap["billing_cycle_charge_day"])
         assertEquals("2025-12-31T00:00:00Z", termsMap["end_date"])
+        assertEquals("2024-01-01T00:00:00Z", termsMap["start_date"])
+        assertEquals(12, termsMap["total_billing_cycles"])
 
         // Verify payment_schedule
         assertNotNull(termsMap["payment_schedule"])
         val scheduleMap = termsMap["payment_schedule"] as Map<*, *>
-        assertEquals("2024-01-01T00:00:00Z", scheduleMap["start_date"])
-        assertEquals("2025-01-01T00:00:00Z", scheduleMap["end_date"])
         assertEquals(1, scheduleMap["period"])
         assertEquals("MONTH", scheduleMap["period_unit"])
-        assertEquals(12, scheduleMap["total_billing_cycles"])
     }
 }
