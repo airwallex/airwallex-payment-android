@@ -120,6 +120,9 @@ class AirwallexPaymentSession internal constructor(
             this.amount = paymentIntent.amount
             this.customerId = paymentIntent.customerId
             this.googlePayOptions = googlePayOptions
+            paymentIntent.clientSecret?.apply {
+                TokenManager.updateClientSecret(this)
+            }
         }
 
         /**

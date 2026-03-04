@@ -187,15 +187,10 @@ class Session internal constructor(
         private var paymentMethods: List<String>? = null
         private var shipping: Shipping? = null
 
-        init {
-            paymentIntent?.clientSecret?.apply {
-                TokenManager.updateClientSecret(this)
+        fun setPaymentConsentOptions(paymentConsentOptions: PaymentConsentOptions?): Builder =
+            apply {
+                this.paymentConsentOptions = paymentConsentOptions
             }
-        }
-
-        fun setPaymentConsentOptions(paymentConsentOptions: PaymentConsentOptions?): Builder = apply {
-            this.paymentConsentOptions = paymentConsentOptions
-        }
 
         fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requiresBillingInformation

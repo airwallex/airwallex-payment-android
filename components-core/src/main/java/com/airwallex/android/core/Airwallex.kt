@@ -620,8 +620,7 @@ class Airwallex internal constructor(
                     clientSecret = clientSecret,
                     customerId = customerId,
                     pageNum = pageNum,
-                ).setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
-                    .setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED).build()
+                ).setStatus(PaymentConsent.PaymentConsentStatus.VERIFIED).build()
             )
         }
     )
