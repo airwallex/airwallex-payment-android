@@ -115,8 +115,8 @@ class Session internal constructor(
     val isOneOffPayment: Boolean
         get() = paymentConsentOptions == null
 
-    override val clientSecret: String
-        get() = paymentIntent?.clientSecret ?: ""
+    override val clientSecret: String?
+        get() = paymentIntent?.clientSecret
 
     class Builder : ObjectBuilder<Session> {
         private var paymentIntent: PaymentIntent? = null

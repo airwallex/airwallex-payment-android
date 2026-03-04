@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.math.BigDecimal
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -92,7 +93,7 @@ abstract class BaseViewModel : ViewModel() {
                 // Start polling for InProgress status
                 status.paymentIntentId?.let { intentId ->
                     val clientSecret = session.clientSecret
-                    if (clientSecret.isNotEmpty()) {
+                    if (!clientSecret.isNullOrEmpty()) {
                         startPolling(intentId, clientSecret)
                     } else {
                         Log.e(TAG, "Client secret is null, cannot start polling")
@@ -138,9 +139,10 @@ abstract class BaseViewModel : ViewModel() {
     suspend fun getPaymentIntentFromServer(
         force3DS: Boolean = false,
         customerId: String? = null,
-        returnUrl: DemoReturnUrl
+        returnUrl: DemoReturnUrl,
+        amount: BigDecimal? = null
     ): PaymentIntent {
-        return repository.getPaymentIntentFromServer(force3DS, customerId, returnUrl)
+        return repository.getPaymentIntentFromServer(force3DS, customerId, returnUrl, amount)
     }
 
     /**

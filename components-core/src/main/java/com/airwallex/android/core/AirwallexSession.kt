@@ -68,7 +68,7 @@ abstract class AirwallexSession : Parcelable {
      * The client secret for this session.
      * Used for authenticating API requests.
      */
-    abstract val clientSecret: String
+    abstract val clientSecret: String?
 }
 
 /**

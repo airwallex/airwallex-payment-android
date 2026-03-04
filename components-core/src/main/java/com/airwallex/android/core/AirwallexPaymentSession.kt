@@ -109,8 +109,8 @@ class AirwallexPaymentSession internal constructor(
     @Transient
     override var paymentIntentProvider: PaymentIntentProvider? = null
 
-    override val clientSecret: String
-        get() = paymentIntent?.clientSecret ?: ""
+    override val clientSecret: String?
+        get() = paymentIntent?.clientSecret
 
     class Builder : ObjectBuilder<AirwallexPaymentSession> {
         private var paymentIntent: PaymentIntent? = null

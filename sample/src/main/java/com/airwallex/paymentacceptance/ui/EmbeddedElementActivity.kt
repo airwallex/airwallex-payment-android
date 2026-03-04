@@ -208,7 +208,7 @@ class EmbeddedElementActivity : AppCompatActivity() {
 //                // Start polling
                 status.paymentIntentId?.let { intentId ->
                     val clientSecret = session.clientSecret
-                    if (clientSecret.isNotEmpty()) {
+                    if (!clientSecret.isNullOrEmpty()) {
                         startPolling(intentId, clientSecret)
                     } else {
                         Log.e(TAG, "Client secret is null, cannot start polling")

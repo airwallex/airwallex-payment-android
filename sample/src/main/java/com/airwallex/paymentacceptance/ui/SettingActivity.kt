@@ -43,6 +43,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.sw3DS.setChecked(Settings.force3DS == "True")
         mBinding.swAutoCapture.setChecked(Settings.autoCapture == "Enabled")
         mBinding.swExpressCheckout.setChecked(Settings.expressCheckout == "Enabled")
+        mBinding.swUseSession.setChecked(Settings.useSession == "Enabled")
         mBinding.swEmail.setChecked(Settings.requiresEmail == "True")
 
         mBinding.etReturnUrl.setText(Settings.returnUrl)
@@ -73,6 +74,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             Settings.force3DS = if (mBinding.sw3DS.isChecked()) "True" else "False"
             Settings.autoCapture = if (mBinding.swAutoCapture.isChecked()) "Enabled" else "Disabled"
             Settings.expressCheckout = if (mBinding.swExpressCheckout.isChecked()) "Enabled" else "Disabled"
+            Settings.useSession = if (mBinding.swUseSession.isChecked()) "Enabled" else "Disabled"
             Settings.requiresEmail = if (mBinding.swEmail.isChecked()) "True" else "False"
             Settings.cachedCustomerId = mBinding.etCustomerId.getText()
             showAlert("", "settings saved") {
@@ -92,6 +94,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             mBinding.sw3DS.setChecked(false)
             mBinding.swAutoCapture.setChecked(false)
             mBinding.swExpressCheckout.setChecked(false)
+            mBinding.swUseSession.setChecked(true)
             mBinding.swEmail.setChecked(false)
             mBinding.selectViewEnvironment.setSelectOption("DEMO")
             mBinding.selectViewTrigger.setSelectOption("Merchant")

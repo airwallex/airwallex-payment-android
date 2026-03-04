@@ -52,13 +52,13 @@ open class AirwallexCheckoutViewModel(
             }
         }
         airwallex.checkout(
-            session,
-            paymentMethod,
-            paymentConsentId,
-            cvc,
-            additionalInfo,
-            flow,
-            listener
+            session = session,
+            paymentMethod = paymentMethod,
+            paymentConsentId = paymentConsentId,
+            cvc = cvc,
+            additionalInfo = additionalInfo,
+            flow = flow,
+            listener = listener
         )
 
         return resultData

@@ -34,13 +34,14 @@ class PACheckoutDemoRepository : BaseRepository {
     override suspend fun getPaymentIntentFromServer(
         force3DS: Boolean?,
         customerId: String?,
-        returnUrl: DemoReturnUrl
+        returnUrl: DemoReturnUrl,
+        amount: java.math.BigDecimal?
     ): PaymentIntent {
         val body = mutableMapOf(
             "apiKey" to Settings.apiKey,
             "clientId" to Settings.clientId,
             "request_id" to UUID.randomUUID().toString(),
-            "amount" to Settings.price.toDouble(),
+            "amount" to (amount ?: Settings.price.toBigDecimal()).toDouble(),
             "currency" to Settings.currency,
             "merchant_order_id" to UUID.randomUUID().toString(),
             "order" to PurchaseOrder.Builder()
