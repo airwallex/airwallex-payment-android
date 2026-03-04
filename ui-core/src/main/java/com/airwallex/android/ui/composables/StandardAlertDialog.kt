@@ -46,50 +46,70 @@ fun StandardAlertDialog(
                 modifier = Modifier.fillMaxWidth(),
             )
         },
-        buttons = {
-            val showDismissButton = dismissButtonTitle != null && onDismiss != null
-            val showConfirmButton = confirmButtonTitle != null && onConfirm != null
-
-            if (showDismissButton || showConfirmButton) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            shape = RoundedCornerShape(8.dp),
-                            color = AirwallexColor.backgroundPrimary(),
-                        )
-                        .padding(
-                            vertical = 12.dp,
-                            horizontal = 24.dp,
-                        ),
-                ) {
-                    if (showDismissButton) {
-                        StandardOutlinedButton(
-                            text = dismissButtonTitle!!,
-                            onClick = onDismiss!!,
-                            textColor = AirwallexColor.textPrimary(),
-                            borderColor = AirwallexColor.Transparent,
-                            modifier = Modifier.weight(1f),
-                        )
-
-                        if (showConfirmButton) {
-                            Spacer(modifier = Modifier.width(12.dp))
-                        }
-                    }
-
-                    if (showConfirmButton) {
-                        StandardSolidButton(
-                            text = confirmButtonTitle!!,
-                            containerColor = confirmButtonContainerColor,
-                            onClick = onConfirm!!,
-                            modifier = if (showDismissButton) Modifier.weight(1f) else Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
-            }
-        },
+        buttons = alertButtonsLayout(
+            dismissButtonTitle,
+            onDismiss,
+            confirmButtonTitle,
+            onConfirm,
+            confirmButtonContainerColor
+        ),
         onDismissRequest = { onDismiss?.invoke() },
     )
+}
+
+@Composable
+private fun alertButtonsLayout(
+    dismissButtonTitle: String?,
+    onDismiss: (() -> Unit)?,
+    confirmButtonTitle: String?,
+    onConfirm: (() -> Unit)?,
+    confirmButtonContainerColor: Color
+): @Composable () -> Unit = {
+    val showDismissButton = dismissButtonTitle != null && onDismiss != null
+    val showConfirmButton = confirmButtonTitle != null && onConfirm != null
+    val showAnyButton = showDismissButton || showConfirmButton
+
+    if (showAnyButton) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    shape = RoundedCornerShape(8.dp),
+                    color = AirwallexColor.backgroundPrimary(),
+                )
+                .padding(
+                    vertical = 12.dp,
+                    horizontal = 24.dp,
+                ),
+        ) {
+            if (dismissButtonTitle != null && onDismiss != null) {
+                StandardOutlinedButton(
+                    text = dismissButtonTitle,
+                    onClick = onDismiss,
+                    textColor = AirwallexColor.textPrimary(),
+                    borderColor = AirwallexColor.Transparent,
+                    modifier = Modifier.weight(1f),
+                )
+
+                if (confirmButtonTitle != null && onConfirm != null) {
+                    Spacer(modifier = Modifier.width(12.dp))
+                }
+            }
+
+            if (confirmButtonTitle != null && onConfirm != null) {
+                StandardSolidButton(
+                    text = confirmButtonTitle,
+                    containerColor = confirmButtonContainerColor,
+                    onClick = onConfirm,
+                    modifier = if (dismissButtonTitle != null && onDismiss != null) {
+                        Modifier.weight(1f)
+                    } else {
+                        Modifier.fillMaxWidth()
+                    },
+                )
+            }
+        }
+    }
 }
 
 @Composable

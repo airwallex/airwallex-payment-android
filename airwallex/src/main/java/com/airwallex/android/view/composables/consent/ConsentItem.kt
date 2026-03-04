@@ -81,22 +81,30 @@ internal fun ConsentItem(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Image(
-                painter = painterResource(id = R.drawable.airwallex_ic_three_dots_vertical),
-                contentDescription = "three dots",
-                colorFilter = ColorFilter.tint(
-                    if (consent.nextTriggeredBy == PaymentConsent.NextTriggeredBy.MERCHANT) {
-                        AirwallexColor.iconDisabled()
-                    } else {
-                        AirwallexColor.theme()
-                    }
-                ),
-                modifier = Modifier.clickable(
-                    onClick = {
-                        onDeleteCard(consent)
-                    },
-                ),
-            )
+            MenuConsentItem(consent, onDeleteCard)
         }
     }
+}
+
+@Composable
+private fun MenuConsentItem(
+    consent: PaymentConsent,
+    onDeleteCard: (PaymentConsent) -> Unit
+) {
+    Image(
+        painter = painterResource(id = R.drawable.airwallex_ic_three_dots_vertical),
+        contentDescription = "three dots",
+        colorFilter = ColorFilter.tint(
+            if (consent.nextTriggeredBy == PaymentConsent.NextTriggeredBy.MERCHANT) {
+                AirwallexColor.iconDisabled()
+            } else {
+                AirwallexColor.theme()
+            }
+        ),
+        modifier = Modifier.clickable(
+            onClick = {
+                onDeleteCard(consent)
+            },
+        ),
+    )
 }
