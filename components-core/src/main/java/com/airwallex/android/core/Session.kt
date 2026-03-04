@@ -92,7 +92,7 @@ class Session internal constructor(
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */
-    val autoCapture: Boolean = true,
+    override val autoCapture: Boolean = true,
 
     /**
      * Control whether saved cards are displayed on the list screen
@@ -114,6 +114,9 @@ class Session internal constructor(
      */
     val isOneOffPayment: Boolean
         get() = paymentConsentOptions == null
+
+    override val clientSecret: String
+        get() = paymentIntent?.clientSecret ?: ""
 
     class Builder : ObjectBuilder<Session> {
         private var paymentIntent: PaymentIntent? = null

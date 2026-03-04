@@ -48,6 +48,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.math.BigDecimal
 
+@Suppress("LongMethod")
 class PaymentFlowViewModelTest {
     private lateinit var airwallex: Airwallex
     private val testDispatcher = StandardTestDispatcher()

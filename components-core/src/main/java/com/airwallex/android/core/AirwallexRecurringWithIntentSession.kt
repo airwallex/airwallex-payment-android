@@ -99,7 +99,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */
-    val autoCapture: Boolean = true
+    override val autoCapture: Boolean = true
 ) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 
     /**
@@ -109,6 +109,9 @@ class AirwallexRecurringWithIntentSession internal constructor(
     @IgnoredOnParcel
     @Transient
     override var paymentIntentProvider: PaymentIntentProvider? = null
+
+    override val clientSecret: String
+        get() = paymentIntent?.clientSecret ?: ""
 
     class Builder : ObjectBuilder<AirwallexRecurringWithIntentSession> {
         private var paymentIntent: PaymentIntent? = null

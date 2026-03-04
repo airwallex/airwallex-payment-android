@@ -164,7 +164,7 @@ class APIIntegrationViewModel : BaseViewModel() {
             airwallex!!.retrieveAvailablePaymentMethods(
                 session = session,
                 params = RetrieveAvailablePaymentMethodParams.Builder(
-                    clientSecret = getClientSecretFromSession(session),
+                    clientSecret = session.clientSecret,
                     pageNum = pageNum
                 )
                     .setActive(true)
