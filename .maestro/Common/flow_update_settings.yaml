@@ -107,10 +107,9 @@ env:
 - scrollUntilVisible:
     element:
       id: "com.airwallex.paymentacceptance:id/etCustomerId"
-- runFlow: # ensure customerId for registered user  
+- runFlow: # ensure customerId for registered user
     when:
       true: ${IS_GUEST == 'false'}
-      notVisible: ${UI_TESTING_CUSTOMER_ID}
     commands:
       - runFlow:
           when:
@@ -119,16 +118,8 @@ env:
           commands:
             - tapOn:
                 id: "com.airwallex.paymentacceptance:id/deleteIcon"
-      - assertVisible: "Customer ID"
-      - tapOn: "Customer ID"
-      - runFlow:
-          when:
-            visible: "Try out your stylus"
-          commands:
-            - tapOn: "Cancel"
-      - inputText: ${UI_TESTING_CUSTOMER_ID} # setup this in CI
-      - assertVisible: ${UI_TESTING_CUSTOMER_ID}
-      - hideKeyboard
+      - assertVisible: "Generate"
+      - tapOn: "Generate"
 - runFlow: # ensure no customerId for guest checkout
     when:
       true: ${IS_GUEST}
