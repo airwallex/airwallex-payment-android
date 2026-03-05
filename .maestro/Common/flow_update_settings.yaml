@@ -6,6 +6,7 @@ env:
   FORCE_3DS: ${FORCE_3DS || "false"}
   EXPRESS_CHECKOUT: ${EXPRESS_CHECKOUT || "false"}
   IS_GUEST: ${IS_GUEST || "true"}
+  GENERATE_NEW_CUSTOMER_ID: ${GENERATE_NEW_CUSTOMER_ID || "false"}
 ---
 - assertVisible: "Settings"
 - runFlow: # ensure environment
@@ -15,6 +16,13 @@ env:
       - tapOn: "Environment"
       - tapOn: ${ENVIRONMENT}
       - assertVisible: ${ENVIRONMENT}
+      - scrollUntilVisible:
+          element: "Save"
+      - tapOn:
+          id: "com.airwallex.paymentacceptance:id/btnSave"
+      - assertVisible: "settings saved"
+      - tapOn: "OK"
+      - tapOn: setting
 - runFlow: # ensure next triggered by
     when:
       notVisible: ${NEXT_TRIGGERED_BY}
@@ -127,9 +135,9 @@ env:
 - scrollUntilVisible:
     element:
       id: "com.airwallex.paymentacceptance:id/etCustomerId"
-- runFlow: # ensure customerId for registered user
+- runFlow: # ensure customerId for registered user - generate new ID
     when:
-      true: ${IS_GUEST == 'false'}
+      true: ${IS_GUEST == 'false' && GENERATE_NEW_CUSTOMER_ID == 'true'}
     commands:
       - runFlow:
           when:
@@ -140,13 +148,35 @@ env:
                 id: "com.airwallex.paymentacceptance:id/deleteIcon"
       - assertVisible: "Generate"
       - tapOn: "Generate"
+- runFlow: # ensure customerId for registered user - use UI_TESTING_CUSTOMER_ID
+    when:
+      true: ${IS_GUEST == 'false' && GENERATE_NEW_CUSTOMER_ID == 'false'}
+      notVisible: ${UI_TESTING_CUSTOMER_ID}
+    commands:
+      - runFlow:
+          when:
+            visible:
+              id: "com.airwallex.paymentacceptance:id/deleteIcon"
+          commands:
+            - tapOn:
+                id: "com.airwallex.paymentacceptance:id/deleteIcon"
+      - assertVisible: "Customer ID"
+      - tapOn: "Customer ID"
+      - runFlow:
+          when:
+            visible: "Try out your stylus"
+          commands:
+            - tapOn: "Cancel"
+      - inputText: ${UI_TESTING_CUSTOMER_ID}
+      - assertVisible: ${UI_TESTING_CUSTOMER_ID}
+      - hideKeyboard
 - runFlow: # ensure no customerId for guest checkout
     when:
       true: ${IS_GUEST}
       visible:
         id: "com.airwallex.paymentacceptance:id/deleteIcon"
     commands:
-      - tapOn: 
+      - tapOn:
           id: "com.airwallex.paymentacceptance:id/deleteIcon"
       - assertVisible: "Customer ID"
       - assertVisible: "Generate"
