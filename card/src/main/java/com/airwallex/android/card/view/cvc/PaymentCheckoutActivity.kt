@@ -73,12 +73,12 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
         supportActionBar?.let { actionBar ->
             actionBar.setBackgroundDrawable(
-                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+                AirwallexColor.backgroundPrimary.toArgb().toDrawable()
             )
             val upArrow = AppCompatResources.getDrawable(this, homeAsUpIndicatorResId())
             upArrow?.let {
                 val wrappedDrawable = DrawableCompat.wrap(it)
-                DrawableCompat.setTint(wrappedDrawable, AirwallexColor.iconPrimary().toArgb())
+                DrawableCompat.setTint(wrappedDrawable, AirwallexColor.iconPrimary.toArgb())
                 actionBar.setHomeAsUpIndicator(wrappedDrawable)
             }
         }
@@ -86,7 +86,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         viewBinding.header.text = getString(
             R.string.airwallex_card_enter_cvv,
             String.format(
@@ -101,12 +101,12 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                 paymentMethod.card?.last4
             )
         )
-        viewBinding.header.setTextColor(AirwallexColor.textPrimary().toArgb())
+        viewBinding.header.setTextColor(AirwallexColor.textPrimary.toArgb())
 
         viewBinding.atlCardCvc.setCardNumber(paymentMethod.card?.number)
         viewBinding.tvTotalPrice.text =
             getString(R.string.airwallex_card_total, formatPrice(session.currency, session.amount))
-        viewBinding.tvTotalPrice.setTextColor(AirwallexColor.textSecondary().toArgb())
+        viewBinding.tvTotalPrice.setTextColor(AirwallexColor.textSecondary.toArgb())
 
         setupButtonColors()
 
@@ -127,8 +127,8 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                 intArrayOf()
             ),
             intArrayOf(
-                AirwallexColor.textSecondary().toArgb(),
-                AirwallexColor.textInverse().toArgb()
+                AirwallexColor.textSecondary.toArgb(),
+                AirwallexColor.textInverse.toArgb()
             )
         )
         viewBinding.rlPayNow.setTextColor(textColorStateList)
@@ -137,14 +137,14 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
         val disabledDrawable = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            setColor(AirwallexColor.borderDecorative().toArgb())
+            setColor(AirwallexColor.borderDecorative.toArgb())
             cornerRadius = 6f * resources.displayMetrics.density
         }
         backgroundDrawable.addState(intArrayOf(-android.R.attr.state_enabled), disabledDrawable)
 
         val enabledDrawable = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            setColor(AirwallexColor.theme().toArgb())
+            setColor(AirwallexColor.theme.toArgb())
             cornerRadius = 6f * resources.displayMetrics.density
         }
         backgroundDrawable.addState(intArrayOf(), enabledDrawable)

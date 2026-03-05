@@ -45,7 +45,7 @@ internal fun PaymentElementComponent(
         }
     }
 
-    Column(Modifier.background(AirwallexColor.backgroundPrimary())) {
+    Column(Modifier.background(AirwallexColor.backgroundPrimary)) {
         when (configuration) {
             is PaymentElementConfiguration.Card -> {
                 val availablePaymentMethods by flowViewModel.availablePaymentMethods.collectAsState()

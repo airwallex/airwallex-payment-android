@@ -108,7 +108,7 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
         // Set background with rounded corners (12dp on top)
         val cornerRadius = context.resources.displayMetrics.density * 12
         viewBinding.root.background = GradientDrawable().apply {
-            setColor(AirwallexColor.backgroundPrimary().toArgb())
+            setColor(AirwallexColor.backgroundPrimary.toArgb())
             cornerRadii = floatArrayOf(
                 cornerRadius, cornerRadius,
                 cornerRadius, cornerRadius,
@@ -116,8 +116,8 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
                 0f, 0f
             )
         }
-        viewBinding.cardLabel.setTextColor(AirwallexColor.textPrimary().toArgb())
-        viewBinding.closeIcon.setColorFilter(AirwallexColor.iconPrimary().toArgb())
+        viewBinding.cardLabel.setTextColor(AirwallexColor.textPrimary.toArgb())
+        viewBinding.closeIcon.setColorFilter(AirwallexColor.iconPrimary.toArgb())
         viewBinding.composeView.apply {
             setContent {
                 AddPaymentDialogContent()

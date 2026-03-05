@@ -50,8 +50,8 @@ fun StandardSearchBar(
     onTextChanged: (String?) -> Unit,
     modifier: Modifier = Modifier,
     typeface: TextStyle = AirwallexTypography.Body200.toComposeTextStyle(),
-    textColorStyle: Color = AirwallexColor.textPrimary(),
-    backgroundColorStyle: Color = AirwallexColor.backgroundSecondary(),
+    textColorStyle: Color = AirwallexColor.textPrimary,
+    backgroundColorStyle: Color = AirwallexColor.backgroundSecondary,
     hint: String = "",
     singleLine: Boolean = true,
 ) {
@@ -88,7 +88,7 @@ fun StandardSearchBar(
     val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    val activeColor = AirwallexColor.theme()
+    val activeColor = AirwallexColor.theme
     // Note that we are not using the leading and trailing icons as they add additional padding
     // to the decorationBox
     Row(
@@ -142,7 +142,7 @@ fun StandardSearchBar(
                     placeholder = {
                         StandardText(
                             text = hint,
-                            color = AirwallexColor.textPrimary(),
+                            color = AirwallexColor.textPrimary,
                             typography = AirwallexTypography.Body200,
                             modifier = Modifier.fillMaxWidth(),
                         )

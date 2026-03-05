@@ -19,6 +19,7 @@ import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.util.EditTextColorUtil
 import com.airwallex.android.view.util.CountryUtils
 import java.util.Locale
+import androidx.core.graphics.drawable.toDrawable
 
 class CountryAutoCompleteView constructor(
     context: Context,
@@ -60,9 +61,9 @@ class CountryAutoCompleteView constructor(
         }
 
     init {
-        viewBinding.actCountry.setTextColor(AirwallexColor.textPrimary().toArgb())
+        viewBinding.actCountry.setTextColor(AirwallexColor.textPrimary.toArgb())
 
-        EditTextColorUtil.applyCursorColor(viewBinding.actCountry, AirwallexColor.theme(), context)
+        EditTextColorUtil.applyCursorColor(viewBinding.actCountry, AirwallexColor.theme, context)
 
         val boxStrokeStateList = ColorStateList(
             arrayOf(
@@ -70,8 +71,8 @@ class CountryAutoCompleteView constructor(
                 intArrayOf()
             ),
             intArrayOf(
-                AirwallexColor.theme().toArgb(),
-                AirwallexColor.borderDecorativeStrong().toArgb()
+                AirwallexColor.theme.toArgb(),
+                AirwallexColor.borderDecorativeStrong.toArgb()
             )
         )
         viewBinding.tlCountry.setBoxStrokeColorStateList(boxStrokeStateList)
@@ -82,17 +83,17 @@ class CountryAutoCompleteView constructor(
                 intArrayOf()
             ),
             intArrayOf(
-                AirwallexColor.theme().toArgb(),
-                AirwallexColor.textPlaceholder().toArgb()
+                AirwallexColor.theme.toArgb(),
+                AirwallexColor.textPlaceholder.toArgb()
             )
         )
-        viewBinding.tlCountry.setHintTextColor(hintStateList)
+        viewBinding.tlCountry.hintTextColor = hintStateList
         viewBinding.tlCountry.defaultHintTextColor = hintStateList
 
         viewBinding.actCountry.threshold = 0
         viewBinding.actCountry.setAdapter(countryAdapter)
         viewBinding.actCountry.setDropDownBackgroundDrawable(
-            ColorDrawable(AirwallexColor.backgroundSecondary().toArgb())
+            AirwallexColor.backgroundSecondary.toArgb().toDrawable()
         )
 
         viewBinding.actCountry.onItemClickListener =
@@ -172,14 +173,14 @@ class CountryAutoCompleteView constructor(
         override fun getView(i: Int, view: View?, viewGroup: ViewGroup): View {
             return if (view is TextView) {
                 view.text = getItem(i).name
-                view.setTextColor(AirwallexColor.textPrimary().toArgb())
+                view.setTextColor(AirwallexColor.textPrimary.toArgb())
                 view
             } else {
                 val countryText = LayoutInflater.from(context).inflate(
                     R.layout.country_textview, viewGroup, false
                 ) as TextView
                 countryText.text = getItem(i).name
-                countryText.setTextColor(AirwallexColor.textPrimary().toArgb())
+                countryText.setTextColor(AirwallexColor.textPrimary.toArgb())
                 countryText
             }
         }

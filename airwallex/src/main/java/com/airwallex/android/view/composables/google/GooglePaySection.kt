@@ -61,13 +61,13 @@ internal fun GooglePaySection(
 
             StandardText(
                 textRes = R.string.airwallex_or_pay_with,
-                color = AirwallexColor.textSecondary(),
+                color = AirwallexColor.textSecondary,
                 typography = AirwallexTypography.Body200,
             )
 
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
-                color = AirwallexColor.borderDecorative()
+                color = AirwallexColor.borderDecorative
             )
         }
     }
