@@ -106,6 +106,26 @@ env:
           checked: false
 - scrollUntilVisible:
     element:
+      id: "com.airwallex.paymentacceptance:id/swUseSession"
+- runFlow: # ensure "use Session over legacy variants" switch is off
+    when:
+      visible:
+        childOf:
+          id: "com.airwallex.paymentacceptance:id/swUseSession"
+        id: "com.airwallex.paymentacceptance:id/switchControl"
+        checked: true
+    commands:
+      - tapOn:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/swUseSession"
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+      - assertVisible:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/swUseSession"
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          checked: false
+- scrollUntilVisible:
+    element:
       id: "com.airwallex.paymentacceptance:id/etCustomerId"
 - runFlow: # ensure customerId for registered user
     when:
