@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.View
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -31,7 +32,8 @@ import kotlinx.parcelize.Parcelize
  * Activity to demonstrate Embedded Element integration
  * Shows order summary, shipping address, and embedded card element
  */
-class EmbeddedElementActivity : BasePaymentActivity<ActivityEmbeddedElementBinding, EmbeddedElementViewModel>() {
+class EmbeddedElementActivity :
+    BasePaymentActivity<ActivityEmbeddedElementBinding, EmbeddedElementViewModel>() {
 
     private val args: Args by lazy {
         intent.getArgs()
@@ -68,33 +70,53 @@ class EmbeddedElementActivity : BasePaymentActivity<ActivityEmbeddedElementBindi
 
     private fun setupColors() {
         mBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
-
         mBinding.toolbar.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         mBinding.btnBack.setColorFilter(AirwallexColor.iconPrimary.toArgb())
-
         mBinding.tvTitle.setTextColor(AirwallexColor.textPrimary.toArgb())
+        mBinding.orderDetailsCard.setCardBackgroundColor(AirwallexColor.backgroundSecondary.toArgb())
 
-        mBinding.orderSummaryCard.setBackgroundColor(AirwallexColor.backgroundSecondary.toArgb())
-        mBinding.shippingAddressCard.setBackgroundColor(AirwallexColor.backgroundSecondary.toArgb())
+        mBinding.tvMerchantName.setTextColor(AirwallexColor.textPrimary.toArgb())
+        mBinding.tvOrderDetailsLabel.setTextColor(AirwallexColor.textPrimary.toArgb())
 
         mBinding.tvOrderSummaryTitle.setTextColor(AirwallexColor.textPrimary.toArgb())
-        mBinding.tvAirpodsProLabel.setTextColor(AirwallexColor.textPrimary.toArgb())
-        mBinding.tvAirpodsProPrice.setTextColor(AirwallexColor.textPrimary.toArgb())
-        mBinding.tvHomepodLabel.setTextColor(AirwallexColor.textPrimary.toArgb())
-        mBinding.tvHomepodPrice.setTextColor(AirwallexColor.textPrimary.toArgb())
-        mBinding.tvTotalLabel.setTextColor(AirwallexColor.textPrimary.toArgb())
-        mBinding.tvTotalPrice.setTextColor(AirwallexColor.textPrimary.toArgb())
-        mBinding.tvShippingAddressTitle.setTextColor(AirwallexColor.textPrimary.toArgb())
-        mBinding.tvShippingName.setTextColor(AirwallexColor.textPrimary.toArgb())
-        mBinding.tvShippingAddress.setTextColor(AirwallexColor.textSecondary.toArgb())
 
-        // Set divider color
-        mBinding.divider.setBackgroundColor(AirwallexColor.borderDecorative.toArgb())
+        mBinding.tvProduct1Name.setTextColor(AirwallexColor.textPrimary.toArgb())
+        mBinding.tvProduct1Detail.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvProduct1Price.setTextColor(AirwallexColor.textPrimary.toArgb())
+
+        mBinding.tvProduct2Name.setTextColor(AirwallexColor.textPrimary.toArgb())
+        mBinding.tvProduct2Detail.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvProduct2Price.setTextColor(AirwallexColor.textPrimary.toArgb())
+
+        mBinding.tvFeeLabel.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvFeeAmount.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvSubtotalLabel.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvSubtotalAmount.setTextColor(AirwallexColor.textSecondary.toArgb())
+
+        mBinding.tvTotalLabel.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvTotalPrice.setTextColor(AirwallexColor.textPrimary.toArgb())
     }
 
     private fun setupToolbar() {
         mBinding.btnBack.setOnClickListener {
             finish()
+        }
+
+        // Setup expand/collapse for order details
+        var isExpanded = false
+        mBinding.orderDetailsHeader.setOnClickListener {
+            isExpanded = !isExpanded
+            mBinding.orderDetailsContent.visibility = if (isExpanded) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+
+            // Rotate chevron
+            mBinding.ivChevron.animate()
+                .rotation(if (isExpanded) 180f else 0f)
+                .setDuration(200)
+                .start()
         }
     }
 
@@ -125,9 +147,11 @@ class EmbeddedElementActivity : BasePaymentActivity<ActivityEmbeddedElementBindi
                 PaymentMethodsLayoutType.TAB -> PaymentElementConfiguration.PaymentSheet(
                     layout = PaymentMethodsLayoutType.TAB
                 )
+
                 PaymentMethodsLayoutType.ACCORDION -> PaymentElementConfiguration.PaymentSheet(
                     layout = PaymentMethodsLayoutType.ACCORDION
                 )
+
                 null -> PaymentElementConfiguration.Card(
                     supportedCardBrands = args.supportedCardSchemes ?: emptyList()
                 )
@@ -201,12 +225,15 @@ class EmbeddedElementActivity : BasePaymentActivity<ActivityEmbeddedElementBindi
                     finish()
                 }
             }
+
             is PaymentStatusPoller.PollingResult.Timeout -> {
                 showAlert("Polling Timeout", result.description)
             }
+
             is PaymentStatusPoller.PollingResult.Error -> {
                 showPaymentError(result.message)
             }
+
             is PaymentStatusPoller.PollingResult.PaymentAttemptNotFound -> {
                 showPaymentError("Payment attempt not found")
             }
