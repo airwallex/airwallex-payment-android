@@ -2,7 +2,6 @@ package com.airwallex.android.view
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +12,13 @@ import android.widget.Filter
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.drawable.toDrawable
 import com.airwallex.android.R
 import com.airwallex.android.databinding.CountryAutocompleteViewBinding
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.util.EditTextColorUtil
 import com.airwallex.android.view.util.CountryUtils
 import java.util.Locale
-import androidx.core.graphics.drawable.toDrawable
 
 class CountryAutoCompleteView constructor(
     context: Context,
