@@ -37,8 +37,6 @@ class AirwallexStarter {
          *
          * @param application Application instance
          * @param configuration Airwallex SDK configuration
-         * @param themeColor Optional theme color as hex string ("#00FF00", "0xFF00FF00", etc). If null or invalid, uses default purple.
-         * @param darkMode Dark mode preference. Defaults to SYSTEM (follows device setting).
          */
         fun initialize(
             application: Application,

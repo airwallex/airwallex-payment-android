@@ -10,120 +10,62 @@ import com.airwallex.android.ui.composables.AirwallexColor.adjustByLevel
 
 @Composable
 fun AirwallexTheme(
-    customTintColor: Color? = null,
-    darkTheme: Boolean? = null, // null = use global config
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
 
     AirwallexThemeConfig.initializeContext(context)
 
-    val tintColor = customTintColor ?: AirwallexThemeConfig.themeColor
-    val isDark = darkTheme ?: AirwallexThemeConfig.isDarkTheme
-
-    val colorScheme = remember(tintColor, isDark) {
-        if (isDark) {
-            createDarkColorScheme(tintColor)
-        } else {
-            createLightColorScheme(tintColor)
-        }
-    }
-
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = createColorScheme(),
         content = content
     )
 }
 
 /**
- * Creates a light mode ColorScheme with the given tint color.
+ * Creates a ColorScheme using AirwallexColor semantic properties.
+ * Assumes AirwallexThemeConfig is already set with the desired theme color and dark mode.
  */
-private fun createLightColorScheme(tintColor: Color): ColorScheme {
-    val primaryColor = tintColor.adjustByLevel(AirwallexColor.Level.Level70)
+private fun createColorScheme(): ColorScheme {
+    val isDark = AirwallexThemeConfig.isDarkTheme
+    val primaryColor = AirwallexColor.theme
 
     return ColorScheme(
         primary = primaryColor,
-        onPrimary = AirwallexColor.White,
-        primaryContainer = AirwallexColor.White,
+        onPrimary = if (isDark) AirwallexColor.Gray90 else AirwallexColor.White,
+        primaryContainer = if (isDark) AirwallexColor.Gray90 else AirwallexColor.White,
         onPrimaryContainer = primaryColor,
         inversePrimary = primaryColor,
-        secondary = AirwallexColor.TextSecondary,
-        onSecondary = AirwallexColor.White,
-        secondaryContainer = AirwallexColor.Gray10,
+        secondary = if (isDark) AirwallexColor.Gray50 else AirwallexColor.textSecondary,
+        onSecondary = if (isDark) AirwallexColor.Gray90 else AirwallexColor.White,
+        secondaryContainer = AirwallexColor.backgroundSecondary,
         onSecondaryContainer = primaryColor,
-        tertiary = AirwallexColor.White,
+        tertiary = if (isDark) AirwallexColor.Gray80 else AirwallexColor.White,
         onTertiary = primaryColor,
-        tertiaryContainer = AirwallexColor.Gray20,
+        tertiaryContainer = AirwallexColor.borderDecorative,
         onTertiaryContainer = primaryColor,
-        background = AirwallexColor.White,
-        onBackground = primaryColor,
-        surface = AirwallexColor.White,
-        onSurface = AirwallexColor.Gray50,
+        background = AirwallexColor.backgroundPrimary,
+        onBackground = if (isDark) AirwallexColor.Gray10 else primaryColor,
+        surface = AirwallexColor.backgroundPrimary,
+        onSurface = AirwallexColor.iconSecondary,
         surfaceVariant = primaryColor,
-        onSurfaceVariant = primaryColor,
+        onSurfaceVariant = if (isDark) AirwallexColor.Gray30 else primaryColor,
         surfaceTint = primaryColor,
-        inverseSurface = AirwallexColor.Gray90,
-        inverseOnSurface = AirwallexColor.White,
-        error = AirwallexColor.Red50,
+        inverseSurface = if (isDark) AirwallexColor.Gray20 else AirwallexColor.Gray90,
+        inverseOnSurface = AirwallexColor.backgroundPrimary,
+        error = AirwallexColor.borderError,
         onError = AirwallexColor.White,
-        errorContainer = primaryColor,
-        onErrorContainer = primaryColor,
-        outline = AirwallexColor.Gray30,
-        outlineVariant = AirwallexColor.Gray10,
-        scrim = AirwallexColor.Gray50,
-        surfaceBright = primaryColor,
-        surfaceContainer = primaryColor.adjustByLevel(AirwallexColor.Level.Level5),
-        surfaceContainerHighest = AirwallexColor.White,
-        surfaceContainerHigh = AirwallexColor.White,
-        surfaceContainerLow = AirwallexColor.White,
-        surfaceContainerLowest = AirwallexColor.White,
-        surfaceDim = AirwallexColor.White
-    )
-
-}
-
-/**
- * Creates a dark mode ColorScheme with the given tint color.
- */
-private fun createDarkColorScheme(tintColor: Color): ColorScheme {
-    val primaryColor = tintColor.adjustByLevel(AirwallexColor.Level.Level40)
-
-    return ColorScheme(
-        primary = primaryColor,
-        onPrimary = AirwallexColor.Gray90,
-        primaryContainer = AirwallexColor.Gray90,
-        onPrimaryContainer = primaryColor,
-        inversePrimary = primaryColor,
-        secondary = AirwallexColor.Gray50,
-        onSecondary = AirwallexColor.Gray90,
-        secondaryContainer = AirwallexColor.Gray90,
-        onSecondaryContainer = primaryColor,
-        tertiary = AirwallexColor.Gray80,
-        onTertiary = primaryColor,
-        tertiaryContainer = AirwallexColor.Gray80,
-        onTertiaryContainer = primaryColor,
-        background = AirwallexColor.Gray100,
-        onBackground = AirwallexColor.Gray10,
-        surface = AirwallexColor.Gray100,
-        onSurface = AirwallexColor.Gray50,
-        surfaceVariant = primaryColor,
-        onSurfaceVariant = AirwallexColor.Gray30,
-        surfaceTint = primaryColor,
-        inverseSurface = AirwallexColor.Gray20,
-        inverseOnSurface = AirwallexColor.Gray100,
-        error = AirwallexColor.Red60,
-        onError = AirwallexColor.White,
-        errorContainer = tintColor.adjustByLevel(AirwallexColor.Level.Level90),
-        onErrorContainer = AirwallexColor.Red40,
-        outline = AirwallexColor.Gray60,
-        outlineVariant = AirwallexColor.Gray80,
-        scrim = AirwallexColor.Black,
-        surfaceBright = AirwallexColor.Gray70,
-        surfaceContainer = tintColor.adjustByLevel(AirwallexColor.Level.Level90),
-        surfaceContainerHighest = AirwallexColor.Gray80,
-        surfaceContainerHigh = AirwallexColor.Gray90,
-        surfaceContainerLow = AirwallexColor.Gray100,
-        surfaceContainerLowest = AirwallexColor.Black,
-        surfaceDim = AirwallexColor.Gray100
+        errorContainer = if (isDark) AirwallexColor.backgroundHighlight else primaryColor,
+        onErrorContainer = if (isDark) AirwallexColor.Red40 else primaryColor,
+        outline = if (isDark) AirwallexColor.Gray60 else AirwallexColor.Gray30,
+        outlineVariant = if (isDark) AirwallexColor.Gray80 else AirwallexColor.Gray10,
+        scrim = if (isDark) AirwallexColor.Black else AirwallexColor.Gray50,
+        surfaceBright = if (isDark) AirwallexColor.Gray70 else primaryColor,
+        surfaceContainer = AirwallexColor.backgroundHighlight,
+        surfaceContainerHighest = if (isDark) AirwallexColor.Gray80 else AirwallexColor.White,
+        surfaceContainerHigh = if (isDark) AirwallexColor.Gray90 else AirwallexColor.White,
+        surfaceContainerLow = AirwallexColor.backgroundPrimary,
+        surfaceContainerLowest = if (isDark) AirwallexColor.Black else AirwallexColor.White,
+        surfaceDim = AirwallexColor.backgroundPrimary
     )
 }

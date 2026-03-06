@@ -53,16 +53,16 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
     override fun initView() {
         super.initView()
-        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         supportActionBar?.let { actionBar ->
             actionBar.setBackgroundDrawable(
-                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+                AirwallexColor.backgroundPrimary.toArgb().toDrawable()
             )
         }
         supportActionBar?.themedContext?.let { context ->
             ContextCompat.getDrawable(context, homeAsUpIndicatorResId())?.let { drawable ->
                 val tintedDrawable = DrawableCompat.wrap(drawable.mutate())
-                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary().toArgb())
+                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary.toArgb())
                 supportActionBar?.setHomeAsUpIndicator(tintedDrawable)
             }
         }
