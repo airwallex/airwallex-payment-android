@@ -13,9 +13,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -75,7 +79,20 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
+        supportActionBar?.let { actionBar ->
+            actionBar.setBackgroundDrawable(
+                AirwallexColor.backgroundPrimary.toArgb().toDrawable()
+            )
+        }
+        supportActionBar?.themedContext?.let { context ->
+            ContextCompat.getDrawable(context, homeAsUpIndicatorResId())?.let { drawable ->
+                val tintedDrawable = DrawableCompat.wrap(drawable.mutate())
+                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary.toArgb())
+                supportActionBar?.setHomeAsUpIndicator(tintedDrawable)
+            }
+        }
         viewBinding.composeView.apply {
             setContent {
                 AirwallexTheme {
@@ -86,7 +103,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                     ) {
                         StandardText(
                             text = stringResource(id = R.string.airwallex_new_card),
-                            color = AirwallexColor.TextPrimary,
+                            color = AirwallexColor.textPrimary,
                             typography = AirwallexTypography.Title200,
                             textAlign = TextAlign.Left,
                         )

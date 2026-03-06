@@ -12,4 +12,9 @@
     <color name="airwallex_color_grey_70">#545B63</color>
     <color name="airwallex_color_grey_100">#1A1D21</color>
     <color name="airwallex_color_yellow_10">#FFF8E0</color>
+
+    <!-- Dynamic colors for light/dark mode support -->
+    <color name="airwallex_window_background">@color/airwallex_color_white</color>
+    <color name="airwallex_status_bar">@color/airwallex_color_white</color>
+    <color name="airwallex_navigation_bar">@color/airwallex_color_white</color>
 </resources>

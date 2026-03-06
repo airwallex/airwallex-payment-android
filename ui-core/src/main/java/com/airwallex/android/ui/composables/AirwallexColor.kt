@@ -11,7 +11,6 @@ object AirwallexColor {
     val Transparent = Color(0x00000000)
     val Black = Color(red = 0, green = 0, blue = 0)
     val White = Color(red = 255, green = 255, blue = 255)
-    val Grey100 = Color(0xff1A1D21)
     val Gray100 = Color(0xFF1A1D21)
     val Gray90 = Color(0xFF2F3237)
     val Gray80 = Color(0xFF42474D)
@@ -22,6 +21,7 @@ object AirwallexColor {
     val Gray30 = Color(0xFFD7DBE0)
     val Gray20 = Color(0xFFE8EAED)
     val Gray10 = Color(0xFFF6F7F8)
+    val Gray5 = Color(0xFFFBFBFC)
 
     val Ultraviolet10 = Color(0xFFF0EFFF)
     val Ultraviolet20 = Color(0xFFDFDEFF)
@@ -54,18 +54,16 @@ object AirwallexColor {
 
     val Red10 = Color(0xFFFFE0E0)
     val Red30 = Color(0xFFFFADAD)
+    val Red40 = Color(0xFFFF7A70)
     val Red50 = Color(0xFFFF4F42)
+    val Red60 = Color(0xFFD93026)
     val Red70 = Color(0xFFB80D00)
     val Red90 = Color(0xFF990000)
 
     val Blue10 = Color(0xFFE0F2FE)
 
-    val TextPrimary = Color(0xFF14171A)
-    val TextSecondary = Color(0xFF68707A)
-    val BackgroundSecondary = Color(0xFFF5F6F7)
     val ProgressbarStart = Color(0xFFFF4F42)
     val Interactive = Color(0xFF612FFF)
-    val TextError = Color(0xFFD91807)
     val ProgressbarDefault = Color(0xFFB0B6BF)
     val WarningBackground = Color(0xFFFFF6EF)
     val ErrorBox = Color(0xFFFFE9E6)
@@ -105,4 +103,102 @@ object AirwallexColor {
             else -> this
         }
     }
+
+    // ============================================================================
+    // Semantic Colors
+    // ============================================================================
+
+    val theme: Color
+        get() {
+            val isDark = AirwallexThemeConfig.isDarkTheme
+            val themeColor = AirwallexThemeConfig.themeColor
+            return themeColor.adjustByLevel(
+                if (isDark) Level.Level40 else Level.Level70
+            )
+        }
+
+    // Background Colors
+    val backgroundPrimary: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray100 else White
+
+    val backgroundSecondary: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray90 else Gray10
+
+    val backgroundField: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray90 else Gray5
+
+    val backgroundHighlight: Color
+        get() {
+            val isDark = AirwallexThemeConfig.isDarkTheme
+            val themeColor = AirwallexThemeConfig.themeColor
+            return themeColor.adjustByLevel(
+                if (isDark) Level.Level90 else Level.Level5
+            )
+        }
+
+    val backgroundSelected: Color
+        get() {
+            val isDark = AirwallexThemeConfig.isDarkTheme
+            val themeColor = AirwallexThemeConfig.themeColor
+            return themeColor.adjustByLevel(
+                if (isDark) Level.Level80 else Level.Level20
+            )
+        }
+
+    val backgroundInteractive: Color
+        get() = theme
+
+    val backgroundWarning: Color
+        get() = Yellow10
+
+    // Border Colors
+    val borderDecorative: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray80 else Gray20
+
+    val borderDecorativeStrong: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray70 else Gray40
+
+    val borderPerceivable: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray60 else Gray50
+
+    val borderInteractive: Color
+        get() = theme
+
+    val borderError: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Red60 else Red50
+
+    // Icon Colors
+    val iconPrimary: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray30 else Gray80
+
+    val iconSecondary: Color
+        get() = Gray50
+
+    val iconLink: Color
+        get() = theme
+
+    val iconDisabled: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray70 else Gray40
+
+    val iconWarning: Color
+        get() = Orange50
+
+    // Text Colors
+    val textLink: Color
+        get() = theme
+
+    val textPrimary: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray10 else Gray100
+
+    val textSecondary: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray50 else Gray60
+
+    val textPlaceholder: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray60 else Gray50
+
+    val textError: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Red40 else Red60
+
+    val textInverse: Color
+        get() = if (AirwallexThemeConfig.isDarkTheme) Gray100 else White
 }

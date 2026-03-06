@@ -1,18 +1,16 @@
 package com.airwallex.android.view.composables
 
 import android.content.Context
-import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.InvalidParamsException
-import com.airwallex.android.ui.R
-import com.airwallex.android.view.composables.PaymentElement.Companion.create
+import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
+import com.airwallex.android.view.composables.PaymentElement.Companion.create
 
 class PaymentElement private constructor(
     private val session: AirwallexSession,
@@ -80,6 +78,7 @@ class PaymentElement private constructor(
                 )
             }
         }
+
         @Suppress("LongParameterList")
         suspend fun create(
             session: AirwallexSession,
@@ -104,20 +103,6 @@ class PaymentElement private constructor(
             }
             return create(session, airwallex, configuration, listener)
         }
-
-        private fun alert(title: String = "", message: String, activity: ComponentActivity) {
-            if (!activity.isFinishing) {
-                AlertDialog.Builder(activity)
-                    .setTitle(title)
-                    .setMessage(message)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.airwallex_okay) { dialogInterface, _ ->
-                        dialogInterface.dismiss()
-                    }
-                    .create()
-                    .show()
-            }
-        }
     }
 
     /**
@@ -128,12 +113,14 @@ class PaymentElement private constructor(
      */
     @Composable
     fun Content() {
-        PaymentElementComponent(
-            session = session,
-            airwallex = airwallex,
-            configuration = configuration,
-            paymentFlowListener = paymentFlowListener,
-            flowViewModel = flowViewModel
-        )
+        AirwallexTheme {
+            PaymentElementComponent(
+                session = session,
+                airwallex = airwallex,
+                configuration = configuration,
+                paymentFlowListener = paymentFlowListener,
+                flowViewModel = flowViewModel
+            )
+        }
     }
 }

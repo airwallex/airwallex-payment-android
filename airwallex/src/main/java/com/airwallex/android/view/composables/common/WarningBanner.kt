@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +39,7 @@ fun WarningBanner(message: String) {
         StandardText(
             text = message,
             typography = AirwallexTypography.Body200,
-            color = MaterialTheme.colorScheme.error,
+            color = AirwallexColor.textError,
             modifier = Modifier.padding(vertical = 8.dp),
         )
     }
