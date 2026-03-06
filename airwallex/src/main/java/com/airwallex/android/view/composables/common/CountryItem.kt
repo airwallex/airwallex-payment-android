@@ -35,7 +35,7 @@ internal fun CountryItem(
                 if (isSelected) {
                     Modifier
                         .background(
-                            color = AirwallexColor.backgroundPrimary(),
+                            color = AirwallexColor.backgroundPrimary,
                             shape = RoundedCornerShape(8.dp),
                         )
                 } else {
@@ -61,7 +61,7 @@ internal fun CountryItem(
 
         StandardText(
             text = countryName,
-            color = AirwallexColor.textPrimary(),
+            color = AirwallexColor.textPrimary,
             typography = AirwallexTypography.Body100,
         )
 
@@ -72,7 +72,7 @@ internal fun CountryItem(
                 drawableRes = R.drawable.airwallex_ic_tick,
                 size = 16.dp,
                 padding = 0.dp,
-                tint = AirwallexColor.theme(),
+                tint = AirwallexColor.theme,
             )
 
             Spacer(modifier = Modifier.width(24.dp))

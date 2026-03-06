@@ -56,7 +56,7 @@ internal fun CountrySelectRow(
 
                 StandardText(
                     text = stringResource(id = R.string.airwallex_shipping_country_name_hint),
-                    color = AirwallexColor.textPrimary(),
+                    color = AirwallexColor.textPrimary,
                     typography = AirwallexTypography.Title200,
                     modifier = Modifier.padding(24.dp),
                 )
