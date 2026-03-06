@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Test
 import java.math.BigDecimal
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -235,6 +236,233 @@ class SessionTest {
         assertEquals(true, recurringWithIntentSession.isEmailRequired)
         assertEquals("test://return", recurringWithIntentSession.returnUrl)
         assertEquals(true, recurringWithIntentSession.autoCapture)
+    }
+
+    // ========== isOneOffPayment Tests ==========
+
+    @Test
+    fun `isOneOffPayment returns true when paymentConsentOptions is null`() {
+        val session = Session.Builder(
+            PaymentIntentFixtures.PAYMENT_INTENT,
+            "US"
+        ).build()
+
+        assertTrue(session.isOneOffPayment)
+    }
+
+    @Test
+    fun `isOneOffPayment returns false when paymentConsentOptions is not null`() {
+        val paymentConsentOptions = PaymentConsentOptions(
+            nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
+            merchantTriggerReason = PaymentConsent.MerchantTriggerReason.SCHEDULED
+        )
+
+        val session = Session.Builder(
+            PaymentIntentFixtures.PAYMENT_INTENT,
+            "US"
+        )
+            .setPaymentConsentOptions(paymentConsentOptions)
+            .build()
+
+        assertFalse(session.isOneOffPayment)
+    }
+
+    // ========== clientSecret Tests ==========
+
+    @Test
+    fun `clientSecret returns value from paymentIntent when available`() {
+        val session = Session.Builder(
+            PaymentIntentFixtures.PAYMENT_INTENT,
+            "US"
+        ).build()
+
+        assertEquals(PaymentIntentFixtures.PAYMENT_INTENT.clientSecret, session.clientSecret)
+    }
+
+    @Test
+    fun `clientSecret returns null when paymentIntent is null`() {
+        val provider = object : PaymentIntentProvider {
+            override val currency = "USD"
+            override val amount = BigDecimal("100.00")
+            override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+                // No-op for test
+            }
+        }
+
+        val session = Session.Builder(
+            provider,
+            "US",
+            "cus_123"
+        ).build()
+
+        assertNull(session.clientSecret)
+    }
+
+    @Test
+    fun `clientSecret returns null when paymentIntent clientSecret is null`() {
+        val paymentIntent = PaymentIntent(
+            id = "pi_test",
+            amount = BigDecimal("100.00"),
+            currency = "USD",
+            clientSecret = null
+        )
+
+        val session = Session.Builder(
+            paymentIntent,
+            "US"
+        ).build()
+
+        assertNull(session.clientSecret)
+    }
+
+    // ========== PaymentIntentProvider Constructor Tests ==========
+
+    @Test
+    fun `build with PaymentIntentProvider constructor sets all fields correctly`() {
+        val provider = object : PaymentIntentProvider {
+            override val currency = "EUR"
+            override val amount = BigDecimal("250.50")
+            override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+                callback.onSuccess(PaymentIntentFixtures.PAYMENT_INTENT)
+            }
+        }
+
+        val session = Session.Builder(
+            provider,
+            "FR",
+            "cus_provider_123",
+            GooglePayOptions(
+                allowedCardAuthMethods = listOf("PAN_ONLY"),
+                merchantName = "Test Merchant"
+            )
+        )
+            .setRequireBillingInformation(false)
+            .setRequireEmail(true)
+            .setReturnUrl("provider://return")
+            .build()
+
+        assertNotNull(session)
+        assertNull(session.paymentIntent)
+        assertNotNull(session.paymentIntentProvider)
+        assertEquals("EUR", session.currency)
+        assertEquals(BigDecimal("250.50"), session.amount)
+        assertEquals("FR", session.countryCode)
+        assertEquals("cus_provider_123", session.customerId)
+        assertEquals(false, session.isBillingInformationRequired)
+        assertEquals(true, session.isEmailRequired)
+        assertEquals("provider://return", session.returnUrl)
+        assertNotNull(session.googlePayOptions)
+    }
+
+    @Test
+    fun `build with PaymentIntentProvider constructor without customerId`() {
+        val provider = object : PaymentIntentProvider {
+            override val currency = "GBP"
+            override val amount = BigDecimal("99.99")
+            override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+                // No-op for test
+            }
+        }
+
+        val session = Session.Builder(
+            provider,
+            "GB"
+        ).build()
+
+        assertNotNull(session)
+        assertNull(session.paymentIntent)
+        assertNotNull(session.paymentIntentProvider)
+        assertEquals("GBP", session.currency)
+        assertEquals(BigDecimal("99.99"), session.amount)
+        assertEquals("GB", session.countryCode)
+        assertNull(session.customerId)
+    }
+
+    // ========== PaymentIntentSource Constructor Tests ==========
+
+    @Test
+    fun `build with PaymentIntentSource constructor sets all fields correctly`() {
+        val source = object : PaymentIntentSource {
+            override val currency = "JPY"
+            override val amount = BigDecimal("10000")
+            override suspend fun getPaymentIntent(): PaymentIntent {
+                return PaymentIntentFixtures.PAYMENT_INTENT
+            }
+        }
+
+        val session = Session.Builder(
+            source,
+            "JP",
+            "cus_source_456",
+            GooglePayOptions(
+                allowedCardAuthMethods = listOf("CRYPTOGRAM_3DS"),
+                merchantName = "Source Merchant"
+            )
+        )
+            .setRequireEmail(false)
+            .setAutoCapture(false)
+            .build()
+
+        assertNotNull(session)
+        assertNull(session.paymentIntent)
+        assertNotNull(session.paymentIntentProvider)
+        // Verify the adapter was created
+        assertTrue(session.paymentIntentProvider is SourceToProviderAdapter)
+        assertEquals("JPY", session.currency)
+        assertEquals(BigDecimal("10000"), session.amount)
+        assertEquals("JP", session.countryCode)
+        assertEquals("cus_source_456", session.customerId)
+        assertEquals(false, session.isEmailRequired)
+        assertEquals(false, session.autoCapture)
+        assertNotNull(session.googlePayOptions)
+    }
+
+    @Test
+    fun `build with PaymentIntentSource constructor without optional parameters`() {
+        val source = object : PaymentIntentSource {
+            override val currency = "CAD"
+            override val amount = BigDecimal("50.00")
+            override suspend fun getPaymentIntent(): PaymentIntent {
+                return PaymentIntentFixtures.PAYMENT_INTENT
+            }
+        }
+
+        val session = Session.Builder(
+            source,
+            "CA"
+        ).build()
+
+        assertNotNull(session)
+        assertNull(session.paymentIntent)
+        assertNotNull(session.paymentIntentProvider)
+        assertTrue(session.paymentIntentProvider is SourceToProviderAdapter)
+        assertEquals("CAD", session.currency)
+        assertEquals(BigDecimal("50.00"), session.amount)
+        assertEquals("CA", session.countryCode)
+        assertNull(session.customerId)
+        assertNull(session.googlePayOptions)
+    }
+
+    @Test
+    fun `SourceToProviderAdapter properly wraps PaymentIntentSource`() {
+        val source = object : PaymentIntentSource {
+            override val currency = "USD"
+            override val amount = BigDecimal("100.00")
+            override suspend fun getPaymentIntent(): PaymentIntent {
+                return PaymentIntentFixtures.PAYMENT_INTENT
+            }
+        }
+
+        val session = Session.Builder(
+            source,
+            "US"
+        ).build()
+
+        // Verify that the adapter has the correct currency and amount
+        val provider = session.paymentIntentProvider
+        assertNotNull(provider)
+        assertEquals("USD", provider.currency)
+        assertEquals(BigDecimal("100.00"), provider.amount)
     }
 
 }

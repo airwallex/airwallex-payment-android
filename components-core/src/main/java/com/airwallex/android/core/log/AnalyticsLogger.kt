@@ -196,11 +196,11 @@ object AnalyticsLogger {
      * @param transactionMode The current transaction mode.
      * @param paymentIntentId The payment intent ID (optional).
      */
-    fun setSessionInformation(
+    private fun setSessionInformation(
         transactionMode: String,
         launchType: String,
         expressCheckout: Boolean,
-        layout: String? = null,
+        layout: String?,
         paymentIntentId: String? = null
     ) {
         this.paymentIntentId = paymentIntentId
