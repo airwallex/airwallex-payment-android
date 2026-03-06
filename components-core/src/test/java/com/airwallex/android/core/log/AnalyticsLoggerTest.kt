@@ -58,7 +58,7 @@ class AnalyticsLoggerTest {
     }
 
     @Test
-    fun `test page view, error and action logging`() {
+    fun `test initialization, page view, error and action logging`() {
         AnalyticsLogger.initialize(context)
         val additionalInfo = mapOf("key" to "value")
 
@@ -118,7 +118,8 @@ class AnalyticsLoggerTest {
             anyConstructed<Tracker>() setProperty "extraCommonData" value mapOf(
                 "merchantAppName" to "test_app",
                 "merchantAppVersion" to "1.0.1",
-                "accountId" to "aid"
+                "accountId" to "aid",
+                "integrationType" to "android"
             )
         }
 

@@ -141,23 +141,9 @@ class Airwallex internal constructor(
     )
 
     private fun setupAnalyticsLogger(session: AirwallexSession) {
-        when (session) {
-            is AirwallexPaymentSession ->
-                AnalyticsLogger.setSessionInformation(
-                    transactionMode = TransactionMode.ONE_OFF.value,
-                    paymentIntentId = session.paymentIntent?.id,
-                )
-
-            is AirwallexRecurringSession ->
-                AnalyticsLogger.setSessionInformation(
-                    transactionMode = TransactionMode.RECURRING.value,
-                )
-
-            is AirwallexRecurringWithIntentSession ->
-                AnalyticsLogger.setSessionInformation(
-                    transactionMode = TransactionMode.RECURRING.value,
-                    paymentIntentId = session.paymentIntent?.id,
-                )
+        // Set up analytics for API flow if not already set up (e.g., by UI components)
+        if (!AnalyticsLogger.isSessionSetup(session)) {
+            AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.API, null)
         }
     }
 
@@ -262,14 +248,12 @@ class Airwallex internal constructor(
         }
         if (paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN) {
             AirwallexLogger.info("confirmPaymentIntent, need cvc")
-            // Only log payment_launched for API integration (when activity is NOT an Airwallex UI activity)
-            if (!isAirwallexUIActivity) {
+            // Only log payment_launched for true API integration (not embedded elements or UI integration)
+            if (!isAirwallexUIActivity && AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API) {
                 AnalyticsLogger.logAction(
                     actionName = "payment_launched",
                     additionalInfo = mutableMapOf<String, Any>(
-                        "subtype" to "api",
                         "paymentMethod" to PaymentMethodType.CARD.value,
-                        "expressCheckout" to session.isExpressCheckout,
                         "consentId" to paymentConsentId
                     )
                 )
@@ -322,14 +306,13 @@ class Airwallex internal constructor(
         setupAnalyticsLogger(session)
         // Wrap listener at entry point to log payment result once
         val loggingListener = wrapListenerWithLogging(listener, PaymentMethodType.CARD.value)
-        // Only log payment_launched for API integration (when activity is NOT an Airwallex UI activity)
-        if (!isAirwallexUIActivity) {
+
+        // Only log payment_launched for true API integration (not embedded elements or UI integration)
+        if (!isAirwallexUIActivity && AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API) {
             AnalyticsLogger.logAction(
                 actionName = "payment_launched",
                 additionalInfo = mutableMapOf<String, Any>(
-                    "subtype" to "api",
                     "paymentMethod" to PaymentMethodType.CARD.value,
-                    "expressCheckout" to session.isExpressCheckout,
                     "consentId" to paymentConsentId
                 )
             )
@@ -370,14 +353,12 @@ class Airwallex internal constructor(
         session.bindToActivity(activity)
 
         setupAnalyticsLogger(session)
-        // Only log payment_launched for API integration (when activity is NOT an Airwallex UI activity)
-        if (!isAirwallexUIActivity) {
+        // Only log payment_launched for true API integration (not embedded elements or UI integration)
+        if (!isAirwallexUIActivity && AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API) {
             AnalyticsLogger.logAction(
                 actionName = "payment_launched",
                 additionalInfo = mapOf(
-                    "subtype" to "api",
                     "paymentMethod" to PaymentMethodType.GOOGLEPAY.value,
-                    "expressCheckout" to session.isExpressCheckout
                 )
             )
         }
@@ -1004,14 +985,11 @@ class Airwallex internal constructor(
         setupAnalyticsLogger(session)
         // Wrap listener at entry point to log payment result once
         val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: "unknown")
-        // Only log payment_launched for API integration (when activity is NOT an Airwallex UI activity)
-        if (!isAirwallexUIActivity) {
+        // Only log payment_launched for true API integration (not embedded elements or UI integration)
+        if (!isAirwallexUIActivity && AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API) {
             AnalyticsLogger.logAction(
                 actionName = "payment_launched",
-                additionalInfo = mutableMapOf<String, Any>(
-                    "subtype" to "api",
-                    "expressCheckout" to session.isExpressCheckout
-                ).apply {
+                additionalInfo = mutableMapOf<String, Any>().apply {
                     paymentMethod.type?.let { put("paymentMethod", it) }
                 }
             )
