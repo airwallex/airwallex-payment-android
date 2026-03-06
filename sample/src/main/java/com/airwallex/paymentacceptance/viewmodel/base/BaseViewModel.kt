@@ -7,15 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
-import com.airwallex.android.core.AirwallexRecurringSession
-import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentIntent
-import com.airwallex.paymentacceptance.repo.RepositoryProvider
 import com.airwallex.paymentacceptance.repo.DemoReturnUrl
+import com.airwallex.paymentacceptance.repo.RepositoryProvider
 import com.airwallex.paymentacceptance.util.PaymentStatusPoller
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +21,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.math.BigDecimal
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -94,8 +92,8 @@ abstract class BaseViewModel : ViewModel() {
             if (status is AirwallexPaymentStatus.InProgress) {
                 // Start polling for InProgress status
                 status.paymentIntentId?.let { intentId ->
-                    val clientSecret = getClientSecretFromSession(session)
-                    if (clientSecret.isNotEmpty()) {
+                    val clientSecret = session.clientSecret
+                    if (!clientSecret.isNullOrEmpty()) {
                         startPolling(intentId, clientSecret)
                     } else {
                         Log.e(TAG, "Client secret is null, cannot start polling")
@@ -141,9 +139,10 @@ abstract class BaseViewModel : ViewModel() {
     suspend fun getPaymentIntentFromServer(
         force3DS: Boolean = false,
         customerId: String? = null,
-        returnUrl: DemoReturnUrl
+        returnUrl: DemoReturnUrl,
+        amount: BigDecimal? = null
     ): PaymentIntent {
-        return repository.getPaymentIntentFromServer(force3DS, customerId, returnUrl)
+        return repository.getPaymentIntentFromServer(force3DS, customerId, returnUrl, amount)
     }
 
     /**
@@ -176,15 +175,6 @@ abstract class BaseViewModel : ViewModel() {
             loadPagedItems(items, pageNum, loadPage)
         } else {
             items
-        }
-    }
-
-    internal fun getClientSecretFromSession(session: AirwallexSession): String {
-        return when (session) {
-            is AirwallexPaymentSession -> session.paymentIntent?.clientSecret ?: ""
-            is AirwallexRecurringWithIntentSession -> session.paymentIntent?.clientSecret ?: ""
-            is AirwallexRecurringSession -> session.clientSecret
-            else -> ""
         }
     }
 

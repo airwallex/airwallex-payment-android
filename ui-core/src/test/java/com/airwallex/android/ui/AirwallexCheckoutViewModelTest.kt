@@ -49,6 +49,8 @@ class AirwallexCheckoutViewModelTest {
                 any(),
                 any(),
                 any(),
+                any(),
+                any(),
                 any()
             )
         } just runs
@@ -68,6 +70,8 @@ class AirwallexCheckoutViewModelTest {
                 paymentMethod,
                 any(),
                 null,
+                any(),
+                any(),
                 any(),
                 any(),
                 any()

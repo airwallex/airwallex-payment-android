@@ -17,17 +17,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
-import com.airwallex.android.core.AirwallexRecurringSession
-import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.ui.composables.AirwallexColor
-import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
+import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ActivityEmbeddedElementBinding
 import com.airwallex.paymentacceptance.util.PaymentStatusPoller
@@ -210,8 +207,8 @@ class EmbeddedElementActivity : AppCompatActivity() {
 //
 //                // Start polling
                 status.paymentIntentId?.let { intentId ->
-                    val clientSecret = getClientSecretFromSession(session)
-                    if (clientSecret.isNotEmpty()) {
+                    val clientSecret = session.clientSecret
+                    if (!clientSecret.isNullOrEmpty()) {
                         startPolling(intentId, clientSecret)
                     } else {
                         Log.e(TAG, "Client secret is null, cannot start polling")
@@ -270,15 +267,6 @@ class EmbeddedElementActivity : AppCompatActivity() {
             _pollingResult.emit(result)
             paymentStatusPoller = null
             setLoadingProgress(false)
-        }
-    }
-
-    private fun getClientSecretFromSession(session: AirwallexSession): String {
-        return when (session) {
-            is AirwallexPaymentSession -> session.paymentIntent?.clientSecret ?: ""
-            is AirwallexRecurringWithIntentSession -> session.paymentIntent?.clientSecret ?: ""
-            is AirwallexRecurringSession -> session.clientSecret
-            else -> ""
         }
     }
 

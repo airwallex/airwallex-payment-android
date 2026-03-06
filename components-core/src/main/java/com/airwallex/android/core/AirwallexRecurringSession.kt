@@ -30,7 +30,7 @@ class AirwallexRecurringSession internal constructor(
      */
     val merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
 
-    val clientSecret: String,
+    override val clientSecret: String,
 
     /**
      * Amount currency. required.
@@ -83,6 +83,12 @@ class AirwallexRecurringSession internal constructor(
      */
     override val paymentMethods: List<String>? = null,
 
+    /**
+     * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
+     * Default: true
+     */
+    override val autoCapture: Boolean = true
+
 ) : AirwallexSession(), Parcelable {
 
     class Builder(
@@ -103,6 +109,7 @@ class AirwallexRecurringSession internal constructor(
         private var returnUrl: String? = null
         private var paymentMethods: List<String>? = null
         private var googlePayOptions: GooglePayOptions? = null
+        private var autoCapture: Boolean = true
 
         init {
             TokenManager.updateClientSecret(clientSecret)
@@ -141,6 +148,10 @@ class AirwallexRecurringSession internal constructor(
             this.googlePayOptions = googlePayOptions
         }
 
+        fun setAutoCapture(autoCapture: Boolean): Builder = apply {
+            this.autoCapture = autoCapture
+        }
+
         override fun build(): AirwallexRecurringSession {
             return AirwallexRecurringSession(
                 nextTriggerBy = nextTriggerBy,
@@ -156,7 +167,8 @@ class AirwallexRecurringSession internal constructor(
                 returnUrl = returnUrl,
                 paymentMethods = paymentMethods,
                 clientSecret = clientSecret,
-                googlePayOptions = googlePayOptions
+                googlePayOptions = googlePayOptions,
+                autoCapture = autoCapture
             )
         }
     }

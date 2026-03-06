@@ -9,6 +9,7 @@ import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.Session
 import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.getAppName
@@ -195,11 +196,11 @@ object AnalyticsLogger {
      * @param transactionMode The current transaction mode.
      * @param paymentIntentId The payment intent ID (optional).
      */
-    fun setSessionInformation(
+    private fun setSessionInformation(
         transactionMode: String,
         launchType: String,
         expressCheckout: Boolean,
-        layout: String? = null,
+        layout: String?,
         paymentIntentId: String? = null
     ) {
         this.paymentIntentId = paymentIntentId
@@ -237,6 +238,15 @@ object AnalyticsLogger {
         this.currentSession = session
         val expressCheckout = session.isExpressCheckout
         when (session) {
+            is Session -> {
+                setSessionInformation(
+                    transactionMode = if (session.isOneOffPayment) TransactionMode.ONE_OFF.value else TransactionMode.RECURRING.value,
+                    paymentIntentId = session.paymentIntent?.id,
+                    expressCheckout = expressCheckout,
+                    layout = layout,
+                    launchType = launchType
+                )
+            }
             is AirwallexPaymentSession -> {
                 setSessionInformation(
                     transactionMode = TransactionMode.ONE_OFF.value,
