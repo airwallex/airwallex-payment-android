@@ -11,12 +11,12 @@ platform:
       true: ${IS_RECORDING}
     commands:
       - startRecording: test_user_recurring_trigger_by_merchant
-- runScript: cards.js
-- runScript: ../Common/settings.js
+- runScript: ../../Card/cards.js
+- runScript: ../../Common/settings.js
 - runFlow:
-    file: flow_recurring_payment.yaml
+    file: ../../Card/flow_recurring_payment.yaml
     env:
-      WITH_PAYMENT: false 
+      WITH_PAYMENT: false
       TRIGGER_BY_CUSTOMER: false
 
 - runFlow:

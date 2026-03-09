@@ -14,26 +14,31 @@ platform:
 - launchApp
 - tapOn: "Integrate with Airwallex UI"
 # remove all consents before start recurring payment flow
+# (only needed for customer-triggered which reuses UI_TESTING_CUSTOMER_ID)
 - runFlow:
-    file: ../Common/flow_update_checkout_mode.yaml
-    env:
-      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
-- tapOn: setting
-- runFlow:
-    file: ../Common/flow_update_settings.yaml
-    env: 
-      LAYOUT: ${output.settings.layout.tab}
-      ENVIRONMENT: ${output.settings.environment.demo}
-      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
-      IS_GUEST: false 
-- tapOn: "Launch payment list"
-- runFlow:
-    file: flow_remove_all_consents.yaml
-- tapOn: "Navigate up"
-- runFlow:
-    file: ../Common/flow_handle_payment_result.yaml
-    env:
-      PAYMENT_RESULT: CANCELLED 
+    when:
+      true: ${TRIGGER_BY_CUSTOMER}
+    commands:
+      - runFlow:
+          file: ../Common/flow_update_checkout_mode.yaml
+          env:
+            CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+      - tapOn: setting
+      - runFlow:
+          file: ../Common/flow_update_settings.yaml
+          env:
+            LAYOUT: ${output.settings.layout.tab}
+            ENVIRONMENT: ${output.settings.environment.demo}
+            NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
+            IS_GUEST: false
+      - tapOn: "Launch payment list"
+      - runFlow:
+          file: flow_remove_all_consents.yaml
+      - tapOn: "Navigate up"
+      - runFlow:
+          file: ../Common/flow_handle_payment_result.yaml
+          env:
+            PAYMENT_RESULT: CANCELLED 
 
 # update checkout mode 
 - runFlow:
@@ -58,7 +63,7 @@ platform:
       LAYOUT: ${output.settings.layout.tab}
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
-      IS_GUEST: false 
+      IS_GUEST: false
 - runFlow:
     when:
       true: ${TRIGGER_BY_CUSTOMER == 'false'}
@@ -67,7 +72,8 @@ platform:
       LAYOUT: ${output.settings.layout.tab}
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.merchant}
-      IS_GUEST: false 
+      IS_GUEST: false
+      GENERATE_NEW_CUSTOMER_ID: true 
 
 # start recurring payment flow
 - tapOn: "Launch payment list"
@@ -87,6 +93,42 @@ platform:
     file: ../Common/flow_handle_payment_result.yaml
     env:
       PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
+
+# test duplicate consent behavior
+- tapOn: "Launch payment list"
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER}
+    commands:
+      # For customer-triggered: second attempt with same card should fail
+      - runFlow:
+          file: flow_pay_with_card.yaml
+          env:
+            CARD_NUMBER: ${output.cards.visa}
+            CAN_SAVE_CARD: false
+            SHOULD_SAVE_CARD: false
+      - assertVisible: "Payment failed"
+      - assertVisible: "already exists"
+      - tapOn: "OK"
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER == 'false'}
+    commands:
+      # For merchant-triggered: second attempt with same card should succeed
+      - runFlow:
+          file: flow_pay_with_card.yaml
+          env:
+            CARD_NUMBER: ${output.cards.visa}
+            CAN_SAVE_CARD: false
+            SHOULD_SAVE_CARD: false
+      - runFlow:
+          file: ../Common/flow_handle_3ds.yaml
+          env:
+            CANCEL_3DS: false
+      - runFlow:
+          file: ../Common/flow_handle_payment_result.yaml
+          env:
+            PAYMENT_RESULT: SUCCESS
 
 # check and remove consents
 - runFlow:
@@ -119,7 +161,12 @@ platform:
     when:
       true: ${TRIGGER_BY_CUSTOMER == 'false'}
     commands:
-      - assertVisible: "Card information" # verify no consent saved
+      # For merchant-triggered: 2nd save succeeded but deduplicated, only 1 consent shown
+      - assertVisible:
+          id: "saved-consent"
+          index: 0
+      - runFlow:
+          file: ../MerchantTriggered/flow_assert_merchant_consent.yaml
       - tapOn: "Navigate up"
       - runFlow:
           file: ../Common/flow_handle_payment_result.yaml

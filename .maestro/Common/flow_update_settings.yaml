@@ -148,9 +148,9 @@ env:
                 id: "com.airwallex.paymentacceptance:id/deleteIcon"
       - assertVisible: "Generate"
       - tapOn: "Generate"
-- runFlow: # ensure customerId for registered user - use UI_TESTING_CUSTOMER_ID
+- runFlow: # ensure customerId for registered user - use UI_TESTING_CUSTOMER_ID (only if defined)
     when:
-      true: ${IS_GUEST == 'false' && GENERATE_NEW_CUSTOMER_ID == 'false'}
+      true: ${IS_GUEST == 'false' && GENERATE_NEW_CUSTOMER_ID == 'false' && UI_TESTING_CUSTOMER_ID}
       notVisible: ${UI_TESTING_CUSTOMER_ID}
     commands:
       - runFlow:
