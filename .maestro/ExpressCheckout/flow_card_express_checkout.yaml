@@ -14,6 +14,7 @@ appId: com.airwallex.paymentacceptance
       EXPRESS_CHECKOUT: true
       NEXT_TRIGGERED_BY: ${NEXT_TRIGGERED_BY}
       GENERATE_NEW_CUSTOMER_ID: ${GENERATE_NEW_CUSTOMER_ID}
+      USE_NEW_SESSION: false
 # card payment
 - tapOn: "Launch card payment"
 - runFlow:

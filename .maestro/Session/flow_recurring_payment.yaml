@@ -1,6 +1,6 @@
 appId: com.airwallex.paymentacceptance
 tags:
-  - card 
+  - card
   - user
 platform:
   android:
@@ -10,38 +10,9 @@ platform:
 #   TRIGGER_BY_CUSTOMER: true # Flag to indicate if the flow is triggered by customer
 ---
 - runScript: ../Common/settings.js
-- runScript: cards.js
+- runScript: ../Card/cards.js
 - launchApp
 - tapOn: "Integrate with Airwallex UI"
-# remove all consents before start recurring payment flow
-# (only needed for customer-triggered which reuses UI_TESTING_CUSTOMER_ID)
-- runFlow:
-    when:
-      true: ${TRIGGER_BY_CUSTOMER}
-    commands:
-      - runFlow:
-          file: ../Common/flow_update_checkout_mode.yaml
-          env:
-            CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
-      - tapOn: setting
-      - runFlow:
-          file: ../Common/flow_update_settings.yaml
-          env:
-            LAYOUT: ${output.settings.layout.tab}
-            ENVIRONMENT: ${output.settings.environment.demo}
-            NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
-            IS_GUEST: false
-            USE_NEW_SESSION: false
-      - tapOn: "Launch payment list"
-      - runFlow:
-          file: flow_remove_all_consents.yaml
-      - tapOn: "Navigate up"
-      - runFlow:
-          file: ../Common/flow_handle_payment_result.yaml
-          env:
-            PAYMENT_RESULT: CANCELLED 
-
-# update checkout mode 
 - runFlow:
     when:
       true: ${WITH_PAYMENT}
@@ -65,7 +36,7 @@ platform:
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
       IS_GUEST: false
-      USE_NEW_SESSION: false
+      USE_NEW_SESSION: true
 - runFlow:
     when:
       true: ${TRIGGER_BY_CUSTOMER == 'false'}
@@ -76,15 +47,15 @@ platform:
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.merchant}
       IS_GUEST: false
       GENERATE_NEW_CUSTOMER_ID: true
-      USE_NEW_SESSION: false 
+      USE_NEW_SESSION: true
 
 # start recurring payment flow
 - tapOn: "Launch payment list"
 - runFlow:
-    file: flow_pay_with_card.yaml
+    file: ../Card/flow_pay_with_card.yaml
     env:
       CARD_NUMBER: ${output.cards.visa} # Card number for testing
-      CAN_SAVE_CARD: false 
+      CAN_SAVE_CARD: false
       SHOULD_SAVE_CARD: false
 - runFlow:
     when:
@@ -97,33 +68,60 @@ platform:
     env:
       PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
 
-# test duplicate consent behavior
+# test duplicate consent behavior - in Session mode, both customer & merchant can use same card
+- tapOn: "Launch payment list"
+- tapOn: "Add new"
+- runFlow:
+    file: ../Card/flow_pay_with_card.yaml
+    env:
+      CARD_NUMBER: ${output.cards.visa}
+      CAN_SAVE_CARD: false
+      SHOULD_SAVE_CARD: false
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER == 'false'}
+    file: ../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS
+
+# NEW SESSION: consents are visible in recurring mode, no need to switch to one-off
 - tapOn: "Launch payment list"
 - runFlow:
     when:
       true: ${TRIGGER_BY_CUSTOMER}
     commands:
-      # For customer-triggered: second attempt with same card should fail
+      # For customer-triggered: consent visible, pay with it, then delete
+      - assertVisible:
+          id: "saved-consent"
+          index: 0
       - runFlow:
-          file: flow_pay_with_card.yaml
+          file: ../Card/flow_pay_with_consent.yaml
+      - runFlow:
+          file: ../Common/flow_handle_payment_result.yaml
           env:
-            CARD_NUMBER: ${output.cards.visa}
-            CAN_SAVE_CARD: false
-            SHOULD_SAVE_CARD: false
-      - assertVisible: "Payment failed"
-      - assertVisible: "already exists"
-      - tapOn: "OK"
+            PAYMENT_RESULT: SUCCESS
+      - tapOn: "Launch payment list"
+      - runFlow:
+          file: ../Card/flow_remove_all_consents.yaml
+      - tapOn: "Navigate up"
+      - runFlow:
+          file: ../Common/flow_handle_payment_result.yaml
+          env:
+            PAYMENT_RESULT: CANCELLED
 - runFlow:
     when:
       true: ${TRIGGER_BY_CUSTOMER == 'false'}
     commands:
-      # For merchant-triggered: second attempt with same card should succeed
+      # For merchant-triggered: consent visible, pay with it, then assert cannot delete
+      - assertVisible:
+          id: "saved-consent"
+          index: 0
       - runFlow:
-          file: flow_pay_with_card.yaml
-          env:
-            CARD_NUMBER: ${output.cards.visa}
-            CAN_SAVE_CARD: false
-            SHOULD_SAVE_CARD: false
+          file: ../Card/flow_pay_with_consent.yaml
       - runFlow:
           file: ../Common/flow_handle_3ds.yaml
           env:
@@ -132,42 +130,7 @@ platform:
           file: ../Common/flow_handle_payment_result.yaml
           env:
             PAYMENT_RESULT: SUCCESS
-
-# check and remove consents
-- runFlow:
-    file: ../Common/flow_update_checkout_mode.yaml
-    env:
-      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
-- tapOn: "Launch payment list"
-- runFlow:
-    when:
-      true: ${TRIGGER_BY_CUSTOMER}
-    commands:
-      - assertVisible:
-          id: "saved-consent"
-          index: 0
-      - runFlow:
-          file: flow_pay_with_consent.yaml
-      - runFlow:
-          file: ../Common/flow_handle_payment_result.yaml
-          env:
-            PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
       - tapOn: "Launch payment list"
-      - runFlow:
-          file: flow_remove_all_consents.yaml
-      - tapOn: "Navigate up"
-      - runFlow:
-          file: ../Common/flow_handle_payment_result.yaml
-          env:
-            PAYMENT_RESULT: CANCELLED
-- runFlow:
-    when:
-      true: ${TRIGGER_BY_CUSTOMER == 'false'}
-    commands:
-      # For merchant-triggered: 2nd save succeeded but deduplicated, only 1 consent shown
-      - assertVisible:
-          id: "saved-consent"
-          index: 0
       - runFlow:
           file: ../MerchantTriggered/flow_assert_merchant_consent.yaml
       - tapOn: "Navigate up"
@@ -175,4 +138,3 @@ platform:
           file: ../Common/flow_handle_payment_result.yaml
           env:
             PAYMENT_RESULT: CANCELLED
-    

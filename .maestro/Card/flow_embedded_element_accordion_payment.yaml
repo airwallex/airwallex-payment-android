@@ -14,6 +14,7 @@ appId: com.airwallex.paymentacceptance
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
       IS_GUEST: false
+      USE_NEW_SESSION: false
 - tapOn: "Launch Embedded Element"
 # Wait for the embedded element activity to load
 - assertVisible: "Shopping Cart"
