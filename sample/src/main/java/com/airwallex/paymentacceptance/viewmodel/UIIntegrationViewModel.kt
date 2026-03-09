@@ -107,11 +107,9 @@ class UIIntegrationViewModel : BaseViewModel() {
     private fun launchPaymentListTraditional(activity: ComponentActivity) = launch {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
         val session = if (Settings.useSession == "Enabled") {
-            // Use the new unified Session class
             createSessionForTraditional(googlePayOptions)
         } else {
-            // Use legacy session variants
-            createSession(googlePayOptions)
+            createLegacySession(googlePayOptions)
         }
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
@@ -144,11 +142,21 @@ class UIIntegrationViewModel : BaseViewModel() {
      */
     private fun launchCustomPaymentListExpressCheckout(activity: ComponentActivity) {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
-        val session = buildAirwallexPaymentSessionWithProvider(
-            googlePayOptions,
-            //customize the payment methods and their order
-            listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
-        )
+        val session = if (Settings.useSession == "Enabled") {
+            // Use the new unified Session class
+            buildSessionForExpressCheckout(
+                googlePayOptions,
+                //customize the payment methods and their order
+                listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
+            )
+        } else {
+            // Use legacy session
+            buildAirwallexPaymentSessionWithProvider(
+                googlePayOptions,
+                //customize the payment methods and their order
+                listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
+            )
+        }
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
@@ -166,11 +174,20 @@ class UIIntegrationViewModel : BaseViewModel() {
      */
     private fun launchCustomPaymentListTraditional(activity: ComponentActivity) = launch {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
-        val session = createSession(
-            googlePayOptions,
-            //customize the payment methods and their order
-            listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
-        )
+        val session = if (Settings.useSession == "Enabled") {
+            // Use the new unified Session class
+            createSessionForTraditional(
+                googlePayOptions,
+                //customize the payment methods and their order
+                listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
+            )
+        } else {
+            createLegacySession(
+                googlePayOptions,
+                //customize the payment methods and their order
+                listOf("paypal", "card", "Googlepay", "fps", "alipayhk")
+            )
+        }
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
@@ -201,7 +218,13 @@ class UIIntegrationViewModel : BaseViewModel() {
      * Express Checkout: Launch card payment page immediately without loading
      */
     private fun launchCardPageExpressCheckout(activity: ComponentActivity) {
-        val session = buildAirwallexPaymentSessionWithProvider()
+        val session = if (Settings.useSession == "Enabled") {
+            // Use the new unified Session class
+            buildSessionForExpressCheckout()
+        } else {
+            // Use legacy session
+            buildAirwallexPaymentSessionWithProvider()
+        }
         AirwallexStarter.presentCardPaymentFlow(
             activity = activity,
             session = session,
@@ -217,7 +240,11 @@ class UIIntegrationViewModel : BaseViewModel() {
      * Traditional flow: Launch card payment page with loading for API calls
      */
     private fun launchCardPageTraditional(activity: ComponentActivity) = launch {
-        val session = createSession()
+        val session = if (Settings.useSession == "Enabled") {
+            createSessionForTraditional()
+        } else {
+            createLegacySession()
+        }
         AirwallexStarter.presentCardPaymentFlow(
             activity = activity,
             session = session,
@@ -247,7 +274,13 @@ class UIIntegrationViewModel : BaseViewModel() {
      * Express Checkout: Launch card payment dialog immediately without loading
      */
     private fun launchCardDialogExpressCheckout(activity: ComponentActivity) {
-        val session = buildAirwallexPaymentSessionWithProvider()
+        val session = if (Settings.useSession == "Enabled") {
+            // Use the new unified Session class
+            buildSessionForExpressCheckout()
+        } else {
+            // Use legacy session
+            buildAirwallexPaymentSessionWithProvider()
+        }
         AnalyticsLogger.setupSession(
             session,
             launchType = AnalyticsLogger.LaunchType.COMPONENT,
@@ -269,7 +302,11 @@ class UIIntegrationViewModel : BaseViewModel() {
      * Traditional flow: Launch card payment dialog with loading for API calls
      */
     private fun launchCardDialogTraditional(activity: ComponentActivity) = launch {
-        val session = createSession()
+        val session = if (Settings.useSession == "Enabled") {
+            createSessionForTraditional()
+        } else {
+            createLegacySession()
+        }
         val dialog = AirwallexAddPaymentDialog(
             activity = activity,
             session = session,
@@ -314,9 +351,17 @@ class UIIntegrationViewModel : BaseViewModel() {
      * Express Checkout: Launch embedded element immediately without loading
      */
     private fun launchEmbeddedElementExpressCheckout(activity: ComponentActivity) {
-        val session = buildAirwallexPaymentSessionWithProvider(
-            returnUrl = DemoReturnUrl.EmbeddedElement
-        )
+        val session = if (Settings.useSession == "Enabled") {
+            // Use the new unified Session class
+            buildSessionForExpressCheckout(
+                returnUrl = DemoReturnUrl.EmbeddedElement
+            )
+        } else {
+            // Use legacy session
+            buildAirwallexPaymentSessionWithProvider(
+                returnUrl = DemoReturnUrl.EmbeddedElement
+            )
+        }
         session.bindToActivity(activity)
         // Express Checkout: use null layoutType (Card only) with all supported card schemes
         val supportedCardSchemes = enumValues<AirwallexSupportedCard>().map { CardScheme(it.brandName) }
@@ -332,10 +377,17 @@ class UIIntegrationViewModel : BaseViewModel() {
      * Traditional flow: Launch embedded element with loading for API calls
      */
     private fun launchEmbeddedElementTraditional(activity: ComponentActivity) = launch {
-        val session = createSession(
-            returnUrl = DemoReturnUrl.EmbeddedElement,
-            googlePayOptions = googlePayOptions
-        )
+        val session = if (Settings.useSession == "Enabled") {
+            createSessionForTraditional(
+                returnUrl = DemoReturnUrl.EmbeddedElement,
+                googlePayOptions = googlePayOptions
+            )
+        } else {
+            createLegacySession(
+                returnUrl = DemoReturnUrl.EmbeddedElement,
+                googlePayOptions = googlePayOptions
+            )
+        }
         session.bindToActivity(activity)
         // Traditional flow: use layoutType from settings
         val layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase())
@@ -350,7 +402,7 @@ class UIIntegrationViewModel : BaseViewModel() {
     /**
      * this method will create different types of Sessions based on the different modes.
      */
-    private suspend fun createSession(
+    private suspend fun createLegacySession(
         googlePayOptions: GooglePayOptions? = null,
         paymentMethods: List<String>? = listOf(),
         returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration

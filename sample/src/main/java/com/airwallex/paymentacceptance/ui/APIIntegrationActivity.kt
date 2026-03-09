@@ -200,7 +200,7 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
                         }
                         setBtnEnabled(
                             holder.btnPay,
-                            mBinding.dropdownView.currentOption == "One-off payment"
+                            mBinding.dropdownView.currentOption == "One-off payment" || Settings.useSession == "Enabled"
                         )
                     }
                 }
