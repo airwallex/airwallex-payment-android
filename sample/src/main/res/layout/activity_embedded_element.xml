@@ -290,6 +290,16 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Payment methods title -->
+            <TextView
+                android:id="@+id/tvPaymentMethodsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:text="@string/airwallex_payment_methods"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
             <!-- Empty ComposeView for Card Information -->
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/composeCardInfo"

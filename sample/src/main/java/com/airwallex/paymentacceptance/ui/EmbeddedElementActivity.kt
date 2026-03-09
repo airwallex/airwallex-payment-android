@@ -73,6 +73,7 @@ class EmbeddedElementActivity :
         mBinding.toolbar.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         mBinding.btnBack.setColorFilter(AirwallexColor.iconPrimary.toArgb())
         mBinding.tvTitle.setTextColor(AirwallexColor.textPrimary.toArgb())
+        mBinding.tvPaymentMethodsTitle.setTextColor(AirwallexColor.textPrimary.toArgb())
         mBinding.orderDetailsCard.setCardBackgroundColor(AirwallexColor.backgroundSecondary.toArgb())
 
         mBinding.tvMerchantName.setTextColor(AirwallexColor.textPrimary.toArgb())
