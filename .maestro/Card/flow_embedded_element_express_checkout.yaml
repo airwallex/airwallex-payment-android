@@ -1,4 +1,6 @@
 appId: com.airwallex.paymentacceptance
+env:
+  USE_NEW_SESSION: ${USE_NEW_SESSION || "false"}
 ---
 - launchApp
 - tapOn: "Integrate with Airwallex UI"
@@ -15,7 +17,7 @@ appId: com.airwallex.paymentacceptance
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
       IS_GUEST: true
       EXPRESS_CHECKOUT: true
-      USE_NEW_SESSION: false
+      USE_NEW_SESSION: ${USE_NEW_SESSION}
 - tapOn: "Launch Embedded Element"
 # Wait for the embedded element activity to load
 - assertVisible: "Shopping Cart"
