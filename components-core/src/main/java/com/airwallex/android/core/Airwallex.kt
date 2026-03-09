@@ -219,7 +219,7 @@ class Airwallex internal constructor(
     }
 
     /**
-     * Confirm a payment intent with payment consent ID
+     * Confirm a payment intent with payment consent
      *
      * @param session an [AirwallexSession] used to start the payment flow
      * @param paymentConsent a [PaymentConsent] used to start the payment flow
@@ -527,9 +527,9 @@ class Airwallex internal constructor(
     /**
      * Retrieve available payment methods
      *
-     * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve all [AvailablePaymentMethodType]
      * @param session The [AirwallexSession] which contains session information for retrieving payment methods.
-     * @param params [RetrieveAvailablePaymentMethodParams] Parameters used to retrieve all [AvailablePaymentMethodType].
+     * @param params [RetrieveAvailablePaymentMethodParams] used to retrieve all [AvailablePaymentMethodType]
+     * @param callback [AirwallexCallback] A callback interface to handle the success or failure of the network request.
      */
     fun retrieveAvailablePaymentMethods(
         session: AirwallexSession,
@@ -546,6 +546,12 @@ class Airwallex internal constructor(
         }
     }
 
+    /**
+     * Fetch available payment methods and consents (suspend function)
+     *
+     * @param session an [AirwallexSession] for fetching payment methods and consents
+     * @return [Result] containing a [Pair] of payment methods list and consents list
+     */
     suspend fun fetchAvailablePaymentMethodsAndConsents(session: AirwallexSession): Result<Pair<List<AvailablePaymentMethodType>, List<PaymentConsent>>> {
         val secret = getClientSecret(session).takeIf { !it.isNullOrBlank() } ?: return Result.failure(
             AirwallexCheckoutException(message = "Client secret is empty or blank")
@@ -684,6 +690,7 @@ class Airwallex internal constructor(
     /**
      * Verify a [PaymentConsent]
      *
+     * @param device a [Device] object containing device information for fingerprinting
      * @param params [VerifyPaymentConsentParams] used to verify the [PaymentConsent]
      * @param listener a [PaymentListener] to receive the response or error
      */
@@ -853,6 +860,12 @@ class Airwallex internal constructor(
         )
     }
 
+    /**
+     * Retrieve available banks
+     *
+     * @param params [RetrieveBankParams] used to retrieve bank information
+     * @param listener a [PaymentListener] to receive the response or error
+     */
     @UiThread
     fun retrieveBanks(
         params: RetrieveBankParams,
@@ -871,6 +884,12 @@ class Airwallex internal constructor(
         )
     }
 
+    /**
+     * Retrieve payment method type information
+     *
+     * @param params [RetrievePaymentMethodTypeInfoParams] used to retrieve payment method type details
+     * @param listener a [PaymentListener] to receive the response or error
+     */
     @UiThread
     fun retrievePaymentMethodTypeInfo(
         params: RetrievePaymentMethodTypeInfoParams,
@@ -935,6 +954,8 @@ class Airwallex internal constructor(
      *
      * @param session a [AirwallexSession] used to present the Checkout flow, required.
      * @param paymentMethod a [PaymentMethod] used to present the Checkout flow, required.
+     * @param cvc the CVC of the Credit Card, optional.
+     * @param saveCard whether card will be saved as a payment consent, optional.
      * @param listener The callback of checkout
      */
     @UiThread
@@ -965,9 +986,12 @@ class Airwallex internal constructor(
      * @param session a [AirwallexSession] used to present the Checkout flow, required.
      * @param paymentMethod a [PaymentMethod] used to present the Checkout flow, required.
      * @param paymentConsentId the ID of the [PaymentConsent], optional. (CIT & Card will need this field for subsequent payments, paymentConsentId is not empty indicating a subsequent payment, empty indicating a recurring )
+     * @param paymentConsent a [PaymentConsent] object used for the payment, optional. will be used to fill in paymentConsentId also. Prefer to fill this than paymentConsentId because it's more complete
      * @param cvc the CVC of the Credit Card, optional.
      * @param additionalInfo used by LPMs
+     * @param flow an [AirwallexPaymentRequestFlow], currently only supporting [AirwallexPaymentRequestFlow.IN_APP], optional.
      * @param listener The callback of checkout
+     * @param saveCard whether card will be saved as a payment consent, optional.
      */
     @Suppress("LongParameterList")
     @UiThread
@@ -1116,13 +1140,14 @@ class Airwallex internal constructor(
      * Unified confirm function that handles all scenarios with single API call.
      * Replaces multi-step flows with single confirmPaymentIntent call.
      *
+     * @param session the [Session] containing session information
      * @param paymentIntentId the ID of the PaymentIntent
      * @param clientSecret the client secret of the PaymentIntent
      * @param paymentMethod the payment method to use
-     * @param cvc the CVC of the card
-     * @param customerId the customer ID
-     * @param paymentConsentOptions payment consent options for unified flow
-     * @param returnUrl return URL for 3DS
+     * @param cvc the CVC of the card, optional
+     * @param saveCard whether card will be saved as a payment consent
+     * @param paymentConsent a [PaymentConsent] object used for the payment, optional
+     * @param returnUrl return URL for 3DS, optional
      * @param autoCapture whether to auto-capture
      * @param listener The callback of the payment flow
      */
@@ -1587,6 +1612,10 @@ class Airwallex internal constructor(
 
     /**
      * Confirm PaymentIntent with Device Fingerprinting
+     *
+     * @param device a [Device] object containing device information for fingerprinting, optional.
+     * @param params [ConfirmPaymentIntentParams] used to confirm the payment intent
+     * @param listener a [PaymentResultListener] to receive the response or error
      */
     fun confirmPaymentIntentWithDevice(
         device: Device? = null,
