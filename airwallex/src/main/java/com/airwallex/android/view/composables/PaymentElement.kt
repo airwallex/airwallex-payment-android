@@ -91,7 +91,11 @@ class PaymentElement private constructor(
                 is PaymentElementConfiguration.PaymentSheet -> configuration.layout.toAnalyticsLayoutString()
                 else -> null
             }
-            AnalyticsLogger.setupSession(session, launchType, layout)
+            val prioritizeGooglePay = when (configuration) {
+                is PaymentElementConfiguration.PaymentSheet -> configuration.prioritizeGooglePay
+                else -> null
+            }
+            AnalyticsLogger.setupSession(session, launchType, layout, prioritizeGooglePay)
             val additionalInfo = mutableMapOf<String, String>()
             if (configuration is PaymentElementConfiguration.Card) {
                 additionalInfo["paymentMethod"] = PaymentMethodType.CARD.value

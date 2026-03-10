@@ -63,7 +63,10 @@ internal fun GooglePayDivider(modifier: Modifier = Modifier) {
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        HorizontalDivider(modifier = Modifier.weight(1f))
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = AirwallexColor.borderDecorative
+        )
 
         StandardText(
             textRes = R.string.airwallex_or_pay_with,

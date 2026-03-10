@@ -54,7 +54,7 @@ internal fun GooglePayListItem(
 
                 StandardText(
                     text = stringResource(id = R.string.airwallex_google_payment_redirect_message),
-                    color = AirwallexColor.textPrimary(),
+                    color = AirwallexColor.textPrimary,
                     typography = AirwallexTypography.Body200,
                 )
             }
@@ -76,6 +76,7 @@ internal fun GooglePayListItem(
                     flowViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
                 },
             )
+            Spacer(modifier = Modifier.height(36.dp))
         }
     }
 }
