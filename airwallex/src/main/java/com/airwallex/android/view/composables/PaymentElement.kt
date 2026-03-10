@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.toAnalyticsLayoutString
@@ -73,6 +74,9 @@ class PaymentElement private constructor(
             paymentFlowListener: PaymentFlowListener,
             launchType: String
         ): Result<PaymentElement> {
+            if (configuration is PaymentElementConfiguration.Card && configuration.supportedCardBrands.isEmpty()) {
+                return Result.failure(InvalidParamsException("supportedCardBrands should not be empty"))
+            }
             val viewModel = ViewModelProvider(
                 airwallex.activity,
                 PaymentFlowViewModel.Factory(
@@ -96,11 +100,7 @@ class PaymentElement private constructor(
                 actionName = AnalyticsConstants.EVENT_PAYMENT_LAUNCHED,
                 additionalInfo = additionalInfo
             )
-            // Determine if we need to fetch based on configuration
-            val shouldFetch = when (configuration) {
-                is PaymentElementConfiguration.Card -> configuration.supportedCardBrands.isEmpty()
-                is PaymentElementConfiguration.PaymentSheet -> true
-            } && !alreadyLoaded
+            val shouldFetch = configuration is PaymentElementConfiguration.PaymentSheet && !alreadyLoaded
 
             return if (shouldFetch) {
                 viewModel.fetchAvailablePaymentMethodsAndConsents()
@@ -171,7 +171,7 @@ class PaymentElement private constructor(
                 }
 
                 override fun onError(exception: Throwable, context: Context) {
-                    onError ?: super.onError(exception, context)
+                    onError?.invoke(exception) ?: super.onError(exception, context)
                 }
             }
             return create(session, airwallex, configuration, listener, launchType)

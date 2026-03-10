@@ -63,9 +63,9 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
         tlInput = findViewById(R.id.tlInput)
         teInput = findViewById(R.id.teInput)
 
-        teInput.setTextColor(AirwallexColor.textPrimary().toArgb())
+        teInput.setTextColor(AirwallexColor.textPrimary.toArgb())
 
-        EditTextColorUtil.applyCursorColor(teInput, AirwallexColor.theme(), context)
+        EditTextColorUtil.applyCursorColor(teInput, AirwallexColor.theme, context)
 
         val boxStrokeStateList = ColorStateList(
             arrayOf(
@@ -73,8 +73,8 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
                 intArrayOf()
             ),
             intArrayOf(
-                AirwallexColor.theme().toArgb(),
-                AirwallexColor.borderDecorativeStrong().toArgb()
+                AirwallexColor.theme.toArgb(),
+                AirwallexColor.borderDecorativeStrong.toArgb()
             )
         )
         tlInput.setBoxStrokeColorStateList(boxStrokeStateList)
@@ -85,8 +85,8 @@ open class AirwallexTextInputLayout @JvmOverloads constructor(
                 intArrayOf()
             ),
             intArrayOf(
-                AirwallexColor.theme().toArgb(),
-                AirwallexColor.textPlaceholder().toArgb()
+                AirwallexColor.theme.toArgb(),
+                AirwallexColor.textPlaceholder.toArgb()
             )
         )
         tlInput.hintTextColor = hintStateList

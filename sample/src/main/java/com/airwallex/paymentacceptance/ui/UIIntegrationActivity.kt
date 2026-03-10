@@ -53,6 +53,7 @@ class UIIntegrationActivity :
             ButtonItem(LAUNCH_CUSTOM_PAYMENT_LIST, "Launch custom payment list"),
             ButtonItem(LAUNCH_CARD_PAYMENT, "Launch card payment"),
             ButtonItem(LAUNCH_CARD_PAYMENT_DIALOG, "Launch card payment (dialog)"),
+            ButtonItem(LAUNCH_EMBEDDED_ELEMENT, "Launch Embedded Element"),
             ButtonItem(LAUNCH_SHIPPING_ADDRESS_DIALOG, "Launch shipping address (dialog)")
         )
 
@@ -83,6 +84,8 @@ class UIIntegrationActivity :
             LAUNCH_CARD_PAYMENT_DIALOG -> {
                 mViewModel.launchCardDialog(this)
             }
+
+            LAUNCH_EMBEDDED_ELEMENT -> mViewModel.launchEmbeddedElement(this)
 
             LAUNCH_SHIPPING_ADDRESS_DIALOG -> {
                 mViewModel.launchShipping(this)
@@ -170,6 +173,7 @@ class UIIntegrationActivity :
         const val LAUNCH_CUSTOM_PAYMENT_LIST = 2
         const val LAUNCH_CARD_PAYMENT = 3
         const val LAUNCH_CARD_PAYMENT_DIALOG = 4
-        const val LAUNCH_SHIPPING_ADDRESS_DIALOG = 5
+        const val LAUNCH_EMBEDDED_ELEMENT = 5
+        const val LAUNCH_SHIPPING_ADDRESS_DIALOG = 6
     }
 }

@@ -25,11 +25,11 @@ fun StandardAlertDialog(
     onDismiss: () -> Unit,
 ) {
     AlertDialog(
-        backgroundColor = AirwallexColor.backgroundPrimary(),
+        backgroundColor = AirwallexColor.backgroundPrimary,
         title = {
             StandardText(
                 text = title,
-                color = AirwallexColor.textPrimary(),
+                color = AirwallexColor.textPrimary,
                 typography = AirwallexTypography.Title300,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -38,7 +38,7 @@ fun StandardAlertDialog(
         text = {
             StandardText(
                 text = content,
-                color = AirwallexColor.textPrimary(),
+                color = AirwallexColor.textPrimary,
                 typography = AirwallexTypography.Body200,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -50,7 +50,7 @@ fun StandardAlertDialog(
                     .fillMaxWidth()
                     .background(
                         shape = RoundedCornerShape(8.dp),
-                        color = AirwallexColor.backgroundPrimary(),
+                        color = AirwallexColor.backgroundPrimary,
                     )
                     .padding(
                         vertical = 12.dp,
@@ -60,7 +60,7 @@ fun StandardAlertDialog(
                 StandardOutlinedButton(
                     text = dismissButtonTitle,
                     onClick = onDismiss,
-                    textColor = AirwallexColor.textPrimary(),
+                    textColor = AirwallexColor.textPrimary,
                     borderColor = AirwallexColor.Transparent,
                     modifier = Modifier.weight(1f),
                 )
@@ -69,7 +69,7 @@ fun StandardAlertDialog(
 
                 StandardSolidButton(
                     text = confirmButtonTitle,
-                    containerColor = AirwallexColor.textError(),
+                    containerColor = AirwallexColor.textError,
                     onClick = onConfirm,
                     modifier = Modifier.weight(1f),
                 )
