@@ -111,7 +111,7 @@ internal fun SchemaSection(
                 horizontalArrangement = Arrangement.Center
             ) {
                 CircularProgressIndicator(
-                    color = AirwallexColor.theme()
+                    color = AirwallexColor.theme
                 )
             }
         }
