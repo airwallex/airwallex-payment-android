@@ -34,6 +34,7 @@
     <string name="airwallex_delete_consent_alert_title">ลบ %s หรือไม่?</string>
     <string name="airwallex_delete_consent_alert_content">ตัวเลือกนี้จะถูกลบออกจากวิธีการชำระเงินที่บันทึกไว้ของคุณอย่างถาวร</string>
     <string name="airwallex_schema_payment_redirect_message">คุณจะถูกเปลี่ยนเส้นทางไปหน้าชำระเงินเมื่อยืนยัน</string>
+    <string name="airwallex_google_payment_redirect_message">คลิกปุ่ม Google Pay ด้านล่างเพื่อทำการซื้อให้เสร็จสมบูรณ์อย่างปลอดภัย</string>
     <string name="airwallex_invalid_scheme_message">รูปแบบไม่ถูกต้อง</string>
     <string name="airwallex_empty_state">กรุณากรอกรัฐ / จังหวัดของคุณ</string>
     <string name="airwallex_delete_payment_method_prompt_title">คุณต้องการลบการยินยอมการชำระเงินนี้หรือไม่?</string>

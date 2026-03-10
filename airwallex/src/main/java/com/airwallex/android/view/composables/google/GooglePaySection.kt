@@ -32,11 +32,15 @@ internal fun GooglePaySection(
     onClick: () -> Unit,
     onScreenViewed: () -> Unit,
     modifier: Modifier = Modifier,
+    onPayButtonVisibilityChanged: ((Boolean) -> Unit)? = null,
 ) {
     var payButtonVisible by remember { mutableStateOf(false) }
 
     PayButtonWithVisibilityChecker(
-        onVisibilityChanged = { isVisible -> payButtonVisible = isVisible },
+        onVisibilityChanged = { isVisible ->
+            payButtonVisible = isVisible
+            onPayButtonVisibilityChanged?.invoke(isVisible)
+        },
     ) {
         ScreenView { onScreenViewed() }
         PayButton(
@@ -49,28 +53,33 @@ internal fun GooglePaySection(
             modifier = modifier,
         )
     }
+}
 
-    if (payButtonVisible) {
-        Spacer(modifier = Modifier.height(24.dp))
+@Composable
+internal fun GooglePayDivider(modifier: Modifier = Modifier) {
+    Spacer(modifier = Modifier.height(24.dp))
 
-        Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            HorizontalDivider(modifier = Modifier.weight(1f))
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = AirwallexColor.borderDecorative
+        )
 
-            StandardText(
-                textRes = R.string.airwallex_or_pay_with,
-                color = AirwallexColor.textSecondary,
-                typography = AirwallexTypography.Body200,
-            )
+        StandardText(
+            textRes = R.string.airwallex_or_pay_with,
+            color = AirwallexColor.textSecondary,
+            typography = AirwallexTypography.Body200,
+        )
 
-            HorizontalDivider(
-                modifier = Modifier.weight(1f),
-                color = AirwallexColor.borderDecorative
-            )
-        }
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = AirwallexColor.borderDecorative
+        )
     }
+    Spacer(modifier = Modifier.height(24.dp))
 }
 
 @Composable
