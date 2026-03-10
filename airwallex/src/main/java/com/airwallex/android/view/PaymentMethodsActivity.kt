@@ -77,7 +77,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 session = session,
                 airwallex = airwallex,
                 configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType),
-                launchType = AnalyticsLogger.LaunchType.DROPIN,
+                launchType = AnalyticsLogger.LaunchType.HPP,
                 paymentFlowListener = object : PaymentFlowListener {
                     override fun onLoadingStateChanged(isLoading: Boolean) {
                         setLoadingProgress(loading = isLoading, cancelable = false)

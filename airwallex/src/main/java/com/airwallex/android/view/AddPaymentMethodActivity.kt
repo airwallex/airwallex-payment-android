@@ -123,7 +123,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                 configuration = PaymentElementConfiguration.Card(
                     supportedCardBrands = args.supportedCardSchemes
                 ),
-                launchType = AnalyticsLogger.LaunchType.COMPONENT,
+                launchType = AnalyticsLogger.LaunchType.HPP,
                 onLoadingStateChanged = { isLoading ->
                     setLoadingProgress(loading = isLoading, cancelable = false)
                 },

@@ -222,8 +222,7 @@ class UIIntegrationViewModel : BaseViewModel() {
         val session = buildAirwallexPaymentSessionWithProvider()
         AnalyticsLogger.setupSession(
             session,
-            launchType = AnalyticsLogger.LaunchType.COMPONENT,
-            layout = AnalyticsLogger.Layout.NONE
+            launchType = AnalyticsLogger.LaunchType.HPP,
         )
         val dialog = AirwallexAddPaymentDialog(
             activity = activity,

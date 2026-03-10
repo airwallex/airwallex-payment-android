@@ -40,8 +40,7 @@ object AnalyticsLogger {
      * Constants for launch type values
      */
     object LaunchType {
-        const val DROPIN = "dropin"
-        const val COMPONENT = "component"
+        const val HPP = "hpp"
         const val EMBEDDED = "embedded_element"
         const val API = "api"
     }
@@ -52,7 +51,6 @@ object AnalyticsLogger {
     object Layout {
         const val TAB = "tab"
         const val ACCORDION = "accordion"
-        const val NONE = "none"
     }
 
     // region Public API
@@ -206,7 +204,7 @@ object AnalyticsLogger {
         this.transactionMode = transactionMode
         this.launchType = launchType
         this.expressCheckout = expressCheckout
-        this.layout = layout ?: Layout.NONE
+        this.layout = layout
     }
 
     /**
@@ -286,7 +284,7 @@ object AnalyticsLogger {
                 context.packageManager.getAppVersion(context.packageName)
             )
             putIfNotNull("accountId", TokenManager.accountId)
-            putIfNotNull("integrationType", "android")
+            put("framework", "android")
         }
     }
 

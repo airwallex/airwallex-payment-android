@@ -69,8 +69,7 @@ class AirwallexStarter {
         ) {
             AnalyticsLogger.setupSession(
                 session = session,
-                launchType = AnalyticsLogger.LaunchType.COMPONENT,
-                layout = AnalyticsLogger.Layout.NONE
+                launchType = AnalyticsLogger.LaunchType.HPP,
             )
             AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)
@@ -218,7 +217,7 @@ class AirwallexStarter {
         ) {
             AnalyticsLogger.setupSession(
                 session = session,
-                launchType = AnalyticsLogger.LaunchType.DROPIN,
+                launchType = AnalyticsLogger.LaunchType.HPP,
                 layout = if (layoutType == PaymentMethodsLayoutType.TAB) AnalyticsLogger.Layout.TAB else AnalyticsLogger.Layout.ACCORDION
             )
             AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
