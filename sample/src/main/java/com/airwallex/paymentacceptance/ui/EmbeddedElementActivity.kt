@@ -1,17 +1,12 @@
 package com.airwallex.paymentacceptance.ui
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
-import android.widget.ProgressBar
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -27,10 +22,9 @@ import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ActivityEmbeddedElementBinding
+import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity
 import com.airwallex.paymentacceptance.util.PaymentStatusPoller
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import com.airwallex.paymentacceptance.viewmodel.EmbeddedElementViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
@@ -38,9 +32,8 @@ import kotlinx.parcelize.Parcelize
  * Activity to demonstrate Embedded Element integration
  * Shows order summary, shipping address, and embedded card element
  */
-class EmbeddedElementActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityEmbeddedElementBinding
+class EmbeddedElementActivity :
+    BasePaymentActivity<ActivityEmbeddedElementBinding, EmbeddedElementViewModel>() {
 
     private val args: Args by lazy {
         intent.getArgs()
@@ -54,82 +47,94 @@ class EmbeddedElementActivity : AppCompatActivity() {
         Airwallex(this)
     }
 
-    private var loadingDialog: Dialog? = null
+    override fun getViewBinding(): ActivityEmbeddedElementBinding {
+        return ActivityEmbeddedElementBinding.inflate(layoutInflater)
+    }
 
-    // Payment status poller for handling deep link returns
-    private var paymentStatusPoller: PaymentStatusPoller? = null
+    override fun getViewModelClass(): Class<EmbeddedElementViewModel> {
+        return EmbeddedElementViewModel::class.java
+    }
 
-    // Internal flow for handling payment results
-    private val _paymentStatus = MutableSharedFlow<AirwallexPaymentStatus>()
-    private val paymentStatus: SharedFlow<AirwallexPaymentStatus> = _paymentStatus.asSharedFlow()
-
-    // Polling result flow
-    private val _pollingResult = MutableSharedFlow<PaymentStatusPoller.PollingResult>()
-    private val pollingResult: SharedFlow<PaymentStatusPoller.PollingResult> = _pollingResult.asSharedFlow()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityEmbeddedElementBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
+    override fun initView() {
         setupColors()
-        setupToolbar()
-        setupObservers()
         setupCardInfoCompose()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        paymentStatusPoller?.stop()
-        loadingDialog?.dismiss()
+    override fun initListener() {
+        setupToolbar()
+    }
+
+    override fun addObserver() {
+        setupObservers()
     }
 
     private fun setupColors() {
-        binding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+        mBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
+        mBinding.toolbar.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
+        mBinding.btnBack.setColorFilter(AirwallexColor.iconPrimary.toArgb())
+        mBinding.tvTitle.setTextColor(AirwallexColor.textPrimary.toArgb())
+        mBinding.tvPaymentMethodsTitle.setTextColor(AirwallexColor.textPrimary.toArgb())
+        mBinding.orderDetailsCard.setCardBackgroundColor(AirwallexColor.backgroundSecondary.toArgb())
 
-        binding.toolbar.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
-        binding.btnBack.setColorFilter(AirwallexColor.iconPrimary().toArgb())
+        mBinding.tvMerchantName.setTextColor(AirwallexColor.textPrimary.toArgb())
+        mBinding.tvOrderDetailsLabel.setTextColor(AirwallexColor.textPrimary.toArgb())
 
-        binding.tvTitle.setTextColor(AirwallexColor.textPrimary().toArgb())
+        mBinding.tvOrderSummaryTitle.setTextColor(AirwallexColor.textPrimary.toArgb())
 
-        binding.orderSummaryCard.setBackgroundColor(AirwallexColor.backgroundSecondary().toArgb())
-        binding.shippingAddressCard.setBackgroundColor(AirwallexColor.backgroundSecondary().toArgb())
+        mBinding.tvProduct1Name.setTextColor(AirwallexColor.textPrimary.toArgb())
+        mBinding.tvProduct1Detail.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvProduct1Price.setTextColor(AirwallexColor.textPrimary.toArgb())
 
-        binding.tvOrderSummaryTitle.setTextColor(AirwallexColor.textPrimary().toArgb())
-        binding.tvAirpodsProLabel.setTextColor(AirwallexColor.textPrimary().toArgb())
-        binding.tvAirpodsProPrice.setTextColor(AirwallexColor.textPrimary().toArgb())
-        binding.tvHomepodLabel.setTextColor(AirwallexColor.textPrimary().toArgb())
-        binding.tvHomepodPrice.setTextColor(AirwallexColor.textPrimary().toArgb())
-        binding.tvTotalLabel.setTextColor(AirwallexColor.textPrimary().toArgb())
-        binding.tvTotalPrice.setTextColor(AirwallexColor.textPrimary().toArgb())
-        binding.tvShippingAddressTitle.setTextColor(AirwallexColor.textPrimary().toArgb())
-        binding.tvShippingName.setTextColor(AirwallexColor.textPrimary().toArgb())
-        binding.tvShippingAddress.setTextColor(AirwallexColor.textSecondary().toArgb())
+        mBinding.tvProduct2Name.setTextColor(AirwallexColor.textPrimary.toArgb())
+        mBinding.tvProduct2Detail.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvProduct2Price.setTextColor(AirwallexColor.textPrimary.toArgb())
 
-        // Set divider color
-        binding.divider.setBackgroundColor(AirwallexColor.borderDecorative().toArgb())
+        mBinding.tvFeeLabel.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvFeeAmount.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvSubtotalLabel.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvSubtotalAmount.setTextColor(AirwallexColor.textSecondary.toArgb())
+
+        mBinding.tvTotalLabel.setTextColor(AirwallexColor.textSecondary.toArgb())
+        mBinding.tvTotalPrice.setTextColor(AirwallexColor.textPrimary.toArgb())
     }
 
     private fun setupToolbar() {
-        binding.btnBack.setOnClickListener {
+        mBinding.btnBack.setOnClickListener {
             finish()
+        }
+
+        // Setup expand/collapse for order details
+        var isExpanded = false
+        mBinding.orderDetailsHeader.setOnClickListener {
+            isExpanded = !isExpanded
+            mBinding.orderDetailsContent.visibility = if (isExpanded) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+
+            // Rotate chevron
+            mBinding.ivChevron.animate()
+                .rotation(if (isExpanded) 180f else 0f)
+                .setDuration(200)
+                .start()
         }
     }
 
     private fun setupObservers() {
-        // Observe payment status
+        // Observe payment status from ViewModel
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                paymentStatus.collect { status ->
+                mViewModel.airwallexPaymentStatus.collect { status ->
                     handleStatusUpdate(status)
                 }
             }
         }
 
-        // Observe polling result
+        // Observe polling result from ViewModel
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                pollingResult.collect { result ->
+                mViewModel.pollingResult.collect { result ->
                     handlePollingResult(result)
                 }
             }
@@ -143,9 +148,11 @@ class EmbeddedElementActivity : AppCompatActivity() {
                 PaymentMethodsLayoutType.TAB -> PaymentElementConfiguration.PaymentSheet(
                     layout = PaymentMethodsLayoutType.TAB
                 )
+
                 PaymentMethodsLayoutType.ACCORDION -> PaymentElementConfiguration.PaymentSheet(
                     layout = PaymentMethodsLayoutType.ACCORDION
                 )
+
                 null -> PaymentElementConfiguration.Card(
                     supportedCardBrands = args.supportedCardSchemes ?: emptyList()
                 )
@@ -170,10 +177,10 @@ class EmbeddedElementActivity : AppCompatActivity() {
                 }
             )
 
-            result.onSuccess { manager ->
+            result.onSuccess {
                 // Set up the ComposeView with PaymentElement
-                binding.composeCardInfo.setContent {
-                    manager.Content()
+                mBinding.composeCardInfo.setContent {
+                    it.Content()
                 }
             }.onFailure { throwable ->
                 AirwallexLogger.error("Failed to create PaymentElement", throwable)
@@ -183,49 +190,30 @@ class EmbeddedElementActivity : AppCompatActivity() {
     }
 
     private fun handlePaymentResult(status: AirwallexPaymentStatus) {
-        lifecycleScope.launch {
-            // Emit to flow for processing
-            _paymentStatus.emit(status)
-        }
+        // Delegate to ViewModel which handles polling if needed
+        mViewModel.handlePaymentResult(session, status)
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
         when (status) {
             is AirwallexPaymentStatus.Success -> {
-                Log.d(
-                    TAG,
-                    "Payment success with intent id: ${status.paymentIntentId}, consent id: ${status.consentId}"
-                )
                 AirwallexLogger.info("Payment successful: ${status.paymentIntentId}")
-                showPaymentSuccess()
+                showPaymentSuccess { finish() }
             }
 
             is AirwallexPaymentStatus.InProgress -> {
-                // redirecting
-                Log.d(TAG, "Payment is redirecting ${status.paymentIntentId}")
+                // ViewModel handles polling automatically
+                setLoadingProgress(loading = true, cancellable = true)
                 AirwallexLogger.info("Payment in progress: ${status.paymentIntentId}")
-//
-//                // Start polling
-                status.paymentIntentId?.let { intentId ->
-                    val clientSecret = session.clientSecret
-                    if (!clientSecret.isNullOrEmpty()) {
-                        startPolling(intentId, clientSecret)
-                    } else {
-                        Log.e(TAG, "Client secret is null, cannot start polling")
-                    }
-                }
             }
 
             is AirwallexPaymentStatus.Failure -> {
                 AirwallexLogger.error("Payment failed", status.exception)
-                setLoadingProgress(false)
                 showPaymentError(status.exception.localizedMessage)
             }
 
             is AirwallexPaymentStatus.Cancel -> {
-                Log.d(TAG, "User cancel the payment")
                 AirwallexLogger.info("Payment cancelled")
-                setLoadingProgress(false)
                 showPaymentCancelled()
             }
         }
@@ -238,128 +226,18 @@ class EmbeddedElementActivity : AppCompatActivity() {
                     finish()
                 }
             }
+
             is PaymentStatusPoller.PollingResult.Timeout -> {
                 showAlert("Polling Timeout", result.description)
             }
+
             is PaymentStatusPoller.PollingResult.Error -> {
                 showPaymentError(result.message)
             }
+
             is PaymentStatusPoller.PollingResult.PaymentAttemptNotFound -> {
                 showPaymentError("Payment attempt not found")
             }
-        }
-    }
-
-    private fun startPolling(intentId: String, clientSecret: String) {
-        // Stop any existing poller first
-        paymentStatusPoller?.stop()
-
-        val poller = PaymentStatusPoller(
-            intentId = intentId,
-            clientSecret = clientSecret,
-            airwallex = airwallex
-        )
-        paymentStatusPoller = poller
-
-        lifecycleScope.launch {
-            setLoadingProgress(true, cancellable = true)
-            val result = poller.getPaymentAttempt()
-            _pollingResult.emit(result)
-            paymentStatusPoller = null
-            setLoadingProgress(false)
-        }
-    }
-
-    // UI Helper Methods
-    private fun setLoadingProgress(loading: Boolean, cancellable: Boolean = false) {
-        if (loading) {
-            startWait(cancellable)
-        } else {
-            endWait()
-        }
-    }
-
-    private fun startWait(cancellable: Boolean = false) {
-        // If dialog already showing, just update cancelable state (reentrant)
-        if (loadingDialog?.isShowing == true) {
-            loadingDialog?.setCancelable(cancellable)
-            if (cancellable) {
-                loadingDialog?.setOnCancelListener { onLoadingCancelled() }
-            } else {
-                loadingDialog?.setOnCancelListener(null)
-            }
-            return
-        }
-        if (!isFinishing) {
-            try {
-                loadingDialog = Dialog(this).apply {
-                    setContentView(R.layout.airwallex_loading)
-                    val progressBar = findViewById<ProgressBar>(R.id.airwallex_progress_bar)
-                    progressBar.indeterminateTintList = ColorStateList.valueOf(
-                        AirwallexColor.theme().toArgb()
-                    )
-                    window?.setBackgroundDrawableResource(android.R.color.transparent)
-                    setCancelable(cancellable)
-                    if (cancellable) {
-                        setOnCancelListener { onLoadingCancelled() }
-                    }
-                    show()
-                }
-            } catch (e: Exception) {
-                Log.d(TAG, "Failed to show loading dialog", e)
-            }
-        } else {
-            loadingDialog = null
-        }
-    }
-
-    private fun onLoadingCancelled() {
-        paymentStatusPoller?.stop()
-    }
-
-    private fun endWait() {
-        loadingDialog?.dismiss()
-        loadingDialog = null
-    }
-
-    private fun showPaymentSuccess() {
-        showAlert(
-            getString(R.string.payment_successful),
-            getString(R.string.payment_successful_message)
-        ) {
-            finish()
-        }
-    }
-
-    private fun showPaymentError(error: String? = null) {
-        showAlert(
-            getString(R.string.payment_failed),
-            error ?: getString(R.string.payment_failed_message)
-        )
-    }
-
-    private fun showPaymentCancelled(error: String? = null) {
-        showAlert(
-            getString(R.string.payment_cancelled),
-            error ?: getString(R.string.payment_cancelled_message)
-        )
-    }
-
-    private fun showAlert(title: String, message: String, callback: (() -> Unit)? = null) {
-        if (!isFinishing) {
-            val dialog = AlertDialog.Builder(this)
-                .setTitle(title)
-                .setMessage(message)
-                .setCancelable(false)
-                .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
-                    dialogInterface.dismiss()
-                    callback?.invoke()
-                }
-                .create()
-            dialog.show()
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
-                ColorStateList.valueOf(AirwallexColor.theme().toArgb())
-            )
         }
     }
 
@@ -372,7 +250,6 @@ class EmbeddedElementActivity : AppCompatActivity() {
     ) : Parcelable
 
     companion object {
-        private const val TAG = "EmbeddedElementActivity"
         private const val EXTRA_BUNDLE = "extra_bundle"
         private const val EXTRA_ARGS = "extra_args"
 

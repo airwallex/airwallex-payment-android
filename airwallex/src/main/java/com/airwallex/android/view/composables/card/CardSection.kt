@@ -113,7 +113,7 @@ internal fun CardSection(
                             text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }
                                 .orEmpty(),
                             typography = AirwallexTypography.Body200Bold,
-                            color = AirwallexColor.textPrimary()
+                            color = AirwallexColor.textPrimary
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
@@ -121,7 +121,7 @@ internal fun CardSection(
                         StandardText(
                             text = stringResource(id = selectedScreen.buttonTitleRes),
                             typography = AirwallexTypography.Body200Bold,
-                            color = AirwallexColor.theme(),
+                            color = AirwallexColor.theme,
                             modifier = Modifier.clickable(
                                 onClick = { selectedScreen = CardSectionType.ConsentList },
                             ),
@@ -149,7 +149,7 @@ internal fun CardSection(
                         text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }
                             .orEmpty(),
                         typography = AirwallexTypography.Body200Bold,
-                        color = AirwallexColor.textPrimary()
+                        color = AirwallexColor.textPrimary
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -157,7 +157,7 @@ internal fun CardSection(
                     StandardText(
                         text = stringResource(id = selectedScreen.buttonTitleRes),
                         typography = AirwallexTypography.Body200Bold,
-                        color = AirwallexColor.theme(),
+                        color = AirwallexColor.theme,
                         modifier = Modifier.clickable(
                             onClick = { selectedScreen = CardSectionType.AddCard },
                         ),
@@ -211,7 +211,7 @@ internal fun CardSection(
                             card.last4,
                         ),
                         typography = AirwallexTypography.Body200,
-                        color = AirwallexColor.textPrimary()
+                        color = AirwallexColor.textPrimary
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -219,7 +219,7 @@ internal fun CardSection(
                     StandardText(
                         text = stringResource(id = selectedScreen.buttonTitleRes),
                         typography = AirwallexTypography.Body200Bold,
-                        color = AirwallexColor.theme(),
+                        color = AirwallexColor.theme,
                         modifier = Modifier.clickable(
                             onClick = { selectedScreen = CardSectionType.ConsentList },
                         ),

@@ -21,7 +21,7 @@ fun StandardIcon(
     size: Dp,
     padding: Dp,
     modifier: Modifier = Modifier,
-    tint: Color = AirwallexColor.theme(),
+    tint: Color = AirwallexColor.theme,
     contentDescription: String? = null,
 ) {
     Box(modifier = modifier.padding(padding)) {

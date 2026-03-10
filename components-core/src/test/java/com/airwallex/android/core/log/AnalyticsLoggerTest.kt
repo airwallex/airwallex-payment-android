@@ -146,7 +146,7 @@ class AnalyticsLoggerTest {
                 "merchantAppName" to "test_app",
                 "merchantAppVersion" to "1.0.1",
                 "accountId" to "aid",
-                "integrationType" to "android"
+                "framework" to "android"
             )
         }
 
@@ -173,7 +173,7 @@ class AnalyticsLoggerTest {
             returnUrl = null
         )
 
-        AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.DROPIN, AnalyticsLogger.Layout.TAB)
+        AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.HPP, AnalyticsLogger.Layout.TAB)
         AnalyticsLogger.logAction("test_action")
 
         verify {
@@ -181,7 +181,7 @@ class AnalyticsLoggerTest {
                 "test_action",
                 match { map ->
                     map["transactionMode"] == "oneoff" &&
-                        map["launchType"] == AnalyticsLogger.LaunchType.DROPIN &&
+                        map["launchType"] == AnalyticsLogger.LaunchType.HPP &&
                         map["layout"] == AnalyticsLogger.Layout.TAB &&
                         map["expressCheckout"] == false
                 }
@@ -204,7 +204,7 @@ class AnalyticsLoggerTest {
             returnUrl = null
         )
 
-        AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.COMPONENT, AnalyticsLogger.Layout.ACCORDION)
+        AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.HPP, AnalyticsLogger.Layout.ACCORDION)
         AnalyticsLogger.logAction("test_action")
 
         verify {
@@ -212,7 +212,7 @@ class AnalyticsLoggerTest {
                 "test_action",
                 match { map ->
                     map["transactionMode"] == "recurring" &&
-                        map["launchType"] == AnalyticsLogger.LaunchType.COMPONENT &&
+                        map["launchType"] == AnalyticsLogger.LaunchType.HPP &&
                         map["layout"] == AnalyticsLogger.Layout.ACCORDION
                 }
             )
@@ -241,7 +241,7 @@ class AnalyticsLoggerTest {
                 match { map ->
                     map["transactionMode"] == "oneoff" &&
                         map["launchType"] == AnalyticsLogger.LaunchType.EMBEDDED &&
-                        map["layout"] == AnalyticsLogger.Layout.NONE
+                        map["layout"] == null
                 }
             )
         }
@@ -269,7 +269,7 @@ class AnalyticsLoggerTest {
                 match { map ->
                     map["transactionMode"] == "recurring" &&
                         map["launchType"] == AnalyticsLogger.LaunchType.API &&
-                        map["layout"] == AnalyticsLogger.Layout.NONE
+                        map["layout"] == null
                 }
             )
         }
@@ -288,7 +288,7 @@ class AnalyticsLoggerTest {
             returnUrl = null
         )
 
-        AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.DROPIN, AnalyticsLogger.Layout.TAB)
+        AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.HPP, AnalyticsLogger.Layout.TAB)
         AnalyticsLogger.logAction("test_action")
 
         verify {
@@ -296,7 +296,7 @@ class AnalyticsLoggerTest {
                 "test_action",
                 match { map ->
                     map["transactionMode"] == "recurring" &&
-                        map["launchType"] == AnalyticsLogger.LaunchType.DROPIN &&
+                        map["launchType"] == AnalyticsLogger.LaunchType.HPP &&
                         map["layout"] == AnalyticsLogger.Layout.TAB
                 }
             )
@@ -316,13 +316,13 @@ class AnalyticsLoggerTest {
             returnUrl = null
         )
 
-        AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.DROPIN, layout = null)
+        AnalyticsLogger.setupSession(session, AnalyticsLogger.LaunchType.HPP, layout = null)
         AnalyticsLogger.logAction("test_action")
 
         verify {
             anyConstructed<Tracker>().info(
                 "test_action",
-                match { map -> map["layout"] == AnalyticsLogger.Layout.NONE }
+                match { map -> map["layout"] == null }
             )
         }
     }
@@ -351,7 +351,7 @@ class AnalyticsLoggerTest {
         )
 
         assertFalse(AnalyticsLogger.isSessionSetup(session1))
-        AnalyticsLogger.setupSession(session1, AnalyticsLogger.LaunchType.DROPIN)
+        AnalyticsLogger.setupSession(session1, AnalyticsLogger.LaunchType.HPP)
         assertTrue(AnalyticsLogger.isSessionSetup(session1))
 
         assertFalse(AnalyticsLogger.isSessionSetup(session2))
@@ -404,7 +404,7 @@ class AnalyticsLoggerTest {
             returnUrl = null
         )
 
-        AnalyticsLogger.setupSession(session1, AnalyticsLogger.LaunchType.DROPIN)
+        AnalyticsLogger.setupSession(session1, AnalyticsLogger.LaunchType.HPP)
         AnalyticsLogger.setupSession(session2, AnalyticsLogger.LaunchType.API)
 
         assertEquals(AnalyticsLogger.LaunchType.API, AnalyticsLogger.getLaunchType())

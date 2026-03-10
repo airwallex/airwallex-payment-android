@@ -48,7 +48,7 @@ internal fun BankSelectRow(
 
                 StandardText(
                     text = stringResource(id = R.string.airwallex_select_your_bank),
-                    color = AirwallexColor.textPrimary(),
+                    color = AirwallexColor.textPrimary,
                     typography = AirwallexTypography.Title200,
                     modifier = Modifier.padding(24.dp),
                 )

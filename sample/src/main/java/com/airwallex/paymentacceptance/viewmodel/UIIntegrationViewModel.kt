@@ -8,10 +8,10 @@ import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.AirwallexPaymentSession
-import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
+import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.BillingAddressParameters
@@ -20,7 +20,6 @@ import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.Session
 import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.model.CardScheme
-import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentConsentOptions
 import com.airwallex.android.core.model.PaymentIntent
@@ -31,8 +30,8 @@ import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.autoCapture
 import com.airwallex.paymentacceptance.force3DS
 import com.airwallex.paymentacceptance.nextTriggerBy
-import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.repo.DemoReturnUrl
+import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.ui.EmbeddedElementActivity
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
 import java.math.BigDecimal
@@ -93,6 +92,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             activity = activity,
             session = session,
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
+            prioritizeGooglePay = true,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
@@ -117,6 +117,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             activity = activity,
             session = session,
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
+            prioritizeGooglePay = true,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
@@ -153,6 +154,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             activity = activity,
             session = session,
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
+            prioritizeGooglePay = true,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
@@ -175,6 +177,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             activity = activity,
             session = session,
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
+            prioritizeGooglePay = true,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
@@ -248,11 +251,6 @@ class UIIntegrationViewModel : BaseViewModel() {
      */
     private fun launchCardDialogExpressCheckout(activity: ComponentActivity) {
         val session = buildAirwallexPaymentSessionWithProvider()
-        AnalyticsLogger.setupSession(
-            session,
-            launchType = AnalyticsLogger.LaunchType.COMPONENT,
-            layout = AnalyticsLogger.Layout.NONE
-        )
         val dialog = AirwallexAddPaymentDialog(
             activity = activity,
             session = session,
