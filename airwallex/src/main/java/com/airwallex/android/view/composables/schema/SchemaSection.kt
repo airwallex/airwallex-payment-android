@@ -132,7 +132,7 @@ internal fun SchemaSection(
 
             StandardText(
                 text = stringResource(id = R.string.airwallex_schema_payment_redirect_message),
-                color = AirwallexColor.textPrimary(),
+                color = AirwallexColor.textPrimary,
                 typography = AirwallexTypography.Body200,
             )
         }
