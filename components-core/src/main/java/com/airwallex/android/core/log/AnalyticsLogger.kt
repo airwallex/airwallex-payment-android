@@ -195,13 +195,14 @@ object AnalyticsLogger {
      * @param transactionMode The current transaction mode.
      * @param paymentIntentId The payment intent ID (optional).
      */
+    @Suppress("LongParameterList")
     fun setSessionInformation(
         transactionMode: String,
         launchType: String,
         expressCheckout: Boolean,
         layout: String? = null,
         paymentIntentId: String? = null,
-        prioritizeGooglePay : Boolean? = null
+        prioritizeGooglePay: Boolean? = null
     ) {
         this.paymentIntentId = paymentIntentId
         this.transactionMode = transactionMode
@@ -235,7 +236,7 @@ object AnalyticsLogger {
         session: AirwallexSession,
         launchType: String,
         layout: String? = null,
-        prioritizeGooglePay : Boolean? = null
+        prioritizeGooglePay: Boolean? = null
     ) {
         this.currentSession = session
         val expressCheckout = session.isExpressCheckout
