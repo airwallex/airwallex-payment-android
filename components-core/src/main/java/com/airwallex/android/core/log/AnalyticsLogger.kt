@@ -4,12 +4,18 @@ import android.content.Context
 import com.airwallex.airtracker.Config
 import com.airwallex.airtracker.Environment
 import com.airwallex.airtracker.Tracker
+import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
+import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.getAppName
 import com.airwallex.android.core.extension.getAppVersion
 import com.airwallex.android.core.extension.putIfNotNull
+import com.airwallex.android.core.isExpressCheckout
+import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.core.util.BuildConfigHelper
 
 private typealias AirwallexEnvironment = com.airwallex.android.core.Environment
@@ -22,6 +28,32 @@ object AnalyticsLogger {
     private var tracker: Tracker? = null
     private var paymentIntentId: String? = null
     private var transactionMode: String? = null
+
+    private var launchType: String? = null
+    private var expressCheckout: Boolean? = null
+    private var layout: String? = null
+
+    private var prioritizeGooglePay: Boolean? = null
+
+    // Track current session for session-aware setup
+    private var currentSession: AirwallexSession? = null
+
+    /**
+     * Constants for launch type values
+     */
+    object LaunchType {
+        const val HPP = "hpp"
+        const val EMBEDDED = "embedded_element"
+        const val API = "api"
+    }
+
+    /**
+     * Constants for layout type values
+     */
+    object Layout {
+        const val TAB = "tab"
+        const val ACCORDION = "accordion"
+    }
 
     // region Public API
 
@@ -163,9 +195,81 @@ object AnalyticsLogger {
      * @param transactionMode The current transaction mode.
      * @param paymentIntentId The payment intent ID (optional).
      */
-    fun setSessionInformation(transactionMode: String, paymentIntentId: String? = null) {
+    fun setSessionInformation(
+        transactionMode: String,
+        launchType: String,
+        expressCheckout: Boolean,
+        layout: String? = null,
+        paymentIntentId: String? = null,
+        prioritizeGooglePay : Boolean? = null
+    ) {
         this.paymentIntentId = paymentIntentId
         this.transactionMode = transactionMode
+        this.launchType = launchType
+        this.expressCheckout = expressCheckout
+        this.layout = layout
+        this.prioritizeGooglePay = prioritizeGooglePay
+    }
+
+    /**
+     * Check if analytics session is already set up for the given session.
+     * Returns false if session has changed, allowing re-initialization.
+     *
+     * @param session The session to check
+     * @return true if analytics is already set up for this session
+     */
+    fun isSessionSetup(session: AirwallexSession): Boolean {
+        return this.launchType != null && this.currentSession === session
+    }
+
+    fun getLaunchType(): String? = launchType
+
+    /**
+     * Helper function to set up analytics session information from an AirwallexSession.
+     *
+     * @param session The Airwallex session containing transaction details
+     * @param launchType The launch type identifier (e.g., "dropin", "component", "embedded_element", "api")
+     * @param layout The layout type as string: "tab", "accordion", "none", or null
+     */
+    fun setupSession(
+        session: AirwallexSession,
+        launchType: String,
+        layout: String? = null,
+        prioritizeGooglePay : Boolean? = null
+    ) {
+        this.currentSession = session
+        val expressCheckout = session.isExpressCheckout
+        when (session) {
+            is AirwallexPaymentSession -> {
+                setSessionInformation(
+                    transactionMode = TransactionMode.ONE_OFF.value,
+                    paymentIntentId = session.paymentIntent?.id,
+                    expressCheckout = expressCheckout,
+                    layout = layout,
+                    launchType = launchType,
+                    prioritizeGooglePay = prioritizeGooglePay
+                )
+            }
+            is AirwallexRecurringSession -> {
+                setSessionInformation(
+                    transactionMode = TransactionMode.RECURRING.value,
+                    expressCheckout = expressCheckout,
+                    layout = layout,
+                    launchType = launchType,
+                    prioritizeGooglePay = prioritizeGooglePay
+                )
+            }
+            is AirwallexRecurringWithIntentSession -> {
+                setSessionInformation(
+                    transactionMode = TransactionMode.RECURRING.value,
+                    paymentIntentId = session.paymentIntent?.id,
+                    expressCheckout = expressCheckout,
+                    layout = layout,
+                    launchType = launchType,
+                    prioritizeGooglePay = prioritizeGooglePay
+                )
+            }
+        }
     }
 
     // endregion
@@ -188,13 +292,19 @@ object AnalyticsLogger {
                 context.packageManager.getAppVersion(context.packageName)
             )
             putIfNotNull("accountId", TokenManager.accountId)
+            put("framework", "android")
         }
     }
 
     private val additionalSessionInfo: MutableMap<String, Any>
         get() = mutableMapOf<String, Any>().apply {
-            putIfNotNull("payment_intent_id", paymentIntentId)
-            putIfNotNull("transaction_mode", transactionMode)
+            putIfNotNull("paymentIntentId", paymentIntentId)
+            putIfNotNull("transactionMode", transactionMode)
+            putIfNotNull("launchType", launchType)
+            putIfNotNull("expressCheckout", expressCheckout)
+            putIfNotNull("layout", layout)
+            putIfNotNull("showsGooglePayAsPrimaryButton", prioritizeGooglePay)
+
         }
 
     // endregion

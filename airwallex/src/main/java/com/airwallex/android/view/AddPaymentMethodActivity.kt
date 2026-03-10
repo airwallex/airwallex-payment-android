@@ -26,8 +26,8 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
-import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.ActivityAddCardBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexColor
@@ -35,8 +35,8 @@ import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
-import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
+import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
@@ -70,26 +70,23 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         Airwallex(this)
     }
 
-    override val paymentLaunchSubtype: String = "component"
-    override val paymentMethodName: String = PaymentMethodType.CARD.value
-
     override fun homeAsUpIndicatorResId(): Int {
         return R.drawable.airwallex_ic_close
     }
 
     override fun initView() {
         super.initView()
-        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
         supportActionBar?.let { actionBar ->
             actionBar.setBackgroundDrawable(
-                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+                AirwallexColor.backgroundPrimary.toArgb().toDrawable()
             )
         }
         supportActionBar?.themedContext?.let { context ->
             ContextCompat.getDrawable(context, homeAsUpIndicatorResId())?.let { drawable ->
                 val tintedDrawable = DrawableCompat.wrap(drawable.mutate())
-                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary().toArgb())
+                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary.toArgb())
                 supportActionBar?.setHomeAsUpIndicator(tintedDrawable)
             }
         }
@@ -103,7 +100,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                     ) {
                         StandardText(
                             text = stringResource(id = R.string.airwallex_new_card),
-                            color = AirwallexColor.textPrimary(),
+                            color = AirwallexColor.textPrimary,
                             typography = AirwallexTypography.Title200,
                             textAlign = TextAlign.Left,
                         )
@@ -126,6 +123,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                 configuration = PaymentElementConfiguration.Card(
                     supportedCardBrands = args.supportedCardSchemes
                 ),
+                launchType = AnalyticsLogger.LaunchType.HPP,
                 onLoadingStateChanged = { isLoading ->
                     setLoadingProgress(loading = isLoading, cancelable = false)
                 },

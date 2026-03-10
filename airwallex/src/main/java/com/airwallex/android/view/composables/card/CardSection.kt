@@ -75,7 +75,7 @@ internal fun CardSection(
     // Observe delete consent results
     LaunchedEffect(Unit) {
         paymentFlowViewModel.deleteConsentResult.collect { result ->
-            paymentFlowListener.onLoadingStateChanged(false)
+            paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
             when (result) {
                 is PaymentFlowViewModel.DeleteConsentResult.Success -> {
                     addPaymentMethodViewModel.deleteCardSuccess(result.consent)
@@ -113,7 +113,7 @@ internal fun CardSection(
                             text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }
                                 .orEmpty(),
                             typography = AirwallexTypography.Body200Bold,
-                            color = AirwallexColor.textPrimary()
+                            color = AirwallexColor.textPrimary
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
@@ -121,7 +121,7 @@ internal fun CardSection(
                         StandardText(
                             text = stringResource(id = selectedScreen.buttonTitleRes),
                             typography = AirwallexTypography.Body200Bold,
-                            color = AirwallexColor.theme(),
+                            color = AirwallexColor.theme,
                             modifier = Modifier.clickable(
                                 onClick = { selectedScreen = CardSectionType.ConsentList },
                             ),
@@ -136,6 +136,7 @@ internal fun CardSection(
                     paymentFlowViewModel = paymentFlowViewModel,
                     cardSchemes = cardSchemes,
                     paymentFlowListener = paymentFlowListener,
+                    airwallex = airwallex,
                 )
             }
 
@@ -148,7 +149,7 @@ internal fun CardSection(
                         text = selectedScreen.screenTitleRes?.let { stringResource(id = it) }
                             .orEmpty(),
                         typography = AirwallexTypography.Body200Bold,
-                        color = AirwallexColor.textPrimary()
+                        color = AirwallexColor.textPrimary
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -156,7 +157,7 @@ internal fun CardSection(
                     StandardText(
                         text = stringResource(id = selectedScreen.buttonTitleRes),
                         typography = AirwallexTypography.Body200Bold,
-                        color = AirwallexColor.theme(),
+                        color = AirwallexColor.theme,
                         modifier = Modifier.clickable(
                             onClick = { selectedScreen = CardSectionType.AddCard },
                         ),
@@ -171,7 +172,7 @@ internal fun CardSection(
                         selectedScreen = CardSectionType.ConsentDetail(consent = consent)
                     },
                     onDeleteCard = { consent ->
-                        paymentFlowListener.onLoadingStateChanged(true)
+                        paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
                         paymentFlowViewModel.deletePaymentConsent(consent)
                     },
                     onScreenViewed = {
@@ -210,7 +211,7 @@ internal fun CardSection(
                             card.last4,
                         ),
                         typography = AirwallexTypography.Body200,
-                        color = AirwallexColor.textPrimary()
+                        color = AirwallexColor.textPrimary
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -218,7 +219,7 @@ internal fun CardSection(
                     StandardText(
                         text = stringResource(id = selectedScreen.buttonTitleRes),
                         typography = AirwallexTypography.Body200Bold,
-                        color = AirwallexColor.theme(),
+                        color = AirwallexColor.theme,
                         modifier = Modifier.clickable(
                             onClick = { selectedScreen = CardSectionType.ConsentList },
                         ),
@@ -236,6 +237,7 @@ internal fun CardSection(
                             consent = consent,
                             cvc = cvc,
                             paymentFlowListener = paymentFlowListener,
+                            airwallex = airwallex,
                             paymentFlowViewModel = paymentFlowViewModel,
                         )
                     },
@@ -243,6 +245,7 @@ internal fun CardSection(
                         onCheckoutWithoutCvcOperationStart(
                             consent = consent,
                             paymentFlowListener = paymentFlowListener,
+                            airwallex = airwallex,
                             paymentFlowViewModel = paymentFlowViewModel,
                         )
                     },
@@ -264,9 +267,10 @@ internal fun CardSection(
 private fun onCheckoutWithoutCvcOperationStart(
     consent: PaymentConsent,
     paymentFlowListener: PaymentFlowListener,
+    airwallex: Airwallex,
     paymentFlowViewModel: PaymentFlowViewModel,
 ) {
-    paymentFlowListener.onLoadingStateChanged(true)
+    paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
     consent.paymentMethod?.type?.let {
         AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
     }
@@ -277,9 +281,10 @@ private fun onCheckoutWithCvcOperationStart(
     consent: PaymentConsent,
     cvc: String,
     paymentFlowListener: PaymentFlowListener,
+    airwallex: Airwallex,
     paymentFlowViewModel: PaymentFlowViewModel,
 ) {
-    paymentFlowListener.onLoadingStateChanged(true)
+    paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
     consent.paymentMethod?.type?.let {
         AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
     }

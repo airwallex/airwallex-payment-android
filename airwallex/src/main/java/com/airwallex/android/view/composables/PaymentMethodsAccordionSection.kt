@@ -46,7 +46,8 @@ import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.card.CardBrandTrailingAccessory
 import com.airwallex.android.view.composables.card.CardSection
-import com.airwallex.android.view.composables.google.GooglePaySection
+import com.airwallex.android.view.composables.google.GooglePayListItem
+import com.airwallex.android.view.composables.google.GooglePayStandaloneButton
 import com.airwallex.android.view.composables.schema.SchemaSection
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_SELECT
@@ -60,6 +61,7 @@ internal fun PaymentMethodsAccordionSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     paymentFlowListener: PaymentFlowListener,
+    prioritizeGooglePay: Boolean = true,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -86,41 +88,39 @@ internal fun PaymentMethodsAccordionSection(
                 }
             }
         }
-        // Google Pay Section (if eligible)
-        allowedPaymentMethods?.let { allowedPaymentMethods ->
-            GooglePaySection(
-                modifier = Modifier.fillMaxWidth(),
-                allowedPaymentMethods = allowedPaymentMethods.toString().trimIndent(),
-                onClick = {
-                    AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value))
-                    paymentFlowListener.onLoadingStateChanged(true)
-                    flowViewModel.checkoutWithGooglePay()
-                },
-                onScreenViewed = {
-                    flowViewModel.trackScreenViewed(PaymentMethodType.GOOGLEPAY.value)
-                },
+        // Google Pay Section on top (if eligible and prioritizeGooglePay is true)
+        if (prioritizeGooglePay) {
+            GooglePayStandaloneButton(
+                allowedPaymentMethods = allowedPaymentMethods,
+                paymentFlowListener = paymentFlowListener,
+                flowViewModel = flowViewModel,
+                airwallex = airwallex,
             )
-            if (availablePaymentMethods.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(24.dp))
-            }
         }
-        val nonGooglePaymentMethods = availablePaymentMethods.filterNot { paymentMethodType ->
-            paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
+        val paymentMethodsList = if (prioritizeGooglePay) {
+            availablePaymentMethods.filterNot { paymentMethodType ->
+                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
+            }
+        } else {
+            // If Google Pay is not prioritized, filter it out only if allowedPaymentMethods is null
+            availablePaymentMethods.filterNot { paymentMethodType ->
+                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value && allowedPaymentMethods == null
+            }
         }
         Column(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            nonGooglePaymentMethods.forEachIndexed { index, type ->
+            paymentMethodsList.forEachIndexed { index, type ->
                 Column(
                     modifier = Modifier
                         .padding(
                             top = if (type == selectedOption && index != 0) 16.dp else 0.dp,
-                            bottom = if (type == selectedOption && index != nonGooglePaymentMethods.size - 1) 16.dp else 0.dp,
+                            bottom = if (type == selectedOption && index != paymentMethodsList.size - 1) 16.dp else 0.dp,
                         )
                         .border(
                             border = BorderStroke(
                                 width = 1.dp,
-                                color = if (type == selectedOption) AirwallexColor.borderDecorative() else Color.Transparent,
+                                color = if (type == selectedOption) AirwallexColor.borderDecorative else Color.Transparent,
                             ),
                             shape = RoundedCornerShape(8.dp),
                         ),
@@ -143,13 +143,13 @@ internal fun PaymentMethodsAccordionSection(
                             .border(
                                 border = BorderStroke(
                                     width = (0.5).dp,
-                                    color = if (type == selectedOption) Color.Transparent else AirwallexColor.borderDecorative(),
+                                    color = if (type == selectedOption) Color.Transparent else AirwallexColor.borderDecorative,
                                 ),
                                 shape = RoundedCornerShape(
                                     topStart = if (index == selectedIndex + 1 || index == 0) 8.dp else 0.dp,
                                     topEnd = if (index == selectedIndex + 1 || index == 0) 8.dp else 0.dp,
-                                    bottomStart = if (index == selectedIndex - 1 || index == nonGooglePaymentMethods.size - 1) 8.dp else 0.dp,
-                                    bottomEnd = if (index == selectedIndex - 1 || index == nonGooglePaymentMethods.size - 1) 8.dp else 0.dp,
+                                    bottomStart = if (index == selectedIndex - 1 || index == paymentMethodsList.size - 1) 8.dp else 0.dp,
+                                    bottomEnd = if (index == selectedIndex - 1 || index == paymentMethodsList.size - 1) 8.dp else 0.dp,
                                 ),
                             )
                             .padding(horizontal = 24.dp),
@@ -158,7 +158,7 @@ internal fun PaymentMethodsAccordionSection(
                         RadioButton(
                             selected = (type == selectedOption),
                             onClick = null, // null recommended for accessibility with screen readers
-                            colors = RadioButtonDefaults.colors(unselectedColor = AirwallexColor.borderDecorativeStrong()),
+                            colors = RadioButtonDefaults.colors(unselectedColor = AirwallexColor.borderDecorativeStrong),
                         )
 
                         Spacer(modifier = Modifier.width(16.dp))
@@ -176,7 +176,7 @@ internal fun PaymentMethodsAccordionSection(
 
                         StandardText(
                             text = type.displayName ?: type.name,
-                            color = if (type == selectedOption) AirwallexColor.theme() else AirwallexColor.textPrimary(),
+                            color = if (type == selectedOption) AirwallexColor.theme else AirwallexColor.textPrimary,
                             typography = if (type == selectedOption) AirwallexTypography.Body200Bold else AirwallexTypography.Body200,
                             textAlign = TextAlign.Left,
                             overflow = TextOverflow.Ellipsis,
@@ -184,7 +184,7 @@ internal fun PaymentMethodsAccordionSection(
                             modifier = Modifier.padding(horizontal = 8.dp),
                         )
 
-                        if (type != selectedOption) {
+                        if (type != selectedOption && type.name != PaymentMethodType.GOOGLEPAY.value) {
                             type.cardSchemes?.toSupportedIcons()?.let { icons ->
                                 Spacer(modifier = Modifier.weight(1f))
                                 CardBrandTrailingAccessory(
@@ -200,7 +200,8 @@ internal fun PaymentMethodsAccordionSection(
 
                     AnimatedVisibility(
                         visible = (type == selectedOption),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(horizontal = 24.dp),
                     ) {
                         when (type.name) {
@@ -210,6 +211,15 @@ internal fun PaymentMethodsAccordionSection(
                                     airwallex = airwallex,
                                     cardSchemes = type.cardSchemes.orEmpty(),
                                     paymentFlowListener = paymentFlowListener,
+                                )
+                            }
+
+                            PaymentMethodType.GOOGLEPAY.value -> {
+                                GooglePayListItem(
+                                    allowedPaymentMethods = allowedPaymentMethods,
+                                    paymentFlowListener = paymentFlowListener,
+                                    flowViewModel = flowViewModel,
+                                    airwallex = airwallex,
                                 )
                             }
 

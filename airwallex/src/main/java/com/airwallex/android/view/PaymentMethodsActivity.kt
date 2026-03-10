@@ -1,5 +1,6 @@
 package com.airwallex.android.view
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.launch
 import androidx.core.graphics.drawable.toDrawable
+import com.airwallex.android.core.log.AnalyticsLogger
 
 @Suppress("LongMethod")
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
@@ -50,20 +52,18 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
         Airwallex(this)
     }
 
-    override val paymentLaunchSubtype: String = "dropin"
-
     override fun initView() {
         super.initView()
-        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         supportActionBar?.let { actionBar ->
             actionBar.setBackgroundDrawable(
-                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+                AirwallexColor.backgroundPrimary.toArgb().toDrawable()
             )
         }
         supportActionBar?.themedContext?.let { context ->
             ContextCompat.getDrawable(context, homeAsUpIndicatorResId())?.let { drawable ->
                 val tintedDrawable = DrawableCompat.wrap(drawable.mutate())
-                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary().toArgb())
+                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary.toArgb())
                 supportActionBar?.setHomeAsUpIndicator(tintedDrawable)
             }
         }
@@ -77,9 +77,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
-                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType),
+                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType, prioritizeGooglePay = args.prioritizeGooglePay),
+                launchType = AnalyticsLogger.LaunchType.HPP,
                 paymentFlowListener = object : PaymentFlowListener {
-                    override fun onLoadingStateChanged(isLoading: Boolean) {
+                    override fun onLoadingStateChanged(isLoading: Boolean, context: Context) {
                         setLoadingProgress(loading = isLoading, cancelable = false)
                     }
 

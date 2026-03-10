@@ -25,17 +25,15 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.isExpressCheckout
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.CardScheme
-import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTheme
-import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
+import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.EVENT_PAYMENT_CANCELLED
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
@@ -71,15 +69,11 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
-        AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
-        AnalyticsLogger.logAction(
-            actionName = "payment_launched",
-            additionalInfo = mapOf(
-                "subtype" to "component",
-                "paymentMethod" to PaymentMethodType.CARD.value,
-                "expressCheckout" to session.isExpressCheckout
-            )
+        AnalyticsLogger.setupSession(
+            session,
+            launchType = AnalyticsLogger.LaunchType.HPP,
         )
+        AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
         initDialog()
         initView()
         addListener()
@@ -108,7 +102,7 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
         // Set background with rounded corners (12dp on top)
         val cornerRadius = context.resources.displayMetrics.density * 12
         viewBinding.root.background = GradientDrawable().apply {
-            setColor(AirwallexColor.backgroundPrimary().toArgb())
+            setColor(AirwallexColor.backgroundPrimary.toArgb())
             cornerRadii = floatArrayOf(
                 cornerRadius, cornerRadius,
                 cornerRadius, cornerRadius,
@@ -116,8 +110,8 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
                 0f, 0f
             )
         }
-        viewBinding.cardLabel.setTextColor(AirwallexColor.textPrimary().toArgb())
-        viewBinding.closeIcon.setColorFilter(AirwallexColor.iconPrimary().toArgb())
+        viewBinding.cardLabel.setTextColor(AirwallexColor.textPrimary.toArgb())
+        viewBinding.closeIcon.setColorFilter(AirwallexColor.iconPrimary.toArgb())
         viewBinding.composeView.apply {
             setContent {
                 AddPaymentDialogContent()
@@ -146,6 +140,7 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
                 configuration = PaymentElementConfiguration.Card(
                     supportedCardBrands = supportedCardSchemes
                 ),
+                launchType = AnalyticsLogger.LaunchType.HPP,
                 onLoadingStateChanged = { isLoading ->
                     setLoadingProgress(isLoading)
                 },
@@ -173,7 +168,7 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
                     paymentState = state
                     setLoadingProgress(false)
                 },
-                onFailure = { _ ->
+                onFailure = { error ->
                     setLoadingProgress(false)
                     dismiss()
                 }

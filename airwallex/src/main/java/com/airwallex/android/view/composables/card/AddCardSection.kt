@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.airwallex.android.R
+import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
@@ -63,6 +64,7 @@ internal fun AddCardSection(
     paymentFlowViewModel: PaymentFlowViewModel,
     cardSchemes: List<CardScheme>,
     paymentFlowListener: PaymentFlowListener,
+    airwallex: Airwallex,
 ) {
     val focusManager = LocalFocusManager.current
     val expiryFocusRequester = remember { FocusRequester() }
@@ -120,7 +122,7 @@ internal fun AddCardSection(
             text = stringResource(R.string.airwallex_card_information_title),
             textAlign = TextAlign.Left,
             typography = AirwallexTypography.Body200,
-            color = AirwallexColor.textPrimary(),
+            color = AirwallexColor.textPrimary,
             modifier = Modifier.padding(
                 vertical = 12.dp,
             ),
@@ -211,7 +213,7 @@ internal fun AddCardSection(
                 text = stringResource(id = errorMessage),
                 textAlign = TextAlign.Left,
                 typography = AirwallexTypography.Caption100,
-                color = AirwallexColor.textError(),
+                color = AirwallexColor.textError,
                 modifier = Modifier.padding(start = 16.dp),
             )
         }
@@ -222,7 +224,7 @@ internal fun AddCardSection(
             text = stringResource(R.string.airwallex_card_name_hint),
             textAlign = TextAlign.Left,
             typography = AirwallexTypography.Body200,
-            color = AirwallexColor.textPrimary(),
+            color = AirwallexColor.textPrimary,
             modifier = Modifier.padding(
                 vertical = 12.dp,
             ),
@@ -266,7 +268,7 @@ internal fun AddCardSection(
                 text = stringResource(R.string.airwallex_email_hint),
                 textAlign = TextAlign.Left,
                 typography = AirwallexTypography.Body200,
-                color = AirwallexColor.textPrimary(),
+                color = AirwallexColor.textPrimary,
                 modifier = Modifier.padding(
                     vertical = 12.dp,
                 ),
@@ -302,7 +304,7 @@ internal fun AddCardSection(
                     text = stringResource(R.string.airwallex_billing_info),
                     textAlign = TextAlign.Left,
                     typography = AirwallexTypography.Body200,
-                    color = AirwallexColor.textPrimary(),
+                    color = AirwallexColor.textPrimary,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -494,7 +496,7 @@ internal fun AddCardSection(
                         text = stringResource(id = billingErrorMessage),
                         textAlign = TextAlign.Left,
                         typography = AirwallexTypography.Caption100,
-                        color = AirwallexColor.textError(),
+                        color = AirwallexColor.textError,
                         modifier = Modifier.padding(start = 16.dp),
                     )
                 }
@@ -579,7 +581,7 @@ internal fun AddCardSection(
                         phoneNumber = phoneNumber,
                         email = email,
                     )
-                    paymentFlowListener.onLoadingStateChanged(true)
+                    paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
                     AnalyticsLogger.logAction(
                         TAP_PAY_BUTTON,
                         mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
