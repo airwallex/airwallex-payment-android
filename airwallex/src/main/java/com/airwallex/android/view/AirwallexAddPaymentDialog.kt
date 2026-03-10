@@ -69,6 +69,10 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+        AnalyticsLogger.setupSession(
+            session,
+            launchType = AnalyticsLogger.LaunchType.HPP,
+        )
         AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
         initDialog()
         initView()

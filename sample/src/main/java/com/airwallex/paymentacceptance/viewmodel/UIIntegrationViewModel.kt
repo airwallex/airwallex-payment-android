@@ -220,10 +220,6 @@ class UIIntegrationViewModel : BaseViewModel() {
      */
     private fun launchCardDialogExpressCheckout(activity: ComponentActivity) {
         val session = buildAirwallexPaymentSessionWithProvider()
-        AnalyticsLogger.setupSession(
-            session,
-            launchType = AnalyticsLogger.LaunchType.HPP,
-        )
         val dialog = AirwallexAddPaymentDialog(
             activity = activity,
             session = session,
