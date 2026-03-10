@@ -3,14 +3,13 @@ package com.airwallex.android.view.composables
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModelProvider
-import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.toAnalyticsLayoutString
-import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
