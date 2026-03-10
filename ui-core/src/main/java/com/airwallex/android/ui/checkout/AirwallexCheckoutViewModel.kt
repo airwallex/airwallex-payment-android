@@ -18,7 +18,6 @@ open class AirwallexCheckoutViewModel(
 ) : AndroidViewModel(application) {
     companion object {
         private const val EVENT_PAYMENT_CANCELLED = "payment_canceled"
-        private const val EVENT_PAYMENT_LAUNCHED = "payment_launched"
     }
 
     val transactionMode: TransactionMode by lazy {
@@ -208,18 +207,6 @@ open class AirwallexCheckoutViewModel(
 
     fun trackPaymentCancelled() {
         AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_CANCELLED)
-    }
-
-    fun trackPaymentLaunched(
-        subtype: String,
-        paymentMethod: String? = null
-    ) {
-        val additionalInfo = mutableMapOf<String, Any>(
-            "subtype" to subtype,
-            "expressCheckout" to session.isExpressCheckout
-        )
-        paymentMethod?.let { additionalInfo["paymentMethod"] = it }
-        AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_LAUNCHED, additionalInfo = additionalInfo)
     }
 
     fun trackScreenViewed(eventName: String, params: Map<String, Any> = emptyMap()) {

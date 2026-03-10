@@ -111,9 +111,11 @@ class SchemaPaymentViewModelTest {
         mockkObject(TokenManager)
 
         // Mock AnalyticsLogger
+        every { AnalyticsLogger.initialize(any()) } just runs
         every { AnalyticsLogger.logAction(any(), any()) } just runs
         every { AnalyticsLogger.logPageView(any(), any()) } just runs
-        every { AnalyticsLogger.setSessionInformation(any(), any()) } just runs
+        every { AnalyticsLogger.setupSession(any(), any(), any()) } just runs
+        every { AnalyticsLogger.logError(any(), any<Map<String, Any>>()) } just runs
 
         // Mock AirwallexLogger
         every { AirwallexLogger.info(any()) } just runs

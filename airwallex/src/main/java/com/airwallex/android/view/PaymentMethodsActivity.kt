@@ -25,6 +25,7 @@ import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.launch
 import androidx.core.graphics.drawable.toDrawable
+import com.airwallex.android.core.log.AnalyticsLogger
 
 @Suppress("LongMethod")
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
@@ -49,8 +50,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     override val airwallex: Airwallex by lazy {
         Airwallex(this)
     }
-
-    override val paymentLaunchSubtype: String = "dropin"
 
     override fun initView() {
         super.initView()
@@ -78,6 +77,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 session = session,
                 airwallex = airwallex,
                 configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType),
+                launchType = AnalyticsLogger.LaunchType.HPP,
                 paymentFlowListener = object : PaymentFlowListener {
                     override fun onLoadingStateChanged(isLoading: Boolean) {
                         setLoadingProgress(loading = isLoading, cancelable = false)

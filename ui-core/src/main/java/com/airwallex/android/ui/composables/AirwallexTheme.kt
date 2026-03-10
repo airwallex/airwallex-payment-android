@@ -3,10 +3,7 @@ package com.airwallex.android.ui.composables
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.airwallex.android.ui.composables.AirwallexColor.adjustByLevel
 
 @Composable
 fun AirwallexTheme(
@@ -26,6 +23,7 @@ fun AirwallexTheme(
  * Creates a ColorScheme using AirwallexColor semantic properties.
  * Assumes AirwallexThemeConfig is already set with the desired theme color and dark mode.
  */
+@Suppress("ComplexMethod")
 private fun createColorScheme(): ColorScheme {
     val isDark = AirwallexThemeConfig.isDarkTheme
     val primaryColor = AirwallexColor.theme
