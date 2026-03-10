@@ -75,7 +75,7 @@ internal fun PaymentElementComponent(
                             session = session,
                             airwallex = airwallex,
                             paymentFlowListener = paymentFlowListener,
-                            prioritizeGooglePay = configuration.prioritizeGooglePay,
+                            showsGooglePayAsPrimaryButton = configuration.showsGooglePayAsPrimaryButton,
                         )
                     }
 
@@ -84,7 +84,7 @@ internal fun PaymentElementComponent(
                             session = session,
                             airwallex = airwallex,
                             paymentFlowListener = paymentFlowListener,
-                            prioritizeGooglePay = configuration.prioritizeGooglePay,
+                            showsGooglePayAsPrimaryButton = configuration.showsGooglePayAsPrimaryButton,
                         )
                     }
                 }

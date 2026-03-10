@@ -201,14 +201,14 @@ class AirwallexStarter {
             activity: ComponentActivity,
             session: AirwallexSession,
             layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
-            prioritizeGooglePay: Boolean = true,
+            showsGooglePayAsPrimaryButton: Boolean = true,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(activity),
                 session,
                 layoutType,
-                prioritizeGooglePay,
+                showsGooglePayAsPrimaryButton,
                 paymentResultListener,
             )
         }
@@ -217,14 +217,14 @@ class AirwallexStarter {
             launch: PaymentMethodsActivityLaunch,
             session: AirwallexSession,
             layoutType: PaymentMethodsLayoutType,
-            prioritizeGooglePay: Boolean = true,
+            showsGooglePayAsPrimaryButton: Boolean = true,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             AnalyticsLogger.setupSession(
                 session = session,
                 launchType = AnalyticsLogger.LaunchType.HPP,
                 layout = if (layoutType == PaymentMethodsLayoutType.TAB) AnalyticsLogger.Layout.TAB else AnalyticsLogger.Layout.ACCORDION,
-                prioritizeGooglePay = prioritizeGooglePay,
+                showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton,
             )
             AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)

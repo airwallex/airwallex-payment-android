@@ -61,7 +61,7 @@ internal fun PaymentMethodsAccordionSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     paymentFlowListener: PaymentFlowListener,
-    prioritizeGooglePay: Boolean = true,
+    showsGooglePayAsPrimaryButton: Boolean = true,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -88,15 +88,15 @@ internal fun PaymentMethodsAccordionSection(
                 }
             }
         }
-        // Google Pay Section on top (if eligible and prioritizeGooglePay is true)
-        if (prioritizeGooglePay) {
+        // Google Pay Section on top (if eligible and showsGooglePayAsPrimaryButton is true)
+        if (showsGooglePayAsPrimaryButton) {
             GooglePayStandaloneButton(
                 allowedPaymentMethods = allowedPaymentMethods,
                 paymentFlowListener = paymentFlowListener,
                 flowViewModel = flowViewModel,
             )
         }
-        val paymentMethodsList = if (prioritizeGooglePay) {
+        val paymentMethodsList = if (showsGooglePayAsPrimaryButton) {
             availablePaymentMethods.filterNot { paymentMethodType ->
                 paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
             }

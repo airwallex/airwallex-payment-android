@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
  *
  * @param session The Airwallex session for the payment flow
  * @param airwallex The Airwallex instance for payment operations
- * @param prioritizeGooglePay If true, GooglePay is shown on top; if false, shown in LazyRow
+ * @param showsGooglePayAsPrimaryButton If true, GooglePay is shown on top; if false, shown in LazyRow
  */
 @Suppress("LongMethod", "LongParameterList")
 @Composable
@@ -51,7 +51,7 @@ internal fun PaymentMethodsTabSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     paymentFlowListener: PaymentFlowListener,
-    prioritizeGooglePay: Boolean = true,
+    showsGooglePayAsPrimaryButton: Boolean = true,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -84,15 +84,15 @@ internal fun PaymentMethodsTabSection(
             }
         }
         Column {
-            // Google Pay Section on top (if eligible and prioritizeGooglePay is true)
-            if (prioritizeGooglePay) {
+            // Google Pay Section on top (if eligible and showsGooglePayAsPrimaryButton is true)
+            if (showsGooglePayAsPrimaryButton) {
                 GooglePayStandaloneButton(
                     allowedPaymentMethods = allowedPaymentMethods,
                     paymentFlowListener = paymentFlowListener,
                     flowViewModel = flowViewModel,
                 )
             }
-            val paymentMethodsList = if (prioritizeGooglePay || allowedPaymentMethods == null) {
+            val paymentMethodsList = if (showsGooglePayAsPrimaryButton || allowedPaymentMethods == null) {
                 availablePaymentMethods.filterNot { paymentMethodType ->
                     paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
                 }
