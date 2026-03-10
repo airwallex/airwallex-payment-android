@@ -37,8 +37,6 @@ class AirwallexStarter {
          *
          * @param application Application instance
          * @param configuration Airwallex SDK configuration
-         * @param themeColor Optional theme color as hex string ("#00FF00", "0xFF00FF00", etc). If null or invalid, uses default purple.
-         * @param darkMode Dark mode preference. Defaults to SYSTEM (follows device setting).
          */
         fun initialize(
             application: Application,
@@ -71,8 +69,7 @@ class AirwallexStarter {
         ) {
             AnalyticsLogger.setupSession(
                 session = session,
-                launchType = AnalyticsLogger.LaunchType.COMPONENT,
-                layout = AnalyticsLogger.Layout.NONE
+                launchType = AnalyticsLogger.LaunchType.HPP,
             )
             AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)
@@ -163,6 +160,7 @@ class AirwallexStarter {
                 PaymentMethodsActivityLaunch(fragment),
                 session,
                 layoutType,
+                true,
                 paymentResultListener,
             )
         }
@@ -186,6 +184,7 @@ class AirwallexStarter {
                 PaymentMethodsActivityLaunch(activity),
                 session,
                 layoutType,
+                true,
                 paymentResultListener,
             )
         }
@@ -202,12 +201,14 @@ class AirwallexStarter {
             activity: ComponentActivity,
             session: AirwallexSession,
             layoutType: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
+            prioritizeGooglePay: Boolean = true,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
                 PaymentMethodsActivityLaunch(activity),
                 session,
                 layoutType,
+                prioritizeGooglePay,
                 paymentResultListener,
             )
         }
@@ -216,12 +217,14 @@ class AirwallexStarter {
             launch: PaymentMethodsActivityLaunch,
             session: AirwallexSession,
             layoutType: PaymentMethodsLayoutType,
+            prioritizeGooglePay: Boolean = true,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             AnalyticsLogger.setupSession(
                 session = session,
-                launchType = AnalyticsLogger.LaunchType.DROPIN,
-                layout = if (layoutType == PaymentMethodsLayoutType.TAB) AnalyticsLogger.Layout.TAB else AnalyticsLogger.Layout.ACCORDION
+                launchType = AnalyticsLogger.LaunchType.HPP,
+                layout = if (layoutType == PaymentMethodsLayoutType.TAB) AnalyticsLogger.Layout.TAB else AnalyticsLogger.Layout.ACCORDION,
+                prioritizeGooglePay = prioritizeGooglePay,
             )
             AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)

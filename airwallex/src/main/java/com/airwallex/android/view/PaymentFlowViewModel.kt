@@ -179,7 +179,7 @@ class PaymentFlowViewModel(
         }
     }
 
-    fun confirmPaymentIntent(paymentConsent: PaymentConsent) {
+    fun checkoutWithoutCvc(paymentConsent: PaymentConsent) {
         viewModelScope.launch {
             val paymentMethod = paymentConsent.paymentMethod
             if (paymentMethod == null) {

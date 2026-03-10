@@ -42,6 +42,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @Suppress("LargeClass")
 class AirwallexTest {
@@ -1378,6 +1379,7 @@ class AirwallexTest {
         assertEquals(testPaymentIntent.clientSecret, capturedParams.captured.clientSecret)
         assertEquals(testCustomerId, capturedParams.captured.customerId)
         assertEquals(0, capturedParams.captured.pageNum) // First page
+        assertNull(capturedParams.captured.nextTriggeredBy)
         assertEquals(PaymentConsent.PaymentConsentStatus.VERIFIED, capturedParams.captured.status)
     }
 

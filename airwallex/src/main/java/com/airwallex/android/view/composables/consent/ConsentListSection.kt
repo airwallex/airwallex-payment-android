@@ -82,7 +82,7 @@ internal fun ConsentListSection(
                 onDismiss = {
                     localConsentToBeDeleted = null
                 },
-                confirmButtonContainerColor = AirwallexColor.textError()
+                confirmButtonContainerColor = AirwallexColor.textError
             )
         }
     }
