@@ -21,17 +21,17 @@ fun StandardAlertDialog(
     title: String,
     content: String,
     confirmButtonTitle: String? = null,
-    confirmButtonContainerColor: Color = AirwallexColor.textError(),
+    confirmButtonContainerColor: Color = AirwallexColor.textError,
     onConfirm: (() -> Unit)? = null,
     dismissButtonTitle: String? = null,
     onDismiss: (() -> Unit)? = null,
 ) {
     AlertDialog(
-        backgroundColor = AirwallexColor.backgroundPrimary(),
+        backgroundColor = AirwallexColor.backgroundPrimary,
         title = {
             StandardText(
                 text = title,
-                color = AirwallexColor.textPrimary(),
+                color = AirwallexColor.textPrimary,
                 typography = AirwallexTypography.Title300,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -40,7 +40,7 @@ fun StandardAlertDialog(
         text = {
             StandardText(
                 text = content,
-                color = AirwallexColor.textPrimary(),
+                color = AirwallexColor.textPrimary,
                 typography = AirwallexTypography.Body200,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -75,7 +75,7 @@ private fun alertButtonsLayout(
                 .fillMaxWidth()
                 .background(
                     shape = RoundedCornerShape(8.dp),
-                    color = AirwallexColor.backgroundPrimary(),
+                    color = AirwallexColor.backgroundPrimary,
                 )
                 .padding(
                     vertical = 12.dp,
@@ -86,7 +86,7 @@ private fun alertButtonsLayout(
                 StandardOutlinedButton(
                     text = dismissButtonTitle,
                     onClick = onDismiss,
-                    textColor = AirwallexColor.textPrimary(),
+                    textColor = AirwallexColor.textPrimary,
                     borderColor = AirwallexColor.Transparent,
                     modifier = Modifier.weight(1f),
                 )

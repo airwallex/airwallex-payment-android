@@ -50,7 +50,7 @@ internal fun ConsentItem(
             modifier = Modifier
                 .background(
                     shape = RoundedCornerShape(8.dp),
-                    color = AirwallexColor.backgroundPrimary(),
+                    color = AirwallexColor.backgroundPrimary,
                 )
                 .padding(vertical = 12.dp)
                 .fillMaxWidth(),
@@ -76,7 +76,7 @@ internal fun ConsentItem(
                     card.last4,
                 ),
                 typography = AirwallexTypography.Body200,
-                color = AirwallexColor.textPrimary()
+                color = AirwallexColor.textPrimary
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -96,9 +96,9 @@ private fun MenuConsentItem(
         contentDescription = "three dots",
         colorFilter = ColorFilter.tint(
             if (consent.nextTriggeredBy == PaymentConsent.NextTriggeredBy.MERCHANT) {
-                AirwallexColor.iconDisabled()
+                AirwallexColor.iconDisabled
             } else {
-                AirwallexColor.theme()
+                AirwallexColor.theme
             }
         ),
         modifier = Modifier.clickable(

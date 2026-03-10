@@ -28,7 +28,7 @@ internal fun PaymentScreen(
     ) {
         StandardText(
             text = stringResource(id = R.string.airwallex_payment_methods),
-            color = AirwallexColor.textPrimary(),
+            color = AirwallexColor.textPrimary,
             typography = AirwallexTypography.Title200,
             textAlign = TextAlign.Left,
         )

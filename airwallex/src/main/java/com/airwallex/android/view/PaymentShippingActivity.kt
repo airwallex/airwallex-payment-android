@@ -41,15 +41,15 @@ class PaymentShippingActivity : AirwallexActivity() {
 
     override fun initView() {
         super.initView()
-        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         supportActionBar?.let { actionBar ->
             actionBar.setBackgroundDrawable(
-                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+                AirwallexColor.backgroundPrimary.toArgb().toDrawable()
             )
             val upArrow = AppCompatResources.getDrawable(this, homeAsUpIndicatorResId())
             upArrow?.let {
                 val wrappedDrawable = DrawableCompat.wrap(it)
-                DrawableCompat.setTint(wrappedDrawable, AirwallexColor.iconPrimary().toArgb())
+                DrawableCompat.setTint(wrappedDrawable, AirwallexColor.iconPrimary.toArgb())
                 actionBar.setHomeAsUpIndicator(wrappedDrawable)
             }
         }
@@ -79,25 +79,25 @@ class PaymentShippingActivity : AirwallexActivity() {
                 intArrayOf()
             ),
             intArrayOf(
-                AirwallexColor.textSecondary().toArgb(),
-                AirwallexColor.textInverse().toArgb()
+                AirwallexColor.textSecondary.toArgb(),
+                AirwallexColor.textInverse.toArgb()
             )
         )
         viewBinding.btnSaveShipping.setTextColor(textColorStateList)
-        viewBinding.headerTitle.setTextColor(AirwallexColor.textPrimary().toArgb())
+        viewBinding.headerTitle.setTextColor(AirwallexColor.textPrimary.toArgb())
 
         val backgroundDrawable = StateListDrawable()
 
         val disabledDrawable = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            setColor(AirwallexColor.borderDecorative().toArgb())
+            setColor(AirwallexColor.borderDecorative.toArgb())
             cornerRadius = 6f * resources.displayMetrics.density
         }
         backgroundDrawable.addState(intArrayOf(-android.R.attr.state_enabled), disabledDrawable)
 
         val enabledDrawable = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            setColor(AirwallexColor.theme().toArgb())
+            setColor(AirwallexColor.theme.toArgb())
             cornerRadius = 6f * resources.displayMetrics.density
         }
         backgroundDrawable.addState(intArrayOf(), enabledDrawable)

@@ -49,31 +49,35 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
         }
     }
 
-    fun showPaymentSuccess() {
+    fun showPaymentSuccess(callback: (() -> Unit)? = null) {
         showAlert(
             getString(R.string.payment_successful),
-            getString(R.string.payment_successful_message)
+            getString(R.string.payment_successful_message),
+            callback
         )
     }
 
-    fun showCreatePaymentIntentError(error: String? = null) {
+    fun showCreatePaymentIntentError(error: String? = null, callback: (() -> Unit)? = null) {
         showAlert(
             getString(R.string.create_payment_intent_failed),
-            error ?: getString(R.string.payment_failed_message)
+            error ?: getString(R.string.payment_failed_message),
+            callback
         )
     }
 
-    fun showPaymentError(error: String? = null) {
+    fun showPaymentError(error: String? = null, callback: (() -> Unit)? = null) {
         showAlert(
             getString(R.string.payment_failed),
-            error ?: getString(R.string.payment_failed_message)
+            error ?: getString(R.string.payment_failed_message),
+            callback
         )
     }
 
-    fun showPaymentCancelled(error: String? = null) {
+    fun showPaymentCancelled(error: String? = null, callback: (() -> Unit)? = null) {
         showAlert(
             getString(R.string.payment_cancelled),
-            error ?: getString(R.string.payment_cancelled_message)
+            error ?: getString(R.string.payment_cancelled_message),
+            callback
         )
     }
 
