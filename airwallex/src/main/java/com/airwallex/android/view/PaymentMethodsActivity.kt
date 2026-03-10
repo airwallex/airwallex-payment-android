@@ -54,16 +54,16 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
     override fun initView() {
         super.initView()
-        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         supportActionBar?.let { actionBar ->
             actionBar.setBackgroundDrawable(
-                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+                AirwallexColor.backgroundPrimary.toArgb().toDrawable()
             )
         }
         supportActionBar?.themedContext?.let { context ->
             ContextCompat.getDrawable(context, homeAsUpIndicatorResId())?.let { drawable ->
                 val tintedDrawable = DrawableCompat.wrap(drawable.mutate())
-                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary().toArgb())
+                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary.toArgb())
                 supportActionBar?.setHomeAsUpIndicator(tintedDrawable)
             }
         }
@@ -77,8 +77,8 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
-                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType),
-                launchType = AnalyticsLogger.LaunchType.DROPIN,
+                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType, prioritizeGooglePay = args.prioritizeGooglePay),
+                launchType = AnalyticsLogger.LaunchType.HPP,
                 paymentFlowListener = object : PaymentFlowListener {
                     override fun onLoadingStateChanged(isLoading: Boolean, context: Context) {
                         setLoadingProgress(loading = isLoading, cancelable = false)

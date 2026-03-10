@@ -50,7 +50,7 @@ internal fun ConsentItem(
             modifier = Modifier
                 .background(
                     shape = RoundedCornerShape(8.dp),
-                    color = AirwallexColor.backgroundPrimary(),
+                    color = AirwallexColor.backgroundPrimary,
                 )
                 .padding(vertical = 12.dp)
                 .fillMaxWidth(),
@@ -76,7 +76,7 @@ internal fun ConsentItem(
                     card.last4,
                 ),
                 typography = AirwallexTypography.Body200,
-                color = AirwallexColor.textPrimary()
+                color = AirwallexColor.textPrimary
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -84,7 +84,7 @@ internal fun ConsentItem(
             Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_three_dots_vertical),
                 contentDescription = "three dots",
-                colorFilter = ColorFilter.tint(AirwallexColor.theme()),
+                colorFilter = ColorFilter.tint(AirwallexColor.theme),
                 modifier = Modifier.clickable(
                     onClick = {
                         onDeleteCard(consent)

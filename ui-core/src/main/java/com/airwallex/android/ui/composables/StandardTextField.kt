@@ -147,10 +147,10 @@ private fun supportTextOrNull(
 
 @Composable
 private fun textFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedTextColor = AirwallexColor.textPrimary(),
-    unfocusedTextColor = AirwallexColor.textPrimary(),
+    focusedTextColor = AirwallexColor.textPrimary,
+    unfocusedTextColor = AirwallexColor.textPrimary,
     unfocusedLabelColor = MaterialTheme.colorScheme.tertiaryContainer,
-    focusedLabelColor = AirwallexColor.theme(),
+    focusedLabelColor = AirwallexColor.theme,
 )
 
 @Composable
@@ -171,7 +171,7 @@ private fun SupportingText(
         if (!description.isNullOrEmpty()) {
             Text(
                 text = description,
-                style = textStyle.copy(color = AirwallexColor.textPrimary()),
+                style = textStyle.copy(color = AirwallexColor.textPrimary),
             )
         }
 
@@ -179,7 +179,7 @@ private fun SupportingText(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = errorMessage,
-                style = textStyle.copy(color = AirwallexColor.textError()),
+                style = textStyle.copy(color = AirwallexColor.textError),
             )
         }
     }
@@ -195,7 +195,7 @@ private fun Hint(
             text = buildAnnotatedString {
                 val text = "$hint *"
                 append(text)
-                val baseStyle = MaterialTheme.typography.bodyMedium.toSpanStyle().copy(color = AirwallexColor.textError())
+                val baseStyle = MaterialTheme.typography.bodyMedium.toSpanStyle().copy(color = AirwallexColor.textError)
                 addStyle(
                     style = baseStyle,
                     start = text.length - 1,
@@ -207,7 +207,7 @@ private fun Hint(
         Text(
             text = hint,
             textAlign = TextAlign.Left,
-            color = AirwallexColor.textPlaceholder(),
+            color = AirwallexColor.textPlaceholder,
             style = MaterialTheme.typography.bodyMedium,
         )
     }

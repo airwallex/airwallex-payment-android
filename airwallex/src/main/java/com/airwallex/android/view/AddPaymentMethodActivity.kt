@@ -76,17 +76,17 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
     override fun initView() {
         super.initView()
-        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary().toArgb())
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
         supportActionBar?.let { actionBar ->
             actionBar.setBackgroundDrawable(
-                AirwallexColor.backgroundPrimary().toArgb().toDrawable()
+                AirwallexColor.backgroundPrimary.toArgb().toDrawable()
             )
         }
         supportActionBar?.themedContext?.let { context ->
             ContextCompat.getDrawable(context, homeAsUpIndicatorResId())?.let { drawable ->
                 val tintedDrawable = DrawableCompat.wrap(drawable.mutate())
-                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary().toArgb())
+                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary.toArgb())
                 supportActionBar?.setHomeAsUpIndicator(tintedDrawable)
             }
         }
@@ -100,7 +100,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                     ) {
                         StandardText(
                             text = stringResource(id = R.string.airwallex_new_card),
-                            color = AirwallexColor.textPrimary(),
+                            color = AirwallexColor.textPrimary,
                             typography = AirwallexTypography.Title200,
                             textAlign = TextAlign.Left,
                         )
@@ -123,7 +123,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                 configuration = PaymentElementConfiguration.Card(
                     supportedCardBrands = args.supportedCardSchemes
                 ),
-                launchType = AnalyticsLogger.LaunchType.COMPONENT,
+                launchType = AnalyticsLogger.LaunchType.HPP,
                 onLoadingStateChanged = { isLoading ->
                     setLoadingProgress(loading = isLoading, cancelable = false)
                 },

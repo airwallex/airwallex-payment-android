@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.toAnalyticsLayoutString
@@ -73,6 +74,9 @@ class PaymentElement private constructor(
             paymentFlowListener: PaymentFlowListener,
             launchType: String
         ): Result<PaymentElement> {
+            if (configuration is PaymentElementConfiguration.Card && configuration.supportedCardBrands.isEmpty()) {
+                return Result.failure(InvalidParamsException("supportedCardBrands should not be empty"))
+            }
             val viewModel = ViewModelProvider(
                 airwallex.activity,
                 PaymentFlowViewModel.Factory(
@@ -87,7 +91,11 @@ class PaymentElement private constructor(
                 is PaymentElementConfiguration.PaymentSheet -> configuration.layout.toAnalyticsLayoutString()
                 else -> null
             }
-            AnalyticsLogger.setupSession(session, launchType, layout)
+            val prioritizeGooglePay = when (configuration) {
+                is PaymentElementConfiguration.PaymentSheet -> configuration.prioritizeGooglePay
+                else -> null
+            }
+            AnalyticsLogger.setupSession(session, launchType, layout, prioritizeGooglePay)
             val additionalInfo = mutableMapOf<String, String>()
             if (configuration is PaymentElementConfiguration.Card) {
                 additionalInfo["paymentMethod"] = PaymentMethodType.CARD.value
@@ -96,11 +104,7 @@ class PaymentElement private constructor(
                 actionName = AnalyticsConstants.EVENT_PAYMENT_LAUNCHED,
                 additionalInfo = additionalInfo
             )
-            // Determine if we need to fetch based on configuration
-            val shouldFetch = when (configuration) {
-                is PaymentElementConfiguration.Card -> configuration.supportedCardBrands.isEmpty()
-                is PaymentElementConfiguration.PaymentSheet -> true
-            } && !alreadyLoaded
+            val shouldFetch = configuration is PaymentElementConfiguration.PaymentSheet && !alreadyLoaded
 
             return if (shouldFetch) {
                 viewModel.fetchAvailablePaymentMethodsAndConsents()
