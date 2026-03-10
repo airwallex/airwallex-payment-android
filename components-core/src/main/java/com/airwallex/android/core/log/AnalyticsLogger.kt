@@ -284,7 +284,7 @@ object AnalyticsLogger {
                 context.packageManager.getAppVersion(context.packageName)
             )
             putIfNotNull("accountId", TokenManager.accountId)
-            put("framework", "android")
+            put("framework", "native")
         }
     }
 
