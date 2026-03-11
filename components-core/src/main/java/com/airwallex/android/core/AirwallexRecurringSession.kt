@@ -91,6 +91,13 @@ class AirwallexRecurringSession internal constructor(
 
 ) : AirwallexSession(), Parcelable {
 
+    /**
+     * Control whether saved cards are displayed on the list screen.
+     * Always true for recurring sessions.
+     */
+    override val hidePaymentConsents: Boolean
+        get() = true
+
     class Builder(
         private var customerId: String,
         private var clientSecret: String,

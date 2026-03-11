@@ -68,6 +68,7 @@ private fun Session.recurringWithIntentSession(
     )
     returnUrl?.let { setReturnUrl(it) }
     setAutoCapture(autoCapture)
+    setHidePaymentConsents(hidePaymentConsents)
     googlePayOptions?.let { setGooglePayOptions(it) }
     paymentMethods?.let { setPaymentMethods(it) }
     shipping?.let { setShipping(it) }
@@ -117,7 +118,7 @@ private fun Session.oneOffPaymentSession(paymentIntent: PaymentIntent): Airwalle
  * Helper method to resolve payment intent synchronously from a suspend function.
  * This is needed for the conversion logic.
  */
-private suspend fun Session.resolvePaymentIntentSuspend(): com.airwallex.android.core.model.PaymentIntent {
+private suspend fun Session.resolvePaymentIntentSuspend(): PaymentIntent {
     return kotlinx.coroutines.suspendCancellableCoroutine { continuation ->
         (this as AirwallexSession).resolvePaymentIntent(object :
             PaymentIntentProvider.PaymentIntentCallback {
@@ -132,4 +133,55 @@ private suspend fun Session.resolvePaymentIntentSuspend(): com.airwallex.android
             }
         })
     }
+}
+
+/**
+ * Converts [AirwallexPaymentSession] (legacy one-off payment session) to the new [Session] type.
+ *
+ * @return A [Session] object representing the one-off payment
+ */
+fun AirwallexPaymentSession.convertToSession(): Session {
+    return Session(
+        paymentIntent = paymentIntent,
+        paymentConsentOptions = null, // One-off payment has no consent options
+        currency = currency,
+        countryCode = countryCode,
+        amount = amount,
+        customerId = customerId,
+        returnUrl = returnUrl,
+        autoCapture = autoCapture,
+        isBillingInformationRequired = isBillingInformationRequired,
+        isEmailRequired = isEmailRequired,
+        hidePaymentConsents = hidePaymentConsents,
+        googlePayOptions = googlePayOptions,
+        paymentMethods = paymentMethods,
+        shipping = shipping
+    )
+}
+
+/**
+ * Converts [AirwallexRecurringWithIntentSession] (legacy recurring with intent session) to the new [Session] type.
+ *
+ * @return A [Session] object representing the recurring payment with intent
+ */
+fun AirwallexRecurringWithIntentSession.convertToSession(): Session {
+    return Session(
+        paymentIntent = paymentIntent,
+        paymentConsentOptions = PaymentConsentOptions(
+            nextTriggeredBy = nextTriggerBy,
+            merchantTriggerReason = merchantTriggerReason
+        ),
+        currency = currency,
+        countryCode = countryCode,
+        amount = amount,
+        customerId = customerId,
+        returnUrl = returnUrl,
+        autoCapture = autoCapture,
+        isBillingInformationRequired = isBillingInformationRequired,
+        isEmailRequired = isEmailRequired,
+        hidePaymentConsents = hidePaymentConsents,
+        googlePayOptions = googlePayOptions,
+        paymentMethods = paymentMethods,
+        shipping = shipping
+    )
 }

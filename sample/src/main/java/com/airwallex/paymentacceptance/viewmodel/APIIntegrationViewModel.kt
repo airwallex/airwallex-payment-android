@@ -30,7 +30,6 @@ import com.airwallex.paymentacceptance.repo.DemoReturnUrl
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
 import java.math.BigDecimal
-import kotlin.Boolean
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -226,10 +225,14 @@ class APIIntegrationViewModel : BaseViewModel() {
         saveCard: Boolean
     ) {
         suspendCoroutine { continuation ->
-            airwallex?.confirmPaymentIntent(
+            airwallex?.checkout(
                 session = session,
-                card = card,
-                billing = null,
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.CARD.value)
+                    .setCard(card)
+                    .setBilling(null)
+                    .build(),
+                cvc = card.cvc,
                 saveCard = saveCard,
                 listener = object : Airwallex.PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {

@@ -45,7 +45,7 @@ open class AirwallexHttpRequest internal constructor(
                 )
         }
 
-    private val body: String
+    internal val body: String
         @Throws(InvalidRequestException::class, UnsupportedEncodingException::class)
         get() {
             return AirwallexJsonUtils.mapToJsonObject(params).toString()
