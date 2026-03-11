@@ -30,7 +30,7 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
 
     val loading: Boolean
         get() {
-            return supportFragmentManager.findFragmentByTag("AirwallexLoadingDialog") != null
+            return supportFragmentManager.findFragmentByTag(AirwallexLoadingDialogFragment.TAG) != null
         }
 
     private var isLoadingBeforeConfigChange = false

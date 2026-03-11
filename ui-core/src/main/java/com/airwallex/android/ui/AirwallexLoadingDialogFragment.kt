@@ -59,7 +59,7 @@ class AirwallexLoadingDialogFragment : DialogFragment() {
     }
 
     companion object {
-        private const val TAG = "AirwallexLoadingDialog"
+        const val TAG = "AirwallexLoadingDialog"
 
         /**
          * Show loading dialog. Automatically handles:
