@@ -27,7 +27,6 @@ class AirwallexLoadingDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.AirwallexLoadingDialogStyle)
-        AirwallexLogger.debug("AirwallexLoadingDialog: onCreate instance: ${System.identityHashCode(this)}")
     }
 
     override fun onCreateView(
@@ -53,11 +52,6 @@ class AirwallexLoadingDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onDestroy() {
-        AirwallexLogger.debug("AirwallexLoadingDialog: onDestroy instance: ${System.identityHashCode(this)}")
-        super.onDestroy()
-    }
-
     companion object {
         const val TAG = "AirwallexLoadingDialog"
 
@@ -73,14 +67,12 @@ class AirwallexLoadingDialogFragment : DialogFragment() {
             // Check if already showing
             val existingDialog = fragmentManager.findFragmentByTag(TAG) as? AirwallexLoadingDialogFragment
             if (existingDialog != null && existingDialog.isAdded) {
-                AirwallexLogger.debug("AirwallexLoadingDialog: Already showing instance: ${System.identityHashCode(existingDialog)}, skipping")
                 return
             }
 
             // Show new dialog
             try {
                 val newDialog = AirwallexLoadingDialogFragment()
-                AirwallexLogger.debug("AirwallexLoadingDialog: Showing new dialog instance: ${System.identityHashCode(newDialog)}")
                 newDialog.show(fragmentManager, TAG)
             } catch (_: IllegalStateException) {
                 // Fragment transaction after state saved - ignore
@@ -95,10 +87,7 @@ class AirwallexLoadingDialogFragment : DialogFragment() {
             val fragmentManager = context.findFragmentManager() ?: return
             val existingDialog = fragmentManager.findFragmentByTag(TAG) as? DialogFragment
             if (existingDialog != null) {
-                AirwallexLogger.debug("AirwallexLoadingDialog: Hiding dialog instance: ${System.identityHashCode(existingDialog)}")
                 existingDialog.dismissAllowingStateLoss()
-            } else {
-                AirwallexLogger.debug("AirwallexLoadingDialog: No dialog to hide")
             }
         }
 
