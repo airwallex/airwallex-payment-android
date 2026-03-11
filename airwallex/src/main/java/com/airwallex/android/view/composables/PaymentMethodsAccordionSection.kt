@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,8 +73,10 @@ internal fun PaymentMethodsAccordionSection(
     )
     val availablePaymentMethods by flowViewModel.availablePaymentMethods.collectAsState()
     val availablePaymentConsents by flowViewModel.availablePaymentConsents.collectAsState()
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethods.first()) }
-    var selectedIndex by remember { mutableIntStateOf(0) }
+    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+    val (selectedOption, onOptionSelected) = remember(selectedIndex, availablePaymentMethods) {
+        mutableStateOf(availablePaymentMethods.getOrNull(selectedIndex) ?: availablePaymentMethods.first())
+    }
 
     if (availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
         val allowedPaymentMethods = remember(availablePaymentMethods) {

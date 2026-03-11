@@ -90,14 +90,7 @@ class PaymentElement private constructor(
             )[PaymentFlowViewModel::class.java]
             viewModel.updateActivity(airwallex.activity)
 
-            airwallex.activity.lifecycleScope.launch {
-                airwallex.activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.paymentResult.collect { event ->
-                        paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
-                        paymentFlowListener.onPaymentResult(event.status)
-                    }
-                }
-            }
+            observeState(airwallex, viewModel, paymentFlowListener)
 
             val alreadyLoaded = viewModel.availablePaymentMethods.value.isNotEmpty()
 
@@ -212,6 +205,21 @@ class PaymentElement private constructor(
                 paymentFlowListener = paymentFlowListener,
                 flowViewModel = flowViewModel
             )
+        }
+    }
+}
+
+private fun observeState(
+    airwallex: Airwallex,
+    viewModel: PaymentFlowViewModel,
+    paymentFlowListener: PaymentFlowListener
+) {
+    airwallex.activity.lifecycleScope.launch {
+        airwallex.activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.paymentResult.collect { event ->
+                paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
+                paymentFlowListener.onPaymentResult(event.status)
+            }
         }
     }
 }
