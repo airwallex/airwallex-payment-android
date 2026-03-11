@@ -119,7 +119,7 @@ class AnalyticsLoggerTest {
                 "merchantAppName" to "test_app",
                 "merchantAppVersion" to "1.0.1",
                 "accountId" to "aid",
-                "framework" to "android"
+                "framework" to "native"
             )
         }
 

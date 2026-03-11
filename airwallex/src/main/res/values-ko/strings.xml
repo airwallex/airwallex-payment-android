@@ -34,6 +34,7 @@
     <string name="airwallex_delete_consent_alert_title">%s을(를) 삭제하시겠습니까?</string>
     <string name="airwallex_delete_consent_alert_content">이 옵션은 저장된 결제 수단에서 영구적으로 삭제됩니다.</string>
     <string name="airwallex_schema_payment_redirect_message">확인 후 결제를 완료하러 이동합니다.</string>
+    <string name="airwallex_google_payment_redirect_message">아래 Google Pay 버튼을 클릭하여 안전하게 구매를 완료하세요.</string>
     <string name="airwallex_invalid_scheme_message">유효하지 않은 형식</string>
     <string name="airwallex_empty_state">주를 입력하세요</string>
     <string name="airwallex_delete_payment_method_prompt_title">이 결제 동의를 삭제하시겠습니까?</string>

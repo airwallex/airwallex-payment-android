@@ -77,7 +77,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
-                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType, prioritizeGooglePay = args.prioritizeGooglePay),
+                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType, showsGooglePayAsPrimaryButton = args.showsGooglePayAsPrimaryButton),
                 launchType = AnalyticsLogger.LaunchType.HPP,
                 paymentFlowListener = object : PaymentFlowListener {
                     override fun onLoadingStateChanged(isLoading: Boolean, context: Context) {
