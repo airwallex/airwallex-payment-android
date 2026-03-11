@@ -1,24 +1,54 @@
 package com.airwallex.android.view
 
 import android.app.Dialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ProgressBar
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import com.airwallex.android.ui.R
+import com.airwallex.android.ui.composables.AirwallexThemeConfig
 
 /**
  * DialogFragment-based loading dialog that handles configuration changes properly.
- * Unlike ProgressDialog, this survives rotation and prevents window attachment crashes.
+ * Shows a transparent loading indicator with dimmed background.
  */
 internal class AirwallexLoadingDialogFragment : DialogFragment() {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_FRAME, R.style.AirwallexLoadingDialogStyle)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.airwallex_loading, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val progressBar = view.findViewById<ProgressBar>(R.id.airwallex_progress_bar)
+        progressBar?.indeterminateTintList = ColorStateList.valueOf(
+            AirwallexThemeConfig.themeColor.toArgb()
+        )
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return ProgressDialog(requireContext()).apply {
-            setMessage("Loading...")
+        return super.onCreateDialog(savedInstanceState).apply {
             setCancelable(false)
+            window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         }
     }
 
@@ -40,7 +70,7 @@ internal class AirwallexLoadingDialogFragment : DialogFragment() {
             // Show new dialog
             try {
                 AirwallexLoadingDialogFragment().show(fragmentManager, TAG)
-            } catch (e: IllegalStateException) {
+            } catch (_: IllegalStateException) {
                 // Fragment transaction after state saved - ignore
             }
         }
