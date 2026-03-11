@@ -90,6 +90,7 @@ internal fun PaymentMethodsTabSection(
                     allowedPaymentMethods = allowedPaymentMethods,
                     paymentFlowListener = paymentFlowListener,
                     flowViewModel = flowViewModel,
+                    airwallex = airwallex,
                 )
             }
             val paymentMethodsList = if (showsGooglePayAsPrimaryButton || allowedPaymentMethods == null) {
@@ -158,6 +159,7 @@ internal fun PaymentMethodsTabSection(
                             allowedPaymentMethods = allowedPaymentMethods,
                             paymentFlowListener = paymentFlowListener,
                             flowViewModel = flowViewModel,
+                            airwallex = airwallex,
                         )
                     }
 
