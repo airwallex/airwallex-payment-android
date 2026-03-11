@@ -1,4 +1,4 @@
-package com.airwallex.android.view
+package com.airwallex.android.ui
 
 import android.app.Dialog
 import android.content.Context
@@ -15,18 +15,19 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.airwallex.android.ui.R
+import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.ui.composables.AirwallexThemeConfig
 
 /**
  * DialogFragment-based loading dialog that handles configuration changes properly.
  * Shows a transparent loading indicator with dimmed background.
  */
-internal class AirwallexLoadingDialogFragment : DialogFragment() {
+class AirwallexLoadingDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, R.style.AirwallexLoadingDialogStyle)
+        AirwallexLogger.debug("AirwallexLoadingDialog: onCreate instance: ${System.identityHashCode(this)}")
     }
 
     override fun onCreateView(
@@ -52,6 +53,11 @@ internal class AirwallexLoadingDialogFragment : DialogFragment() {
         }
     }
 
+    override fun onDestroy() {
+        AirwallexLogger.debug("AirwallexLoadingDialog: onDestroy instance: ${System.identityHashCode(this)}")
+        super.onDestroy()
+    }
+
     companion object {
         private const val TAG = "AirwallexLoadingDialog"
 
@@ -59,19 +65,26 @@ internal class AirwallexLoadingDialogFragment : DialogFragment() {
          * Show loading dialog. Automatically handles:
          * - Configuration changes (rotation)
          * - Activity lifecycle
-         * - Dismissing existing dialogs
+         * - Reuses existing dialog if already showing (no duplicate)
          */
         fun show(context: Context) {
             val fragmentManager = context.findFragmentManager() ?: return
 
-            // Dismiss existing dialog if any
-            (fragmentManager.findFragmentByTag(TAG) as? DialogFragment)?.dismissAllowingStateLoss()
+            // Check if already showing
+            val existingDialog = fragmentManager.findFragmentByTag(TAG) as? AirwallexLoadingDialogFragment
+            if (existingDialog != null && existingDialog.isAdded) {
+                AirwallexLogger.debug("AirwallexLoadingDialog: Already showing instance: ${System.identityHashCode(existingDialog)}, skipping")
+                return
+            }
 
             // Show new dialog
             try {
-                AirwallexLoadingDialogFragment().show(fragmentManager, TAG)
+                val newDialog = AirwallexLoadingDialogFragment()
+                AirwallexLogger.debug("AirwallexLoadingDialog: Showing new dialog instance: ${System.identityHashCode(newDialog)}")
+                newDialog.show(fragmentManager, TAG)
             } catch (_: IllegalStateException) {
                 // Fragment transaction after state saved - ignore
+                AirwallexLogger.debug("AirwallexLoadingDialog: Cannot show dialog - fragment transaction after state saved")
             }
         }
 
@@ -80,7 +93,13 @@ internal class AirwallexLoadingDialogFragment : DialogFragment() {
          */
         fun hide(context: Context) {
             val fragmentManager = context.findFragmentManager() ?: return
-            (fragmentManager.findFragmentByTag(TAG) as? DialogFragment)?.dismissAllowingStateLoss()
+            val existingDialog = fragmentManager.findFragmentByTag(TAG) as? DialogFragment
+            if (existingDialog != null) {
+                AirwallexLogger.debug("AirwallexLoadingDialog: Hiding dialog instance: ${System.identityHashCode(existingDialog)}")
+                existingDialog.dismissAllowingStateLoss()
+            } else {
+                AirwallexLogger.debug("AirwallexLoadingDialog: No dialog to hide")
+            }
         }
 
         private fun Context.findFragmentManager(): FragmentManager? {
