@@ -136,23 +136,14 @@ class AirwallexApiRepository : ApiRepository {
     private suspend fun <ModelType : AirwallexModel> Options.executeApiRequest(
         jsonParser: ModelJsonParser<ModelType>
     ): ModelType? = withContext(Dispatchers.IO) {
-        val request = toAirwallexHttpRequest()
-        // Log URL and request JSON
-        AirwallexLogger.debug("[OKHTTP Request] URL: ${request.url}")
-        AirwallexLogger.debug("[OKHTTP Request] Request JSON: ${request.body ?: "<no body>"}")
-
         val response = runCatching {
-            httpClient.execute(request)
+            httpClient.execute(toAirwallexHttpRequest())
         }.getOrElse {
             throw when (it) {
-                is IOException -> APIConnectionException.create(it, request.url)
+                is IOException -> APIConnectionException.create(it, toAirwallexHttpRequest().url)
                 else -> it
             }
         }
-
-        // Log response JSON
-        AirwallexLogger.debug("[OKHTTP Response] URL: ${request.url}")
-        AirwallexLogger.debug("[OKHTTP Response] Response JSON: ${response.responseJson}")
 
         if (response.isError) {
             handleApiError(response)
