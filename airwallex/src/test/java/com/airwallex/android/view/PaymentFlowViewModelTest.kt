@@ -30,11 +30,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -503,6 +503,20 @@ class PaymentFlowViewModelTest {
     fun `test checkoutWithNewCard with non-payment session`() = runTest {
         val session = createRecurringSession()
         val card = mockk<PaymentMethod.Card>(relaxed = true)
+        val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id", "test_consent_id")
+
+        val slot = slot<Airwallex.PaymentResultListener>()
+        coEvery {
+            airwallex.confirmPaymentIntent(
+                session = session,
+                card = card,
+                billing = null,
+                saveCard = true,
+                listener = capture(slot)
+            )
+        } answers {
+            slot.captured.onCompleted(expectedStatus)
+        }
 
         val viewModel = PaymentFlowViewModel(airwallex, session)
 
@@ -517,12 +531,7 @@ class PaymentFlowViewModelTest {
         assertEquals(1, results.size)
         val result = results.first()
         assertEquals(PaymentFlowType.CHECKOUT_WITH_NEW_CARD, result.flowType)
-        assertTrue(result.status is AirwallexPaymentStatus.Failure)
-        assertEquals(
-            "checkout with new card only supports AirwallexPaymentSession",
-            (result.status as AirwallexPaymentStatus.Failure).exception.message
-        )
-
+        assertEquals(expectedStatus, result.status)
         job.cancel()
     }
 

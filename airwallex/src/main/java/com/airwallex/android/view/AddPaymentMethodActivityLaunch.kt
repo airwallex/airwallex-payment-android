@@ -5,13 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
-import com.airwallex.android.view.AddPaymentMethodActivityLaunch.Args
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.ui.extension.getExtraResult
+import com.airwallex.android.view.AddPaymentMethodActivityLaunch.Args
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 

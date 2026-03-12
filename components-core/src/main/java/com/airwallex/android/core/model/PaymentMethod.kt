@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.airwallex.android.core.model.parser.PaymentMethodParser
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
-import java.util.*
+import java.util.Date
 
 /**
  * A PaymentMethod represents the funding source that is used by your customer when making a

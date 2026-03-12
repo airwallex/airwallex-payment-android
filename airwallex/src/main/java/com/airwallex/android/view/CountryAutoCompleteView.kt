@@ -4,13 +4,16 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Filter
+import android.widget.FrameLayout
+import android.widget.TextView
 import com.airwallex.android.R
 import com.airwallex.android.databinding.CountryAutocompleteViewBinding
 import com.airwallex.android.view.util.CountryUtils
-import java.util.*
+import java.util.Locale
 
 class CountryAutoCompleteView constructor(
     context: Context,

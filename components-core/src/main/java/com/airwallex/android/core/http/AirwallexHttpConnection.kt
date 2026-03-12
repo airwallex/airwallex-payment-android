@@ -4,7 +4,7 @@ import java.io.Closeable
 import java.io.IOException
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.Scanner
 import javax.net.ssl.HttpsURLConnection
 
 internal class AirwallexHttpConnection internal constructor(private val conn: HttpsURLConnection) : Closeable {

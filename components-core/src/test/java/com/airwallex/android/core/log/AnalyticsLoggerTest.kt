@@ -7,8 +7,15 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.getAppName
 import com.airwallex.android.core.extension.getAppVersion
 import com.airwallex.android.core.model.AirwallexError
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.mockkConstructor
+import io.mockk.mockkStatic
+import io.mockk.runs
+import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 

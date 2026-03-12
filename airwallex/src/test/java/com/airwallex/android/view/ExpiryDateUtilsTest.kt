@@ -2,7 +2,8 @@ package com.airwallex.android.view
 
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
-import java.util.*
+import java.util.Calendar
+import java.util.TimeZone
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

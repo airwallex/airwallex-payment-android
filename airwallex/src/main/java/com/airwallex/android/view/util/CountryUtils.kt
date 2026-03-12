@@ -1,7 +1,7 @@
 package com.airwallex.android.view.util
 
 import com.airwallex.android.view.CountryAutoCompleteView
-import java.util.*
+import java.util.Locale
 
 internal object CountryUtils {
 

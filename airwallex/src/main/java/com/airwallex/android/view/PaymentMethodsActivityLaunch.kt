@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.ObjectBuilder
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.ui.extension.getExtraResult
 import com.airwallex.android.view.PaymentMethodsActivityLaunch.Args

@@ -40,6 +40,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@Suppress("LargeClass")
 class AirwallexTest {
 
     // Test dispatcher for coroutines
@@ -1049,84 +1050,28 @@ class AirwallexTest {
 
     @Test
     fun `pagination logic handles three pages correctly`() = runTest {
-        // Create spy to test pagination
         val airwallexSpy = spyk(airwallex)
-
-        // Setup session with customerId
         every { mockPaymentSession.customerId } returns testCustomerId
 
-        // Create consents for three pages
-        val consent1 = mockk<PaymentConsent> {
-            every { paymentMethod } returns mockk {
-                every { type } returns PaymentMethodType.CARD.value
-            }
-        }
-        val consent2 = mockk<PaymentConsent> {
-            every { paymentMethod } returns mockk {
-                every { type } returns PaymentMethodType.CARD.value
-            }
-        }
-        val consent3 = mockk<PaymentConsent> {
-            every { paymentMethod } returns mockk {
-                every { type } returns PaymentMethodType.CARD.value
-            }
-        }
-        val consent4 = mockk<PaymentConsent> {
-            every { paymentMethod } returns mockk {
-                every { type } returns PaymentMethodType.CARD.value
-            }
-        }
+        // Create test data
+        val consents = createCardConsents(count = 4)
+        val pages = listOf(
+            createConsentPage(listOf(consents[0]), hasMore = true),
+            createConsentPage(listOf(consents[1], consents[2]), hasMore = true),
+            createConsentPage(listOf(consents[3]), hasMore = false)
+        )
 
-        // Mock three pages
-        val page1Response = mockk<Page<PaymentConsent>> {
-            every { items } returns listOf(consent1)
-            every { hasMore } returns true
-        }
-
-        val page2Response = mockk<Page<PaymentConsent>> {
-            every { items } returns listOf(consent2, consent3)
-            every { hasMore } returns true
-        }
-
-        val page3Response = mockk<Page<PaymentConsent>> {
-            every { items } returns listOf(consent4)
-            every { hasMore } returns false
-        }
-
-        // Mock retrieveAvailablePaymentConsents based on pageNum
-        coEvery {
-            airwallexSpy.retrieveAvailablePaymentConsents(
-                match { params -> params.pageNum == 0 }
-            )
-        } returns page1Response
-
-        coEvery {
-            airwallexSpy.retrieveAvailablePaymentConsents(
-                match { params -> params.pageNum == 1 }
-            )
-        } returns page2Response
-
-        coEvery {
-            airwallexSpy.retrieveAvailablePaymentConsents(
-                match { params -> params.pageNum == 2 }
-            )
-        } returns page3Response
-
-        // Mock payment methods
-        val cardMethod = mockk<AvailablePaymentMethodType> {
-            every { name } returns PaymentMethodType.CARD.value
-        }
-        coEvery {
-            airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
-        } returns listOf(cardMethod)
+        // Setup mocks
+        setupPaginatedConsentMocks(airwallexSpy, pages)
+        setupPaymentMethodMocks(airwallexSpy)
 
         // Execute
         val result = airwallexSpy.fetchAvailablePaymentMethodsAndConsents(mockPaymentSession)
 
         // Verify - should have retrieved all items from all three pages
         assertEquals(true, result.isSuccess)
-        val (_, consents) = result.getOrThrow()
-        assertEquals(4, consents.size) // 1 + 2 + 1 = 4 total
+        val (_, retrievedConsents) = result.getOrThrow()
+        assertEquals(4, retrievedConsents.size) // 1 + 2 + 1 = 4 total
 
         // Verify retrieveAvailablePaymentConsents was called three times
         coVerify(exactly = 3) {
@@ -1147,20 +1092,24 @@ class AirwallexTest {
 
         // Create responses for two pages
         val page1Response = mockk<Page<PaymentConsent>> {
-            every { items } returns listOf(mockk {
-                every { paymentMethod } returns mockk {
-                    every { type } returns PaymentMethodType.CARD.value
+            every { items } returns listOf(
+                mockk {
+                    every { paymentMethod } returns mockk {
+                        every { type } returns PaymentMethodType.CARD.value
+                    }
                 }
-            })
+            )
             every { hasMore } returns true
         }
 
         val page2Response = mockk<Page<PaymentConsent>> {
-            every { items } returns listOf(mockk {
-                every { paymentMethod } returns mockk {
-                    every { type } returns PaymentMethodType.CARD.value
+            every { items } returns listOf(
+                mockk {
+                    every { paymentMethod } returns mockk {
+                        every { type } returns PaymentMethodType.CARD.value
+                    }
                 }
-            })
+            )
             every { hasMore } returns false
         }
 
@@ -1227,5 +1176,40 @@ class AirwallexTest {
         assertEquals(0, capturedParams.captured.pageNum) // First page
         assertEquals(PaymentConsent.NextTriggeredBy.CUSTOMER, capturedParams.captured.nextTriggeredBy)
         assertEquals(PaymentConsent.PaymentConsentStatus.VERIFIED, capturedParams.captured.status)
+    }
+
+    // Helper methods for pagination tests
+    private fun createCardConsents(count: Int): List<PaymentConsent> {
+        return List(count) {
+            mockk {
+                every { paymentMethod } returns mockk {
+                    every { type } returns PaymentMethodType.CARD.value
+                }
+            }
+        }
+    }
+
+    private fun createConsentPage(items: List<PaymentConsent>, hasMore: Boolean): Page<PaymentConsent> {
+        return mockk {
+            every { this@mockk.items } returns items
+            every { this@mockk.hasMore } returns hasMore
+        }
+    }
+
+    private fun setupPaginatedConsentMocks(spy: Airwallex, pages: List<Page<PaymentConsent>>) {
+        pages.forEachIndexed { index, page ->
+            coEvery {
+                spy.retrieveAvailablePaymentConsents(match { it.pageNum == index })
+            } returns page
+        }
+    }
+
+    private fun setupPaymentMethodMocks(spy: Airwallex) {
+        val cardMethod = mockk<AvailablePaymentMethodType> {
+            every { name } returns PaymentMethodType.CARD.value
+        }
+        coEvery {
+            spy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
+        } returns listOf(cardMethod)
     }
 }
