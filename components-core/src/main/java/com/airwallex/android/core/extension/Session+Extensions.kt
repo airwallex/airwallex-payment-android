@@ -143,6 +143,7 @@ private suspend fun Session.resolvePaymentIntentSuspend(): PaymentIntent {
 fun AirwallexPaymentSession.convertToSession(): Session {
     return Session(
         paymentIntent = paymentIntent,
+        paymentIntentProviderId = paymentIntentProviderId,
         paymentConsentOptions = null, // One-off payment has no consent options
         currency = currency,
         countryCode = countryCode,
@@ -167,6 +168,7 @@ fun AirwallexPaymentSession.convertToSession(): Session {
 fun AirwallexRecurringWithIntentSession.convertToSession(): Session {
     return Session(
         paymentIntent = paymentIntent,
+        paymentIntentProviderId = paymentIntentProviderId,
         paymentConsentOptions = PaymentConsentOptions(
             nextTriggeredBy = nextTriggerBy,
             merchantTriggerReason = merchantTriggerReason
