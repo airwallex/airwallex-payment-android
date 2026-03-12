@@ -70,7 +70,6 @@ platform:
 
 # test duplicate consent behavior - in Session mode, both customer & merchant can use same card
 - tapOn: "Launch payment list"
-- tapOn: "Add new"
 - runFlow:
     file: ../Card/flow_pay_with_card.yaml
     env:
@@ -90,21 +89,27 @@ platform:
 
 # NEW SESSION: consents are visible in recurring mode, no need to switch to one-off
 - tapOn: "Launch payment list"
+- assertVisible:
+    id: "saved-consent"
+    index: 0
+- runFlow:
+    file: ../Card/flow_pay_with_consent.yaml
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER == 'false'}
+    file: ../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS
+- tapOn: "Launch payment list"
 - runFlow:
     when:
       true: ${TRIGGER_BY_CUSTOMER}
     commands:
-      # For customer-triggered: consent visible, pay with it, then delete
-      - assertVisible:
-          id: "saved-consent"
-          index: 0
-      - runFlow:
-          file: ../Card/flow_pay_with_consent.yaml
-      - runFlow:
-          file: ../Common/flow_handle_payment_result.yaml
-          env:
-            PAYMENT_RESULT: SUCCESS
-      - tapOn: "Launch payment list"
+      # For customer-triggered: delete consents
       - runFlow:
           file: ../Card/flow_remove_all_consents.yaml
       - tapOn: "Navigate up"
@@ -116,21 +121,7 @@ platform:
     when:
       true: ${TRIGGER_BY_CUSTOMER == 'false'}
     commands:
-      # For merchant-triggered: consent visible, pay with it, then assert cannot delete
-      - assertVisible:
-          id: "saved-consent"
-          index: 0
-      - runFlow:
-          file: ../Card/flow_pay_with_consent.yaml
-      - runFlow:
-          file: ../Common/flow_handle_3ds.yaml
-          env:
-            CANCEL_3DS: false
-      - runFlow:
-          file: ../Common/flow_handle_payment_result.yaml
-          env:
-            PAYMENT_RESULT: SUCCESS
-      - tapOn: "Launch payment list"
+      # For merchant-triggered: assert cannot delete
       - runFlow:
           file: ../MerchantTriggered/flow_assert_merchant_consent.yaml
       - tapOn: "Navigate up"

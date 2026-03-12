@@ -11,7 +11,19 @@ import java.math.BigDecimal
 
 /**
  * For recurring payment (need create payment intent)
+ *
+ * @deprecated Use [Session] instead. AirwallexRecurringWithIntentSession will be removed in a future version.
+ * Session provides a unified API for all payment scenarios with support for both static PaymentIntent
+ * and PaymentIntentProvider.
  */
+@Deprecated(
+    message = "Use Session instead. AirwallexRecurringWithIntentSession will be removed in a future version.",
+    replaceWith = ReplaceWith(
+        "Session.Builder(paymentIntent, countryCode, googlePayOptions)",
+        "com.airwallex.android.core.Session"
+    ),
+    level = DeprecationLevel.WARNING
+)
 @Suppress("LongParameterList")
 @Parcelize
 class AirwallexRecurringWithIntentSession internal constructor(
