@@ -3,6 +3,7 @@ package com.airwallex.paymentacceptance.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -96,6 +97,10 @@ class EmbeddedElementActivity :
 
         mBinding.tvTotalLabel.setTextColor(AirwallexColor.textSecondary.toArgb())
         mBinding.tvTotalPrice.setTextColor(AirwallexColor.textPrimary.toArgb())
+
+        mBinding.progressBar.indeterminateTintList = ColorStateList.valueOf(
+            AirwallexColor.theme.toArgb()
+        )
     }
 
     private fun setupToolbar() {
@@ -142,6 +147,9 @@ class EmbeddedElementActivity :
     }
 
     private fun setupCardInfoCompose() {
+        mBinding.progressBar.visibility = View.VISIBLE
+        mBinding.composeCardInfo.visibility = View.GONE
+
         lifecycleScope.launch {
             // Determine configuration based on layoutType
             val configuration = when (args.layoutType) {
@@ -162,9 +170,6 @@ class EmbeddedElementActivity :
                 session = session,
                 airwallex = airwallex,
                 configuration = configuration,
-                onLoadingStateChanged = { isLoading ->
-                    setLoadingProgress(loading = isLoading, cancellable = true)
-                },
                 onPaymentResult = { status ->
                     handlePaymentResult(status)
                 },
@@ -179,11 +184,15 @@ class EmbeddedElementActivity :
 
             result.onSuccess {
                 // Set up the ComposeView with PaymentElement
+                //loading state end
+                mBinding.progressBar.visibility = View.GONE
+                mBinding.composeCardInfo.visibility = View.VISIBLE
                 mBinding.composeCardInfo.setContent {
                     it.Content()
                 }
             }.onFailure { throwable ->
                 AirwallexLogger.error("Failed to create PaymentElement", throwable)
+                mBinding.progressBar.visibility = View.GONE
                 // Handle error - show error message
             }
         }

@@ -128,7 +128,6 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
 
     open fun setLoadingProgress(loading: Boolean, cancelable: Boolean = true) {
         loadingCancelable = cancelable
-        println("AirwallexLoadingDialog set loading: $loading")
         if (loading) {
             AirwallexLoadingDialogFragment.show(this)
         } else {
