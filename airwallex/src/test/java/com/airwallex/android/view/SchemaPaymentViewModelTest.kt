@@ -53,6 +53,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Suppress("LargeClass")
 class SchemaPaymentViewModelTest {
 
     @get:Rule
@@ -689,5 +690,211 @@ class SchemaPaymentViewModelTest {
 
         // Then
         assertEquals(true, result.isFailure)
+    }
+
+    @Test
+    fun `test loadSchemaFields with bank field and empty bank list`() = runTest {
+        val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
+
+        // Given
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns mockk { every { hasSchema } returns true }
+        }
+
+        val bankField = DynamicSchemaField(
+            "bank",
+            "Bank",
+            DynamicSchemaFieldUIType.LOGO_LIST,
+            DynamicSchemaFieldType.BANKS,
+            false,
+            null,
+            null
+        )
+        val typeInfo = mockk<PaymentMethodTypeInfo> {
+            every { fieldSchemas } returns listOf(
+                DynamicSchema(
+                    transactionMode = TransactionMode.ONE_OFF, fields = listOf(bankField)
+                )
+            )
+        }
+
+        val emptyBankResponse = mockk<BankResponse> {
+            every { items } returns emptyList()
+        }
+
+        every {
+            mockAirwallex.retrievePaymentMethodTypeInfo(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+            listener.onSuccess(typeInfo)
+        }
+
+        every {
+            mockAirwallex.retrieveBanks(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<BankResponse>>()
+            listener.onSuccess(emptyBankResponse)
+        }
+
+        // When
+        val result = testViewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        // Then
+        assertEquals(true, result.isSuccess)
+        val schemaData = result.getOrNull()
+        Assert.assertNotNull(schemaData)
+        assertEquals(emptyList(), schemaData?.banks)
+    }
+
+    @Test
+    fun `test loadSchemaFields with bank field and non-empty bank list`() = runTest {
+        val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
+
+        // Given
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns mockk { every { hasSchema } returns true }
+        }
+
+        val bankField = DynamicSchemaField(
+            "bank",
+            "Bank",
+            DynamicSchemaFieldUIType.LOGO_LIST,
+            DynamicSchemaFieldType.BANKS,
+            false,
+            null,
+            null
+        )
+        val typeInfo = mockk<PaymentMethodTypeInfo> {
+            every { fieldSchemas } returns listOf(
+                DynamicSchema(
+                    transactionMode = TransactionMode.ONE_OFF, fields = listOf(bankField)
+                )
+            )
+        }
+
+        val testBank1 = mockk<Bank>(relaxed = true)
+        val testBank2 = mockk<Bank>(relaxed = true)
+        val bankResponse = mockk<BankResponse> {
+            every { items } returns listOf(testBank1, testBank2)
+        }
+
+        every {
+            mockAirwallex.retrievePaymentMethodTypeInfo(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+            listener.onSuccess(typeInfo)
+        }
+
+        every {
+            mockAirwallex.retrieveBanks(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<BankResponse>>()
+            listener.onSuccess(bankResponse)
+        }
+
+        // When
+        val result = testViewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        // Then
+        assertEquals(true, result.isSuccess)
+        val schemaData = result.getOrNull()
+        Assert.assertNotNull(schemaData)
+        assertEquals(2, schemaData?.banks?.size)
+    }
+
+    @Test
+    fun `test loadSchemaFields when filterRequiredFields returns null`() = runTest {
+        val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
+
+        // Given
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns mockk { every { hasSchema } returns true }
+        }
+
+        // TypeInfo with no matching transaction mode schema
+        val typeInfo = mockk<PaymentMethodTypeInfo> {
+            every { fieldSchemas } returns listOf(
+                DynamicSchema(
+                    transactionMode = TransactionMode.RECURRING, // Different mode
+                    fields = listOf(mockk())
+                )
+            )
+        }
+
+        every {
+            mockAirwallex.retrievePaymentMethodTypeInfo(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+            listener.onSuccess(typeInfo)
+        }
+
+        // When
+        val result = testViewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        // Then
+        assertEquals(true, result.isSuccess)
+        Assert.assertNull(result.getOrNull())
+    }
+
+    @Test
+    fun `test loadSchemaFields with null bank items in response`() = runTest {
+        val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
+
+        // Given
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns mockk { every { hasSchema } returns true }
+        }
+
+        val bankField = DynamicSchemaField(
+            "bank",
+            "Bank",
+            DynamicSchemaFieldUIType.LOGO_LIST,
+            DynamicSchemaFieldType.BANKS,
+            false,
+            null,
+            null
+        )
+        val typeInfo = mockk<PaymentMethodTypeInfo> {
+            every { fieldSchemas } returns listOf(
+                DynamicSchema(
+                    transactionMode = TransactionMode.ONE_OFF, fields = listOf(bankField)
+                )
+            )
+        }
+
+        val bankResponse = mockk<BankResponse> {
+            every { items } returns null
+        }
+
+        every {
+            mockAirwallex.retrievePaymentMethodTypeInfo(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+            listener.onSuccess(typeInfo)
+        }
+
+        every {
+            mockAirwallex.retrieveBanks(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<BankResponse>>()
+            listener.onSuccess(bankResponse)
+        }
+
+        // When
+        val result = testViewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        // Then
+        assertEquals(true, result.isSuccess)
+        val schemaData = result.getOrNull()
+        Assert.assertNotNull(schemaData)
+        assertEquals(emptyList(), schemaData?.banks)
     }
 }

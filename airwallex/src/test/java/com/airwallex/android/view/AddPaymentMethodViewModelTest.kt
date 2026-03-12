@@ -10,6 +10,8 @@ import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
@@ -335,6 +337,39 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
+    fun `test createCard with blank cardNumber`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        assertNull(viewModel.createCard("", "John Doe", "12/25", "123"))
+    }
+
+    @Test
+    fun `test createCard with blank name`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        assertNull(viewModel.createCard(visaCardNumber, "", "12/25", "123"))
+    }
+
+    @Test
+    fun `test createCard with blank expiryDate`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        assertNull(viewModel.createCard(visaCardNumber, "John Doe", "", "123"))
+    }
+
+    @Test
+    fun `test createCard with blank cvv`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        assertNull(viewModel.createCard(visaCardNumber, "John Doe", "12/25", ""))
+    }
+
+    @Test
+    fun `test createCard with single digit month pads with zero`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        val card = viewModel.createCard(visaCardNumber, "John Doe", "05/25", "123")
+        assertNotNull(card)
+        assertEquals("05", card.expiryMonth)
+        assertEquals("2025", card.expiryYear)
+    }
+
+    @Test
     fun `test createBillingWithShipping with valid input`() {
         val viewModel = createViewModel(createBasicMockSession())
         val billing = viewModel.createBilling(
@@ -615,6 +650,72 @@ class AddPaymentMethodViewModelTest {
 
         assertEquals(listOf("", "1234567890123456"), cardNumberValues)
         assertEquals(listOf("", "updated@example.com"), emailValues)
+    }
+
+    @Test
+    fun `test updateSupportedCardSchemes updates card schemes and additionalInfo`() {
+        val mockSession = mockk<AirwallexSession>(relaxed = true)
+        val initialSchemes = listOf(CardScheme("visa"))
+        val viewModel = createViewModel(mockSession, initialSchemes)
+
+        // Verify initial state
+        assertEquals(mapOf("supportedSchemes" to listOf("visa")), viewModel.additionalInfo)
+
+        // Update schemes
+        val newSchemes = listOf(CardScheme("mastercard"), CardScheme("amex"))
+        viewModel.updateSupportedCardSchemes(newSchemes)
+
+        // Verify updated state
+        assertEquals(mapOf("supportedSchemes" to listOf("mastercard", "amex")), viewModel.additionalInfo)
+    }
+
+    @Test
+    fun `test deleteCardSuccess adds consent to deleted card list`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        val mockConsent1 = mockk<PaymentConsent>(relaxed = true)
+        val mockConsent2 = mockk<PaymentConsent>(relaxed = true)
+
+        // Initially should be empty
+        assertEquals(0, viewModel.deletedCardList.value.size)
+
+        // Add first consent
+        viewModel.deleteCardSuccess(mockConsent1)
+        assertEquals(1, viewModel.deletedCardList.value.size)
+        assertTrue(viewModel.deletedCardList.value.contains(mockConsent1))
+
+        // Add second consent
+        viewModel.deleteCardSuccess(mockConsent2)
+        assertEquals(2, viewModel.deletedCardList.value.size)
+        assertTrue(viewModel.deletedCardList.value.contains(mockConsent1))
+        assertTrue(viewModel.deletedCardList.value.contains(mockConsent2))
+    }
+
+    @Test
+    fun `test isCvcRequired returns true for PAN card`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        val mockConsent = mockk<PaymentConsent>(relaxed = true) {
+            every { paymentMethod } returns mockk(relaxed = true) {
+                every { card } returns mockk(relaxed = true) {
+                    every { numberType } returns PaymentMethod.Card.NumberType.PAN
+                }
+            }
+        }
+
+        assertTrue(viewModel.isCvcRequired(mockConsent))
+    }
+
+    @Test
+    fun `test isCvcRequired returns false for non-PAN card`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        val mockConsent = mockk<PaymentConsent>(relaxed = true) {
+            every { paymentMethod } returns mockk(relaxed = true) {
+                every { card } returns mockk(relaxed = true) {
+                    every { numberType } returns PaymentMethod.Card.NumberType.EXTERNAL_NETWORK_TOKEN
+                }
+            }
+        }
+
+        assertFalse(viewModel.isCvcRequired(mockConsent))
     }
 
     private fun createViewModel(
