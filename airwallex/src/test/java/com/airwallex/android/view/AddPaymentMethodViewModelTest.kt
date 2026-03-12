@@ -128,17 +128,6 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
-    fun `one off payment method includes provided billing when information is required by session`() {
-        val card: PaymentMethod.Card = mockk()
-        val billing: Billing = mockk()
-        val session: AirwallexPaymentSession = mockk(relaxed = true)
-        every { airwallex.confirmPaymentIntent(any(), card, billing, true, any()) } just Runs
-        val viewModel = createViewModel(session)
-        viewModel.confirmPayment(card, true, billing)
-        verify { airwallex.confirmPaymentIntent(any(), card, billing, true, any()) }
-    }
-
-    @Test
     fun `test page view tracking`() {
         val mockSession = mockk<AirwallexSession>(relaxed = true)
         val viewModel = createViewModel(
@@ -372,71 +361,6 @@ class AddPaymentMethodViewModelTest {
         assertEquals("94105", billing.address?.postcode)
         assertEquals("+14155551234", billing.phone)
         assertEquals("test@example.com", billing.email)
-    }
-
-    @Test
-    fun `test confirmPayment calls airwallex with correct parameters`() {
-        val session = mockk<AirwallexPaymentSession>(relaxed = true) {
-            every { isBillingInformationRequired } returns true
-        }
-        val viewModel = createViewModel(session, isBillingRequired = true)
-
-        val card = PaymentMethod.Card.Builder().setNumber("4111111111111111").setName("Test User")
-            .setExpiryMonth("12").setExpiryYear("2025").setCvc("123").build()
-
-        val billing = Billing.Builder().setAddress(
-            Address.Builder().setCountryCode("US").setState("CA").setCity("San Francisco")
-                .setStreet("123 Main St").setPostcode("94105").build()
-        ).setPhone("+1234567890").setEmail("test@example.com").build()
-
-        // Mock the confirmPaymentIntent method
-        every {
-            airwallex.confirmPaymentIntent(
-                session = session, card = card, billing = billing, saveCard = true, listener = any()
-            )
-        } returns Unit
-
-        // When
-        viewModel.confirmPayment(card, true, billing)
-
-        // Then
-        verify {
-            airwallex.confirmPaymentIntent(
-                session = session, card = card, billing = billing, saveCard = true, listener = any()
-            )
-        }
-    }
-
-    @Test
-    fun `test airwallexPaymentStatus uses postValue for thread safety`() {
-        val session = mockk<AirwallexPaymentSession>(relaxed = true) {
-            every { isBillingInformationRequired } returns false
-        }
-        val viewModel = createViewModel(session)
-        val card = PaymentMethod.Card.Builder().setNumber("4111111111111111").setName("Test User")
-            .setExpiryMonth("12").setExpiryYear("2025").setCvc("123").build()
-
-        val statusSlot = CapturingSlot<com.airwallex.android.core.Airwallex.PaymentResultListener>()
-
-        every {
-            airwallex.confirmPaymentIntent(
-                session = session, card = card, billing = null, saveCard = false, listener = capture(statusSlot)
-            )
-        } returns Unit
-
-        // When payment is confirmed
-        viewModel.confirmPayment(card, false, null)
-
-        // Capture the listener and simulate onCompleted being called from a background thread
-        val listener = statusSlot.captured
-        val mockStatus = mockk<com.airwallex.android.core.AirwallexPaymentStatus>()
-
-        // This simulates the callback happening on a background thread
-        // The implementation should use postValue (thread-safe) instead of value (main-thread only)
-        listener.onCompleted(mockStatus)
-
-        // The status should be properly set without threading issues
-        assertEquals(mockStatus, viewModel.airwallexPaymentStatus.value)
     }
 
     // Tests for user input state retention (added in commit b6c790b7)

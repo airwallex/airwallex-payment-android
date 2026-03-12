@@ -2,14 +2,11 @@ package com.airwallex.android.view
 
 import android.app.Application
 import androidx.annotation.StringRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
-import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
@@ -38,8 +35,15 @@ class AddPaymentMethodViewModel(
     private val supportedCardSchemes: List<CardScheme>
 ) : AirwallexCheckoutViewModel(application, airwallex, session) {
     val pageName: String = "card_payment_view"
-    val additionalInfo: Map<String, List<String>> =
-        mapOf("supportedSchemes" to supportedCardSchemes.map { it.name })
+
+    private var cardSchemes = supportedCardSchemes
+
+    fun updateSupportedCardSchemes(schemes: List<CardScheme>) {
+        cardSchemes = schemes
+    }
+
+    val additionalInfo: Map<String, List<String>>
+        get() = mapOf("supportedSchemes" to cardSchemes.map { it.name })
 
     @StringRes
     val ctaRes: Int = if (session is AirwallexRecurringSession) {
@@ -68,11 +72,8 @@ class AddPaymentMethodViewModel(
 
     val countryCode: String by lazy { session.countryCode }
 
-    private val _airwallexPaymentStatus = MutableLiveData<AirwallexPaymentStatus>()
-    val airwallexPaymentStatus: LiveData<AirwallexPaymentStatus> = _airwallexPaymentStatus
-
-    private val _deleteCardSuccess = MutableStateFlow<PaymentConsent?>(null)
-    val deleteCardSuccess: StateFlow<PaymentConsent?> = _deleteCardSuccess.asStateFlow()
+    private val _deletedCardList = MutableStateFlow<MutableList<PaymentConsent>>(mutableListOf())
+    val deletedCardList: StateFlow<MutableList<PaymentConsent>> = _deletedCardList.asStateFlow()
 
     // Card input state
     private val _cardNumber = MutableStateFlow("")
@@ -176,7 +177,7 @@ class AddPaymentMethodViewModel(
         return when {
             cardNumber.isBlank() -> R.string.airwallex_empty_card_number
             !CardUtils.isValidCardNumber(cardNumber) -> R.string.airwallex_invalid_card_number
-            supportedCardSchemes.none {
+            cardSchemes.none {
                 CardBrand.fromType(it.name) == CardUtils.getPossibleCardBrand(
                     cardNumber, true
                 )
@@ -223,25 +224,10 @@ class AddPaymentMethodViewModel(
                 BillingFieldType.STREET -> type.errorMessage
                 BillingFieldType.CITY -> type.errorMessage
                 BillingFieldType.STATE -> type.errorMessage
-                else -> null
             }
 
             else -> null
         }
-    }
-
-    fun confirmPayment(card: PaymentMethod.Card, saveCard: Boolean, billing: Billing?) {
-        airwallex.confirmPaymentIntent(
-            session = session,
-            card = card,
-            billing = billing,
-            saveCard = saveCard,
-            listener = object : Airwallex.PaymentResultListener {
-                override fun onCompleted(status: AirwallexPaymentStatus) {
-                    _airwallexPaymentStatus.postValue(status)
-                }
-            },
-        )
     }
 
     fun createCard(
@@ -269,13 +255,17 @@ class AddPaymentMethodViewModel(
         email: String
     ): Billing {
         return Billing.Builder().setAddress(
-                Address.Builder().setCountryCode(countryCode).setState(state).setCity(city)
-                    .setStreet(street).setPostcode(postcode).build()
-            ).setPhone(phoneNumber).setEmail(email).build()
+            Address.Builder().setCountryCode(countryCode).setState(state).setCity(city)
+                .setStreet(street).setPostcode(postcode).build()
+        ).setPhone(phoneNumber).setEmail(email).build()
     }
 
     fun deleteCardSuccess(consent: PaymentConsent) {
-        _deleteCardSuccess.update { consent }
+        _deletedCardList.update { currentList ->
+            val newList = currentList.toMutableList()
+            newList.add(consent)
+            newList
+        }
     }
 
     fun isCvcRequired(paymentConsent: PaymentConsent) =
