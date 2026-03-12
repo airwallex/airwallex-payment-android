@@ -70,7 +70,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @Suppress("LongMethod")
 class Airwallex internal constructor(
     private val fragment: Fragment?,
-    private var activity: ComponentActivity,
+    var activity: ComponentActivity,
     private val paymentManager: PaymentManager,
     private val applicationContext: Context,
 ) {
