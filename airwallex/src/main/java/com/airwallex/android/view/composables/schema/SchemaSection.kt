@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
@@ -59,6 +63,9 @@ internal fun SchemaSection(
         viewModelStoreOwner = airwallex.activity
     )
 
+    // Update activity reference in ViewModel after rotation
+    schemaPaymentViewModel.updateActivity(airwallex.activity)
+
     var fieldsToSubmit by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var validateFields: (() -> Unit)? by remember { mutableStateOf(null) }
     var schemaData by remember { mutableStateOf<SchemaPaymentViewModel.SchemaData?>(null) }
@@ -82,10 +89,17 @@ internal fun SchemaSection(
         }
     }
 
-    LaunchedEffect(Unit) {
-        schemaPaymentViewModel.paymentResult.collect { status ->
-            paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
-            paymentFlowListener.onPaymentResult(status)
+    DisposableEffect(airwallex.activity) {
+        val job = airwallex.activity.lifecycleScope.launch {
+            airwallex.activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                schemaPaymentViewModel.paymentResult.collect { status ->
+                    paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
+                    paymentFlowListener.onPaymentResult(status)
+                }
+            }
+        }
+        onDispose {
+            job.cancel()
         }
     }
     Column {
