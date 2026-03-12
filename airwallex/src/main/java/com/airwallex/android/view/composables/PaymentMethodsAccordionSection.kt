@@ -94,6 +94,7 @@ internal fun PaymentMethodsAccordionSection(
                 allowedPaymentMethods = allowedPaymentMethods,
                 paymentFlowListener = paymentFlowListener,
                 flowViewModel = flowViewModel,
+                airwallex = airwallex,
             )
         }
         val paymentMethodsList = if (showsGooglePayAsPrimaryButton) {
@@ -218,6 +219,7 @@ internal fun PaymentMethodsAccordionSection(
                                     allowedPaymentMethods = allowedPaymentMethods,
                                     paymentFlowListener = paymentFlowListener,
                                     flowViewModel = flowViewModel,
+                                    airwallex = airwallex,
                                 )
                             }
 

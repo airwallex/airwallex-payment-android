@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
+import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
@@ -31,12 +32,14 @@ import org.json.JSONArray
  * @param allowedPaymentMethods JSONArray of allowed payment methods for Google Pay
  * @param paymentFlowListener Listener for payment flow events
  * @param flowViewModel ViewModel for payment flow operations
+ * @param airwallex The Airwallex instance for payment operations
  */
 @Composable
 internal fun GooglePayListItem(
     allowedPaymentMethods: JSONArray?,
     paymentFlowListener: PaymentFlowListener,
     flowViewModel: PaymentFlowViewModel,
+    airwallex: Airwallex,
 ) {
     Column {
         allowedPaymentMethods?.let { methods ->
@@ -69,7 +72,7 @@ internal fun GooglePayListItem(
                         "tap_pay_button",
                         mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value)
                     )
-                    paymentFlowListener.onLoadingStateChanged(true)
+                    paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
                     flowViewModel.checkoutWithGooglePay()
                 },
                 onScreenViewed = {
