@@ -195,6 +195,7 @@ object AnalyticsLogger {
      * @param transactionMode The current transaction mode.
      * @param paymentIntentId The payment intent ID (optional).
      */
+    @Suppress("LongParameterList")
     fun setSessionInformation(
         transactionMode: String,
         launchType: String,
