@@ -1,6 +1,13 @@
 package com.airwallex.android.core
 
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.BankResponse
+import com.airwallex.android.core.model.Options
+import com.airwallex.android.core.model.Page
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodTypeInfo
 
 /**
  * An interface for making Airwallex API requests

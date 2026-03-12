@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 
 /**
  * A PaymentIntent guides you through the process of collecting a payment from your customer.

@@ -53,7 +53,6 @@ import com.airwallex.android.view.composables.common.WarningBanner
 import com.airwallex.android.view.util.AnalyticsConstants.CLICK_PAY_BUTTON
 import com.airwallex.android.view.util.AnalyticsConstants.PAGE_CREATE_CARD
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
-import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_SELECT
 import com.airwallex.android.view.util.AnalyticsConstants.TAP_PAY_BUTTON
 import com.airwallex.android.view.util.CountryUtils
 import com.airwallex.risk.AirwallexRisk

@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
-import com.airwallex.android.databinding.ActivityAddShippingBinding
 import com.airwallex.android.R
 import com.airwallex.android.core.extension.setOnSingleClickListener
+import com.airwallex.android.databinding.ActivityAddShippingBinding
 import com.airwallex.android.ui.AirwallexActivity
 import com.airwallex.android.ui.extension.getExtraArgs
 

@@ -3,13 +3,20 @@ package com.airwallex.android.core.extension
 import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
-import com.airwallex.android.core.*
+import com.airwallex.android.core.ActionComponent
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.PaymentManager
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.parser.PaymentIntentParser
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.spyk
+import io.mockk.verify
 import org.json.JSONObject
 import org.junit.Test
 

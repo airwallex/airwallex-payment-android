@@ -12,5 +12,5 @@ enum class PaymentIntentContinueType(val value: String) : Parcelable {
 
     THREE_DS_CONTINUE("3ds_continue"),
 
-    DCC("dcc");
+    DCC("dcc")
 }
