@@ -14,9 +14,9 @@ sealed class PaymentElementConfiguration {
      * Configuration for standalone card payment element.
      * Shows only card input and saved cards (if available).
      *
-     * @param supportedCardBrands List of supported card brands/schemes. If empty, will be fetched automatically.
+     * @param supportedCardBrands List of supported card brands/schemes. Must not be empty.
      */
-    data class Card(val supportedCardBrands: List<CardScheme> = emptyList()) : PaymentElementConfiguration()
+    data class Card(val supportedCardBrands: List<CardScheme>) : PaymentElementConfiguration()
 
     /**
      * Configuration for payment sheet with multiple payment methods.
