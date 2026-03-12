@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -37,13 +36,6 @@ internal fun PaymentElementComponent(
     paymentFlowListener: PaymentFlowListener,
     flowViewModel: PaymentFlowViewModel
 ) {
-
-    LaunchedEffect(Unit) {
-        flowViewModel.paymentResult.collect { event ->
-            paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
-            paymentFlowListener.onPaymentResult(event.status)
-        }
-    }
 
     Column(Modifier.background(AirwallexColor.backgroundPrimary)) {
         when (configuration) {
